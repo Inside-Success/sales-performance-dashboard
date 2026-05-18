@@ -8,16 +8,17 @@ import type { RepSummary } from "@/lib/types";
 type RepPickerProps = {
   reps: RepSummary[];
   selectedRepSlug?: string;
+  basePath?: string;
 };
 
-export function RepPicker({ reps, selectedRepSlug }: RepPickerProps) {
+export function RepPicker({ reps, selectedRepSlug, basePath = "/" }: RepPickerProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   function handleRepChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const repSlug = event.target.value;
     startTransition(() => {
-      router.push(repSlug ? `/?rep=${encodeURIComponent(repSlug)}` : "/");
+      router.push(repSlug ? `${basePath}?rep=${encodeURIComponent(repSlug)}` : basePath);
     });
   }
 

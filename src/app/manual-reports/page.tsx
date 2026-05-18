@@ -2,6 +2,7 @@ import Link from "next/link";
 import type React from "react";
 import {
   ArrowLeft,
+  ArrowDownWideNarrow,
   CalendarDays,
   ExternalLink,
   FileText,
@@ -11,23 +12,39 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { RepPicker } from "@/components/dashboard/rep-picker";
 import { getManualFeedbackReports } from "@/lib/db";
 import { formatMiamiDateTime, truncate } from "@/lib/format";
 import { isManualFeedbackEnabled } from "@/lib/manual-reports";
-import type { ManualFeedbackReport } from "@/lib/types";
+import { slugify } from "@/lib/slug";
+import type { ManualFeedbackReport, RepSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function ManualReportsPage() {
+export default async function ManualReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ rep?: string | string[] }>;
+}) {
   if (!isManualFeedbackEnabled()) notFound();
 
-  const reports = await getManualFeedbackReports();
+  const selectedRepSlug = readRepParam(await searchParams);
+  const allReports = await getManualFeedbackReports(500);
+  const reps = buildManualRepSummaries(allReports);
+  const selectedRepName =
+    reps.find((rep) => rep.rep_slug === selectedRepSlug)?.rep_name ||
+    allReports.find((report) => slugify(report.rep_name) === selectedRepSlug)?.rep_name ||
+    "";
+  const reports = selectedRepSlug
+    ? allReports.filter((report) => slugify(report.rep_name) === selectedRepSlug)
+    : [];
+  const hasSelectedRep = Boolean(selectedRepSlug);
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <header className="dashboard-card dashboard-hero rounded-xl border bg-card/95 p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <Link href="/" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "px-0")}>
@@ -46,27 +63,78 @@ export default async function ManualReportsPage() {
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Completed manual coaching reports, kept separate from the official performance report list.
           </p>
-          <p className="mt-3 text-xs font-medium text-muted-foreground">
-            Showing {reports.length} completed {reports.length === 1 ? "report" : "reports"}.
-          </p>
+
+          <div className="mt-5 rounded-xl border bg-background/80 p-3">
+            <RepPicker reps={reps} selectedRepSlug={selectedRepSlug} basePath="/manual-reports" />
+          </div>
+
+          {hasSelectedRep ? (
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+              <Badge variant="outline" className="gap-1 rounded-md bg-background/70">
+                <ArrowDownWideNarrow className="size-3.5" />
+                Newest received first
+              </Badge>
+            </div>
+          ) : null}
         </header>
 
-        <section className="grid gap-2.5">
-          {reports.length ? (
-            reports.map((report) => <ManualReportCard key={report.public_id} report={report} />)
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">
+              {hasSelectedRep ? `${selectedRepName || "Selected rep"}'s manual reports` : "Choose a rep"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {hasSelectedRep
+                ? `${reports.length} completed manual ${reports.length === 1 ? "report" : "reports"} received by the dashboard.`
+                : "The manual report list appears after a rep is selected."}
+            </p>
+          </div>
+
+          {hasSelectedRep ? (
+            reports.length ? (
+              <div className="grid gap-3">
+                {reports.map((report) => <ManualReportCard key={report.public_id} report={report} />)}
+              </div>
+            ) : (
+              <EmptyState repName={selectedRepName} />
+            )
           ) : (
-            <div className="rounded-xl border bg-card/80 p-8 text-center">
-              <FileText className="mx-auto mb-3 size-8 text-muted-foreground" />
-              <h2 className="text-base font-semibold">No completed manual reports yet</h2>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                Completed Call 2+ reports will appear here after the workflow sends its callback.
-              </p>
-            </div>
+            <SelectionState />
           )}
         </section>
       </div>
     </main>
   );
+}
+
+function readRepParam(searchParams: { rep?: string | string[] }) {
+  const rep = searchParams.rep;
+  return Array.isArray(rep) ? rep[0] : rep;
+}
+
+function buildManualRepSummaries(reports: ManualFeedbackReport[]): RepSummary[] {
+  const reps = new Map<string, RepSummary>();
+
+  for (const report of reports) {
+    const repSlug = slugify(report.rep_name);
+    const existing = reps.get(repSlug);
+    if (!existing) {
+      reps.set(repSlug, {
+        rep_name: report.rep_name,
+        rep_slug: repSlug,
+        call_count: 1,
+        latest_call_date: report.updated_at,
+      });
+      continue;
+    }
+
+    existing.call_count += 1;
+    if (!existing.latest_call_date || new Date(report.updated_at) > new Date(existing.latest_call_date)) {
+      existing.latest_call_date = report.updated_at;
+    }
+  }
+
+  return [...reps.values()].sort((a, b) => a.rep_name.localeCompare(b.rep_name));
 }
 
 function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
@@ -119,6 +187,30 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function SelectionState() {
+  return (
+    <div className="rounded-xl border bg-card/80 p-8 text-center">
+      <UserRound className="mx-auto mb-3 size-8 text-muted-foreground" />
+      <h3 className="text-base font-semibold">No rep selected</h3>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+        Completed manual reports are grouped by rep.
+      </p>
+    </div>
+  );
+}
+
+function EmptyState({ repName }: { repName: string }) {
+  return (
+    <div className="rounded-xl border bg-card/80 p-8 text-center">
+      <FileText className="mx-auto mb-3 size-8 text-muted-foreground" />
+      <h3 className="text-base font-semibold">No completed manual reports found</h3>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+        {repName ? `${repName} does not have completed manual reports yet.` : "This rep does not have completed manual reports yet."}
+      </p>
+    </div>
   );
 }
 

@@ -114,7 +114,12 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
             <div className="mt-5 flex flex-wrap gap-2">
               <ExternalButton href={reportDocLink} label="Open Google Doc" icon={<FileText className="size-4" />} />
               <ExternalButton href={zoomLink} label="Zoom" icon={<Video className="size-4" />} />
-              <ExternalButton href={transcriptLink} label="Transcript" icon={<MessageSquareText className="size-4" />} />
+              <ExternalButton
+                href={transcriptLink}
+                label="Transcript"
+                icon={<MessageSquareText className="size-4" />}
+                unavailableLabel="Transcript unavailable"
+              />
             </div>
           </header>
 
@@ -300,12 +305,26 @@ function ExternalButton({
   href,
   label,
   icon,
+  unavailableLabel,
 }: {
   href: string | null;
   label: string;
   icon: React.ReactNode;
+  unavailableLabel?: string;
 }) {
-  if (!href) return null;
+  if (!href) {
+    if (!unavailableLabel) return null;
+
+    return (
+      <span
+        aria-disabled="true"
+        className={cn(buttonVariants({ variant: "outline" }), "gap-1 opacity-55")}
+      >
+        {icon}
+        {unavailableLabel}
+      </span>
+    );
+  }
 
   return (
     <a href={href} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "gap-1")}>

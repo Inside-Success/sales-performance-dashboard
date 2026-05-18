@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
-import { BarChart3, FileText, Home, Send } from "lucide-react";
-import { isManualFeedbackEnabled } from "@/lib/manual-reports";
+import { BarChart3, Home } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,8 +24,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const showManualLinks = isManualFeedbackEnabled();
-
   return (
     <html
       lang="en"
@@ -49,24 +46,6 @@ export default function RootLayout({
                 <Home className="size-4" />
                 Home
               </Link>
-              {showManualLinks ? (
-                <>
-                  <Link
-                    href="/manual-reports"
-                    className="hidden h-8 items-center gap-1.5 rounded-lg border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:inline-flex"
-                  >
-                    <FileText className="size-4" />
-                    Manual reports
-                  </Link>
-                  <Link
-                    href="/submit"
-                    className="hidden h-8 items-center gap-1.5 rounded-lg border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:inline-flex"
-                  >
-                    <Send className="size-4" />
-                    Submit
-                  </Link>
-                </>
-              ) : null}
             </nav>
           </div>
         </header>
