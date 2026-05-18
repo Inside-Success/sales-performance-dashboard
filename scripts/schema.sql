@@ -46,13 +46,17 @@ create table if not exists manual_feedback_reports (
   public_id text not null unique,
   status text not null default 'pending',
   input_type text not null,
+  source_type text,
   rep_name text not null,
   rep_email text,
   client_name text,
   zoom_link text,
+  original_zoom_link text,
   transcript_link text,
+  transcript_drive_link text,
   google_doc_id text,
   google_doc_link text,
+  report_doc_link text,
   call_status text,
   refusal_reason text,
   one_line_verdict text,
@@ -71,6 +75,12 @@ create table if not exists manual_feedback_reports (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table manual_feedback_reports
+  add column if not exists source_type text,
+  add column if not exists original_zoom_link text,
+  add column if not exists transcript_drive_link text,
+  add column if not exists report_doc_link text;
 
 create index if not exists manual_feedback_reports_public_id_idx
   on manual_feedback_reports (public_id);

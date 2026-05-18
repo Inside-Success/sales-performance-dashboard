@@ -74,13 +74,17 @@ export async function ensureSchema() {
       public_id text not null unique,
       status text not null default 'pending',
       input_type text not null,
+      source_type text,
       rep_name text not null,
       rep_email text,
       client_name text,
       zoom_link text,
+      original_zoom_link text,
       transcript_link text,
+      transcript_drive_link text,
       google_doc_id text,
       google_doc_link text,
+      report_doc_link text,
       call_status text,
       refusal_reason text,
       one_line_verdict text,
@@ -100,6 +104,10 @@ export async function ensureSchema() {
       updated_at timestamptz not null default now()
     )
   `;
+  await sql`alter table manual_feedback_reports add column if not exists source_type text`;
+  await sql`alter table manual_feedback_reports add column if not exists original_zoom_link text`;
+  await sql`alter table manual_feedback_reports add column if not exists transcript_drive_link text`;
+  await sql`alter table manual_feedback_reports add column if not exists report_doc_link text`;
   await sql`create index if not exists manual_feedback_reports_public_id_idx on manual_feedback_reports (public_id)`;
   await sql`create index if not exists manual_feedback_reports_status_idx on manual_feedback_reports (status)`;
   await sql`create index if not exists manual_feedback_reports_updated_at_idx on manual_feedback_reports (updated_at desc)`;
@@ -326,30 +334,35 @@ export async function getPerformanceCall(id: string) {
 
 export async function createManualFeedbackReport(publicId: string, payload: ManualSubmitPayload) {
   await ensureSchema();
+  const sourceType = payload.input_type === "zoom_link" ? "zoom_link" : "pasted_transcript";
   const rows = await getSql().query(
     `
       insert into manual_feedback_reports (
         public_id,
         status,
         input_type,
+        source_type,
         rep_name,
         rep_email,
         client_name,
         zoom_link,
+        original_zoom_link,
         source_payload
       )
-      values ($1, 'pending', $2, $3, $4, $5, $6, $7::jsonb)
+      values ($1, 'pending', $2, $3, $4, $5, $6, $7, $7, $8::jsonb)
       returning *
     `,
     [
       publicId,
       payload.input_type,
+      sourceType,
       payload.rep_name || "Unknown rep",
       payload.rep_email,
       payload.client_name,
       payload.zoom_link,
       JSON.stringify({
         input_type: payload.input_type,
+        source_type: sourceType,
         rep_name: payload.rep_name,
         rep_email: payload.rep_email,
         client_name: payload.client_name,
@@ -396,9 +409,12 @@ export async function applyManualFeedbackCallback(payload: NormalizedManualCallb
           rep_email = coalesce($4, rep_email),
           client_name = coalesce($5, client_name),
           zoom_link = coalesce($6, zoom_link),
+          original_zoom_link = coalesce($25, original_zoom_link),
           transcript_link = coalesce($7, transcript_link),
+          transcript_drive_link = coalesce($26, transcript_drive_link),
           google_doc_id = coalesce($8, google_doc_id),
           google_doc_link = coalesce($9, google_doc_link),
+          report_doc_link = coalesce($27, report_doc_link),
           call_status = coalesce($10, call_status),
           refusal_reason = coalesce($11, refusal_reason),
           one_line_verdict = coalesce($12, one_line_verdict),
@@ -414,6 +430,7 @@ export async function applyManualFeedbackCallback(payload: NormalizedManualCallb
           close_section_type = $22,
           close_section = $23::jsonb,
           source_payload = $24::jsonb,
+          source_type = coalesce($28, source_type),
           updated_at = now()
       where public_id = $1
       returning *
@@ -443,12 +460,38 @@ export async function applyManualFeedbackCallback(payload: NormalizedManualCallb
       payload.close_section_type,
       JSON.stringify(payload.close_section),
       JSON.stringify(payload.source_payload),
+      payload.original_zoom_link,
+      payload.transcript_drive_link,
+      payload.report_doc_link,
+      payload.source_type,
     ],
   );
 
   return (rows as ManualFeedbackReport[])[0]
     ? normalizeManualReport((rows as ManualFeedbackReport[])[0])
     : null;
+}
+
+export async function getManualFeedbackReports(limit = 100) {
+  if (!hasDatabase()) return [];
+
+  try {
+    await ensureSchema();
+    const rows = (await getSql().query(
+      `
+        select *
+        from manual_feedback_reports
+        order by updated_at desc
+        limit $1
+      `,
+      [limit],
+    )) as ManualFeedbackReport[];
+
+    return rows.map(normalizeManualReport);
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export async function getManualFeedbackReport(publicId: string) {

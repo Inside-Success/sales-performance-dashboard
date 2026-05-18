@@ -58,19 +58,24 @@ export type ManualReportStatus =
   | "failed";
 
 export type ManualReportInputType = "transcript" | "zoom_link";
+export type ManualReportSourceType = "pasted_transcript" | "zoom_link";
 
 export type ManualFeedbackReport = {
   id: number;
   public_id: string;
   status: ManualReportStatus;
   input_type: ManualReportInputType;
+  source_type: ManualReportSourceType | null;
   rep_name: string;
   rep_email: string | null;
   client_name: string | null;
   zoom_link: string | null;
+  original_zoom_link: string | null;
   transcript_link: string | null;
+  transcript_drive_link: string | null;
   google_doc_id: string | null;
   google_doc_link: string | null;
+  report_doc_link: string | null;
   call_status: string | null;
   refusal_reason: string | null;
   one_line_verdict: string | null;

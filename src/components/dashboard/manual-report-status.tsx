@@ -36,6 +36,9 @@ const TERMINAL_STATUSES = new Set(["completed", "refused", "needs_transcript_pas
 export function ManualReportStatus({ initialReport }: { initialReport: ManualFeedbackReport }) {
   const [report, setReport] = useState(initialReport);
   const [error, setError] = useState<string | null>(null);
+  const reportDocLink = report.report_doc_link || report.google_doc_link;
+  const transcriptLink = report.transcript_drive_link || report.transcript_link;
+  const zoomLink = report.original_zoom_link || report.zoom_link;
 
   const isWaiting = !TERMINAL_STATUSES.has(report.status);
   const closeTitle =
@@ -102,9 +105,9 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <ExternalButton href={report.google_doc_link} label="Open Google Doc" icon={<FileText className="size-4" />} />
-              <ExternalButton href={report.zoom_link} label="Zoom" icon={<Video className="size-4" />} />
-              <ExternalButton href={report.transcript_link} label="Transcript" icon={<MessageSquareText className="size-4" />} />
+              <ExternalButton href={reportDocLink} label="Open Google Doc" icon={<FileText className="size-4" />} />
+              <ExternalButton href={zoomLink} label="Zoom" icon={<Video className="size-4" />} />
+              <ExternalButton href={transcriptLink} label="Transcript" icon={<MessageSquareText className="size-4" />} />
             </div>
           </header>
 

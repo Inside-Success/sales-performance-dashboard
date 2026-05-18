@@ -62,12 +62,16 @@ export const manualCallbackSchema = z
     rep_name: optionalString,
     rep_email: optionalString,
     client_name: optionalString,
+    source_type: optionalString,
     zoom_link: optionalString,
+    original_zoom_link: optionalString,
     meeting_link: optionalString,
     transcript_link: optionalString,
     meeting_transcript_link: optionalString,
+    transcript_drive_link: optionalString,
     google_doc_id: optionalString,
     google_doc_link: optionalString,
+    report_doc_link: optionalString,
     pdf_link: optionalString,
     call_status: optionalString,
     refusal_reason: optionalString,
@@ -118,13 +122,19 @@ export function normalizeManualCallback(raw: unknown) {
   return {
     public_id: parsed.public_id,
     status: parsed.status,
+    source_type: normalizeSourceType(parsed.source_type),
     rep_name: parsed.rep_name,
     rep_email: parsed.rep_email,
     client_name: parsed.client_name,
-    zoom_link: parsed.zoom_link || parsed.meeting_link,
-    transcript_link: parsed.transcript_link || parsed.meeting_transcript_link,
+    zoom_link: parsed.original_zoom_link || parsed.zoom_link || parsed.meeting_link,
+    original_zoom_link: parsed.original_zoom_link || parsed.zoom_link || parsed.meeting_link,
+    transcript_link:
+      parsed.transcript_drive_link || parsed.transcript_link || parsed.meeting_transcript_link,
+    transcript_drive_link:
+      parsed.transcript_drive_link || parsed.transcript_link || parsed.meeting_transcript_link,
     google_doc_id: parsed.google_doc_id,
-    google_doc_link: parsed.google_doc_link || parsed.pdf_link,
+    google_doc_link: parsed.report_doc_link || parsed.google_doc_link || parsed.pdf_link,
+    report_doc_link: parsed.report_doc_link || parsed.google_doc_link || parsed.pdf_link,
     call_status: parsed.call_status,
     refusal_reason: refusalReason,
     one_line_verdict: parsed.one_line_verdict,
@@ -141,6 +151,12 @@ export function normalizeManualCallback(raw: unknown) {
     close_section: closeWorks || whyNoClose || null,
     source_payload: parsed as JsonObject,
   };
+}
+
+function normalizeSourceType(value: string | null) {
+  if (value === "pasted_transcript" || value === "transcript") return "pasted_transcript";
+  if (value === "zoom_link") return value;
+  return null;
 }
 
 function normalizeJsonField(value: unknown): JsonObject | string | null {
