@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
-import { BarChart3, Home } from "lucide-react";
+import { BarChart3, FileText, Home, Send } from "lucide-react";
+import { isManualFeedbackEnabled } from "@/lib/manual-reports";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,6 +25,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const showManualLinks = isManualFeedbackEnabled();
+
   return (
     <html
       lang="en"
@@ -38,7 +41,7 @@ export default function RootLayout({
               </span>
               <span className="truncate">Lil Rudy Feedback</span>
             </Link>
-            <nav aria-label="Primary navigation">
+            <nav aria-label="Primary navigation" className="flex items-center gap-2">
               <Link
                 href="/"
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
@@ -46,6 +49,24 @@ export default function RootLayout({
                 <Home className="size-4" />
                 Home
               </Link>
+              {showManualLinks ? (
+                <>
+                  <Link
+                    href="/manual-reports"
+                    className="hidden h-8 items-center gap-1.5 rounded-lg border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:inline-flex"
+                  >
+                    <FileText className="size-4" />
+                    Manual reports
+                  </Link>
+                  <Link
+                    href="/submit"
+                    className="hidden h-8 items-center gap-1.5 rounded-lg border bg-card px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:inline-flex"
+                  >
+                    <Send className="size-4" />
+                    Submit
+                  </Link>
+                </>
+              ) : null}
             </nav>
           </div>
         </header>

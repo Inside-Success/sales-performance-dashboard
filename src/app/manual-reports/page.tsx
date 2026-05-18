@@ -1,6 +1,14 @@
 import Link from "next/link";
 import type React from "react";
-import { ArrowLeft, Clock3, ExternalLink, FileText, MessageSquareText, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  ExternalLink,
+  FileText,
+  MessageSquareText,
+  Send,
+  UserRound,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getManualFeedbackReports } from "@/lib/db";
@@ -19,33 +27,39 @@ export default async function ManualReportsPage() {
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
-          <Link href="/" className={cn(buttonVariants({ variant: "ghost" }), "mb-4 px-0")}>
-            <ArrowLeft className="size-4" />
-            Home
-          </Link>
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">Manual feedback</Badge>
-            <Badge variant="outline">Self-submitted</Badge>
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="dashboard-card dashboard-hero rounded-xl border bg-card/95 p-5">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <Link href="/" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "px-0")}>
+              <ArrowLeft className="size-4" />
+              Home
+            </Link>
+            <Link href="/submit" className={buttonVariants({ variant: "outline", size: "sm" })}>
+              <Send className="size-4" />
+              Submit call
+            </Link>
           </div>
-          <h1 className="text-3xl font-semibold tracking-normal md:text-4xl">
+          <Badge variant="secondary" className="mb-3">Manual feedback</Badge>
+          <h1 className="text-2xl font-semibold tracking-normal md:text-3xl">
             Self-submitted feedback reports
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Manual reports stay separate from the official performance report list.
+            Completed manual coaching reports, kept separate from the official performance report list.
+          </p>
+          <p className="mt-3 text-xs font-medium text-muted-foreground">
+            Showing {reports.length} completed {reports.length === 1 ? "report" : "reports"}.
           </p>
         </header>
 
-        <section className="space-y-3">
+        <section className="grid gap-2.5">
           {reports.length ? (
             reports.map((report) => <ManualReportCard key={report.public_id} report={report} />)
           ) : (
             <div className="rounded-xl border bg-card/80 p-8 text-center">
               <FileText className="mx-auto mb-3 size-8 text-muted-foreground" />
-              <h2 className="text-base font-semibold">No manual reports yet</h2>
+              <h2 className="text-base font-semibold">No completed manual reports yet</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                Self-submitted reports will appear here after the workflow sends its callback.
+                Completed Call 2+ reports will appear here after the workflow sends its callback.
               </p>
             </div>
           )}
@@ -59,48 +73,43 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
   const reportDocLink = report.report_doc_link || report.google_doc_link;
   const transcriptLink = report.transcript_drive_link || report.transcript_link;
   const zoomLink = report.original_zoom_link || report.zoom_link;
+  const title = report.client_name || `${report.rep_name}'s feedback`;
+  const sourceLabel = report.source_type || report.input_type;
 
   return (
-    <article className="dashboard-card rounded-lg border bg-card/95 p-4 transition-all hover:-translate-y-px hover:border-primary/40">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant={report.status === "completed" ? "secondary" : "outline"} className="capitalize">
-              {report.status.replace(/_/g, " ")}
-            </Badge>
-            {report.source_type || report.input_type ? (
-              <Badge variant="outline" className="capitalize">
-                {(report.source_type || report.input_type).replace(/_/g, " ")}
-              </Badge>
-            ) : null}
-            <span className="inline-flex items-center gap-1">
-              <Clock3 className="size-3.5" />
-              Updated {formatMiamiDateTime(report.updated_at)}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <UserRound className="size-3.5" />
-              {report.rep_name}
-            </span>
-          </div>
-
-          <h2 className="text-base font-semibold">
+    <article className="dashboard-card rounded-lg border bg-card/95 p-4 transition-colors hover:border-primary/35">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <h2 className="text-base font-semibold leading-6">
             <Link href={`/self-report/${report.public_id}`} className="hover:underline">
-              {report.client_name || "Self-submitted report"}
+              {title}
             </Link>
           </h2>
 
           {report.one_line_verdict ? (
-            <p className="text-sm leading-6 text-muted-foreground">
-              {truncate(report.one_line_verdict, 220)}
-            </p>
-          ) : report.refusal_reason ? (
-            <p className="text-sm leading-6 text-muted-foreground">
-              {truncate(report.refusal_reason, 220)}
+            <p className="text-sm leading-6 text-muted-foreground md:max-w-2xl">
+              {truncate(report.one_line_verdict, 185)}
             </p>
           ) : null}
+
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <UserRound className="size-3.5" />
+              {report.rep_name}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays className="size-3.5" />
+              {formatMiamiDateTime(report.updated_at)}
+            </span>
+            {sourceLabel ? (
+              <span className="capitalize">
+                {sourceLabel.replace(/_/g, " ")}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap gap-1.5 md:justify-end">
           <Link href={`/self-report/${report.public_id}`} className={buttonVariants({ size: "sm", variant: "outline" })}>
             Open report
           </Link>

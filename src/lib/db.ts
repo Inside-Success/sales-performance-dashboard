@@ -481,6 +481,7 @@ export async function getManualFeedbackReports(limit = 100) {
       `
         select *
         from manual_feedback_reports
+        where status = 'completed'
         order by updated_at desc
         limit $1
       `,

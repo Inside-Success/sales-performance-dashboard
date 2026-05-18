@@ -13,6 +13,7 @@ import {
   Loader2,
   MessageSquareText,
   PencilLine,
+  Send,
   Target,
   TriangleAlert,
   Video,
@@ -86,11 +87,17 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
       {isWaiting ? <div className="fixed inset-x-0 top-14 z-50 h-0.5 overflow-hidden bg-primary/10"><div className="loading-progress h-full bg-primary" /></div> : null}
       <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
         <article className="space-y-4">
-          <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
-            <Link href="/submit" className={cn(buttonVariants({ variant: "ghost" }), "mb-4 px-0")}>
-              <ArrowLeft className="size-4" />
-              Submit another call
-            </Link>
+          <header className="dashboard-card dashboard-hero rounded-xl border bg-card/95 p-5 md:p-6">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Link href="/manual-reports" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "px-0")}>
+                <ArrowLeft className="size-4" />
+                Manual reports
+              </Link>
+              <Link href="/submit" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                <Send className="size-4" />
+                Submit call
+              </Link>
+            </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={report.status} />
@@ -98,10 +105,10 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
             </div>
 
             <h1 className="mt-3 text-3xl font-semibold tracking-normal">
-              {report.client_name || "Self-submitted report"}
+              {report.client_name || `${report.rep_name}'s feedback`}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {report.rep_name} sales feedback report.
+              Manual sales feedback for {report.rep_name}.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
