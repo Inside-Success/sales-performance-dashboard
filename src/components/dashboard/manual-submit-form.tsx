@@ -155,7 +155,7 @@ export function ManualSubmitForm() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
         <p className="text-sm text-muted-foreground">
-          Reports usually take about 5 minutes and update automatically.
+          Reports usually take about 1-2 minutes and update automatically.
         </p>
         <Button type="submit" disabled={!canSubmit || isSubmitting} className="gap-1.5">
           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}

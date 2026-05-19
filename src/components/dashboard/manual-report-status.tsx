@@ -203,7 +203,7 @@ function PendingPanel() {
       <Loader2 className="mx-auto mb-3 size-8 animate-spin text-primary" />
       <h2 className="text-lg font-semibold">Your report is being generated</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-        This usually takes about 5 minutes. You can leave this page open and the report will appear automatically.
+        This usually takes about 1-2 minutes. You can leave this page open and the report will appear automatically.
       </p>
     </section>
   );
