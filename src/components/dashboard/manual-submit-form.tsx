@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileText, LinkIcon, Loader2, Send, ShieldAlert } from "lucide-react";
+import { ChevronDown, FileText, LinkIcon, Loader2, Send, ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -122,13 +122,12 @@ export function ManualSubmitForm() {
       </div>
 
       <details className="group rounded-xl border bg-background/60 p-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold">
-          <span>Optional details</span>
-          <span className="text-xs font-normal text-muted-foreground group-open:hidden">
-            Rep email and client name
-          </span>
-          <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">
-            Hide
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <span className="text-sm font-semibold">Optional details</span>
+          <span className="inline-flex items-center gap-2 text-xs font-normal text-muted-foreground">
+            <span className="group-open:hidden">Add rep email or client name</span>
+            <span className="hidden group-open:inline">Hide optional details</span>
+            <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
           </span>
         </summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -151,27 +150,13 @@ export function ManualSubmitForm() {
         </div>
       </details>
 
-      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-        <div className="flex gap-3">
-          <span className="grid size-8 shrink-0 place-items-center rounded-md border bg-background text-primary">
-            <ShieldAlert className="size-4" />
-          </span>
-          <div className="space-y-1">
-            <div className="text-sm font-semibold">Call 2 or later only</div>
-            <p className="text-sm leading-6 text-muted-foreground">
-              Call 1, internal calls, training calls, no-shows, or very short transcripts will not generate a report.
-            </p>
-          </div>
-        </div>
-      </div>
-
       {error ? (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-background/80 p-4">
         <p className="text-sm text-muted-foreground">
           Reports usually take about 1-2 minutes and update automatically.
         </p>
@@ -179,6 +164,20 @@ export function ManualSubmitForm() {
           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
           Generate feedback
         </Button>
+      </div>
+
+      <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+        <div className="flex gap-3">
+          <span className="grid size-7 shrink-0 place-items-center rounded-md border bg-background text-primary">
+            <ShieldAlert className="size-3.5" />
+          </span>
+          <div className="space-y-0.5">
+            <div className="text-sm font-semibold">Call 2 or later only</div>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Call 1, internal calls, training calls, no-shows, or very short transcripts will not generate a report.
+            </p>
+          </div>
+        </div>
       </div>
     </form>
   );
