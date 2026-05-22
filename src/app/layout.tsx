@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lil Rudy Sales Feedback Bot",
+  title: "Magic Mike Bot (Formerly Lil Rudy)",
   description: "Simple rep-based coaching feedback for Inside Success TV sales calls.",
 };
 
@@ -36,7 +36,7 @@ export default function RootLayout({
               <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
                 <BarChart3 className="size-4" />
               </span>
-              <span className="truncate">Lil Rudy Feedback</span>
+              <span className="truncate">Magic Mike Bot</span>
             </Link>
             <nav
               aria-label="Primary navigation"

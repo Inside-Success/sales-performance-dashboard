@@ -31,7 +31,7 @@ export default async function Home({
               {!configured ? <Badge variant="destructive">Database not connected</Badge> : null}
             </div>
             <h1 className="text-3xl font-semibold tracking-normal md:text-4xl">
-              Lil Rudy Sales Feedback Bot
+              Magic Mike Bot (Formerly Lil Rudy)
             </h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Newest feedback reports by rep.

@@ -36,7 +36,7 @@ export default function SubmitPage() {
             Generate call feedback
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Add a Zoom recording link or paste a transcript to generate a Lil Rudy coaching report for a closing-stage call.
+            Add a Zoom recording link or paste a transcript to generate a Magic Mike coaching report for a closing-stage call.
           </p>
         </header>
 
