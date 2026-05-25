@@ -14,8 +14,8 @@ type CallCardProps = {
 };
 
 export function CallCard({ call, compact = false, showRep = true }: CallCardProps) {
-  const title = call.meeting_title || call.client_name || "Unknown client";
-  const clientLine = getClientLine(call);
+  const title = call.client_name || call.meeting_title || "Unknown client";
+  const meetingLine = getMeetingLine(call);
 
   if (compact) {
     return (
@@ -27,7 +27,7 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
                 {title}
               </Link>
             </CardTitle>
-            {clientLine ? <p className="text-sm text-muted-foreground">{clientLine}</p> : null}
+            {meetingLine ? <p className="text-sm text-muted-foreground">{meetingLine}</p> : null}
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               {call.call_date ? (
                 <span className="inline-flex items-center gap-1">
@@ -79,7 +79,7 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
             {title}
           </Link>
         </CardTitle>
-        {clientLine ? <p className="text-sm text-muted-foreground">{clientLine}</p> : null}
+        {meetingLine ? <p className="text-sm text-muted-foreground">{meetingLine}</p> : null}
       </CardHeader>
       <CardContent className="space-y-4">
         {call.one_line_verdict ? (
@@ -114,14 +114,13 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
   );
 }
 
-function getClientLine(call: PerformanceCall) {
-  if (!call.client_name || !call.meeting_title) return null;
+function getMeetingLine(call: PerformanceCall) {
+  if (!call.meeting_title) return null;
 
-  const client = call.client_name.trim();
-  const title = call.meeting_title.trim().toLowerCase();
-  if (!client || title.includes(client.toLowerCase())) return null;
+  const meetingTitle = call.meeting_title.trim();
+  if (!meetingTitle || meetingTitle === call.client_name?.trim()) return null;
 
-  return client;
+  return meetingTitle;
 }
 
 function SummaryBlock({

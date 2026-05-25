@@ -67,10 +67,10 @@ export default async function CallPage({
             </div>
 
             <h1 className="mt-3 text-3xl font-semibold tracking-normal">
-              {call.meeting_title || call.client_name || "Feedback Report"}
+              {call.client_name || call.meeting_title || "Feedback Report"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              {call.client_name ? `${call.client_name} - ` : ""}
+              {call.meeting_title && call.meeting_title !== call.client_name ? `${call.meeting_title} - ` : ""}
               {call.rep_name} sales feedback report.
             </p>
 
