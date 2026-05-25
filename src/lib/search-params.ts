@@ -7,6 +7,7 @@ export function readFilters(searchParams: RawSearchParams, overrides: DashboardF
     q: readString(searchParams.q),
     rep: readString(searchParams.rep),
     client: readString(searchParams.client),
+    date: readString(searchParams.date),
     from: readString(searchParams.from),
     to: readString(searchParams.to),
     ...overrides,

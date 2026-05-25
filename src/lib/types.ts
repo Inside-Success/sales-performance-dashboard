@@ -38,6 +38,7 @@ export type DashboardFilters = {
   q?: string;
   rep?: string;
   client?: string;
+  date?: string;
   from?: string;
   to?: string;
 };

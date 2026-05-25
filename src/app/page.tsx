@@ -2,6 +2,7 @@ import { ArrowDownWideNarrow, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CallCard } from "@/components/dashboard/call-card";
 import { RepPicker } from "@/components/dashboard/rep-picker";
+import { ReportFilters } from "@/components/dashboard/report-filters";
 import { getDashboardData } from "@/lib/db";
 import { readFilters, type RawSearchParams } from "@/lib/search-params";
 
@@ -15,7 +16,7 @@ export default async function Home({
   const filters = readFilters(await searchParams);
   const selectedRepSlug = filters.rep;
   const { calls, reps, configured, error } = await getDashboardData(
-    selectedRepSlug ? { rep: selectedRepSlug } : {},
+    selectedRepSlug ? { ...filters, rep: selectedRepSlug } : {},
   );
   const selectedRepName =
     reps.find((rep) => rep.rep_slug === selectedRepSlug)?.rep_name || calls[0]?.rep_name || "";
@@ -46,7 +47,7 @@ export default async function Home({
             <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
               <Badge variant="outline" className="gap-1 rounded-md bg-background/70">
                 <ArrowDownWideNarrow className="size-3.5" />
-                Newest received first
+                Newest meetings first
               </Badge>
             </div>
           ) : null}
@@ -72,20 +73,28 @@ export default async function Home({
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {hasSelectedRep
-                  ? `${calls.length} ${calls.length === 1 ? "report" : "reports"} received by the dashboard.`
+                  ? `${calls.length} ${calls.length === 1 ? "report" : "reports"} found.`
                   : "The call list appears after a rep is selected."}
               </p>
             </div>
           </div>
 
           {hasSelectedRep ? (
-            calls.length ? (
-              <div className="grid gap-3">
-                {calls.map((call) => <CallCard key={call.id} call={call} compact showRep={false} />)}
-              </div>
-            ) : (
-              <EmptyState repName={selectedRepName} />
-            )
+            <>
+              <ReportFilters
+                action="/"
+                filters={filters}
+                repSlug={selectedRepSlug}
+                clearHref={`/?rep=${encodeURIComponent(selectedRepSlug || "")}`}
+              />
+              {calls.length ? (
+                <div className="grid gap-3">
+                  {calls.map((call) => <CallCard key={call.id} call={call} compact showRep={false} />)}
+                </div>
+              ) : (
+                <EmptyState repName={selectedRepName} hasFilters={Boolean(filters.q || filters.date)} />
+              )}
+            </>
           ) : (
             <SelectionState />
           )}
@@ -107,12 +116,16 @@ function SelectionState() {
   );
 }
 
-function EmptyState({ repName }: { repName: string }) {
+function EmptyState({ repName, hasFilters }: { repName: string; hasFilters?: boolean }) {
   return (
     <div className="rounded-xl border bg-card/80 p-8 text-center">
       <h3 className="text-base font-semibold">No reports found</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-        {repName ? `${repName} does not have dashboard reports yet.` : "This rep does not have dashboard reports yet."}
+        {hasFilters
+          ? "No reports match that search."
+          : repName
+            ? `${repName} does not have dashboard reports yet.`
+            : "This rep does not have dashboard reports yet."}
       </p>
     </div>
   );

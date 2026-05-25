@@ -235,7 +235,15 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
     if (filters.q) {
       params.push(`%${filters.q}%`);
       where.push(
-        `(search_document ilike $${params.length} or rep_name ilike $${params.length} or client_name ilike $${params.length})`,
+        `(
+          search_document ilike $${params.length}
+          or rep_name ilike $${params.length}
+          or client_name ilike $${params.length}
+          or meeting_title ilike $${params.length}
+          or to_char(call_date at time zone 'America/New_York', 'Dy Mon DD YYYY HH12:MI AM') ilike $${params.length}
+          or to_char(call_date at time zone 'America/New_York', 'FMDay FMMonth FMDD YYYY FMHH12:MI AM') ilike $${params.length}
+          or to_char(call_date at time zone 'America/New_York', 'YYYY-MM-DD') ilike $${params.length}
+        )`,
       );
     }
 
@@ -247,6 +255,11 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
     if (filters.client) {
       params.push(`%${filters.client}%`);
       where.push(`client_name ilike $${params.length}`);
+    }
+
+    if (filters.date) {
+      params.push(filters.date);
+      where.push(`(call_date at time zone 'America/New_York')::date = $${params.length}::date`);
     }
 
     if (filters.from) {
@@ -268,7 +281,7 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
           select *
           from performance_calls
           ${whereSql}
-          order by updated_at desc, coalesce(call_date, created_at) desc
+          order by call_date desc nulls last, updated_at desc
           limit 100
         `,
         params,
@@ -288,9 +301,9 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
           from (
             select distinct on (rep_slug) *
             from performance_calls
-            order by rep_slug, updated_at desc, coalesce(call_date, created_at) desc
+            order by rep_slug, call_date desc nulls last, updated_at desc
           ) latest
-          order by updated_at desc, coalesce(call_date, created_at) desc
+          order by call_date desc nulls last, updated_at desc
           limit 40
         `,
         [],

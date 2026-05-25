@@ -3,7 +3,7 @@ import { CalendarDays, Clock3, ExternalLink, FileText, MessageSquareText, UserRo
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate, formatMiamiDateTime, truncate } from "@/lib/format";
+import { formatMiamiDateTime, formatMiamiMeetingDateTime, truncate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { PerformanceCall } from "@/lib/types";
 
@@ -14,6 +14,9 @@ type CallCardProps = {
 };
 
 export function CallCard({ call, compact = false, showRep = true }: CallCardProps) {
+  const title = call.meeting_title || call.client_name || "Unknown client";
+  const clientLine = getClientLine(call);
+
   if (compact) {
     return (
       <Card className="dashboard-card rounded-lg border-border/80 bg-card/95 transition-all hover:-translate-y-px hover:border-primary/40">
@@ -21,20 +24,22 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
           <div className="min-w-0 space-y-2">
             <CardTitle className="text-base">
               <Link href={`/call/${call.id}`} className="hover:underline">
-                {call.client_name || "Unknown client"}
+                {title}
               </Link>
             </CardTitle>
+            {clientLine ? <p className="text-sm text-muted-foreground">{clientLine}</p> : null}
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <Clock3 className="size-3.5" />
-                Received {formatMiamiDateTime(call.updated_at)}
-              </span>
               {call.call_date ? (
                 <span className="inline-flex items-center gap-1">
                   <CalendarDays className="size-3.5" />
-                  Call {formatDate(call.call_date)}
+                  Meeting {formatMiamiMeetingDateTime(call.call_date)}
                 </span>
-              ) : null}
+              ) : (
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="size-3.5" />
+                  Received {formatMiamiDateTime(call.updated_at)}
+                </span>
+              )}
             </div>
           </div>
 
@@ -50,16 +55,17 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
     <Card className="dashboard-card rounded-lg border-border/80 bg-card/95 transition-all hover:-translate-y-px hover:border-primary/40">
       <CardHeader className="gap-3 border-b bg-muted/15">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Clock3 className="size-3.5" />
-            Received {formatMiamiDateTime(call.updated_at)}
-          </span>
           {call.call_date ? (
             <span className="inline-flex items-center gap-1">
               <CalendarDays className="size-3.5" />
-              Call {formatDate(call.call_date)}
+              Meeting {formatMiamiMeetingDateTime(call.call_date)}
             </span>
-          ) : null}
+          ) : (
+            <span className="inline-flex items-center gap-1">
+              <Clock3 className="size-3.5" />
+              Received {formatMiamiDateTime(call.updated_at)}
+            </span>
+          )}
           {showRep ? (
             <span className="inline-flex items-center gap-1">
               <UserRound className="size-3.5" />
@@ -70,9 +76,10 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
         </div>
         <CardTitle className={compact ? "text-base" : "text-lg"}>
           <Link href={`/call/${call.id}`} className="hover:underline">
-            {call.client_name || "Unknown client"}
+            {title}
           </Link>
         </CardTitle>
+        {clientLine ? <p className="text-sm text-muted-foreground">{clientLine}</p> : null}
       </CardHeader>
       <CardContent className="space-y-4">
         {call.one_line_verdict ? (
@@ -105,6 +112,16 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
       </CardContent>
     </Card>
   );
+}
+
+function getClientLine(call: PerformanceCall) {
+  if (!call.client_name || !call.meeting_title) return null;
+
+  const client = call.client_name.trim();
+  const title = call.meeting_title.trim().toLowerCase();
+  if (!client || title.includes(client.toLowerCase())) return null;
+
+  return client;
 }
 
 function SummaryBlock({

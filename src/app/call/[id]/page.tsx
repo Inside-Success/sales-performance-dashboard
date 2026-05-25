@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   Award,
   BookOpenText,
+  CalendarDays,
+  Clock3,
   ExternalLink,
   FileText,
   Lightbulb,
@@ -18,7 +20,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
 import { TrackRecentlyViewed } from "@/components/dashboard/recently-viewed";
 import { getPerformanceCall } from "@/lib/db";
-import { formatMiamiDateTime } from "@/lib/format";
+import { formatMiamiDateTime, formatMiamiMeetingDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -51,13 +53,24 @@ export default async function CallPage({
 
             <div className="flex flex-wrap items-center gap-2">
               {call.call_status ? <Badge variant="secondary">{call.call_status}</Badge> : null}
-              <Badge variant="outline">Received {formatMiamiDateTime(call.updated_at)}</Badge>
+              {call.call_date ? (
+                <Badge variant="outline" className="gap-1">
+                  <CalendarDays className="size-3.5" />
+                  Meeting {formatMiamiMeetingDateTime(call.call_date)}
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="gap-1">
+                  <Clock3 className="size-3.5" />
+                  Received {formatMiamiDateTime(call.updated_at)}
+                </Badge>
+              )}
             </div>
 
             <h1 className="mt-3 text-3xl font-semibold tracking-normal">
-              {call.client_name || "Feedback Report"}
+              {call.meeting_title || call.client_name || "Feedback Report"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
+              {call.client_name ? `${call.client_name} - ` : ""}
               {call.rep_name} sales feedback report.
             </p>
 
