@@ -2,7 +2,7 @@ import { z } from "zod";
 import { normalizeStringList } from "@/lib/list-format";
 import type { JsonObject, ManualFeedbackReport } from "@/lib/types";
 
-const MANUAL_REPORT_TIMEOUT_MS = 20 * 60 * 1000;
+const MANUAL_REPORT_TIMEOUT_MS = 5 * 60 * 1000;
 const WAITING_MANUAL_REPORT_STATUSES = new Set(["pending", "processing"]);
 
 const optionalString = z
