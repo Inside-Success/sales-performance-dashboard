@@ -108,6 +108,8 @@ export type UsageTotals = {
 };
 
 export type UsageOfficialSummary = {
+  total_reps: number;
+  total_reports: number;
   report_views_today: number;
   report_views_7d: number;
   report_views_30d: number;

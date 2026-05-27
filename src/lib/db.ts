@@ -361,6 +361,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
                )
           )
           select
+            (select count(distinct rep_slug)::int from performance_calls) as total_reps,
+            (select count(*)::int from performance_calls) as total_reports,
             count(*) filter (
               where event_name = 'report_detail_viewed'
                 and created_at >= now() - interval '1 day'
@@ -415,7 +417,12 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
           select
             (select count(*)::int from manual_feedback_reports) as total_reports,
             (select count(*)::int from manual_feedback_reports where status = 'completed') as completed_reports,
-            (select count(*)::int from manual_feedback_reports where status in ('pending', 'processing')) as pending_reports,
+            (
+              select count(*)::int
+              from manual_feedback_reports
+              where status in ('pending', 'processing')
+                and updated_at >= now() - interval '5 minutes'
+            ) as pending_reports,
             count(*) filter (
               where event_name in ('manual_reports_page_viewed', 'manual_submit_opened')
                 and created_at >= now() - interval '7 days'
@@ -941,6 +948,8 @@ function normalizeUsageTotals(row: UsageTotals | undefined): UsageTotals {
 
 function normalizeUsageOfficialSummary(row: UsageOfficialSummary | undefined): UsageOfficialSummary {
   return {
+    total_reps: Number(row?.total_reps || 0),
+    total_reports: Number(row?.total_reports || 0),
     report_views_today: Number(row?.report_views_today || 0),
     report_views_7d: Number(row?.report_views_7d || 0),
     report_views_30d: Number(row?.report_views_30d || 0),

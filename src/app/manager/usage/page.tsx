@@ -76,6 +76,18 @@ export default async function ManagerUsagePage() {
             </div>
 
             <div className="flex flex-col gap-2 text-sm text-muted-foreground lg:items-end">
+              <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto">
+                <HeaderStat
+                  icon={Users}
+                  label="Official reps"
+                  value={analytics.official.total_reps}
+                />
+                <HeaderStat
+                  icon={FileText}
+                  label="Official feedback"
+                  value={analytics.official.total_reports}
+                />
+              </div>
               <div className="inline-flex items-center gap-2 rounded-lg border bg-background/75 px-3 py-2">
                 <Clock3 className="size-4 text-foreground" />
                 Updated {formatMiamiDateTime(analytics.generatedAt)}
@@ -146,6 +158,26 @@ export default async function ManagerUsagePage() {
         </section>
       </div>
     </main>
+  );
+}
+
+function HeaderStat({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="flex min-w-36 items-center justify-between gap-3 rounded-lg border bg-background/75 px-3 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <Icon className="size-4 shrink-0 text-foreground" />
+        <span className="truncate text-xs text-muted-foreground">{label}</span>
+      </div>
+      <span className="text-base font-semibold text-foreground">{formatNumber(value)}</span>
+    </div>
   );
 }
 
@@ -421,7 +453,7 @@ function ManualUsageCard({ manual }: { manual: UsageManualSummary }) {
             <span className="font-medium">{formatNumber(manual.link_clicks_7d)}</span>
           </div>
           <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="text-muted-foreground">Pending/processing</span>
+            <span className="text-muted-foreground">Active pending/processing</span>
             <span className="font-medium">{formatNumber(manual.pending_reports)}</span>
           </div>
         </div>
