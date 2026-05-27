@@ -4,6 +4,7 @@ import { ArrowLeft, FileText, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ManualSubmitForm } from "@/components/dashboard/manual-submit-form";
+import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { isManualFeedbackEnabled } from "@/lib/manual-reports";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,7 @@ export default function SubmitPage() {
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
+      <TrackUsageEvent eventName="manual_submit_opened" eventData={{ source: "manual_submit" }} />
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
           <div className="mb-4 flex flex-wrap items-center gap-2">

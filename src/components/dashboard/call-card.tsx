@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { CalendarDays, Clock3, ExternalLink, FileText, MessageSquareText, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrackedExternalLink, TrackedLink } from "@/components/dashboard/usage-tracker";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime, truncate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { PerformanceCall } from "@/lib/types";
@@ -16,6 +16,7 @@ type CallCardProps = {
 export function CallCard({ call, compact = false, showRep = true }: CallCardProps) {
   const title = call.client_name || call.meeting_title || "Unknown client";
   const meetingLine = getMeetingLine(call);
+  const trackingData = getReportTrackingData(call);
 
   if (compact) {
     return (
@@ -23,9 +24,14 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
         <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-2">
             <CardTitle className="text-base">
-              <Link href={`/call/${call.id}`} className="hover:underline">
+              <TrackedLink
+                href={`/call/${call.id}`}
+                eventName="report_card_clicked"
+                eventData={trackingData}
+                className="hover:underline"
+              >
                 {title}
-              </Link>
+              </TrackedLink>
             </CardTitle>
             {meetingLine ? <p className="text-sm text-muted-foreground">{meetingLine}</p> : null}
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -43,9 +49,14 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
             </div>
           </div>
 
-          <Link href={`/call/${call.id}`} className={cn(buttonVariants({ size: "sm", variant: "outline" }), "sm:shrink-0")}>
+          <TrackedLink
+            href={`/call/${call.id}`}
+            eventName="report_card_clicked"
+            eventData={trackingData}
+            className={cn(buttonVariants({ size: "sm", variant: "outline" }), "sm:shrink-0")}
+          >
             Open report
-          </Link>
+          </TrackedLink>
         </CardContent>
       </Card>
     );
@@ -75,9 +86,14 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
           {call.call_status ? <Badge variant="secondary">{call.call_status}</Badge> : null}
         </div>
         <CardTitle className={compact ? "text-base" : "text-lg"}>
-          <Link href={`/call/${call.id}`} className="hover:underline">
+          <TrackedLink
+            href={`/call/${call.id}`}
+            eventName="report_card_clicked"
+            eventData={trackingData}
+            className="hover:underline"
+          >
             {title}
-          </Link>
+          </TrackedLink>
         </CardTitle>
         {meetingLine ? <p className="text-sm text-muted-foreground">{meetingLine}</p> : null}
       </CardHeader>
@@ -94,24 +110,44 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Link href={`/call/${call.id}`} className={buttonVariants({ size: "sm", variant: "outline" })}>
+          <TrackedLink
+            href={`/call/${call.id}`}
+            eventName="report_card_clicked"
+            eventData={trackingData}
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+          >
             Open report
-          </Link>
+          </TrackedLink>
           {call.google_doc_link ? (
-            <a
+            <TrackedExternalLink
               href={call.google_doc_link}
+              eventName="google_doc_clicked"
+              eventData={trackingData}
               target="_blank"
               rel="noreferrer"
               className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "gap-1")}
             >
               <ExternalLink className="size-4" />
               Drive
-            </a>
+            </TrackedExternalLink>
           ) : null}
         </div>
       </CardContent>
     </Card>
   );
+}
+
+function getReportTrackingData(call: PerformanceCall) {
+  return {
+    source: "official_dashboard",
+    target_rep_slug: call.rep_slug,
+    target_rep_name: call.rep_name,
+    report_id: call.id,
+    metadata: {
+      client_name: call.client_name,
+      meeting_title: call.meeting_title,
+    },
+  };
 }
 
 function getMeetingLine(call: PerformanceCall) {

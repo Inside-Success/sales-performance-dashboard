@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { UserRound } from "lucide-react";
 import type { RepSummary } from "@/lib/types";
+import { trackUsageEvent } from "@/components/dashboard/usage-tracker";
 
 type RepPickerProps = {
   reps: RepSummary[];
@@ -17,6 +18,14 @@ export function RepPicker({ reps, selectedRepSlug, basePath = "/" }: RepPickerPr
 
   function handleRepChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const repSlug = event.target.value;
+    const rep = reps.find((item) => item.rep_slug === repSlug);
+    if (repSlug) {
+      trackUsageEvent("rep_selected", {
+        source: basePath === "/manual-reports" ? "manual_reports" : "official_dashboard",
+        target_rep_slug: repSlug,
+        target_rep_name: rep?.rep_name || null,
+      });
+    }
     startTransition(() => {
       router.push(repSlug ? `${basePath}?rep=${encodeURIComponent(repSlug)}` : basePath);
     });

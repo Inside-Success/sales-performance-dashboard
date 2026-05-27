@@ -1,8 +1,21 @@
 import { neon } from "@neondatabase/serverless";
 import type { NormalizedIngestPayload } from "@/lib/ingest";
 import { normalizeStringList } from "@/lib/list-format";
-import type { DashboardFilters, ManualFeedbackReport, PerformanceCall, RepSummary } from "@/lib/types";
+import type {
+  DashboardFilters,
+  ManualFeedbackReport,
+  PerformanceCall,
+  RepSummary,
+  UsageAnalytics,
+  UsageDailyPoint,
+  UsageEventBreakdown,
+  UsageRecentEvent,
+  UsageRepEngagement,
+  UsageTotals,
+  UsageUnviewedReport,
+} from "@/lib/types";
 import type { NormalizedManualCallback, ManualSubmitPayload } from "@/lib/manual-reports";
+import type { UsageEventPayload } from "@/lib/usage-events";
 
 type SqlClient = ReturnType<typeof neon>;
 
@@ -112,6 +125,29 @@ export async function ensureSchema() {
   await sql`create index if not exists manual_feedback_reports_status_idx on manual_feedback_reports (status)`;
   await sql`create index if not exists manual_feedback_reports_updated_at_idx on manual_feedback_reports (updated_at desc)`;
 
+  await sql`
+    create table if not exists dashboard_usage_events (
+      id bigserial primary key,
+      event_name text not null,
+      source text,
+      target_rep_slug text,
+      target_rep_name text,
+      report_id bigint,
+      manual_public_id text,
+      anonymous_session_id text,
+      path text,
+      referrer text,
+      user_agent text,
+      metadata jsonb not null default '{}'::jsonb,
+      created_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists dashboard_usage_events_created_at_idx on dashboard_usage_events (created_at desc)`;
+  await sql`create index if not exists dashboard_usage_events_event_created_idx on dashboard_usage_events (event_name, created_at desc)`;
+  await sql`create index if not exists dashboard_usage_events_rep_created_idx on dashboard_usage_events (target_rep_slug, created_at desc)`;
+  await sql`create index if not exists dashboard_usage_events_report_idx on dashboard_usage_events (report_id)`;
+  await sql`create index if not exists dashboard_usage_events_manual_public_id_idx on dashboard_usage_events (manual_public_id)`;
+
   schemaReady = true;
 }
 
@@ -220,6 +256,251 @@ export async function upsertPerformanceCall(payload: NormalizedIngestPayload) {
   );
 
   return normalizeCall((rows as PerformanceCall[])[0]);
+}
+
+export async function recordUsageEvent(payload: UsageEventPayload) {
+  await ensureSchema();
+  const sql = getSql();
+
+  await sql.query(
+    `
+      insert into dashboard_usage_events (
+        event_name,
+        source,
+        target_rep_slug,
+        target_rep_name,
+        report_id,
+        manual_public_id,
+        anonymous_session_id,
+        path,
+        referrer,
+        user_agent,
+        metadata
+      )
+      values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb)
+    `,
+    [
+      payload.event_name,
+      payload.source || null,
+      payload.target_rep_slug || null,
+      payload.target_rep_name || null,
+      payload.report_id || null,
+      payload.manual_public_id || null,
+      payload.anonymous_session_id || null,
+      payload.path || null,
+      payload.referrer || null,
+      payload.user_agent || null,
+      JSON.stringify(payload.metadata || {}),
+    ],
+  );
+}
+
+export async function getUsageAnalytics(): Promise<UsageAnalytics> {
+  const fallback = getFallbackUsageAnalytics();
+
+  if (!hasDatabase()) {
+    return fallback;
+  }
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+
+    const [
+      totalsRows,
+      dailyRows,
+      eventBreakdownRows,
+      repEngagementRows,
+      unviewedReportRows,
+      recentEventRows,
+    ] = await Promise.all([
+      sql.query(
+        `
+          select
+            count(*) filter (where created_at >= now() - interval '1 day')::int as events_today,
+            count(*) filter (where created_at >= now() - interval '7 days')::int as events_7d,
+            count(*) filter (where created_at >= now() - interval '30 days')::int as events_30d,
+            count(distinct anonymous_session_id) filter (
+              where created_at >= now() - interval '7 days'
+                and anonymous_session_id is not null
+            )::int as sessions_7d,
+            count(*) filter (
+              where event_name in ('report_detail_viewed', 'manual_report_viewed')
+                and created_at >= now() - interval '7 days'
+            )::int as report_views_7d,
+            count(*) filter (
+              where event_name = 'rep_selected'
+                and created_at >= now() - interval '7 days'
+            )::int as rep_selections_7d,
+            count(*) filter (
+              where event_name = 'manual_report_submitted'
+                and created_at >= now() - interval '7 days'
+            )::int as manual_submissions_7d,
+            count(*) filter (
+              where event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                and created_at >= now() - interval '7 days'
+            )::int as link_clicks_7d
+          from dashboard_usage_events
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          with days as (
+            select generate_series(
+              (current_date - interval '13 days')::date,
+              current_date::date,
+              interval '1 day'
+            )::date as day
+          )
+          select
+            days.day::text as day,
+            count(events.id)::int as total_events,
+            count(events.id) filter (
+              where events.event_name in ('report_detail_viewed', 'manual_report_viewed')
+            )::int as report_views,
+            count(events.id) filter (where events.event_name = 'rep_selected')::int as rep_selections,
+            count(events.id) filter (where events.event_name = 'manual_report_submitted')::int as manual_submissions
+          from days
+          left join dashboard_usage_events events
+            on events.created_at >= days.day
+           and events.created_at < days.day + interval '1 day'
+          group by days.day
+          order by days.day asc
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select event_name, count(*)::int as count
+          from dashboard_usage_events
+          where created_at >= now() - interval '7 days'
+          group by event_name
+          order by count desc, event_name asc
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          with report_views as (
+            select
+              report_id,
+              count(*)::int as view_count,
+              max(created_at) as last_viewed_at
+            from dashboard_usage_events
+            where event_name = 'report_detail_viewed'
+              and report_id is not null
+            group by report_id
+          ),
+          report_link_clicks as (
+            select
+              report_id,
+              count(*) filter (where event_name = 'google_doc_clicked')::int as doc_clicks,
+              count(*) filter (where event_name = 'zoom_clicked')::int as zoom_clicks,
+              count(*) filter (where event_name = 'transcript_clicked')::int as transcript_clicks,
+              max(created_at) as last_link_at
+            from dashboard_usage_events
+            where report_id is not null
+              and event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+            group by report_id
+          ),
+          rep_selections as (
+            select
+              target_rep_slug as rep_slug,
+              count(*)::int as rep_selections,
+              max(created_at) as last_selected_at
+            from dashboard_usage_events
+            where event_name = 'rep_selected'
+              and target_rep_slug is not null
+            group by target_rep_slug
+          )
+          select
+            calls.rep_name,
+            calls.rep_slug,
+            count(calls.id)::int as generated_reports,
+            count(distinct calls.id) filter (where coalesce(report_views.view_count, 0) > 0)::int as viewed_reports,
+            coalesce(sum(report_views.view_count), 0)::int as report_views,
+            coalesce(max(rep_selections.rep_selections), 0)::int as rep_selections,
+            coalesce(sum(report_link_clicks.doc_clicks), 0)::int as doc_clicks,
+            coalesce(sum(report_link_clicks.zoom_clicks), 0)::int as zoom_clicks,
+            coalesce(sum(report_link_clicks.transcript_clicks), 0)::int as transcript_clicks,
+            nullif(
+              greatest(
+                coalesce(max(report_views.last_viewed_at), 'epoch'::timestamptz),
+                coalesce(max(report_link_clicks.last_link_at), 'epoch'::timestamptz),
+                coalesce(max(rep_selections.last_selected_at), 'epoch'::timestamptz)
+              ),
+              'epoch'::timestamptz
+            )::text as last_activity_at
+          from performance_calls calls
+          left join report_views on report_views.report_id = calls.id
+          left join report_link_clicks on report_link_clicks.report_id = calls.id
+          left join rep_selections on rep_selections.rep_slug = calls.rep_slug
+          group by calls.rep_name, calls.rep_slug
+          order by report_views desc, viewed_reports desc, rep_selections desc, generated_reports desc, calls.rep_name asc
+          limit 50
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            calls.id,
+            calls.rep_name,
+            calls.rep_slug,
+            calls.client_name,
+            calls.call_date::text,
+            calls.created_at::text
+          from performance_calls calls
+          left join dashboard_usage_events events
+            on events.report_id = calls.id
+           and events.event_name = 'report_detail_viewed'
+          where calls.created_at < now() - interval '48 hours'
+          group by calls.id
+          having count(events.id) = 0
+          order by calls.created_at desc
+          limit 25
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            id,
+            event_name,
+            source,
+            target_rep_slug,
+            target_rep_name,
+            report_id,
+            manual_public_id,
+            path,
+            created_at::text
+          from dashboard_usage_events
+          order by created_at desc
+          limit 25
+        `,
+        [],
+      ),
+    ]);
+
+    return {
+      configured: true,
+      generatedAt: new Date().toISOString(),
+      totals: normalizeUsageTotals((totalsRows as UsageTotals[])[0]),
+      daily: (dailyRows as UsageDailyPoint[]).map(normalizeUsageDailyPoint),
+      eventBreakdown: (eventBreakdownRows as UsageEventBreakdown[]).map(normalizeUsageEventBreakdown),
+      repEngagement: (repEngagementRows as UsageRepEngagement[]).map(normalizeUsageRepEngagement),
+      unviewedReports: (unviewedReportRows as UsageUnviewedReport[]).map(normalizeUsageUnviewedReport),
+      recentEvents: (recentEventRows as UsageRecentEvent[]).map(normalizeUsageRecentEvent),
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      ...fallback,
+      configured: true,
+      error: "Usage analytics query failed. Check DATABASE_URL and the dashboard_usage_events schema.",
+    };
+  }
 }
 
 export async function getDashboardData(filters: DashboardFilters = {}) {
@@ -543,6 +824,76 @@ function normalizeManualReport(report: ManualFeedbackReport): ManualFeedbackRepo
   };
 }
 
+function normalizeUsageTotals(row: UsageTotals | undefined): UsageTotals {
+  return {
+    events_today: Number(row?.events_today || 0),
+    events_7d: Number(row?.events_7d || 0),
+    events_30d: Number(row?.events_30d || 0),
+    sessions_7d: Number(row?.sessions_7d || 0),
+    report_views_7d: Number(row?.report_views_7d || 0),
+    rep_selections_7d: Number(row?.rep_selections_7d || 0),
+    manual_submissions_7d: Number(row?.manual_submissions_7d || 0),
+    link_clicks_7d: Number(row?.link_clicks_7d || 0),
+  };
+}
+
+function normalizeUsageDailyPoint(row: UsageDailyPoint): UsageDailyPoint {
+  return {
+    day: row.day,
+    total_events: Number(row.total_events || 0),
+    report_views: Number(row.report_views || 0),
+    rep_selections: Number(row.rep_selections || 0),
+    manual_submissions: Number(row.manual_submissions || 0),
+  };
+}
+
+function normalizeUsageEventBreakdown(row: UsageEventBreakdown): UsageEventBreakdown {
+  return {
+    event_name: row.event_name,
+    count: Number(row.count || 0),
+  };
+}
+
+function normalizeUsageRepEngagement(row: UsageRepEngagement): UsageRepEngagement {
+  return {
+    rep_name: row.rep_name,
+    rep_slug: row.rep_slug,
+    generated_reports: Number(row.generated_reports || 0),
+    viewed_reports: Number(row.viewed_reports || 0),
+    report_views: Number(row.report_views || 0),
+    rep_selections: Number(row.rep_selections || 0),
+    doc_clicks: Number(row.doc_clicks || 0),
+    zoom_clicks: Number(row.zoom_clicks || 0),
+    transcript_clicks: Number(row.transcript_clicks || 0),
+    last_activity_at: row.last_activity_at,
+  };
+}
+
+function normalizeUsageUnviewedReport(row: UsageUnviewedReport): UsageUnviewedReport {
+  return {
+    id: Number(row.id),
+    rep_name: row.rep_name,
+    rep_slug: row.rep_slug,
+    client_name: row.client_name,
+    call_date: row.call_date,
+    created_at: row.created_at,
+  };
+}
+
+function normalizeUsageRecentEvent(row: UsageRecentEvent): UsageRecentEvent {
+  return {
+    id: Number(row.id),
+    event_name: row.event_name,
+    source: row.source,
+    target_rep_slug: row.target_rep_slug,
+    target_rep_name: row.target_rep_name,
+    report_id: row.report_id ? Number(row.report_id) : null,
+    manual_public_id: row.manual_public_id,
+    path: row.path,
+    created_at: row.created_at,
+  };
+}
+
 function getFallbackDashboardData() {
   const useDemo = process.env.USE_DEMO_DATA === "true";
   const calls = useDemo ? demoCalls : [];
@@ -553,6 +904,19 @@ function getFallbackDashboardData() {
     lastUpdatedAt: getLatestUpdatedAt(calls),
     configured: false,
     error: undefined,
+  };
+}
+
+function getFallbackUsageAnalytics(): UsageAnalytics {
+  return {
+    configured: false,
+    generatedAt: new Date().toISOString(),
+    totals: normalizeUsageTotals(undefined),
+    daily: [],
+    eventBreakdown: [],
+    repEngagement: [],
+    unviewedReports: [],
+    recentEvents: [],
   };
 }
 

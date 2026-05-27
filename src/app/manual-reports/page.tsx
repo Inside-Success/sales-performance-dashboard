@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ReportFilters } from "@/components/dashboard/report-filters";
 import { RepPicker } from "@/components/dashboard/rep-picker";
+import { TrackedExternalLink, TrackedLink, TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getManualFeedbackReports } from "@/lib/db";
 import { formatMiamiDateTime, truncate } from "@/lib/format";
 import { isManualFeedbackEnabled } from "@/lib/manual-reports";
@@ -51,6 +52,14 @@ export default async function ManualReportsPage({
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
+      <TrackUsageEvent
+        eventName="manual_reports_page_viewed"
+        eventData={{
+          source: "manual_reports",
+          target_rep_slug: selectedRepSlug || null,
+          target_rep_name: selectedRepName || null,
+        }}
+      />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <header className="dashboard-card dashboard-hero rounded-xl border bg-card/95 p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -207,15 +216,30 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
   const zoomLink = report.original_zoom_link || report.zoom_link;
   const title = report.client_name || `${report.rep_name}'s feedback`;
   const sourceLabel = report.source_type || report.input_type;
+  const trackingData = {
+    source: "manual_reports",
+    target_rep_slug: slugify(report.rep_name),
+    target_rep_name: report.rep_name,
+    manual_public_id: report.public_id,
+    metadata: {
+      client_name: report.client_name,
+      status: report.status,
+    },
+  };
 
   return (
     <article className="dashboard-card rounded-lg border bg-card/95 p-4 transition-colors hover:border-primary/35">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0 flex-1 space-y-1.5">
           <h2 className="text-base font-semibold leading-6">
-            <Link href={`/self-report/${report.public_id}`} className="hover:underline">
+            <TrackedLink
+              href={`/self-report/${report.public_id}`}
+              eventName="report_card_clicked"
+              eventData={trackingData}
+              className="hover:underline"
+            >
               {title}
-            </Link>
+            </TrackedLink>
           </h2>
 
           {report.one_line_verdict ? (
@@ -242,12 +266,17 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-1.5 md:justify-end">
-          <Link href={`/self-report/${report.public_id}`} className={buttonVariants({ size: "sm", variant: "outline" })}>
+          <TrackedLink
+            href={`/self-report/${report.public_id}`}
+            eventName="report_card_clicked"
+            eventData={trackingData}
+            className={buttonVariants({ size: "sm", variant: "outline" })}
+          >
             Open report
-          </Link>
-          <ExternalButton href={reportDocLink} label="Doc" icon={<FileText className="size-4" />} />
-          <ExternalButton href={transcriptLink} label="Transcript" icon={<MessageSquareText className="size-4" />} />
-          <ExternalButton href={zoomLink} label="Zoom" icon={<ExternalLink className="size-4" />} />
+          </TrackedLink>
+          <ExternalButton href={reportDocLink} label="Doc" icon={<FileText className="size-4" />} eventName="google_doc_clicked" eventData={trackingData} />
+          <ExternalButton href={transcriptLink} label="Transcript" icon={<MessageSquareText className="size-4" />} eventName="transcript_clicked" eventData={trackingData} />
+          <ExternalButton href={zoomLink} label="Zoom" icon={<ExternalLink className="size-4" />} eventName="zoom_clicked" eventData={trackingData} />
         </div>
       </div>
     </article>
@@ -286,22 +315,37 @@ function ExternalButton({
   href,
   label,
   icon,
+  eventName,
+  eventData,
 }: {
   href: string | null;
   label: string;
   icon: React.ReactNode;
+  eventName: "google_doc_clicked" | "zoom_clicked" | "transcript_clicked";
+  eventData: {
+    source: string;
+    target_rep_slug: string;
+    target_rep_name: string;
+    manual_public_id: string;
+    metadata: {
+      client_name: string | null;
+      status: ManualFeedbackReport["status"];
+    };
+  };
 }) {
   if (!href) return null;
 
   return (
-    <a
+    <TrackedExternalLink
       href={href}
+      eventName={eventName}
+      eventData={eventData}
       target="_blank"
       rel="noreferrer"
       className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "gap-1")}
     >
       {icon}
       {label}
-    </a>
+    </TrackedExternalLink>
   );
 }

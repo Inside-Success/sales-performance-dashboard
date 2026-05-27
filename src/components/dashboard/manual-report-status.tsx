@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
+import { TrackedExternalLink } from "@/components/dashboard/usage-tracker";
 import { formatMiamiDateTime } from "@/lib/format";
 import { slugify } from "@/lib/slug";
 import type { ManualFeedbackReport } from "@/lib/types";
@@ -116,13 +117,27 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <ExternalButton href={reportDocLink} label="Open Google Doc" icon={<FileText className="size-4" />} />
-              <ExternalButton href={zoomLink} label="Zoom" icon={<Video className="size-4" />} />
+              <ExternalButton
+                href={reportDocLink}
+                label="Open Google Doc"
+                icon={<FileText className="size-4" />}
+                eventName="google_doc_clicked"
+                report={report}
+              />
+              <ExternalButton
+                href={zoomLink}
+                label="Zoom"
+                icon={<Video className="size-4" />}
+                eventName="zoom_clicked"
+                report={report}
+              />
               <ExternalButton
                 href={transcriptLink}
                 label="Transcript"
                 icon={<MessageSquareText className="size-4" />}
                 unavailableLabel="Transcript unavailable"
+                eventName="transcript_clicked"
+                report={report}
               />
             </div>
           </header>
@@ -310,11 +325,15 @@ function ExternalButton({
   label,
   icon,
   unavailableLabel,
+  eventName,
+  report,
 }: {
   href: string | null;
   label: string;
   icon: React.ReactNode;
   unavailableLabel?: string;
+  eventName: "google_doc_clicked" | "zoom_clicked" | "transcript_clicked";
+  report: ManualFeedbackReport;
 }) {
   if (!href) {
     if (!unavailableLabel) return null;
@@ -331,10 +350,26 @@ function ExternalButton({
   }
 
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "gap-1")}>
+    <TrackedExternalLink
+      href={href}
+      eventName={eventName}
+      eventData={{
+        source: "manual_report",
+        target_rep_slug: slugify(report.rep_name),
+        target_rep_name: report.rep_name,
+        manual_public_id: report.public_id,
+        metadata: {
+          client_name: report.client_name,
+          status: report.status,
+        },
+      }}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(buttonVariants({ variant: "outline" }), "gap-1")}
+    >
       {icon}
       {label}
       <ExternalLink className="size-4" />
-    </a>
+    </TrackedExternalLink>
   );
 }

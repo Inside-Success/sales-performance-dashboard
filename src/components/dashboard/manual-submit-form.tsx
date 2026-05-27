@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { trackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/slug";
 
 type InputType = "transcript" | "zoom_link";
 
@@ -54,6 +56,16 @@ export function ManualSubmitForm() {
         throw new Error(data.error || "Report could not be submitted.");
       }
 
+      trackUsageEvent("manual_report_submitted", {
+        source: "manual_submit",
+        target_rep_slug: slugify(repName),
+        target_rep_name: repName,
+        manual_public_id: data.public_id || null,
+        metadata: {
+          input_type: inputType,
+          has_client_name: Boolean(clientName.trim()),
+        },
+      });
       router.push(`/self-report/${data.public_id}`);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Report could not be submitted.");

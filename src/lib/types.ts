@@ -95,3 +95,73 @@ export type ManualFeedbackReport = {
   created_at: string;
   updated_at: string;
 };
+
+export type UsageTotals = {
+  events_today: number;
+  events_7d: number;
+  events_30d: number;
+  sessions_7d: number;
+  report_views_7d: number;
+  rep_selections_7d: number;
+  manual_submissions_7d: number;
+  link_clicks_7d: number;
+};
+
+export type UsageDailyPoint = {
+  day: string;
+  total_events: number;
+  report_views: number;
+  rep_selections: number;
+  manual_submissions: number;
+};
+
+export type UsageEventBreakdown = {
+  event_name: string;
+  count: number;
+};
+
+export type UsageRepEngagement = {
+  rep_name: string;
+  rep_slug: string;
+  generated_reports: number;
+  viewed_reports: number;
+  report_views: number;
+  rep_selections: number;
+  doc_clicks: number;
+  zoom_clicks: number;
+  transcript_clicks: number;
+  last_activity_at: string | null;
+};
+
+export type UsageUnviewedReport = {
+  id: number;
+  rep_name: string;
+  rep_slug: string;
+  client_name: string | null;
+  call_date: string | null;
+  created_at: string;
+};
+
+export type UsageRecentEvent = {
+  id: number;
+  event_name: string;
+  source: string | null;
+  target_rep_slug: string | null;
+  target_rep_name: string | null;
+  report_id: number | null;
+  manual_public_id: string | null;
+  path: string | null;
+  created_at: string;
+};
+
+export type UsageAnalytics = {
+  configured: boolean;
+  error?: string;
+  generatedAt: string;
+  totals: UsageTotals;
+  daily: UsageDailyPoint[];
+  eventBreakdown: UsageEventBreakdown[];
+  repEngagement: UsageRepEngagement[];
+  unviewedReports: UsageUnviewedReport[];
+  recentEvents: UsageRecentEvent[];
+};

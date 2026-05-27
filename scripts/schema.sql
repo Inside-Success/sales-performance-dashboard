@@ -90,3 +90,34 @@ create index if not exists manual_feedback_reports_status_idx
 
 create index if not exists manual_feedback_reports_updated_at_idx
   on manual_feedback_reports (updated_at desc);
+
+create table if not exists dashboard_usage_events (
+  id bigserial primary key,
+  event_name text not null,
+  source text,
+  target_rep_slug text,
+  target_rep_name text,
+  report_id bigint,
+  manual_public_id text,
+  anonymous_session_id text,
+  path text,
+  referrer text,
+  user_agent text,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists dashboard_usage_events_created_at_idx
+  on dashboard_usage_events (created_at desc);
+
+create index if not exists dashboard_usage_events_event_created_idx
+  on dashboard_usage_events (event_name, created_at desc);
+
+create index if not exists dashboard_usage_events_rep_created_idx
+  on dashboard_usage_events (target_rep_slug, created_at desc);
+
+create index if not exists dashboard_usage_events_report_idx
+  on dashboard_usage_events (report_id);
+
+create index if not exists dashboard_usage_events_manual_public_id_idx
+  on dashboard_usage_events (manual_public_id);

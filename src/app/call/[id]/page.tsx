@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
 import { TrackRecentlyViewed } from "@/components/dashboard/recently-viewed";
+import { TrackedExternalLink, TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getPerformanceCall } from "@/lib/db";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -27,10 +28,15 @@ export const dynamic = "force-dynamic";
 
 export default async function CallPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string | string[] }>;
 }) {
   const { id } = await params;
+  const query = await searchParams;
+  const source = Array.isArray(query.from) ? query.from[0] : query.from;
+  const isManagerUsageView = source === "manager-usage";
   const call = await getPerformanceCall(id);
 
   if (!call) notFound();
@@ -43,6 +49,21 @@ export default async function CallPage({
   return (
     <main className="dashboard-page min-h-screen bg-background">
       <TrackRecentlyViewed call={call} />
+      {!isManagerUsageView ? (
+        <TrackUsageEvent
+          eventName="report_detail_viewed"
+          eventData={{
+            source: "official_report",
+            target_rep_slug: call.rep_slug,
+            target_rep_name: call.rep_name,
+            report_id: call.id,
+            metadata: {
+              client_name: call.client_name,
+              meeting_title: call.meeting_title,
+            },
+          }}
+        />
+      ) : null}
       <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
         <article className="space-y-4">
           <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
@@ -75,9 +96,36 @@ export default async function CallPage({
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <ExternalButton href={call.google_doc_link} label="Open Google Doc" icon={<FileText className="size-4" />} />
-              <ExternalButton href={call.meeting_link} label="Zoom" icon={<Video className="size-4" />} />
-              <ExternalButton href={call.transcript_link} label="Transcript" icon={<MessageSquareText className="size-4" />} />
+              <ExternalButton
+                href={call.google_doc_link}
+                label="Open Google Doc"
+                icon={<FileText className="size-4" />}
+                eventName="google_doc_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+              />
+              <ExternalButton
+                href={call.meeting_link}
+                label="Zoom"
+                icon={<Video className="size-4" />}
+                eventName="zoom_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+              />
+              <ExternalButton
+                href={call.transcript_link}
+                label="Transcript"
+                icon={<MessageSquareText className="size-4" />}
+                eventName="transcript_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+              />
             </div>
           </header>
 
@@ -159,18 +207,55 @@ function ExternalButton({
   href,
   label,
   icon,
+  eventName,
+  reportId,
+  repSlug,
+  repName,
+  trackingDisabled = false,
 }: {
   href: string | null;
   label: string;
   icon: React.ReactNode;
+  eventName: "google_doc_clicked" | "zoom_clicked" | "transcript_clicked";
+  reportId: number;
+  repSlug: string;
+  repName: string;
+  trackingDisabled?: boolean;
 }) {
   if (!href) return null;
 
-  return (
-    <a href={href} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "gap-1")}>
+  const className = cn(buttonVariants({ variant: "outline" }), "gap-1");
+  const content = (
+    <>
       {icon}
       {label}
       <ExternalLink className="size-4" />
-    </a>
+    </>
+  );
+
+  if (trackingDisabled) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className={className}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <TrackedExternalLink
+      href={href}
+      eventName={eventName}
+      eventData={{
+        source: "official_report",
+        target_rep_slug: repSlug,
+        target_rep_name: repName,
+        report_id: reportId,
+      }}
+      target="_blank"
+      rel="noreferrer"
+      className={className}
+    >
+      {content}
+    </TrackedExternalLink>
   );
 }

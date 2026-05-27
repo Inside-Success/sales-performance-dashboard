@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { CallCard } from "@/components/dashboard/call-card";
 import { RepPicker } from "@/components/dashboard/rep-picker";
 import { ReportFilters } from "@/components/dashboard/report-filters";
+import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getDashboardData } from "@/lib/db";
 import { readFilters, type RawSearchParams } from "@/lib/search-params";
 
@@ -24,6 +25,14 @@ export default async function Home({
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
+      <TrackUsageEvent
+        eventName="dashboard_home_viewed"
+        eventData={{
+          source: "official_dashboard",
+          target_rep_slug: selectedRepSlug || null,
+          target_rep_name: selectedRepName || null,
+        }}
+      />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
           <div className="max-w-2xl">
