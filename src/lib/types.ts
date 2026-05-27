@@ -107,10 +107,35 @@ export type UsageTotals = {
   link_clicks_7d: number;
 };
 
+export type UsageOfficialSummary = {
+  report_views_today: number;
+  report_views_7d: number;
+  report_views_30d: number;
+  active_sessions_7d: number;
+  reps_with_activity_7d: number;
+  rep_selections_7d: number;
+  link_clicks_7d: number;
+  last_activity_at: string | null;
+};
+
+export type UsageManualSummary = {
+  total_reports: number;
+  completed_reports: number;
+  pending_reports: number;
+  page_opens_7d: number;
+  submissions_7d: number;
+  report_views_7d: number;
+  link_clicks_7d: number;
+  active_sessions_7d: number;
+  last_activity_at: string | null;
+};
+
 export type UsageDailyPoint = {
   day: string;
   total_events: number;
   report_views: number;
+  official_report_views: number;
+  manual_report_views: number;
   rep_selections: number;
   manual_submissions: number;
 };
@@ -159,6 +184,8 @@ export type UsageAnalytics = {
   error?: string;
   generatedAt: string;
   totals: UsageTotals;
+  official: UsageOfficialSummary;
+  manual: UsageManualSummary;
   daily: UsageDailyPoint[];
   eventBreakdown: UsageEventBreakdown[];
   repEngagement: UsageRepEngagement[];

@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Activity,
   BarChart3,
   CalendarDays,
+  CheckCircle2,
   Clock3,
   Eye,
   FileText,
   MousePointerClick,
-  Search,
   Send,
   ShieldCheck,
-  TrendingUp,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -30,8 +28,8 @@ import { getUsageAnalytics } from "@/lib/db";
 import { formatDate, formatMiamiDateTime } from "@/lib/format";
 import type {
   UsageDailyPoint,
-  UsageEventBreakdown,
-  UsageRecentEvent,
+  UsageManualSummary,
+  UsageOfficialSummary,
   UsageRepEngagement,
   UsageUnviewedReport,
 } from "@/lib/types";
@@ -51,8 +49,7 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 
 export default async function ManagerUsagePage() {
   const analytics = await getUsageAnalytics();
-  const { totals } = analytics;
-  const hasEvents = totals.events_30d > 0;
+  const hasEvents = analytics.totals.events_30d > 0;
 
   return (
     <main className="dashboard-page min-h-screen bg-background">
@@ -73,8 +70,8 @@ export default async function ManagerUsagePage() {
                 Magic Mike Bot Usage
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Report-level dashboard activity for managers. This view tracks anonymous sessions,
-                selected reps, viewed reports, and report link clicks without recording viewer identity.
+                Official coaching reports and self-submitted feedback are tracked separately, so
+                managers can read adoption without mixing the two workflows.
               </p>
             </div>
 
@@ -111,65 +108,41 @@ export default async function ManagerUsagePage() {
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            title="Events today"
-            value={totals.events_today}
-            description="All tracked dashboard activity"
-            icon={Activity}
-          />
-          <MetricCard
-            title="Active sessions"
-            value={totals.sessions_7d}
-            description="Anonymous sessions in 7 days"
-            icon={Users}
-          />
-          <MetricCard
-            title="Report views"
-            value={totals.report_views_7d}
-            description="Reports opened in 7 days"
+            title="Official views today"
+            value={analytics.official.report_views_today}
+            description="Official coaching reports opened"
             icon={Eye}
           />
           <MetricCard
-            title="Rep selections"
-            value={totals.rep_selections_7d}
-            description="Rep filter picks in 7 days"
-            icon={Search}
+            title="Official views this week"
+            value={analytics.official.report_views_7d}
+            description="Report opens in the last 7 days"
+            icon={BarChart3}
           />
           <MetricCard
-            title="Link clicks"
-            value={totals.link_clicks_7d}
-            description="Docs, Zoom, and transcripts"
-            icon={MousePointerClick}
+            title="Active sessions"
+            value={analytics.official.active_sessions_7d}
+            description="Anonymous official-dashboard sessions"
+            icon={Users}
           />
           <MetricCard
-            title="Manual submits"
-            value={totals.manual_submissions_7d}
-            description="Manual feedback requests"
-            icon={Send}
-          />
-          <MetricCard
-            title="Events in 7 days"
-            value={totals.events_7d}
-            description="Short-term activity pulse"
-            icon={TrendingUp}
-          />
-          <MetricCard
-            title="Events in 30 days"
-            value={totals.events_30d}
-            description="Rolling monthly activity"
-            icon={CalendarDays}
+            title="Reps with activity"
+            value={analytics.official.reps_with_activity_7d}
+            description="Reps tied to official usage signals"
+            icon={CheckCircle2}
           />
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)]">
-          <DailyActivityCard daily={analytics.daily} />
-          <EventBreakdownCard events={analytics.eventBreakdown} />
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
+          <DailyReportViewsCard daily={analytics.daily} />
+          <OfficialSignalCard official={analytics.official} />
         </section>
 
         <RepEngagementCard reps={analytics.repEngagement} />
 
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)]">
           <UnviewedReportsCard reports={analytics.unviewedReports} />
-          <RecentEventsCard events={analytics.recentEvents} />
+          <ManualUsageCard manual={analytics.manual} />
         </section>
       </div>
     </main>
@@ -205,69 +178,103 @@ function MetricCard({
   );
 }
 
-function DailyActivityCard({ daily }: { daily: UsageDailyPoint[] }) {
-  const maxEvents = Math.max(1, ...daily.map((point) => point.total_events));
+function DailyReportViewsCard({ daily }: { daily: UsageDailyPoint[] }) {
+  const maxViews = Math.max(
+    1,
+    ...daily.map((point) => point.official_report_views + point.manual_report_views),
+  );
 
   return (
     <Card className="dashboard-card border bg-card/95">
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="size-4" />
-          Daily Activity
+          Daily Report Views
         </CardTitle>
-        <CardDescription>Last 14 days of tracked dashboard events.</CardDescription>
+        <CardDescription>
+          Official coaching views are primary. Self-submitted views are shown separately.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {daily.length ? (
           <div className="grid gap-3">
-            {daily.map((point) => (
-              <div
-                key={point.day}
-                className="grid grid-cols-[3.5rem_minmax(0,1fr)_3rem] items-center gap-3"
-              >
-                <span className="text-xs text-muted-foreground">{formatDayLabel(point.day)}</span>
-                <div className="h-8 overflow-hidden rounded-lg bg-muted">
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-primary" />
+                Official coaching
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="size-2 rounded-full bg-accent-foreground/70" />
+                Self-submitted
+              </span>
+            </div>
+            {daily.map((point) => {
+              const totalViews = point.official_report_views + point.manual_report_views;
+
+              return (
+                <div
+                  key={point.day}
+                  className="grid grid-cols-[3.5rem_minmax(0,1fr)_6.5rem] items-center gap-3"
+                >
+                  <span className="text-xs text-muted-foreground">{formatDayLabel(point.day)}</span>
                   <div
-                    className="flex h-full items-center rounded-lg bg-primary/85 px-2 text-xs font-medium text-primary-foreground"
-                    style={{ width: getBarWidth(point.total_events, maxEvents) }}
-                    aria-label={`${point.total_events} events, ${point.report_views} report views`}
-                  />
+                    className="flex h-8 overflow-hidden rounded-lg bg-muted"
+                    aria-label={`${point.official_report_views} official views and ${point.manual_report_views} self-submitted views`}
+                  >
+                    <div
+                      className="h-full bg-primary/85"
+                      style={{ width: getStackWidth(point.official_report_views, maxViews) }}
+                    />
+                    <div
+                      className="h-full bg-accent-foreground/70"
+                      style={{ width: getStackWidth(point.manual_report_views, maxViews) }}
+                    />
+                  </div>
+                  <span className="text-right text-sm font-medium">
+                    {formatNumber(totalViews)}
+                    <span className="ml-1 text-xs text-muted-foreground">views</span>
+                  </span>
                 </div>
-                <span className="text-right text-sm font-medium">{formatNumber(point.total_events)}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
-          <EmptyPanel text="No activity has been recorded yet." />
+          <EmptyPanel text="No report views have been recorded yet." />
         )}
       </CardContent>
     </Card>
   );
 }
 
-function EventBreakdownCard({ events }: { events: UsageEventBreakdown[] }) {
+function OfficialSignalCard({ official }: { official: UsageOfficialSummary }) {
   return (
     <Card className="dashboard-card border bg-card/95">
       <CardHeader className="border-b">
-        <CardTitle>Event Mix</CardTitle>
-        <CardDescription>Tracked actions from the last 7 days.</CardDescription>
+        <CardTitle>Official Coaching Signals</CardTitle>
+        <CardDescription>Secondary usage signals, kept out of the main scorecards.</CardDescription>
       </CardHeader>
-      <CardContent>
-        {events.length ? (
-          <div className="grid gap-2">
-            {events.map((event) => (
-              <div
-                key={event.event_name}
-                className="flex items-center justify-between gap-3 rounded-lg border bg-background/70 px-3 py-2"
-              >
-                <span className="min-w-0 truncate text-sm">{formatEventName(event.event_name)}</span>
-                <Badge variant="secondary">{formatNumber(event.count)}</Badge>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <EmptyPanel text="No tracked actions in the last 7 days." />
-        )}
+      <CardContent className="grid gap-3">
+        <SignalRow
+          icon={CalendarDays}
+          label="Official views in 30 days"
+          value={official.report_views_30d}
+        />
+        <SignalRow
+          icon={MousePointerClick}
+          label="Report link clicks in 7 days"
+          value={official.link_clicks_7d}
+        />
+        <SignalRow
+          icon={Users}
+          label="Rep filter picks in 7 days"
+          value={official.rep_selections_7d}
+        />
+        <div className="rounded-lg border bg-background/70 px-3 py-2">
+          <p className="text-xs text-muted-foreground">Last official activity</p>
+          <p className="mt-1 text-sm font-medium">
+            {official.last_activity_at ? formatMiamiDateTime(official.last_activity_at) : "No activity yet"}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
@@ -277,9 +284,9 @@ function RepEngagementCard({ reps }: { reps: UsageRepEngagement[] }) {
   return (
     <Card className="dashboard-card border bg-card/95">
       <CardHeader className="border-b">
-        <CardTitle>Rep Report Engagement</CardTitle>
+        <CardTitle>Official Rep Engagement</CardTitle>
         <CardDescription>
-          Official report views are counted by the report opened, not by identifying who opened it.
+          This table only uses official coaching reports. It does not include self-submitted feedback.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -291,7 +298,7 @@ function RepEngagementCard({ reps }: { reps: UsageRepEngagement[] }) {
                 <TableHead className="text-right">Reports</TableHead>
                 <TableHead className="text-right">Viewed</TableHead>
                 <TableHead className="text-right">Views</TableHead>
-                <TableHead>Engagement</TableHead>
+                <TableHead>Secondary signals</TableHead>
                 <TableHead>Last activity</TableHead>
               </TableRow>
             </TableHeader>
@@ -327,7 +334,7 @@ function RepEngagementCard({ reps }: { reps: UsageRepEngagement[] }) {
             </TableBody>
           </Table>
         ) : (
-          <EmptyPanel text="No reps are available to summarize yet." />
+          <EmptyPanel text="No official reps are available to summarize yet." />
         )}
       </CardContent>
     </Card>
@@ -377,45 +384,77 @@ function UnviewedReportsCard({ reports }: { reports: UsageUnviewedReport[] }) {
             </TableBody>
           </Table>
         ) : (
-          <EmptyPanel text="No unviewed reports older than 48 hours." />
+          <EmptyPanel text="No unviewed official reports older than 48 hours." />
         )}
       </CardContent>
     </Card>
   );
 }
 
-function RecentEventsCard({ events }: { events: UsageRecentEvent[] }) {
+function ManualUsageCard({ manual }: { manual: UsageManualSummary }) {
   return (
     <Card className="dashboard-card border bg-card/95">
       <CardHeader className="border-b">
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Latest tracked events, newest first.</CardDescription>
+        <CardTitle>Self-Submitted Feedback</CardTitle>
+        <CardDescription>
+          Manual submissions are tracked separately from official coaching reports.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        {events.length ? (
-          <div className="grid gap-2">
-            {events.map((event) => (
-              <div key={event.id} className="rounded-lg border bg-background/70 p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{formatEventName(event.event_name)}</p>
-                    <p className="mt-1 truncate text-xs text-muted-foreground">
-                      {event.target_rep_name || event.target_rep_slug || event.path || "Dashboard"}
-                    </p>
-                  </div>
-                  <Badge variant="outline">{event.source || "dashboard"}</Badge>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {formatMiamiDateTime(event.created_at)}
-                </p>
-              </div>
-            ))}
+      <CardContent className="grid gap-3">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+          <SignalRow icon={FileText} label="Total self-submitted reports" value={manual.total_reports} />
+          <SignalRow icon={CheckCircle2} label="Completed reports" value={manual.completed_reports} />
+          <SignalRow icon={Send} label="Submissions in 7 days" value={manual.submissions_7d} />
+          <SignalRow icon={Eye} label="Manual report views in 7 days" value={manual.report_views_7d} />
+        </div>
+        <div className="grid gap-2 rounded-lg border bg-background/70 p-3">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">Form/list opens</span>
+            <span className="font-medium">{formatNumber(manual.page_opens_7d)}</span>
           </div>
-        ) : (
-          <EmptyPanel text="No recent usage events yet." />
-        )}
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">Anonymous sessions</span>
+            <span className="font-medium">{formatNumber(manual.active_sessions_7d)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">Manual link clicks</span>
+            <span className="font-medium">{formatNumber(manual.link_clicks_7d)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-muted-foreground">Pending/processing</span>
+            <span className="font-medium">{formatNumber(manual.pending_reports)}</span>
+          </div>
+        </div>
+        <div className="rounded-lg border bg-background/70 px-3 py-2">
+          <p className="text-xs text-muted-foreground">Last self-submitted activity</p>
+          <p className="mt-1 text-sm font-medium">
+            {manual.last_activity_at ? formatMiamiDateTime(manual.last_activity_at) : "No activity yet"}
+          </p>
+        </div>
       </CardContent>
     </Card>
+  );
+}
+
+function SignalRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border bg-background/70 px-3 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-muted text-foreground">
+          <Icon className="size-3.5" />
+        </span>
+        <span className="min-w-0 text-sm text-muted-foreground">{label}</span>
+      </div>
+      <span className="text-lg font-semibold">{formatNumber(value)}</span>
+    </div>
   );
 }
 
@@ -432,9 +471,9 @@ function getViewRate(rep: UsageRepEngagement) {
   return rep.viewed_reports / rep.generated_reports;
 }
 
-function getBarWidth(value: number, max: number) {
+function getStackWidth(value: number, max: number) {
   if (!value) return "0%";
-  return `${Math.max(10, Math.round((value / max) * 100))}%`;
+  return `${Math.round((value / max) * 100)}%`;
 }
 
 function formatNumber(value: number) {
@@ -453,11 +492,4 @@ function formatDayLabel(day: string) {
     month: "short",
     day: "numeric",
   }).format(date);
-}
-
-function formatEventName(eventName: string) {
-  return eventName
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }

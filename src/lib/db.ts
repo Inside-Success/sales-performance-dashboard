@@ -9,6 +9,8 @@ import type {
   UsageAnalytics,
   UsageDailyPoint,
   UsageEventBreakdown,
+  UsageManualSummary,
+  UsageOfficialSummary,
   UsageRecentEvent,
   UsageRepEngagement,
   UsageTotals,
@@ -308,6 +310,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
 
     const [
       totalsRows,
+      officialSummaryRows,
+      manualSummaryRows,
       dailyRows,
       eventBreakdownRows,
       repEngagementRows,
@@ -346,6 +350,100 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       ),
       sql.query(
         `
+          with official_events as (
+            select *
+            from dashboard_usage_events
+            where event_name in ('dashboard_home_viewed', 'rep_selected', 'report_detail_viewed')
+               or (event_name = 'report_card_clicked' and report_id is not null)
+               or (
+                 event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                 and report_id is not null
+               )
+          )
+          select
+            count(*) filter (
+              where event_name = 'report_detail_viewed'
+                and created_at >= now() - interval '1 day'
+            )::int as report_views_today,
+            count(*) filter (
+              where event_name = 'report_detail_viewed'
+                and created_at >= now() - interval '7 days'
+            )::int as report_views_7d,
+            count(*) filter (
+              where event_name = 'report_detail_viewed'
+                and created_at >= now() - interval '30 days'
+            )::int as report_views_30d,
+            count(distinct anonymous_session_id) filter (
+              where created_at >= now() - interval '7 days'
+                and anonymous_session_id is not null
+            )::int as active_sessions_7d,
+            count(distinct target_rep_slug) filter (
+              where created_at >= now() - interval '7 days'
+                and target_rep_slug is not null
+            )::int as reps_with_activity_7d,
+            count(*) filter (
+              where event_name = 'rep_selected'
+                and created_at >= now() - interval '7 days'
+            )::int as rep_selections_7d,
+            count(*) filter (
+              where event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                and report_id is not null
+                and created_at >= now() - interval '7 days'
+            )::int as link_clicks_7d,
+            max(created_at)::text as last_activity_at
+          from official_events
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          with manual_usage as (
+            select *
+            from dashboard_usage_events
+            where event_name in (
+                'manual_reports_page_viewed',
+                'manual_submit_opened',
+                'manual_report_submitted',
+                'manual_report_viewed'
+              )
+               or (event_name = 'report_card_clicked' and manual_public_id is not null)
+               or (
+                 event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                 and manual_public_id is not null
+               )
+          )
+          select
+            (select count(*)::int from manual_feedback_reports) as total_reports,
+            (select count(*)::int from manual_feedback_reports where status = 'completed') as completed_reports,
+            (select count(*)::int from manual_feedback_reports where status in ('pending', 'processing')) as pending_reports,
+            count(*) filter (
+              where event_name in ('manual_reports_page_viewed', 'manual_submit_opened')
+                and created_at >= now() - interval '7 days'
+            )::int as page_opens_7d,
+            count(*) filter (
+              where event_name = 'manual_report_submitted'
+                and created_at >= now() - interval '7 days'
+            )::int as submissions_7d,
+            count(*) filter (
+              where event_name = 'manual_report_viewed'
+                and created_at >= now() - interval '7 days'
+            )::int as report_views_7d,
+            count(*) filter (
+              where event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                and manual_public_id is not null
+                and created_at >= now() - interval '7 days'
+            )::int as link_clicks_7d,
+            count(distinct anonymous_session_id) filter (
+              where created_at >= now() - interval '7 days'
+                and anonymous_session_id is not null
+            )::int as active_sessions_7d,
+            max(created_at)::text as last_activity_at
+          from manual_usage
+        `,
+        [],
+      ),
+      sql.query(
+        `
           with days as (
             select generate_series(
               (current_date - interval '13 days')::date,
@@ -359,6 +457,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
             count(events.id) filter (
               where events.event_name in ('report_detail_viewed', 'manual_report_viewed')
             )::int as report_views,
+            count(events.id) filter (where events.event_name = 'report_detail_viewed')::int as official_report_views,
+            count(events.id) filter (where events.event_name = 'manual_report_viewed')::int as manual_report_views,
             count(events.id) filter (where events.event_name = 'rep_selected')::int as rep_selections,
             count(events.id) filter (where events.event_name = 'manual_report_submitted')::int as manual_submissions
           from days
@@ -487,6 +587,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       configured: true,
       generatedAt: new Date().toISOString(),
       totals: normalizeUsageTotals((totalsRows as UsageTotals[])[0]),
+      official: normalizeUsageOfficialSummary((officialSummaryRows as UsageOfficialSummary[])[0]),
+      manual: normalizeUsageManualSummary((manualSummaryRows as UsageManualSummary[])[0]),
       daily: (dailyRows as UsageDailyPoint[]).map(normalizeUsageDailyPoint),
       eventBreakdown: (eventBreakdownRows as UsageEventBreakdown[]).map(normalizeUsageEventBreakdown),
       repEngagement: (repEngagementRows as UsageRepEngagement[]).map(normalizeUsageRepEngagement),
@@ -837,11 +939,40 @@ function normalizeUsageTotals(row: UsageTotals | undefined): UsageTotals {
   };
 }
 
+function normalizeUsageOfficialSummary(row: UsageOfficialSummary | undefined): UsageOfficialSummary {
+  return {
+    report_views_today: Number(row?.report_views_today || 0),
+    report_views_7d: Number(row?.report_views_7d || 0),
+    report_views_30d: Number(row?.report_views_30d || 0),
+    active_sessions_7d: Number(row?.active_sessions_7d || 0),
+    reps_with_activity_7d: Number(row?.reps_with_activity_7d || 0),
+    rep_selections_7d: Number(row?.rep_selections_7d || 0),
+    link_clicks_7d: Number(row?.link_clicks_7d || 0),
+    last_activity_at: row?.last_activity_at || null,
+  };
+}
+
+function normalizeUsageManualSummary(row: UsageManualSummary | undefined): UsageManualSummary {
+  return {
+    total_reports: Number(row?.total_reports || 0),
+    completed_reports: Number(row?.completed_reports || 0),
+    pending_reports: Number(row?.pending_reports || 0),
+    page_opens_7d: Number(row?.page_opens_7d || 0),
+    submissions_7d: Number(row?.submissions_7d || 0),
+    report_views_7d: Number(row?.report_views_7d || 0),
+    link_clicks_7d: Number(row?.link_clicks_7d || 0),
+    active_sessions_7d: Number(row?.active_sessions_7d || 0),
+    last_activity_at: row?.last_activity_at || null,
+  };
+}
+
 function normalizeUsageDailyPoint(row: UsageDailyPoint): UsageDailyPoint {
   return {
     day: row.day,
     total_events: Number(row.total_events || 0),
     report_views: Number(row.report_views || 0),
+    official_report_views: Number(row.official_report_views || 0),
+    manual_report_views: Number(row.manual_report_views || 0),
     rep_selections: Number(row.rep_selections || 0),
     manual_submissions: Number(row.manual_submissions || 0),
   };
@@ -912,6 +1043,8 @@ function getFallbackUsageAnalytics(): UsageAnalytics {
     configured: false,
     generatedAt: new Date().toISOString(),
     totals: normalizeUsageTotals(undefined),
+    official: normalizeUsageOfficialSummary(undefined),
+    manual: normalizeUsageManualSummary(undefined),
     daily: [],
     eventBreakdown: [],
     repEngagement: [],
