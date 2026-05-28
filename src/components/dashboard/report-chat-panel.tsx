@@ -314,7 +314,7 @@ function InlineMarkdown({ text }: { text: string }) {
 
 function renderInlineMarkdown(text: string): ReactNode[] {
   const parts: ReactNode[] = [];
-  const pattern = /(\*\*[^*]+\*\*|\*[^*\n]+\*)/g;
+  const pattern = /(\*\*[\s\S]+?\*\*|\*[^*\n]+\*)/g;
   let lastIndex = 0;
 
   for (const match of text.matchAll(pattern)) {
@@ -327,7 +327,7 @@ function renderInlineMarkdown(text: string): ReactNode[] {
     parts.push(
       isBold ? (
         <strong key={`${token}-${index}`} className="font-semibold">
-          {innerText}
+          {renderInlineMarkdown(innerText)}
         </strong>
       ) : (
         <em key={`${token}-${index}`}>{innerText}</em>
