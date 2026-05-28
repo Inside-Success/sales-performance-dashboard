@@ -19,9 +19,11 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
 import { TrackRecentlyViewed } from "@/components/dashboard/recently-viewed";
+import { ReportChatPanel } from "@/components/dashboard/report-chat-panel";
 import { TrackedExternalLink, TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getPerformanceCall } from "@/lib/db";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime } from "@/lib/format";
+import { isReportChatEnabledForCall } from "@/lib/report-chat";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +43,7 @@ export default async function CallPage({
 
   if (!call) notFound();
 
+  const reportChatEnabled = isReportChatEnabledForCall(call);
   const closeTitle =
     call.close_section_type === "what_made_this_close_work"
       ? "What Made This Close Work"
@@ -126,6 +129,13 @@ export default async function CallPage({
                 repName={call.rep_name}
                 trackingDisabled={isManagerUsageView}
               />
+              {reportChatEnabled ? (
+                <ReportChatPanel
+                  reportId={call.id}
+                  repName={call.rep_name}
+                  clientName={call.client_name}
+                />
+              ) : null}
             </div>
           </header>
 

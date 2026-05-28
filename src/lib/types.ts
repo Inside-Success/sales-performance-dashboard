@@ -30,6 +30,7 @@ export type PerformanceCall = {
   objections_surfaced: string[];
   close_section_type: CloseSectionType;
   close_section: JsonObject | string | null;
+  source_payload: JsonObject;
   created_at: string;
   updated_at: string;
 };

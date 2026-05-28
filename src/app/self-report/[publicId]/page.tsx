@@ -3,6 +3,7 @@ import { ManualReportStatus } from "@/components/dashboard/manual-report-status"
 import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getManualFeedbackReport } from "@/lib/db";
 import { resolveManualReportStatus } from "@/lib/manual-reports";
+import { isReportChatEnabledForManualReport } from "@/lib/report-chat";
 import { slugify } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,9 @@ export default async function SelfReportPage({
   const report = await getManualFeedbackReport(publicId);
 
   if (!report) notFound();
+
+  const resolvedReport = resolveManualReportStatus(report);
+  const reportChatEnabled = isReportChatEnabledForManualReport(resolvedReport);
 
   return (
     <>
@@ -32,7 +36,7 @@ export default async function SelfReportPage({
           },
         }}
       />
-      <ManualReportStatus initialReport={resolveManualReportStatus(report)} />
+      <ManualReportStatus initialReport={resolvedReport} reportChatEnabled={reportChatEnabled} />
     </>
   );
 }

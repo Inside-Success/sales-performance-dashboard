@@ -1126,6 +1126,7 @@ const demoCalls: PerformanceCall[] = [
       root_cause: "The ask came too late.",
       what_to_say_next_time: "Based on what you told me, are you ready to get started today?",
     },
+    source_payload: {},
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },

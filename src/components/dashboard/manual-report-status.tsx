@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
+import { ReportChatPanel } from "@/components/dashboard/report-chat-panel";
 import { TrackedExternalLink } from "@/components/dashboard/usage-tracker";
 import { formatMiamiDateTime } from "@/lib/format";
 import { slugify } from "@/lib/slug";
@@ -36,7 +37,13 @@ type ApiResponse = {
 
 const TERMINAL_STATUSES = new Set(["completed", "refused", "needs_transcript_paste", "failed"]);
 
-export function ManualReportStatus({ initialReport }: { initialReport: ManualFeedbackReport }) {
+export function ManualReportStatus({
+  initialReport,
+  reportChatEnabled = false,
+}: {
+  initialReport: ManualFeedbackReport;
+  reportChatEnabled?: boolean;
+}) {
   const [report, setReport] = useState(initialReport);
   const [error, setError] = useState<string | null>(null);
   const reportDocLink = report.report_doc_link || report.google_doc_link;
@@ -139,6 +146,14 @@ export function ManualReportStatus({ initialReport }: { initialReport: ManualFee
                 eventName="transcript_clicked"
                 report={report}
               />
+              {reportChatEnabled && report.status === "completed" ? (
+                <ReportChatPanel
+                  reportType="manual"
+                  reportId={report.public_id}
+                  repName={report.rep_name}
+                  clientName={report.client_name}
+                />
+              ) : null}
             </div>
           </header>
 
