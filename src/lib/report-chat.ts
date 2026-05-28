@@ -151,6 +151,7 @@ function buildMessages(reportContext: string, history: ReportChatMessage[]) {
         "Do not infer tone, body language, facial expression, or intent unless the transcript explicitly states it.",
         "Be fair to the sales rep. If a prospect had a genuine blocker, poor fit, approval need, payment access issue, or strong resistance, account for that in the coaching answer.",
         "Do not recommend custom deposits, invented payment plans, unusually low payments, contacting cast references, sending recordings, personal cell handling, invented package details, or exceptions outside the sales process.",
+        "When giving multiple points, use simple markdown numbered or bulleted lists with each item on its own line. Do not return one long paragraph with inline numbering.",
       ].join("\n"),
     },
     {
