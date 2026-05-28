@@ -226,7 +226,7 @@ function AssistantMessageContent({ content }: { content: string }) {
       {blocks.map((block, index) => {
         if (block.type === "ol") {
           return (
-            <ol key={`ol-${index}`} className="list-decimal space-y-2 pl-5">
+            <ol key={`ol-${index}`} className="list-decimal space-y-2 pl-5" start={block.start}>
               {block.items.map((item, itemIndex) => (
                 <li key={`${item}-${itemIndex}`} className="pl-1">
                   <InlineMarkdown text={item} />
@@ -264,7 +264,8 @@ function AssistantMessageContent({ content }: { content: string }) {
 
 type AssistantBlock =
   | { type: "p"; text: string }
-  | { type: "ol" | "ul"; items: string[] };
+  | { type: "ol"; items: string[]; start: number }
+  | { type: "ul"; items: string[] };
 
 function parseAssistantBlocks(content: string): AssistantBlock[] {
   const normalized = content
@@ -282,12 +283,15 @@ function parseAssistantBlocks(content: string): AssistantBlock[] {
   let index = 0;
   while (index < lines.length) {
     const orderedItems: string[] = [];
+    const firstOrderedMatch = lines[index]?.match(/^(\d{1,2})\.\s+/);
+    const orderedStart = Number(firstOrderedMatch?.[1] || 1);
+
     while (/^\d{1,2}\.\s+/.test(lines[index] || "")) {
       orderedItems.push(lines[index].replace(/^\d{1,2}\.\s+/, "").trim());
       index += 1;
     }
     if (orderedItems.length) {
-      blocks.push({ type: "ol", items: orderedItems });
+      blocks.push({ type: "ol", items: orderedItems, start: orderedStart });
       continue;
     }
 
