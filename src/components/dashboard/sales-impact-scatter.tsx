@@ -92,30 +92,32 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
             {formatCurrency(maxRevenue)}
           </span>
 
-          {filteredReps.map((rep) => {
-            const left = 12 + (rep.usageSignalsWindow / maxUsage) * 78;
-            const bottom = 12 + (rep.newPaidRevenueWindow / maxRevenue) * 76;
-            const isSelected = selectedRep?.repSlug === rep.repSlug;
+          <div className="absolute inset-x-12 bottom-12 top-8">
+            {filteredReps.map((rep) => {
+              const left = (rep.usageSignalsWindow / maxUsage) * 100;
+              const bottom = (rep.newPaidRevenueWindow / maxRevenue) * 100;
+              const isSelected = selectedRep?.repSlug === rep.repSlug;
 
-            return (
-              <button
-                key={rep.repSlug}
-                type="button"
-                title={`${rep.repName}: ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
-                className={cn(
-                  "absolute size-4 -translate-x-1/2 translate-y-1/2 rounded-full border-2 border-background shadow-sm outline-none transition-all hover:scale-125 focus-visible:ring-3 focus-visible:ring-ring/50",
-                  dotClass(rep.usageGroup),
-                  isSelected && "z-10 scale-150 ring-3 ring-ring/40",
-                )}
-                style={{
-                  left: `${left}%`,
-                  bottom: `${bottom}%`,
-                }}
-                onClick={() => setSelectedSlug(rep.repSlug)}
-                aria-label={`${rep.repName}, ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
-              />
-            );
-          })}
+              return (
+                <button
+                  key={rep.repSlug}
+                  type="button"
+                  title={`${rep.repName}: ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
+                  className={cn(
+                    "absolute size-4 -translate-x-1/2 translate-y-1/2 rounded-full border-2 border-background shadow-sm outline-none transition-all hover:scale-125 focus-visible:ring-3 focus-visible:ring-ring/50",
+                    dotClass(rep.usageGroup),
+                    isSelected && "z-10 scale-150 ring-3 ring-ring/40",
+                  )}
+                  style={{
+                    left: `${left}%`,
+                    bottom: `${bottom}%`,
+                  }}
+                  onClick={() => setSelectedSlug(rep.repSlug)}
+                  aria-label={`${rep.repName}, ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
+                />
+              );
+            })}
+          </div>
 
           <div className="absolute right-4 top-4 rounded-lg border bg-card/95 px-3 py-2 text-xs text-muted-foreground shadow-xs">
             Click a point for details
