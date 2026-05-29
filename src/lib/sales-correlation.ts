@@ -6,6 +6,10 @@ const DEFAULT_SALES_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1lBdE_LUKI8rzTvYc5vztSwKROJ7uIAOb5mNT9s4PeLA/gviz/tq?tqx=out:csv&sheet=Main";
 const HISTORY_DAYS = 120;
 const LAG_DAYS = 14;
+const REP_SLUG_ALIASES: Record<string, string> = {
+  "ollie-mcfarl": "ollie-mcfarlane",
+};
+const REP_SLUG_SUFFIXES = new Set(["success"]);
 
 export const SALES_CORRELATION_WINDOWS = [7, 14, 30, 90] as const;
 export type SalesCorrelationWindow = (typeof SALES_CORRELATION_WINDOWS)[number];
@@ -141,11 +145,13 @@ export async function getSalesCorrelationAnalytics(
     getSalesRows(),
   ]);
 
+  const usageRows = canonicalizeUsageRows(usageData.rows);
+  const usageEvents = usageData.events.map(canonicalizeUsageEvent);
   const salesRows = salesResult.rows;
   const paidRows = salesRows.filter(isPaidRow);
   const newPaidRows = paidRows.filter(isNewPaymentRow);
   const salesByRep = groupSalesRowsByRep(salesRows);
-  const usageByRep = new Map(usageData.rows.map((row) => [row.rep_slug, row]));
+  const usageByRep = new Map(usageRows.map((row) => [row.rep_slug, row]));
   const salesRepNames = getSalesRepNames(salesRows);
   const repSlugs = new Set([...usageByRep.keys(), ...salesByRep.keys()]);
 
@@ -153,7 +159,7 @@ export async function getSalesCorrelationAnalytics(
     .map((repSlug) => {
       const usage = usageByRep.get(repSlug);
       const repSalesRows = salesByRep.get(repSlug) || [];
-      const repName = usage?.rep_name || salesRepNames.get(repSlug) || repSlug;
+      const repName = salesRepNames.get(repSlug) || usage?.rep_name || repSlug;
       const windowSales = summarizeSalesRows(repSalesRows, windowStart, windowEnd);
       const allSales = summarizeSalesRows(repSalesRows);
       const firstActivityAt = usage?.first_activity_at || null;
@@ -216,10 +222,10 @@ export async function getSalesCorrelationAnalytics(
     .filter((rep) => rep.generatedReports > 0 || rep.usageSignalsWindow > 0 || rep.newPaidRevenueWindow > 0)
     .map((rep) => [rep.usageSignalsWindow, rep.newPaidRevenueWindow] as [number, number]);
   const correlation = pearson(correlationPairs);
-  const weekly = buildWeeklyPoints(usageData.events, newPaidRows, generatedAt);
-  const laggedImpact = buildLaggedImpact(reps, usageData.events, newPaidRows, generatedAt);
+  const weekly = buildWeeklyPoints(usageEvents, newPaidRows, generatedAt);
+  const laggedImpact = buildLaggedImpact(reps, usageEvents, newPaidRows, generatedAt);
   const latestSalesDate = getLatestSalesDate(salesRows);
-  const usageActivity = getUsageActivitySummary(usageData.rows, generatedAt, windowStart, windowEnd);
+  const usageActivity = getUsageActivitySummary(usageRows, generatedAt, windowStart, windowEnd);
   const unmatchedSalesReps = reps
     .filter((rep) => rep.hasSalesData && !rep.hasUsageData && rep.newPaidRevenueWindow > 0)
     .sort((a, b) => b.newPaidRevenueWindow - a.newPaidRevenueWindow)
@@ -313,6 +319,95 @@ function getUsageDataMaturity(usageTrackingAgeDays: number) {
   return "stable" as const;
 }
 
+function canonicalizeUsageRows(rows: SalesCorrelationUsageRow[]) {
+  const rowsBySlug = new Map<string, SalesCorrelationUsageRow>();
+
+  for (const row of rows) {
+    const repSlug = getCanonicalRepSlug(row.rep_name || row.rep_slug);
+    const repName = cleanRepDisplayName(row.rep_name);
+    const existing = rowsBySlug.get(repSlug);
+
+    if (!existing) {
+      rowsBySlug.set(repSlug, {
+        ...row,
+        rep_slug: repSlug,
+        rep_name: repName,
+      });
+      continue;
+    }
+
+    rowsBySlug.set(repSlug, {
+      rep_slug: repSlug,
+      rep_name: existing.rep_name || repName,
+      generated_reports: existing.generated_reports + row.generated_reports,
+      first_report_generated_at: earlierDateString(
+        existing.first_report_generated_at,
+        row.first_report_generated_at,
+      ),
+      latest_report_generated_at: laterDateString(
+        existing.latest_report_generated_at,
+        row.latest_report_generated_at,
+      ),
+      usage_events_window: existing.usage_events_window + row.usage_events_window,
+      usage_events_all: existing.usage_events_all + row.usage_events_all,
+      report_views_window: existing.report_views_window + row.report_views_window,
+      report_views_all: existing.report_views_all + row.report_views_all,
+      report_clicks_window: existing.report_clicks_window + row.report_clicks_window,
+      viewed_reports: existing.viewed_reports + row.viewed_reports,
+      viewed_reports_window: existing.viewed_reports_window + row.viewed_reports_window,
+      rep_selections_window: existing.rep_selections_window + row.rep_selections_window,
+      link_clicks_window: existing.link_clicks_window + row.link_clicks_window,
+      first_activity_at: earlierDateString(existing.first_activity_at, row.first_activity_at),
+      last_activity_at: laterDateString(existing.last_activity_at, row.last_activity_at),
+    });
+  }
+
+  return Array.from(rowsBySlug.values());
+}
+
+function canonicalizeUsageEvent(event: SalesCorrelationUsageEvent): SalesCorrelationUsageEvent {
+  return {
+    ...event,
+    rep_slug: getCanonicalRepSlug(event.rep_name || event.rep_slug),
+    rep_name: cleanRepDisplayName(event.rep_name),
+  };
+}
+
+function getCanonicalRepSlug(value: string) {
+  const rawSlug = slugify(value);
+  const withoutSuffix = stripKnownRepSuffixes(rawSlug);
+  return REP_SLUG_ALIASES[withoutSuffix] || withoutSuffix;
+}
+
+function stripKnownRepSuffixes(slug: string) {
+  const parts = slug.split("-").filter(Boolean);
+
+  while (parts.length > 1 && REP_SLUG_SUFFIXES.has(parts[parts.length - 1])) {
+    parts.pop();
+  }
+
+  return parts.join("-") || slug;
+}
+
+function cleanRepDisplayName(value: string) {
+  return value
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\s+Success$/i, "");
+}
+
+function earlierDateString(first: string | null, second: string | null) {
+  if (!first) return second;
+  if (!second) return first;
+  return new Date(first) <= new Date(second) ? first : second;
+}
+
+function laterDateString(first: string | null, second: string | null) {
+  if (!first) return second;
+  if (!second) return first;
+  return new Date(first) >= new Date(second) ? first : second;
+}
+
 async function getSalesRows(): Promise<{
   configured: boolean;
   rows: SalesPaymentRow[];
@@ -372,7 +467,7 @@ function parseSalesRows(csv: string): SalesPaymentRow[] {
       paymentType: (row[typeIndex] || "").trim(),
       amount,
       repName,
-      repSlug: slugify(repName),
+      repSlug: getCanonicalRepSlug(repName),
       showName: showIndex >= 0 ? (row[showIndex] || "").trim() : "",
       contractSigned: contractIndex >= 0 ? /^true$/i.test((row[contractIndex] || "").trim()) : false,
     };
