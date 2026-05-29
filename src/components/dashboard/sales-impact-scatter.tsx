@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { SalesCorrelationRep, UsageGroupKey } from "@/lib/sales-correlation";
@@ -14,6 +14,21 @@ const FILTERS: Array<{ key: ScatterFilter; label: string }> = [
   { key: "medium", label: "Some" },
   { key: "low", label: "Low/no" },
 ];
+
+const GROUP_STYLES: Record<UsageGroupKey, { dot: string; badge: string }> = {
+  high: {
+    dot: "bg-primary",
+    badge: "border-primary/25 bg-primary/10 text-primary",
+  },
+  medium: {
+    dot: "bg-chart-3",
+    badge: "border-chart-3/40 bg-chart-3/15 text-foreground",
+  },
+  low: {
+    dot: "bg-muted-foreground",
+    badge: "border-muted-foreground/25 bg-muted text-muted-foreground",
+  },
+};
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -35,11 +50,17 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
         .slice(0, 90),
     [eligibleReps, filter],
   );
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(filteredReps[0]?.repSlug || null);
-  const selectedRep =
-    filteredReps.find((rep) => rep.repSlug === selectedSlug) || filteredReps[0] || null;
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const selectedRep = selectedSlug
+    ? filteredReps.find((rep) => rep.repSlug === selectedSlug) || null
+    : null;
   const maxUsage = Math.max(1, ...filteredReps.map((rep) => rep.usageSignalsWindow));
   const maxRevenue = Math.max(1, ...filteredReps.map((rep) => rep.newPaidRevenueWindow));
+
+  function selectRep(event: MouseEvent<HTMLButtonElement>, repSlug: string) {
+    event.stopPropagation();
+    setSelectedSlug(repSlug);
+  }
 
   if (!eligibleReps.length) {
     return (
@@ -50,7 +71,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4" onClick={() => setSelectedSlug(null)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-1.5">
           {FILTERS.map((item) => (
@@ -68,10 +89,10 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
             </Button>
           ))}
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          <LegendDot className="bg-primary" label="High usage" />
-          <LegendDot className="bg-accent-foreground" label="Some usage" />
-          <LegendDot className="bg-muted-foreground" label="Low/no usage" />
+        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+          <LegendDot className={GROUP_STYLES.high.dot} label="High usage" />
+          <LegendDot className={GROUP_STYLES.medium.dot} label="Some usage" />
+          <LegendDot className={GROUP_STYLES.low.dot} label="Low/no usage" />
         </div>
       </div>
 
@@ -105,14 +126,14 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
                   title={`${rep.repName}: ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
                   className={cn(
                     "absolute size-4 -translate-x-1/2 translate-y-1/2 rounded-full border-2 border-background shadow-sm outline-none transition-all hover:scale-125 focus-visible:ring-3 focus-visible:ring-ring/50",
-                    dotClass(rep.usageGroup),
+                    GROUP_STYLES[rep.usageGroup].dot,
                     isSelected && "z-10 scale-150 ring-3 ring-ring/40",
                   )}
                   style={{
                     left: `${left}%`,
                     bottom: `${bottom}%`,
                   }}
-                  onClick={() => setSelectedSlug(rep.repSlug)}
+                  onClick={(event) => selectRep(event, rep.repSlug)}
                   aria-label={`${rep.repName}, ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
                 />
               );
@@ -128,7 +149,9 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
           {selectedRep ? (
             <div className="grid gap-3">
               <div>
-                <Badge variant="secondary">{groupLabel(selectedRep.usageGroup)}</Badge>
+                <Badge variant="outline" className={GROUP_STYLES[selectedRep.usageGroup].badge}>
+                  {groupLabel(selectedRep.usageGroup)}
+                </Badge>
                 <h3 className="mt-2 text-lg font-semibold">{selectedRep.repName}</h3>
               </div>
               <ScatterStat label="New paid sales" value={formatCurrency(selectedRep.newPaidRevenueWindow)} />
@@ -141,9 +164,12 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
               </p>
             </div>
           ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              Select a point to see the rep behind it.
-            </p>
+            <div className="flex min-h-full flex-col justify-center rounded-lg border border-dashed bg-card/55 p-4 text-center">
+              <p className="font-medium">No rep selected</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Click a dot in the graph to view that rep&apos;s sales and usage details.
+              </p>
+            </div>
           )}
         </div>
       </div>
@@ -153,8 +179,8 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
 
 function LegendDot({ className, label }: { className: string; label: string }) {
   return (
-    <span className="inline-flex items-center gap-1">
-      <span className={cn("size-2 rounded-full", className)} />
+    <span className="inline-flex items-center gap-1.5 rounded-full border bg-background/70 px-2 py-1">
+      <span className={cn("size-2.5 rounded-full", className)} />
       {label}
     </span>
   );
@@ -167,12 +193,6 @@ function ScatterStat({ label, value }: { label: string; value: string }) {
       <span className="text-sm font-semibold">{value}</span>
     </div>
   );
-}
-
-function dotClass(group: UsageGroupKey) {
-  if (group === "high") return "bg-primary";
-  if (group === "medium") return "bg-accent-foreground";
-  return "bg-muted-foreground";
 }
 
 function groupLabel(group: UsageGroupKey) {

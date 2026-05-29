@@ -143,7 +143,7 @@ export default async function SalesCorrelationPage({
           />
           <MetricCard
             icon={CalendarDays}
-            title="Sales rows read"
+            title="Valid sales rows"
             value={formatNumber(analytics.summary.salesRowsRead)}
             description={analytics.summary.latestSalesDate ? `Latest ${formatShortDate(analytics.summary.latestSalesDate)}` : "No sales rows"}
           />
@@ -220,6 +220,7 @@ function StatusMessages({ analytics }: { analytics: SalesCorrelationAnalytics })
 function ExecutiveInsight({ analytics }: { analytics: SalesCorrelationAnalytics }) {
   const high = analytics.groups.find((group) => group.key === "high");
   const low = analytics.groups.find((group) => group.key === "low");
+  const gap = (high?.avgNewRevenue || 0) - (low?.avgNewRevenue || 0);
 
   return (
     <Card className="dashboard-card border bg-card/95">
@@ -240,30 +241,72 @@ function ExecutiveInsight({ analytics }: { analytics: SalesCorrelationAnalytics 
               )}
             </Badge>
           </div>
-          <h2 className="text-2xl font-semibold tracking-normal">
-            {analytics.summary.insight}
+          <h2 className="max-w-3xl text-2xl font-semibold leading-tight tracking-normal">
+            {getExecutiveHeadline(high, low)}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-            This uses official coaching usage only. Self-submitted feedback and compliance signals are not mixed into this view.
+            {getExecutiveSupportingText(analytics)}
           </p>
         </div>
-        <div className="grid gap-2 rounded-xl border bg-background/70 p-3">
-          <MiniStat
-            label="High usage avg new sales"
-            value={formatCurrency(high?.avgNewRevenue || 0)}
-          />
-          <MiniStat
-            label="Low/no usage avg new sales"
-            value={formatCurrency(low?.avgNewRevenue || 0)}
-          />
-          <MiniStat
-            label="Recurring revenue tracked separately"
-            value={formatCurrency(analytics.summary.totalRecurringRevenue)}
-          />
+        <div className="rounded-xl border bg-background/80 p-4 shadow-xs">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">
+              Avg new revenue gap
+            </p>
+            <Badge variant={gap >= 0 ? "secondary" : "outline"}>
+              {gap >= 0 ? "High ahead" : "Review"}
+            </Badge>
+          </div>
+          <p className={cn("mt-3 text-3xl font-semibold tracking-normal", gap >= 0 ? "text-primary" : "text-destructive")}>
+            {gap >= 0 ? "+" : ""}
+            {formatCurrency(gap)}
+          </p>
+          <div className="mt-4 grid gap-2">
+            <ComparisonRow
+              dotClass={groupDotClass("high")}
+              label="High usage"
+              value={formatCurrency(high?.avgNewRevenue || 0)}
+            />
+            <ComparisonRow
+              dotClass={groupDotClass("low")}
+              label="Low/no usage"
+              value={formatCurrency(low?.avgNewRevenue || 0)}
+            />
+          </div>
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+            Recurring revenue is tracked separately: {formatCurrency(analytics.summary.totalRecurringRevenue)}.
+          </p>
         </div>
       </CardContent>
     </Card>
   );
+}
+
+function getExecutiveHeadline(
+  high: SalesCorrelationGroup | undefined,
+  low: SalesCorrelationGroup | undefined,
+) {
+  if (!high?.repCount || !low?.repCount) {
+    return "There is not enough matched usage and sales data yet.";
+  }
+
+  const gap = high.avgNewRevenue - low.avgNewRevenue;
+  if (gap > 0) {
+    return `High-usage reps are averaging ${formatCurrency(gap)} more new paid revenue.`;
+  }
+  if (gap < 0) {
+    return `High-usage reps are not ahead yet on average new paid revenue.`;
+  }
+  return "High-usage and low/no-usage reps are even on average new paid revenue.";
+}
+
+function getExecutiveSupportingText(analytics: SalesCorrelationAnalytics) {
+  const usageCoverage = formatUsageHistory(
+    analytics.summary.effectiveUsageWindowDays,
+    analytics.summary.periodDays,
+  );
+
+  return `Usage data covers ${usageCoverage}. Treat this as directional, not causal proof. Official coaching usage only; self-submitted feedback and compliance signals are excluded.`;
 }
 
 function MetricCard({
@@ -417,13 +460,13 @@ function WeeklyTrendCard({ weekly }: { weekly: SalesCorrelationWeeklyPoint[] }) 
             <div className="grid gap-1">
               <div className="h-3 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary/85"
+                  className="h-full rounded-full bg-chart-3"
                   style={{ width: `${Math.round((point.newPaidRevenue / maxRevenue) * 100)}%` }}
                 />
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted/80">
                 <div
-                  className="h-full rounded-full bg-accent-foreground/70"
+                  className="h-full rounded-full bg-primary"
                   style={{ width: `${Math.round((point.usageSignals / maxUsage) * 100)}%` }}
                 />
               </div>
@@ -438,11 +481,11 @@ function WeeklyTrendCard({ weekly }: { weekly: SalesCorrelationWeeklyPoint[] }) 
         ))}
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
-            <span className="size-2 rounded-full bg-primary" />
+            <span className="size-2.5 rounded-full bg-chart-3" />
             New paid revenue
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="size-2 rounded-full bg-accent-foreground/70" />
+            <span className="size-2.5 rounded-full bg-primary" />
             Usage signals
           </span>
         </div>
@@ -553,7 +596,7 @@ function RepImpactTable({
                   <TableRow key={rep.repSlug}>
                     <TableCell>
                       <div className="font-medium">{rep.repName}</div>
-                      <Badge variant="outline" className="mt-1">
+                      <Badge variant="outline" className={cn("mt-1", groupBadgeClass(rep.usageGroup))}>
                         {groupLabel(rep.usageGroup)}
                       </Badge>
                     </TableCell>
@@ -639,6 +682,26 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   );
 }
 
+function ComparisonRow({
+  dotClass,
+  label,
+  value,
+}: {
+  dotClass: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border bg-card/70 px-3 py-2">
+      <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+        <span className={cn("size-2.5 rounded-full", dotClass)} />
+        {label}
+      </span>
+      <span className="font-semibold">{value}</span>
+    </div>
+  );
+}
+
 function EmptyPanel({ text }: { text: string }) {
   return (
     <div className="rounded-lg border border-dashed bg-background/60 p-6 text-center text-sm text-muted-foreground">
@@ -655,14 +718,20 @@ function groupLabel(group: UsageGroupKey) {
 
 function groupDotClass(group: UsageGroupKey) {
   if (group === "high") return "bg-primary";
-  if (group === "medium") return "bg-accent-foreground";
+  if (group === "medium") return "bg-chart-3";
   return "bg-muted-foreground";
 }
 
 function groupBarClass(group: UsageGroupKey) {
   if (group === "high") return "bg-primary";
-  if (group === "medium") return "bg-accent-foreground/75";
+  if (group === "medium") return "bg-chart-3";
   return "bg-muted-foreground/65";
+}
+
+function groupBadgeClass(group: UsageGroupKey) {
+  if (group === "high") return "border-primary/25 bg-primary/10 text-primary";
+  if (group === "medium") return "border-chart-3/40 bg-chart-3/15 text-foreground";
+  return "border-muted-foreground/25 bg-muted text-muted-foreground";
 }
 
 function formatCurrency(value: number) {

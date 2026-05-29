@@ -54,7 +54,7 @@ function buildAnalyticsContext(analytics: SalesCorrelationAnalytics) {
     `Actual official usage tracking age: ${summary.usageTrackingAgeDays} days`,
     `Effective official usage coverage inside selected window: ${summary.effectiveUsageWindowDays} of ${summary.periodDays} days`,
     `Usage data maturity: ${summary.usageDataMaturity}`,
-    `Sales rows read: ${summary.salesRowsRead}`,
+    `Valid sales rows read: ${summary.salesRowsRead}`,
     `Paid rows read: ${summary.paidRowsRead}`,
     `New paid rows read: ${summary.newPaidRowsRead}`,
     `Latest sales date: ${summary.latestSalesDate || "not available"}`,
