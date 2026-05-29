@@ -1,6 +1,6 @@
 import { getSalesCorrelationUsageData } from "@/lib/db";
 import { slugify } from "@/lib/slug";
-import type { SalesCorrelationUsageEvent } from "@/lib/types";
+import type { SalesCorrelationUsageEvent, SalesCorrelationUsageRow } from "@/lib/types";
 
 const DEFAULT_SALES_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1lBdE_LUKI8rzTvYc5vztSwKROJ7uIAOb5mNT9s4PeLA/gviz/tq?tqx=out:csv&sheet=Main";
@@ -94,6 +94,11 @@ export type SalesCorrelationSummary = {
   latestSalesDate: string | null;
   usageConfigured: boolean;
   sheetConfigured: boolean;
+  firstUsageActivityAt: string | null;
+  lastUsageActivityAt: string | null;
+  usageTrackingAgeDays: number;
+  effectiveUsageWindowDays: number;
+  usageDataMaturity: "no_usage" | "early" | "developing" | "stable";
   usageError?: string;
   sheetError?: string;
   totalNewRevenue: number;
@@ -214,6 +219,7 @@ export async function getSalesCorrelationAnalytics(
   const weekly = buildWeeklyPoints(usageData.events, newPaidRows, generatedAt);
   const laggedImpact = buildLaggedImpact(reps, usageData.events, newPaidRows, generatedAt);
   const latestSalesDate = getLatestSalesDate(salesRows);
+  const usageActivity = getUsageActivitySummary(usageData.rows, generatedAt, windowStart, windowEnd);
   const unmatchedSalesReps = reps
     .filter((rep) => rep.hasSalesData && !rep.hasUsageData && rep.newPaidRevenueWindow > 0)
     .sort((a, b) => b.newPaidRevenueWindow - a.newPaidRevenueWindow)
@@ -229,6 +235,11 @@ export async function getSalesCorrelationAnalytics(
       latestSalesDate: latestSalesDate ? latestSalesDate.toISOString() : null,
       usageConfigured: usageData.configured,
       sheetConfigured: salesResult.configured,
+      firstUsageActivityAt: usageActivity.firstUsageActivityAt,
+      lastUsageActivityAt: usageActivity.lastUsageActivityAt,
+      usageTrackingAgeDays: usageActivity.usageTrackingAgeDays,
+      effectiveUsageWindowDays: usageActivity.effectiveUsageWindowDays,
+      usageDataMaturity: usageActivity.usageDataMaturity,
       usageError: usageData.error,
       sheetError: salesResult.error,
       totalNewRevenue: sum(reps.map((rep) => rep.newPaidRevenueWindow)),
@@ -239,7 +250,7 @@ export async function getSalesCorrelationAnalytics(
       matchedRepCount: reps.filter((rep) => rep.hasUsageData && rep.hasSalesData).length,
       correlation,
       correlationPairs: correlationPairs.length,
-      insight: buildInsight(groups, correlation, correlationPairs.length, periodDays),
+      insight: buildInsight(groups, correlation, correlationPairs.length, periodDays, usageActivity),
     },
     groups,
     reps,
@@ -247,6 +258,59 @@ export async function getSalesCorrelationAnalytics(
     laggedImpact,
     unmatchedSalesReps,
   };
+}
+
+function getUsageActivitySummary(
+  rows: SalesCorrelationUsageRow[],
+  generatedAt: Date,
+  windowStart: Date,
+  windowEnd: Date,
+) {
+  const firstActivity = rows.reduce<Date | null>((earliest, row) => {
+    const date = parseDate(row.first_activity_at);
+    if (!date) return earliest;
+    return !earliest || date < earliest ? date : earliest;
+  }, null);
+  const lastActivity = rows.reduce<Date | null>((latest, row) => {
+    const date = parseDate(row.last_activity_at);
+    if (!date) return latest;
+    return !latest || date > latest ? date : latest;
+  }, null);
+
+  if (!firstActivity || !lastActivity) {
+    return {
+      firstUsageActivityAt: null,
+      lastUsageActivityAt: null,
+      usageTrackingAgeDays: 0,
+      effectiveUsageWindowDays: 0,
+      usageDataMaturity: "no_usage" as const,
+    };
+  }
+
+  const usageTrackingAgeDays = daysInclusive(firstActivity, generatedAt);
+  const selectedWindowDays = Math.max(
+    1,
+    Math.ceil((windowEnd.getTime() - windowStart.getTime()) / 86_400_000),
+  );
+  const effectiveStart = firstActivity > windowStart ? firstActivity : windowStart;
+  const effectiveUsageWindowDays = effectiveStart > windowEnd
+    ? 0
+    : Math.min(daysInclusive(effectiveStart, windowEnd), selectedWindowDays);
+
+  return {
+    firstUsageActivityAt: firstActivity.toISOString(),
+    lastUsageActivityAt: lastActivity.toISOString(),
+    usageTrackingAgeDays,
+    effectiveUsageWindowDays,
+    usageDataMaturity: getUsageDataMaturity(usageTrackingAgeDays),
+  };
+}
+
+function getUsageDataMaturity(usageTrackingAgeDays: number) {
+  if (usageTrackingAgeDays <= 0) return "no_usage" as const;
+  if (usageTrackingAgeDays < 14) return "early" as const;
+  if (usageTrackingAgeDays < 30) return "developing" as const;
+  return "stable" as const;
 }
 
 async function getSalesRows(): Promise<{
@@ -618,26 +682,53 @@ function buildInsight(
   correlation: number | null,
   pairCount: number,
   periodDays: number,
+  usageActivity: Pick<
+    SalesCorrelationSummary,
+    "effectiveUsageWindowDays" | "usageTrackingAgeDays" | "usageDataMaturity"
+  >,
 ) {
+  const maturityText = getMaturityInsight(usageActivity, periodDays);
   const high = groups.find((group) => group.key === "high");
   const low = groups.find((group) => group.key === "low");
 
   if (!high?.repCount || !low?.repCount || pairCount < 3) {
-    return `There is not enough matched usage and new sales data yet to call a reliable pattern for the last ${periodDays} days.`;
+    return `There is not enough matched usage and new sales data yet to call a reliable pattern for the last ${periodDays} days. ${maturityText}`;
   }
 
   const difference = high.avgNewRevenue - low.avgNewRevenue;
   const correlationText = describeCorrelation(correlation);
 
   if (difference > 0) {
-    return `High-usage reps are currently averaging ${formatCurrencyPlain(difference)} more new paid revenue than low/no-usage reps over the last ${periodDays} days. ${correlationText}`;
+    return `High-usage reps are currently averaging ${formatCurrencyPlain(difference)} more new paid revenue than low/no-usage reps over the last ${periodDays} days. ${correlationText} ${maturityText}`;
   }
 
   if (difference < 0) {
-    return `High-usage reps are not ahead of low/no-usage reps in new paid revenue for the last ${periodDays} days. ${correlationText}`;
+    return `High-usage reps are not ahead of low/no-usage reps in new paid revenue for the last ${periodDays} days. ${correlationText} ${maturityText}`;
   }
 
-  return `High-usage and low/no-usage reps are even on average new paid revenue for the last ${periodDays} days. ${correlationText}`;
+  return `High-usage and low/no-usage reps are even on average new paid revenue for the last ${periodDays} days. ${correlationText} ${maturityText}`;
+}
+
+function getMaturityInsight(
+  usageActivity: Pick<
+    SalesCorrelationSummary,
+    "effectiveUsageWindowDays" | "usageTrackingAgeDays" | "usageDataMaturity"
+  >,
+  periodDays: number,
+) {
+  if (usageActivity.usageDataMaturity === "no_usage") {
+    return "No official usage activity has been tracked yet.";
+  }
+
+  if (usageActivity.effectiveUsageWindowDays < periodDays) {
+    return `Actual tracked usage only covers ${usageActivity.effectiveUsageWindowDays} of the selected ${periodDays} days, so this should still be treated as early directional data.`;
+  }
+
+  if (usageActivity.usageDataMaturity === "early") {
+    return `Usage tracking is only ${usageActivity.usageTrackingAgeDays} days old, so this should still be treated as early directional data.`;
+  }
+
+  return "Keep treating this as correlation, not causal proof.";
 }
 
 function describeCorrelation(value: number | null) {
@@ -734,6 +825,19 @@ function addDays(date: Date, days: number) {
   const next = new Date(date);
   next.setUTCDate(next.getUTCDate() + days);
   return next;
+}
+
+function parseDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function daysInclusive(start: Date, end: Date) {
+  const startDay = startOfUtcDay(start);
+  const endDay = startOfUtcDay(end);
+  const dayCount = Math.floor((endDay.getTime() - startDay.getTime()) / 86_400_000) + 1;
+  return Math.max(1, dayCount);
 }
 
 function toDateKey(date: Date) {

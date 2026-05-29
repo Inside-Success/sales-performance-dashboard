@@ -159,7 +159,7 @@ export default async function SalesCorrelationPage({
           <LaggedImpactCard analytics={analytics} />
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <section className="grid gap-5">
           <ScatterCard reps={analytics.reps} />
           <RepImpactTable reps={analytics.reps} periodDays={analytics.summary.periodDays} />
         </section>
@@ -232,6 +232,12 @@ function ExecutiveInsight({ analytics }: { analytics: SalesCorrelationAnalytics 
             </Badge>
             <Badge variant="outline">
               Last {analytics.summary.periodDays} days
+            </Badge>
+            <Badge variant="outline">
+              Usage data {formatUsageHistory(
+                analytics.summary.effectiveUsageWindowDays,
+                analytics.summary.periodDays,
+              )}
             </Badge>
           </div>
           <h2 className="text-2xl font-semibold tracking-normal">
@@ -531,7 +537,7 @@ function RepImpactTable({
       </CardHeader>
       <CardContent>
         {visibleReps.length ? (
-          <div className="dashboard-scroll max-h-[46rem] overflow-y-auto rounded-xl border">
+          <div className="dashboard-scroll max-h-[42rem] overflow-y-auto rounded-xl border">
             <Table>
               <TableHeader className="sticky top-0 z-10 bg-card shadow-xs">
                 <TableRow>
@@ -686,6 +692,12 @@ function formatShortDate(value: string) {
     year: "numeric",
     timeZone: "UTC",
   }).format(date);
+}
+
+function formatUsageHistory(effectiveDays: number, periodDays: number) {
+  if (!effectiveDays) return "not available";
+  if (effectiveDays >= periodDays) return `${periodDays}d covered`;
+  return `${effectiveDays}d of ${periodDays}d`;
 }
 
 function sum(values: number[]) {
