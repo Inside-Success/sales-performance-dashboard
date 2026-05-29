@@ -63,7 +63,14 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
   }
 
   useEffect(() => {
-    function clearSelection() {
+    function clearSelection(event: globalThis.MouseEvent) {
+      if (
+        event.target instanceof Element &&
+        event.target.closest("[data-sales-scatter-point='true']")
+      ) {
+        return;
+      }
+
       setSelectedSlug(null);
     }
 
@@ -132,6 +139,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
                 <button
                   key={rep.repSlug}
                   type="button"
+                  data-sales-scatter-point="true"
                   title={`${rep.repName}: ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
                   className={cn(
                     "absolute size-4 -translate-x-1/2 translate-y-1/2 rounded-full border-2 border-background shadow-sm outline-none transition-all hover:scale-125 focus-visible:ring-3 focus-visible:ring-ring/50",
