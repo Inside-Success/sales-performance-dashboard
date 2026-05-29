@@ -15,6 +15,9 @@ import type {
   UsageRepEngagement,
   UsageTotals,
   UsageUnviewedReport,
+  SalesCorrelationUsageData,
+  SalesCorrelationUsageEvent,
+  SalesCorrelationUsageRow,
 } from "@/lib/types";
 import type { NormalizedManualCallback, ManualSubmitPayload } from "@/lib/manual-reports";
 import type { UsageEventPayload } from "@/lib/usage-events";
@@ -612,6 +615,168 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
   }
 }
 
+export async function getSalesCorrelationUsageData(
+  historyDays = 120,
+  windowDays = 30,
+): Promise<SalesCorrelationUsageData> {
+  if (!hasDatabase()) {
+    return {
+      configured: false,
+      rows: [],
+      events: [],
+    };
+  }
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+
+    const [rows, events] = await Promise.all([
+      sql.query(
+        `
+          with reports as (
+            select
+              rep_slug,
+              max(rep_name) as rep_name,
+              count(*)::int as generated_reports,
+              min(created_at)::text as first_report_generated_at,
+              max(created_at)::text as latest_report_generated_at
+            from performance_calls
+            group by rep_slug
+          ),
+          normalized_events as (
+            select
+              events.id,
+              events.event_name,
+              events.created_at,
+              events.report_id,
+              coalesce(events.target_rep_slug, calls.rep_slug) as rep_slug,
+              coalesce(events.target_rep_name, calls.rep_name) as rep_name
+            from dashboard_usage_events events
+            left join performance_calls calls on calls.id = events.report_id
+            where events.event_name in ('dashboard_home_viewed', 'rep_selected', 'report_detail_viewed')
+               or (events.event_name = 'report_card_clicked' and events.report_id is not null)
+               or (
+                 events.event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                 and events.report_id is not null
+               )
+          ),
+          event_agg as (
+            select
+              rep_slug,
+              max(rep_name) as rep_name,
+              count(*) filter (
+                where created_at >= now() - ($1::int * interval '1 day')
+              )::int as usage_events_window,
+              count(*)::int as usage_events_all,
+              count(*) filter (
+                where event_name = 'report_detail_viewed'
+                  and created_at >= now() - ($1::int * interval '1 day')
+              )::int as report_views_window,
+              count(*) filter (
+                where event_name = 'report_detail_viewed'
+              )::int as report_views_all,
+              count(*) filter (
+                where event_name = 'report_card_clicked'
+                  and created_at >= now() - ($1::int * interval '1 day')
+              )::int as report_clicks_window,
+              count(distinct report_id) filter (
+                where event_name = 'report_detail_viewed'
+                  and report_id is not null
+              )::int as viewed_reports,
+              count(distinct report_id) filter (
+                  where event_name = 'report_detail_viewed'
+                  and report_id is not null
+                  and created_at >= now() - ($1::int * interval '1 day')
+              )::int as viewed_reports_window,
+              count(*) filter (
+                where event_name = 'rep_selected'
+                  and created_at >= now() - ($1::int * interval '1 day')
+              )::int as rep_selections_window,
+              count(*) filter (
+                where event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                  and created_at >= now() - ($1::int * interval '1 day')
+              )::int as link_clicks_window,
+              min(created_at)::text as first_activity_at,
+              max(created_at)::text as last_activity_at
+            from normalized_events
+            where rep_slug is not null
+            group by rep_slug
+          )
+          select
+            coalesce(reports.rep_slug, event_agg.rep_slug) as rep_slug,
+            coalesce(reports.rep_name, event_agg.rep_name, reports.rep_slug, event_agg.rep_slug) as rep_name,
+            coalesce(reports.generated_reports, 0)::int as generated_reports,
+            reports.first_report_generated_at,
+            reports.latest_report_generated_at,
+            coalesce(event_agg.usage_events_window, 0)::int as usage_events_window,
+            coalesce(event_agg.usage_events_all, 0)::int as usage_events_all,
+            coalesce(event_agg.report_views_window, 0)::int as report_views_window,
+            coalesce(event_agg.report_views_all, 0)::int as report_views_all,
+            coalesce(event_agg.report_clicks_window, 0)::int as report_clicks_window,
+            coalesce(event_agg.viewed_reports, 0)::int as viewed_reports,
+            coalesce(event_agg.viewed_reports_window, 0)::int as viewed_reports_window,
+            coalesce(event_agg.rep_selections_window, 0)::int as rep_selections_window,
+            coalesce(event_agg.link_clicks_window, 0)::int as link_clicks_window,
+            event_agg.first_activity_at,
+            event_agg.last_activity_at
+          from reports
+          full outer join event_agg on event_agg.rep_slug = reports.rep_slug
+          order by report_views_window desc, usage_events_window desc, generated_reports desc, rep_name asc
+        `,
+        [windowDays],
+      ),
+      sql.query(
+        `
+          with normalized_events as (
+            select
+              events.event_name,
+              events.created_at,
+              events.report_id,
+              coalesce(events.target_rep_slug, calls.rep_slug) as rep_slug,
+              coalesce(events.target_rep_name, calls.rep_name) as rep_name
+            from dashboard_usage_events events
+            left join performance_calls calls on calls.id = events.report_id
+            where events.created_at >= now() - ($1::int * interval '1 day')
+              and (
+                events.event_name in ('dashboard_home_viewed', 'rep_selected', 'report_detail_viewed')
+                or (events.event_name = 'report_card_clicked' and events.report_id is not null)
+                or (
+                  events.event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
+                  and events.report_id is not null
+                )
+              )
+          )
+          select
+            rep_slug,
+            coalesce(rep_name, rep_slug) as rep_name,
+            event_name,
+            report_id,
+            created_at::text
+          from normalized_events
+          where rep_slug is not null
+          order by created_at asc
+        `,
+        [historyDays],
+      ),
+    ]);
+
+    return {
+      configured: true,
+      rows: (rows as SalesCorrelationUsageRow[]).map(normalizeSalesCorrelationUsageRow),
+      events: (events as SalesCorrelationUsageEvent[]).map(normalizeSalesCorrelationUsageEvent),
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      configured: true,
+      rows: [],
+      events: [],
+      error: "Sales correlation usage query failed. Check DATABASE_URL and usage tracking data.",
+    };
+  }
+}
+
 export async function getDashboardData(filters: DashboardFilters = {}) {
   if (!hasDatabase()) {
     return getFallbackDashboardData();
@@ -1030,6 +1195,39 @@ function normalizeUsageRecentEvent(row: UsageRecentEvent): UsageRecentEvent {
     report_id: row.report_id ? Number(row.report_id) : null,
     manual_public_id: row.manual_public_id,
     path: row.path,
+    created_at: row.created_at,
+  };
+}
+
+function normalizeSalesCorrelationUsageRow(row: SalesCorrelationUsageRow): SalesCorrelationUsageRow {
+  return {
+    rep_slug: row.rep_slug,
+    rep_name: row.rep_name,
+    generated_reports: Number(row.generated_reports || 0),
+    first_report_generated_at: row.first_report_generated_at || null,
+    latest_report_generated_at: row.latest_report_generated_at || null,
+    usage_events_window: Number(row.usage_events_window || 0),
+    usage_events_all: Number(row.usage_events_all || 0),
+    report_views_window: Number(row.report_views_window || 0),
+    report_views_all: Number(row.report_views_all || 0),
+    report_clicks_window: Number(row.report_clicks_window || 0),
+    viewed_reports: Number(row.viewed_reports || 0),
+    viewed_reports_window: Number(row.viewed_reports_window || 0),
+    rep_selections_window: Number(row.rep_selections_window || 0),
+    link_clicks_window: Number(row.link_clicks_window || 0),
+    first_activity_at: row.first_activity_at || null,
+    last_activity_at: row.last_activity_at || null,
+  };
+}
+
+function normalizeSalesCorrelationUsageEvent(
+  row: SalesCorrelationUsageEvent,
+): SalesCorrelationUsageEvent {
+  return {
+    rep_slug: row.rep_slug,
+    rep_name: row.rep_name,
+    event_name: row.event_name,
+    report_id: row.report_id ? Number(row.report_id) : null,
     created_at: row.created_at,
   };
 }

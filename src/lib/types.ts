@@ -195,3 +195,37 @@ export type UsageAnalytics = {
   unviewedReports: UsageUnviewedReport[];
   recentEvents: UsageRecentEvent[];
 };
+
+export type SalesCorrelationUsageRow = {
+  rep_slug: string;
+  rep_name: string;
+  generated_reports: number;
+  first_report_generated_at: string | null;
+  latest_report_generated_at: string | null;
+  usage_events_window: number;
+  usage_events_all: number;
+  report_views_window: number;
+  report_views_all: number;
+  report_clicks_window: number;
+  viewed_reports: number;
+  viewed_reports_window: number;
+  rep_selections_window: number;
+  link_clicks_window: number;
+  first_activity_at: string | null;
+  last_activity_at: string | null;
+};
+
+export type SalesCorrelationUsageEvent = {
+  rep_slug: string;
+  rep_name: string;
+  event_name: string;
+  report_id: number | null;
+  created_at: string;
+};
+
+export type SalesCorrelationUsageData = {
+  configured: boolean;
+  rows: SalesCorrelationUsageRow[];
+  events: SalesCorrelationUsageEvent[];
+  error?: string;
+};
