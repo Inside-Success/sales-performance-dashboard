@@ -20,6 +20,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SalesAnalyticsChatPanel } from "@/components/dashboard/sales-analytics-chat-panel";
+import { SalesImpactScatter } from "@/components/dashboard/sales-impact-scatter";
 import {
   Table,
   TableBody,
@@ -170,6 +172,7 @@ export default async function SalesCorrelationPage({
           This page shows association, not guaranteed causation. New paid sales are the primary KPI;
           recurring revenue is kept secondary so old deals do not overstate Magic Mike impact.
         </p>
+        <SalesAnalyticsChatPanel periodDays={analytics.summary.periodDays} />
       </div>
     </main>
   );
@@ -488,12 +491,6 @@ function LaggedImpactCard({ analytics }: { analytics: SalesCorrelationAnalytics 
 }
 
 function ScatterCard({ reps }: { reps: SalesCorrelationRep[] }) {
-  const points = reps
-    .filter((rep) => rep.usageSignalsWindow > 0 || rep.newPaidRevenueWindow > 0)
-    .slice(0, 70);
-  const maxUsage = Math.max(1, ...points.map((rep) => rep.usageSignalsWindow));
-  const maxRevenue = Math.max(1, ...points.map((rep) => rep.newPaidRevenueWindow));
-
   return (
     <Card className="dashboard-card border bg-card/95">
       <CardHeader className="border-b">
@@ -506,29 +503,7 @@ function ScatterCard({ reps }: { reps: SalesCorrelationRep[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {points.length ? (
-          <div className="relative h-80 rounded-xl border bg-background/70 p-4">
-            <div className="absolute inset-x-12 bottom-10 top-6 border-l border-b border-border" />
-            <span className="absolute bottom-2 left-12 text-xs text-muted-foreground">Usage</span>
-            <span className="absolute left-3 top-6 text-xs text-muted-foreground">New sales</span>
-            {points.map((rep) => (
-              <span
-                key={rep.repSlug}
-                title={`${rep.repName}: ${formatNumber(rep.usageSignalsWindow)} usage signals, ${formatCurrency(rep.newPaidRevenueWindow)} new sales`}
-                className={cn(
-                  "absolute size-3 -translate-x-1/2 translate-y-1/2 rounded-full border border-background shadow-sm",
-                  rep.usageGroup === "high" ? "bg-primary" : rep.usageGroup === "medium" ? "bg-accent-foreground" : "bg-muted-foreground",
-                )}
-                style={{
-                  left: `calc(3rem + ${(rep.usageSignalsWindow / maxUsage) * 78}%)`,
-                  bottom: `calc(2.5rem + ${(rep.newPaidRevenueWindow / maxRevenue) * 72}%)`,
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyPanel text="No usage or new paid sales points are available for this window." />
-        )}
+        <SalesImpactScatter reps={reps} />
       </CardContent>
     </Card>
   );
@@ -541,7 +516,7 @@ function RepImpactTable({
   reps: SalesCorrelationRep[];
   periodDays: number;
 }) {
-  const visibleReps = reps.slice(0, 60);
+  const visibleReps = reps;
 
   return (
     <Card className="dashboard-card border bg-card/95">
@@ -556,52 +531,54 @@ function RepImpactTable({
       </CardHeader>
       <CardContent>
         {visibleReps.length ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rep</TableHead>
-                <TableHead className="text-right">Usage</TableHead>
-                <TableHead className="text-right">New sales</TableHead>
-                <TableHead className="text-right">Before/after</TableHead>
-                <TableHead>Last activity</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {visibleReps.map((rep) => (
-                <TableRow key={rep.repSlug}>
-                  <TableCell>
-                    <div className="font-medium">{rep.repName}</div>
-                    <Badge variant="outline" className="mt-1">
-                      {groupLabel(rep.usageGroup)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="font-medium">{formatNumber(rep.reportViewsWindow)} views</div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatNumber(rep.usageSignalsWindow)} signals, {formatPercent(rep.usageRate)} viewed
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="font-medium">{formatCurrency(rep.newPaidRevenueWindow)}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatNumber(rep.newPaidDealsWindow)} deals
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="font-medium">
-                      {formatCurrency(rep.afterUsageNewRevenue - rep.beforeUsageNewRevenue)}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatCurrency(rep.beforeUsageNewRevenue)} to {formatCurrency(rep.afterUsageNewRevenue)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {rep.lastActivityAt ? formatMiamiDateTime(rep.lastActivityAt) : "No usage yet"}
-                  </TableCell>
+          <div className="dashboard-scroll max-h-[46rem] overflow-y-auto rounded-xl border">
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-card shadow-xs">
+                <TableRow>
+                  <TableHead>Rep</TableHead>
+                  <TableHead className="text-right">Usage</TableHead>
+                  <TableHead className="text-right">New sales</TableHead>
+                  <TableHead className="text-right">Before/after</TableHead>
+                  <TableHead>Last activity</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {visibleReps.map((rep) => (
+                  <TableRow key={rep.repSlug}>
+                    <TableCell>
+                      <div className="font-medium">{rep.repName}</div>
+                      <Badge variant="outline" className="mt-1">
+                        {groupLabel(rep.usageGroup)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-medium">{formatNumber(rep.reportViewsWindow)} views</div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatNumber(rep.usageSignalsWindow)} signals, {formatPercent(rep.usageRate)} viewed
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-medium">{formatCurrency(rep.newPaidRevenueWindow)}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatNumber(rep.newPaidDealsWindow)} deals
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-medium">
+                        {formatCurrency(rep.afterUsageNewRevenue - rep.beforeUsageNewRevenue)}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatCurrency(rep.beforeUsageNewRevenue)} to {formatCurrency(rep.afterUsageNewRevenue)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {rep.lastActivityAt ? formatMiamiDateTime(rep.lastActivityAt) : "No usage yet"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         ) : (
           <EmptyPanel text="No rep-level sales or usage data is available yet." />
         )}

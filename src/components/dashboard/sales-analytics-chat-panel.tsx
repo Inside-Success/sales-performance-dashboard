@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Loader2, MessageCircleQuestion, SendHorizontal, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { BotMessageSquare, Loader2, SendHorizontal, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { AssistantMessageContent } from "@/components/dashboard/report-chat-panel";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -20,25 +21,14 @@ type ChatMessage = {
   content: string;
 };
 
-type ReportChatPanelProps = {
-  reportType?: "official" | "manual";
-  reportId: string | number;
-  repName: string;
-  clientName: string | null;
-};
-
 const STARTER_QUESTIONS = [
-  "What should I fix first?",
-  "Give me a better talk track.",
-  "Did I miss a close?",
+  "Summarize this page.",
+  "Are high-usage reps selling more?",
+  "Who needs manager follow-up?",
+  "Is this enough data to trust?",
 ];
 
-export function ReportChatPanel({
-  reportType = "official",
-  reportId,
-  repName,
-  clientName,
-}: ReportChatPanelProps) {
+export function SalesAnalyticsChatPanel({ periodDays }: { periodDays: number }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -63,14 +53,13 @@ export function ReportChatPanel({
     setIsSending(true);
 
     try {
-      const response = await fetch("/api/report-chat", {
+      const response = await fetch("/api/sales-analytics-chat", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          reportType,
-          reportId,
+          periodDays,
           messages: nextMessages,
         }),
       });
@@ -98,29 +87,35 @@ export function ReportChatPanel({
     <Sheet>
       <SheetTrigger
         render={
-          <Button variant="default" className="gap-1.5">
-            <Sparkles className="size-4" />
-            Ask Magic Mike
+          <Button
+            size="icon-lg"
+            className="fixed bottom-5 right-5 z-40 size-14 rounded-full border border-primary/20 shadow-xl shadow-primary/20 transition-transform hover:scale-105 sm:bottom-6 sm:right-6"
+            aria-label="Ask Magic Mike about sales impact"
+          >
+            <Sparkles className="size-6" />
           </Button>
         }
       />
       <SheetContent
         side="right"
-        className="w-full gap-0 overflow-hidden p-0 sm:max-w-[500px]"
-        aria-describedby="report-chat-description"
+        className="w-full gap-0 overflow-hidden p-0 sm:max-w-[520px]"
+        aria-describedby="sales-analytics-chat-description"
       >
         <SheetHeader className="border-b bg-background/95 p-5 pr-12">
           <div className="mb-2 flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-              <MessageCircleQuestion className="size-5" />
+            <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+              <BotMessageSquare className="size-5" />
             </span>
             <div className="min-w-0">
-              <Badge variant="secondary">Beta</Badge>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">AI analyst</Badge>
+                <Badge variant="outline">{periodDays}d view</Badge>
+              </div>
               <SheetTitle className="mt-2 text-xl">Ask Magic Mike</SheetTitle>
             </div>
           </div>
-          <SheetDescription id="report-chat-description">
-            Coaching Q&A for {clientName || "this report"} with {repName}.
+          <SheetDescription id="sales-analytics-chat-description">
+            Manager Q&amp;A for Magic Mike usage, new paid sales, and adoption signals.
           </SheetDescription>
         </SheetHeader>
 
@@ -128,15 +123,16 @@ export function ReportChatPanel({
           {messages.length === 0 ? (
             <div className="space-y-4">
               <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-muted-foreground shadow-xs">
-                Ask a question about the coaching feedback or transcript. Answers stay focused on this report.
+                Ask about the sales-impact stats on this page. Magic Mike will stay focused on the current analytics snapshot and avoid overclaiming causation.
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid gap-2 sm:grid-cols-2">
                 {STARTER_QUESTIONS.map((question) => (
                   <Button
                     key={question}
                     type="button"
                     variant="outline"
                     size="sm"
+                    className="h-auto justify-start whitespace-normal px-3 py-2 text-left"
                     onClick={() => void sendMessage(question)}
                     disabled={isSending}
                   >
@@ -154,7 +150,7 @@ export function ReportChatPanel({
           {isSending ? (
             <div className="flex max-w-[92%] items-center gap-2 rounded-2xl border bg-card px-4 py-3 text-sm text-muted-foreground shadow-xs">
               <Loader2 className="size-4 animate-spin" />
-              Thinking...
+              Reading the latest stats...
             </div>
           ) : null}
 
@@ -170,7 +166,7 @@ export function ReportChatPanel({
             <Textarea
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about this report..."
+              placeholder="Ask about sales impact..."
               className="max-h-40 min-h-20 resize-none rounded-xl bg-card text-sm shadow-xs"
               disabled={isSending}
             />
@@ -216,130 +212,4 @@ function ChatBubble({ message }: { message: ChatMessage }) {
       </div>
     </div>
   );
-}
-
-export function AssistantMessageContent({ content }: { content: string }) {
-  const blocks = parseAssistantBlocks(content);
-
-  return (
-    <div className="space-y-3">
-      {blocks.map((block, index) => {
-        if (block.type === "ol") {
-          return (
-            <ol key={`ol-${index}`} className="list-decimal space-y-2 pl-5" start={block.start}>
-              {block.items.map((item, itemIndex) => (
-                <li key={`${item}-${itemIndex}`} className="pl-1">
-                  <InlineMarkdown text={item} />
-                </li>
-              ))}
-            </ol>
-          );
-        }
-
-        if (block.type === "ul") {
-          return (
-            <ul key={`ul-${index}`} className="list-disc space-y-2 pl-5">
-              {block.items.map((item, itemIndex) => (
-                <li key={`${item}-${itemIndex}`} className="pl-1">
-                  <InlineMarkdown text={item} />
-                </li>
-              ))}
-            </ul>
-          );
-        }
-
-        if (block.type === "p") {
-          return (
-            <p key={`p-${index}`} className="whitespace-pre-wrap">
-              <InlineMarkdown text={block.text} />
-            </p>
-          );
-        }
-
-        return null;
-      })}
-    </div>
-  );
-}
-
-type AssistantBlock =
-  | { type: "p"; text: string }
-  | { type: "ol"; items: string[]; start: number }
-  | { type: "ul"; items: string[] };
-
-function parseAssistantBlocks(content: string): AssistantBlock[] {
-  const normalized = content
-    .trim()
-    .replace(/\r\n/g, "\n")
-    .replace(/[ \t]+(\d{1,2})\.\s+(?=\S)/g, "\n$1. ")
-    .replace(/[ \t]+[-*]\s+(?=\S)/g, "\n- ");
-
-  const blocks: AssistantBlock[] = [];
-  const lines = normalized
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  let index = 0;
-  while (index < lines.length) {
-    const orderedItems: string[] = [];
-    const firstOrderedMatch = lines[index]?.match(/^(\d{1,2})\.\s+/);
-    const orderedStart = Number(firstOrderedMatch?.[1] || 1);
-
-    while (/^\d{1,2}\.\s+/.test(lines[index] || "")) {
-      orderedItems.push(lines[index].replace(/^\d{1,2}\.\s+/, "").trim());
-      index += 1;
-    }
-    if (orderedItems.length) {
-      blocks.push({ type: "ol", items: orderedItems, start: orderedStart });
-      continue;
-    }
-
-    const unorderedItems: string[] = [];
-    while (/^[-*]\s+/.test(lines[index] || "")) {
-      unorderedItems.push(lines[index].replace(/^[-*]\s+/, "").trim());
-      index += 1;
-    }
-    if (unorderedItems.length) {
-      blocks.push({ type: "ul", items: unorderedItems });
-      continue;
-    }
-
-    blocks.push({ type: "p", text: lines[index] });
-    index += 1;
-  }
-
-  return blocks.length ? blocks : [{ type: "p", text: content }];
-}
-
-function InlineMarkdown({ text }: { text: string }) {
-  return <>{renderInlineMarkdown(text)}</>;
-}
-
-function renderInlineMarkdown(text: string): ReactNode[] {
-  const parts: ReactNode[] = [];
-  const pattern = /(\*\*[\s\S]+?\*\*|\*[^*\n]+\*)/g;
-  let lastIndex = 0;
-
-  for (const match of text.matchAll(pattern)) {
-    const index = match.index ?? 0;
-    if (index > lastIndex) parts.push(text.slice(lastIndex, index));
-
-    const token = match[0];
-    const isBold = token.startsWith("**");
-    const innerText = token.slice(isBold ? 2 : 1, isBold ? -2 : -1);
-    parts.push(
-      isBold ? (
-        <strong key={`${token}-${index}`} className="font-semibold">
-          {renderInlineMarkdown(innerText)}
-        </strong>
-      ) : (
-        <em key={`${token}-${index}`}>{innerText}</em>
-      ),
-    );
-    lastIndex = index + token.length;
-  }
-
-  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-  return parts;
 }
