@@ -87,8 +87,8 @@ export default async function RepNoShowPage({
                 Rep No-Show Impact
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Call 1 attendance signals are tracked separately from Call 2+ coaching, so managers
-                can see operational leakage without mixing it into feedback reports.
+                Track rep no-shows across sales calls, estimate opportunity at risk, and review
+                every detected no-show from one manager view.
               </p>
             </div>
 
@@ -135,9 +135,9 @@ export default async function RepNoShowPage({
           />
           <MetricCard
             icon={CalendarDays}
-            title="Call 1 no-shows"
-            value={formatNumber(analytics.summary.call1NoShows)}
-            description={`${formatNumber(analytics.summary.call2PlusNoShows)} from Call 2+`}
+            title="Call breakdown"
+            value={`${formatNumber(analytics.summary.call1NoShows)} / ${formatNumber(analytics.summary.call2PlusNoShows)}`}
+            description="Call 1 / Call 2+"
           />
         </section>
 
@@ -216,8 +216,8 @@ function ExecutiveReadout({ analytics }: { analytics: RepNoShowAnalytics }) {
             {getExecutiveHeadline(analytics)}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-            Rep no-shows are tracked only from reliable attendance signals after Call 1 no-show
-            detection was activated. Coaching reports remain focused on Call 2+ performance.
+            Counts use reliable attendance signals captured after rep no-show tracking was
+            activated. Older incomplete periods are excluded from rates and trends.
           </p>
         </div>
 
@@ -257,7 +257,7 @@ function ExecutiveReadout({ analytics }: { analytics: RepNoShowAnalytics }) {
               </div>
               <p className="mt-3 text-2xl font-semibold tracking-normal">No fair prior comparison yet</p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Call 1 rep no-show tracking started {formatShortDate(analytics.summary.trackingStartedAt)}.
+                Rep no-show tracking started {formatShortDate(analytics.summary.trackingStartedAt)}.
                 Older periods are hidden so the trend does not compare against incomplete detection.
               </p>
               <div className="mt-4 rounded-lg border bg-card/80 px-3 py-2">
