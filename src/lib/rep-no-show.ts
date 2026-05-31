@@ -22,8 +22,8 @@ const AIRTABLE_FIELDS = [
   "Processing Status",
   "Ingested At",
   "Source",
-  "Upstream Attendance Status",
-  "Upstream Attendance Reason",
+  "AI Decision Reason",
+  "AI Confidence",
   "Automation Key",
 ];
 
@@ -248,8 +248,8 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
 function normalizeAirtableRecord(record: AirtableRecord): NormalizedCall {
   const fields = record.fields || {};
   const repName = fieldString(fields, "Rep Name") || "Unknown rep";
-  const attendanceStatus = fieldString(fields, "Upstream Attendance Status");
-  const attendanceReason = fieldString(fields, "Upstream Attendance Reason");
+  const aiDecisionReason = fieldString(fields, "AI Decision Reason");
+  const attendanceStatus = extractAttendanceStatus(aiDecisionReason);
 
   return {
     id: record.id,
@@ -267,10 +267,15 @@ function normalizeAirtableRecord(record: AirtableRecord): NormalizedCall {
     meetingLink: fieldString(fields, "Meeting Link"),
     transcriptLink: fieldString(fields, "Meeting Transcript Link"),
     attendanceStatus,
-    attendanceReason,
+    attendanceReason: aiDecisionReason,
     source: fieldString(fields, "Source"),
-    noShow: isRepNoShow(attendanceStatus, attendanceReason),
+    noShow: isRepNoShow(attendanceStatus, aiDecisionReason),
   };
+}
+
+function extractAttendanceStatus(reason: string) {
+  const match = reason.match(/attendance_status\s*=\s*([^:|]+)/i);
+  return match?.[1]?.trim() || "";
 }
 
 function isEligibleCall(call: NormalizedCall) {
