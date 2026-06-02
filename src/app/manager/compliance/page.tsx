@@ -378,9 +378,12 @@ function CategoryList({ categories }: { categories: ComplianceRepGroup["categori
   return (
     <div className="flex flex-wrap gap-1.5">
       {visibleCategories.map((category) => (
-        <Badge key={category.name} variant="outline" className="bg-background/70">
+        <span
+          key={category.name}
+          className="inline-block max-w-full rounded-full border bg-background/70 px-2 py-0.5 text-xs leading-5 text-foreground"
+        >
           {category.name} ({formatNumber(category.count)})
-        </Badge>
+        </span>
       ))}
       {hiddenCount > 0 ? (
         <Badge variant="secondary">+{formatNumber(hiddenCount)} more</Badge>
