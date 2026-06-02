@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  AlertTriangle,
   CalendarDays,
   Clock3,
   ExternalLink,
@@ -12,6 +11,7 @@ import {
   ShieldCheck,
   Tags,
   Users,
+  UserX,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -138,12 +138,10 @@ export default async function ManagerCompliancePage({
             description="Grouped from the summary sheet"
           />
           <MetricCard
-            icon={AlertTriangle}
-            title="Highest severity"
-            value={data.summary.highestSeverity}
-            description={`${formatNumber(data.summary.highSeverityRows)} high-severity ${
-              data.summary.highSeverityRows === 1 ? "row" : "rows"
-            }`}
+            icon={UserX}
+            title="Repeat reps"
+            value={formatNumber(data.summary.repeatReps)}
+            description="3+ flags in selected week"
           />
         </section>
 
@@ -255,11 +253,10 @@ function RepSummaryCard({ data }: { data: ComplianceDashboardData }) {
             <Table className="table-fixed">
               <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
                 <TableRow>
-                  <TableHead className="w-[23%] px-4">Rep</TableHead>
+                  <TableHead className="w-[24%] px-4">Rep</TableHead>
                   <TableHead className="w-16 text-right">Count</TableHead>
                   <TableHead className="w-24">Severity</TableHead>
-                  <TableHead className="min-w-[300px]">Categories</TableHead>
-                  <TableHead className="w-36">Last seen</TableHead>
+                  <TableHead>Categories</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -294,9 +291,6 @@ function RepSummaryRow({ row }: { row: ComplianceRepGroup }) {
             Notes: {row.managerNotes.join(" | ")}
           </p>
         ) : null}
-      </TableCell>
-      <TableCell className="whitespace-normal text-xs leading-5 text-muted-foreground">
-        {row.lastSeen || "Not listed"}
       </TableCell>
     </TableRow>
   );

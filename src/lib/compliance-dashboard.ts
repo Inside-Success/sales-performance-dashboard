@@ -3,7 +3,7 @@ const REP_SUMMARY_SHEET = "Weekly Rep Summary";
 const CATEGORY_SUMMARY_SHEET = "Weekly Category Summary";
 const FETCH_TIMEOUT_MS = 10_000;
 
-export const COMPLIANCE_COUNT_FILTERS = [1, 2, 3, 5] as const;
+export const COMPLIANCE_COUNT_FILTERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 export type ComplianceCountFilter = (typeof COMPLIANCE_COUNT_FILTERS)[number];
 
 export type ComplianceSearchParams = {
@@ -64,6 +64,7 @@ export type ComplianceRepGroup = {
 export type ComplianceDashboardSummary = {
   totalFlags: number;
   repsInvolved: number;
+  repeatReps: number;
   categories: number;
   highestSeverity: string;
   highSeverityRows: number;
@@ -162,6 +163,7 @@ function getFallbackDashboardData(
     summary: {
       totalFlags: 0,
       repsInvolved: 0,
+      repeatReps: 0,
       categories: 0,
       highestSeverity: "None",
       highSeverityRows: 0,
@@ -403,7 +405,12 @@ function buildSummary(
   categoryRows: ComplianceCategoryRow[],
 ): ComplianceDashboardSummary {
   const totalFlags = repRows.reduce((total, row) => total + row.count, 0);
-  const repsInvolved = new Set(repRows.map((row) => row.rep)).size;
+  const repCounts = new Map<string, number>();
+  for (const row of repRows) {
+    repCounts.set(row.rep, (repCounts.get(row.rep) || 0) + row.count);
+  }
+  const repsInvolved = repCounts.size;
+  const repeatReps = [...repCounts.values()].filter((count) => count >= 3).length;
   const categories = categoryRows.length || new Set(repRows.map((row) => row.category)).size;
   const highestSeverity = [...repRows, ...categoryRows].reduce(
     (severity, row) => maxSeverity(severity, row.severity),
@@ -418,6 +425,7 @@ function buildSummary(
   return {
     totalFlags,
     repsInvolved,
+    repeatReps,
     categories,
     highestSeverity,
     highSeverityRows,
