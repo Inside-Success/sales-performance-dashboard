@@ -141,7 +141,9 @@ export default async function ManagerCompliancePage({
             icon={AlertTriangle}
             title="Highest severity"
             value={data.summary.highestSeverity}
-            description={`${formatNumber(data.summary.highSeverityRows)} high-severity rows`}
+            description={`${formatNumber(data.summary.highSeverityRows)} high-severity ${
+              data.summary.highSeverityRows === 1 ? "row" : "rows"
+            }`}
           />
         </section>
 
@@ -250,14 +252,14 @@ function RepSummaryCard({ data }: { data: ComplianceDashboardData }) {
       <CardContent className="p-0">
         {data.repGroups.length ? (
           <div className="dashboard-scroll max-h-[620px] overflow-auto">
-            <Table className="min-w-[760px]">
+            <Table className="table-fixed">
               <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
                 <TableRow>
-                  <TableHead className="w-[210px] px-4">Rep</TableHead>
-                  <TableHead className="w-[88px] text-right">Count</TableHead>
-                  <TableHead className="w-[120px]">Severity</TableHead>
+                  <TableHead className="w-[23%] px-4">Rep</TableHead>
+                  <TableHead className="w-16 text-right">Count</TableHead>
+                  <TableHead className="w-24">Severity</TableHead>
                   <TableHead className="min-w-[300px]">Categories</TableHead>
-                  <TableHead className="w-[180px]">Last seen</TableHead>
+                  <TableHead className="w-36">Last seen</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -278,7 +280,7 @@ function RepSummaryCard({ data }: { data: ComplianceDashboardData }) {
 function RepSummaryRow({ row }: { row: ComplianceRepGroup }) {
   return (
     <TableRow>
-      <TableCell className="px-4 font-medium">{row.rep}</TableCell>
+      <TableCell className="whitespace-normal px-4 font-medium leading-5">{row.rep}</TableCell>
       <TableCell className="text-right text-base font-semibold">
         {formatNumber(row.totalCount)}
       </TableCell>
@@ -293,7 +295,9 @@ function RepSummaryRow({ row }: { row: ComplianceRepGroup }) {
           </p>
         ) : null}
       </TableCell>
-      <TableCell className="text-sm text-muted-foreground">{row.lastSeen || "Not listed"}</TableCell>
+      <TableCell className="whitespace-normal text-xs leading-5 text-muted-foreground">
+        {row.lastSeen || "Not listed"}
+      </TableCell>
     </TableRow>
   );
 }
