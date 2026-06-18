@@ -7,7 +7,6 @@ import {
   MessageSquareText,
   UserRound,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ReportVersionBadge } from "@/components/dashboard/report-version-badge";
 import { TrackedExternalLink, TrackedLink } from "@/components/dashboard/usage-tracker";
@@ -33,11 +32,6 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <ReportVersionBadge createdAt={call.created_at} />
-              {call.call_status ? (
-                <Badge variant="outline" className="h-6 rounded-full bg-slate-50 text-xs text-slate-500">
-                  {call.call_status}
-                </Badge>
-              ) : null}
             </div>
             <h3 className="text-base font-semibold leading-6 text-slate-950">
               <TrackedLink
@@ -103,11 +97,6 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
               <UserRound className="size-3.5" />
               {call.rep_name}
             </span>
-          ) : null}
-          {call.call_status ? (
-            <Badge variant="outline" className="h-6 rounded-full bg-white text-xs text-slate-500">
-              {call.call_status}
-            </Badge>
           ) : null}
         </div>
         <h3 className="text-lg font-semibold text-slate-950">

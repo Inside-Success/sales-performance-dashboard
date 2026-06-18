@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Award,
   BookOpenText,
-  CalendarDays,
   Clock3,
   ExternalLink,
   FileText,
@@ -16,7 +15,6 @@ import {
   Video,
   Wrench,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { BulletList, JsonSection } from "@/components/dashboard/json-section";
 import { TrackRecentlyViewed } from "@/components/dashboard/recently-viewed";
@@ -56,6 +54,15 @@ export default async function CallPage({
     closeSection.type === "what_made_this_close_work"
       ? "What Made This Close Work"
       : "Why No Close";
+  const meetingMeta = call.call_date
+    ? {
+        label: "Meeting time",
+        value: formatMiamiMeetingDateTime(call.call_date),
+      }
+    : {
+        label: "Received",
+        value: formatMiamiDateTime(call.updated_at),
+      };
 
   return (
     <main className="magic-page">
@@ -89,22 +96,6 @@ export default async function CallPage({
 
               <div className="flex flex-wrap items-center gap-2">
                 <ReportVersionBadge createdAt={call.created_at} />
-                {call.call_status ? (
-                  <Badge variant="outline" className="h-6 rounded-full bg-white/80 text-slate-600">
-                    {call.call_status}
-                  </Badge>
-                ) : null}
-              {call.call_date ? (
-                <Badge variant="outline" className="gap-1 rounded-full bg-white/80 text-slate-600">
-                  <CalendarDays className="size-3.5" />
-                  Meeting {formatMiamiMeetingDateTime(call.call_date)}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="gap-1 rounded-full bg-white/80 text-slate-600">
-                  <Clock3 className="size-3.5" />
-                  Received {formatMiamiDateTime(call.updated_at)}
-                </Badge>
-              )}
               </div>
 
               <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
@@ -118,8 +109,8 @@ export default async function CallPage({
               <div className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white/80 p-4 text-sm sm:grid-cols-3">
                 <MetaItem label="Rep" value={call.rep_name} icon={<UserRound className="size-4" />} />
                 <MetaItem
-                  label="Report created"
-                  value={formatMiamiDateTime(call.created_at)}
+                  label={meetingMeta.label}
+                  value={meetingMeta.value}
                   icon={<Clock3 className="size-4" />}
                 />
                 <MetaItem
@@ -258,19 +249,19 @@ function ReportSection({
         featured && "border-red-100 bg-[#FEF2F2]/80",
       )}
     >
-      <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
-        <span className="grid size-8 place-items-center rounded-full border border-red-100 bg-white text-[#DC2626]">
+      <h2 className="mb-4 flex items-center gap-2.5 text-lg font-extrabold leading-tight tracking-normal text-slate-950">
+        <span className="grid size-9 place-items-center rounded-xl border border-red-100 bg-white text-[#DC2626]">
           {icon}
         </span>
         {title}
       </h2>
-      <div className="text-sm leading-7 text-slate-700">{children}</div>
+      <div className="text-base leading-8 text-slate-700 md:text-[17px]">{children}</div>
     </section>
   );
 }
 
 function ReportText({ children }: { children: React.ReactNode }) {
-  return <p className="leading-7">{children}</p>;
+  return <p className="leading-8">{children}</p>;
 }
 
 function ExternalButton({

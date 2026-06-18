@@ -7,7 +7,6 @@ import {
   Award,
   BookOpenText,
   CheckCircle2,
-  Clock3,
   ExternalLink,
   FileText,
   Lightbulb,
@@ -126,10 +125,14 @@ export function ManualReportStatus({
 
               <div className="flex flex-wrap items-center gap-2">
                 <ReportVersionBadge createdAt={report.created_at} />
-                <StatusBadge status={report.status} />
-                <Badge variant="outline" className="rounded-full bg-white/80 text-slate-600">
-                  Updated {formatMiamiDateTime(report.updated_at)}
-                </Badge>
+                {report.status !== "completed" ? (
+                  <>
+                    <StatusBadge status={report.status} />
+                    <Badge variant="outline" className="rounded-full bg-white/80 text-slate-600">
+                      Updated {formatMiamiDateTime(report.updated_at)}
+                    </Badge>
+                  </>
+                ) : null}
               </div>
 
               <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
@@ -139,13 +142,8 @@ export function ManualReportStatus({
                 Manual sales feedback for {report.rep_name}.
               </p>
 
-              <div className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white/80 p-4 text-sm sm:grid-cols-3">
+              <div className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white/80 p-4 text-sm sm:grid-cols-2">
                 <MetaItem label="Rep" value={report.rep_name} icon={<UserRound className="size-4" />} />
-                <MetaItem
-                  label="Report created"
-                  value={formatMiamiDateTime(report.created_at)}
-                  icon={<Clock3 className="size-4" />}
-                />
                 <MetaItem
                   label="Source"
                   value={(report.source_type || report.input_type).replace(/_/g, " ")}
@@ -379,19 +377,19 @@ function ReportSection({
         featured && "border-red-100 bg-[#FEF2F2]/80",
       )}
     >
-      <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
-        <span className="grid size-8 place-items-center rounded-full border border-red-100 bg-white text-[#DC2626]">
+      <h2 className="mb-4 flex items-center gap-2.5 text-lg font-extrabold leading-tight tracking-normal text-slate-950">
+        <span className="grid size-9 place-items-center rounded-xl border border-red-100 bg-white text-[#DC2626]">
           {icon}
         </span>
         {title}
       </h2>
-      <div className="text-sm leading-7 text-slate-700">{children}</div>
+      <div className="text-base leading-8 text-slate-700 md:text-[17px]">{children}</div>
     </section>
   );
 }
 
 function ReportText({ children }: { children: React.ReactNode }) {
-  return <p className="leading-7">{children}</p>;
+  return <p className="leading-8">{children}</p>;
 }
 
 function ExternalButton({

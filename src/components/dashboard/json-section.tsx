@@ -3,11 +3,11 @@ import type { JsonObject } from "@/lib/types";
 
 export function BulletList({ items }: { items: string[] }) {
   if (!items.length) {
-    return <p className="text-sm text-muted-foreground">Not provided</p>;
+    return <p className="text-base text-muted-foreground">Not provided</p>;
   }
 
   return (
-    <ul className="list-disc space-y-2 pl-5 leading-7 marker:text-primary">
+    <ul className="list-disc space-y-3 pl-6 leading-8 marker:text-primary">
       {items.map((item, index) => (
         <li key={`${item}-${index}`}>{item}</li>
       ))}
@@ -27,7 +27,7 @@ export function JsonSection({ value }: { value: JsonObject | string | null }) {
     const items = normalizeStringList(value);
     if (items.length > 1) return <BulletList items={items} />;
 
-    return <p className="leading-7">{value}</p>;
+    return <p className="leading-8">{value}</p>;
   }
 
   return (
@@ -59,7 +59,7 @@ function JsonEntry({ value }: { value: unknown }) {
   const items = normalizeStringList(value);
   if (items.length > 1) return <BulletList items={items} />;
 
-  return <p className="leading-7">{String(value || "Not provided")}</p>;
+  return <p className="leading-8">{String(value || "Not provided")}</p>;
 }
 
 function LabeledEntries({ entries }: { entries: Array<{ label: string; text: string }> }) {
