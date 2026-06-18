@@ -1,15 +1,10 @@
-import Link from "next/link";
 import type React from "react";
 import {
-  ArrowLeft,
-  ArrowDownWideNarrow,
   CalendarDays,
-  CheckCircle2,
   ExternalLink,
   FileText,
+  Inbox,
   MessageSquareText,
-  Send,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -63,79 +58,44 @@ export default async function ManualReportsPage({
           target_rep_name: selectedRepName || null,
         }}
       />
-      <div className="magic-container flex flex-col gap-6">
-        <header className="magic-card magic-hero p-5 md:p-7">
-          <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
-            <div className="max-w-3xl pt-2">
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <Link
-                  href="/"
-                  className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}
-                >
-                  <ArrowLeft className="size-4" />
-                  Home
-                </Link>
-                <span className="magic-kicker">
-                  <Sparkles className="size-3.5" />
-                  Self-submitted feedback
-                </span>
-              </div>
-              <h1 className="text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
-                Self-submitted reports
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-                Review manually submitted call coaching without mixing it into the official production report list.
-              </p>
-              <div className="mt-5 grid gap-2 text-sm font-medium text-slate-700 sm:grid-cols-2">
-                <span className="inline-flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-[#DC2626]" />
-                  Separate from official reports
-                </span>
-                <span className="inline-flex items-center gap-2">
-                  <CheckCircle2 className="size-4 text-[#DC2626]" />
-                  Enhanced feedback ready
-                </span>
-              </div>
-            </div>
-
-            <div className="magic-soft-panel p-4">
-              <div className="mb-3 flex justify-end">
-                <Link
-                  href="/submit"
-                  className={cn(buttonVariants({ size: "sm" }), "h-9 rounded-full bg-[#DC2626] px-4 text-white hover:bg-[#B91C1C]")}
-                >
-                  <Send className="size-4" />
-                  Get feedback
-                </Link>
-              </div>
-              <RepPicker reps={reps} selectedRepSlug={selectedRepSlug} basePath="/manual-reports" />
-
-              {hasSelectedRep ? (
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-                  <Badge variant="outline" className="gap-1 rounded-full bg-white/80 text-slate-600">
-                    <ArrowDownWideNarrow className="size-3.5" />
-                    Newest completed first
-                  </Badge>
-                </div>
-              ) : null}
-            </div>
-          </div>
+      <div className="mx-auto w-full max-w-3xl px-5 pb-24 pt-12 sm:px-8 sm:pt-16">
+        <header className="mb-9">
+          <h1 className="text-[38px] font-extrabold leading-[1.05] tracking-normal text-slate-900 sm:text-[48px]">
+            Self-submitted reports
+          </h1>
+          <ul className="mt-6 space-y-2 text-[17px] font-medium leading-[1.8] text-slate-500">
+            <li className="flex items-start gap-2.5">
+              <span className="mt-[13px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
+              <span>Review manually submitted Magic Mike coaching feedback.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-[13px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
+              <span>Keep self-submitted calls separate from official production reports.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-[13px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
+              <span>Select a rep to see their completed manual feedback reports.</span>
+            </li>
+          </ul>
         </header>
 
-        <section className="space-y-4">
-          <div className="px-1">
-            <h2 className="text-2xl font-semibold tracking-normal text-slate-950">
-              {hasSelectedRep ? `${selectedRepName || "Selected rep"}'s self-submitted reports` : "Choose a rep"}
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              {hasSelectedRep
-                ? `${reports.length} completed manual ${reports.length === 1 ? "report" : "reports"} found.`
-                : "The manual report list appears after a rep is selected."}
-            </p>
+        <section className="magic-card magic-selector-card">
+          <div className="border-b border-slate-100 p-5 sm:p-7">
+            <RepPicker
+              reps={reps}
+              selectedRepSlug={selectedRepSlug}
+              basePath="/manual-reports"
+              selectedSubline="Viewing self-submitted reports"
+            />
           </div>
-
           {hasSelectedRep ? (
-            <>
+            <div className="space-y-4 p-5 sm:p-7">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[13px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                  {reports.length} report{reports.length === 1 ? "" : "s"}
+                </span>
+                <span className="text-[13px] font-semibold text-slate-400">Newest first</span>
+              </div>
               <ReportFilters
                 action="/manual-reports"
                 filters={filters}
@@ -151,7 +111,7 @@ export default async function ManualReportsPage({
               ) : (
                 <EmptyState repName={selectedRepName} hasFilters={hasFilters} />
               )}
-            </>
+            </div>
           ) : (
             <SelectionState />
           )}
@@ -324,11 +284,16 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
 
 function SelectionState() {
   return (
-    <div className="magic-card p-10 text-center">
-      <UserRound className="mx-auto mb-3 size-8 text-slate-400" />
-      <h3 className="text-base font-semibold text-slate-950">No rep selected</h3>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Self-submitted reports are grouped by rep.
+    <div className="px-6 py-20 text-center sm:px-10">
+      <span className="relative mx-auto mb-8 grid size-28 place-items-center rounded-[30px] bg-[#FEF2F2] text-[#DC2626]">
+        <Inbox className="size-12" strokeWidth={2.4} />
+        <span className="absolute -right-3 -top-3 grid size-10 place-items-center rounded-full bg-white text-slate-300 shadow-sm">
+          ✦
+        </span>
+      </span>
+      <h3 className="text-[24px] font-extrabold tracking-normal text-slate-900">No rep selected</h3>
+      <p className="mx-auto mt-4 max-w-sm text-[16px] font-medium leading-8 text-slate-500">
+        The manual report list appears after a rep is selected. Self-submitted reports are grouped by rep.
       </p>
     </div>
   );
@@ -336,7 +301,7 @@ function SelectionState() {
 
 function EmptyState({ repName, hasFilters }: { repName: string; hasFilters?: boolean }) {
   return (
-    <div className="magic-card p-10 text-center">
+    <div className="p-10 text-center">
       <FileText className="mx-auto mb-3 size-8 text-slate-400" />
       <h3 className="text-base font-semibold text-slate-950">No completed self-submitted reports found</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
