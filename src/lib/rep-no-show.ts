@@ -397,23 +397,24 @@ function getCallDedupeKey(call: NormalizedCall) {
   const clientKey = normalizeIdentity(call.clientName);
   const meetingIdKey = normalizeIdentity(call.meetingId);
   const meetingTitleKey = normalizeIdentity(call.meetingTitle);
-  const meetingKey = hasStrongIdentity(meetingIdKey)
-    ? meetingIdKey
-    : hasStrongIdentity(meetingTitleKey)
-      ? `title:${meetingTitleKey}`
-      : "";
-  const timeKey = getMinuteTimeKey(call.callDate);
 
   if (
     !hasStrongIdentity(repKey) ||
-    !hasStrongIdentity(clientKey) ||
-    !hasStrongIdentity(meetingKey) ||
-    !timeKey
+    !hasStrongIdentity(clientKey)
   ) {
     return "";
   }
 
-  return [repKey, clientKey, meetingKey, timeKey].join("|");
+  if (hasStrongIdentity(meetingIdKey)) {
+    return [repKey, clientKey, `meeting:${meetingIdKey}`].join("|");
+  }
+
+  const timeKey = getMinuteTimeKey(call.callDate);
+  if (!hasStrongIdentity(meetingTitleKey) || !timeKey) {
+    return "";
+  }
+
+  return [repKey, clientKey, `title:${meetingTitleKey}`, timeKey].join("|");
 }
 
 function choosePreferredCall(current: NormalizedCall, candidate: NormalizedCall) {
