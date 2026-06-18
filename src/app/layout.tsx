@@ -45,28 +45,30 @@ export default function RootLayout({
             </Link>
             <nav
               aria-label="Primary navigation"
-              className="dashboard-scroll -mx-1 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-0.5 sm:mx-0 sm:w-auto sm:flex-none sm:justify-end sm:overflow-visible sm:pb-0"
+              className="grid w-full min-w-0 grid-cols-3 items-center gap-1 sm:flex sm:w-auto sm:flex-none sm:justify-end"
             >
               <Link
                 href="/"
-                className="magic-nav-link inline-flex h-9 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold transition-colors"
+                className="magic-nav-link inline-flex h-9 shrink-0 items-center justify-center gap-1.5 px-2 text-sm font-semibold transition-colors sm:px-3"
               >
                 <Home className="size-4" />
                 Home
               </Link>
               <Link
                 href="/manual-reports"
-                className="magic-nav-link inline-flex h-9 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold transition-colors"
+                className="magic-nav-link inline-flex h-9 shrink-0 items-center justify-center gap-1.5 px-2 text-sm font-semibold transition-colors sm:px-3"
               >
                 <FileText className="size-4" />
-                Self-submitted reports
+                <span className="sm:hidden">Reports</span>
+                <span className="hidden sm:inline">Self-submitted reports</span>
               </Link>
               <Link
                 href="/submit"
-                className="magic-nav-link magic-nav-link-primary inline-flex h-9 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold transition-colors"
+                className="magic-nav-link magic-nav-link-primary inline-flex h-9 shrink-0 items-center justify-center gap-1.5 px-2 text-sm font-semibold transition-colors sm:px-3"
               >
                 <Send className="size-4" />
-                Get feedback
+                <span className="sm:hidden">Feedback</span>
+                <span className="hidden sm:inline">Get feedback</span>
               </Link>
             </nav>
           </div>
