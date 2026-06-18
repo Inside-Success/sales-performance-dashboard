@@ -29,7 +29,7 @@ export function ReportFeedbackWidget({
   const eligible = useMemo(() => isEnhancedReport(reportCreatedAt), [reportCreatedAt]);
   const [selectedRating, setSelectedRating] = useState<FeedbackRating | null>(null);
   const [status, setStatus] = useState<SubmitState>("idle");
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => repName || "");
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -128,6 +128,7 @@ export function ReportFeedbackWidget({
               setSelectedRating("negative");
               setStatus("idle");
               setError(null);
+              if (!name.trim()) setName(repName || "");
             }}
           >
             <ThumbsDown className="size-4" />
@@ -139,7 +140,7 @@ export function ReportFeedbackWidget({
       {sent ? (
         <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800">
           {selectedRating === "positive"
-            ? "Thanks - your anonymous rating was saved."
+            ? "Thanks - your rating was saved."
             : "Thanks - your feedback was submitted."}
         </div>
       ) : null}
@@ -158,7 +159,7 @@ export function ReportFeedbackWidget({
               required
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder={repName || "Sales rep"}
+              placeholder="Name"
               autoComplete="name"
               className="magic-input"
             />
