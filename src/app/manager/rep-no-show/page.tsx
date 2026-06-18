@@ -154,7 +154,7 @@ export default async function RepNoShowPage({
 
         <p className="max-w-4xl text-xs leading-5 text-muted-foreground">
           Estimates are directional and conservative. The current formula uses rep no-shows x
-          close-rate assumption x minimum package value. It should be described as opportunity at
+          close-rate assumption x average package value. It should be described as opportunity at
           risk, not confirmed missed sales.
         </p>
 
