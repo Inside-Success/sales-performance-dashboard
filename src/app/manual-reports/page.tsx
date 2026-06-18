@@ -1,11 +1,11 @@
 import type React from "react";
 import {
+  ArrowRight,
   CalendarDays,
   ExternalLink,
   FileText,
   Inbox,
   MessageSquareText,
-  UserRound,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -89,12 +89,24 @@ export default async function ManualReportsPage({
             />
           </div>
           {hasSelectedRep ? (
-            <div className="space-y-4 p-5 sm:p-7">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-[13px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                  {reports.length} report{reports.length === 1 ? "" : "s"}
-                </span>
-                <span className="text-[13px] font-semibold text-slate-400">Newest first</span>
+            <div className="space-y-5 p-5 sm:p-7">
+              <div className="flex flex-col gap-2 rounded-[20px] border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                    Viewing self-submitted reports
+                  </p>
+                  <h2 className="mt-1 text-[22px] font-extrabold tracking-normal text-slate-950">
+                    {selectedRepName || "Selected rep"}
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2 text-[13px] font-semibold text-slate-500">
+                  <span className="rounded-full border border-red-100 bg-[#FEF2F2] px-3 py-1 text-[#B91C1C]">
+                    {reports.length} report{reports.length === 1 ? "" : "s"}
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1">
+                    Newest first
+                  </span>
+                </div>
               </div>
               <ReportFilters
                 action="/manual-reports"
@@ -216,62 +228,70 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
   };
 
   return (
-    <article className="magic-card p-4 transition-all hover:-translate-y-px hover:border-red-200 hover:shadow-xl">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="mb-1 flex flex-wrap items-center gap-2">
-            <ReportVersionBadge createdAt={report.created_at} />
-            {report.status ? (
-              <Badge variant="outline" className="h-6 rounded-full bg-slate-50 text-xs capitalize text-slate-500">
-                {report.status.replace(/_/g, " ")}
-              </Badge>
-            ) : null}
-          </div>
-          <h2 className="text-base font-semibold leading-6 text-slate-950">
-            <TrackedLink
-              href={`/self-report/${report.public_id}`}
-              eventName="report_card_clicked"
-              eventData={trackingData}
-              className="hover:text-[#B91C1C]"
-            >
-              {title}
-            </TrackedLink>
-          </h2>
-
-          {report.one_line_verdict ? (
-            <p className="text-sm leading-6 text-slate-600 md:max-w-2xl">
-              {truncate(report.one_line_verdict, 185)}
-            </p>
+    <article className="magic-card overflow-hidden transition-all hover:-translate-y-px hover:border-red-200 hover:shadow-xl">
+      <div className="space-y-3 border-b border-slate-100 bg-slate-50/60 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <ReportVersionBadge createdAt={report.created_at} />
+          <span className="inline-flex items-center gap-1">
+            <CalendarDays className="size-3.5" />
+            Completed {formatMiamiDateTime(report.updated_at)}
+          </span>
+          {sourceLabel ? (
+            <span className="capitalize">
+              {sourceLabel.replace(/_/g, " ")}
+            </span>
           ) : null}
-
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-            <span className="inline-flex items-center gap-1">
-              <UserRound className="size-3.5" />
-              {report.rep_name}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <CalendarDays className="size-3.5" />
-              Completed {formatMiamiDateTime(report.updated_at)}
-            </span>
-            {sourceLabel ? (
-              <span className="capitalize">
-                {sourceLabel.replace(/_/g, " ")}
-              </span>
-            ) : null}
-          </div>
+          {report.status ? (
+            <Badge variant="outline" className="h-6 rounded-full bg-white text-xs capitalize text-slate-500">
+              {report.status.replace(/_/g, " ")}
+            </Badge>
+          ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-wrap gap-1.5 md:justify-end">
+        <h2 className="text-lg font-semibold leading-7 text-slate-950">
+          <TrackedLink
+            href={`/self-report/${report.public_id}`}
+            eventName="report_card_clicked"
+            eventData={trackingData}
+            className="hover:text-[#B91C1C]"
+          >
+            {title}
+          </TrackedLink>
+        </h2>
+
+        {report.one_line_verdict ? (
+          <p className="text-sm leading-6 text-slate-600">
+            {truncate(report.one_line_verdict, 220)}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="space-y-4 p-4 sm:p-5">
+        <div className="grid gap-3 text-sm md:grid-cols-2">
+          <SummaryBlock
+            icon={<MessageSquareText className="size-4" />}
+            label="Biggest Strength"
+            value={report.biggest_strength}
+          />
+          <SummaryBlock
+            icon={<FileText className="size-4" />}
+            label="What I'd Polish"
+            value={report.biggest_fix}
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
           <TrackedLink
             href={`/self-report/${report.public_id}`}
             eventName="report_card_clicked"
             eventData={trackingData}
             className={cn(
               buttonVariants({ size: "sm", variant: "outline" }),
-              "h-9 rounded-full border-slate-200 bg-white px-4 hover:bg-[#FEF2F2] hover:text-[#B91C1C]",
+              "h-9 rounded-full border-slate-200 bg-white px-4 text-slate-700 hover:bg-[#FEF2F2] hover:text-[#B91C1C]",
             )}
           >
             Open report
+            <ArrowRight className="size-3.5" />
           </TrackedLink>
           <ExternalButton href={reportDocLink} label="Doc" icon={<FileText className="size-4" />} eventName="google_doc_clicked" eventData={trackingData} />
           <ExternalButton href={transcriptLink} label="Transcript" icon={<MessageSquareText className="size-4" />} eventName="transcript_clicked" eventData={trackingData} />
@@ -279,6 +299,26 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function SummaryBlock({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | null;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+      <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {icon}
+        {label}
+      </div>
+      <p className="leading-6 text-slate-700">{truncate(value, 150) || "Not provided"}</p>
+    </div>
   );
 }
 

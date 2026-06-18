@@ -75,7 +75,7 @@ export function ManualSubmitForm() {
 
   return (
     <form onSubmit={submitReport} className="space-y-5">
-      <div className="magic-soft-panel p-2">
+      <div className="magic-soft-panel bg-white p-2">
         <div className="grid gap-2 sm:grid-cols-2">
           <ModeButton
             active={inputType === "zoom_link"}
@@ -93,7 +93,7 @@ export function ManualSubmitForm() {
       </div>
 
       {inputType === "zoom_link" ? (
-        <Field label="Zoom meeting or recording link" required>
+        <Field label="Recording link" required>
           <Input
             value={zoomLink}
             onChange={(event) => setZoomLink(event.target.value)}
@@ -101,7 +101,7 @@ export function ManualSubmitForm() {
             className="magic-input h-11"
           />
           <p className="mt-2 text-xs leading-5 text-slate-500">
-            Paste one Zoom recording link. If Zoom does not allow transcript access, the report will ask for a pasted transcript instead.
+            Paste one recording link. If a usable transcript cannot be found, submit the transcript text instead.
           </p>
         </Field>
       ) : (
@@ -119,7 +119,7 @@ export function ManualSubmitForm() {
         </Field>
       )}
 
-      <div className="magic-soft-panel p-4">
+      <div className="magic-soft-panel bg-white p-4">
         <Field
           label="Rep name"
           required
@@ -135,7 +135,7 @@ export function ManualSubmitForm() {
         </Field>
       </div>
 
-      <details className="group magic-soft-panel p-4">
+      <details className="group magic-soft-panel bg-white p-4">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl transition-colors hover:text-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200">
           <span className="text-sm font-semibold">Optional details</span>
           <span className="inline-flex items-center gap-2 text-xs font-normal text-slate-500">
@@ -172,8 +172,8 @@ export function ManualSubmitForm() {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-white p-4">
-        <p className="text-sm text-slate-500">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-white p-4 shadow-[0_12px_32px_rgba(15,23,42,0.05)]">
+        <p className="text-sm font-medium text-slate-500">
           Reports usually take about 1-2 minutes and update automatically.
         </p>
         <Button

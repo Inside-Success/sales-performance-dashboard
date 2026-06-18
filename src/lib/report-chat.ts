@@ -1,4 +1,3 @@
-import { slugify } from "@/lib/slug";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
 export const REPORT_CHAT_MODEL = "deepseek-v4-pro";
@@ -19,12 +18,7 @@ const TRANSCRIPT_KEYS = [
 
 export function isReportChatEnabledForCall(call: Pick<PerformanceCall, "id" | "rep_slug">) {
   if (process.env.REPORT_CHAT_ENABLED !== "true") return false;
-
-  const repSlugs = readListEnv(process.env.REPORT_CHAT_BETA_REP_SLUGS);
-  const reportIds = readListEnv(process.env.REPORT_CHAT_BETA_REPORT_IDS);
-  const callId = String(call.id);
-
-  return repSlugs.includes("*") || repSlugs.includes(call.rep_slug) || reportIds.includes(callId);
+  return Boolean(call.id);
 }
 
 export function isReportChatEnabledForManualReport(
@@ -32,12 +26,7 @@ export function isReportChatEnabledForManualReport(
 ) {
   if (report.status !== "completed") return false;
   if (process.env.REPORT_CHAT_ENABLED !== "true") return false;
-
-  const repSlugs = readListEnv(process.env.REPORT_CHAT_BETA_REP_SLUGS);
-  const reportIds = readListEnv(process.env.REPORT_CHAT_BETA_REPORT_IDS);
-  const repSlug = slugify(report.rep_name);
-
-  return repSlugs.includes("*") || repSlugs.includes(repSlug) || reportIds.includes(report.public_id);
+  return Boolean(report.public_id);
 }
 
 export async function fetchTranscriptText(call: PerformanceCall) {
@@ -322,11 +311,4 @@ function cleanTranscriptText(value: string) {
     .replace(/\r\n/g, "\n")
     .replace(/\n{4,}/g, "\n\n\n")
     .trim();
-}
-
-function readListEnv(value: string | undefined) {
-  return String(value || "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
 }
