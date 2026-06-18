@@ -36,7 +36,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-background">
         <header className="magic-app-header sticky top-0 z-40 border-b backdrop-blur supports-[backdrop-filter]:bg-white/85">
-          <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 sm:flex-nowrap sm:gap-3 sm:px-6 sm:py-0 lg:px-8">
             <Link href="/" className="flex min-w-0 items-center gap-2 font-semibold">
               <span className="magic-brand-mark grid size-9 place-items-center rounded-2xl text-white">
                 <BarChart3 className="size-4" />
@@ -45,7 +45,7 @@ export default function RootLayout({
             </Link>
             <nav
               aria-label="Primary navigation"
-              className="dashboard-scroll flex min-w-0 flex-1 items-center justify-end gap-1 overflow-x-auto pb-0.5 sm:flex-none sm:overflow-visible sm:pb-0"
+              className="dashboard-scroll -mx-1 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-0.5 sm:mx-0 sm:w-auto sm:flex-none sm:justify-end sm:overflow-visible sm:pb-0"
             >
               <Link
                 href="/"
