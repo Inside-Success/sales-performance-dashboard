@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   AlertTriangle,
   BarChart3,
+  Bot,
   CircleAlert,
   CheckCircle2,
   Clock3,
@@ -10,6 +11,7 @@ import {
   FileText,
   History,
   ListChecks,
+  MessageCircleQuestion,
   MousePointerClick,
   Send,
   ShieldCheck,
@@ -32,6 +34,8 @@ import {
 import { getUsageAnalytics } from "@/lib/db";
 import { formatMiamiDateTime } from "@/lib/format";
 import type {
+  UsageChatRep,
+  UsageChatSummary,
   UsageDailyPoint,
   UsageLegacySummary,
   UsageManualSummary,
@@ -181,6 +185,8 @@ export default async function ManagerUsagePage() {
           <ManualUsageCard manual={analytics.manual} />
           <LegacyUsageCard legacy={analytics.legacy} />
         </section>
+
+        <ChatUsageCard chat={analytics.chat} reps={analytics.chatReps} />
       </div>
     </main>
   );
@@ -656,6 +662,129 @@ function ManualUsageCard({ manual }: { manual: UsageManualSummary }) {
             {manual.last_activity_at ? formatMiamiDateTime(manual.last_activity_at) : "No activity yet"}
           </p>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ChatUsageCard({
+  chat,
+  reps,
+}: {
+  chat: UsageChatSummary;
+  reps: UsageChatRep[];
+}) {
+  const reportsAskedAbout =
+    chat.official_reports_with_questions_7d + chat.manual_reports_with_questions_7d;
+
+  return (
+    <Card className="magic-card border-slate-200 bg-white/90">
+      <CardHeader className="border-b border-slate-100">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-slate-950">
+              <Bot className="size-4 text-[#DC2626]" />
+              Ask Magic Mike Chat Usage
+            </CardTitle>
+            <CardDescription>
+              Supplemental signal only. These chatbot events do not change verified engagement or sales impact scores.
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="w-fit rounded-full border-slate-200 bg-slate-50 text-slate-500">
+            Low-priority signal
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <SignalRow icon={Bot} label="Chat opens in 7 days" value={chat.opens_7d} />
+          <SignalRow
+            icon={MessageCircleQuestion}
+            label="Questions asked in 7 days"
+            value={chat.questions_7d}
+          />
+          <SignalRow icon={CheckCircle2} label="Answers delivered" value={chat.answers_7d} />
+          <SignalRow icon={CircleAlert} label="Chat errors" value={chat.errors_7d} />
+        </div>
+
+        <div className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 text-sm sm:grid-cols-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Reps using chat</p>
+            <p className="mt-1 text-xl font-extrabold tracking-normal text-slate-950">
+              {formatNumber(chat.reps_using_chat_7d)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Reports asked about</p>
+            <p className="mt-1 text-xl font-extrabold tracking-normal text-slate-950">
+              {formatNumber(reportsAskedAbout)}
+            </p>
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              {formatNumber(chat.official_reports_with_questions_7d)} official,{" "}
+              {formatNumber(chat.manual_reports_with_questions_7d)} self-submitted
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Last chat activity</p>
+            <p className="mt-1 text-sm font-semibold leading-6 text-slate-950">
+              {chat.last_activity_at ? formatMiamiDateTime(chat.last_activity_at) : "No chat activity yet"}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-3">
+          <p className="text-xs font-medium leading-5 text-slate-500">
+            Chat tracking stores event counts and safe context only, such as report type and whether a starter prompt was used. It does not store the question text.
+          </p>
+        </div>
+
+        {reps.length ? (
+          <div className="dashboard-scroll overflow-x-auto rounded-2xl border border-slate-200">
+            <Table>
+              <TableHeader className="bg-slate-50/80">
+                <TableRow>
+                  <TableHead>Rep</TableHead>
+                  <TableHead className="text-right">Questions</TableHead>
+                  <TableHead className="text-right">Opens</TableHead>
+                  <TableHead className="text-right">Answers</TableHead>
+                  <TableHead className="text-right">Errors</TableHead>
+                  <TableHead>Report context</TableHead>
+                  <TableHead>Last activity</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {reps.map((rep) => (
+                  <TableRow key={rep.rep_slug}>
+                    <TableCell>
+                      <span className="font-medium text-slate-950">{rep.rep_name}</span>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold">
+                      {formatNumber(rep.questions_7d)}
+                    </TableCell>
+                    <TableCell className="text-right">{formatNumber(rep.opens_7d)}</TableCell>
+                    <TableCell className="text-right">{formatNumber(rep.answers_7d)}</TableCell>
+                    <TableCell className="text-right">{formatNumber(rep.errors_7d)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge variant="outline">
+                          {formatNumber(rep.official_reports_asked_7d)} official
+                        </Badge>
+                        <Badge variant="outline">
+                          {formatNumber(rep.manual_reports_asked_7d)} self-submitted
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {rep.last_activity_at ? formatMiamiDateTime(rep.last_activity_at) : "No activity"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <EmptyPanel text="No Ask Magic Mike chat usage has been recorded in the last 7 days." />
+        )}
       </CardContent>
     </Card>
   );

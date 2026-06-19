@@ -8,6 +8,8 @@ import type {
   PerformanceCall,
   RepSummary,
   UsageAnalytics,
+  UsageChatRep,
+  UsageChatSummary,
   UsageDailyPoint,
   UsageEventBreakdown,
   UsageLegacySummary,
@@ -444,6 +446,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       unviewedReportRows,
       unmappedUserRows,
       legacySummaryRows,
+      chatSummaryRows,
+      chatRepRows,
       recentEventRows,
     ] = await Promise.all([
       sql.query(
@@ -808,6 +812,76 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       sql.query(
         `
           select
+            count(*) filter (
+              where event_name = 'chat_opened'
+                and created_at >= now() - interval '7 days'
+            )::int as opens_7d,
+            count(*) filter (
+              where event_name = 'chat_question_sent'
+                and created_at >= now() - interval '7 days'
+            )::int as questions_7d,
+            count(*) filter (
+              where event_name = 'chat_answer_received'
+                and created_at >= now() - interval '7 days'
+            )::int as answers_7d,
+            count(*) filter (
+              where event_name = 'chat_error'
+                and created_at >= now() - interval '7 days'
+            )::int as errors_7d,
+            count(distinct viewer_rep_slug) filter (
+              where viewer_is_mapped
+                and viewer_rep_slug is not null
+                and event_name in ('chat_opened', 'chat_question_sent', 'chat_answer_received')
+                and created_at >= now() - interval '7 days'
+            )::int as reps_using_chat_7d,
+            count(distinct report_id) filter (
+              where report_id is not null
+                and event_name = 'chat_question_sent'
+                and created_at >= now() - interval '7 days'
+            )::int as official_reports_with_questions_7d,
+            count(distinct manual_public_id) filter (
+              where manual_public_id is not null
+                and event_name = 'chat_question_sent'
+                and created_at >= now() - interval '7 days'
+            )::int as manual_reports_with_questions_7d,
+            max(created_at)::text as last_activity_at
+          from dashboard_usage_events
+          where event_name in ('chat_opened', 'chat_question_sent', 'chat_answer_received', 'chat_error')
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            viewer_rep_slug as rep_slug,
+            coalesce(max(viewer_rep_name), 'Mapped rep') as rep_name,
+            count(*) filter (where event_name = 'chat_opened')::int as opens_7d,
+            count(*) filter (where event_name = 'chat_question_sent')::int as questions_7d,
+            count(*) filter (where event_name = 'chat_answer_received')::int as answers_7d,
+            count(*) filter (where event_name = 'chat_error')::int as errors_7d,
+            count(distinct report_id) filter (
+              where report_id is not null
+                and event_name = 'chat_question_sent'
+            )::int as official_reports_asked_7d,
+            count(distinct manual_public_id) filter (
+              where manual_public_id is not null
+                and event_name = 'chat_question_sent'
+            )::int as manual_reports_asked_7d,
+            max(created_at)::text as last_activity_at
+          from dashboard_usage_events
+          where event_name in ('chat_opened', 'chat_question_sent', 'chat_answer_received', 'chat_error')
+            and created_at >= now() - interval '7 days'
+            and viewer_is_mapped
+            and viewer_rep_slug is not null
+          group by viewer_rep_slug
+          order by questions_7d desc, opens_7d desc, last_activity_at desc
+          limit 15
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
             id,
             event_name,
             source,
@@ -843,6 +917,8 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       unviewedReports: (unviewedReportRows as UsageUnviewedReport[]).map(normalizeUsageUnviewedReport),
       unmappedUsers: (unmappedUserRows as UsageUnmappedUser[]).map(normalizeUsageUnmappedUser),
       legacy: normalizeUsageLegacySummary((legacySummaryRows as UsageLegacySummary[])[0]),
+      chat: normalizeUsageChatSummary((chatSummaryRows as UsageChatSummary[])[0]),
+      chatReps: (chatRepRows as UsageChatRep[]).map(normalizeUsageChatRep),
       recentEvents: (recentEventRows as UsageRecentEvent[]).map(normalizeUsageRecentEvent),
     };
   } catch (error) {
@@ -1460,6 +1536,33 @@ function normalizeUsageLegacySummary(row: UsageLegacySummary | undefined): Usage
   };
 }
 
+function normalizeUsageChatSummary(row: UsageChatSummary | undefined): UsageChatSummary {
+  return {
+    opens_7d: Number(row?.opens_7d || 0),
+    questions_7d: Number(row?.questions_7d || 0),
+    answers_7d: Number(row?.answers_7d || 0),
+    errors_7d: Number(row?.errors_7d || 0),
+    reps_using_chat_7d: Number(row?.reps_using_chat_7d || 0),
+    official_reports_with_questions_7d: Number(row?.official_reports_with_questions_7d || 0),
+    manual_reports_with_questions_7d: Number(row?.manual_reports_with_questions_7d || 0),
+    last_activity_at: row?.last_activity_at || null,
+  };
+}
+
+function normalizeUsageChatRep(row: UsageChatRep): UsageChatRep {
+  return {
+    rep_slug: row.rep_slug,
+    rep_name: row.rep_name,
+    opens_7d: Number(row.opens_7d || 0),
+    questions_7d: Number(row.questions_7d || 0),
+    answers_7d: Number(row.answers_7d || 0),
+    errors_7d: Number(row.errors_7d || 0),
+    official_reports_asked_7d: Number(row.official_reports_asked_7d || 0),
+    manual_reports_asked_7d: Number(row.manual_reports_asked_7d || 0),
+    last_activity_at: row.last_activity_at || null,
+  };
+}
+
 function normalizeUsageRecentEvent(row: UsageRecentEvent): UsageRecentEvent {
   return {
     id: Number(row.id),
@@ -1539,6 +1642,8 @@ function getFallbackUsageAnalytics(): UsageAnalytics {
     unviewedReports: [],
     unmappedUsers: [],
     legacy: normalizeUsageLegacySummary(undefined),
+    chat: normalizeUsageChatSummary(undefined),
+    chatReps: [],
     recentEvents: [],
   };
 }

@@ -12,6 +12,10 @@ export const USAGE_EVENT_NAMES = [
   "manual_report_viewed",
   "report_engaged",
   "report_active_time",
+  "chat_opened",
+  "chat_question_sent",
+  "chat_answer_received",
+  "chat_error",
 ] as const;
 
 export type UsageEventName = (typeof USAGE_EVENT_NAMES)[number];

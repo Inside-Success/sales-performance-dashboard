@@ -203,6 +203,29 @@ export type UsageLegacySummary = {
   last_activity_at: string | null;
 };
 
+export type UsageChatSummary = {
+  opens_7d: number;
+  questions_7d: number;
+  answers_7d: number;
+  errors_7d: number;
+  reps_using_chat_7d: number;
+  official_reports_with_questions_7d: number;
+  manual_reports_with_questions_7d: number;
+  last_activity_at: string | null;
+};
+
+export type UsageChatRep = {
+  rep_slug: string;
+  rep_name: string;
+  opens_7d: number;
+  questions_7d: number;
+  answers_7d: number;
+  errors_7d: number;
+  official_reports_asked_7d: number;
+  manual_reports_asked_7d: number;
+  last_activity_at: string | null;
+};
+
 export type UsageRecentEvent = {
   id: number;
   event_name: string;
@@ -234,6 +257,8 @@ export type UsageAnalytics = {
   unviewedReports: UsageUnviewedReport[];
   unmappedUsers: UsageUnmappedUser[];
   legacy: UsageLegacySummary;
+  chat: UsageChatSummary;
+  chatReps: UsageChatRep[];
   recentEvents: UsageRecentEvent[];
 };
 

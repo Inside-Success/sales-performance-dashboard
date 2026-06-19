@@ -12,6 +12,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { trackUsageEvent } from "@/components/dashboard/usage-tracker";
+import type { UsageEventData } from "@/lib/usage-events";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -43,6 +45,22 @@ export function ReportChatPanel({
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const numericReportId = typeof reportId === "number" ? reportId : Number(reportId);
+
+  function getChatUsageEventData(metadata: Record<string, unknown> = {}): UsageEventData {
+    return {
+      source: reportType === "manual" ? "manual_report_chat" : "official_report_chat",
+      target_rep_name: repName,
+      report_id:
+        reportType === "official" && Number.isFinite(numericReportId) ? numericReportId : null,
+      manual_public_id: reportType === "manual" ? String(reportId) : null,
+      metadata: {
+        report_type: reportType,
+        client_name: clientName || null,
+        ...metadata,
+      },
+    };
+  }
 
   useEffect(() => {
     messagesRef.current?.scrollTo({
@@ -60,6 +78,14 @@ export function ReportChatPanel({
     setInput("");
     setError(null);
     setIsSending(true);
+    trackUsageEvent(
+      "chat_question_sent",
+      getChatUsageEventData({
+        message_count_before: messages.length,
+        question_length: text.length,
+        starter_question: STARTER_QUESTIONS.includes(text),
+      }),
+    );
 
     try {
       const response = await fetch("/api/report-chat", {
@@ -80,9 +106,25 @@ export function ReportChatPanel({
       }
 
       setMessages([...nextMessages, { role: "assistant", content: data.answer }]);
+      trackUsageEvent(
+        "chat_answer_received",
+        getChatUsageEventData({
+          answer_length: data.answer.length,
+          message_count_after: nextMessages.length + 1,
+        }),
+      );
     } catch (sendError) {
-      setError(sendError instanceof Error ? sendError.message : "Magic Mike could not answer right now.");
+      const errorMessage =
+        sendError instanceof Error ? sendError.message : "Magic Mike could not answer right now.";
+      setError(errorMessage);
       setMessages(nextMessages);
+      trackUsageEvent(
+        "chat_error",
+        getChatUsageEventData({
+          error_type: sendError instanceof Error ? sendError.name : "unknown",
+          message_count_after: nextMessages.length,
+        }),
+      );
     } finally {
       setIsSending(false);
     }
@@ -99,6 +141,7 @@ export function ReportChatPanel({
         render={
           <Button
             variant="outline"
+            onClick={() => trackUsageEvent("chat_opened", getChatUsageEventData())}
             className="h-10 gap-1 rounded-full border-red-200 bg-[#FEF2F2] px-4 text-[#B91C1C] shadow-sm hover:border-red-300 hover:bg-[#FEE2E2] hover:text-[#991B1B]"
           >
             <Sparkles className="size-4" />
