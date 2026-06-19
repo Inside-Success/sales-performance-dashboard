@@ -48,6 +48,19 @@ Rep usage and sales-impact metrics use mapped verified users only. Managers/admi
 
 Sales impact uses verified official `report_engaged` events plus official report link clicks. Legacy anonymous events, quick opens, self-submitted feedback, and compliance signals are excluded from sales-impact usage scoring.
 
+## Supplemental Chat Usage
+
+Ask Magic Mike report-chat usage is tracked as a supplemental signal only:
+
+- `chat_opened`
+- `chat_question_sent`
+- `chat_answer_received`
+- `chat_error`
+
+These events use the same signed-in viewer mapping as other usage events and include safe context such as report type, report ID/public ID, question length, and whether a starter prompt was used. They do not store the question text.
+
+`/manager/usage` shows chat usage at the bottom of the page as a low-priority section. Chat activity does not count toward verified engagement, first-read reporting, or sales-impact usage scoring.
+
 ## Legacy Data
 
 Old anonymous rows are not deleted. They remain in the usage database with `viewer_email = null` and appear only in the Legacy Anonymous Usage panel on `/manager/usage`.
