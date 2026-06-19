@@ -1,11 +1,26 @@
-import { getSalesCorrelationUsageData } from "@/lib/db";
+import {
+  getLatestSalesPerformanceSnapshot,
+  getSalesCorrelationUsageData,
+  saveSalesPerformanceSnapshot,
+} from "@/lib/db";
 import { slugify } from "@/lib/slug";
-import type { SalesCorrelationUsageEvent, SalesCorrelationUsageRow } from "@/lib/types";
+import type {
+  SalesCorrelationUsageEvent,
+  SalesCorrelationUsageRow,
+  SalesSnapshotRecord,
+  SalesSnapshotRow,
+} from "@/lib/types";
 
 const DEFAULT_SALES_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1lBdE_LUKI8rzTvYc5vztSwKROJ7uIAOb5mNT9s4PeLA/gviz/tq?tqx=out:csv&sheet=Main";
+  "https://docs.google.com/spreadsheets/d/1lBdE_LUKI8rzTvYc5vztSwKROJ7uIAOb5mNT9s4PeLA/export?format=csv&gid=0";
+const SALES_SOURCE_SHEET = "Main";
 const HISTORY_DAYS = 120;
 const LAG_DAYS = 14;
+const MIN_ROW_RETENTION_RATIO = 0.95;
+const MIN_PAID_ROW_RETENTION_RATIO = 0.95;
+const MIN_INITIAL_ROW_COUNT = 500;
+const MIN_INITIAL_PAID_ROW_COUNT = 100;
+const LATEST_DATE_BACKSLIDE_DAYS = 2;
 const REP_SLUG_ALIASES: Record<string, string> = {
   "ollie-mcfarl": "ollie-mcfarlane",
 };
@@ -105,6 +120,9 @@ export type SalesCorrelationSummary = {
   usageDataMaturity: "no_usage" | "early" | "developing" | "stable";
   usageError?: string;
   sheetError?: string;
+  salesDataSource: "live_sheet" | "cached_snapshot" | "unavailable";
+  salesSnapshotCreatedAt: string | null;
+  salesSnapshotWarning?: string;
   totalNewRevenue: number;
   totalNewDeals: number;
   totalRecurringRevenue: number;
@@ -248,6 +266,9 @@ export async function getSalesCorrelationAnalytics(
       usageDataMaturity: usageActivity.usageDataMaturity,
       usageError: usageData.error,
       sheetError: salesResult.error,
+      salesDataSource: salesResult.dataSource,
+      salesSnapshotCreatedAt: salesResult.snapshotCreatedAt,
+      salesSnapshotWarning: salesResult.snapshotWarning,
       totalNewRevenue: sum(reps.map((rep) => rep.newPaidRevenueWindow)),
       totalNewDeals: sum(reps.map((rep) => rep.newPaidDealsWindow)),
       totalRecurringRevenue: sum(reps.map((rep) => rep.recurringPaidRevenueWindow)),
@@ -411,9 +432,13 @@ function laterDateString(first: string | null, second: string | null) {
 async function getSalesRows(): Promise<{
   configured: boolean;
   rows: SalesPaymentRow[];
+  dataSource: SalesCorrelationSummary["salesDataSource"];
+  snapshotCreatedAt: string | null;
+  snapshotWarning?: string;
   error?: string;
 }> {
   const csvUrl = process.env.SALES_PERFORMANCE_CSV_URL || DEFAULT_SALES_CSV_URL;
+  const latestSnapshot = await getLatestSalesPerformanceSnapshot();
 
   try {
     const response = await fetch(csvUrl, {
@@ -425,24 +450,73 @@ async function getSalesRows(): Promise<{
       throw new Error(`Google Sheet read failed with status ${response.status}`);
     }
 
+    const parsed = parseSalesCsv(await response.text());
+    const stats = getSalesRowStats(parsed.rows);
+    const rejectionReasons = getSnapshotRejectionReasons(stats, latestSnapshot);
+
+    if (rejectionReasons.length && latestSnapshot) {
+      return {
+        configured: true,
+        rows: deserializeSnapshotRows(latestSnapshot.rows),
+        dataSource: "cached_snapshot",
+        snapshotCreatedAt: latestSnapshot.created_at,
+        snapshotWarning: `Live sales sheet read looked incomplete, so the page is using the last good snapshot from ${latestSnapshot.created_at}. ${rejectionReasons.join(" ")}`,
+      };
+    }
+
+    if (rejectionReasons.length) {
+      throw new Error(`Sales sheet read failed validation: ${rejectionReasons.join(" ")}`);
+    }
+
+    const snapshotRows = serializeSnapshotRows(parsed.rows);
+    const savedSnapshot = await saveSalesPerformanceSnapshot({
+      source_url: csvUrl,
+      source_sheet: SALES_SOURCE_SHEET,
+      headers: parsed.headers,
+      rows: snapshotRows,
+      row_count: stats.rowCount,
+      paid_row_count: stats.paidRowCount,
+      new_paid_row_count: stats.newPaidRowCount,
+      latest_sales_date: stats.latestSalesDate ? stats.latestSalesDate.toISOString() : null,
+      validation_notes: rejectionReasons.length
+        ? rejectionReasons
+        : ["Accepted live read after required-header and row-quality validation."],
+    });
+
     return {
       configured: true,
-      rows: parseSalesRows(await response.text()),
+      rows: parsed.rows,
+      dataSource: "live_sheet",
+      snapshotCreatedAt: savedSnapshot?.created_at || latestSnapshot?.created_at || null,
     };
   } catch (error) {
     console.error(error);
+    if (latestSnapshot) {
+      return {
+        configured: true,
+        rows: deserializeSnapshotRows(latestSnapshot.rows),
+        dataSource: "cached_snapshot",
+        snapshotCreatedAt: latestSnapshot.created_at,
+        snapshotWarning: `Live sales sheet could not be read, so the page is using the last good snapshot from ${latestSnapshot.created_at}.`,
+      };
+    }
+
     return {
       configured: false,
       rows: [],
+      dataSource: "unavailable",
+      snapshotCreatedAt: null,
       error: "Sales sheet could not be read. The page only reads the Google Sheet and never writes to it.",
     };
   }
 }
 
-function parseSalesRows(csv: string): SalesPaymentRow[] {
+function parseSalesCsv(csv: string): { headers: string[]; rows: SalesPaymentRow[] } {
   const table = parseCsv(csv);
   const [headers, ...rows] = table;
-  if (!headers?.length) return [];
+  if (!headers?.length) {
+    throw new Error("Sales sheet returned no header row.");
+  }
 
   const headerMap = new Map(headers.map((header, index) => [normalizeHeader(header), index]));
   const dateIndex = requireColumn(headerMap, "date");
@@ -453,23 +527,139 @@ function parseSalesRows(csv: string): SalesPaymentRow[] {
   const showIndex = headerMap.get("show name") ?? -1;
   const contractIndex = headerMap.get("contract signed") ?? -1;
 
-  return rows.flatMap((row) => {
-    const repName = (row[repIndex] || "").trim();
-    const date = parseSheetDate(row[dateIndex] || "");
-    const amount = parseMoney(row[amountIndex] || "");
+  return {
+    headers,
+    rows: rows.flatMap((row) => {
+      const repName = (row[repIndex] || "").trim();
+      const date = parseSheetDate(row[dateIndex] || "");
+      const amount = parseMoney(row[amountIndex] || "");
 
-    if (!repName || !date || amount <= 0) return [];
+      if (!repName || !date || amount <= 0) return [];
+
+      return {
+        date,
+        dateKey: toDateKey(date),
+        paymentStatus: (row[statusIndex] || "").trim(),
+        paymentType: (row[typeIndex] || "").trim(),
+        amount,
+        repName,
+        repSlug: getCanonicalRepSlug(repName),
+        showName: showIndex >= 0 ? (row[showIndex] || "").trim() : "",
+        contractSigned: contractIndex >= 0 ? /^true$/i.test((row[contractIndex] || "").trim()) : false,
+      };
+    }),
+  };
+}
+
+function getSalesRowStats(rows: SalesPaymentRow[]) {
+  const paidRows = rows.filter(isPaidRow);
+  const newPaidRows = paidRows.filter(isNewPaymentRow);
+
+  return {
+    rowCount: rows.length,
+    paidRowCount: paidRows.length,
+    newPaidRowCount: newPaidRows.length,
+    latestSalesDate: getLatestSalesDate(rows),
+  };
+}
+
+function getSnapshotRejectionReasons(
+  stats: ReturnType<typeof getSalesRowStats>,
+  latestSnapshot: SalesSnapshotRecord | null,
+) {
+  const reasons: string[] = [];
+
+  if (stats.rowCount === 0) {
+    reasons.push("The live read returned zero valid sales rows.");
+  }
+
+  if (stats.rowCount > 0 && stats.paidRowCount === 0) {
+    reasons.push("The live read returned zero paid sales rows.");
+  }
+
+  if (stats.rowCount > 0 && stats.rowCount < MIN_INITIAL_ROW_COUNT) {
+    reasons.push(`The live read returned only ${stats.rowCount} valid sales rows.`);
+  }
+
+  if (stats.paidRowCount > 0 && stats.paidRowCount < MIN_INITIAL_PAID_ROW_COUNT) {
+    reasons.push(`The live read returned only ${stats.paidRowCount} paid sales rows.`);
+  }
+
+  if (!latestSnapshot) return reasons;
+
+  if (
+    latestSnapshot.row_count > 50 &&
+    stats.rowCount < Math.floor(latestSnapshot.row_count * MIN_ROW_RETENTION_RATIO)
+  ) {
+    reasons.push(
+      `Valid row count dropped from ${latestSnapshot.row_count} to ${stats.rowCount}.`,
+    );
+  }
+
+  if (
+    latestSnapshot.paid_row_count > 20 &&
+    stats.paidRowCount < Math.floor(latestSnapshot.paid_row_count * MIN_PAID_ROW_RETENTION_RATIO)
+  ) {
+    reasons.push(
+      `Paid row count dropped from ${latestSnapshot.paid_row_count} to ${stats.paidRowCount}.`,
+    );
+  }
+
+  if (
+    latestSnapshot.new_paid_row_count > 20 &&
+    stats.newPaidRowCount < Math.floor(latestSnapshot.new_paid_row_count * MIN_PAID_ROW_RETENTION_RATIO)
+  ) {
+    reasons.push(
+      `New-paid row count dropped from ${latestSnapshot.new_paid_row_count} to ${stats.newPaidRowCount}.`,
+    );
+  }
+
+  const latestSnapshotDate = parseDate(latestSnapshot.latest_sales_date);
+  if (latestSnapshotDate && stats.latestSalesDate) {
+    const allowedBackslide = addDays(latestSnapshotDate, -LATEST_DATE_BACKSLIDE_DAYS);
+    if (stats.latestSalesDate < allowedBackslide) {
+      reasons.push(
+        `Latest sales date moved backward from ${toDateKey(latestSnapshotDate)} to ${toDateKey(stats.latestSalesDate)}.`,
+      );
+    }
+  }
+
+  if (latestSnapshotDate && !stats.latestSalesDate) {
+    reasons.push("The live read did not include any parseable sales dates.");
+  }
+
+  return reasons;
+}
+
+function serializeSnapshotRows(rows: SalesPaymentRow[]): SalesSnapshotRow[] {
+  return rows.map((row) => ({
+    date: row.date.toISOString(),
+    dateKey: row.dateKey,
+    paymentStatus: row.paymentStatus,
+    paymentType: row.paymentType,
+    amount: row.amount,
+    repName: row.repName,
+    repSlug: row.repSlug,
+    showName: row.showName,
+    contractSigned: row.contractSigned,
+  }));
+}
+
+function deserializeSnapshotRows(rows: SalesSnapshotRow[]): SalesPaymentRow[] {
+  return rows.flatMap((row) => {
+    const date = parseDate(row.date);
+    if (!date || !row.repName || row.amount <= 0) return [];
 
     return {
       date,
-      dateKey: toDateKey(date),
-      paymentStatus: (row[statusIndex] || "").trim(),
-      paymentType: (row[typeIndex] || "").trim(),
-      amount,
-      repName,
-      repSlug: getCanonicalRepSlug(repName),
-      showName: showIndex >= 0 ? (row[showIndex] || "").trim() : "",
-      contractSigned: contractIndex >= 0 ? /^true$/i.test((row[contractIndex] || "").trim()) : false,
+      dateKey: row.dateKey || toDateKey(date),
+      paymentStatus: row.paymentStatus,
+      paymentType: row.paymentType,
+      amount: Number(row.amount || 0),
+      repName: row.repName,
+      repSlug: row.repSlug || getCanonicalRepSlug(row.repName),
+      showName: row.showName,
+      contractSigned: Boolean(row.contractSigned),
     };
   });
 }

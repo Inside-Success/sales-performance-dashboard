@@ -295,3 +295,138 @@ export type SalesCorrelationUsageData = {
   events: SalesCorrelationUsageEvent[];
   error?: string;
 };
+
+export type SalesSnapshotRow = {
+  date: string;
+  dateKey: string;
+  paymentStatus: string;
+  paymentType: string;
+  amount: number;
+  repName: string;
+  repSlug: string;
+  showName: string;
+  contractSigned: boolean;
+};
+
+export type SalesSnapshotRecord = {
+  id: number;
+  source_url: string;
+  source_sheet: string | null;
+  headers: string[];
+  rows: SalesSnapshotRow[];
+  row_count: number;
+  paid_row_count: number;
+  new_paid_row_count: number;
+  latest_sales_date: string | null;
+  validation_notes: string[];
+  created_at: string;
+};
+
+export type PromptBenchmarkRun = {
+  id: number;
+  run_id: string;
+  title: string | null;
+  status: string;
+  sheet_url: string | null;
+  dashboard_url: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  total_cost_usd: number;
+  total_provider_calls: number;
+  source_payload: JsonObject;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PromptBenchmarkOutput = {
+  id: number;
+  result_id: string;
+  run_id: string;
+  case_id: string;
+  case_label: string | null;
+  case_type: string;
+  expected_call_status: string | null;
+  call_status: string | null;
+  model: string;
+  provider: string;
+  call_mode: string;
+  coaching_mode: string;
+  output: JsonObject;
+  ai_eval: JsonObject;
+  classification_agreed: boolean | null;
+  overall_quality: number | null;
+  total_cost_usd: number;
+  total_input_tokens: number;
+  total_output_tokens: number;
+  total_latency_ms: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PromptBenchmarkCost = {
+  id: number;
+  cost_id: string;
+  run_id: string;
+  result_id: string | null;
+  case_id: string | null;
+  model: string;
+  provider: string;
+  call_purpose: string;
+  input_tokens: number;
+  cache_creation_input_tokens: number;
+  cache_read_input_tokens: number;
+  output_tokens: number;
+  input_cost_usd: number;
+  cache_write_cost_usd: number;
+  cache_read_cost_usd: number;
+  output_cost_usd: number;
+  total_cost_usd: number;
+  started_at: string | null;
+  finished_at: string | null;
+  latency_ms: number;
+  provider_response_id: string | null;
+  error: string | null;
+  created_at: string;
+};
+
+export type PromptBenchmarkDecisionRow = {
+  model: string;
+  call_mode: string;
+  coaching_mode: string;
+  output_count: number;
+  scored_cases: number;
+  gate_cases: number;
+  avg_overall_quality: number | null;
+  classification_agreement_rate: number | null;
+  pass_rate_core_criteria: number | null;
+  total_cost_usd: number;
+  avg_latency_ms: number;
+  total_input_tokens: number;
+  total_output_tokens: number;
+};
+
+export type PromptBenchmarkData = {
+  configured: boolean;
+  generatedAt: string;
+  runs: PromptBenchmarkRun[];
+  outputs: PromptBenchmarkOutput[];
+  costs: PromptBenchmarkCost[];
+  decisionRows: PromptBenchmarkDecisionRow[];
+  totals: {
+    runs: number;
+    outputs: number;
+    provider_calls: number;
+    total_cost_usd: number;
+    avg_overall_quality: number | null;
+  };
+  error?: string;
+};
+
+export type PromptBenchmarkRunReviewData = {
+  configured: boolean;
+  generatedAt: string;
+  run: PromptBenchmarkRun | null;
+  outputs: PromptBenchmarkOutput[];
+  costs: PromptBenchmarkCost[];
+  error?: string;
+};

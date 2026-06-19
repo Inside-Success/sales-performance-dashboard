@@ -1,3 +1,4 @@
+import { resolveCloseSection } from "@/lib/close-section";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
 export const REPORT_CHAT_MODEL = "deepseek-v4-pro";
@@ -157,6 +158,10 @@ function buildMessages(reportContext: string, history: ReportChatMessage[]) {
 }
 
 function buildReportContext(call: PerformanceCall, transcriptText: string) {
+  const closeSection = resolveCloseSection({
+    whyNoClose: call.why_no_close,
+    closeWorks: call.what_made_this_close_work,
+  });
   const lines = [
     "Opened coaching report context:",
     fieldLine("Report type", "official coaching report"),
@@ -176,10 +181,10 @@ function buildReportContext(call: PerformanceCall, transcriptText: string) {
     fieldLine("What Went Well", call.what_went_well),
     fieldLine("What To Improve", call.what_to_improve),
     fieldLine(
-      call.close_section_type === "what_made_this_close_work"
+      closeSection.type === "what_made_this_close_work"
         ? "What Made This Close Work"
         : "Why No Close",
-      call.close_section,
+      closeSection.value,
     ),
     fieldLine("Objections Surfaced", call.objections_surfaced),
     "",
@@ -191,6 +196,10 @@ function buildReportContext(call: PerformanceCall, transcriptText: string) {
 }
 
 function buildManualReportContext(report: ManualFeedbackReport, transcriptText: string) {
+  const closeSection = resolveCloseSection({
+    whyNoClose: report.why_no_close,
+    closeWorks: report.what_made_this_close_work,
+  });
   const lines = [
     "Opened coaching report context:",
     fieldLine("Report type", "self-submitted coaching report"),
@@ -209,10 +218,10 @@ function buildManualReportContext(report: ManualFeedbackReport, transcriptText: 
     fieldLine("What Went Well", report.what_went_well),
     fieldLine("What To Improve", report.what_to_improve),
     fieldLine(
-      report.close_section_type === "what_made_this_close_work"
+      closeSection.type === "what_made_this_close_work"
         ? "What Made This Close Work"
         : "Why No Close",
-      report.close_section,
+      closeSection.value,
     ),
     fieldLine("Objections Surfaced", report.objections_surfaced),
     "",

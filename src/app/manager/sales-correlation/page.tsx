@@ -91,6 +91,17 @@ export default async function SalesCorrelationPage({
                 {!analytics.summary.sheetConfigured ? (
                   <Badge variant="destructive">Sales sheet unavailable</Badge>
                 ) : null}
+                {analytics.summary.salesDataSource === "cached_snapshot" ? (
+                  <Badge variant="outline" className="gap-1 rounded-full border-amber-200 bg-amber-50 text-amber-700">
+                    <ShieldCheck className="size-3.5" />
+                    Protected snapshot
+                  </Badge>
+                ) : analytics.summary.salesDataSource === "live_sheet" ? (
+                  <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
+                    <ShieldCheck className="size-3.5" />
+                    Live read captured
+                  </Badge>
+                ) : null}
               </div>
               <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">
                 Sales impact
@@ -147,7 +158,7 @@ export default async function SalesCorrelationPage({
             icon={CalendarDays}
             title="Valid sales rows"
             value={formatNumber(analytics.summary.salesRowsRead)}
-            description={analytics.summary.latestSalesDate ? `Latest ${formatShortDate(analytics.summary.latestSalesDate)}` : "No sales rows"}
+            description={formatSalesRowsDescription(analytics)}
           />
         </section>
 
@@ -207,10 +218,16 @@ function PeriodSelector({ selectedDays }: { selectedDays: number }) {
 
 function StatusMessages({ analytics }: { analytics: SalesCorrelationAnalytics }) {
   const messages = [analytics.summary.usageError, analytics.summary.sheetError].filter(Boolean);
-  if (!messages.length) return null;
+  const warning = analytics.summary.salesSnapshotWarning;
+  if (!messages.length && !warning) return null;
 
   return (
     <div className="grid gap-2">
+      {warning ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-amber-800">
+          {warning}
+        </div>
+      ) : null}
       {messages.map((message) => (
         <div
           key={message}
@@ -423,6 +440,7 @@ function DataQualityCard({ analytics }: { analytics: SalesCorrelationAnalytics }
         <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 text-sm">
           <QualityRow label="Official reports" value="Included" />
           <QualityRow label="10+ sec engaged reads" value="Included" />
+          <QualityRow label="Sales sheet source" value={salesDataSourceLabel(analytics)} />
           <QualityRow label="Self-submitted reports" value="Separated" />
           <QualityRow label="Legacy anonymous traffic" value="Excluded" />
           <QualityRow label="Quick opens under 10 sec" value="Not engagement" />
@@ -811,6 +829,28 @@ function formatShortDate(value: string) {
     year: "numeric",
     timeZone: "UTC",
   }).format(date);
+}
+
+function formatSalesRowsDescription(analytics: SalesCorrelationAnalytics) {
+  const latest = analytics.summary.latestSalesDate
+    ? `Latest ${formatShortDate(analytics.summary.latestSalesDate)}`
+    : "No sales rows";
+  if (analytics.summary.salesDataSource === "cached_snapshot") {
+    return analytics.summary.salesSnapshotCreatedAt
+      ? `Snapshot ${formatShortDate(analytics.summary.salesSnapshotCreatedAt)}`
+      : "Using saved snapshot";
+  }
+  return latest;
+}
+
+function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {
+  if (analytics.summary.salesDataSource === "cached_snapshot") {
+    return analytics.summary.salesSnapshotCreatedAt
+      ? `Last good snapshot (${formatShortDate(analytics.summary.salesSnapshotCreatedAt)})`
+      : "Last good snapshot";
+  }
+  if (analytics.summary.salesDataSource === "live_sheet") return "Validated live read";
+  return "Unavailable";
 }
 
 function formatUsageHistory(effectiveDays: number, periodDays: number) {

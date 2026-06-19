@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { resolveCloseSection } from "@/lib/close-section";
 import { normalizeStringList } from "@/lib/list-format";
 import type { JsonObject, ManualFeedbackReport } from "@/lib/types";
 
@@ -134,11 +135,7 @@ export function normalizeManualCallback(raw: unknown) {
   const objectionsSurfaced = normalizeStringList(parsed.objections_surfaced);
   const whyNoClose = normalizeJsonField(parsed.why_no_close);
   const closeWorks = normalizeJsonField(parsed.what_made_this_close_work);
-  const closeSectionType = closeWorks
-    ? "what_made_this_close_work"
-    : whyNoClose
-      ? "why_no_close"
-      : null;
+  const closeSection = resolveCloseSection({ whyNoClose, closeWorks });
 
   const refusalReason =
     parsed.refusal_reason || parsed.skip_reason || parsed.error_details || null;
@@ -171,8 +168,8 @@ export function normalizeManualCallback(raw: unknown) {
     why_no_close: whyNoClose,
     what_made_this_close_work: closeWorks,
     objections_surfaced: objectionsSurfaced,
-    close_section_type: closeSectionType,
-    close_section: closeWorks || whyNoClose || null,
+    close_section_type: closeSection.type,
+    close_section: closeSection.value,
     source_payload: parsed as JsonObject,
   };
 }

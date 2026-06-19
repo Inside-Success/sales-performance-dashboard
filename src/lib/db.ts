@@ -23,8 +23,17 @@ import type {
   SalesCorrelationUsageData,
   SalesCorrelationUsageEvent,
   SalesCorrelationUsageRow,
+  SalesSnapshotRecord,
+  SalesSnapshotRow,
+  PromptBenchmarkCost,
+  PromptBenchmarkData,
+  PromptBenchmarkDecisionRow,
+  PromptBenchmarkOutput,
+  PromptBenchmarkRun,
+  PromptBenchmarkRunReviewData,
 } from "@/lib/types";
 import type { NormalizedManualCallback, ManualSubmitPayload } from "@/lib/manual-reports";
+import type { PromptBenchmarkIngestPayload } from "@/lib/prompt-benchmark";
 import type { UsageEventPayload } from "@/lib/usage-events";
 
 type SqlClient = ReturnType<typeof neon>;
@@ -171,6 +180,104 @@ export async function ensureSchema() {
   await sql`create index if not exists dashboard_usage_events_rep_created_idx on dashboard_usage_events (target_rep_slug, created_at desc)`;
   await sql`create index if not exists dashboard_usage_events_report_idx on dashboard_usage_events (report_id)`;
   await sql`create index if not exists dashboard_usage_events_manual_public_id_idx on dashboard_usage_events (manual_public_id)`;
+  await sql`create index if not exists dashboard_usage_events_viewer_email_created_idx on dashboard_usage_events (viewer_email, created_at desc)`;
+  await sql`create index if not exists dashboard_usage_events_viewer_rep_created_idx on dashboard_usage_events (viewer_rep_slug, created_at desc)`;
+
+  await sql`
+    create table if not exists sales_performance_snapshots (
+      id bigserial primary key,
+      source_url text not null,
+      source_sheet text,
+      headers jsonb not null default '[]'::jsonb,
+      rows jsonb not null default '[]'::jsonb,
+      row_count integer not null default 0,
+      paid_row_count integer not null default 0,
+      new_paid_row_count integer not null default 0,
+      latest_sales_date timestamptz,
+      validation_notes jsonb not null default '[]'::jsonb,
+      created_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists sales_performance_snapshots_created_at_idx on sales_performance_snapshots (created_at desc)`;
+
+  await sql`
+    create table if not exists prompt_benchmark_runs (
+      id bigserial primary key,
+      run_id text not null unique,
+      title text,
+      status text not null default 'completed',
+      sheet_url text,
+      dashboard_url text,
+      started_at timestamptz,
+      finished_at timestamptz,
+      total_cost_usd numeric(12,6) not null default 0,
+      total_provider_calls integer not null default 0,
+      source_payload jsonb not null default '{}'::jsonb,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists prompt_benchmark_runs_updated_at_idx on prompt_benchmark_runs (updated_at desc)`;
+
+  await sql`
+    create table if not exists prompt_benchmark_outputs (
+      id bigserial primary key,
+      result_id text not null unique,
+      run_id text not null,
+      case_id text not null,
+      case_label text,
+      case_type text not null default 'scored',
+      expected_call_status text,
+      call_status text,
+      model text not null,
+      provider text not null,
+      call_mode text not null,
+      coaching_mode text not null,
+      output jsonb not null default '{}'::jsonb,
+      ai_eval jsonb not null default '{}'::jsonb,
+      classification_agreed boolean,
+      overall_quality numeric(6,2),
+      total_cost_usd numeric(12,6) not null default 0,
+      total_input_tokens integer not null default 0,
+      total_output_tokens integer not null default 0,
+      total_latency_ms integer not null default 0,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists prompt_benchmark_outputs_run_id_idx on prompt_benchmark_outputs (run_id)`;
+  await sql`create index if not exists prompt_benchmark_outputs_config_idx on prompt_benchmark_outputs (model, call_mode, coaching_mode)`;
+  await sql`create index if not exists prompt_benchmark_outputs_updated_at_idx on prompt_benchmark_outputs (updated_at desc)`;
+
+  await sql`
+    create table if not exists prompt_benchmark_costs (
+      id bigserial primary key,
+      cost_id text not null unique,
+      run_id text not null,
+      result_id text,
+      case_id text,
+      model text not null,
+      provider text not null,
+      call_purpose text not null,
+      input_tokens integer not null default 0,
+      cache_creation_input_tokens integer not null default 0,
+      cache_read_input_tokens integer not null default 0,
+      output_tokens integer not null default 0,
+      input_cost_usd numeric(12,6) not null default 0,
+      cache_write_cost_usd numeric(12,6) not null default 0,
+      cache_read_cost_usd numeric(12,6) not null default 0,
+      output_cost_usd numeric(12,6) not null default 0,
+      total_cost_usd numeric(12,6) not null default 0,
+      started_at timestamptz,
+      finished_at timestamptz,
+      latency_ms integer not null default 0,
+      provider_response_id text,
+      error text,
+      created_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists prompt_benchmark_costs_run_id_idx on prompt_benchmark_costs (run_id)`;
+  await sql`create index if not exists prompt_benchmark_costs_result_id_idx on prompt_benchmark_costs (result_id)`;
 
   schemaReady = true;
 }
@@ -1377,6 +1484,585 @@ export async function getManualFeedbackReports(limit = 100) {
   }
 }
 
+export async function getLatestSalesPerformanceSnapshot(): Promise<SalesSnapshotRecord | null> {
+  if (!hasDatabase()) return null;
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+    const rows = await sql.query(
+      `
+        select
+          id,
+          source_url,
+          source_sheet,
+          headers,
+          rows,
+          row_count::int,
+          paid_row_count::int,
+          new_paid_row_count::int,
+          latest_sales_date::text,
+          validation_notes,
+          created_at::text
+        from sales_performance_snapshots
+        order by created_at desc
+        limit 1
+      `,
+      [],
+    );
+
+    const snapshot = (rows as SalesSnapshotRecord[])[0];
+    return snapshot ? normalizeSalesSnapshot(snapshot) : null;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function saveSalesPerformanceSnapshot(input: {
+  source_url: string;
+  source_sheet: string;
+  headers: string[];
+  rows: SalesSnapshotRow[];
+  row_count: number;
+  paid_row_count: number;
+  new_paid_row_count: number;
+  latest_sales_date: string | null;
+  validation_notes: string[];
+}): Promise<SalesSnapshotRecord | null> {
+  if (!hasDatabase()) return null;
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+    const rows = await sql.query(
+      `
+        insert into sales_performance_snapshots (
+          source_url,
+          source_sheet,
+          headers,
+          rows,
+          row_count,
+          paid_row_count,
+          new_paid_row_count,
+          latest_sales_date,
+          validation_notes
+        )
+        values ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, nullif($8, '')::timestamptz, $9::jsonb)
+        returning
+          id,
+          source_url,
+          source_sheet,
+          headers,
+          rows,
+          row_count::int,
+          paid_row_count::int,
+          new_paid_row_count::int,
+          latest_sales_date::text,
+          validation_notes,
+          created_at::text
+      `,
+      [
+        input.source_url,
+        input.source_sheet,
+        JSON.stringify(input.headers),
+        JSON.stringify(input.rows),
+        input.row_count,
+        input.paid_row_count,
+        input.new_paid_row_count,
+        input.latest_sales_date || "",
+        JSON.stringify(input.validation_notes),
+      ],
+    );
+
+    const snapshot = (rows as SalesSnapshotRecord[])[0];
+    return snapshot ? normalizeSalesSnapshot(snapshot) : null;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function ingestPromptBenchmark(payload: PromptBenchmarkIngestPayload) {
+  await ensureSchema();
+  const sql = getSql();
+
+  await sql.query(
+    `
+      insert into prompt_benchmark_runs (
+        run_id,
+        title,
+        status,
+        sheet_url,
+        dashboard_url,
+        started_at,
+        finished_at,
+        total_cost_usd,
+        total_provider_calls,
+        source_payload
+      )
+      values ($1, $2, $3, $4, $5, nullif($6, '')::timestamptz, nullif($7, '')::timestamptz, $8, $9, $10::jsonb)
+      on conflict (run_id) do update set
+        title = excluded.title,
+        status = excluded.status,
+        sheet_url = excluded.sheet_url,
+        dashboard_url = excluded.dashboard_url,
+        started_at = excluded.started_at,
+        finished_at = excluded.finished_at,
+        total_cost_usd = excluded.total_cost_usd,
+        total_provider_calls = excluded.total_provider_calls,
+        source_payload = excluded.source_payload,
+        updated_at = now()
+    `,
+    [
+      payload.run.run_id,
+      payload.run.title,
+      payload.run.status,
+      payload.run.sheet_url,
+      payload.run.dashboard_url,
+      payload.run.started_at,
+      payload.run.finished_at,
+      payload.run.total_cost_usd,
+      payload.run.total_provider_calls,
+      JSON.stringify(payload.run.source_payload),
+    ],
+  );
+
+  for (const output of payload.outputs) {
+    await sql.query(
+      `
+        insert into prompt_benchmark_outputs (
+          result_id,
+          run_id,
+          case_id,
+          case_label,
+          case_type,
+          expected_call_status,
+          call_status,
+          model,
+          provider,
+          call_mode,
+          coaching_mode,
+          output,
+          ai_eval,
+          classification_agreed,
+          overall_quality,
+          total_cost_usd,
+          total_input_tokens,
+          total_output_tokens,
+          total_latency_ms
+        )
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb, $13::jsonb, $14, $15, $16, $17, $18, $19)
+        on conflict (result_id) do update set
+          run_id = excluded.run_id,
+          case_id = excluded.case_id,
+          case_label = excluded.case_label,
+          case_type = excluded.case_type,
+          expected_call_status = excluded.expected_call_status,
+          call_status = excluded.call_status,
+          model = excluded.model,
+          provider = excluded.provider,
+          call_mode = excluded.call_mode,
+          coaching_mode = excluded.coaching_mode,
+          output = excluded.output,
+          ai_eval = excluded.ai_eval,
+          classification_agreed = excluded.classification_agreed,
+          overall_quality = excluded.overall_quality,
+          total_cost_usd = excluded.total_cost_usd,
+          total_input_tokens = excluded.total_input_tokens,
+          total_output_tokens = excluded.total_output_tokens,
+          total_latency_ms = excluded.total_latency_ms,
+          updated_at = now()
+      `,
+      [
+        output.result_id,
+        output.run_id,
+        output.case_id,
+        output.case_label,
+        output.case_type,
+        output.expected_call_status,
+        output.call_status,
+        output.model,
+        output.provider,
+        output.call_mode,
+        output.coaching_mode,
+        JSON.stringify(output.output),
+        JSON.stringify(output.ai_eval),
+        output.classification_agreed,
+        output.overall_quality,
+        output.total_cost_usd,
+        output.total_input_tokens,
+        output.total_output_tokens,
+        output.total_latency_ms,
+      ],
+    );
+  }
+
+  for (const cost of payload.costs) {
+    await sql.query(
+      `
+        insert into prompt_benchmark_costs (
+          cost_id,
+          run_id,
+          result_id,
+          case_id,
+          model,
+          provider,
+          call_purpose,
+          input_tokens,
+          cache_creation_input_tokens,
+          cache_read_input_tokens,
+          output_tokens,
+          input_cost_usd,
+          cache_write_cost_usd,
+          cache_read_cost_usd,
+          output_cost_usd,
+          total_cost_usd,
+          started_at,
+          finished_at,
+          latency_ms,
+          provider_response_id,
+          error
+        )
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, nullif($17, '')::timestamptz, nullif($18, '')::timestamptz, $19, $20, $21)
+        on conflict (cost_id) do update set
+          run_id = excluded.run_id,
+          result_id = excluded.result_id,
+          case_id = excluded.case_id,
+          model = excluded.model,
+          provider = excluded.provider,
+          call_purpose = excluded.call_purpose,
+          input_tokens = excluded.input_tokens,
+          cache_creation_input_tokens = excluded.cache_creation_input_tokens,
+          cache_read_input_tokens = excluded.cache_read_input_tokens,
+          output_tokens = excluded.output_tokens,
+          input_cost_usd = excluded.input_cost_usd,
+          cache_write_cost_usd = excluded.cache_write_cost_usd,
+          cache_read_cost_usd = excluded.cache_read_cost_usd,
+          output_cost_usd = excluded.output_cost_usd,
+          total_cost_usd = excluded.total_cost_usd,
+          started_at = excluded.started_at,
+          finished_at = excluded.finished_at,
+          latency_ms = excluded.latency_ms,
+          provider_response_id = excluded.provider_response_id,
+          error = excluded.error
+      `,
+      [
+        cost.cost_id,
+        cost.run_id,
+        cost.result_id,
+        cost.case_id,
+        cost.model,
+        cost.provider,
+        cost.call_purpose,
+        cost.input_tokens,
+        cost.cache_creation_input_tokens,
+        cost.cache_read_input_tokens,
+        cost.output_tokens,
+        cost.input_cost_usd,
+        cost.cache_write_cost_usd,
+        cost.cache_read_cost_usd,
+        cost.output_cost_usd,
+        cost.total_cost_usd,
+        cost.started_at,
+        cost.finished_at,
+        cost.latency_ms,
+        cost.provider_response_id,
+        cost.error,
+      ],
+    );
+  }
+
+  return {
+    run_id: payload.run.run_id,
+    outputs: payload.outputs.length,
+    costs: payload.costs.length,
+  };
+}
+
+export async function getPromptBenchmarkData(): Promise<PromptBenchmarkData> {
+  const fallback = getFallbackPromptBenchmarkData();
+
+  if (!hasDatabase()) return fallback;
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+
+    const [runs, outputs, costs, decisionRows, totalsRows] = await Promise.all([
+      sql.query(
+        `
+          select
+            id,
+            run_id,
+            title,
+            status,
+            sheet_url,
+            dashboard_url,
+            started_at::text,
+            finished_at::text,
+            total_cost_usd::float8,
+            total_provider_calls::int,
+            source_payload,
+            created_at::text,
+            updated_at::text
+          from prompt_benchmark_runs
+          order by updated_at desc
+          limit 20
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            id,
+            result_id,
+            run_id,
+            case_id,
+            case_label,
+            case_type,
+            expected_call_status,
+            call_status,
+            model,
+            provider,
+            call_mode,
+            coaching_mode,
+            output,
+            ai_eval,
+            classification_agreed,
+            overall_quality::float8,
+            total_cost_usd::float8,
+            total_input_tokens::int,
+            total_output_tokens::int,
+            total_latency_ms::int,
+            created_at::text,
+            updated_at::text
+          from prompt_benchmark_outputs
+          order by updated_at desc
+          limit 250
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            id,
+            cost_id,
+            run_id,
+            result_id,
+            case_id,
+            model,
+            provider,
+            call_purpose,
+            input_tokens::int,
+            cache_creation_input_tokens::int,
+            cache_read_input_tokens::int,
+            output_tokens::int,
+            input_cost_usd::float8,
+            cache_write_cost_usd::float8,
+            cache_read_cost_usd::float8,
+            output_cost_usd::float8,
+            total_cost_usd::float8,
+            started_at::text,
+            finished_at::text,
+            latency_ms::int,
+            provider_response_id,
+            error,
+            created_at::text
+          from prompt_benchmark_costs
+          order by created_at desc
+          limit 250
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            model,
+            call_mode,
+            coaching_mode,
+            count(*)::int as output_count,
+            count(*) filter (where case_type = 'scored')::int as scored_cases,
+            count(*) filter (where case_type <> 'scored')::int as gate_cases,
+            avg(overall_quality)::float8 as avg_overall_quality,
+            avg(case when classification_agreed is null then null when classification_agreed then 1 else 0 end)::float8 as classification_agreement_rate,
+            avg(
+              case
+                when ai_eval = '{}'::jsonb then null
+                else (
+                  (
+                    case when ai_eval #>> '{classification_correct,rating}' = 'pass' then 1 else 0 end +
+                    case when ai_eval #>> '{fair_to_rep,rating}' = 'pass' then 1 else 0 end +
+                    case when ai_eval #>> '{accurate_facts,rating}' = 'pass' then 1 else 0 end +
+                    case when ai_eval #>> '{separation_maintained,rating}' = 'pass' then 1 else 0 end
+                  )::float8 / 4
+                )
+              end
+            )::float8 as pass_rate_core_criteria,
+            sum(total_cost_usd)::float8 as total_cost_usd,
+            avg(total_latency_ms)::float8 as avg_latency_ms,
+            sum(total_input_tokens)::int as total_input_tokens,
+            sum(total_output_tokens)::int as total_output_tokens
+          from prompt_benchmark_outputs
+          group by model, call_mode, coaching_mode
+          order by avg_overall_quality desc nulls last, total_cost_usd asc
+        `,
+        [],
+      ),
+      sql.query(
+        `
+          select
+            (select count(*)::int from prompt_benchmark_runs) as runs,
+            (select count(*)::int from prompt_benchmark_outputs) as outputs,
+            (select count(*)::int from prompt_benchmark_costs) as provider_calls,
+            (select coalesce(sum(total_cost_usd), 0)::float8 from prompt_benchmark_costs) as total_cost_usd,
+            (select avg(overall_quality)::float8 from prompt_benchmark_outputs) as avg_overall_quality
+        `,
+        [],
+      ),
+    ]);
+
+    return {
+      configured: true,
+      generatedAt: new Date().toISOString(),
+      runs: (runs as PromptBenchmarkRun[]).map(normalizePromptBenchmarkRun),
+      outputs: (outputs as PromptBenchmarkOutput[]).map(normalizePromptBenchmarkOutput),
+      costs: (costs as PromptBenchmarkCost[]).map(normalizePromptBenchmarkCost),
+      decisionRows: (decisionRows as PromptBenchmarkDecisionRow[]).map(
+        normalizePromptBenchmarkDecisionRow,
+      ),
+      totals: normalizePromptBenchmarkTotals(
+        (totalsRows as Partial<PromptBenchmarkData["totals"]>[])[0],
+      ),
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      ...fallback,
+      configured: true,
+      error: "Prompt benchmark query failed. Check DATABASE_URL and the benchmark schema.",
+    };
+  }
+}
+
+export async function getPromptBenchmarkRunReview(
+  runId: string,
+): Promise<PromptBenchmarkRunReviewData> {
+  const fallback = getFallbackPromptBenchmarkRunReviewData();
+
+  if (!hasDatabase()) return fallback;
+
+  try {
+    await ensureSchema();
+    const sql = getSql();
+
+    const [runs, outputs, costs] = await Promise.all([
+      sql.query(
+        `
+          select
+            id,
+            run_id,
+            title,
+            status,
+            sheet_url,
+            dashboard_url,
+            started_at::text,
+            finished_at::text,
+            total_cost_usd::float8,
+            total_provider_calls::int,
+            source_payload,
+            created_at::text,
+            updated_at::text
+          from prompt_benchmark_runs
+          where run_id = $1
+          limit 1
+        `,
+        [runId],
+      ),
+      sql.query(
+        `
+          select
+            id,
+            result_id,
+            run_id,
+            case_id,
+            case_label,
+            case_type,
+            expected_call_status,
+            call_status,
+            model,
+            provider,
+            call_mode,
+            coaching_mode,
+            output,
+            ai_eval,
+            classification_agreed,
+            overall_quality::float8,
+            total_cost_usd::float8,
+            total_input_tokens::int,
+            total_output_tokens::int,
+            total_latency_ms::int,
+            created_at::text,
+            updated_at::text
+          from prompt_benchmark_outputs
+          where run_id = $1
+          order by case_label asc nulls last, case_id asc, call_mode asc, coaching_mode asc, model asc
+        `,
+        [runId],
+      ),
+      sql.query(
+        `
+          select
+            id,
+            cost_id,
+            run_id,
+            result_id,
+            case_id,
+            model,
+            provider,
+            call_purpose,
+            input_tokens::int,
+            cache_creation_input_tokens::int,
+            cache_read_input_tokens::int,
+            output_tokens::int,
+            input_cost_usd::float8,
+            cache_write_cost_usd::float8,
+            cache_read_cost_usd::float8,
+            output_cost_usd::float8,
+            total_cost_usd::float8,
+            started_at::text,
+            finished_at::text,
+            latency_ms::int,
+            provider_response_id,
+            error,
+            created_at::text
+          from prompt_benchmark_costs
+          where run_id = $1
+          order by case_id asc nulls last, result_id asc nulls last, created_at asc
+        `,
+        [runId],
+      ),
+    ]);
+
+    return {
+      configured: true,
+      generatedAt: new Date().toISOString(),
+      run: (runs as PromptBenchmarkRun[])[0]
+        ? normalizePromptBenchmarkRun((runs as PromptBenchmarkRun[])[0])
+        : null,
+      outputs: (outputs as PromptBenchmarkOutput[]).map(normalizePromptBenchmarkOutput),
+      costs: (costs as PromptBenchmarkCost[]).map(normalizePromptBenchmarkCost),
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      ...fallback,
+      configured: true,
+      error: "Prompt benchmark review query failed. Check DATABASE_URL and the benchmark schema.",
+    };
+  }
+}
+
 export async function getManualFeedbackReport(publicId: string) {
   if (!hasDatabase()) return null;
 
@@ -1409,6 +2095,127 @@ function normalizeManualReport(report: ManualFeedbackReport): ManualFeedbackRepo
     what_went_well: normalizeStringList(report.what_went_well),
     what_to_improve: normalizeStringList(report.what_to_improve),
     objections_surfaced: normalizeStringList(report.objections_surfaced),
+  };
+}
+
+function normalizePromptBenchmarkRun(run: PromptBenchmarkRun): PromptBenchmarkRun {
+  return {
+    ...run,
+    id: Number(run.id),
+    total_cost_usd: Number(run.total_cost_usd || 0),
+    total_provider_calls: Number(run.total_provider_calls || 0),
+    source_payload: (run.source_payload || {}) as PromptBenchmarkRun["source_payload"],
+  };
+}
+
+function normalizeSalesSnapshot(snapshot: SalesSnapshotRecord): SalesSnapshotRecord {
+  return {
+    ...snapshot,
+    id: Number(snapshot.id),
+    headers: Array.isArray(snapshot.headers) ? snapshot.headers.map(String) : [],
+    rows: Array.isArray(snapshot.rows) ? snapshot.rows.map(normalizeSalesSnapshotRow) : [],
+    row_count: Number(snapshot.row_count || 0),
+    paid_row_count: Number(snapshot.paid_row_count || 0),
+    new_paid_row_count: Number(snapshot.new_paid_row_count || 0),
+    validation_notes: Array.isArray(snapshot.validation_notes)
+      ? snapshot.validation_notes.map(String)
+      : [],
+  };
+}
+
+function normalizeSalesSnapshotRow(row: SalesSnapshotRow): SalesSnapshotRow {
+  return {
+    date: String(row.date || ""),
+    dateKey: String(row.dateKey || ""),
+    paymentStatus: String(row.paymentStatus || ""),
+    paymentType: String(row.paymentType || ""),
+    amount: Number(row.amount || 0),
+    repName: String(row.repName || ""),
+    repSlug: String(row.repSlug || ""),
+    showName: String(row.showName || ""),
+    contractSigned: Boolean(row.contractSigned),
+  };
+}
+
+function normalizePromptBenchmarkOutput(output: PromptBenchmarkOutput): PromptBenchmarkOutput {
+  return {
+    ...output,
+    id: Number(output.id),
+    output: (output.output || {}) as PromptBenchmarkOutput["output"],
+    ai_eval: (output.ai_eval || {}) as PromptBenchmarkOutput["ai_eval"],
+    classification_agreed:
+      output.classification_agreed === null || output.classification_agreed === undefined
+        ? null
+        : Boolean(output.classification_agreed),
+    overall_quality:
+      output.overall_quality === null || output.overall_quality === undefined
+        ? null
+        : Number(output.overall_quality),
+    total_cost_usd: Number(output.total_cost_usd || 0),
+    total_input_tokens: Number(output.total_input_tokens || 0),
+    total_output_tokens: Number(output.total_output_tokens || 0),
+    total_latency_ms: Number(output.total_latency_ms || 0),
+  };
+}
+
+function normalizePromptBenchmarkCost(cost: PromptBenchmarkCost): PromptBenchmarkCost {
+  return {
+    ...cost,
+    id: Number(cost.id),
+    input_tokens: Number(cost.input_tokens || 0),
+    cache_creation_input_tokens: Number(cost.cache_creation_input_tokens || 0),
+    cache_read_input_tokens: Number(cost.cache_read_input_tokens || 0),
+    output_tokens: Number(cost.output_tokens || 0),
+    input_cost_usd: Number(cost.input_cost_usd || 0),
+    cache_write_cost_usd: Number(cost.cache_write_cost_usd || 0),
+    cache_read_cost_usd: Number(cost.cache_read_cost_usd || 0),
+    output_cost_usd: Number(cost.output_cost_usd || 0),
+    total_cost_usd: Number(cost.total_cost_usd || 0),
+    latency_ms: Number(cost.latency_ms || 0),
+  };
+}
+
+function normalizePromptBenchmarkDecisionRow(
+  row: PromptBenchmarkDecisionRow,
+): PromptBenchmarkDecisionRow {
+  return {
+    model: row.model,
+    call_mode: row.call_mode,
+    coaching_mode: row.coaching_mode,
+    output_count: Number(row.output_count || 0),
+    scored_cases: Number(row.scored_cases || 0),
+    gate_cases: Number(row.gate_cases || 0),
+    avg_overall_quality:
+      row.avg_overall_quality === null || row.avg_overall_quality === undefined
+        ? null
+        : Number(row.avg_overall_quality),
+    classification_agreement_rate:
+      row.classification_agreement_rate === null ||
+      row.classification_agreement_rate === undefined
+        ? null
+        : Number(row.classification_agreement_rate),
+    pass_rate_core_criteria:
+      row.pass_rate_core_criteria === null || row.pass_rate_core_criteria === undefined
+        ? null
+        : Number(row.pass_rate_core_criteria),
+    total_cost_usd: Number(row.total_cost_usd || 0),
+    avg_latency_ms: Number(row.avg_latency_ms || 0),
+    total_input_tokens: Number(row.total_input_tokens || 0),
+    total_output_tokens: Number(row.total_output_tokens || 0),
+  };
+}
+
+function normalizePromptBenchmarkTotals(row: unknown): PromptBenchmarkData["totals"] {
+  const totals = (row || {}) as Partial<PromptBenchmarkData["totals"]>;
+  const avgQuality = totals.avg_overall_quality;
+
+  return {
+    runs: Number(totals.runs || 0),
+    outputs: Number(totals.outputs || 0),
+    provider_calls: Number(totals.provider_calls || 0),
+    total_cost_usd: Number(totals.total_cost_usd || 0),
+    avg_overall_quality:
+      avgQuality === null || avgQuality === undefined ? null : Number(avgQuality),
   };
 }
 
@@ -1645,6 +2452,34 @@ function getFallbackUsageAnalytics(): UsageAnalytics {
     chat: normalizeUsageChatSummary(undefined),
     chatReps: [],
     recentEvents: [],
+  };
+}
+
+function getFallbackPromptBenchmarkData(): PromptBenchmarkData {
+  return {
+    configured: false,
+    generatedAt: new Date().toISOString(),
+    runs: [],
+    outputs: [],
+    costs: [],
+    decisionRows: [],
+    totals: {
+      runs: 0,
+      outputs: 0,
+      provider_calls: 0,
+      total_cost_usd: 0,
+      avg_overall_quality: null,
+    },
+  };
+}
+
+function getFallbackPromptBenchmarkRunReviewData(): PromptBenchmarkRunReviewData {
+  return {
+    configured: false,
+    generatedAt: new Date().toISOString(),
+    run: null,
+    outputs: [],
+    costs: [],
   };
 }
 

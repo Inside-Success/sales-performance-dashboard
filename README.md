@@ -88,7 +88,7 @@ The endpoint upserts dashboard rows and returns:
 - Enhanced report feedback is forwarded to n8n workflow `Vt1Ze3LiWynk7mao` and stored in the production Google Sheet tabs `Positive Reviews` and `Negative Reviews`.
 - Manual reports stuck in `pending` or `processing` for more than 5 minutes are treated as stale/timed out instead of showing an endless generation state.
 - `/manager/usage` tracks official and manual usage separately. Usage tracking starts from the deployment that added events; older visits are not backfilled.
-- `/manager/sales-correlation` reads the company sales Google Sheet as CSV and never writes to it. It is a directional correlation/association page, not causal proof.
+- `/manager/sales-correlation` reads the company sales Google Sheet as CSV, validates the read, stores a dashboard-owned last-good snapshot in Postgres, and falls back to that snapshot if the live CSV looks filtered/incomplete or fails. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
 - Sales-impact matching canonicalizes known rep-name issues such as suffix `Success` and alias `ollie-mcfarl` -> `ollie-mcfarlane`.
 - Report chat sends visible coaching fields and mandatory transcript text to DeepSeek only after the user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
 - Sales-impact chat answers only from the current analytics snapshot and must not claim Magic Mike caused sales increases.
@@ -101,12 +101,12 @@ DEEPSEEK_API_KEY="..."
 REPORT_CHAT_ENABLED="true"
 REPORT_CHAT_BETA_REP_SLUGS="comma,separated,slugs"
 REPORT_CHAT_BETA_REPORT_IDS="comma,separated,ids"
-SALES_PERFORMANCE_CSV_URL="https://docs.google.com/spreadsheets/d/.../gviz/tq?tqx=out:csv&sheet=Main"
+SALES_PERFORMANCE_CSV_URL="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=0"
 REPORT_FEEDBACK_WEBHOOK_URL="https://insidesuccess.app.n8n.cloud/webhook/magic-mike-report-feedback"
 REPORT_FEEDBACK_WEBHOOK_SECRET="..."
 ```
 
-`SALES_PERFORMANCE_CSV_URL` is optional because a default read-only Google Sheet CSV URL exists in the app.
+`SALES_PERFORMANCE_CSV_URL` is optional because a default read-only Google Sheet CSV URL exists in the app. Sales-impact snapshot protection uses the dashboard `DATABASE_URL` and the `sales_performance_snapshots` table; it never writes to Google Sheets.
 
 Never commit API keys or secrets. Never modify the sales Google Sheet from this app.
 
