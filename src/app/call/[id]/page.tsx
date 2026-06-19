@@ -44,7 +44,7 @@ export default async function CallPage({
   const { id } = await params;
   const query = await searchParams;
   const source = Array.isArray(query.from) ? query.from[0] : query.from;
-  const isManagerUsageView = source === "manager-usage";
+  const isManagerUsageView = source === "manager-usage" || source === "manager-compliance";
   const call = await getPerformanceCall(id);
 
   if (!call) notFound();

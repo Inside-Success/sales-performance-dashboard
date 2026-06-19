@@ -1,6 +1,10 @@
+import { neon } from "@neondatabase/serverless";
+import { slugify } from "@/lib/slug";
+
 const COMPLIANCE_SHEET_ID = "17yBNMgUT7rX2KjdvRFJHj8OrMTWnXrYSOCb46VtwUoc";
 const REP_SUMMARY_SHEET = "Weekly Rep Summary";
 const CATEGORY_SUMMARY_SHEET = "Weekly Category Summary";
+const RAW_LOG_SHEET = "Raw Compliance Log";
 const FETCH_TIMEOUT_MS = 10_000;
 
 export const COMPLIANCE_COUNT_FILTERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
@@ -18,7 +22,9 @@ type RepSummaryRow = {
   week: string;
   status: string;
   rep: string;
+  repSlug: string;
   category: string;
+  categoryKey: string;
   count: number;
   severity: string;
   lastSeen: string;
@@ -32,6 +38,7 @@ export type ComplianceCategoryRow = {
   week: string;
   status: string;
   category: string;
+  categoryKey: string;
   totalCount: number;
   repsInvolved: number;
   severity: string;
@@ -49,6 +56,7 @@ export type ComplianceWeekOption = {
 
 export type ComplianceRepGroup = {
   rep: string;
+  repSlug: string;
   totalCount: number;
   severity: string;
   lastSeen: string;
@@ -59,6 +67,41 @@ export type ComplianceRepGroup = {
     severity: string;
   }>;
   managerNotes: string[];
+};
+
+export type ComplianceFlagDetail = {
+  id: string;
+  weekKey: string;
+  date: string;
+  dateTime: number;
+  rep: string;
+  repSlug: string;
+  client: string;
+  category: string;
+  categoryKey: string;
+  risk: string;
+  severity: string;
+  quote: string;
+  transcriptUrl: string;
+  decision: string;
+  reportId: number | null;
+  reportUrl: string | null;
+};
+
+export type ComplianceCategoryDrilldown = {
+  category: string;
+  categoryKey: string;
+  totalCount: number;
+  repsInvolved: number;
+  reps: Array<{
+    rep: string;
+    repSlug: string;
+    count: number;
+    severity: string;
+    lastSeen: string;
+    lastSeenTime: number;
+    detailCount: number;
+  }>;
 };
 
 export type ComplianceDashboardSummary = {
@@ -86,6 +129,9 @@ export type ComplianceDashboardData = {
   summary: ComplianceDashboardSummary;
   repGroups: ComplianceRepGroup[];
   categoryRows: ComplianceCategoryRow[];
+  flagDetails: ComplianceFlagDetail[];
+  categoryDrilldowns: ComplianceCategoryDrilldown[];
+  reconciliationWarnings: string[];
   unfilteredRepCount: number;
   unfilteredCategoryCount: number;
   error?: string;
@@ -100,12 +146,14 @@ export async function getComplianceDashboardData(
   const fallback = getFallbackDashboardData(generatedAt, sheetUrl, filters);
 
   try {
-    const [repRecords, categoryRecords] = await Promise.all([
-      fetchSheetRecords(REP_SUMMARY_SHEET),
-      fetchSheetRecords(CATEGORY_SUMMARY_SHEET),
+    const [repRecords, categoryRecords, rawRecords] = await Promise.all([
+      fetchSheetRecords(REP_SUMMARY_SHEET, "Week"),
+      fetchSheetRecords(CATEGORY_SUMMARY_SHEET, "Week"),
+      fetchSheetRecords(RAW_LOG_SHEET, "Date"),
     ]);
     const repRows = repRecords.map(normalizeRepSummaryRow).filter(isPresent);
     const categoryRows = categoryRecords.map(normalizeCategorySummaryRow).filter(isPresent);
+    const rawRows = rawRecords.map(normalizeRawComplianceRow).filter(isPresent);
     const weeks = buildWeekOptions(repRows, categoryRows);
     const selectedWeek = selectWeek(weeks, readFirst(searchParams.week));
 
@@ -118,8 +166,28 @@ export async function getComplianceDashboardData(
 
     const selectedRepRows = repRows.filter((row) => row.weekKey === selectedWeek.key);
     const selectedCategoryRows = categoryRows.filter((row) => row.weekKey === selectedWeek.key);
+    const categoryLabelByKey = buildCategoryLabelMap(selectedCategoryRows);
+    const selectedFlagDetails = await attachReportLinks(
+      rawRows
+        .filter((row) => row.weekKey === selectedWeek.key)
+        .map((row) => ({
+          ...row,
+          category: categoryLabelByKey.get(row.categoryKey) || row.category,
+        })),
+    );
+    const detailCountByRepCategory = countDetailsByRepCategory(selectedFlagDetails);
     const repGroups = groupRepRows(selectedRepRows);
+    const categoryDrilldowns = buildCategoryDrilldowns(
+      selectedRepRows,
+      selectedCategoryRows,
+      detailCountByRepCategory,
+    );
     const summary = buildSummary(selectedRepRows, selectedCategoryRows);
+    const reconciliationWarnings = buildReconciliationWarnings(
+      repGroups,
+      selectedCategoryRows,
+      selectedFlagDetails,
+    );
     const filteredRepGroups = repGroups
       .filter((row) => row.totalCount >= filters.minCount)
       .filter((row) => matchesSearch(row, filters.search))
@@ -138,6 +206,9 @@ export async function getComplianceDashboardData(
       summary,
       repGroups: filteredRepGroups,
       categoryRows: filteredCategoryRows,
+      flagDetails: selectedFlagDetails,
+      categoryDrilldowns,
+      reconciliationWarnings,
       unfilteredRepCount: repGroups.length,
       unfilteredCategoryCount: selectedCategoryRows.length,
     };
@@ -174,6 +245,9 @@ function getFallbackDashboardData(
     },
     repGroups: [],
     categoryRows: [],
+    flagDetails: [],
+    categoryDrilldowns: [],
+    reconciliationWarnings: [],
     unfilteredRepCount: 0,
     unfilteredCategoryCount: 0,
   };
@@ -191,7 +265,7 @@ function readComplianceFilters(searchParams: ComplianceSearchParams) {
   };
 }
 
-async function fetchSheetRecords(sheetName: string) {
+async function fetchSheetRecords(sheetName: string, requiredHeader: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
     sheet: sheetName,
@@ -211,18 +285,18 @@ async function fetchSheetRecords(sheetName: string) {
     }
 
     const csv = await response.text();
-    return recordsFromCsv(csv, sheetName);
+    return recordsFromCsv(csv, sheetName, requiredHeader);
   } finally {
     clearTimeout(timeout);
   }
 }
 
-function recordsFromCsv(csv: string, sheetName: string) {
+function recordsFromCsv(csv: string, sheetName: string, requiredHeader: string) {
   const rows = parseCsv(csv).filter((row) => row.some((cell) => cell.trim()));
   const [headers, ...body] = rows;
 
-  if (!headers?.includes("Week")) {
-    throw new Error(`${sheetName} does not have the expected weekly summary header row.`);
+  if (!headers?.includes(requiredHeader)) {
+    throw new Error(`${sheetName} does not have the expected ${requiredHeader} header row.`);
   }
 
   return body.map((row) => {
@@ -293,7 +367,9 @@ function normalizeRepSummaryRow(record: Record<string, string>): RepSummaryRow |
     week: record.Week || weekKey,
     status: record.Status || "",
     rep,
+    repSlug: slugify(rep),
     category,
+    categoryKey: categoryKey(category),
     count: parseCount(record.Count),
     severity: record["Highest Severity"] || "Review",
     lastSeen,
@@ -319,12 +395,51 @@ function normalizeCategorySummaryRow(
     week: record.Week || weekKey,
     status: record.Status || "",
     category,
+    categoryKey: categoryKey(category),
     totalCount: parseCount(record["Total Count"]),
     repsInvolved: parseCount(record["Reps Involved"]),
     severity: record["Highest Severity"] || "Review",
     lastSeen,
     lastSeenTime: parseSheetDate(lastSeen),
     managerNotes: record["Manager Notes"] || "",
+  };
+}
+
+function normalizeRawComplianceRow(record: Record<string, string>): ComplianceFlagDetail | null {
+  const date = record.Date || "";
+  const rep = record.Rep || "";
+  const client = record.Client || "";
+  const rawCategory = record.Category || record["Compliance Category"] || "";
+  const quote = record.Quote || "";
+  const dateTime = parseSheetDate(date);
+
+  if (!dateTime || !rep || !rawCategory) return null;
+
+  const key = categoryKey(rawCategory);
+
+  return {
+    id: [
+      date,
+      slugify(rep),
+      normalizeText(client),
+      key,
+      normalizeText(quote).slice(0, 80),
+    ].join("|"),
+    weekKey: weekKeyFromTimestamp(dateTime),
+    date,
+    dateTime,
+    rep,
+    repSlug: slugify(rep),
+    client: client || "Unknown client",
+    category: humanizeCategory(rawCategory),
+    categoryKey: key,
+    risk: record.Risk || "",
+    severity: severityFromRisk(record.Risk || ""),
+    quote,
+    transcriptUrl: record.Transcript || "",
+    decision: record.Decision || "",
+    reportId: null,
+    reportUrl: null,
   };
 }
 
@@ -369,8 +484,9 @@ function groupRepRows(rows: RepSummaryRow[]): ComplianceRepGroup[] {
   const groups = new Map<string, ComplianceRepGroup>();
 
   for (const row of rows) {
-    const group = groups.get(row.rep) || {
+    const group = groups.get(row.repSlug) || {
       rep: row.rep,
+      repSlug: row.repSlug,
       totalCount: 0,
       severity: "None",
       lastSeen: "",
@@ -394,13 +510,71 @@ function groupRepRows(rows: RepSummaryRow[]): ComplianceRepGroup[] {
       group.managerNotes.push(row.managerNotes);
     }
 
-    groups.set(row.rep, group);
+    groups.set(row.repSlug, group);
   }
 
   return [...groups.values()].map((group) => ({
     ...group,
     categories: group.categories.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
   }));
+}
+
+function buildCategoryLabelMap(rows: ComplianceCategoryRow[]) {
+  const labels = new Map<string, string>();
+  for (const row of rows) labels.set(row.categoryKey, row.category);
+  return labels;
+}
+
+function countDetailsByRepCategory(details: ComplianceFlagDetail[]) {
+  const counts = new Map<string, number>();
+  for (const detail of details) {
+    const key = `${detail.repSlug}|${detail.categoryKey}`;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return counts;
+}
+
+function buildCategoryDrilldowns(
+  repRows: RepSummaryRow[],
+  categoryRows: ComplianceCategoryRow[],
+  detailCountByRepCategory: Map<string, number>,
+): ComplianceCategoryDrilldown[] {
+  const rowsByCategory = new Map<string, RepSummaryRow[]>();
+
+  for (const row of repRows) {
+    const rows = rowsByCategory.get(row.categoryKey) || [];
+    rows.push(row);
+    rowsByCategory.set(row.categoryKey, rows);
+  }
+
+  return categoryRows.map((category) => {
+    const rows = rowsByCategory.get(category.categoryKey) || [];
+    const reps = rows
+      .map((row) => ({
+        rep: row.rep,
+        repSlug: row.repSlug,
+        count: row.count,
+        severity: row.severity,
+        lastSeen: row.lastSeen,
+        lastSeenTime: row.lastSeenTime,
+        detailCount: detailCountByRepCategory.get(`${row.repSlug}|${row.categoryKey}`) || 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.count - a.count ||
+          severityRank(b.severity) - severityRank(a.severity) ||
+          b.lastSeenTime - a.lastSeenTime ||
+          a.rep.localeCompare(b.rep),
+      );
+
+    return {
+      category: category.category,
+      categoryKey: category.categoryKey,
+      totalCount: category.totalCount,
+      repsInvolved: category.repsInvolved,
+      reps,
+    };
+  });
 }
 
 function buildSummary(
@@ -520,6 +694,23 @@ function getWeekKey(key: string, week: string) {
   return week.trim();
 }
 
+function weekKeyFromTimestamp(timestamp: number) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(timestamp));
+  const year = Number(parts.find((part) => part.type === "year")?.value || 0);
+  const month = Number(parts.find((part) => part.type === "month")?.value || 0);
+  const day = Number(parts.find((part) => part.type === "day")?.value || 0);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const dayOfWeek = date.getUTCDay();
+  const mondayOffset = (dayOfWeek + 6) % 7;
+  date.setUTCDate(date.getUTCDate() - mondayOffset);
+  return date.toISOString().slice(0, 10);
+}
+
 function parseCount(value: string) {
   const parsed = Number(value.replace(/,/g, ""));
   return Number.isFinite(parsed) ? parsed : 0;
@@ -541,8 +732,189 @@ function parseSheetDate(value: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function severityFromRisk(value: string) {
+  const match = value.match(/\(([^)]+)\)/);
+  if (match?.[1]) return match[1];
+  const score = Number(value.match(/\d+/)?.[0] || 0);
+  if (score >= 70) return "High";
+  if (score >= 40) return "Medium";
+  if (score > 0) return "Low";
+  return "Review";
+}
+
 function maxSeverity(current: string, next: string) {
   return severityRank(next) > severityRank(current) ? next || current : current || next;
+}
+
+function categoryKey(value: string) {
+  const normalized = normalizeText(value);
+  const alias = CATEGORY_ALIASES.get(normalized);
+  if (alias) return alias;
+  return normalized
+    .replace(/\band\b/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function humanizeCategory(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "Uncategorized";
+  if (!trimmed.includes("_") && !/^[a-z0-9-]+$/.test(trimmed)) return trimmed;
+  return trimmed
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(/\bRoi\b/g, "ROI")
+    .replace(/\bFtc\b/g, "FTC")
+    .replace(/\bPii\b/g, "PII");
+}
+
+function normalizeText(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+const CATEGORY_ALIASES = new Map<string, string>([
+  ["roi results implications", "roi-business-outcome"],
+  ["roi business outcome", "roi-business-outcome"],
+  ["business outcome", "roi-business-outcome"],
+  ["customer acquisition outcome implications", "roi-business-outcome"],
+  ["platform streaming claims", "third-party-platform-placement"],
+  ["third party platform placement", "third-party-platform-placement"],
+  ["third party platform", "third-party-platform-placement"],
+  ["missing recording consent", "missing-recording-consent"],
+  ["recording consent", "missing-recording-consent"],
+  ["confidentiality recording consent", "missing-recording-consent"],
+  ["hosting duration", "show-longevity-platform-window"],
+  ["show longevity platform window", "show-longevity-platform-window"],
+  ["ftc legal pressure language", "ftc-legal-pressure-language"],
+  ["ftc legal deadline pressure", "ftc-legal-pressure-language"],
+  ["celebrity endorsement claim", "celebrity-endorsement-claim"],
+  ["celebrity roster claims", "celebrity-endorsement-claim"],
+  ["sensitive financial pii on recorded call", "sensitive-financial-pii-on-recorded-call"],
+  ["pii on recording", "sensitive-financial-pii-on-recorded-call"],
+  ["refund cancellation promise", "refund-cancellation-promise"],
+  ["refund or cancellation promises", "refund-cancellation-promise"],
+]);
+
+type ReportLinkCandidate = {
+  id: number;
+  rep_name: string;
+  rep_slug: string;
+  client_name: string | null;
+  call_date: string | null;
+  meeting_title: string | null;
+  transcript_link: string | null;
+  google_doc_link: string | null;
+};
+
+async function attachReportLinks(details: ComplianceFlagDetail[]) {
+  if (!details.length || !process.env.DATABASE_URL) return details;
+
+  try {
+    const sql = neon(process.env.DATABASE_URL);
+    const rows = (await sql.query(
+      `
+        select id, rep_name, rep_slug, client_name, call_date::text, meeting_title, transcript_link, google_doc_link
+        from performance_calls
+        order by call_date desc nulls last, updated_at desc
+        limit 6000
+      `,
+      [],
+    )) as ReportLinkCandidate[];
+    const candidates = rows.map((row) => ({
+      ...row,
+      rep_slug: row.rep_slug || slugify(row.rep_name || ""),
+      transcriptDocId: extractGoogleDocId(row.transcript_link || ""),
+      googleDocId: extractGoogleDocId(row.google_doc_link || ""),
+      clientKey: normalizeText(row.client_name || ""),
+      callDay: row.call_date ? weekDayKey(Date.parse(row.call_date)) : "",
+    }));
+    const byDocId = new Map<string, ReportLinkCandidate & { transcriptDocId: string; googleDocId: string; clientKey: string; callDay: string }>();
+
+    for (const candidate of candidates) {
+      if (candidate.transcriptDocId) byDocId.set(candidate.transcriptDocId, candidate);
+      if (candidate.googleDocId) byDocId.set(candidate.googleDocId, candidate);
+    }
+
+    return details.map((detail) => {
+      const docId = extractGoogleDocId(detail.transcriptUrl);
+      const directMatch = docId ? byDocId.get(docId) : null;
+      const fallbackMatch =
+        directMatch ||
+        candidates.find(
+          (candidate) =>
+            candidate.rep_slug === detail.repSlug &&
+            candidate.clientKey === normalizeText(detail.client) &&
+            candidate.callDay === weekDayKey(detail.dateTime),
+        ) ||
+        null;
+
+      if (!fallbackMatch) return detail;
+
+      return {
+        ...detail,
+        reportId: fallbackMatch.id,
+        reportUrl: `/call/${fallbackMatch.id}?from=manager-compliance`,
+      };
+    });
+  } catch (error) {
+    console.error("Compliance report link matching failed", error);
+    return details;
+  }
+}
+
+function extractGoogleDocId(value: string) {
+  return value.match(/\/d\/([^/?#]+)/)?.[1] || "";
+}
+
+function weekDayKey(timestamp: number) {
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return "";
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(timestamp));
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = parts.find((part) => part.type === "month")?.value || "";
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  return year && month && day ? `${year}-${month}-${day}` : "";
+}
+
+function buildReconciliationWarnings(
+  repGroups: ComplianceRepGroup[],
+  categoryRows: ComplianceCategoryRow[],
+  details: ComplianceFlagDetail[],
+) {
+  const warnings: string[] = [];
+  const rawByRep = new Map<string, number>();
+  const rawByCategory = new Map<string, number>();
+
+  for (const detail of details) {
+    rawByRep.set(detail.repSlug, (rawByRep.get(detail.repSlug) || 0) + 1);
+    rawByCategory.set(detail.categoryKey, (rawByCategory.get(detail.categoryKey) || 0) + 1);
+  }
+
+  for (const rep of repGroups) {
+    const rawCount = rawByRep.get(rep.repSlug) || 0;
+    if (rawCount && rawCount !== rep.totalCount) {
+      warnings.push(`${rep.rep}: summary shows ${rep.totalCount}, raw log shows ${rawCount}.`);
+    }
+  }
+
+  for (const category of categoryRows) {
+    const rawCount = rawByCategory.get(category.categoryKey) || 0;
+    if (rawCount && rawCount !== category.totalCount) {
+      warnings.push(`${category.category}: summary shows ${category.totalCount}, raw log shows ${rawCount}.`);
+    }
+  }
+
+  return warnings.slice(0, 4);
 }
 
 function severityRank(value: string) {
