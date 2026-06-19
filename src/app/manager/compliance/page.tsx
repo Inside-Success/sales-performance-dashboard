@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  AlertTriangle,
   CalendarDays,
   Clock3,
   ExternalLink,
@@ -9,7 +10,6 @@ import {
   Flag,
   Search,
   ShieldCheck,
-  Tags,
   Target,
   Users,
   type LucideIcon,
@@ -113,19 +113,27 @@ export default async function ManagerCompliancePage({
             icon={Flag}
             title="Flags"
             value={formatNumber(data.summary.totalFlags)}
-            description={data.selectedWeek ? data.selectedWeek.label : "No week selected"}
+            description={
+              data.selectedWeek
+                ? `${data.summary.categories} categories in ${data.selectedWeek.label}`
+                : "No week selected"
+            }
           />
           <MetricCard
             icon={Users}
             title="Reps involved"
             value={formatNumber(data.summary.repsInvolved)}
-            description="At least one compliance flag"
+            description={
+              data.summary.topRep
+                ? `Top rep: ${data.summary.topRep.rep} (${formatNumber(data.summary.topRep.totalCount)})`
+                : "At least one compliance flag"
+            }
           />
           <MetricCard
-            icon={Tags}
-            title="Categories"
-            value={formatNumber(data.summary.categories)}
-            description="Grouped from the summary sheet"
+            icon={AlertTriangle}
+            title="High-risk flags"
+            value={formatNumber(data.summary.highSeverityFlags)}
+            description="Flags marked High in the weekly summary"
           />
           <MetricCard
             icon={Target}

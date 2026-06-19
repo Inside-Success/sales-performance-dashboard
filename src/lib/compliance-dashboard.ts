@@ -1,4 +1,3 @@
-import { neon } from "@neondatabase/serverless";
 import { slugify } from "@/lib/slug";
 
 const COMPLIANCE_SHEET_ID = "17yBNMgUT7rX2KjdvRFJHj8OrMTWnXrYSOCb46VtwUoc";
@@ -79,6 +78,7 @@ export type ComplianceFlagDetail = {
   client: string;
   category: string;
   categoryKey: string;
+  categoryKeys: string[];
   risk: string;
   severity: string;
   quote: string;
@@ -112,8 +112,13 @@ export type ComplianceDashboardSummary = {
     category: string;
     totalCount: number;
   } | null;
+  topRep: {
+    rep: string;
+    totalCount: number;
+  } | null;
   highestSeverity: string;
   highSeverityRows: number;
+  highSeverityFlags: number;
   lastSeen: string;
 };
 
@@ -167,14 +172,18 @@ export async function getComplianceDashboardData(
     const selectedRepRows = repRows.filter((row) => row.weekKey === selectedWeek.key);
     const selectedCategoryRows = categoryRows.filter((row) => row.weekKey === selectedWeek.key);
     const categoryLabelByKey = buildCategoryLabelMap(selectedCategoryRows);
-    const selectedFlagDetails = await attachReportLinks(
-      rawRows
-        .filter((row) => row.weekKey === selectedWeek.key)
-        .map((row) => ({
+    const selectedFlagDetails = rawRows
+      .filter((row) => row.weekKey === selectedWeek.key)
+      .map((row) => {
+        const displayCategoryKey =
+          row.categoryKeys.find((key) => categoryLabelByKey.has(key)) || row.categoryKey;
+
+        return {
           ...row,
-          category: categoryLabelByKey.get(row.categoryKey) || row.category,
-        })),
-    );
+          category: categoryLabelByKey.get(displayCategoryKey) || row.category,
+          categoryKey: displayCategoryKey,
+        };
+      });
     const detailCountByRepCategory = countDetailsByRepCategory(selectedFlagDetails);
     const repGroups = groupRepRows(selectedRepRows);
     const categoryDrilldowns = buildCategoryDrilldowns(
@@ -239,8 +248,10 @@ function getFallbackDashboardData(
       repsInvolved: 0,
       categories: 0,
       topIssue: null,
+      topRep: null,
       highestSeverity: "None",
       highSeverityRows: 0,
+      highSeverityFlags: 0,
       lastSeen: "",
     },
     repGroups: [],
@@ -430,7 +441,8 @@ function normalizeRawComplianceRow(record: Record<string, string>): ComplianceFl
 
   if (!dateTime || !rep || !rawCategory) return null;
 
-  const key = categoryKey(rawCategory);
+  const keys = categoryKeysFromRawCategory(rawCategory);
+  const key = keys[0] || categoryKey(rawCategory);
 
   return {
     id: [
@@ -448,6 +460,7 @@ function normalizeRawComplianceRow(record: Record<string, string>): ComplianceFl
     client: client || "Unknown client",
     category: humanizeCategory(rawCategory),
     categoryKey: key,
+    categoryKeys: keys,
     risk: record.Risk || "",
     severity: severityFromRisk(record.Risk || ""),
     quote,
@@ -543,8 +556,10 @@ function buildCategoryLabelMap(rows: ComplianceCategoryRow[]) {
 function countDetailsByRepCategory(details: ComplianceFlagDetail[]) {
   const counts = new Map<string, number>();
   for (const detail of details) {
-    const key = `${detail.repSlug}|${detail.categoryKey}`;
-    counts.set(key, (counts.get(key) || 0) + 1);
+    for (const category of detail.categoryKeys.length ? detail.categoryKeys : [detail.categoryKey]) {
+      const key = `${detail.repSlug}|${category}`;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
   }
   return counts;
 }
@@ -601,6 +616,11 @@ function buildSummary(
   for (const row of repRows) {
     repCounts.set(row.rep, (repCounts.get(row.rep) || 0) + row.count);
   }
+  const topRep = [...repCounts.entries()].reduce<ComplianceDashboardSummary["topRep"]>(
+    (top, [rep, totalCount]) =>
+      !top || totalCount > top.totalCount ? { rep, totalCount } : top,
+    null,
+  );
   const repsInvolved = repCounts.size;
   const categories = categoryRows.length || new Set(repRows.map((row) => row.category)).size;
   const topIssue = getTopIssue(categoryRows, repRows);
@@ -609,6 +629,9 @@ function buildSummary(
     "None",
   );
   const highSeverityRows = repRows.filter((row) => severityRank(row.severity) >= severityRank("High")).length;
+  const highSeverityFlags = repRows
+    .filter((row) => severityRank(row.severity) >= severityRank("High"))
+    .reduce((total, row) => total + row.count, 0);
   const latestRow = repRows.reduce<RepSummaryRow | null>(
     (latest, row) => (!latest || row.lastSeenTime > latest.lastSeenTime ? row : latest),
     null,
@@ -619,8 +642,10 @@ function buildSummary(
     repsInvolved,
     categories,
     topIssue,
+    topRep,
     highestSeverity,
     highSeverityRows,
+    highSeverityFlags,
     lastSeen: latestRow?.lastSeen || "",
   };
 }
@@ -772,6 +797,87 @@ function categoryKey(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function categoryKeysFromRawCategory(value: string) {
+  const normalized = normalizeText(value);
+  const keys = new Set<string>();
+  const add = (key: string) => {
+    if (key) keys.add(key);
+  };
+  const hasAny = (...needles: string[]) => needles.some((needle) => normalized.includes(needle));
+
+  if (
+    hasAny(
+      "roi",
+      "business outcome",
+      "business growth",
+      "growth implication",
+      "customer acquisition",
+      "revenue implication",
+    )
+  ) {
+    add("roi-business-outcome");
+  }
+
+  if (hasAny("third party platform", "platform placement", "platform language", "streaming", "prime", "apple")) {
+    add("third-party-platform-placement");
+  }
+
+  if (hasAny("show longevity", "platform window", "hosting duration", "forward looking show")) {
+    add("show-longevity-platform-window");
+  }
+
+  if (hasAny("recording consent", "missing consent", "confidentiality recording")) {
+    add("missing-recording-consent");
+  }
+
+  if (hasAny("deliverable", "package claim", "package language")) {
+    add("deliverable-package-claim");
+  }
+
+  if (
+    hasAny(
+      "refund",
+      "payment contract",
+      "contract terms",
+      "payment terms",
+      "deposit terms",
+      "payment plan",
+      "pre payment contract",
+      "refund terms",
+      "refund policy",
+    )
+  ) {
+    add("refund-payment-contract-terms");
+  }
+
+  if (hasAny("view count", "performance claim", "performance guarantee", "view count guarantee")) {
+    add("view-count-performance-claim");
+  }
+
+  if (hasAny("celebrity", "endorsement", "network association", "cast claim", "talent claim")) {
+    add("celebrity-endorsement-claim");
+  }
+
+  if (hasAny("ftc", "legal deadline", "regulatory", "legal pressure", "mandate language")) {
+    add("ftc-legal-pressure-language");
+  }
+
+  if (hasAny("loan", "credit", "financing", "financially vulnerable", "payment source concern")) {
+    add("loan-credit-financing-encouragement");
+  }
+
+  if (hasAny("sensitive financial", "pii", "pci", "financial data", "data security")) {
+    add("sensitive-financial-pii-on-recorded-call");
+  }
+
+  if (hasAny("secrecy", "side terms", "side term")) {
+    add("secrecy-or-side-terms");
+  }
+
+  add(categoryKey(value));
+  return [...keys];
+}
+
 function humanizeCategory(value: string) {
   const trimmed = value.trim();
   if (!trimmed) return "Uncategorized";
@@ -814,92 +920,16 @@ const CATEGORY_ALIASES = new Map<string, string>([
   ["pii on recording", "sensitive-financial-pii-on-recorded-call"],
   ["refund cancellation promise", "refund-cancellation-promise"],
   ["refund or cancellation promises", "refund-cancellation-promise"],
+  ["refund payment contract", "refund-payment-contract-terms"],
+  ["refund payment contract terms", "refund-payment-contract-terms"],
+  ["unauthorized refund payment promise", "refund-payment-contract-terms"],
+  ["view count performance claim", "view-count-performance-claim"],
+  ["celebrity endorsement claim", "celebrity-endorsement-claim"],
+  ["celebrity network association", "celebrity-endorsement-claim"],
+  ["deliverable package claim", "deliverable-package-claim"],
+  ["loan credit financing encouragement", "loan-credit-financing-encouragement"],
+  ["secrecy or side terms", "secrecy-or-side-terms"],
 ]);
-
-type ReportLinkCandidate = {
-  id: number;
-  rep_name: string;
-  rep_slug: string;
-  client_name: string | null;
-  call_date: string | null;
-  meeting_title: string | null;
-  transcript_link: string | null;
-  google_doc_link: string | null;
-};
-
-async function attachReportLinks(details: ComplianceFlagDetail[]) {
-  if (!details.length || !process.env.DATABASE_URL) return details;
-
-  try {
-    const sql = neon(process.env.DATABASE_URL);
-    const rows = (await sql.query(
-      `
-        select id, rep_name, rep_slug, client_name, call_date::text, meeting_title, transcript_link, google_doc_link
-        from performance_calls
-        order by call_date desc nulls last, updated_at desc
-        limit 6000
-      `,
-      [],
-    )) as ReportLinkCandidate[];
-    const candidates = rows.map((row) => ({
-      ...row,
-      rep_slug: row.rep_slug || slugify(row.rep_name || ""),
-      transcriptDocId: extractGoogleDocId(row.transcript_link || ""),
-      googleDocId: extractGoogleDocId(row.google_doc_link || ""),
-      clientKey: normalizeText(row.client_name || ""),
-      callDay: row.call_date ? weekDayKey(Date.parse(row.call_date)) : "",
-    }));
-    const byDocId = new Map<string, ReportLinkCandidate & { transcriptDocId: string; googleDocId: string; clientKey: string; callDay: string }>();
-
-    for (const candidate of candidates) {
-      if (candidate.transcriptDocId) byDocId.set(candidate.transcriptDocId, candidate);
-      if (candidate.googleDocId) byDocId.set(candidate.googleDocId, candidate);
-    }
-
-    return details.map((detail) => {
-      const docId = extractGoogleDocId(detail.transcriptUrl);
-      const directMatch = docId ? byDocId.get(docId) : null;
-      const fallbackMatch =
-        directMatch ||
-        candidates.find(
-          (candidate) =>
-            candidate.rep_slug === detail.repSlug &&
-            candidate.clientKey === normalizeText(detail.client) &&
-            candidate.callDay === weekDayKey(detail.dateTime),
-        ) ||
-        null;
-
-      if (!fallbackMatch) return detail;
-
-      return {
-        ...detail,
-        reportId: fallbackMatch.id,
-        reportUrl: `/call/${fallbackMatch.id}?from=manager-compliance`,
-      };
-    });
-  } catch (error) {
-    console.error("Compliance report link matching failed", error);
-    return details;
-  }
-}
-
-function extractGoogleDocId(value: string) {
-  return value.match(/\/d\/([^/?#]+)/)?.[1] || "";
-}
-
-function weekDayKey(timestamp: number) {
-  if (!Number.isFinite(timestamp) || timestamp <= 0) return "";
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date(timestamp));
-  const year = parts.find((part) => part.type === "year")?.value || "";
-  const month = parts.find((part) => part.type === "month")?.value || "";
-  const day = parts.find((part) => part.type === "day")?.value || "";
-  return year && month && day ? `${year}-${month}-${day}` : "";
-}
 
 function buildReconciliationWarnings(
   repGroups: ComplianceRepGroup[],
@@ -912,7 +942,9 @@ function buildReconciliationWarnings(
 
   for (const detail of details) {
     rawByRep.set(detail.repSlug, (rawByRep.get(detail.repSlug) || 0) + 1);
-    rawByCategory.set(detail.categoryKey, (rawByCategory.get(detail.categoryKey) || 0) + 1);
+    for (const category of detail.categoryKeys.length ? detail.categoryKeys : [detail.categoryKey]) {
+      rawByCategory.set(category, (rawByCategory.get(category) || 0) + 1);
+    }
   }
 
   for (const rep of repGroups) {

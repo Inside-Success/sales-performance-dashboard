@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ChevronRight,
   ExternalLink,
-  FileText,
   Tags,
   Users,
   X,
@@ -73,7 +72,12 @@ export function ComplianceDrilldownBoard({ data }: { data: ComplianceDashboardDa
     if (modal?.type !== "rep") return [];
     return data.flagDetails
       .filter((detail) => detail.repSlug === modal.repSlug)
-      .filter((detail) => !modal.categoryKey || detail.categoryKey === modal.categoryKey)
+      .filter(
+        (detail) =>
+          !modal.categoryKey ||
+          detail.categoryKey === modal.categoryKey ||
+          detail.categoryKeys.includes(modal.categoryKey),
+      )
       .sort((a, b) => b.dateTime - a.dateTime || a.client.localeCompare(b.client));
   }, [data.flagDetails, modal]);
 
@@ -395,7 +399,8 @@ function RepModal({
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm leading-6 text-slate-500">
-            No raw evidence rows were found for this exact drill-down.
+            The weekly summary shows flags here, but the raw evidence log does not include a
+            matching quote row for this exact drill-down.
           </div>
         )}
       </div>
@@ -420,15 +425,6 @@ function EvidenceCard({ detail }: { detail: ComplianceFlagDetail }) {
           <p className="mt-1 text-sm text-slate-500">{detail.date}</p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
-          {detail.reportUrl ? (
-            <Link
-              href={detail.reportUrl}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:border-red-200 hover:bg-[#FEF2F2] hover:text-[#B91C1C]"
-            >
-              <FileText className="size-4" />
-              Full report
-            </Link>
-          ) : null}
           {detail.transcriptUrl ? (
             <Link
               href={detail.transcriptUrl}
