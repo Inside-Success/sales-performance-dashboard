@@ -2,6 +2,7 @@ const DEFAULT_ALLOWED_DOMAINS = [
   "insidesuccesstv.com",
   "insidesuccess.com",
   "mawercapital.com",
+  "nextlevelceotv.com",
 ];
 
 export function normalizeAuthEmail(email: string | null | undefined) {

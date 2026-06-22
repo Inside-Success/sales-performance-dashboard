@@ -14,7 +14,7 @@ Required Vercel Production env vars:
 - `AUTH_SECRET`
 - `AUTH_GOOGLE_ID`
 - `AUTH_GOOGLE_SECRET`
-- `AUTH_ALLOWED_DOMAINS=insidesuccesstv.com,insidesuccess.com,mawercapital.com`
+- `AUTH_ALLOWED_DOMAINS=insidesuccesstv.com,insidesuccess.com,mawercapital.com,nextlevelceotv.com`
 
 Only Google accounts from the allowed domains can sign in. Human dashboard pages are protected through `src/proxy.ts`; `/api/*` routes remain public so n8n/webhook/API traffic is not blocked.
 
