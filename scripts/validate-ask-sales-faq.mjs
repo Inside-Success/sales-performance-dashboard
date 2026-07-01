@@ -186,6 +186,15 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "Ask Sales FAQ defaults to DeepSeek V4 Pro",
+    runtime.includes('process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro"') &&
+      envExample.includes('FAQ_DEEPSEEK_MODEL="deepseek-v4-pro"') &&
+      runtime.includes('process.env.FAQ_MODEL_TIMEOUT_SECONDS || "35"') &&
+      envExample.includes('FAQ_MODEL_TIMEOUT_SECONDS="35"'),
+    "runtime and env example default to DeepSeek V4 Pro with enough timeout room for the higher-quality model",
+  );
+
+  addCheck(
     "follow-up questions include recent chat context",
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&

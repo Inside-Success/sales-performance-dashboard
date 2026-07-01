@@ -665,7 +665,7 @@ async function callDeepSeekJson<T>(
   },
   apiKey: string,
 ): Promise<ProviderJsonResult<T>> {
-  const model = process.env.FAQ_DEEPSEEK_MODEL || "deepseek-chat";
+  const model = process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
   const response = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
@@ -838,7 +838,7 @@ function clampConfidence(value: number) {
 }
 
 async function fetchWithTimeout(input: string, init: RequestInit) {
-  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "25");
+  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "35");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Math.max(8, timeoutSeconds) * 1000);
   try {
