@@ -20,14 +20,12 @@ export default async function AskSalesFaqPage() {
   const access = getAskSalesFaqAccess(session);
 
   return (
-    <main className="magic-page">
-      <div className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-[92rem] flex-col px-4 py-5 sm:px-6 lg:px-8">
+    <main className="magic-page h-[calc(100dvh-72px)] min-h-0 overflow-hidden">
+      <div className="flex h-full min-h-0 w-full flex-col">
         {access.ok ? (
-          <div className="-mx-4 -my-5 sm:-mx-6 lg:-mx-8">
-            <AskSalesFaqChat viewerName={access.viewerName || "Signed-in user"} viewerEmail={access.viewerEmail} />
-          </div>
+          <AskSalesFaqChat />
         ) : (
-          <section className="grid min-h-[60vh] place-items-center">
+          <section className="grid h-full place-items-center px-4 py-6">
             <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white/90 p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <span className="grid size-9 place-items-center rounded-lg bg-[#FEF2F2] text-[#DC2626]">

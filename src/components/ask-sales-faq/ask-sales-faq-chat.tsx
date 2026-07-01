@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
-  ArrowLeft,
   BookText,
   CheckCircle2,
   ChevronDown,
@@ -30,7 +29,6 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -132,7 +130,7 @@ function isRouteOrBlocked(message: ChatMessage) {
   );
 }
 
-export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: string; viewerEmail: string }) {
+export function AskSalesFaqChat() {
   const [conversations, setConversations] = useState<AskSalesFaqConversationSummary[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -372,7 +370,7 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
 
   return (
     <section
-      className="flex min-h-[calc(100vh-4rem)] overflow-hidden bg-[linear-gradient(180deg,#FBFAFB_0%,#F5F4F6_100%)] text-slate-900"
+      className="flex h-full min-h-0 w-full overflow-hidden bg-[linear-gradient(180deg,#FBFAFB_0%,#F5F4F6_100%)] text-slate-900"
       data-screen-label="Ask Sales FAQ"
     >
       <FaqSidebar
@@ -402,12 +400,12 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-[60px] shrink-0 items-center justify-between gap-3 border-b border-slate-200/70 bg-white/85 px-3 backdrop-blur-md sm:px-5">
+        <header className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-slate-200/70 bg-white/86 px-3 backdrop-blur-md sm:px-5">
           <div className="flex min-w-0 items-center gap-2">
             <Button
               type="button"
               variant="ghost"
-              size="icon-lg"
+              size="icon"
               className="text-slate-500 lg:hidden"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open conversation menu"
@@ -418,7 +416,7 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-lg"
+                size="icon"
                 className="hidden text-slate-500 lg:inline-flex"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Show conversation sidebar"
@@ -427,35 +425,32 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
               </Button>
             ) : null}
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#DC2626] text-white lg:hidden">
+              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#DC2626] text-white lg:hidden">
                 <MessageCircleQuestion className="size-4.5" />
               </span>
               <div className="min-w-0 leading-tight">
-                <h1 className="truncate text-[15px] font-extrabold tracking-normal text-slate-950">
+                <h1 className="truncate text-sm font-extrabold tracking-normal text-slate-950">
                   {messages.length ? activeConversation?.title || "Ask Sales FAQ" : "Ask Sales FAQ"}
                 </h1>
-                <p className="hidden text-[11px] font-semibold text-slate-400 sm:block">Internal sales help center</p>
+                <p className="hidden text-[11px] font-semibold text-slate-400 sm:block">
+                  Approved sales answers
+                </p>
               </div>
             </div>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <Badge variant="outline" className="hidden border-red-100 bg-[#FEF2F2] text-[11px] font-bold text-[#B91C1C] sm:inline-flex">
+            <Badge
+              variant="outline"
+              className="border-red-100 bg-[#FEF2F2] px-2 py-0.5 text-[11px] font-bold text-[#B91C1C]"
+            >
               Hidden beta
             </Badge>
-            <Link
-              href="/"
-              className="inline-flex h-7 items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 text-[0.8rem] font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-950"
-            >
-              <ArrowLeft className="size-4" />
-              <span className="hidden sm:inline">Dashboard</span>
-            </Link>
-            <ProfilePill viewerName={viewerName} viewerEmail={viewerEmail} />
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6">
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+          <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-5">
             {!messages.length ? (
               <WelcomeState
                 onStarter={(prompt) => void submitQuestion(undefined, prompt)}
@@ -488,9 +483,12 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
           </div>
         </div>
 
-        <form onSubmit={submitQuestion} className="shrink-0 bg-gradient-to-t from-[#F5F4F6] via-[#F5F4F6] to-transparent px-4 pb-4 pt-2 sm:px-6">
+        <form
+          onSubmit={submitQuestion}
+          className="shrink-0 border-t border-slate-200/75 bg-white/88 px-4 py-3 backdrop-blur sm:px-6"
+        >
           <div className="mx-auto w-full max-w-3xl">
-            <div className="flex items-end gap-2 rounded-[20px] border border-slate-200 bg-white p-2 pl-4 shadow-[0_1px_2px_rgba(17,17,26,.04),0_8px_22px_-14px_rgba(17,17,26,.18)] focus-within:border-slate-300">
+            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white p-2 pl-4 shadow-[0_1px_2px_rgba(17,17,26,.04),0_8px_22px_-14px_rgba(17,17,26,.18)] focus-within:border-slate-300">
               <Textarea
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
@@ -501,7 +499,7 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
                   }
                 }}
                 rows={1}
-                className="max-h-[180px] min-h-10 flex-1 resize-none border-0 bg-transparent px-0 py-2 text-[15.5px] font-medium leading-relaxed shadow-none placeholder:text-slate-400 focus-visible:ring-0"
+                className="max-h-[132px] min-h-10 flex-1 resize-none border-0 bg-transparent px-0 py-2 text-[15px] font-medium leading-relaxed shadow-none placeholder:text-slate-400 focus-visible:ring-0"
                 placeholder="Ask anything about offers, payments, rights..."
                 disabled={isLoading}
               />
@@ -515,9 +513,6 @@ export function AskSalesFaqChat({ viewerName, viewerEmail }: { viewerName: strin
                 {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
               </Button>
             </div>
-            <p className="mt-2 px-1 text-center text-xs font-medium text-slate-400">
-              Approved answers only. Missing or sensitive questions route to <span className="font-bold text-slate-500">#sales-questions-requests</span>.
-            </p>
           </div>
         </form>
       </div>
@@ -557,18 +552,20 @@ function FaqSidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-50 flex w-[300px] flex-col border-r border-slate-200/80 bg-[#FBFAFB] transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 flex w-[288px] flex-col border-r border-slate-200/80 bg-[#FBFAFB] transition-transform duration-300 lg:static lg:z-auto lg:h-full lg:translate-x-0",
         drawerOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >
-      <div className="flex items-center justify-between gap-2 px-4 pb-3 pt-4">
+      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-slate-200/70 px-3.5">
         <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl bg-[#DC2626] text-white shadow-[0_6px_16px_-8px_rgba(220,38,38,.95)]">
-            <MessageCircleQuestion className="size-5" />
+          <span className="grid size-8 place-items-center rounded-xl bg-[#DC2626] text-white shadow-[0_6px_16px_-8px_rgba(220,38,38,.95)]">
+            <MessageCircleQuestion className="size-4.5" />
           </span>
           <span className="leading-tight">
-            <span className="block text-[15px] font-extrabold tracking-normal text-slate-950">Ask Sales FAQ</span>
-            <span className="block text-[10.5px] font-bold uppercase tracking-[0.14em] text-slate-400">Sales help center</span>
+            <span className="block text-sm font-extrabold tracking-normal text-slate-950">Ask Sales FAQ</span>
+            <span className="block text-[10px] font-bold uppercase tracking-[0.13em] text-slate-400">
+              Sales help center
+            </span>
           </span>
         </div>
         <Button
@@ -591,8 +588,8 @@ function FaqSidebar({
         </Button>
       </div>
 
-      <div className="px-3 pb-2 pt-1">
-        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm focus-within:border-slate-300">
+      <div className="px-3 pb-2 pt-3">
+        <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 shadow-sm focus-within:border-slate-300">
           <Search className="size-4 text-slate-400" />
           <input
             value={searchQuery}
@@ -612,7 +609,7 @@ function FaqSidebar({
         <button
           type="button"
           onClick={onBrowse}
-          className="flex w-full items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50"
+          className="flex h-10 w-full items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 text-left text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50"
         >
           <LibraryBig className="size-4.5 text-[#DC2626]" />
           Browse topics
@@ -620,7 +617,7 @@ function FaqSidebar({
       </div>
 
       <div className="mx-4 my-1 border-t border-slate-200/80" />
-      <div className="px-5 pb-1.5 pt-2 text-[11px] font-bold uppercase tracking-[0.13em] text-slate-400">
+      <div className="px-5 pb-1 pt-2 text-[10.5px] font-bold uppercase tracking-[0.13em] text-slate-400">
         {searchQuery.trim() ? "Results" : "Recent"}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto pb-3">
@@ -632,7 +629,7 @@ function FaqSidebar({
                 type="button"
                 onClick={() => onOpenConversation(conversation)}
                 className={cn(
-                  "group mx-2 flex w-[calc(100%-1rem)] items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition-colors",
+                  "group mx-2 flex w-[calc(100%-1rem)] items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors",
                   activeConversationId === conversation.id ? "bg-[#FEF2F2]" : "hover:bg-slate-100",
                 )}
               >
@@ -645,14 +642,14 @@ function FaqSidebar({
                 <span className="min-w-0 flex-1">
                   <span
                     className={cn(
-                      "block truncate text-sm",
+                      "block truncate text-[13px]",
                       activeConversationId === conversation.id ? "font-bold text-[#B91C1C]" : "font-semibold text-slate-700",
                     )}
                   >
                     {titleForConversation(conversation)}
                   </span>
                 </span>
-                <span className="shrink-0 text-[11px] font-semibold text-slate-300">
+                <span className="shrink-0 text-[10.5px] font-semibold text-slate-300">
                   {formatTimestamp(conversation.updatedAt)}
                 </span>
               </button>
@@ -665,11 +662,11 @@ function FaqSidebar({
         )}
       </div>
 
-      <div className="border-t border-slate-200/80 p-3">
+      <div className="shrink-0 border-t border-slate-200/80 bg-[#FBFAFB] p-3">
         <Button
           type="button"
           onClick={onNewConversation}
-          className="h-11 w-full rounded-xl bg-[#DC2626] text-[14.5px] font-bold text-white shadow-[0_10px_22px_-12px_rgba(220,38,38,.95)] hover:bg-[#B91C1C]"
+          className="h-10 w-full rounded-xl bg-[#DC2626] text-[14px] font-bold text-white shadow-[0_10px_22px_-12px_rgba(220,38,38,.95)] hover:bg-[#B91C1C]"
         >
           <MessageSquarePlus className="size-4.5" />
           New chat
@@ -679,48 +676,26 @@ function FaqSidebar({
   );
 }
 
-function ProfilePill({ viewerName, viewerEmail }: { viewerName: string; viewerEmail: string }) {
-  const initials = viewerName
-    .split(/\s+/)
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
-  return (
-    <div className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3 shadow-sm md:flex">
-      <span className="grid size-8 place-items-center rounded-full bg-[#DC2626] text-xs font-extrabold text-white">
-        {initials || "U"}
-      </span>
-      <span className="min-w-0 leading-tight">
-        <span className="block max-w-36 truncate text-xs font-bold text-slate-800">{viewerName}</span>
-        <span className="block max-w-36 truncate text-[11px] font-medium text-slate-400">{viewerEmail}</span>
-      </span>
-    </div>
-  );
-}
-
 function WelcomeState({ onStarter, onBrowse }: { onStarter: (prompt: string) => void; onBrowse: () => void }) {
   return (
-    <div className="relative mx-auto flex min-h-[56vh] w-full max-w-2xl flex-col items-center justify-center px-5 py-10 text-center">
+    <div className="relative mx-auto grid min-h-full w-full max-w-2xl place-items-center px-5 py-6 text-center">
       <div className="relative z-10 flex flex-col items-center">
-        <span className="grid size-16 place-items-center rounded-[20px] bg-[#DC2626] text-white shadow-[0_14px_30px_-10px_rgba(220,38,38,.95)]">
-          <MessageCircleQuestion className="size-8" />
+        <span className="grid size-14 place-items-center rounded-[18px] bg-[#DC2626] text-white shadow-[0_14px_30px_-12px_rgba(220,38,38,.95)]">
+          <MessageCircleQuestion className="size-7" />
         </span>
-        <h2 className="mt-5 text-[30px] font-extrabold tracking-normal text-slate-950 sm:text-[34px]">
+        <h2 className="mt-4 text-[27px] font-extrabold tracking-normal text-slate-950 sm:text-[30px]">
           Ask Sales FAQ
         </h2>
-        <p className="mt-2.5 max-w-md text-base font-medium leading-relaxed text-slate-500">
+        <p className="mt-2 max-w-md text-[15px] font-medium leading-relaxed text-slate-500">
           Fast, approved answers for live sales calls. Ask a question, or browse the help topics.
         </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+        <div className="mt-6 flex flex-wrap justify-center gap-2.5">
           {starterPrompts.map((prompt) => (
             <button
               key={prompt}
               type="button"
               onClick={() => onStarter(prompt)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[.98]"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[13.5px] font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[.98]"
             >
               {prompt}
             </button>
@@ -729,7 +704,7 @@ function WelcomeState({ onStarter, onBrowse }: { onStarter: (prompt: string) => 
         <button
           type="button"
           onClick={onBrowse}
-          className="mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-[#B91C1C] transition-colors hover:bg-[#FEF2F2]"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-[#B91C1C] transition-colors hover:bg-[#FEF2F2]"
         >
           <LibraryBig className="size-4" />
           Browse all topics
