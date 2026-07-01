@@ -185,6 +185,27 @@ export function AskSalesFaqChat() {
     scrollRef.current?.scrollIntoView({ block: "end" });
   }, [messages, isLoading, error]);
 
+  useEffect(() => {
+    if (!conversationMenuId) return;
+
+    function closeConversationMenu(event: PointerEvent) {
+      if (event.target instanceof Element && event.target.closest("[data-conversation-menu-root]")) return;
+      setConversationMenuId(null);
+    }
+
+    function closeConversationMenuWithKeyboard(event: KeyboardEvent) {
+      if (event.key === "Escape") setConversationMenuId(null);
+    }
+
+    document.addEventListener("pointerdown", closeConversationMenu);
+    document.addEventListener("keydown", closeConversationMenuWithKeyboard);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeConversationMenu);
+      document.removeEventListener("keydown", closeConversationMenuWithKeyboard);
+    };
+  }, [conversationMenuId]);
+
   async function loadConversations() {
     try {
       const response = await fetch("/api/ask-sales-faq/conversations", { cache: "no-store" });
@@ -898,6 +919,7 @@ function FaqSidebar({
                 </button>
                 <button
                   type="button"
+                  data-conversation-menu-root
                   onClick={(event) => {
                     event.stopPropagation();
                     onToggleConversationMenu(conversation.id);
@@ -912,7 +934,10 @@ function FaqSidebar({
                   <MoreHorizontal className="size-4" />
                 </button>
                 {openMenuConversationId === conversation.id ? (
-                  <div className="absolute right-2 top-9 z-20 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-[0_12px_30px_-18px_rgba(15,23,42,.45)]">
+                  <div
+                    data-conversation-menu-root
+                    className="absolute right-2 top-9 z-20 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-[0_12px_30px_-18px_rgba(15,23,42,.45)]"
+                  >
                     <button
                       type="button"
                       onClick={() => onRenameConversation(conversation)}

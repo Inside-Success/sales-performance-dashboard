@@ -43,6 +43,7 @@ if (missingFiles.length === 0) {
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
+  const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
@@ -105,6 +106,14 @@ if (missingFiles.length === 0) {
       conversationActionRoute.includes("retainedInBackend: true") &&
       !conversationActionRoute.includes("delete from ask_sales_faq"),
     "delete hides chat from sidebar without deleting rows",
+  );
+
+  addCheck(
+    "conversation action menu closes on outside click",
+    chatUi.includes("document.addEventListener(\"pointerdown\", closeConversationMenu)") &&
+      chatUi.includes("[data-conversation-menu-root]") &&
+      chatUi.includes("document.addEventListener(\"keydown\", closeConversationMenuWithKeyboard)"),
+    "recent-chat action menu has click-away and escape-key closing behavior",
   );
 
   addCheck(
