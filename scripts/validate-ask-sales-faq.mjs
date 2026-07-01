@@ -149,13 +149,14 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "normal FAQ answers are AI-first, not deterministic templates",
-    runtime.includes("createSearchProfileWithAi") &&
-      runtime.includes("selectEvidenceWithAi") &&
-      runtime.includes("generateProviderAnswer") &&
-      runtime.includes("reviewAnswerWithAi") &&
+    runtime.includes("generateProviderAnswer") &&
+      runtime.includes("selected_source_ids") &&
+      !runtime.includes("createSearchProfileWithAi") &&
+      !runtime.includes("selectEvidenceWithAi") &&
+      !runtime.includes("reviewAnswerWithAi") &&
       !runtime.includes("function buildDeterministicAnswer") &&
       !runtime.includes("const deterministicAnswer"),
-    "normal FAQ path uses AI search planning, evidence selection, answer generation, and AI review",
+    "normal FAQ path uses a single AI call for evidence selection and answer generation",
   );
 
   addCheck(
@@ -168,13 +169,20 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "runtime uses AI semantic evidence selection over broad evidence",
-    runtime.includes("Generate semantic search queries that capture what the rep is really asking") &&
-      runtime.includes("semantic_search_queries") &&
-      runtime.includes("Select evidence by meaning, not by mechanical keyword overlap.") &&
+    runtime.includes("Internally select the evidence by meaning, not by mechanical keyword overlap") &&
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
       runtime.includes("buildEvidenceCandidates"),
-    "runtime uses AI search planning and model-based evidence selection before answering",
+    "runtime asks the model to select evidence semantically inside the answer call",
+  );
+
+  addCheck(
+    "AI provider calls enforce JSON and preserve provider diagnostics",
+    runtime.includes("response_format: { type: \"json_object\" }") &&
+      runtime.includes("sanitizeProviderError") &&
+      runtime.includes("extractJsonObject") &&
+      runtime.includes("No Ask Sales FAQ provider succeeded for ${input.purpose}. Attempts: ${errors.length}."),
+    "DeepSeek JSON mode is enabled and provider failures are logged with sanitized detail",
   );
 
   addCheck(

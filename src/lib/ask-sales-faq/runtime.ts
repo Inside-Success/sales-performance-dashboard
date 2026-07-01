@@ -65,36 +65,9 @@ type ModelOutput = {
   answer: string;
   summary?: string;
   sections?: Array<{ title?: string; body?: string; items?: string[]; tone?: string }>;
+  selected_source_ids?: string[];
   needs_route: boolean;
   route_reason: string;
-  confidence_label?: "High" | "Medium" | "Low";
-  confidence_score?: number;
-};
-
-type SearchProfileOutput = {
-  understood_question: string;
-  answer_scope: string;
-  semantic_search_queries: string[];
-  expected_source_categories?: string[];
-  exclude_topics?: string[];
-  confidence_label?: "High" | "Medium" | "Low";
-  confidence_score?: number;
-};
-
-type EvidenceSelectionOutput = {
-  understood_question: string;
-  answer_scope: string;
-  selected_source_ids: string[];
-  needs_route: boolean;
-  route_reason: string;
-  confidence_label?: "High" | "Medium" | "Low";
-  confidence_score?: number;
-};
-
-type ReviewOutput = {
-  approved: boolean;
-  reason: string;
-  revised_output?: ModelOutput | null;
   confidence_label?: "High" | "Medium" | "Low";
   confidence_score?: number;
 };
@@ -202,37 +175,17 @@ export async function runAskSalesFaq(
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
   const conversationContext = buildConversationContext(conversationMessages);
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
-  let candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext);
+  const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext);
 
   try {
-    const searchProfile = await createSearchProfileWithAi({
-      currentQuestion: sanitizedQuestion,
-      conversationContext,
-    });
-    candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, searchProfile.output);
-    const selectionResult = await selectEvidenceWithAi({
-      currentQuestion: sanitizedQuestion,
-      conversationContext,
-      searchProfile: searchProfile.output,
-      candidates,
-    });
-    const selectedEvidence = resolveSelectedEvidence(selectionResult.output, candidates);
     const answerResult = await generateProviderAnswer({
       currentQuestion: sanitizedQuestion,
       conversationContext,
-      selection: selectionResult.output,
-      evidence: selectedEvidence,
+      evidence: candidates,
     });
-    const reviewedOutput = await reviewAnswerWithAi({
-      currentQuestion: sanitizedQuestion,
-      conversationContext,
-      selection: selectionResult.output,
-      evidence: selectedEvidence,
-      output: answerResult.output,
-    });
-    const finalOutput = reviewedOutput.output.revised_output || answerResult.output;
+    const selectedEvidence = resolveSelectedEvidence(answerResult.output, candidates);
+    const finalOutput = answerResult.output;
     const decision = buildDecision({
-      selection: selectionResult.output,
       output: finalOutput,
       evidence: selectedEvidence,
     });
@@ -253,7 +206,7 @@ export async function runAskSalesFaq(
       source: sourceSummaryFromDecision(decision),
       provider: answerResult.provider,
       model: answerResult.model,
-      errorClass: reviewedOutput.output.approved ? null : "ai_review_revised_answer",
+      errorClass: null,
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
@@ -315,19 +268,10 @@ function buildHandledResponse(input: {
   };
 }
 
-function buildEvidenceCandidates(question: string, conversationContext: string, searchProfile?: SearchProfileOutput): EvidenceCandidate[] {
+function buildEvidenceCandidates(question: string, conversationContext: string): EvidenceCandidate[] {
   const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
-  const searchText = [
-    question,
-    conversationContext,
-    searchProfile?.understood_question || "",
-    searchProfile?.answer_scope || "",
-    ...(searchProfile?.semantic_search_queries || []),
-    ...(searchProfile?.expected_source_categories || []),
-  ]
-    .filter(Boolean)
-    .join("\n");
-  const chunkCandidates = retrieveCandidateChunks(searchText, 52, { expand: !searchProfile })
+  const searchText = [question, conversationContext].filter(Boolean).join("\n");
+  const chunkCandidates = retrieveCandidateChunks(searchText, 42, { expand: true })
     .filter((chunk) => chunk.source_type !== "approved_article")
     .map((chunk) => chunkToCandidate(chunk));
   const byId = new Map<string, EvidenceCandidate>();
@@ -340,44 +284,6 @@ function buildEvidenceCandidates(question: string, conversationContext: string, 
   return Array.from(byId.values())
     .sort((left, right) => right.authority - left.authority || right.score - left.score || left.id.localeCompare(right.id))
     .slice(0, 48);
-}
-
-async function createSearchProfileWithAi(input: {
-  currentQuestion: string;
-  conversationContext: string;
-}): Promise<ProviderJsonResult<SearchProfileOutput>> {
-  return generateProviderJson({
-    purpose: "semantic search planning",
-    maxTokens: 800,
-    messages: [
-      {
-        role: "system",
-        content: [
-          "You are the semantic search planner for Ask Sales FAQ.",
-          "Do not answer the sales question.",
-          "Generate semantic search queries that capture what the rep is really asking, including sales shorthand and equivalent phrases.",
-          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
-          "Respect narrow wording like only, just, specific product, specific show, specific package, or specific payment path.",
-          "Return only JSON with keys: understood_question, answer_scope, semantic_search_queries, expected_source_categories, exclude_topics, confidence_label, confidence_score.",
-          "semantic_search_queries must be natural-language search phrases, not source IDs, and should include 6 to 10 varied phrasings.",
-        ].join("\n"),
-      },
-      {
-        role: "user",
-        content: [
-          "CURRENT USER QUESTION:",
-          input.currentQuestion,
-          "",
-          "RECENT CONVERSATION CONTEXT:",
-          input.conversationContext || "None",
-          "",
-          "HIGH-TRUST ARTICLE CATALOG:",
-          formatArticleCatalog(),
-        ].join("\n"),
-      },
-    ],
-    parse: parseSearchProfileOutput,
-  });
 }
 
 function approvedArticleToCandidate(article: ApprovedFaqArticle): EvidenceCandidate {
@@ -420,52 +326,9 @@ function chunkToCandidate(chunk: RetrievedChunk): EvidenceCandidate {
   };
 }
 
-async function selectEvidenceWithAi(input: {
-  currentQuestion: string;
-  conversationContext: string;
-  searchProfile: SearchProfileOutput;
-  candidates: EvidenceCandidate[];
-}): Promise<ProviderJsonResult<EvidenceSelectionOutput>> {
-  return generateProviderJson({
-    purpose: "semantic evidence selection",
-    maxTokens: 900,
-    messages: [
-      {
-        role: "system",
-        content: [
-          "You are the semantic retrieval planner for Ask Sales FAQ.",
-          "Select evidence by meaning, not by mechanical keyword overlap.",
-          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
-          "Use the AI search profile as the retrieval intent, but the evidence packet is the only source of facts.",
-          "Understand sales-team shorthand naturally. If a phrase is ambiguous, choose the evidence that best fits the Inside Success sales context.",
-          "Return only JSON with keys: understood_question, answer_scope, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
-          "selected_source_ids must contain only IDs from the evidence packet. Choose the smallest set that fully answers the question.",
-        ].join("\n"),
-      },
-      {
-        role: "user",
-        content: [
-          "CURRENT USER QUESTION:",
-          input.currentQuestion,
-          "",
-          "RECENT CONVERSATION CONTEXT:",
-          input.conversationContext || "None",
-          "",
-          "AI SEARCH PROFILE:",
-          JSON.stringify(input.searchProfile),
-          "",
-          "EVIDENCE PACKET:",
-          formatEvidencePacket(input.candidates, { maxCharsPerItem: 1200 }),
-        ].join("\n"),
-      },
-    ],
-    parse: parseEvidenceSelectionOutput,
-  });
-}
-
-function resolveSelectedEvidence(selection: EvidenceSelectionOutput, candidates: EvidenceCandidate[]) {
+function resolveSelectedEvidence(output: ModelOutput, candidates: EvidenceCandidate[]) {
   const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
-  const selected = selection.selected_source_ids
+  const selected = (output.selected_source_ids || [])
     .map((id) => byId.get(id))
     .filter((candidate): candidate is EvidenceCandidate => Boolean(candidate));
 
@@ -480,24 +343,28 @@ function resolveSelectedEvidence(selection: EvidenceSelectionOutput, candidates:
 async function generateProviderAnswer(input: {
   currentQuestion: string;
   conversationContext: string;
-  selection: EvidenceSelectionOutput;
   evidence: EvidenceCandidate[];
 }): Promise<ProviderJsonResult<ModelOutput>> {
   return generateProviderJson({
     purpose: "answer generation",
-    maxTokens: 1400,
+    maxTokens: 1800,
     messages: [
       {
         role: "system",
         content: [
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
-          "Use only the selected evidence. Do not invent facts, prices, discounts, owners, links, or exceptions.",
+          "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
+          "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
+          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
           "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
+          "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
           "Never expose source IDs, file paths, article statuses, Slack links, or implementation details.",
-          "Return only JSON with keys: answer, summary, sections, needs_route, route_reason, confidence_label, confidence_score.",
+          "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
           "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
+          "selected_source_ids must contain only IDs from the evidence packet and should list the sources actually used for the answer.",
+          "Return valid JSON only. Do not use markdown. The first character must be { and the last character must be }.",
         ].join("\n"),
       },
       {
@@ -509,14 +376,8 @@ async function generateProviderAnswer(input: {
           "RECENT CONVERSATION CONTEXT:",
           input.conversationContext || "None",
           "",
-          "AI-UNDERSTOOD QUESTION:",
-          input.selection.understood_question,
-          "",
-          "ANSWER SCOPE:",
-          input.selection.answer_scope,
-          "",
-          "SELECTED EVIDENCE:",
-          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1800 }),
+          "EVIDENCE PACKET:",
+          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1600 }),
         ].join("\n"),
       },
     ],
@@ -524,65 +385,16 @@ async function generateProviderAnswer(input: {
   });
 }
 
-async function reviewAnswerWithAi(input: {
-  currentQuestion: string;
-  conversationContext: string;
-  selection: EvidenceSelectionOutput;
-  evidence: EvidenceCandidate[];
-  output: ModelOutput;
-}): Promise<ProviderJsonResult<ReviewOutput>> {
-  return generateProviderJson({
-    purpose: "answer relevance review",
-    maxTokens: 1400,
-    messages: [
-      {
-        role: "system",
-        content: [
-          "You are the AI quality reviewer for Ask Sales FAQ.",
-          "Review semantically, not with keyword rules.",
-          "Approve only if the answer directly answers the current user question, respects narrow wording like only/just/specific product, avoids unrelated sections, and is grounded in evidence.",
-          "If the answer is off-topic, too broad, missing the actual ask, or includes irrelevant product sections, return approved false and provide revised_output as the corrected JSON answer.",
-          "Return only JSON with keys: approved, reason, revised_output, confidence_label, confidence_score.",
-        ].join("\n"),
-      },
-      {
-        role: "user",
-        content: [
-          "CURRENT USER QUESTION:",
-          input.currentQuestion,
-          "",
-          "RECENT CONVERSATION CONTEXT:",
-          input.conversationContext || "None",
-          "",
-          "AI-UNDERSTOOD QUESTION:",
-          input.selection.understood_question,
-          "",
-          "ANSWER SCOPE:",
-          input.selection.answer_scope,
-          "",
-          "SELECTED EVIDENCE:",
-          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1400 }),
-          "",
-          "DRAFT ANSWER JSON:",
-          JSON.stringify(input.output),
-        ].join("\n"),
-      },
-    ],
-    parse: parseReviewOutput,
-  });
-}
-
 function buildDecision(input: {
-  selection: EvidenceSelectionOutput;
   output: ModelOutput;
   evidence: EvidenceCandidate[];
 }): RuntimeDecision {
   const primaryArticle = firstSelectedApprovedArticle(input.evidence);
   const selectedApproved = input.evidence.filter((candidate) => candidate.kind === "approved_article");
   const selectedEvidence = input.evidence.filter((candidate) => candidate.kind !== "approved_article");
-  const needsRoute = Boolean(input.output.needs_route || input.selection.needs_route);
-  const confidenceLabel = input.output.confidence_label || input.selection.confidence_label || "Medium";
-  const confidenceScore = clampConfidence(input.output.confidence_score ?? input.selection.confidence_score ?? 72);
+  const needsRoute = Boolean(input.output.needs_route);
+  const confidenceLabel = input.output.confidence_label || "Medium";
+  const confidenceScore = clampConfidence(input.output.confidence_score ?? 72);
   const sourceMode =
     selectedApproved.length && selectedEvidence.length
       ? "mixed"
@@ -606,8 +418,8 @@ function buildDecision(input: {
     sourceMode,
     confidenceLabel,
     confidenceScore,
-    reason: input.selection.understood_question || "AI semantic retrieval selected source evidence.",
-    routeReason: needsRoute ? input.output.route_reason || input.selection.route_reason || "Confirm this with the current owner before relying on it." : null,
+    reason: input.output.summary || "AI selected source evidence and generated an answer.",
+    routeReason: needsRoute ? input.output.route_reason || "Confirm this with the current owner before relying on it." : null,
     safeToGenerate: true,
     matchedRuleId: "ai-semantic-rag",
     matchedArticleId: primaryArticle?.id || input.evidence.find((candidate) => candidate.articleId)?.articleId || null,
@@ -815,18 +627,6 @@ function formatEvidencePacket(candidates: EvidenceCandidate[], options: { maxCha
     .join("\n\n");
 }
 
-function formatArticleCatalog() {
-  return APPROVED_FAQ_ARTICLES.map((article) =>
-    [
-      `ID: approved:${article.id}`,
-      `Title: ${article.title}`,
-      `Category: ${article.category}`,
-      `Risk: ${article.riskLevel}`,
-      `Body preview: ${article.body.slice(0, 700)}`,
-    ].join("\n"),
-  ).join("\n\n");
-}
-
 async function generateProviderJson<T>(input: {
   purpose: string;
   messages: Array<{ role: "system" | "user"; content: string }>;
@@ -835,13 +635,13 @@ async function generateProviderJson<T>(input: {
 }): Promise<ProviderJsonResult<T>> {
   const deepSeekKey = process.env.DEEPSEEK_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  const errors: unknown[] = [];
+  const errors: string[] = [];
 
   if (deepSeekKey) {
     try {
       return await callDeepSeekJson(input, deepSeekKey);
     } catch (error) {
-      errors.push(error);
+      errors.push(`deepseek: ${sanitizeProviderError(error)}`);
     }
   }
 
@@ -849,11 +649,11 @@ async function generateProviderJson<T>(input: {
     try {
       return await callAnthropicJson(input, anthropicKey);
     } catch (error) {
-      errors.push(error);
+      errors.push(`anthropic: ${sanitizeProviderError(error)}`);
     }
   }
 
-  throw new Error(`No Ask Sales FAQ provider succeeded for ${input.purpose}. Attempts: ${errors.length}`);
+  throw new Error(`No Ask Sales FAQ provider succeeded for ${input.purpose}. Attempts: ${errors.length}. ${errors.join(" | ")}`);
 }
 
 async function callDeepSeekJson<T>(
@@ -874,8 +674,8 @@ async function callDeepSeekJson<T>(
     },
     body: JSON.stringify({
       model,
-      temperature: 0.15,
       max_tokens: input.maxTokens,
+      response_format: { type: "json_object" },
       messages: input.messages,
     }),
   });
@@ -885,7 +685,7 @@ async function callDeepSeekJson<T>(
     error?: { message?: string };
   } | null;
 
-  if (!response.ok) throw new Error(data?.error?.message || `DeepSeek ${input.purpose} request failed`);
+  if (!response.ok) throw new Error(data?.error?.message || `DeepSeek ${input.purpose} request failed with HTTP ${response.status}`);
 
   const content = data?.choices?.[0]?.message?.content || "";
   return { provider: "deepseek", model, output: input.parse(content) };
@@ -925,56 +725,10 @@ async function callAnthropicJson<T>(
     error?: { message?: string };
   } | null;
 
-  if (!response.ok) throw new Error(data?.error?.message || `Anthropic ${input.purpose} request failed`);
+  if (!response.ok) throw new Error(data?.error?.message || `Anthropic ${input.purpose} request failed with HTTP ${response.status}`);
 
   const content = data?.content?.find((part) => part.type === "text" && part.text)?.text || "";
   return { provider: "anthropic", model, output: input.parse(content) };
-}
-
-function parseSearchProfileOutput(content: string): SearchProfileOutput {
-  const parsed = parseJsonObject<Partial<SearchProfileOutput>>(content);
-  const queries = Array.isArray(parsed.semantic_search_queries)
-    ? parsed.semantic_search_queries.filter((query): query is string => typeof query === "string" && query.trim().length > 0)
-    : [];
-
-  if (!parsed.understood_question || !parsed.answer_scope || !queries.length) {
-    throw new Error("Search profile output did not match Ask Sales FAQ schema");
-  }
-
-  return {
-    understood_question: sanitizeModelAnswer(String(parsed.understood_question)),
-    answer_scope: sanitizeModelAnswer(String(parsed.answer_scope)),
-    semantic_search_queries: queries.slice(0, 12).map(sanitizeModelAnswer),
-    expected_source_categories: Array.isArray(parsed.expected_source_categories)
-      ? parsed.expected_source_categories.filter((item): item is string => typeof item === "string").slice(0, 8).map(sanitizeModelAnswer)
-      : [],
-    exclude_topics: Array.isArray(parsed.exclude_topics)
-      ? parsed.exclude_topics.filter((item): item is string => typeof item === "string").slice(0, 8).map(sanitizeModelAnswer)
-      : [],
-    confidence_label: parseConfidenceLabel(parsed.confidence_label),
-    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
-  };
-}
-
-function parseEvidenceSelectionOutput(content: string): EvidenceSelectionOutput {
-  const parsed = parseJsonObject<Partial<EvidenceSelectionOutput>>(content);
-  const selected = Array.isArray(parsed.selected_source_ids)
-    ? parsed.selected_source_ids.filter((id): id is string => typeof id === "string")
-    : [];
-
-  if (!parsed.understood_question || !parsed.answer_scope || !selected.length) {
-    throw new Error("Evidence selection output did not match Ask Sales FAQ schema");
-  }
-
-  return {
-    understood_question: String(parsed.understood_question),
-    answer_scope: String(parsed.answer_scope),
-    selected_source_ids: selected.slice(0, 10),
-    needs_route: Boolean(parsed.needs_route),
-    route_reason: typeof parsed.route_reason === "string" ? parsed.route_reason : "",
-    confidence_label: parseConfidenceLabel(parsed.confidence_label),
-    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
-  };
 }
 
 function parseModelOutput(content: string): ModelOutput {
@@ -987,26 +741,43 @@ function parseModelOutput(content: string): ModelOutput {
   return normalizeModelOutput(parsed);
 }
 
-function parseReviewOutput(content: string): ReviewOutput {
-  const parsed = parseJsonObject<Partial<ReviewOutput>>(content);
-
-  if (typeof parsed.approved !== "boolean") {
-    throw new Error("Review output did not match Ask Sales FAQ schema");
-  }
-
-  return {
-    approved: parsed.approved,
-    reason: typeof parsed.reason === "string" ? parsed.reason : "",
-    revised_output: parsed.revised_output ? normalizeModelOutput(parsed.revised_output) : null,
-    confidence_label: parseConfidenceLabel(parsed.confidence_label),
-    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
-  };
-}
-
 function parseJsonObject<T>(content: string): T {
   const trimmed = content.trim();
-  const jsonText = trimmed.match(/```json\s*([\s\S]*?)```/)?.[1] || trimmed.match(/\{[\s\S]*\}/)?.[0] || trimmed;
+  const jsonText = trimmed.match(/```json\s*([\s\S]*?)```/)?.[1] || extractJsonObject(trimmed) || trimmed;
   return JSON.parse(jsonText) as T;
+}
+
+function extractJsonObject(value: string) {
+  const start = value.indexOf("{");
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = start; index < value.length; index += 1) {
+    const char = value[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (char === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (char === "{") depth += 1;
+    if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return value.slice(start, index + 1);
+    }
+  }
+
+  return null;
 }
 
 function normalizeModelOutput(output: Partial<ModelOutput>): ModelOutput {
@@ -1014,6 +785,9 @@ function normalizeModelOutput(output: Partial<ModelOutput>): ModelOutput {
     answer: sanitizeModelAnswer(String(output.answer || "")),
     summary: typeof output.summary === "string" ? sanitizeModelAnswer(output.summary) : undefined,
     sections: Array.isArray(output.sections) ? output.sections : [],
+    selected_source_ids: Array.isArray(output.selected_source_ids)
+      ? output.selected_source_ids.filter((id): id is string => typeof id === "string").slice(0, 10)
+      : [],
     needs_route: Boolean(output.needs_route),
     route_reason: typeof output.route_reason === "string" ? sanitizeModelAnswer(output.route_reason) : "",
     confidence_label: parseConfidenceLabel(output.confidence_label),
@@ -1108,4 +882,12 @@ function containsHiddenTerms(answer: string) {
     "approved:",
     "chunk:",
   ].some((term) => answer.toLowerCase().includes(term));
+}
+
+function sanitizeProviderError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message
+    .replace(/sk-[A-Za-z0-9_-]{12,}/g, "[redacted_key]")
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "Bearer [redacted_key]")
+    .slice(0, 500);
 }
