@@ -126,6 +126,19 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "common approved-topic wording has guard coverage",
+    [
+      "refund policy",
+      "what payment link",
+      "tier 1 placement",
+      "share internal docs",
+      "how long can clients use",
+      "call recordings stored",
+    ].every((phrase) => bundle.includes(phrase)),
+    "broad rep phrasing maps to existing approved articles",
+  );
+
+  addCheck(
     "feature flag env vars are documented",
     [
       "ASK_SALES_FAQ_ENABLED",
