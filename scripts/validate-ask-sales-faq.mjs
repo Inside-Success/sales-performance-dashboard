@@ -93,15 +93,14 @@ if (missingFiles.length === 0) {
   addCheck(
     "runtime uses approved bundle and policy guard",
     runtime.includes("APPROVED_FAQ_ARTICLES") &&
-      runtime.includes("ASK_SALES_FAQ_POLICY_RULES") &&
       runtime.includes("policy-aware-rag-index.json"),
-    "runtime imports approved bundle, guard rules, and server-side RAG index",
+    "runtime imports approved bundle and server-side RAG index",
   );
 
   addCheck(
     "runtime has safe fallback behavior",
-    runtime.includes("DEFAULT_ROUTE_RESPONSE") && runtime.includes("buildExtractiveEvidenceAnswer"),
-    "runtime returns safe fallback or evidence-based route guidance instead of raw errors",
+    runtime.includes("AI_UNAVAILABLE_RESPONSE") && runtime.includes("buildUnavailableDecision"),
+    "runtime returns a safe user-facing message instead of raw errors when AI is unavailable",
   );
 
   addCheck(
@@ -149,13 +148,14 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "show list answer is approved and deterministic",
-      bundle.includes("Legacy Makers") &&
-      bundle.includes("Masters of Innovation") &&
-      bundle.includes("all tv shows") &&
-      runtime.includes("buildDeterministicAnswer") &&
-      runtime.includes("APPROVED_SHOW_LIST"),
-    "show-list questions can answer from approved article without model drift",
+    "normal FAQ answers are AI-first, not deterministic templates",
+    runtime.includes("createSearchProfileWithAi") &&
+      runtime.includes("selectEvidenceWithAi") &&
+      runtime.includes("generateProviderAnswer") &&
+      runtime.includes("reviewAnswerWithAi") &&
+      !runtime.includes("function buildDeterministicAnswer") &&
+      !runtime.includes("const deterministicAnswer"),
+    "normal FAQ path uses AI search planning, evidence selection, answer generation, and AI review",
   );
 
   addCheck(
@@ -167,45 +167,48 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "runtime handles broad discount wording through retrieval",
-    runtime.includes("can i give my client any discount") ||
-      (runtime.includes("discountQuestion") && runtime.includes("The approved discount I have is the $2,000 same-day discount")),
-    "discount questions can answer from the approved pricing article without exact starter wording",
+    "runtime uses AI semantic evidence selection over broad evidence",
+    runtime.includes("Generate semantic search queries that capture what the rep is really asking") &&
+      runtime.includes("semantic_search_queries") &&
+      runtime.includes("Select evidence by meaning, not by mechanical keyword overlap.") &&
+      runtime.includes("formatEvidencePacket") &&
+      runtime.includes("selected_source_ids") &&
+      runtime.includes("buildEvidenceCandidates"),
+    "runtime uses AI search planning and model-based evidence selection before answering",
   );
 
   addCheck(
     "follow-up questions include recent chat context",
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
-      runtime.includes("buildContextualQuestion") &&
-      runtime.includes("Conversation context:"),
-    "runtime receives recent conversation messages and rewrites short follow-ups with context",
+      runtime.includes("buildConversationContext") &&
+      runtime.includes("The current user question is authoritative."),
+    "runtime sends recent conversation context to AI while keeping current question authoritative",
   );
 
   addCheck(
     "current question intent is not overwritten by old chat context",
-    runtime.includes("decideQuestion(sanitizedQuestion, contextualQuestion)") &&
-      runtime.includes("findMatchingRule(question)") &&
-      runtime.includes("findMatchingRule(contextualQuestion)") &&
+    runtime.includes("CURRENT USER QUESTION:") &&
+      runtime.includes("Use conversation context only to resolve short or ambiguous follow-ups.") &&
       !runtime.includes("const decision = decideQuestion(contextualQuestion)") &&
       !runtime.includes("/\\b(it|that|this|they|them|those|same|there)\\b/i.test(question);"),
-    "runtime matches the latest user question first and restricts context to true follow-ups",
+    "runtime prompts AI to prioritize the latest user question over history",
   );
 
   addCheck(
     "show-list duplicate summary is suppressed",
     chatUi.includes("isDuplicatedSummary") &&
       chatUi.includes("duplicatedItems >= 4") &&
-      runtime.includes("Here is the latest approved show list I have."),
+      bundle.includes("Legacy Makers") &&
+      bundle.includes("Masters of Innovation"),
     "show-list answers do not render the full list twice",
   );
 
   addCheck(
-    "pricing answer includes package descriptions",
-    runtime.includes("Entry ISTV package with a 12-15 minute episode") &&
-      runtime.includes("Mid-tier ISTV package with a 16-20 minute episode") &&
-      runtime.includes("Top ISTV package with a 20-25 minute episode") &&
-      runtime.includes("How to explain it on a call"),
-    "pricing answer explains package differences, payment plans, and call guidance",
+    "AI answer prompt requires scoped useful answers",
+    runtime.includes("If the user asks for only one product, package, show, or topic, do not include unrelated sections.") &&
+      runtime.includes("Do not dump every related fact.") &&
+      runtime.includes("Answer the actual question asked."),
+    "AI answer prompt blocks broad irrelevant sections and canned dumping",
   );
 
   addCheck(

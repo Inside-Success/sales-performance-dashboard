@@ -4,12 +4,7 @@ import type {
   AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
-import {
-  APPROVED_FAQ_ARTICLES,
-  ASK_SALES_FAQ_POLICY_RULES,
-  type ApprovedFaqArticle,
-  type AskSalesFaqRule,
-} from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
+import { APPROVED_FAQ_ARTICLES, type ApprovedFaqArticle } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 
 type RagChunk = {
@@ -34,7 +29,20 @@ type IndexedChunk = RagChunk & {
   tokenSet: Set<string>;
 };
 
-type RetrievedChunk = RagChunk & {
+type EvidenceCandidate = {
+  id: string;
+  kind: "approved_article" | "source_chunk";
+  articleId: string | null;
+  articleStatus: string;
+  sourceType: RagChunk["source_type"] | "approved_article";
+  sourceTitle: string;
+  heading: string;
+  category: string;
+  riskLevel: string;
+  authority: number;
+  trustLabel: string;
+  lastReviewed: string;
+  text: string;
   score: number;
   matchedTokens: string[];
 };
@@ -50,7 +58,7 @@ type RuntimeDecision = {
   matchedRuleId: string;
   matchedArticleId: string | null;
   primaryArticle: ApprovedFaqArticle | null;
-  retrieved: RetrievedChunk[];
+  retrieved: EvidenceCandidate[];
 };
 
 type ModelOutput = {
@@ -63,10 +71,38 @@ type ModelOutput = {
   confidence_score?: number;
 };
 
-type ProviderResult = {
+type SearchProfileOutput = {
+  understood_question: string;
+  answer_scope: string;
+  semantic_search_queries: string[];
+  expected_source_categories?: string[];
+  exclude_topics?: string[];
+  confidence_label?: "High" | "Medium" | "Low";
+  confidence_score?: number;
+};
+
+type EvidenceSelectionOutput = {
+  understood_question: string;
+  answer_scope: string;
+  selected_source_ids: string[];
+  needs_route: boolean;
+  route_reason: string;
+  confidence_label?: "High" | "Medium" | "Low";
+  confidence_score?: number;
+};
+
+type ReviewOutput = {
+  approved: boolean;
+  reason: string;
+  revised_output?: ModelOutput | null;
+  confidence_label?: "High" | "Medium" | "Low";
+  confidence_score?: number;
+};
+
+type ProviderJsonResult<T> = {
   provider: "deepseek" | "anthropic";
   model: string;
-  output: ModelOutput;
+  output: T;
 };
 
 export type AskSalesFaqRuntimeResult = AskSalesFaqResponse & {
@@ -131,55 +167,20 @@ const STOPWORDS = new Set([
   "your",
 ]);
 
-const CONCEPT_EXPANSIONS: Array<{ triggers: string[]; add: string[] }> = [
-  { triggers: ["discount", "discounts", "2000", "$2000", "$2,000"], add: ["same", "day", "call", "2", "pricing", "offer"] },
+const QUERY_EXPANSIONS: Array<{ triggers: string[]; add: string[] }> = [
+  { triggers: ["pay", "payment", "payments", "plan", "plans"], add: ["price", "pricing", "package", "link", "deposit"] },
+  { triggers: ["dj", "daymond", "john"], add: ["daymond", "john", "next", "level", "ceo"] },
+  { triggers: ["nlceo", "next", "level"], add: ["next", "level", "ceo", "daymond", "john"] },
   { triggers: ["price", "pricing", "cost", "package", "packages"], add: ["istv", "payment", "plans", "lite", "standard", "premium"] },
+  { triggers: ["discount", "discounts", "2000", "$2000", "$2,000"], add: ["same", "day", "call", "2", "pricing", "offer"] },
   { triggers: ["show", "shows", "tv"], add: ["current", "active", "list"] },
   { triggers: ["refund", "refunds"], add: ["next", "level", "ceo", "daymond", "istv"] },
   { triggers: ["apple", "amazon", "tubi", "tier", "guaranteed"], add: ["platform", "placement", "proof", "claims"] },
   { triggers: ["recording", "recordings"], add: ["zoom", "stored", "access"] },
-  { triggers: ["contract", "signature", "addendum"], add: ["payment", "legal", "route"] },
-  { triggers: ["stop", "opt", "dnc"], add: ["compliance", "security", "privacy"] },
 ];
 
-const DEFAULT_ROUTE_RESPONSE =
-  "I found related internal FAQ material, but not enough to give a final answer confidently. Route this to the current owner before replying.";
-
-const ADMIN_ONLY_RESPONSE =
-  "This is an admin or maintenance question, not a normal sales-rep answer. Keep it in the admin workflow.";
-
-const APPROVED_SHOW_LIST = [
-  "Legacy Makers",
-  "Women in Power",
-  "Operation CEO",
-  "America's Top Lawyers",
-  "America's Best Doctors",
-  "America's Top Trainers",
-  "America's Top Agents",
-  "Kingdom Creators",
-  "Mompreneurs",
-  "Couples of America",
-  "Builders of America",
-  "Legal Titans",
-  "Life Changers",
-  "Project Beauty",
-  "Mindset Masters",
-  "Love Experts",
-  "Live Longer",
-  "Americas Top Contractors",
-  "Blue Collar America",
-  "America's Authors",
-  "America's Top Physicians",
-  "Doctors of America",
-  "Rise of Her",
-  "Made It In America",
-  "Wealth Makers",
-  "Beyond Success",
-  "American Founders",
-  "Leading with Purpose",
-  "Impact Makers TV",
-  "Masters of Innovation",
-];
+const AI_UNAVAILABLE_RESPONSE =
+  "I cannot generate a reliable AI answer right now. Do not guess from memory; check the approved source or route the question before replying.";
 
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
 const INDEXED_CHUNKS: IndexedChunk[] = rawChunks.map((chunk) => {
@@ -199,63 +200,48 @@ export async function runAskSalesFaq(
 ): Promise<AskSalesFaqRuntimeResult> {
   const startedAt = Date.now();
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
-  const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationMessages);
-  const decision = decideQuestion(sanitizedQuestion, contextualQuestion);
-
-  if (decision.outcome === "admin_only") {
-    return buildHandledResponse({
-      startedAt,
-      sanitizedQuestion,
-      contextualQuestion,
-      redactions,
-      decision,
-      answer: ADMIN_ONLY_RESPONSE,
-      structuredAnswer: structured({
-        summary: ADMIN_ONLY_RESPONSE,
-        sections: [{ title: "Where this belongs", items: ["Keep this in the admin workflow."], tone: "route" }],
-        decision,
-      }),
-      source: null,
-      errorClass: null,
-    });
-  }
-
-  const deterministicAnswer = buildDeterministicAnswer({
-    startedAt,
-    sanitizedQuestion,
-    contextualQuestion,
-    redactions,
-    decision,
-  });
-  if (deterministicAnswer) return deterministicAnswer;
-
-  if (!decision.safeToGenerate) {
-    const evidenceAnswer = buildExtractiveEvidenceAnswer(decision);
-    return buildHandledResponse({
-      startedAt,
-      sanitizedQuestion,
-      contextualQuestion,
-      redactions,
-      decision,
-      answer: evidenceAnswer.answer,
-      structuredAnswer: evidenceAnswer.structuredAnswer,
-      source: sourceSummaryFromDecision(decision),
-      errorClass: decision.outcome === "low_confidence_route" ? "low_confidence_retrieval" : null,
-    });
-  }
+  const conversationContext = buildConversationContext(conversationMessages);
+  const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
+  let candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext);
 
   try {
-    const providerResult = await generateProviderAnswer({
-      question: contextualQuestion,
-      displayQuestion: sanitizedQuestion,
-      decision,
+    const searchProfile = await createSearchProfileWithAi({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
     });
-    const answer = sanitizeModelAnswer(providerResult.output.answer);
+    candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, searchProfile.output);
+    const selectionResult = await selectEvidenceWithAi({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+      searchProfile: searchProfile.output,
+      candidates,
+    });
+    const selectedEvidence = resolveSelectedEvidence(selectionResult.output, candidates);
+    const answerResult = await generateProviderAnswer({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+      selection: selectionResult.output,
+      evidence: selectedEvidence,
+    });
+    const reviewedOutput = await reviewAnswerWithAi({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+      selection: selectionResult.output,
+      evidence: selectedEvidence,
+      output: answerResult.output,
+    });
+    const finalOutput = reviewedOutput.output.revised_output || answerResult.output;
+    const decision = buildDecision({
+      selection: selectionResult.output,
+      output: finalOutput,
+      evidence: selectedEvidence,
+    });
+    const answer = sanitizeModelAnswer(finalOutput.answer);
+
     if (!answer || containsHiddenTerms(answer)) {
-      throw new Error("Model output was empty or exposed hidden terms");
+      throw new Error("AI output was empty or exposed hidden terms");
     }
 
-    const structuredAnswer = normalizeModelStructuredAnswer(providerResult.output, answer, decision);
     return buildHandledResponse({
       startedAt,
       sanitizedQuestion,
@@ -263,25 +249,29 @@ export async function runAskSalesFaq(
       redactions,
       decision,
       answer,
-      structuredAnswer,
+      structuredAnswer: normalizeModelStructuredAnswer(finalOutput, answer, decision),
       source: sourceSummaryFromDecision(decision),
-      provider: providerResult.provider,
-      model: providerResult.model,
-      errorClass: null,
+      provider: answerResult.provider,
+      model: answerResult.model,
+      errorClass: reviewedOutput.output.approved ? null : "ai_review_revised_answer",
     });
   } catch (error) {
-    console.error("Ask Sales FAQ provider failed", error);
-    const fallback = buildExtractiveEvidenceAnswer(decision);
+    console.error("Ask Sales FAQ AI runtime failed", error);
+    const decision = buildUnavailableDecision(candidates);
     return buildHandledResponse({
       startedAt,
       sanitizedQuestion,
       contextualQuestion,
       redactions,
       decision,
-      answer: fallback.answer,
-      structuredAnswer: fallback.structuredAnswer,
-      source: sourceSummaryFromDecision(decision),
-      errorClass: "provider_fallback_to_evidence",
+      answer: AI_UNAVAILABLE_RESPONSE,
+      structuredAnswer: structured({
+        summary: AI_UNAVAILABLE_RESPONSE,
+        sections: [{ title: "What to do", items: ["Check the approved source.", "Route the question before replying to the prospect."], tone: "route" }],
+        decision,
+      }),
+      source: null,
+      errorClass: "ai_runtime_unavailable",
     });
   }
 }
@@ -313,7 +303,8 @@ function buildHandledResponse(input: {
       input.decision.outcome === "route_from_approved_article" ||
       input.decision.outcome === "route_from_evidence" ||
       input.decision.outcome === "low_confidence_route" ||
-      input.decision.outcome === "abstain_unapproved",
+      input.decision.outcome === "abstain_unapproved" ||
+      input.decision.outcome === "safe_fallback",
     routeReason: input.decision.routeReason,
     redactions: input.redactions,
     latencyMs: Date.now() - input.startedAt,
@@ -324,392 +315,418 @@ function buildHandledResponse(input: {
   };
 }
 
-function buildDeterministicAnswer(input: {
-  startedAt: number;
-  sanitizedQuestion: string;
-  contextualQuestion: string;
-  redactions: string[];
-  decision: RuntimeDecision;
-}): AskSalesFaqRuntimeResult | null {
-  const articleId = input.decision.matchedArticleId;
-  const question = normalizeText(input.sanitizedQuestion);
+function buildEvidenceCandidates(question: string, conversationContext: string, searchProfile?: SearchProfileOutput): EvidenceCandidate[] {
+  const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
+  const searchText = [
+    question,
+    conversationContext,
+    searchProfile?.understood_question || "",
+    searchProfile?.answer_scope || "",
+    ...(searchProfile?.semantic_search_queries || []),
+    ...(searchProfile?.expected_source_categories || []),
+  ]
+    .filter(Boolean)
+    .join("\n");
+  const chunkCandidates = retrieveCandidateChunks(searchText, 52, { expand: !searchProfile })
+    .filter((chunk) => chunk.source_type !== "approved_article")
+    .map((chunk) => chunkToCandidate(chunk));
+  const byId = new Map<string, EvidenceCandidate>();
 
-  if (!articleId) return null;
-
-  if (articleId === "current-show-source") {
-    const routeRequired = input.decision.outcome === "route_from_approved_article";
-    const namedShow = APPROVED_SHOW_LIST.find((show) => phrasePresent(show, question));
-    let summary =
-      "Here is the latest approved show list I have. If a show is newly added, paused, disputed, or missing from a dropdown, confirm it with the current sales/ops owner before giving a final answer.";
-    const sections: AskSalesFaqStructuredAnswer["sections"] = [
-      {
-        title: "Current approved shows",
-        items: APPROVED_SHOW_LIST,
-        tone: "default",
-      },
-    ];
-    if (routeRequired) {
-      summary = namedShow
-        ? `${namedShow} is on the latest approved show list I have. Confirm same-day active/paused status with the current sales/ops owner before giving a final prospect answer.`
-        : "Confirm same-day active/paused or missing-dropdown show status with the current sales/ops owner before giving a final prospect answer.";
-      sections.push({
-        title: "Route note",
-        items: ["Show status can change. Confirm newly added, paused, disputed, or missing-form shows before telling a prospect."],
-        tone: "route",
-      });
-    }
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({ summary, sections, decision: input.decision }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
+  for (const candidate of [...approved, ...chunkCandidates]) {
+    const existing = byId.get(candidate.id);
+    if (!existing || candidate.score > existing.score) byId.set(candidate.id, candidate);
   }
 
-  if (articleId === "istv-nlceo-pricing-and-same-day-discount") {
-    const discountQuestion =
-      phrasePresent("discount", question) ||
-      phrasePresent("2000", question) ||
-      phrasePresent("$2000", question) ||
-      phrasePresent("$2,000", question);
-    const nlceoQuestion = phrasePresent("next level ceo", question) || phrasePresent("daymond john", question);
-    let summary =
-      "For main ISTV, the packages are Lite at $12K, Standard at $20K, and VIP/Premium at $30K. Next Level CEO / Daymond John is a separate offer line: Lite $10K, Standard $15K, Premium VIP $20K, with a CEO Day upgrade for +$5K.";
-    if (discountQuestion && nlceoQuestion) {
-      summary = "The $2,000 same-day discount does not apply to Next Level CEO / Daymond John.";
-    } else if (discountQuestion) {
-      summary =
-        "The approved discount I have is the $2,000 same-day discount for the main ISTV program only. It applies on Call 2 when the client closes and pays the initial deposit on that same Call-2 closing call.";
-    } else if (nlceoQuestion) {
-      summary = "Next Level CEO / Daymond John pricing: Lite $10K, Standard $15K, Premium VIP $20K, CEO Day upgrade +$5K.";
-    }
-
-    const sections = [
-      {
-        title: "Main ISTV packages",
-        items: [
-          "Lite: $12,000. Entry ISTV package with a 12-15 minute episode on the Inside Success Network app. Payment plans: 4 x $3,000, 3 x $4,000, or 2 x $6,000.",
-          "Standard: $20,000. Mid-tier ISTV package with a 16-20 minute episode and 100,000 pre-promo views. Payment plans: 4 x $5,000 or 2 x $10,000.",
-          "VIP/Premium: $30,000. Top ISTV package with a 20-25 minute episode, 150,000 pre-promo views, and submission to one Tier-1 platform if accepted. Payment plans: 4 x $7,500, 3 x $10,000, or 2 x $15,000.",
-        ],
-      },
-      {
-        title: "Next Level CEO / Daymond John",
-        items: [
-          "Lite: $10,000.",
-          "Standard: $15,000.",
-          "Premium VIP: $20,000.",
-          "CEO Day upgrade: +$5,000.",
-          "Keep this separate from main ISTV pricing and do not apply the main ISTV same-day discount to it.",
-        ],
-      },
-      {
-        title: "Discount rule",
-        items: [
-          "$2,000 off main ISTV only.",
-          "Only on Call 2 when the client closes and pays the initial deposit on that same call.",
-          "Not for Next Level CEO / Daymond John.",
-          "Do not promise second-show, crossover, VIP-to-VIP, custom, or special discounts unless a current owner approves that exact case.",
-        ],
-        tone: "warning" as const,
-      },
-      {
-        title: "How to explain it on a call",
-        items: [
-          "Start with the package tier that fits the client, then quote the listed price and payment plan.",
-          "Do not invent custom splits, custom amounts, special discounts, or old package terms.",
-          "If the client asks for an exception or a deal not listed here, route it before promising anything.",
-        ],
-        tone: "good" as const,
-      },
-    ];
-
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({ summary, sections, decision: input.decision }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "refund-rules-by-product") {
-    const summary = "Next Level CEO / Daymond John has a 3-day refund window. Main ISTV and other shows have no refund offer and no refunds.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "Current refund rule", items: ["Next Level CEO / Daymond John: 3-day refund window.", "Main ISTV and other shows: no refund offer and no refunds."] },
-          { title: "Route exceptions", items: ["Refund exceptions, duplicate charges, payment pauses, paid-but-not-signed, and legal/contract interpretation must route."], tone: "route" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "payment-plan-and-link-boundaries") {
-    const summary = "Use only current official payment links and listed payment plans. Custom amounts, custom payment plans, custom links, wire/ACH, invoices, and payment exceptions must route.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "What reps can say", items: ["Use the current official payment link and listed payment plan for that package."] },
-          { title: "Must route", items: ["Custom amounts or splits.", "Wire/ACH or invoice requests.", "Broken links or failed payments.", "Any payment exception."], tone: "route" },
-          { title: "Never do this", items: ["Do not collect or paste raw card numbers, bank details, payment details, passwords, tokens, or secrets."], tone: "warning" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "platform-proof-and-claims-boundaries") {
-    const summary = "All tiers air on the Inside Success Network app. VIP/Premium is submitted to one Tier-1 platform, but placement is not guaranteed.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "Approved platform wording", items: ["All tiers air on the Inside Success Network app.", "VIP/Premium is submitted to one Tier-1 platform: Amazon Prime Video, Apple TV streaming app, or Tubi.", "Tier-1 placement is a platform decision and is not guaranteed."] },
-          { title: "Do not promise", items: ["Do not guarantee Amazon, Apple TV streaming app, Tubi, ROI, leads, revenue, fundraising, PR outcomes, views, or business results."], tone: "warning" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "internal-material-sharing-boundaries") {
-    const summary = "Do not externally share internal materials unless explicitly approved.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "Do not share externally", items: ["Internal Slack content.", "Payment details.", "Dashboards/source docs.", "Confidential notes.", "Call recordings.", "Stats decks.", "Training videos."] },
-          { title: "If unsure", items: ["Route to the source owner or compliance owner before sharing."], tone: "route" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "platform-hosting-and-client-license-duration") {
-    const summary = "ISTV platform hosting is 5 years. The client has lifetime license rights to their own episode/content.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "Use this wording", items: ["The episode is hosted on the ISTV platform for 5 years.", "The client has lifetime license rights to their own episode/content."] },
-          { title: "Do not merge these", items: ["Do not say ISTV platform hosting is lifetime or permanent."], tone: "warning" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  if (articleId === "call-recording-storage-and-access") {
-    const summary = "Calls are automatically recorded by Zoom and stored on Zoom servers. Access is through the Zoom recording link for that recording.";
-    return buildHandledResponse({
-      ...input,
-      answer: summary,
-      structuredAnswer: structured({
-        summary,
-        sections: [
-          { title: "Recording storage", items: ["Calls are automatically recorded by Zoom.", "Recordings are stored on Zoom servers."] },
-          { title: "Access", items: ["Use the Zoom recording link for that recording.", "If the link is missing or access is denied, route to the current sales-tech/recording owner."], tone: "route" },
-        ],
-        decision: input.decision,
-      }),
-      source: sourceSummaryFromDecision(input.decision),
-      errorClass: null,
-    });
-  }
-
-  return null;
+  return Array.from(byId.values())
+    .sort((left, right) => right.authority - left.authority || right.score - left.score || left.id.localeCompare(right.id))
+    .slice(0, 48);
 }
 
-function decideQuestion(question: string, contextualQuestion = question): RuntimeDecision {
-  const retrieved = retrieveKnowledge(question, 10);
-  const contextualRetrieved = contextualQuestion === question ? retrieved : retrieveKnowledge(contextualQuestion, 10);
-  const rule = findMatchingRule(question) || (contextualQuestion === question ? null : findMatchingRule(contextualQuestion));
+async function createSearchProfileWithAi(input: {
+  currentQuestion: string;
+  conversationContext: string;
+}): Promise<ProviderJsonResult<SearchProfileOutput>> {
+  return generateProviderJson({
+    purpose: "semantic search planning",
+    maxTokens: 800,
+    messages: [
+      {
+        role: "system",
+        content: [
+          "You are the semantic search planner for Ask Sales FAQ.",
+          "Do not answer the sales question.",
+          "Generate semantic search queries that capture what the rep is really asking, including sales shorthand and equivalent phrases.",
+          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
+          "Respect narrow wording like only, just, specific product, specific show, specific package, or specific payment path.",
+          "Return only JSON with keys: understood_question, answer_scope, semantic_search_queries, expected_source_categories, exclude_topics, confidence_label, confidence_score.",
+          "semantic_search_queries must be natural-language search phrases, not source IDs, and should include 6 to 10 varied phrasings.",
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
+          "",
+          "RECENT CONVERSATION CONTEXT:",
+          input.conversationContext || "None",
+          "",
+          "HIGH-TRUST ARTICLE CATALOG:",
+          formatArticleCatalog(),
+        ].join("\n"),
+      },
+    ],
+    parse: parseSearchProfileOutput,
+  });
+}
 
-  if (rule?.decision === "admin_only") {
-    return {
-      outcome: "admin_only",
-      sourceMode: "fallback",
-      confidenceLabel: "Low",
-      confidenceScore: 0,
-      reason: rule.reason,
-      routeReason: null,
-      safeToGenerate: false,
-      matchedRuleId: rule.id,
-      matchedArticleId: rule.article_id || null,
-      primaryArticle: null,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
-  const ruleArticle = rule?.article_id ? APPROVED_FAQ_ARTICLES.find((article) => article.id === rule.article_id) || null : null;
-  const topApproved = firstApprovedRetrieved(retrieved);
-  const top = retrieved[0] || null;
-  const primaryArticle = ruleArticle || articleFromRetrieved(topApproved || top);
-
-  if (ruleArticle) {
-    const matchedRule = rule as AskSalesFaqRule;
-    const outcome =
-      matchedRule.decision === "route_from_approved_article" ? "route_from_approved_article" : "answer_from_approved_article";
-    return {
-      outcome,
-      sourceMode: "approved",
-      confidenceLabel: "High",
-      confidenceScore: 92,
-      reason: matchedRule.reason,
-      routeReason: outcome === "route_from_approved_article" ? matchedRule.reason : null,
-      safeToGenerate: true,
-      matchedRuleId: matchedRule.id,
-      matchedArticleId: ruleArticle.id,
-      primaryArticle: ruleArticle,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
-  if (topApproved && topApproved.score >= 4.2) {
-    const article = articleFromRetrieved(topApproved);
-    return {
-      outcome: "answer_from_approved_article",
-      sourceMode: "approved",
-      confidenceLabel: topApproved.score >= 7 ? "High" : "Medium",
-      confidenceScore: Math.min(90, Math.round(58 + topApproved.score * 5)),
-      reason: "Semantic retrieval matched an approved FAQ article.",
-      routeReason: null,
-      safeToGenerate: true,
-      matchedRuleId: "semantic-approved-retrieval",
-      matchedArticleId: article?.id || topApproved.article_id,
-      primaryArticle: article,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
-  const contextualTopApproved = contextualQuestion === question ? null : firstApprovedRetrieved(contextualRetrieved);
-  if (contextualTopApproved && contextualTopApproved.score >= 5.6) {
-    const article = articleFromRetrieved(contextualTopApproved);
-    return {
-      outcome: "answer_from_approved_article",
-      sourceMode: "approved",
-      confidenceLabel: "Medium",
-      confidenceScore: Math.min(84, Math.round(50 + contextualTopApproved.score * 5)),
-      reason: "Follow-up context matched an approved FAQ article.",
-      routeReason: null,
-      safeToGenerate: true,
-      matchedRuleId: "semantic-approved-follow-up-retrieval",
-      matchedArticleId: article?.id || contextualTopApproved.article_id,
-      primaryArticle: article,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
-  if (top && top.score >= 4.8) {
-    const route = top.article_status === "in_conflict" || top.risk_level === "high" || top.authority < 58;
-    return {
-      outcome: route ? "route_from_evidence" : "answer_from_evidence",
-      sourceMode: top.source_type === "approved_article" ? "approved" : "evidence",
-      confidenceLabel: top.score >= 8 && top.authority >= 58 ? "Medium" : "Low",
-      confidenceScore: Math.min(78, Math.round(35 + top.score * 4 + top.authority / 5)),
-      reason: "Retrieved relevant internal evidence from the FAQ source corpus.",
-      routeReason: route ? "This answer is based on internal evidence and should be confirmed before giving a final high-risk answer." : null,
-      safeToGenerate: true,
-      matchedRuleId: "semantic-evidence-retrieval",
-      matchedArticleId: top.article_id,
-      primaryArticle,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
-  if (rule?.decision === "abstain_unapproved") {
-    return {
-      outcome: "low_confidence_route",
-      sourceMode: "fallback",
-      confidenceLabel: "Low",
-      confidenceScore: 15,
-      reason: rule.reason,
-      routeReason: rule.reason,
-      safeToGenerate: false,
-      matchedRuleId: rule.id,
-      matchedArticleId: null,
-      primaryArticle: null,
-      retrieved: mergeRetrieved(retrieved, contextualRetrieved),
-    };
-  }
-
+function approvedArticleToCandidate(article: ApprovedFaqArticle): EvidenceCandidate {
   return {
-    outcome: "low_confidence_route",
-    sourceMode: "fallback",
-    confidenceLabel: "Low",
-    confidenceScore: 10,
-    reason: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.reason,
-    routeReason: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.reason,
-    safeToGenerate: false,
-    matchedRuleId: "default-low-confidence-route",
-    matchedArticleId: null,
-    primaryArticle: null,
-    retrieved: mergeRetrieved(retrieved, contextualRetrieved),
+    id: `approved:${article.id}`,
+    kind: "approved_article",
+    articleId: article.id,
+    articleStatus: "approved",
+    sourceType: "approved_article",
+    sourceTitle: article.title,
+    heading: "Approved FAQ article",
+    category: article.category,
+    riskLevel: article.riskLevel,
+    authority: 100,
+    trustLabel: "Approved FAQ article",
+    lastReviewed: article.lastReviewed,
+    text: article.body,
+    score: 100,
+    matchedTokens: [],
   };
 }
 
-function findMatchingRule(question: string): AskSalesFaqRule | null {
-  for (const rules of [
-    ASK_SALES_FAQ_POLICY_RULES.adminOnlyRules,
-    ASK_SALES_FAQ_POLICY_RULES.routeRules,
-    ASK_SALES_FAQ_POLICY_RULES.answerRules,
-    ASK_SALES_FAQ_POLICY_RULES.abstainRules,
-  ]) {
-    for (const rule of rules) {
-      if (ruleMatches(question, rule)) return rule;
-    }
+function chunkToCandidate(chunk: RetrievedChunk): EvidenceCandidate {
+  return {
+    id: `chunk:${chunk.id}`,
+    kind: "source_chunk",
+    articleId: chunk.article_id,
+    articleStatus: chunk.article_status,
+    sourceType: chunk.source_type,
+    sourceTitle: chunk.source_title,
+    heading: chunk.heading,
+    category: chunk.category,
+    riskLevel: chunk.risk_level,
+    authority: chunk.authority,
+    trustLabel: chunk.trust_label,
+    lastReviewed: chunk.last_reviewed,
+    text: chunk.text,
+    score: chunk.score,
+    matchedTokens: chunk.matchedTokens,
+  };
+}
+
+async function selectEvidenceWithAi(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  searchProfile: SearchProfileOutput;
+  candidates: EvidenceCandidate[];
+}): Promise<ProviderJsonResult<EvidenceSelectionOutput>> {
+  return generateProviderJson({
+    purpose: "semantic evidence selection",
+    maxTokens: 900,
+    messages: [
+      {
+        role: "system",
+        content: [
+          "You are the semantic retrieval planner for Ask Sales FAQ.",
+          "Select evidence by meaning, not by mechanical keyword overlap.",
+          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
+          "Use the AI search profile as the retrieval intent, but the evidence packet is the only source of facts.",
+          "Understand sales-team shorthand naturally. If a phrase is ambiguous, choose the evidence that best fits the Inside Success sales context.",
+          "Return only JSON with keys: understood_question, answer_scope, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
+          "selected_source_ids must contain only IDs from the evidence packet. Choose the smallest set that fully answers the question.",
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
+          "",
+          "RECENT CONVERSATION CONTEXT:",
+          input.conversationContext || "None",
+          "",
+          "AI SEARCH PROFILE:",
+          JSON.stringify(input.searchProfile),
+          "",
+          "EVIDENCE PACKET:",
+          formatEvidencePacket(input.candidates, { maxCharsPerItem: 1200 }),
+        ].join("\n"),
+      },
+    ],
+    parse: parseEvidenceSelectionOutput,
+  });
+}
+
+function resolveSelectedEvidence(selection: EvidenceSelectionOutput, candidates: EvidenceCandidate[]) {
+  const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
+  const selected = selection.selected_source_ids
+    .map((id) => byId.get(id))
+    .filter((candidate): candidate is EvidenceCandidate => Boolean(candidate));
+
+  if (selected.length) return selected.slice(0, 10);
+
+  return candidates
+    .filter((candidate) => candidate.kind === "approved_article")
+    .slice(0, 8)
+    .concat(candidates.filter((candidate) => candidate.kind === "source_chunk").slice(0, 4));
+}
+
+async function generateProviderAnswer(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  selection: EvidenceSelectionOutput;
+  evidence: EvidenceCandidate[];
+}): Promise<ProviderJsonResult<ModelOutput>> {
+  return generateProviderJson({
+    purpose: "answer generation",
+    maxTokens: 1400,
+    messages: [
+      {
+        role: "system",
+        content: [
+          "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
+          "Use only the selected evidence. Do not invent facts, prices, discounts, owners, links, or exceptions.",
+          "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
+          "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
+          "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
+          "Never expose source IDs, file paths, article statuses, Slack links, or implementation details.",
+          "Return only JSON with keys: answer, summary, sections, needs_route, route_reason, confidence_label, confidence_score.",
+          "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
+          "",
+          "RECENT CONVERSATION CONTEXT:",
+          input.conversationContext || "None",
+          "",
+          "AI-UNDERSTOOD QUESTION:",
+          input.selection.understood_question,
+          "",
+          "ANSWER SCOPE:",
+          input.selection.answer_scope,
+          "",
+          "SELECTED EVIDENCE:",
+          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1800 }),
+        ].join("\n"),
+      },
+    ],
+    parse: parseModelOutput,
+  });
+}
+
+async function reviewAnswerWithAi(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  selection: EvidenceSelectionOutput;
+  evidence: EvidenceCandidate[];
+  output: ModelOutput;
+}): Promise<ProviderJsonResult<ReviewOutput>> {
+  return generateProviderJson({
+    purpose: "answer relevance review",
+    maxTokens: 1400,
+    messages: [
+      {
+        role: "system",
+        content: [
+          "You are the AI quality reviewer for Ask Sales FAQ.",
+          "Review semantically, not with keyword rules.",
+          "Approve only if the answer directly answers the current user question, respects narrow wording like only/just/specific product, avoids unrelated sections, and is grounded in evidence.",
+          "If the answer is off-topic, too broad, missing the actual ask, or includes irrelevant product sections, return approved false and provide revised_output as the corrected JSON answer.",
+          "Return only JSON with keys: approved, reason, revised_output, confidence_label, confidence_score.",
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
+          "",
+          "RECENT CONVERSATION CONTEXT:",
+          input.conversationContext || "None",
+          "",
+          "AI-UNDERSTOOD QUESTION:",
+          input.selection.understood_question,
+          "",
+          "ANSWER SCOPE:",
+          input.selection.answer_scope,
+          "",
+          "SELECTED EVIDENCE:",
+          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1400 }),
+          "",
+          "DRAFT ANSWER JSON:",
+          JSON.stringify(input.output),
+        ].join("\n"),
+      },
+    ],
+    parse: parseReviewOutput,
+  });
+}
+
+function buildDecision(input: {
+  selection: EvidenceSelectionOutput;
+  output: ModelOutput;
+  evidence: EvidenceCandidate[];
+}): RuntimeDecision {
+  const primaryArticle = firstSelectedApprovedArticle(input.evidence);
+  const selectedApproved = input.evidence.filter((candidate) => candidate.kind === "approved_article");
+  const selectedEvidence = input.evidence.filter((candidate) => candidate.kind !== "approved_article");
+  const needsRoute = Boolean(input.output.needs_route || input.selection.needs_route);
+  const confidenceLabel = input.output.confidence_label || input.selection.confidence_label || "Medium";
+  const confidenceScore = clampConfidence(input.output.confidence_score ?? input.selection.confidence_score ?? 72);
+  const sourceMode =
+    selectedApproved.length && selectedEvidence.length
+      ? "mixed"
+      : selectedApproved.length
+        ? "approved"
+        : selectedEvidence.length
+          ? "evidence"
+          : "fallback";
+  const outcome: AskSalesFaqOutcome = needsRoute
+    ? sourceMode === "approved"
+      ? "route_from_approved_article"
+      : "route_from_evidence"
+    : sourceMode === "approved"
+      ? "answer_from_approved_article"
+      : sourceMode === "fallback"
+        ? "low_confidence_route"
+        : "answer_from_evidence";
+
+  return {
+    outcome,
+    sourceMode,
+    confidenceLabel,
+    confidenceScore,
+    reason: input.selection.understood_question || "AI semantic retrieval selected source evidence.",
+    routeReason: needsRoute ? input.output.route_reason || input.selection.route_reason || "Confirm this with the current owner before relying on it." : null,
+    safeToGenerate: true,
+    matchedRuleId: "ai-semantic-rag",
+    matchedArticleId: primaryArticle?.id || input.evidence.find((candidate) => candidate.articleId)?.articleId || null,
+    primaryArticle,
+    retrieved: input.evidence,
+  };
+}
+
+function buildUnavailableDecision(candidates: EvidenceCandidate[]): RuntimeDecision {
+  return {
+    outcome: "safe_fallback",
+    sourceMode: "fallback",
+    confidenceLabel: "Low",
+    confidenceScore: 0,
+    reason: "AI provider was unavailable, so no content answer was generated.",
+    routeReason: "AI provider unavailable.",
+    safeToGenerate: false,
+    matchedRuleId: "ai-provider-unavailable",
+    matchedArticleId: null,
+    primaryArticle: null,
+    retrieved: candidates.slice(0, 8),
+  };
+}
+
+function firstSelectedApprovedArticle(evidence: EvidenceCandidate[]) {
+  const articleId = evidence.find((candidate) => candidate.kind === "approved_article" && candidate.articleId)?.articleId;
+  if (!articleId) return null;
+  return APPROVED_FAQ_ARTICLES.find((article) => article.id === articleId) || null;
+}
+
+function sourceSummaryFromDecision(decision: RuntimeDecision): AskSalesFaqRuntimeResult["source"] {
+  const primary = decision.primaryArticle;
+  const top = decision.retrieved[0];
+  if (primary) {
+    return {
+      label: primary.title,
+      lastReviewed: primary.lastReviewed,
+      approved: true,
+      sourceMode: decision.sourceMode,
+      confidenceLabel: decision.confidenceLabel,
+      confidenceScore: decision.confidenceScore,
+      expandableDetails: `AI selected approved FAQ evidence reviewed on ${primary.lastReviewed}.`,
+    };
+  }
+  if (top) {
+    return {
+      label: `${top.trustLabel}: ${top.sourceTitle}`,
+      lastReviewed: top.lastReviewed || "2026-07-01",
+      approved: top.kind === "approved_article",
+      sourceMode: decision.sourceMode,
+      confidenceLabel: decision.confidenceLabel,
+      confidenceScore: decision.confidenceScore,
+      expandableDetails: `AI selected evidence category: ${top.category}.`,
+    };
   }
   return null;
 }
 
-function ruleMatches(question: string, rule: AskSalesFaqRule) {
-  const normalizedQuestion = normalizeText(question);
-
-  if (rule.match_all?.length && !rule.match_all.every((phrase) => phrasePresent(phrase, normalizedQuestion))) {
-    return false;
-  }
-
-  if (rule.match_any?.length && rule.match_any.some((phrase) => phrasePresent(phrase, normalizedQuestion))) {
-    return true;
-  }
-
-  for (const group of rule.match_any_groups || []) {
-    if (!group.some((phrase) => phrasePresent(phrase, normalizedQuestion))) {
-      return false;
-    }
-  }
-
-  return Boolean(rule.match_all?.length || rule.match_any_groups?.length);
+function structured(input: {
+  summary: string;
+  sections: AskSalesFaqStructuredAnswer["sections"];
+  decision: RuntimeDecision;
+}): AskSalesFaqStructuredAnswer {
+  return {
+    summary: input.summary,
+    sections: input.sections.filter((section) => section.body || section.items?.length),
+    confidenceLabel: input.decision.confidenceLabel,
+    confidenceScore: input.decision.confidenceScore,
+    sourceMode: input.decision.sourceMode,
+  };
 }
 
-function retrieveKnowledge(question: string, topK: number): RetrievedChunk[] {
-  const queryTokens = tokenize(question, { expand: true });
+function buildConversationContext(messages: AskSalesFaqChatMessage[]) {
+  return messages
+    .slice(0, -1)
+    .filter((message) => message.content.trim())
+    .slice(-6)
+    .map((message) => `${message.role}: ${message.content.trim().slice(0, 600)}`)
+    .join("\n");
+}
+
+function buildContextualQuestion(question: string, conversationContext: string) {
+  if (!conversationContext) return question;
+  return `Recent conversation context:\n${conversationContext}\n\nCurrent user question:\n${question}`;
+}
+
+function redactSensitiveText(value: string) {
+  const redactions = new Set<string>();
+  let text = value;
+
+  text = text.replace(/\b(?:\d[ -]*?){13,19}\b/g, (match) => {
+    const digits = match.replace(/\D/g, "");
+    if (digits.length >= 13 && digits.length <= 19) {
+      redactions.add("payment_number");
+      return "[REDACTED_PAYMENT_NUMBER]";
+    }
+    return match;
+  });
+
+  if (/\b\d{3}-\d{2}-\d{4}\b/.test(text)) {
+    redactions.add("ssn");
+    text = text.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[REDACTED_SSN]");
+  }
+
+  text = text.replace(/\b(password|passcode|api key|secret|token)\s*[:=]\s*\S+/gi, (match, label: string) => {
+    redactions.add("secret");
+    return `${label}: [REDACTED_SECRET]`;
+  });
+
+  return { text, redactions: Array.from(redactions).sort() };
+}
+
+type RetrievedChunk = RagChunk & {
+  score: number;
+  matchedTokens: string[];
+};
+
+function retrieveCandidateChunks(question: string, topK: number, options: { expand: boolean }): RetrievedChunk[] {
+  const queryTokens = tokenize(question, { expand: options.expand });
   const queryTokenSet = new Set(queryTokens);
   const normalizedQuestion = normalizeText(question);
 
@@ -742,157 +759,6 @@ function retrieveKnowledge(question: string, topK: number): RetrievedChunk[] {
     .slice(0, topK);
 }
 
-function firstApprovedRetrieved(retrieved: RetrievedChunk[]) {
-  return retrieved.find((chunk) => chunk.source_type === "approved_article" && chunk.article_id);
-}
-
-function mergeRetrieved(primary: RetrievedChunk[], secondary: RetrievedChunk[]) {
-  const byId = new Map<string, RetrievedChunk>();
-  for (const chunk of [...primary, ...secondary]) {
-    const existing = byId.get(chunk.id);
-    if (!existing || chunk.score > existing.score) byId.set(chunk.id, chunk);
-  }
-  return Array.from(byId.values())
-    .sort((left, right) => right.score - left.score || right.authority - left.authority || left.id.localeCompare(right.id))
-    .slice(0, 10);
-}
-
-function articleFromRetrieved(chunk: RetrievedChunk | null | undefined) {
-  if (!chunk?.article_id) return null;
-  return APPROVED_FAQ_ARTICLES.find((article) => article.id === chunk.article_id) || null;
-}
-
-function buildExtractiveEvidenceAnswer(decision: RuntimeDecision): {
-  answer: string;
-  structuredAnswer: AskSalesFaqStructuredAnswer;
-} {
-  const topChunks = decision.retrieved.slice(0, 3);
-  if (!topChunks.length) {
-    return {
-      answer: DEFAULT_ROUTE_RESPONSE,
-      structuredAnswer: structured({
-        summary: DEFAULT_ROUTE_RESPONSE,
-        sections: [{ title: "Route this", items: ["No strong source match was found in the FAQ corpus."], tone: "route" }],
-        decision,
-      }),
-    };
-  }
-
-  const summary = extractBestSentence(topChunks[0].text) || DEFAULT_ROUTE_RESPONSE;
-  const evidenceItems = topChunks
-    .map((chunk) => extractBestSentence(chunk.text))
-    .filter((item): item is string => Boolean(item))
-    .slice(0, 4);
-
-  const routeItem = decision.routeReason || "Confirm with the current owner before using this as a final high-risk answer.";
-  const sections: AskSalesFaqStructuredAnswer["sections"] = [
-    { title: "Best current guidance found", items: evidenceItems.length ? evidenceItems : [summary] },
-    { title: "Source strength", items: [`${decision.confidenceLabel} confidence from ${topChunks[0].trust_label.toLowerCase()}.`] },
-  ];
-  if (
-    decision.outcome === "route_from_approved_article" ||
-    decision.outcome === "route_from_evidence" ||
-    decision.outcome === "low_confidence_route" ||
-    decision.outcome === "abstain_unapproved"
-  ) {
-    sections.push({ title: "Route note", items: [routeItem], tone: "route" as const });
-  }
-
-  return {
-    answer: summary,
-    structuredAnswer: structured({ summary, sections, decision }),
-  };
-}
-
-function sourceSummaryFromDecision(decision: RuntimeDecision): AskSalesFaqRuntimeResult["source"] {
-  const primary = decision.primaryArticle;
-  const top = decision.retrieved[0];
-  if (primary) {
-    return {
-      label: primary.title,
-      lastReviewed: primary.lastReviewed,
-      approved: true,
-      sourceMode: decision.sourceMode,
-      confidenceLabel: decision.confidenceLabel,
-      confidenceScore: decision.confidenceScore,
-      expandableDetails: `Approved by ${primary.approvedBy} on ${primary.approvedAt}.`,
-    };
-  }
-  if (top) {
-    return {
-      label: `${top.trust_label}: ${top.source_title}`,
-      lastReviewed: top.last_reviewed || "2026-07-01",
-      approved: top.source_type === "approved_article",
-      sourceMode: decision.sourceMode,
-      confidenceLabel: decision.confidenceLabel,
-      confidenceScore: decision.confidenceScore,
-      expandableDetails: `Source category: ${top.category}. Source strength: ${top.trust_label}.`,
-    };
-  }
-  return null;
-}
-
-function structured(input: {
-  summary: string;
-  sections: AskSalesFaqStructuredAnswer["sections"];
-  decision: RuntimeDecision;
-}): AskSalesFaqStructuredAnswer {
-  return {
-    summary: input.summary,
-    sections: input.sections.filter((section) => section.body || section.items?.length),
-    confidenceLabel: input.decision.confidenceLabel,
-    confidenceScore: input.decision.confidenceScore,
-    sourceMode: input.decision.sourceMode,
-  };
-}
-
-function buildContextualQuestion(question: string, messages: AskSalesFaqChatMessage[]) {
-  const normalized = normalizeText(question);
-  const tokens = normalized.split(" ").filter(Boolean);
-  const wordCount = tokens.length;
-  const isFollowUp =
-    /^(what about|how about|and\b|also\b|for\b|what if|does that|can they|can we|is it|would that)\b/i.test(question.trim()) ||
-    (wordCount <= 6 && /\b(it|that|this|they|them|those|same|there)\b/i.test(question));
-
-  if (!isFollowUp) return question;
-
-  const previous = messages
-    .slice(0, -1)
-    .filter((message) => message.content.trim())
-    .slice(-2)
-    .map((message) => `${message.role}: ${message.content.trim().slice(0, 240)}`)
-    .join("\n");
-
-  if (!previous) return question;
-  return `Conversation context:\n${previous}\n\nFollow-up question:\n${question}`;
-}
-
-function redactSensitiveText(value: string) {
-  const redactions = new Set<string>();
-  let text = value;
-
-  text = text.replace(/\b(?:\d[ -]*?){13,19}\b/g, (match) => {
-    const digits = match.replace(/\D/g, "");
-    if (digits.length >= 13 && digits.length <= 19) {
-      redactions.add("payment_number");
-      return "[REDACTED_PAYMENT_NUMBER]";
-    }
-    return match;
-  });
-
-  if (/\b\d{3}-\d{2}-\d{4}\b/.test(text)) {
-    redactions.add("ssn");
-    text = text.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[REDACTED_SSN]");
-  }
-
-  text = text.replace(/\b(password|passcode|api key|secret|token)\s*[:=]\s*\S+/gi, (match, label: string) => {
-    redactions.add("secret");
-    return `${label}: [REDACTED_SECRET]`;
-  });
-
-  return { text, redactions: Array.from(redactions).sort() };
-}
-
 function tokenize(value: string, options: { expand: boolean }) {
   const tokens =
     normalizeText(value)
@@ -902,7 +768,7 @@ function tokenize(value: string, options: { expand: boolean }) {
   if (!options.expand) return tokens;
 
   const expanded = new Set(tokens);
-  for (const expansion of CONCEPT_EXPANSIONS) {
+  for (const expansion of QUERY_EXPANSIONS) {
     if (expansion.triggers.some((trigger) => expanded.has(normalizeText(trigger)))) {
       expansion.add.forEach((token) => expanded.add(normalizeText(token)));
     }
@@ -925,32 +791,55 @@ function normalizeText(value: string) {
     .replaceAll("red-carpet", "red carpet")
     .replaceAll("pay-to-play", "pay to play")
     .replace(/\$2\s*,?\s*000/g, " $2000 2000 $2,000 ")
+    .replace(/\bnlceo\b/g, "next level ceo")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-function extractBestSentence(text: string) {
-  const cleaned = text
-    .split("\n")
-    .map((line) => line.replace(/^[-*]\s+/, "").replace(/^#+\s+/, "").trim())
-    .filter((line) => line && !line.startsWith("|") && !line.includes("http"))
-    .join(" ");
-  const sentence = cleaned.match(/[^.!?]{35,260}[.!?]/)?.[0] || cleaned.slice(0, 240);
-  return sentence.trim();
+function formatEvidencePacket(candidates: EvidenceCandidate[], options: { maxCharsPerItem: number }) {
+  return candidates
+    .map((candidate, index) =>
+      [
+        `EVIDENCE ${index + 1}`,
+        `ID: ${candidate.id}`,
+        `Trust: ${candidate.trustLabel}`,
+        `Type: ${candidate.sourceType}`,
+        `Category: ${candidate.category}`,
+        `Risk: ${candidate.riskLevel}`,
+        `Last reviewed: ${candidate.lastReviewed || "unknown"}`,
+        `Title: ${candidate.sourceTitle}`,
+        `Heading: ${candidate.heading}`,
+        `Text: ${candidate.text.slice(0, options.maxCharsPerItem)}`,
+      ].join("\n"),
+    )
+    .join("\n\n");
 }
 
-async function generateProviderAnswer(input: {
-  question: string;
-  displayQuestion: string;
-  decision: RuntimeDecision;
-}): Promise<ProviderResult> {
+function formatArticleCatalog() {
+  return APPROVED_FAQ_ARTICLES.map((article) =>
+    [
+      `ID: approved:${article.id}`,
+      `Title: ${article.title}`,
+      `Category: ${article.category}`,
+      `Risk: ${article.riskLevel}`,
+      `Body preview: ${article.body.slice(0, 700)}`,
+    ].join("\n"),
+  ).join("\n\n");
+}
+
+async function generateProviderJson<T>(input: {
+  purpose: string;
+  messages: Array<{ role: "system" | "user"; content: string }>;
+  maxTokens: number;
+  parse: (content: string) => T;
+}): Promise<ProviderJsonResult<T>> {
   const deepSeekKey = process.env.DEEPSEEK_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const errors: unknown[] = [];
 
   if (deepSeekKey) {
     try {
-      return await callDeepSeek(input, deepSeekKey);
+      return await callDeepSeekJson(input, deepSeekKey);
     } catch (error) {
       errors.push(error);
     }
@@ -958,20 +847,25 @@ async function generateProviderAnswer(input: {
 
   if (anthropicKey) {
     try {
-      return await callAnthropic(input, anthropicKey);
+      return await callAnthropicJson(input, anthropicKey);
     } catch (error) {
       errors.push(error);
     }
   }
 
-  throw new Error(`No Ask Sales FAQ provider succeeded. Attempts: ${errors.length}`);
+  throw new Error(`No Ask Sales FAQ provider succeeded for ${input.purpose}. Attempts: ${errors.length}`);
 }
 
-async function callDeepSeek(
-  input: { question: string; displayQuestion: string; decision: RuntimeDecision },
+async function callDeepSeekJson<T>(
+  input: {
+    purpose: string;
+    messages: Array<{ role: "system" | "user"; content: string }>;
+    maxTokens: number;
+    parse: (content: string) => T;
+  },
   apiKey: string,
-): Promise<ProviderResult> {
-  const model = process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
+): Promise<ProviderJsonResult<T>> {
+  const model = process.env.FAQ_DEEPSEEK_MODEL || "deepseek-chat";
   const response = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
@@ -980,9 +874,9 @@ async function callDeepSeek(
     },
     body: JSON.stringify({
       model,
-      temperature: 0.1,
-      max_tokens: 850,
-      messages: buildModelMessages(input),
+      temperature: 0.15,
+      max_tokens: input.maxTokens,
+      messages: input.messages,
     }),
   });
 
@@ -991,20 +885,24 @@ async function callDeepSeek(
     error?: { message?: string };
   } | null;
 
-  if (!response.ok) throw new Error(data?.error?.message || "DeepSeek request failed");
+  if (!response.ok) throw new Error(data?.error?.message || `DeepSeek ${input.purpose} request failed`);
 
   const content = data?.choices?.[0]?.message?.content || "";
-  return { provider: "deepseek", model, output: parseModelOutput(content) };
+  return { provider: "deepseek", model, output: input.parse(content) };
 }
 
-async function callAnthropic(
-  input: { question: string; displayQuestion: string; decision: RuntimeDecision },
+async function callAnthropicJson<T>(
+  input: {
+    purpose: string;
+    messages: Array<{ role: "system" | "user"; content: string }>;
+    maxTokens: number;
+    parse: (content: string) => T;
+  },
   apiKey: string,
-): Promise<ProviderResult> {
+): Promise<ProviderJsonResult<T>> {
   const model = process.env.FAQ_CLAUDE_MODEL || "claude-sonnet-4-6";
-  const messages = buildModelMessages(input);
-  const system = messages.find((message) => message.role === "system")?.content || "";
-  const user = messages.find((message) => message.role === "user")?.content || input.question;
+  const system = input.messages.find((message) => message.role === "system")?.content || "";
+  const user = input.messages.find((message) => message.role === "user")?.content || "";
 
   const response = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -1015,8 +913,8 @@ async function callAnthropic(
     },
     body: JSON.stringify({
       model,
-      max_tokens: 850,
-      temperature: 0.1,
+      max_tokens: input.maxTokens,
+      temperature: 0.15,
       system,
       messages: [{ role: "user", content: user }],
     }),
@@ -1027,79 +925,99 @@ async function callAnthropic(
     error?: { message?: string };
   } | null;
 
-  if (!response.ok) throw new Error(data?.error?.message || "Anthropic request failed");
+  if (!response.ok) throw new Error(data?.error?.message || `Anthropic ${input.purpose} request failed`);
 
   const content = data?.content?.find((part) => part.type === "text" && part.text)?.text || "";
-  return { provider: "anthropic", model, output: parseModelOutput(content) };
+  return { provider: "anthropic", model, output: input.parse(content) };
 }
 
-function buildModelMessages(input: { question: string; displayQuestion: string; decision: RuntimeDecision }) {
-  const sourceContext = input.decision.retrieved
-    .slice(0, 6)
-    .map((chunk, index) =>
-      [
-        `SOURCE ${index + 1}`,
-        `Trust: ${chunk.trust_label}`,
-        `Category: ${chunk.category}`,
-        `Risk: ${chunk.risk_level}`,
-        `Last reviewed: ${chunk.last_reviewed || "unknown"}`,
-        `Text: ${chunk.text.slice(0, 1700)}`,
-      ].join("\n"),
-    )
-    .join("\n\n");
+function parseSearchProfileOutput(content: string): SearchProfileOutput {
+  const parsed = parseJsonObject<Partial<SearchProfileOutput>>(content);
+  const queries = Array.isArray(parsed.semantic_search_queries)
+    ? parsed.semantic_search_queries.filter((query): query is string => typeof query === "string" && query.trim().length > 0)
+    : [];
 
-  return [
-    {
-      role: "system" as const,
-      content: [
-        "You are Ask Sales FAQ, an internal sales FAQ assistant for sales reps.",
-        "Answer from the provided FAQ/evidence context only.",
-        "Be useful and direct. Reps use this during live calls.",
-        "If evidence is weaker or high-risk, give the best safe guidance and add a route note.",
-        "Do not expose internal file paths, article statuses, raw Slack links, implementation details, or the phrase unapproved article.",
-        "Return only JSON with keys: answer, summary, sections, needs_route, route_reason, confidence_label, confidence_score.",
-        "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
-      ].join("\n"),
-    },
-    {
-      role: "user" as const,
-      content: [
-        "USER QUESTION:",
-        input.displayQuestion,
-        "",
-        "CONTEXTUAL QUESTION:",
-        input.question,
-        "",
-        "RUNTIME DECISION:",
-        input.decision.outcome,
-        "",
-        "CONFIDENCE:",
-        `${input.decision.confidenceLabel} (${input.decision.confidenceScore}/100)`,
-        "",
-        "SOURCE CONTEXT:",
-        sourceContext,
-      ].join("\n"),
-    },
-  ];
+  if (!parsed.understood_question || !parsed.answer_scope || !queries.length) {
+    throw new Error("Search profile output did not match Ask Sales FAQ schema");
+  }
+
+  return {
+    understood_question: sanitizeModelAnswer(String(parsed.understood_question)),
+    answer_scope: sanitizeModelAnswer(String(parsed.answer_scope)),
+    semantic_search_queries: queries.slice(0, 12).map(sanitizeModelAnswer),
+    expected_source_categories: Array.isArray(parsed.expected_source_categories)
+      ? parsed.expected_source_categories.filter((item): item is string => typeof item === "string").slice(0, 8).map(sanitizeModelAnswer)
+      : [],
+    exclude_topics: Array.isArray(parsed.exclude_topics)
+      ? parsed.exclude_topics.filter((item): item is string => typeof item === "string").slice(0, 8).map(sanitizeModelAnswer)
+      : [],
+    confidence_label: parseConfidenceLabel(parsed.confidence_label),
+    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
+  };
+}
+
+function parseEvidenceSelectionOutput(content: string): EvidenceSelectionOutput {
+  const parsed = parseJsonObject<Partial<EvidenceSelectionOutput>>(content);
+  const selected = Array.isArray(parsed.selected_source_ids)
+    ? parsed.selected_source_ids.filter((id): id is string => typeof id === "string")
+    : [];
+
+  if (!parsed.understood_question || !parsed.answer_scope || !selected.length) {
+    throw new Error("Evidence selection output did not match Ask Sales FAQ schema");
+  }
+
+  return {
+    understood_question: String(parsed.understood_question),
+    answer_scope: String(parsed.answer_scope),
+    selected_source_ids: selected.slice(0, 10),
+    needs_route: Boolean(parsed.needs_route),
+    route_reason: typeof parsed.route_reason === "string" ? parsed.route_reason : "",
+    confidence_label: parseConfidenceLabel(parsed.confidence_label),
+    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
+  };
 }
 
 function parseModelOutput(content: string): ModelOutput {
-  const trimmed = content.trim();
-  const jsonText = trimmed.match(/```json\s*([\s\S]*?)```/)?.[1] || trimmed.match(/\{[\s\S]*\}/)?.[0] || trimmed;
-  const parsed = JSON.parse(jsonText) as Partial<ModelOutput>;
+  const parsed = parseJsonObject<Partial<ModelOutput>>(content);
 
   if (!parsed.answer || typeof parsed.needs_route !== "boolean") {
     throw new Error("Model output did not match Ask Sales FAQ schema");
   }
 
+  return normalizeModelOutput(parsed);
+}
+
+function parseReviewOutput(content: string): ReviewOutput {
+  const parsed = parseJsonObject<Partial<ReviewOutput>>(content);
+
+  if (typeof parsed.approved !== "boolean") {
+    throw new Error("Review output did not match Ask Sales FAQ schema");
+  }
+
   return {
-    answer: parsed.answer,
-    summary: parsed.summary,
-    sections: parsed.sections,
-    needs_route: parsed.needs_route,
-    route_reason: parsed.route_reason || "",
-    confidence_label: parsed.confidence_label,
-    confidence_score: parsed.confidence_score,
+    approved: parsed.approved,
+    reason: typeof parsed.reason === "string" ? parsed.reason : "",
+    revised_output: parsed.revised_output ? normalizeModelOutput(parsed.revised_output) : null,
+    confidence_label: parseConfidenceLabel(parsed.confidence_label),
+    confidence_score: typeof parsed.confidence_score === "number" ? parsed.confidence_score : undefined,
+  };
+}
+
+function parseJsonObject<T>(content: string): T {
+  const trimmed = content.trim();
+  const jsonText = trimmed.match(/```json\s*([\s\S]*?)```/)?.[1] || trimmed.match(/\{[\s\S]*\}/)?.[0] || trimmed;
+  return JSON.parse(jsonText) as T;
+}
+
+function normalizeModelOutput(output: Partial<ModelOutput>): ModelOutput {
+  return {
+    answer: sanitizeModelAnswer(String(output.answer || "")),
+    summary: typeof output.summary === "string" ? sanitizeModelAnswer(output.summary) : undefined,
+    sections: Array.isArray(output.sections) ? output.sections : [],
+    needs_route: Boolean(output.needs_route),
+    route_reason: typeof output.route_reason === "string" ? sanitizeModelAnswer(output.route_reason) : "",
+    confidence_label: parseConfidenceLabel(output.confidence_label),
+    confidence_score: typeof output.confidence_score === "number" ? output.confidence_score : undefined,
   };
 }
 
@@ -1114,8 +1032,10 @@ function normalizeModelStructuredAnswer(
         .map((section) => ({
           title: String(section.title),
           body: typeof section.body === "string" ? sanitizeModelAnswer(section.body) : undefined,
-          items: Array.isArray(section.items) ? section.items.filter((item): item is string => typeof item === "string").map(sanitizeModelAnswer) : undefined,
-          tone: ["default", "good", "warning", "route"].includes(String(section.tone)) ? (section.tone as "default") : undefined,
+          items: Array.isArray(section.items)
+            ? section.items.filter((item): item is string => typeof item === "string").map(sanitizeModelAnswer)
+            : undefined,
+          tone: parseSectionTone(section.tone),
         }))
     : [];
 
@@ -1125,15 +1045,28 @@ function normalizeModelStructuredAnswer(
     decision: {
       ...decision,
       confidenceLabel: output.confidence_label || decision.confidenceLabel,
-      confidenceScore: typeof output.confidence_score === "number" ? output.confidence_score : decision.confidenceScore,
+      confidenceScore: typeof output.confidence_score === "number" ? clampConfidence(output.confidence_score) : decision.confidenceScore,
     },
   });
 }
 
+function parseConfidenceLabel(value: unknown): "High" | "Medium" | "Low" | undefined {
+  return value === "High" || value === "Medium" || value === "Low" ? value : undefined;
+}
+
+function parseSectionTone(value: unknown): "default" | "good" | "warning" | "route" | undefined {
+  return value === "default" || value === "good" || value === "warning" || value === "route" ? value : undefined;
+}
+
+function clampConfidence(value: number) {
+  if (!Number.isFinite(value)) return 60;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
 async function fetchWithTimeout(input: string, init: RequestInit) {
-  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "20");
+  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "25");
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), Math.max(5, timeoutSeconds) * 1000);
+  const timeout = setTimeout(() => controller.abort(), Math.max(8, timeoutSeconds) * 1000);
   try {
     return await fetch(input, { ...init, signal: controller.signal });
   } finally {
@@ -1154,8 +1087,12 @@ function sanitizeModelAnswer(value: string) {
     .replace(/slack\/evidence\/\S+/gi, "internal evidence")
     .replace(/transcription\/transcripts\/\S+/gi, "training evidence")
     .replace(/knowledge-base\/\S+/gi, "FAQ source")
+    .replace(/\bapproved:[a-z0-9_-]+/gi, "approved source")
+    .replace(/\bchunk:[a-z0-9_-]+/gi, "source evidence")
+    .replace(/\bsource\s+\d+\b/gi, "source")
     .replace(/\bin_conflict\b/gi, "needs owner confirmation")
     .replace(/\bdraft article\b/gi, "internal evidence")
+    .replace(/\barticle_id\b/gi, "source reference")
     .trim();
 }
 
@@ -1168,5 +1105,7 @@ function containsHiddenTerms(answer: string) {
     "matched_rule_id",
     "default-abstain",
     "in_conflict",
+    "approved:",
+    "chunk:",
   ].some((term) => answer.toLowerCase().includes(term));
 }
