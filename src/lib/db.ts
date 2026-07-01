@@ -37,6 +37,7 @@ import type { PromptBenchmarkIngestPayload } from "@/lib/prompt-benchmark";
 import type { UsageEventPayload } from "@/lib/usage-events";
 import type {
   AskSalesFaqConversationSummary,
+  AskSalesFaqFeedbackContext,
   AskSalesFaqFeedbackPayload,
   AskSalesFaqLogPayload,
 } from "@/lib/ask-sales-faq/types";
@@ -2408,6 +2409,109 @@ export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayloa
       payload.comment,
     ],
   );
+}
+
+export async function getAskSalesFaqFeedbackContext(payload: {
+  messageId: string;
+  conversationId: string;
+  viewerEmail: string;
+  rating: "up" | "down";
+  comment: string | null;
+}): Promise<AskSalesFaqFeedbackContext | null> {
+  if (!hasDatabase()) return null;
+
+  await ensureSchema();
+  const sql = getSql();
+  const rows = (await sql.query(
+    `
+      with assistant_message as (
+        select
+          id,
+          conversation_id,
+          viewer_email,
+          content_redacted,
+          outcome,
+          source_label,
+          source_last_reviewed,
+          needs_route,
+          route_reason,
+          provider,
+          model,
+          created_at
+        from ask_sales_faq_messages
+        where id = $1
+          and conversation_id = $2
+          and viewer_email = $3
+          and role = 'assistant'
+        limit 1
+      ),
+      previous_user_message as (
+        select m.content_redacted
+        from ask_sales_faq_messages m
+        join assistant_message a on a.conversation_id = m.conversation_id
+        where m.role = 'user'
+          and m.created_at <= a.created_at
+        order by m.created_at desc
+        limit 1
+      )
+      select
+        a.id as message_id,
+        a.conversation_id,
+        c.title as conversation_title,
+        a.viewer_email,
+        (select content_redacted from previous_user_message) as question,
+        a.content_redacted as answer,
+        a.outcome,
+        a.source_label,
+        a.source_last_reviewed,
+        a.needs_route,
+        a.route_reason,
+        a.provider,
+        a.model,
+        a.created_at::text as created_at
+      from assistant_message a
+      join ask_sales_faq_conversations c on c.id = a.conversation_id
+      limit 1
+    `,
+    [payload.messageId, payload.conversationId, payload.viewerEmail],
+  )) as Array<{
+    message_id: string;
+    conversation_id: string;
+    conversation_title: string | null;
+    viewer_email: string;
+    question: string | null;
+    answer: string | null;
+    outcome: string | null;
+    source_label: string | null;
+    source_last_reviewed: string | null;
+    needs_route: boolean | null;
+    route_reason: string | null;
+    provider: string | null;
+    model: string | null;
+    created_at: string | null;
+  }>;
+
+  const row = rows[0];
+  if (!row) return null;
+
+  return {
+    messageId: row.message_id,
+    conversationId: row.conversation_id,
+    conversationTitle: row.conversation_title,
+    viewerEmail: row.viewer_email,
+    rating: payload.rating,
+    comment: payload.comment,
+    question: row.question,
+    answer: row.answer,
+    outcome: row.outcome,
+    sourceLabel: row.source_label,
+    sourceLastReviewed: row.source_last_reviewed,
+    needsRoute: Boolean(row.needs_route),
+    routeReason: row.route_reason,
+    provider: row.provider,
+    model: row.model,
+    createdAt: row.created_at,
+  };
 }
 
 function normalizeCall(call: PerformanceCall): PerformanceCall {

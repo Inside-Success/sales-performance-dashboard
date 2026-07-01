@@ -86,3 +86,22 @@ export type AskSalesFaqFeedbackPayload = {
   rating: "up" | "down";
   comment: string | null;
 };
+
+export type AskSalesFaqFeedbackContext = {
+  messageId: string;
+  conversationId: string;
+  conversationTitle: string | null;
+  viewerEmail: string;
+  rating: "up" | "down";
+  comment: string | null;
+  question: string | null;
+  answer: string | null;
+  outcome: string | null;
+  sourceLabel: string | null;
+  sourceLastReviewed: string | null;
+  needsRoute: boolean;
+  routeReason: string | null;
+  provider: string | null;
+  model: string | null;
+  createdAt: string | null;
+};

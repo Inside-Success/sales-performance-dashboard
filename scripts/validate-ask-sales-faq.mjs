@@ -10,6 +10,7 @@ const requiredFiles = [
   "src/app/api/ask-sales-faq/feedback/route.ts",
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/lib/ask-sales-faq/access.ts",
+  "src/lib/ask-sales-faq/feedback-sync.ts",
   "src/lib/ask-sales-faq/runtime.ts",
   "src/lib/ask-sales-faq/types.ts",
   "src/lib/ask-sales-faq/generated/approved-faq-bundle.ts",
@@ -39,6 +40,7 @@ if (missingFiles.length === 0) {
   const chatRoute = read("src/app/api/ask-sales-faq/route.ts");
   const historyRoute = read("src/app/api/ask-sales-faq/conversations/route.ts");
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
+  const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
@@ -96,10 +98,24 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "feature flag env vars are documented",
-    ["ASK_SALES_FAQ_ENABLED", "ASK_SALES_FAQ_ALLOWED_EMAILS", "ASK_SALES_FAQ_ADMIN_EMAILS"].every((name) =>
-      envExample.includes(name),
-    ),
+    [
+      "ASK_SALES_FAQ_ENABLED",
+      "ASK_SALES_FAQ_ALLOWED_EMAILS",
+      "ASK_SALES_FAQ_ADMIN_EMAILS",
+      "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_URL",
+      "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_SECRET",
+    ].every((name) => envExample.includes(name)),
     "env example includes faq flags",
+  );
+
+  addCheck(
+    "feedback sync is non-blocking and sheet-tab aware",
+    feedbackRoute.includes("syncAskSalesFaqFeedbackToSheet") &&
+      feedbackRoute.includes("console.warn") &&
+      feedbackSync.includes("Positive Reviews") &&
+      feedbackSync.includes("Negative Reviews") &&
+      feedbackSync.includes("ASK_SALES_FAQ_FEEDBACK_WEBHOOK_URL"),
+    "feedback sync posts to configured webhook and does not fail user response",
   );
 
   addCheck(
@@ -110,7 +126,7 @@ if (missingFiles.length === 0) {
     "access gate checks flag and allowlist",
   );
 
-  const scanned = [page, chatRoute, historyRoute, feedbackRoute, runtime, access, bundle, db, envExample];
+  const scanned = [page, chatRoute, historyRoute, feedbackRoute, feedbackSync, runtime, access, bundle, db, envExample];
   const secretHit = scanned.some((content) => secretPatterns.some((pattern) => pattern.test(content)));
   addCheck("no committed api-key-like secrets", !secretHit, secretHit ? "secret-like value found" : "no secret-like value found");
 }

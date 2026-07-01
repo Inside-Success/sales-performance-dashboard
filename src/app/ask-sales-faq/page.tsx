@@ -23,7 +23,9 @@ export default async function AskSalesFaqPage() {
     <main className="magic-page">
       <div className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-[92rem] flex-col px-4 py-5 sm:px-6 lg:px-8">
         {access.ok ? (
-          <AskSalesFaqChat viewerName={access.viewerName || "Signed-in user"} />
+          <div className="-mx-4 -my-5 sm:-mx-6 lg:-mx-8">
+            <AskSalesFaqChat viewerName={access.viewerName || "Signed-in user"} viewerEmail={access.viewerEmail} />
+          </div>
         ) : (
           <section className="grid min-h-[60vh] place-items-center">
             <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white/90 p-6 shadow-sm">
