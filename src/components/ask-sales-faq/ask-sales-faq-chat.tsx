@@ -87,6 +87,9 @@ const starterPrompts = [
   "Where do I check the current active show list?",
 ];
 
+const MAX_CONTEXT_MESSAGES_TO_SEND = 10;
+const MAX_CONTEXT_MESSAGE_CHARS = 1800;
+
 const topicPromptByArticleId: Record<string, string> = {
   "call-recording-storage-and-access": "Where are call recordings stored and how should reps access them?",
   "current-show-source": "Where should I check the current active show list?",
@@ -142,6 +145,17 @@ function isRouteOrBlocked(message: ChatMessage) {
     message.outcome === "admin_only" ||
     message.outcome === "safe_fallback"
   );
+}
+
+function buildRequestMessages(messages: ChatMessage[]) {
+  return messages
+    .filter((message) => message.role === "user" || message.role === "assistant")
+    .slice(-MAX_CONTEXT_MESSAGES_TO_SEND)
+    .map((message) => ({
+      role: message.role,
+      content: message.content.trim().slice(0, MAX_CONTEXT_MESSAGE_CHARS),
+    }))
+    .filter((message) => message.content.length > 0);
 }
 
 export function AskSalesFaqChat() {
@@ -360,10 +374,7 @@ export function AskSalesFaqChat() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           conversationId: activeConversationId,
-          messages: nextMessages.map((message) => ({
-            role: message.role,
-            content: message.content,
-          })),
+          messages: buildRequestMessages(nextMessages),
         }),
       });
       const data = (await response.json()) as Partial<AskSalesFaqResponse> & { error?: string };

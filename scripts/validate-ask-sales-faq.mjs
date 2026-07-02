@@ -104,6 +104,26 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "chat requests send bounded recent context",
+    chatUi.includes("MAX_CONTEXT_MESSAGES_TO_SEND = 10") &&
+      chatUi.includes("MAX_CONTEXT_MESSAGE_CHARS = 1800") &&
+      chatUi.includes("function buildRequestMessages") &&
+      chatUi.includes("messages: buildRequestMessages(nextMessages)"),
+    "browser sends a compact recent chat window instead of the full conversation history",
+  );
+
+  addCheck(
+    "api trims long inbound conversations defensively",
+    chatRoute.includes("MAX_INBOUND_MESSAGES = 200") &&
+      chatRoute.includes("MAX_RUNTIME_MESSAGES = 10") &&
+      chatRoute.includes("MAX_RUNTIME_MESSAGE_CHARS = 2000") &&
+      chatRoute.includes("function normalizeRuntimeMessages") &&
+      chatRoute.includes("const messages = normalizeRuntimeMessages(payload.messages)") &&
+      chatRoute.includes("export const maxDuration = 120"),
+    "server accepts old/full-chat clients but trims to a safe runtime window and allows longer model calls",
+  );
+
+  addCheck(
     "bundle has eight approved articles",
     (bundle.match(/approvedAt: "2026-06-30"/g) || []).length === 8,
     "bundle contains 8 approved articles",
@@ -115,10 +135,21 @@ if (missingFiles.length === 0) {
       db.includes("ask_sales_faq_messages") &&
       db.includes("ask_sales_faq_feedback") &&
       db.includes("ask_sales_faq_misses") &&
+      db.includes("ask_sales_faq_diagnostics") &&
       db.includes("saveAskSalesFaqExchange") &&
+      db.includes("saveAskSalesFaqDiagnostic") &&
       db.includes("getAskSalesFaqAdminOverview") &&
       db.includes("answer_payload"),
-    "db includes ask sales faq tables, helpers, admin overview, and structured answer retention",
+    "db includes ask sales faq tables, helpers, diagnostics, admin overview, and structured answer retention",
+  );
+
+  addCheck(
+    "validation failures become safe replies and diagnostics",
+    chatRoute.includes("requestSchema.safeParse(rawPayload)") &&
+      chatRoute.includes("buildSafeValidationResponse") &&
+      chatRoute.includes("saveAskSalesFaqDiagnostic") &&
+      chatRoute.includes("summarizePayloadIssue"),
+    "bad payloads get a user-facing safe reply plus backend diagnostics, not a raw client error",
   );
 
   addCheck(
@@ -189,9 +220,18 @@ if (missingFiles.length === 0) {
     "Ask Sales FAQ defaults to DeepSeek V4 Pro",
     runtime.includes('process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro"') &&
       envExample.includes('FAQ_DEEPSEEK_MODEL="deepseek-v4-pro"') &&
-      runtime.includes('process.env.FAQ_MODEL_TIMEOUT_SECONDS || "35"') &&
-      envExample.includes('FAQ_MODEL_TIMEOUT_SECONDS="35"'),
-    "runtime and env example default to DeepSeek V4 Pro with enough timeout room for the higher-quality model",
+      runtime.includes('process.env.FAQ_MODEL_TIMEOUT_SECONDS || "60"') &&
+      envExample.includes('FAQ_MODEL_TIMEOUT_SECONDS="60"'),
+    "runtime and env example default to DeepSeek V4 Pro with more timeout room for the higher-quality model",
+  );
+
+  addCheck(
+    "same-day discount article uses same-calendar-day rule",
+    bundle.includes("same calendar day as that Call 2") &&
+      bundle.includes("pays later that same calendar day") &&
+      bundle.includes("Do not carry the discount into the next day.") &&
+      !bundle.includes("on that Call-2 closing call"),
+    "approved pricing article no longer requires payment on the call when same-day payment occurs later",
   );
 
   addCheck(

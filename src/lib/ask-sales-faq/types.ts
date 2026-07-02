@@ -102,6 +102,16 @@ export type AskSalesFaqLogPayload = {
   errorClass: string | null;
 };
 
+export type AskSalesFaqDiagnosticPayload = {
+  id: string;
+  conversationId: string | null;
+  viewerEmail: string;
+  viewerName: string | null;
+  eventType: string;
+  detail: string | null;
+  metadata: Record<string, unknown>;
+};
+
 export type AskSalesFaqFeedbackPayload = {
   id: string;
   messageId: string;

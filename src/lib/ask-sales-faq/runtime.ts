@@ -642,7 +642,13 @@ async function generateProviderJson<T>(input: {
     try {
       return await callDeepSeekJson(input, deepSeekKey);
     } catch (error) {
-      errors.push(`deepseek: ${sanitizeProviderError(error)}`);
+      const sanitizedError = sanitizeProviderError(error);
+      errors.push(`deepseek: ${sanitizedError}`);
+      console.warn("Ask Sales FAQ provider attempt failed", {
+        provider: "deepseek",
+        purpose: input.purpose,
+        error: sanitizedError,
+      });
     }
   }
 
@@ -650,7 +656,13 @@ async function generateProviderJson<T>(input: {
     try {
       return await callAnthropicJson(input, anthropicKey);
     } catch (error) {
-      errors.push(`anthropic: ${sanitizeProviderError(error)}`);
+      const sanitizedError = sanitizeProviderError(error);
+      errors.push(`anthropic: ${sanitizedError}`);
+      console.warn("Ask Sales FAQ provider attempt failed", {
+        provider: "anthropic",
+        purpose: input.purpose,
+        error: sanitizedError,
+      });
     }
   }
 
@@ -852,7 +864,7 @@ function clampConfidence(value: number) {
 }
 
 async function fetchWithTimeout(input: string, init: RequestInit) {
-  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "35");
+  const timeoutSeconds = Number(process.env.FAQ_MODEL_TIMEOUT_SECONDS || "60");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Math.max(8, timeoutSeconds) * 1000);
   try {

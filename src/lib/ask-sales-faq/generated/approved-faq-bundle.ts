@@ -164,7 +164,7 @@ If a prospect or client asks for material that looks internal, route to the sour
     approvedBy: "Syed Moonis Haider",
     approvedAt: "2026-06-30",
     approvalReference: "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed",
-    lastReviewed: "2026-06-30",
+    lastReviewed: "2026-07-02",
     body: String.raw`## Answer
 
 Main ISTV program:
@@ -195,19 +195,23 @@ Next Level CEO / Daymond John pricing:
 Same-day discount:
 
 - The same-day discount applies only to the main ISTV program.
-- It applies only on Call 2 when the client closes and pays the initial deposit on that Call-2 closing call.
 - It is $2,000 off the main ISTV program.
+- It applies only from Call 2.
+- The client must pay the initial deposit on the same calendar day as that Call 2.
+- If Call 2 ends before payment but the client pays later that same calendar day, the same-day discount can still be honored.
 - It does not apply to Next Level CEO / Daymond John.
+- Do not carry the discount into the next day.
 
 ## What Reps Can Say
 
 - Use the listed package prices and listed payment plans above.
-- For same-day discount, keep the rule tied to Call 2 and initial deposit timing.
+- For same-day discount, keep the rule tied to main ISTV, Call 2, and same-calendar-day initial deposit payment.
 
 ## What Reps Must Not Say
 
 - Do not invent payment splits, custom amounts, special discounts, or exception terms.
 - Do not apply the same-day discount to Next Level CEO / Daymond John.
+- Do not promise the same-day discount if payment will happen after that calendar day.
 - Do not promise a second-show, crossover, VIP-to-VIP, or special discount unless a separate approved article covers that exact case.
 - Do not quote old/spare pricing videos as current.
 

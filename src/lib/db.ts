@@ -40,6 +40,7 @@ import type {
   AskSalesFaqAdminOverview,
   AskSalesFaqAdminLogItem,
   AskSalesFaqFeedbackContext,
+  AskSalesFaqDiagnosticPayload,
   AskSalesFaqFeedbackPayload,
   AskSalesFaqLogPayload,
   AskSalesFaqStructuredAnswer,
@@ -288,6 +289,22 @@ async function buildSchema() {
   `;
   await sql`create index if not exists ask_sales_faq_misses_status_created_idx on ask_sales_faq_misses (status, created_at desc)`;
   await sql`create index if not exists ask_sales_faq_misses_viewer_created_idx on ask_sales_faq_misses (viewer_email, created_at desc)`;
+
+  await sql`
+    create table if not exists ask_sales_faq_diagnostics (
+      id text primary key,
+      conversation_id text,
+      viewer_email text not null,
+      viewer_name text,
+      event_type text not null,
+      detail text,
+      metadata jsonb not null default '{}'::jsonb,
+      created_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists ask_sales_faq_diagnostics_created_idx on ask_sales_faq_diagnostics (created_at desc)`;
+  await sql`create index if not exists ask_sales_faq_diagnostics_event_created_idx on ask_sales_faq_diagnostics (event_type, created_at desc)`;
+  await sql`create index if not exists ask_sales_faq_diagnostics_viewer_created_idx on ask_sales_faq_diagnostics (viewer_email, created_at desc)`;
 
   await sql`
     create table if not exists sales_performance_snapshots (
@@ -2311,6 +2328,38 @@ export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
       ],
     );
   }
+}
+
+export async function saveAskSalesFaqDiagnostic(payload: AskSalesFaqDiagnosticPayload) {
+  if (!hasDatabase()) return;
+
+  await ensureSchema();
+  const sql = getSql();
+  await sql.query(
+    `
+      insert into ask_sales_faq_diagnostics (
+        id,
+        conversation_id,
+        viewer_email,
+        viewer_name,
+        event_type,
+        detail,
+        metadata,
+        created_at
+      )
+      values ($1, $2, $3, $4, $5, $6, $7::jsonb, now())
+      on conflict (id) do nothing
+    `,
+    [
+      payload.id,
+      payload.conversationId,
+      payload.viewerEmail,
+      payload.viewerName,
+      payload.eventType,
+      payload.detail,
+      JSON.stringify(payload.metadata),
+    ],
+  );
 }
 
 export async function getAskSalesFaqConversations(
