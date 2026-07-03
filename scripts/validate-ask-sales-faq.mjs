@@ -289,6 +289,41 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "composer stays editable while an answer is loading",
+    chatUi.includes("const [queuedQuestions, setQueuedQuestions]") &&
+      chatUi.includes("const isComposerEmpty = !input.trim()") &&
+      chatUi.includes('placeholder={isLoading ? "Type the next follow-up..."') &&
+      chatUi.includes("disabled={isComposerEmpty}") &&
+      chatUi.includes('aria-label={isLoading ? "Queue follow-up question" : "Send question"}') &&
+      !chatUi.includes("disabled={isLoading}"),
+    "textarea remains enabled during loading and the submit button queues non-empty follow-ups",
+  );
+
+  addCheck(
+    "queued follow-ups drain sequentially after successful answers",
+    chatUi.includes("function queueQuestion") &&
+      chatUi.includes("function runNextQueuedQuestion") &&
+      chatUi.includes("if (isLoadingRef.current)") &&
+      chatUi.includes("syncQueuedQuestions(remainingQuestions)") &&
+      chatUi.includes("void sendQuestion(nextQuestion.content)") &&
+      chatUi.includes("if (shouldContinueQueue) runNextQueuedQuestion()") &&
+      chatUi.includes("messages: buildRequestMessages(nextMessages)"),
+    "loading submissions are queued, then sent one at a time with the latest bounded chat context",
+  );
+
+  addCheck(
+    "queued follow-ups are visible and recoverable",
+    chatUi.includes("function QueuedFollowups") &&
+      chatUi.includes("Paused after the last answer failed.") &&
+      chatUi.includes("onRemove={removeQueuedQuestion}") &&
+      chatUi.includes("onClear={clearQueuedQuestions}") &&
+      chatUi.includes("onResume={resumeQueuedQuestions}") &&
+      chatUi.includes("if (queuedQuestionsRef.current.length) syncQueuePaused(true)") &&
+      chatUi.includes("Finish the current answer or clear queued follow-ups before switching chats."),
+    "queued items can be removed/cleared/resumed and chat switching is blocked while queue work is active",
+  );
+
+  addCheck(
     "current question intent is not overwritten by old chat context",
     runtime.includes("CURRENT USER QUESTION:") &&
       runtime.includes("Use conversation context only to resolve short or ambiguous follow-ups.") &&

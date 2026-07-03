@@ -58,6 +58,11 @@ type ChatMessage = {
   model?: string | null;
 };
 
+type QueuedQuestion = {
+  id: string;
+  content: string;
+};
+
 type FeedbackState = {
   rating: "up" | "down";
   comment: string;
@@ -164,6 +169,8 @@ export function AskSalesFaqChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [queuedQuestions, setQueuedQuestions] = useState<QueuedQuestion[]>([]);
+  const [queuePaused, setQueuePaused] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
@@ -177,8 +184,15 @@ export function AskSalesFaqChat() {
   const [conversationActionError, setConversationActionError] = useState<string | null>(null);
   const [conversationActionSaving, setConversationActionSaving] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messagesRef = useRef<ChatMessage[]>([]);
+  const activeConversationIdRef = useRef<string | null>(null);
+  const isLoadingRef = useRef(false);
+  const queuedQuestionsRef = useRef<QueuedQuestion[]>([]);
+  const queuePausedRef = useRef(false);
 
   const topicGroups = useMemo(buildTopicGroups, []);
+  const isComposerEmpty = !input.trim();
   const visibleConversations = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return conversations;
@@ -202,7 +216,7 @@ export function AskSalesFaqChat() {
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, isLoading, error]);
+  }, [messages, isLoading, error, queuedQuestions.length, queuePaused]);
 
   useEffect(() => {
     if (!conversationMenuId) return;
@@ -225,6 +239,46 @@ export function AskSalesFaqChat() {
     };
   }, [conversationMenuId]);
 
+  function syncMessages(nextMessages: ChatMessage[]) {
+    messagesRef.current = nextMessages;
+    setMessages(nextMessages);
+  }
+
+  function syncActiveConversationId(nextConversationId: string | null) {
+    activeConversationIdRef.current = nextConversationId;
+    setActiveConversationId(nextConversationId);
+  }
+
+  function syncIsLoading(nextIsLoading: boolean) {
+    isLoadingRef.current = nextIsLoading;
+    setIsLoading(nextIsLoading);
+  }
+
+  function syncQueuedQuestions(nextQueuedQuestions: QueuedQuestion[]) {
+    queuedQuestionsRef.current = nextQueuedQuestions;
+    setQueuedQuestions(nextQueuedQuestions);
+  }
+
+  function syncQueuePaused(nextQueuePaused: boolean) {
+    queuePausedRef.current = nextQueuePaused;
+    setQueuePaused(nextQueuePaused);
+  }
+
+  function focusComposer() {
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function hasPendingQuestionWork() {
+    return isLoadingRef.current || queuedQuestionsRef.current.length > 0;
+  }
+
+  function blockConversationChangeWhileBusy() {
+    if (!hasPendingQuestionWork()) return false;
+    setError("Finish the current answer or clear queued follow-ups before switching chats.");
+    focusComposer();
+    return true;
+  }
+
   async function loadConversations() {
     try {
       const response = await fetch("/api/ask-sales-faq/conversations", { cache: "no-store" });
@@ -241,17 +295,21 @@ export function AskSalesFaqChat() {
   }
 
   function startNewConversation() {
-    setActiveConversationId(null);
-    setMessages([]);
+    if (blockConversationChangeWhileBusy()) return;
+    syncActiveConversationId(null);
+    syncMessages([]);
     setFeedbackByMessageId({});
     setError(null);
     setInput("");
+    syncQueuedQuestions([]);
+    syncQueuePaused(false);
     setDrawerOpen(false);
   }
 
   function openConversation(conversation: AskSalesFaqConversationSummary) {
-    setActiveConversationId(conversation.id);
-    setMessages(
+    if (conversation.id !== activeConversationIdRef.current && blockConversationChangeWhileBusy()) return;
+    syncActiveConversationId(conversation.id);
+    syncMessages(
       conversation.messages
         .filter((message) => message.role === "user" || message.role === "assistant")
         .map((message) => ({
@@ -270,6 +328,8 @@ export function AskSalesFaqChat() {
     );
     setFeedbackByMessageId({});
     setError(null);
+    syncQueuedQuestions([]);
+    syncQueuePaused(false);
     setDrawerOpen(false);
   }
 
@@ -338,10 +398,12 @@ export function AskSalesFaqChat() {
 
       setConversations((current) => current.filter((conversation) => conversation.id !== conversationId));
       if (activeConversationId === conversationId) {
-        setActiveConversationId(null);
-        setMessages([]);
+        syncActiveConversationId(null);
+        syncMessages([]);
         setFeedbackByMessageId({});
         setInput("");
+        syncQueuedQuestions([]);
+        syncQueuePaused(false);
       }
       setDeletingConversation(null);
     } catch (deleteError) {
@@ -354,26 +416,83 @@ export function AskSalesFaqChat() {
   async function submitQuestion(event?: FormEvent<HTMLFormElement>, override?: string) {
     event?.preventDefault();
     const question = (override || input).trim();
-    if (!question || isLoading) return;
+    if (!question) return;
 
+    if (isLoadingRef.current) {
+      queueQuestion(question);
+      return;
+    }
+
+    await sendQuestion(question);
+  }
+
+  function queueQuestion(question: string) {
+    const nextQueuedQuestions = [
+      ...queuedQuestionsRef.current,
+      {
+        id: `queued-${Date.now()}-${queuedQuestionsRef.current.length}`,
+        content: question,
+      },
+    ];
+
+    syncQueuedQuestions(nextQueuedQuestions);
+    setInput("");
+    setError(null);
+    focusComposer();
+  }
+
+  function removeQueuedQuestion(questionId: string) {
+    const nextQueuedQuestions = queuedQuestionsRef.current.filter((question) => question.id !== questionId);
+    syncQueuedQuestions(nextQueuedQuestions);
+    if (!nextQueuedQuestions.length) syncQueuePaused(false);
+  }
+
+  function clearQueuedQuestions() {
+    syncQueuedQuestions([]);
+    syncQueuePaused(false);
+    setError(null);
+    focusComposer();
+  }
+
+  function resumeQueuedQuestions() {
+    syncQueuePaused(false);
+    setError(null);
+    focusComposer();
+    void runNextQueuedQuestion();
+  }
+
+  function runNextQueuedQuestion() {
+    if (isLoadingRef.current || queuePausedRef.current) return;
+    const [nextQuestion, ...remainingQuestions] = queuedQuestionsRef.current;
+    if (!nextQuestion) return;
+
+    syncQueuedQuestions(remainingQuestions);
+    void sendQuestion(nextQuestion.content);
+  }
+
+  async function sendQuestion(question: string) {
     const userMessage: ChatMessage = {
       id: `local-user-${Date.now()}`,
       role: "user",
       content: question,
     };
 
-    const nextMessages = [...messages, userMessage];
-    setMessages(nextMessages);
+    const nextMessages = [...messagesRef.current, userMessage];
+    syncMessages(nextMessages);
     setInput("");
-    setIsLoading(true);
+    syncIsLoading(true);
+    syncQueuePaused(false);
     setError(null);
+    focusComposer();
+
+    let shouldContinueQueue = true;
 
     try {
       const response = await fetch("/api/ask-sales-faq", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          conversationId: activeConversationId,
+          conversationId: activeConversationIdRef.current,
           messages: buildRequestMessages(nextMessages),
         }),
       });
@@ -383,9 +502,9 @@ export function AskSalesFaqChat() {
         throw new Error(data.error || "Ask Sales FAQ could not answer right now.");
       }
 
-      setActiveConversationId(data.conversationId);
-      setMessages((current) => [
-        ...current,
+      syncActiveConversationId(data.conversationId);
+      syncMessages([
+        ...messagesRef.current,
         {
           id: data.messageId || `local-assistant-${Date.now()}`,
           role: "assistant",
@@ -408,8 +527,8 @@ export function AskSalesFaqChat() {
           ? requestError.message
           : "Ask Sales FAQ could not answer right now. Route the question instead of guessing.";
       setError(message);
-      setMessages((current) => [
-        ...current,
+      syncMessages([
+        ...messagesRef.current,
         {
           id: `local-safe-${Date.now()}`,
           role: "assistant",
@@ -426,8 +545,11 @@ export function AskSalesFaqChat() {
           routeReason: message,
         },
       ]);
+      if (queuedQuestionsRef.current.length) syncQueuePaused(true);
+      shouldContinueQueue = false;
     } finally {
-      setIsLoading(false);
+      syncIsLoading(false);
+      if (shouldContinueQueue) runNextQueuedQuestion();
     }
   }
 
@@ -633,8 +755,18 @@ export function AskSalesFaqChat() {
           className="shrink-0 border-t border-slate-200/75 bg-white/88 px-4 pb-4 pt-3 backdrop-blur sm:px-6"
         >
           <div className="mx-auto w-full max-w-3xl">
+            {queuedQuestions.length ? (
+              <QueuedFollowups
+                questions={queuedQuestions}
+                paused={queuePaused}
+                onRemove={removeQueuedQuestion}
+                onClear={clearQueuedQuestions}
+                onResume={resumeQueuedQuestions}
+              />
+            ) : null}
             <div className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white p-2 pl-4 shadow-[0_1px_2px_rgba(17,17,26,.04),0_8px_22px_-14px_rgba(17,17,26,.18)] focus-within:border-slate-300">
               <Textarea
+                ref={inputRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={(event) => {
@@ -645,17 +777,22 @@ export function AskSalesFaqChat() {
                 }}
                 rows={1}
                 className="max-h-[132px] min-h-10 flex-1 resize-none border-0 bg-transparent px-0 py-2 text-[15px] font-medium leading-relaxed shadow-none placeholder:text-slate-400 focus-visible:ring-0"
-                placeholder="Ask anything about offers, payments, rights..."
-                disabled={isLoading}
+                placeholder={isLoading ? "Type the next follow-up..." : "Ask anything about offers, payments, rights..."}
               />
               <Button
                 type="submit"
                 size="icon-lg"
-                disabled={!input.trim() || isLoading}
-                aria-label="Send question"
+                disabled={isComposerEmpty}
+                aria-label={isLoading ? "Queue follow-up question" : "Send question"}
                 className="size-10 rounded-xl bg-[#DC2626] text-white shadow-[0_8px_18px_-10px_rgba(220,38,38,.95)] hover:bg-[#B91C1C]"
               >
-                {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                {isLoading && isComposerEmpty ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : isLoading ? (
+                  <MessageSquarePlus className="size-4" />
+                ) : (
+                  <Send className="size-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -691,6 +828,94 @@ export function AskSalesFaqChat() {
         />
       ) : null}
     </section>
+  );
+}
+
+function QueuedFollowups({
+  questions,
+  paused,
+  onRemove,
+  onClear,
+  onResume,
+}: {
+  questions: QueuedQuestion[];
+  paused: boolean;
+  onRemove: (questionId: string) => void;
+  onClear: () => void;
+  onResume: () => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "mb-2 rounded-2xl border px-3 py-2.5 shadow-[0_1px_2px_rgba(17,17,26,.04)]",
+        paused ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-white",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span
+            className={cn(
+              "grid size-7 shrink-0 place-items-center rounded-lg",
+              paused ? "bg-amber-100 text-amber-700" : "bg-[#FEF2F2] text-[#DC2626]",
+            )}
+          >
+            <MessageSquarePlus className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-[12.5px] font-extrabold tracking-normal text-slate-800">
+              {questions.length === 1 ? "1 queued follow-up" : `${questions.length} queued follow-ups`}
+            </p>
+            {paused ? (
+              <p className="truncate text-[11.5px] font-semibold text-amber-700">
+                Paused after the last answer failed.
+              </p>
+            ) : null}
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {paused ? (
+            <Button
+              type="button"
+              size="xs"
+              variant="outline"
+              className="h-7 rounded-lg border-amber-200 bg-white text-amber-800 hover:bg-amber-50"
+              onClick={onResume}
+            >
+              <ChevronRight className="size-3.5" />
+              Resume
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            size="icon-xs"
+            variant="ghost"
+            className="text-slate-400 hover:text-slate-700"
+            onClick={onClear}
+            aria-label="Clear queued follow-ups"
+          >
+            <X className="size-3.5" />
+          </Button>
+        </div>
+      </div>
+      <div className="mt-2 max-h-28 space-y-1 overflow-y-auto pr-1">
+        {questions.map((question, index) => (
+          <div key={question.id} className="flex min-w-0 items-center gap-2 rounded-xl bg-slate-50 px-2 py-1.5">
+            <span className="grid size-5 shrink-0 place-items-center rounded-md bg-white text-[11px] font-extrabold text-slate-400">
+              {index + 1}
+            </span>
+            <p className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-slate-600">{question.content}</p>
+            <button
+              type="button"
+              className="grid size-6 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-white hover:text-slate-700"
+              onClick={() => onRemove(question.id)}
+              aria-label={`Remove queued follow-up ${index + 1}`}
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
