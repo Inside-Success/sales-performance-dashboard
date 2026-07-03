@@ -23,6 +23,51 @@ export type AskSalesFaqRule = {
 
 export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
   {
+    id: "call-1-flow",
+    title: "Call 1 Flow",
+    category: "Call Process & Scripts",
+    riskLevel: "high",
+    approvedBy: "Rich Allen",
+    approvedAt: "2026-07-03",
+    approvalReference: "Slack screenshot supplied by user on 2026-07-03: Rich Allen confirmed Call 1 pricing boundary",
+    lastReviewed: "2026-07-03",
+    body: String.raw`## Answer
+
+Default Call 1 pricing rule:
+
+- Do not discuss pricing, packages, payment plans, discounts, deposits, or license PDFs on Call 1.
+- Keep Call 1 focused on fit, qualification, discovery, and the current Call 1 script.
+- Save pricing and closing mechanics for Call 2.
+
+Narrow disqualification exception:
+
+- If you are sure the prospect does not have a business and is not financially qualified, you may mention price on Call 1 only to disqualify them.
+- Do not use that exception to pitch, close, negotiate, pre-sell, or create urgency on Call 1.
+- If you are not sure whether both conditions are true, keep price for Call 2 and route to sales leadership if needed.
+
+## What Reps Can Say
+
+- "Normally, do not bring up price on Call 1. Keep price for Call 2."
+- "If they clearly do not have a business and are not financially qualified, you can mention the investment only to disqualify them."
+- "If you are unsure, do not quote pricing on Call 1. Route it to sales leadership."
+
+## What reps MUST NOT say
+
+- Do not pitch, close, negotiate, or pre-sell pricing on Call 1.
+- Do not discuss payment plans, discounts, deposits, license PDFs, refunds, or contract/payment mechanics on Call 1.
+- Do not use the disqualification exception unless both conditions are clear: no business and not financially qualified.
+- Do not promise approval, platform results, views, ROI, or business outcomes.
+- Do not invent qualification rules for sensitive edge cases.
+
+## Escalation rule
+
+If the pricing boundary is unclear in the moment, route to sales leadership before telling the prospect. Sensitive fit/compliance questions still route to the qualification/compliance owner.
+
+## Pending Or Excluded
+
+Phone-only Call 1s, interrupted calls, silent/off-camera applicants, reschedules, Call 1 after-hours, and sensitive qualification edge cases still need separate approved process wording before the bot gives direct instructions.`,
+  },
+  {
     id: "call-recording-storage-and-access",
     title: "Call Recording Storage And Access",
     category: "Sales Tech & Support Routing",
@@ -164,7 +209,7 @@ If a prospect or client asks for material that looks internal, route to the sour
     approvedBy: "Syed Moonis Haider",
     approvedAt: "2026-06-30",
     approvalReference: "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed",
-    lastReviewed: "2026-07-02",
+    lastReviewed: "2026-07-03",
     body: String.raw`## Answer
 
 Main ISTV program:
@@ -183,14 +228,14 @@ Main ISTV listed payment plans:
 | Standard | 4 x $5,000 or 2 x $10,000 |
 | VIP / Premium | 4 x $7,500, 3 x $10,000, or 2 x $15,000 |
 
-Next Level CEO / Daymond John pricing:
+Next Level CEO / Daymond John pricing and payment options:
 
-| Package | Price |
-| --- | ---: |
-| Lite | $10,000 |
-| Standard | $15,000 |
-| Premium VIP | $20,000 |
-| CEO Day upgrade | $5,000 |
+| Package | PIF | Listed payment options |
+| --- | ---: | --- |
+| Lite | $10,000 | $2,500 x 4, $3,600 x 3, or $5,000 x 2 |
+| Standard | $15,000 | $4,000 x 4, $5,000 x 3, or $7,500 x 2 |
+| Premium VIP | $20,000 | $5,000 x 4, $7,000 x 3, or $10,000 x 2 |
+| CEO Day upgrade | $5,000 | PIF only |
 
 Same-day discount:
 
@@ -202,16 +247,31 @@ Same-day discount:
 - It does not apply to Next Level CEO / Daymond John.
 - Do not carry the discount into the next day.
 
+Main ISTV upgrade before filming:
+
+- Main ISTV clients can upgrade before filming.
+- After filming, it is too late to upgrade the package.
+- If the client received the main ISTV $2,000 same-day discount, that discount carries forward to the upgraded main ISTV package.
+- Discounted Standard total is $18,000.
+- Discounted VIP/Premium total is $28,000.
+- If the client bought discounted Lite at $10,000, the difference is $8,000 to Standard or $18,000 to VIP/Premium.
+- Use the proper upgraded contract and payment-difference link through the current sales-tech or finance route. Do not create custom links manually.
+
 ## What Reps Can Say
 
 - Use the listed package prices and listed payment plans above.
+- For Next Level CEO / Daymond John, use only the listed PIF and split-payment options above.
 - For same-day discount, keep the rule tied to main ISTV, Call 2, and same-calendar-day initial deposit payment.
+- If a discounted main ISTV Lite client upgrades before filming, carry the $2,000 same-day discount forward to the upgraded main ISTV package and charge only the proper difference.
 
 ## What Reps Must Not Say
 
 - Do not invent payment splits, custom amounts, special discounts, or exception terms.
 - Do not apply the same-day discount to Next Level CEO / Daymond John.
 - Do not promise the same-day discount if payment will happen after that calendar day.
+- Do not carry the main ISTV same-day discount into any Next Level CEO / Daymond John package.
+- Do not upgrade a client after filming.
+- Do not create custom upgrade links or payment splits manually.
 - Do not promise a second-show, crossover, VIP-to-VIP, or special discount unless a separate approved article covers that exact case.
 - Do not quote old/spare pricing videos as current.
 
@@ -396,13 +456,6 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
   ],
   abstainRules: [
     {
-      id: "abstain-call-1-pricing-boundary",
-      decision: "abstain_unapproved",
-      blocked_topic: "call-1-flow",
-      reason: "Call 1 pricing/investment boundary is still pending Rich confirmation.",
-      match_any_groups: [["call 1"], ["pricing", "investment", "price", "$20,000", "$20000"]],
-    },
-    {
       id: "abstain-call-2-handoff",
       decision: "abstain_unapproved",
       blocked_topic: "call-2-close-and-license-flow",
@@ -428,7 +481,10 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       decision: "abstain_unapproved",
       blocked_topic: "greenlight-pdf-and-cohort-deadlines",
       reason: "Greenlight caps, cohort deadlines, no-shows, and reapply rules are not approved.",
-      match_any: ["greenlight", "approval cap", "reapply", "no show", "no-show", "cohort deadline"],
+      match_any_groups: [
+        ["greenlight", "approval cap", "reapply", "no show", "no-show", "cohort deadline"],
+        ["cap", "approval cap", "reapply", "no show", "no-show", "cohort deadline", "deadline", "pdf"],
+      ],
     },
     {
       id: "abstain-sensitive-qualification",
@@ -562,6 +618,13 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
   ],
   answerRules: [
     {
+      id: "answer-call-1-pricing-boundary",
+      decision: "answer_from_approved_article",
+      article_id: "call-1-flow",
+      reason: "Approved Call 1 article covers the default no-pricing rule and the narrow disqualification exception confirmed by Rich.",
+      match_any_groups: [["call 1"], ["pricing", "investment", "price", "cost", "$20,000", "$20000", "payment plan", "discount"]],
+    },
+    {
       id: "answer-current-show-source",
       decision: "answer_from_approved_article",
       article_id: "current-show-source",
@@ -639,8 +702,12 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "price and payment plans",
         "next level ceo",
         "daymond john",
+        "dj",
         "same day discount",
         "main istv call 2",
+        "upgrade",
+        "before filming",
+        "after filming",
       ],
     },
     {
@@ -719,7 +786,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
 
 export const ASK_SALES_FAQ_BUNDLE_META = {
   schemaVersion: 1,
-  generatedFrom: "Inside-Success/faq-chatbot@da91baf",
-  generatedAt: "2026-07-01",
+  generatedFrom: "Inside-Success/faq-chatbot@632b0f3",
+  generatedAt: "2026-07-03",
   approvedArticleCount: APPROVED_FAQ_ARTICLES.length,
 };

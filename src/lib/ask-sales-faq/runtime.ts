@@ -150,10 +150,26 @@ const QUERY_EXPANSIONS: Array<{ triggers: string[]; add: string[] }> = [
   { triggers: ["refund", "refunds"], add: ["next", "level", "ceo", "daymond", "istv"] },
   { triggers: ["apple", "amazon", "tubi", "tier", "guaranteed"], add: ["platform", "placement", "proof", "claims"] },
   { triggers: ["recording", "recordings"], add: ["zoom", "stored", "access"] },
+  { triggers: ["upgrade", "upgraded"], add: ["lite", "standard", "vip", "premium", "same", "day", "discount", "filming"] },
+  { triggers: ["call", "pricing"], add: ["call", "1", "price", "investment", "disqualify", "qualified"] },
 ];
 
 const AI_UNAVAILABLE_RESPONSE =
-  "I cannot generate a reliable AI answer right now. Do not guess from memory; check the approved source or route the question before replying.";
+  "I cannot generate a reliable answer right now. Do not guess from memory; route this to the current sales owner or the right help channel before replying.";
+
+const REP_FACING_INTERNAL_TERMS = [
+  "not approved in the knowledge base",
+  "not approved in kb",
+  "knowledge base",
+  "approved article",
+  "route-only",
+  "route only",
+  "manifest",
+  "source coverage",
+  "pending approval",
+  "article status",
+  "article id",
+];
 
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
 const INDEXED_CHUNKS: IndexedChunk[] = rawChunks.map((chunk) => {
@@ -183,7 +199,7 @@ export async function runAskSalesFaq(
       conversationContext,
       evidence: candidates,
     });
-    const selectedEvidence = resolveSelectedEvidence(answerResult.output, candidates);
+    const selectedEvidence = resolveSelectedEvidence(answerResult.output, candidates, sanitizedQuestion);
     const finalOutput = answerResult.output;
     const decision = buildDecision({
       output: finalOutput,
@@ -220,7 +236,7 @@ export async function runAskSalesFaq(
       answer: AI_UNAVAILABLE_RESPONSE,
       structuredAnswer: structured({
         summary: AI_UNAVAILABLE_RESPONSE,
-        sections: [{ title: "What to do", items: ["Check the approved source.", "Route the question before replying to the prospect."], tone: "route" }],
+        sections: [{ title: "What to do", items: ["Route this to the current sales owner or the right help channel.", "Do not guess before replying to the prospect."], tone: "route" }],
         decision,
       }),
       source: null,
@@ -326,18 +342,19 @@ function chunkToCandidate(chunk: RetrievedChunk): EvidenceCandidate {
   };
 }
 
-function resolveSelectedEvidence(output: ModelOutput, candidates: EvidenceCandidate[]) {
+function resolveSelectedEvidence(output: ModelOutput, candidates: EvidenceCandidate[], currentQuestion: string) {
   const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
   const selected = (output.selected_source_ids || [])
     .map((id) => byId.get(id))
     .filter((candidate): candidate is EvidenceCandidate => Boolean(candidate));
 
-  if (selected.length) return selected.slice(0, 10);
+  const validatedSelected = filterQuestionSupportedEvidence(selected, currentQuestion, output);
+  if (validatedSelected.length) return validatedSelected.slice(0, 10);
 
-  return candidates
-    .filter((candidate) => candidate.kind === "approved_article")
-    .slice(0, 8)
-    .concat(candidates.filter((candidate) => candidate.kind === "source_chunk").slice(0, 4));
+  const fallback = filterQuestionSupportedEvidence(candidates, currentQuestion, output);
+  if (fallback.length) return fallback.slice(0, 10);
+
+  return [];
 }
 
 async function generateProviderAnswer(input: {
@@ -357,10 +374,11 @@ async function generateProviderAnswer(input: {
           "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
           "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
+          "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
           "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
           "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
-          "Never expose source IDs, file paths, article statuses, Slack links, or implementation details.",
+          "Never expose source IDs, file paths, article statuses, Slack links, implementation details, knowledge base wording, approved article wording, route-only labels, RAG, manifests, source coverage, or pending approval wording.",
           "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
           "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
           "selected_source_ids must contain only IDs from the evidence packet and should list the sources actually used for the answer.",
@@ -423,7 +441,7 @@ function buildDecision(input: {
     routeReason: needsRoute ? input.output.route_reason || "Confirm this with the current owner before relying on it." : null,
     safeToGenerate: true,
     matchedRuleId: "ai-semantic-rag",
-    matchedArticleId: primaryArticle?.id || input.evidence.find((candidate) => candidate.articleId)?.articleId || null,
+    matchedArticleId: primaryArticle?.id || null,
     primaryArticle,
     retrieved: input.evidence,
   };
@@ -462,12 +480,12 @@ function sourceSummaryFromDecision(decision: RuntimeDecision): AskSalesFaqRuntim
       sourceMode: decision.sourceMode,
       confidenceLabel: decision.confidenceLabel,
       confidenceScore: decision.confidenceScore,
-      expandableDetails: `AI selected approved FAQ evidence reviewed on ${primary.lastReviewed}.`,
+      expandableDetails: `Selected FAQ source reviewed on ${primary.lastReviewed}.`,
     };
   }
   if (top) {
     return {
-      label: `${top.trustLabel}: ${top.sourceTitle}`,
+      label: `${sourceTrustLabel(top.trustLabel)}: ${top.sourceTitle}`,
       lastReviewed: top.lastReviewed || "2026-07-01",
       approved: top.kind === "approved_article",
       sourceMode: decision.sourceMode,
@@ -603,7 +621,9 @@ function normalizeText(value: string) {
     .replaceAll("tier-1", "tier 1")
     .replaceAll("red-carpet", "red carpet")
     .replaceAll("pay-to-play", "pay to play")
+    .replace(/\bdj\b/g, "daymond john")
     .replace(/\$2\s*,?\s*000/g, " $2000 2000 $2,000 ")
+    .replace(/\$2k\b/g, " $2000 2000 $2,000 ")
     .replace(/\bnlceo\b/g, "next level ceo")
     .replace(/\s+/g, " ")
     .trim();
@@ -884,6 +904,20 @@ async function safeJson(response: Response) {
 
 function sanitizeModelAnswer(value: string) {
   return value
+    .replace(/\b[Tt]he rep should\b/g, "You should")
+    .replace(/\b[Rr]eps should\b/g, "You should")
+    .replace(/\b[Rr]eps must\b/g, "You must")
+    .replace(/\b[Rr]ep-facing\b/g, "sales")
+    .replace(/\bnot approved in (the )?(knowledge base|kb)\b/gi, "not confirmed yet")
+    .replace(/\bpending approval\b/gi, "not confirmed yet")
+    .replace(/\bapproved article\b/gi, "confirmed source")
+    .replace(/\broute[- ]only\b/gi, "needs routing")
+    .replace(/\bknowledge base\b/gi, "current sales guidance")
+    .replace(/\bRAG\b/g, "source evidence")
+    .replace(/\bmanifest\b/gi, "source list")
+    .replace(/\bsource coverage\b/gi, "source support")
+    .replace(/\barticle status\b/gi, "source status")
+    .replace(/\barticle id\b/gi, "source reference")
     .replace(/slack\/evidence\/\S+/gi, "internal evidence")
     .replace(/transcription\/transcripts\/\S+/gi, "training evidence")
     .replace(/knowledge-base\/\S+/gi, "FAQ source")
@@ -897,7 +931,8 @@ function sanitizeModelAnswer(value: string) {
 }
 
 function containsHiddenTerms(answer: string) {
-  return [
+  const normalizedAnswer = answer.toLowerCase();
+  return /\brag\b/i.test(answer) || REP_FACING_INTERNAL_TERMS.some((term) => normalizedAnswer.includes(term)) || [
     "slack/evidence",
     "transcription/transcripts",
     "knowledge-base/",
@@ -907,7 +942,63 @@ function containsHiddenTerms(answer: string) {
     "in_conflict",
     "approved:",
     "chunk:",
-  ].some((term) => answer.toLowerCase().includes(term));
+  ].some((term) => normalizedAnswer.includes(term));
+}
+
+function sourceTrustLabel(value: string) {
+  return value
+    .replace(/\bapproved article\b/gi, "FAQ source")
+    .replace(/\bapproved faq article\b/gi, "FAQ source")
+    .replace(/\bcurated slack evidence\b/gi, "curated source evidence")
+    .replace(/\btraining transcript\b/gi, "training evidence");
+}
+
+function filterQuestionSupportedEvidence(candidates: EvidenceCandidate[], currentQuestion: string, output: ModelOutput) {
+  const answerText = [output.answer, output.summary, output.route_reason].filter(Boolean).join(" ");
+  return candidates
+    .map((candidate) => ({
+      candidate,
+      supportScore: evidenceSupportScore(candidate, currentQuestion, answerText),
+    }))
+    .filter((item) => item.supportScore >= 3)
+    .sort(
+      (left, right) =>
+        right.supportScore - left.supportScore ||
+        right.candidate.authority - left.candidate.authority ||
+        right.candidate.score - left.candidate.score ||
+        left.candidate.id.localeCompare(right.candidate.id),
+    )
+    .map((item) => item.candidate);
+}
+
+function evidenceSupportScore(candidate: EvidenceCandidate, currentQuestion: string, answerText: string) {
+  const searchText = normalizeText(`${currentQuestion} ${answerText}`);
+  const candidateText = normalizeText(`${candidate.sourceTitle} ${candidate.heading} ${candidate.category} ${candidate.text}`);
+  const queryTokens = Array.from(new Set(tokenize(searchText, { expand: true }))).filter((token) => token.length > 2);
+  let score = 0;
+
+  for (const token of queryTokens) {
+    if (candidateText.includes(token)) score += 1;
+  }
+
+  const topicPairs: Array<[string[], string[], number]> = [
+    [["same day discount", "$2000", "$2,000"], ["same day discount", "$2000", "$2,000"], 7],
+    [["daymond john", "next level ceo"], ["daymond john", "next level ceo"], 6],
+    [["upgrade", "before filming", "after filming"], ["upgrade", "before filming", "after filming"], 6],
+    [["call 1", "investment", "pricing", "disqualify"], ["call 1", "investment", "pricing", "disqualify"], 6],
+    [["show list", "tv shows"], ["show list", "latest approved show list"], 5],
+    [["refund"], ["refund"], 5],
+    [["recording"], ["recording"], 4],
+  ];
+
+  for (const [questionPhrases, candidatePhrases, boost] of topicPairs) {
+    if (questionPhrases.some((phrase) => phrasePresent(phrase, searchText)) && candidatePhrases.some((phrase) => phrasePresent(phrase, candidateText))) {
+      score += boost;
+    }
+  }
+
+  if (candidate.kind === "approved_article") score += 1;
+  return score;
 }
 
 function sanitizeProviderError(error: unknown) {

@@ -124,9 +124,11 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "bundle has eight approved articles",
-    (bundle.match(/approvedAt: "2026-06-30"/g) || []).length === 8,
-    "bundle contains 8 approved articles",
+    "bundle has nine approved rep-facing articles",
+    (bundle.match(/approvedAt: "/g) || []).length === 9 &&
+      bundle.includes('id: "call-1-flow"') &&
+      bundle.includes('approvedAt: "2026-07-03"'),
+    "bundle contains the original eight articles plus the approved Call 1 pricing boundary",
   );
 
   addCheck(
@@ -235,6 +237,38 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "DJ and Next Level CEO payment splits are available",
+    bundle.includes("$2,500 x 4") &&
+      bundle.includes("$3,600 x 3") &&
+      bundle.includes("$4,000 x 4") &&
+      bundle.includes("$7,500 x 2") &&
+      bundle.includes("$7,000 x 3") &&
+      bundle.includes("$10,000 x 2") &&
+      bundle.includes("CEO Day upgrade"),
+    "approved pricing bundle includes DJ/NLCEO PIF and split-payment options",
+  );
+
+  addCheck(
+    "main ISTV Lite upgrade discount carry-forward is available",
+    bundle.includes("Main ISTV upgrade before filming") &&
+      bundle.includes("carries forward") &&
+      bundle.includes("Discounted Standard total is $18,000") &&
+      bundle.includes("Discounted VIP/Premium total is $28,000") &&
+      bundle.includes("payment-difference link"),
+    "approved pricing bundle includes before-filming upgrade totals and differences",
+  );
+
+  addCheck(
+    "Call 1 pricing boundary uses Rich confirmation",
+    bundle.includes("Default Call 1 pricing rule") &&
+      bundle.includes("Narrow disqualification exception") &&
+      bundle.includes("does not have a business and is not financially qualified") &&
+      bundle.includes("only to disqualify") &&
+      !bundle.includes("abstain-call-1-pricing-boundary"),
+    "Call 1 pricing is now an approved article with the narrow disqualification exception",
+  );
+
+  addCheck(
     "confidence scores are normalized before display",
     runtime.includes("confidence_score must be an integer from 0 to 100") &&
       runtime.includes("parseConfidenceScore") &&
@@ -281,6 +315,38 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "AI answer prompt requires direct rep-facing style",
+    runtime.includes("Write directly to the rep using you") &&
+      runtime.includes("Do not write in third person as the rep should") &&
+      runtime.includes("You should") &&
+      runtime.includes("You must"),
+    "prompt and sanitizer push model output into second-person rep guidance",
+  );
+
+  addCheck(
+    "rep-facing internal status terms are sanitized",
+    runtime.includes("REP_FACING_INTERNAL_TERMS") &&
+      runtime.includes("not approved in (the )?(knowledge base|kb)") &&
+      runtime.includes("pending approval") &&
+      runtime.includes("route[- ]only") &&
+      runtime.includes("knowledge base") &&
+      runtime.includes("source coverage") &&
+      chatRoute.includes("Route this to the current sales owner or the right help channel") &&
+      !chatRoute.includes("Please check the approved source"),
+    "answer/runtime fallbacks remove KB/governance wording from rep-facing copy",
+  );
+
+  addCheck(
+    "source cards validate selected source IDs against question support",
+    runtime.includes("filterQuestionSupportedEvidence") &&
+      runtime.includes("evidenceSupportScore") &&
+      runtime.includes("matchedArticleId: primaryArticle?.id || null") &&
+      runtime.includes("sourceTrustLabel") &&
+      runtime.includes("Selected FAQ source reviewed"),
+    "runtime validates selected evidence before trusting source cards or matched article IDs",
+  );
+
+  addCheck(
     "structured answers are retained and rendered",
     chatRoute.includes("structuredAnswer: result.structuredAnswer") &&
       chatUi.includes("StructuredAnswerCard") &&
@@ -294,6 +360,9 @@ if (missingFiles.length === 0) {
       "refund policy",
       "what payment link",
       "tier 1 placement",
+      "call 1",
+      "dj",
+      "upgrade",
       "share internal docs",
       "how long can clients use",
       "call recordings stored",

@@ -259,14 +259,14 @@ function buildSafeConfiguredResponse(conversationId: string, messageId: string):
     conversationId,
     messageId,
     answer:
-      "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Please check the approved source or route the question before replying.",
+      "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Route this to the current sales owner or the right help channel before replying.",
     structuredAnswer: {
       summary:
-        "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Please check the approved source or route the question before replying.",
+        "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Route this to the current sales owner or the right help channel before replying.",
       sections: [
         {
           title: "What to do",
-          items: ["Check the approved source.", "Route the question before replying to the prospect."],
+          items: ["Route this to the current sales owner or the right help channel.", "Do not guess before replying to the prospect."],
           tone: "route",
         },
       ],
