@@ -162,6 +162,7 @@ const REP_FACING_INTERNAL_TERMS = [
   "not approved in kb",
   "knowledge base",
   "approved article",
+  "approved faq article",
   "route-only",
   "route only",
   "manifest",
@@ -169,6 +170,53 @@ const REP_FACING_INTERNAL_TERMS = [
   "pending approval",
   "article status",
   "article id",
+  "source id",
+  "selected source",
+  "governance log",
+  "internal guidance",
+  "slack evidence",
+  "slack-sourced",
+  "slack-level",
+  "slack notes",
+  "curated source evidence",
+  "candidate answer",
+  "decision candidates",
+  "candidate q and a",
+  "what the evidence says",
+];
+
+const REP_FACING_INTERNAL_PATTERNS = [
+  /\bnot approved\b/i,
+  /\bunapproved\b/i,
+  /\bpending approval\b/i,
+  /\bapproved (faq )?article\b/i,
+  /\bknowledge base\b/i,
+  /\broute[- ]only\b/i,
+  /\bRAG\b/,
+  /\bmanifest\b/i,
+  /\bsource coverage\b/i,
+  /\bsource id\b/i,
+  /\bselected source\b/i,
+  /\barticle[_ -]?id\b/i,
+  /\bmatched[_ -]?rule[_ -]?id\b/i,
+  /\bdefault[-_ ]abstain\b/i,
+  /\bin_conflict\b/i,
+  /\bgovernance log\b/i,
+  /\binternal guidance\b/i,
+  /\binternal discussions?\b/i,
+  /\bthe evidence\b/i,
+  /\bSlack(?:[- ]level|[- ]sourced)? (?:evidence|notes|guidance|discussion|source)/i,
+  /\bcurated (?:Slack|source) evidence\b/i,
+  /\b(?:Evidence|Source)\s+\d+\b/i,
+  /\bwhat the evidence says\b/i,
+  /\bcandidate answer\b/i,
+  /\bdecision candidates\b/i,
+  /\bcandidate q and a\b/i,
+  /slack\/evidence\/\S+/i,
+  /transcription\/transcripts\/\S+/i,
+  /knowledge-base\/\S+/i,
+  /\bapproved:[a-z0-9_-]+/i,
+  /\bchunk:[a-z0-9_-]+/i,
 ];
 
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
@@ -199,15 +247,18 @@ export async function runAskSalesFaq(
       conversationContext,
       evidence: candidates,
     });
-    const selectedEvidence = resolveSelectedEvidence(answerResult.output, candidates, sanitizedQuestion);
-    const finalOutput = answerResult.output;
+    const finalOutput = await ensureRepFacingOutput({
+      currentQuestion: sanitizedQuestion,
+      output: answerResult.output,
+    });
+    const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
     const decision = buildDecision({
       output: finalOutput,
       evidence: selectedEvidence,
     });
     const answer = sanitizeModelAnswer(finalOutput.answer);
 
-    if (!answer || containsHiddenTerms(answer)) {
+    if (!answer || modelOutputContainsHiddenTerms(finalOutput)) {
       throw new Error("AI output was empty or exposed hidden terms");
     }
 
@@ -379,6 +430,8 @@ async function generateProviderAnswer(input: {
           "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
           "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
           "Never expose source IDs, file paths, article statuses, Slack links, implementation details, knowledge base wording, approved article wording, route-only labels, RAG, manifests, source coverage, or pending approval wording.",
+          "Never say Slack evidence, Slack-level evidence, internal guidance, governance log, candidate answer, decision candidates, Evidence 1, Source 2, or similar source-review language.",
+          "Do not explain why a fact is or is not approved. If something needs confirmation, say: Confirm this with the current sales owner before promising it.",
           "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
           "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
           "selected_source_ids must contain only IDs from the evidence packet and should list the sources actually used for the answer.",
@@ -402,6 +455,54 @@ async function generateProviderAnswer(input: {
     ],
     parse: parseModelOutput,
   });
+}
+
+async function ensureRepFacingOutput(input: { currentQuestion: string; output: ModelOutput }) {
+  if (!modelOutputContainsHiddenTerms(input.output)) return input.output;
+
+  try {
+    const rewrite = await generateProviderJson<ModelOutput>({
+      purpose: "rep-facing wording repair",
+      maxTokens: 1600,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You rewrite Ask Sales FAQ answers so they sound like a polished internal sales assistant, not an internal QA or source-review tool.",
+            "Preserve the answer's facts, warnings, route requirement, and confidence. Do not add new policy or remove useful sales guidance.",
+            "Remove all internal source mechanics and review language. Never mention Slack, evidence numbers, source IDs, article IDs, knowledge base, approved articles, route-only labels, governance logs, internal guidance, RAG, manifests, or file paths.",
+            "If a detail needs confirmation, use normal sales wording such as: \"Confirm this with the current sales owner before promising it.\"",
+            "Write directly to the rep using you, you can say, do not promise, and route this.",
+            "Return valid JSON only with the same schema: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: [
+            "CURRENT USER QUESTION:",
+            input.currentQuestion,
+            "",
+            "DRAFT ANSWER JSON TO CLEAN UP:",
+            JSON.stringify(input.output),
+          ].join("\n"),
+        },
+      ],
+      parse: parseModelOutput,
+    });
+
+    return {
+      ...rewrite.output,
+      selected_source_ids: input.output.selected_source_ids,
+      needs_route: input.output.needs_route,
+      confidence_label: input.output.confidence_label,
+      confidence_score: input.output.confidence_score,
+    };
+  } catch (error) {
+    console.warn("Ask Sales FAQ rep-facing wording repair failed", {
+      error: sanitizeProviderError(error),
+    });
+    return input.output;
+  }
 }
 
 function buildDecision(input: {
@@ -480,18 +581,18 @@ function sourceSummaryFromDecision(decision: RuntimeDecision): AskSalesFaqRuntim
       sourceMode: decision.sourceMode,
       confidenceLabel: decision.confidenceLabel,
       confidenceScore: decision.confidenceScore,
-      expandableDetails: `Selected FAQ source reviewed on ${primary.lastReviewed}.`,
+      expandableDetails: `FAQ source reviewed on ${primary.lastReviewed}.`,
     };
   }
   if (top) {
     return {
-      label: `${sourceTrustLabel(top.trustLabel)}: ${top.sourceTitle}`,
+      label: sourceTrustLabel(top.trustLabel),
       lastReviewed: top.lastReviewed || "2026-07-01",
       approved: top.kind === "approved_article",
       sourceMode: decision.sourceMode,
       confidenceLabel: decision.confidenceLabel,
       confidenceScore: decision.confidenceScore,
-      expandableDetails: `AI selected evidence category: ${top.category}.`,
+      expandableDetails: `Related sales guidance area: ${top.category}. Confirm unusual or time-sensitive cases with the current owner before promising them.`,
     };
   }
   return null;
@@ -908,49 +1009,33 @@ function sanitizeModelAnswer(value: string) {
     .replace(/\b[Rr]eps should\b/g, "You should")
     .replace(/\b[Rr]eps must\b/g, "You must")
     .replace(/\b[Rr]ep-facing\b/g, "sales")
-    .replace(/\bnot approved in (the )?(knowledge base|kb)\b/gi, "not confirmed yet")
-    .replace(/\bpending approval\b/gi, "not confirmed yet")
-    .replace(/\bapproved article\b/gi, "confirmed source")
-    .replace(/\broute[- ]only\b/gi, "needs routing")
-    .replace(/\bknowledge base\b/gi, "current sales guidance")
-    .replace(/\bRAG\b/g, "source evidence")
-    .replace(/\bmanifest\b/gi, "source list")
-    .replace(/\bsource coverage\b/gi, "source support")
-    .replace(/\barticle status\b/gi, "source status")
-    .replace(/\barticle id\b/gi, "source reference")
-    .replace(/slack\/evidence\/\S+/gi, "internal evidence")
-    .replace(/transcription\/transcripts\/\S+/gi, "training evidence")
-    .replace(/knowledge-base\/\S+/gi, "FAQ source")
-    .replace(/\bapproved:[a-z0-9_-]+/gi, "approved source")
-    .replace(/\bchunk:[a-z0-9_-]+/gi, "source evidence")
-    .replace(/\bsource\s+\d+\b/gi, "source")
-    .replace(/\bin_conflict\b/gi, "needs owner confirmation")
-    .replace(/\bdraft article\b/gi, "internal evidence")
-    .replace(/\barticle_id\b/gi, "source reference")
     .trim();
 }
 
 function containsHiddenTerms(answer: string) {
   const normalizedAnswer = answer.toLowerCase();
-  return /\brag\b/i.test(answer) || REP_FACING_INTERNAL_TERMS.some((term) => normalizedAnswer.includes(term)) || [
-    "slack/evidence",
-    "transcription/transcripts",
-    "knowledge-base/",
-    "article_id",
-    "matched_rule_id",
-    "default-abstain",
-    "in_conflict",
-    "approved:",
-    "chunk:",
-  ].some((term) => normalizedAnswer.includes(term));
+  return (
+    REP_FACING_INTERNAL_TERMS.some((term) => normalizedAnswer.includes(term)) ||
+    REP_FACING_INTERNAL_PATTERNS.some((pattern) => pattern.test(answer))
+  );
+}
+
+function modelOutputContainsHiddenTerms(output: ModelOutput) {
+  return modelOutputText(output).some((value) => containsHiddenTerms(value));
+}
+
+function modelOutputText(output: ModelOutput) {
+  return [
+    output.answer,
+    output.summary,
+    output.route_reason,
+    ...(output.sections || []).flatMap((section) => [section.title, section.body, ...(section.items || [])]),
+  ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
 }
 
 function sourceTrustLabel(value: string) {
-  return value
-    .replace(/\bapproved article\b/gi, "FAQ source")
-    .replace(/\bapproved faq article\b/gi, "FAQ source")
-    .replace(/\bcurated slack evidence\b/gi, "curated source evidence")
-    .replace(/\btraining transcript\b/gi, "training evidence");
+  if (/approved/i.test(value)) return "FAQ source";
+  return "Sales guidance";
 }
 
 function filterQuestionSupportedEvidence(candidates: EvidenceCandidate[], currentQuestion: string, output: ModelOutput) {

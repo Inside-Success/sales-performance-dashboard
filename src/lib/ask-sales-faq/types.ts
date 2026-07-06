@@ -166,6 +166,8 @@ export type AskSalesFaqAdminLogItem = {
   rating?: "up" | "down";
   comment?: string | null;
   status?: string | null;
+  reviewCategory?: string | null;
+  reviewAction?: string | null;
 };
 
 export type AskSalesFaqAdminOverview = {

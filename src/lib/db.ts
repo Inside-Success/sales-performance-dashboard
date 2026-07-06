@@ -2732,17 +2732,25 @@ export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesF
   const recentMisses = (await sql.query(
     `
       select
-        id,
-        coalesce(message_id, '') as message_id,
-        conversation_id,
-        viewer_email,
-        question_redacted,
-        decision,
-        route_reason,
-        status,
-        created_at::text as created_at
-      from ask_sales_faq_misses
-      order by created_at desc
+        x.id,
+        coalesce(x.message_id, '') as message_id,
+        x.conversation_id,
+        x.viewer_email,
+        x.question_redacted,
+        x.decision,
+        x.route_reason,
+        x.status,
+        x.created_at::text as created_at,
+        a.content_redacted as answer,
+        a.outcome,
+        a.source_label,
+        a.needs_route,
+        a.provider,
+        a.model,
+        a.answer_payload->>'sourceMode' as source_mode
+      from ask_sales_faq_misses x
+      left join ask_sales_faq_messages a on a.id = x.message_id
+      order by x.created_at desc
       limit $1
     `,
     [normalizedLimit],
@@ -2756,6 +2764,13 @@ export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesF
     route_reason: string | null;
     status: string;
     created_at: string;
+    answer: string | null;
+    outcome: string | null;
+    source_label: string | null;
+    needs_route: boolean | null;
+    provider: string | null;
+    model: string | null;
+    source_mode: string | null;
   }>;
 
   const recentFeedback = (await sql.query(
@@ -2900,32 +2915,80 @@ export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesF
         tone: "default",
       },
     ],
-    recentMisses: recentMisses.map((item): AskSalesFaqAdminLogItem => ({
-      id: item.id,
-      createdAt: item.created_at,
-      viewerEmail: item.viewer_email,
-      question: item.question_redacted,
-      decision: item.decision,
-      routeReason: item.route_reason,
-      status: item.status,
-    })),
-    recentFeedback: recentFeedback.map((item): AskSalesFaqAdminLogItem => ({
-      id: item.id,
-      createdAt: item.created_at,
-      viewerEmail: item.viewer_email,
-      question: item.question,
-      answer: item.answer,
-      outcome: item.outcome,
-      sourceLabel: item.source_label,
-      needsRoute: Boolean(item.needs_route),
-      routeReason: item.route_reason,
-      provider: item.provider,
-      model: item.model,
-      rating: item.rating,
-      comment: item.comment,
-    })),
+    recentMisses: recentMisses.map((item): AskSalesFaqAdminLogItem => {
+      const classification = classifyAskSalesFaqReviewItem({
+        question: item.question_redacted,
+        answer: item.answer,
+        decision: item.decision,
+        outcome: item.outcome,
+        sourceLabel: item.source_label,
+        sourceMode: item.source_mode,
+        needsRoute: Boolean(item.needs_route),
+        routeReason: item.route_reason,
+        errorClass: null,
+      });
+      return {
+        id: item.id,
+        createdAt: item.created_at,
+        viewerEmail: item.viewer_email,
+        question: item.question_redacted,
+        answer: item.answer,
+        decision: item.decision,
+        outcome: item.outcome,
+        sourceLabel: item.source_label,
+        sourceMode: item.source_mode,
+        needsRoute: Boolean(item.needs_route),
+        routeReason: item.route_reason,
+        provider: item.provider,
+        model: item.model,
+        status: item.status,
+        reviewCategory: classification.category,
+        reviewAction: classification.action,
+      };
+    }),
+    recentFeedback: recentFeedback.map((item): AskSalesFaqAdminLogItem => {
+      const classification = classifyAskSalesFaqReviewItem({
+        question: item.question,
+        answer: item.answer,
+        decision: null,
+        outcome: item.outcome,
+        sourceLabel: item.source_label,
+        sourceMode: null,
+        needsRoute: Boolean(item.needs_route),
+        routeReason: item.route_reason,
+        errorClass: null,
+      });
+      return {
+        id: item.id,
+        createdAt: item.created_at,
+        viewerEmail: item.viewer_email,
+        question: item.question,
+        answer: item.answer,
+        outcome: item.outcome,
+        sourceLabel: item.source_label,
+        needsRoute: Boolean(item.needs_route),
+        routeReason: item.route_reason,
+        provider: item.provider,
+        model: item.model,
+        rating: item.rating,
+        comment: item.comment,
+        reviewCategory: classification.category,
+        reviewAction: classification.action,
+      };
+    }),
     recentAnswers: recentAnswers.map((item): AskSalesFaqAdminLogItem => {
       const confidenceScore = normalizeAskSalesFaqConfidenceScore(item.confidence_score);
+      const classification = classifyAskSalesFaqReviewItem({
+        question: item.question,
+        answer: item.answer,
+        decision: null,
+        outcome: item.outcome,
+        sourceLabel: item.source_label,
+        sourceMode: item.source_mode,
+        needsRoute: Boolean(item.needs_route),
+        routeReason: item.route_reason,
+        errorClass: null,
+      });
       return {
         id: item.id,
         createdAt: item.created_at,
@@ -2941,8 +3004,80 @@ export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesF
         confidenceLabel: confidenceScore === null ? item.confidence_label : askSalesFaqConfidenceLabelFromScore(confidenceScore),
         confidenceScore,
         sourceMode: item.source_mode,
+        reviewCategory: classification.category,
+        reviewAction: classification.action,
       };
     }),
+  };
+}
+
+function classifyAskSalesFaqReviewItem(input: {
+  question: string | null;
+  answer: string | null;
+  decision: string | null;
+  outcome: string | null;
+  sourceLabel: string | null;
+  sourceMode: string | null;
+  needsRoute: boolean;
+  routeReason: string | null;
+  errorClass: string | null;
+}) {
+  const text = [input.question, input.answer, input.routeReason, input.sourceLabel, input.decision, input.outcome, input.sourceMode, input.errorClass]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  const hasInternalLanguage =
+    /\b(slack[- ]?(level|sourced)?\s+(evidence|notes|guidance|discussion|source)|governance log|internal guidance|approved article|knowledge base|route[- ]only|rag|manifest|source coverage|candidate answer|decision candidates|candidate q and a|evidence\s+\d+|source\s+\d+|article[_ -]?id|source id)\b/i.test(
+      text,
+    );
+
+  if (hasInternalLanguage) {
+    return {
+      category: "Wording cleanup",
+      action: "Answer was useful enough to review, but rep-facing language exposed internal source or approval mechanics.",
+    };
+  }
+
+  if (input.outcome === "safe_fallback" || input.decision === "safe_fallback" || input.errorClass) {
+    return {
+      category: "Runtime reliability",
+      action: "Check provider/runtime diagnostics before treating this as a KB gap.",
+    };
+  }
+
+  if (
+    (input.outcome === "answer_from_evidence" || input.decision === "answer_from_evidence") &&
+    input.sourceMode !== "approved" &&
+    /pricing|same-day|same day|daymond|next level|content|license|recording|internal material|payment link|call 1/.test(text)
+  ) {
+    return {
+      category: "Approved-topic matching",
+      action: "Likely supported by an approved article; review source selection or matching before creating new KB work.",
+    };
+  }
+
+  if (
+    /stop|opt[- ]?out|dnc|criminal|background|jail|nurse|doctor|physician|patent|personal brand|motivational|adult|cannabis|psychedelic|firearm|politic|mlm|20%|20 percent|keap|reschedul|catastrophic|ach|wire|invoice|card update|contract|addenda|attorney|scam|bad review|proof|100\+|30k|50k|apple tv|missing from.*form|dropdown|legacy makers|top lawyers|video 2|mastermind|red[- ]?carpet|handoff|onboarding/.test(
+      text,
+    )
+  ) {
+    return {
+      category: "Rich/owner approval gap",
+      action: "Keep this in the approval packet or future KB queue until the accountable owner confirms final wording.",
+    };
+  }
+
+  if (input.needsRoute || input.outcome?.includes("route") || input.decision?.includes("route")) {
+    return {
+      category: "Good route review",
+      action: "Review for clarity, but this may not need a new article if the route wording is acceptable.",
+    };
+  }
+
+  return {
+    category: "Good answer review",
+    action: "Spot-check for accuracy and source fit; no immediate KB change is obvious.",
   };
 }
 

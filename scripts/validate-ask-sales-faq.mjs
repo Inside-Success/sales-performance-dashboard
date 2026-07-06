@@ -361,14 +361,42 @@ if (missingFiles.length === 0) {
   addCheck(
     "rep-facing internal status terms are sanitized",
     runtime.includes("REP_FACING_INTERNAL_TERMS") &&
-      runtime.includes("not approved in (the )?(knowledge base|kb)") &&
+      runtime.includes("REP_FACING_INTERNAL_PATTERNS") &&
+      runtime.includes("ensureRepFacingOutput") &&
+      runtime.includes("rep-facing wording repair") &&
+      runtime.includes("\\bnot approved\\b") &&
+      runtime.includes("Slack-level evidence") &&
+      runtime.includes("governance log") &&
+      runtime.includes("internal guidance") &&
+      runtime.includes("candidate answer") &&
       runtime.includes("pending approval") &&
       runtime.includes("route[- ]only") &&
       runtime.includes("knowledge base") &&
       runtime.includes("source coverage") &&
+      runtime.includes("modelOutputContainsHiddenTerms") &&
       chatRoute.includes("Route this to the current sales owner or the right help channel") &&
       !chatRoute.includes("Please check the approved source"),
-    "answer/runtime fallbacks remove KB/governance wording from rep-facing copy",
+    "answer/runtime fallbacks rewrite or reject KB/governance wording instead of relying on awkward direct replacements",
+  );
+
+  addCheck(
+    "evidence source cards use rep-facing labels",
+    runtime.includes("label: sourceTrustLabel(top.trustLabel)") &&
+      runtime.includes('return "Sales guidance"') &&
+      runtime.includes("Related sales guidance area") &&
+      !runtime.includes("AI selected evidence category"),
+    "source cards avoid exposing evidence-file names or AI/source-selection mechanics to reps",
+  );
+
+  addCheck(
+    "admin review items are categorized without mutating Neon",
+    db.includes("classifyAskSalesFaqReviewItem") &&
+      db.includes("Wording cleanup") &&
+      db.includes("Rich/owner approval gap") &&
+      db.includes("Approved-topic matching") &&
+      adminPage.includes("reviewCategory") &&
+      adminPage.includes("Review action"),
+    "read-only admin review labels separate KB gaps from wording and matching cleanup",
   );
 
   addCheck(
@@ -377,7 +405,7 @@ if (missingFiles.length === 0) {
       runtime.includes("evidenceSupportScore") &&
       runtime.includes("matchedArticleId: primaryArticle?.id || null") &&
       runtime.includes("sourceTrustLabel") &&
-      runtime.includes("Selected FAQ source reviewed"),
+      runtime.includes("FAQ source reviewed"),
     "runtime validates selected evidence before trusting source cards or matched article IDs",
   );
 

@@ -207,6 +207,11 @@ function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "miss" |
           </Badge>
         ) : null}
         {item.provider ? <Badge variant="outline">{[item.provider, item.model].filter(Boolean).join(" / ")}</Badge> : null}
+        {item.reviewCategory ? (
+          <Badge variant="outline" className={reviewBadgeClass(item.reviewCategory)}>
+            {item.reviewCategory}
+          </Badge>
+        ) : null}
         <span className="text-slate-400">{formatDateTime(item.createdAt)}</span>
       </div>
 
@@ -214,7 +219,9 @@ function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "miss" |
         <Field label="Rep" value={item.viewerEmail} />
         <Field label="Question" value={item.question} />
         {mode !== "miss" ? <Field label="Answer" value={item.answer} clamp /> : null}
+        {mode === "miss" ? <Field label="Answer" value={item.answer} clamp /> : null}
         {item.sourceLabel ? <Field label="Source" value={item.sourceLabel} /> : null}
+        {item.reviewAction ? <Field label="Review action" value={item.reviewAction} /> : null}
         {item.comment ? <Field label="Comment" value={item.comment} /> : null}
         {item.routeReason ? <Field label="Route reason" value={item.routeReason} /> : null}
       </div>
@@ -248,6 +255,14 @@ function badgeClass(item: AskSalesFaqAdminLogItem, mode: "miss" | "feedback" | "
     return "border-amber-200 bg-amber-50 text-amber-700";
   }
 
+  return "border-slate-200 bg-slate-50 text-slate-700";
+}
+
+function reviewBadgeClass(category: string) {
+  if (category === "Wording cleanup") return "border-red-200 bg-red-50 text-red-700";
+  if (category === "Rich/owner approval gap") return "border-purple-200 bg-purple-50 text-purple-700";
+  if (category === "Approved-topic matching") return "border-blue-200 bg-blue-50 text-blue-700";
+  if (category === "Runtime reliability") return "border-amber-200 bg-amber-50 text-amber-700";
   return "border-slate-200 bg-slate-50 text-slate-700";
 }
 
