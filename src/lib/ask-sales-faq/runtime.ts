@@ -167,7 +167,31 @@ const QUERY_EXPANSIONS: Array<{ triggers: string[]; add: string[] }> = [
   { triggers: ["recording", "recordings"], add: ["zoom", "stored", "access"] },
   { triggers: ["upgrade", "upgraded"], add: ["lite", "standard", "vip", "premium", "same", "day", "discount", "filming"] },
   { triggers: ["call", "pricing"], add: ["call", "1", "price", "investment", "disqualify", "qualified"] },
+  { triggers: ["31", "ownership", "assigned", "keap"], add: ["20", "percent", "lead", "ownership", "contact", "logged"] },
 ];
+
+const SCOPED_EVIDENCE_WEAK_TOKENS = new Set([
+  "answer",
+  "approved",
+  "article",
+  "ask",
+  "call",
+  "calls",
+  "case",
+  "cases",
+  "client",
+  "clients",
+  "confirm",
+  "current",
+  "faq",
+  "owner",
+  "rep",
+  "reps",
+  "route",
+  "sales",
+  "say",
+  "source",
+]);
 
 const AI_UNAVAILABLE_RESPONSE =
   "I cannot generate a reliable answer right now. Do not guess from memory; route this to the current sales owner or the right help channel before replying.";
@@ -255,7 +279,7 @@ export async function runAskSalesFaq(
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
   const conversationContext = buildConversationContext(conversationMessages);
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
-  const policyDecision = decidePolicyGuard(sanitizedQuestion);
+  const policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
   const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
 
   if (!policyDecision.safeToGenerate) {
@@ -376,7 +400,24 @@ function buildHandledResponse(input: {
   };
 }
 
-function decidePolicyGuard(question: string): PolicyGuardDecision {
+function decidePolicyGuard(question: string, conversationContext = ""): PolicyGuardDecision {
+  const directDecision = matchPolicyGuard(question);
+  if (directDecision.matchedRuleId !== "default-abstain") return directDecision;
+
+  if (conversationContext && shouldUseConversationContextForPolicyGuard(question)) {
+    const contextualDecision = matchPolicyGuard(buildContextualQuestion(question, conversationContext));
+    if (contextualDecision.matchedRuleId !== "default-abstain") {
+      return {
+        ...contextualDecision,
+        reason: `${contextualDecision.reason} Recent chat context was used only to resolve the short follow-up.`,
+      };
+    }
+  }
+
+  return directDecision;
+}
+
+function matchPolicyGuard(question: string): PolicyGuardDecision {
   for (const [groupName, rules] of [
     ["adminOnlyRules", ASK_SALES_FAQ_POLICY_RULES.adminOnlyRules],
     ["abstainRules", ASK_SALES_FAQ_POLICY_RULES.abstainRules],
@@ -411,6 +452,19 @@ function decidePolicyGuard(question: string): PolicyGuardDecision {
     reason: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.reason,
     primaryArticle: null,
   };
+}
+
+function shouldUseConversationContextForPolicyGuard(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  const tokens = tokenize(normalizedQuestion, { expand: false });
+  if (tokens.length > 14) return false;
+
+  return (
+    /^(and|also|then|so)\b/.test(normalizedQuestion) ||
+    /\b(it|that|this|they|them|those|same|another|still|again|later|after|before|next|previous|above|there|one|ones)\b/.test(
+      normalizedQuestion,
+    )
+  );
 }
 
 function policyRuleMatches(question: string, rule: AskSalesFaqRule) {
@@ -468,7 +522,7 @@ function buildPolicyBlockedDecision(policyDecision: PolicyGuardDecision): Runtim
 
 function buildEvidenceCandidates(question: string, conversationContext: string, policyDecision: PolicyGuardDecision): EvidenceCandidate[] {
   if (policyDecision.safeToGenerate && policyDecision.primaryArticle) {
-    return [approvedArticleToCandidate(policyDecision.primaryArticle)];
+    return buildPolicyScopedEvidenceCandidates(question, conversationContext, policyDecision.primaryArticle);
   }
 
   const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
@@ -486,6 +540,43 @@ function buildEvidenceCandidates(question: string, conversationContext: string, 
   return Array.from(byId.values())
     .sort((left, right) => right.authority - left.authority || right.score - left.score || left.id.localeCompare(right.id))
     .slice(0, 48);
+}
+
+function buildPolicyScopedEvidenceCandidates(question: string, conversationContext: string, primaryArticle: ApprovedFaqArticle): EvidenceCandidate[] {
+  const primary = approvedArticleToCandidate(primaryArticle);
+  const searchText = [question, conversationContext].filter(Boolean).join("\n");
+  const scoped = retrieveCandidateChunks(searchText, 18, { expand: true })
+    .filter((chunk) => chunk.source_type !== "approved_article")
+    .filter((chunk) => scopedSupportChunkMatchesArticle(chunk, primaryArticle))
+    .map((chunk) => chunkToCandidate(chunk))
+    .sort((left, right) => right.score - left.score || right.authority - left.authority || left.id.localeCompare(right.id))
+    .slice(0, 4);
+  const byId = new Map<string, EvidenceCandidate>();
+
+  for (const candidate of [primary, ...scoped]) {
+    if (!byId.has(candidate.id)) byId.set(candidate.id, candidate);
+  }
+
+  return Array.from(byId.values());
+}
+
+function scopedSupportChunkMatchesArticle(chunk: RetrievedChunk, article: ApprovedFaqArticle) {
+  if (chunk.article_id === article.id) return true;
+
+  const normalizedChunk = normalizeText(`${chunk.source_title} ${chunk.heading} ${chunk.category} ${chunk.text}`);
+  const normalizedArticleId = normalizeText(article.id.replaceAll("-", " "));
+  const normalizedArticleTitle = normalizeText(article.title);
+  const sameCategory = normalizeText(chunk.category) === normalizeText(article.category);
+
+  if (phrasePresent(normalizedArticleTitle, normalizedChunk) || phrasePresent(normalizedArticleId, normalizedChunk)) return true;
+  if (sameCategory && chunk.authority >= 58) return true;
+
+  const articleTokenSet = new Set(tokenize(`${article.id} ${article.title} ${article.category} ${article.body.slice(0, 1600)}`, { expand: true }));
+  const strongArticleTokenMatches = chunk.matchedTokens.filter(
+    (token) => articleTokenSet.has(token) && !SCOPED_EVIDENCE_WEAK_TOKENS.has(token),
+  );
+
+  return strongArticleTokenMatches.length >= 3 && chunk.score >= 4.5;
 }
 
 function approvedArticleToCandidate(article: ApprovedFaqArticle): EvidenceCandidate {
@@ -559,7 +650,8 @@ async function generateProviderAnswer(input: {
         content: [
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
           "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
-          "A deterministic policy guard has already selected the only approved source you may use.",
+          "A deterministic policy guard has already selected the approved article that controls this answer.",
+          "Treat the approved article as authoritative. Use any supporting evidence only for consistent context or wording; never use it to add, contradict, or extend policy.",
           routeRequired
             ? "This policy decision requires routing. Give the safe boundary from the approved source and set needs_route to true."
             : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",

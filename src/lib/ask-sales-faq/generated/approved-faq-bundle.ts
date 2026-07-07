@@ -1173,7 +1173,18 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       match_any_groups: [
         [
           "20 percent",
-          "20%"
+          "20%",
+          "30-day ownership",
+          "30 day ownership",
+          "31 days",
+          "31 day",
+          "lead ownership",
+          "ownership window",
+          "another rep call",
+          "another rep can call",
+          "another rep speak",
+          "another rep can speak",
+          "first booking"
         ],
         [
           "lead",
@@ -1184,7 +1195,11 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "dial",
           "assigned",
           "commenting",
-          "booked"
+          "booked",
+          "contact",
+          "logged",
+          "call",
+          "speak"
         ]
       ],
     },
@@ -1551,7 +1566,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
 
 export const ASK_SALES_FAQ_BUNDLE_META = {
   schemaVersion: 1,
-  generatedFrom: "Inside-Success/faq-chatbot@cf45873",
+  generatedFrom: "Inside-Success/faq-chatbot@f8fd63d",
   generatedAt: "2026-07-07",
   approvedArticleCount: APPROVED_FAQ_ARTICLES.length,
 };

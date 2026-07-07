@@ -10,13 +10,17 @@ Runtime order:
 
 1. Redact sensitive text.
 2. Evaluate the current user question against `ASK_SALES_FAQ_POLICY_RULES`.
-3. If no approved policy rule matches, return a normal route response without calling DeepSeek/Claude and without attaching a source card.
-4. If an approved answer or route rule matches, send only the selected approved article to the model.
-5. If the rule requires routing, force the final outcome to `route_from_approved_article` even if the model omits `needs_route`.
+3. If the current question does not match and looks like a short follow-up, use recent chat context only to resolve the policy topic.
+4. If no approved policy rule matches, return a normal route response without calling DeepSeek/Claude and without attaching a source card.
+5. If an approved answer or route rule matches, send the selected approved article as the controlling source.
+6. Add only tightly scoped supporting RAG chunks when they are tied to the matched approved article/topic.
+7. If the rule requires routing, force the final outcome to `route_from_approved_article` even if the model omits `needs_route`.
 
 ## Why
 
 The meeting with Rich/Mike showed the previous AI-first broad-RAG path could answer sensitive topics too confidently from nearby Slack/source evidence. The new policy-first path keeps useful model-generated wording while preventing unapproved retrieval-only answers.
+
+The 18-question live regression check also showed that overly strict exact matching can miss approved-topic follow-ups. The current hybrid keeps the policy guard as the safety gate while allowing short follow-ups and scoped supporting context.
 
 ## Synced FAQ Runtime Data
 
@@ -26,7 +30,7 @@ The meeting with Rich/Mike showed the previous AI-first broad-RAG path could ans
 
 ## Verification
 
-- `node scripts/validate-ask-sales-faq.mjs`: 46 / 46 passed.
+- `node scripts/validate-ask-sales-faq.mjs`: 47 / 47 passed.
 - `npm run lint`: passed.
 - `npm run build`: passed.
 - Vercel Production deployment: `dpl_24N5hE5KhFzp8ggbEMTabHPHrdHg`.

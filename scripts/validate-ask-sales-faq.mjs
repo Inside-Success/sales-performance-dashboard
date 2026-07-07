@@ -212,8 +212,19 @@ if (missingFiles.length === 0) {
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
       runtime.includes("buildEvidenceCandidates") &&
-      runtime.includes("A deterministic policy guard has already selected the only approved source you may use."),
-    "runtime asks the model to answer only after the policy guard selects an approved source",
+      runtime.includes("A deterministic policy guard has already selected the approved article that controls this answer.") &&
+      runtime.includes("Use any supporting evidence only for consistent context or wording"),
+    "runtime asks the model to answer only after the policy guard selects the controlling approved article",
+  );
+
+  addCheck(
+    "approved-topic RAG is scoped to the matched article",
+    runtime.includes("buildPolicyScopedEvidenceCandidates") &&
+      runtime.includes("scopedSupportChunkMatchesArticle") &&
+      runtime.includes("SCOPED_EVIDENCE_WEAK_TOKENS") &&
+      runtime.includes('chunk.source_type !== "approved_article"') &&
+      runtime.includes("strongArticleTokenMatches.length >= 3"),
+    "approved answers can include tightly scoped support, but broad unmatched retrieval stays blocked",
   );
 
   addCheck(
@@ -291,8 +302,11 @@ if (missingFiles.length === 0) {
     "follow-up questions include recent chat context",
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&
+      runtime.includes("decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
+      runtime.includes("shouldUseConversationContextForPolicyGuard") &&
+      runtime.includes("Recent chat context was used only to resolve the short follow-up.") &&
       runtime.includes("The current user question is authoritative."),
-    "runtime sends recent conversation context to AI while keeping current question authoritative",
+    "runtime sends recent conversation context to AI and policy matching while keeping current question authoritative",
   );
 
   addCheck(
