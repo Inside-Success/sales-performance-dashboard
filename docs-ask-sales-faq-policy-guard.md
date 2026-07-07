@@ -29,5 +29,9 @@ The meeting with Rich/Mike showed the previous AI-first broad-RAG path could ans
 - `node scripts/validate-ask-sales-faq.mjs`: 46 / 46 passed.
 - `npm run lint`: passed.
 - `npm run build`: passed.
+- Vercel Production deployment: `dpl_24N5hE5KhFzp8ggbEMTabHPHrdHg`.
+- Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
+- Anonymous page/API guards passed.
+- Production error logs after guard probes: no logs found.
 
 No local dev server was started.
