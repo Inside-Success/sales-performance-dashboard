@@ -33,9 +33,9 @@ The 18-question live regression check also showed that overly strict exact match
 - `node scripts/validate-ask-sales-faq.mjs`: 47 / 47 passed.
 - `npm run lint`: passed.
 - `npm run build`: passed.
-- Vercel Production deployment: `dpl_24N5hE5KhFzp8ggbEMTabHPHrdHg`.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
-- Anonymous page/API guards passed.
-- Production error logs after guard probes: no logs found.
+- Verify the current Vercel deployment with `vercel inspect` after each pushed dashboard commit.
+- Anonymous page/API guards should pass after deployment.
+- Production error logs should be checked after guard probes.
 
 No local dev server was started.
