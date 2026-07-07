@@ -1,6 +1,6 @@
 # Ask Sales FAQ Policy Guard Enforcement
 
-Date: 2026-07-07
+Date: 2026-07-08
 
 ## What Changed
 
@@ -24,9 +24,10 @@ The 18-question live regression check also showed that overly strict exact match
 
 ## Synced FAQ Runtime Data
 
-- Approved rep-facing articles: 17.
-- Generated policy-aware RAG chunks: 1,687.
+- Approved rep-facing articles: 19.
+- Generated policy-aware RAG chunks: 1,694.
 - New Rich/Mike-approved coverage includes opt-out/DNC, 20 percent ownership, qualification/show fit, contracts, main ISTV Call 2 cohorts, post-sale handoff, America's Top Lawyers passoff, Mastermind/red-carpet fee, scam/bad-review objections, failed payments, missing-show dropdowns, and Apple TV/vendor/value boundaries.
+- New Rich/user-confirmed July 8 coverage includes `#sales-finance-requests`, `#sales-tech-requests`, `#sales-questions-requests`, `#greenlight-requests`, main ISTV 3-month reapply minimum, proof exceptions to Rich, and DJ/NLCEO no-cohort/no-discount.
 
 ## Verification
 

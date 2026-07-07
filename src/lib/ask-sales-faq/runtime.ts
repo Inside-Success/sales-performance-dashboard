@@ -486,15 +486,15 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
   }
 
   if (policyDecision.blockedTopic === "greenlight-pdf-and-cohort-deadlines") {
-    return "I do not have a confirmed answer for that greenlight, PDF, no-show, reapply, or deadline case yet. Route this to the current greenlight owner or sales leadership before replying to the prospect.";
+    return "Use #greenlight-requests for greenlight letter requests, urgent sends, status, caps, cutoff timing, or stop questions. For main ISTV no-show, missed-deadline, rejection, or proof-exception cases, route nonstandard exceptions to Rich.";
   }
 
   if (policyDecision.blockedTopic === "sales-tech-routing-and-support-requests") {
-    return "I do not have a confirmed sales-tech routing answer for that yet. Route this to the current support owner before telling the rep which channel or desk to use.";
+    return "Use issue-type routing: #sales-tech-requests for sales-system tooling issues, #sales-finance-requests for billing/payment issues, #sales-questions-requests for sales-policy approval questions, and #greenlight-requests for greenlight letters.";
   }
 
   if (policyDecision.blockedTopic === "calendars-recordings-and-zoom-phone") {
-    return "I do not have a confirmed calendar, rebooking, or Zoom Phone troubleshooting answer for that yet. Route it to the current sales-tech owner before giving exact steps.";
+    return "For calendar, rebooking, Zoom Phone, call, recording, Keap, form, dropdown, or other sales-system tooling issues, post in #sales-tech-requests before giving exact troubleshooting steps.";
   }
 
   if (policyDecision.blockedTopic === "new-rep-onboarding-and-final-mock") {

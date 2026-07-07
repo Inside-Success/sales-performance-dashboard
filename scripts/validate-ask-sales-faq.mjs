@@ -127,14 +127,19 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "bundle has seventeen approved rep-facing articles",
-    (bundle.match(/approvedAt: "/g) || []).length === 17 &&
+    "bundle has nineteen approved rep-facing articles",
+    (bundle.match(/approvedAt: "/g) || []).length === 19 &&
       bundle.includes('id: "call-1-flow"') &&
       bundle.includes('id: "opt-out-dnc-and-security-escalation"') &&
       bundle.includes('id: "qualification-and-show-fit-rubric"') &&
       bundle.includes('id: "main-istv-call-2-cohort-reschedule-rules"') &&
-      bundle.includes('approvedAt: "2026-07-07"'),
-    "bundle contains the original approved articles plus the Rich/Mike-approved July 7 gap closures",
+      bundle.includes('id: "greenlight-pdf-and-cohort-deadlines"') &&
+      bundle.includes('id: "sales-tech-routing-and-support-requests"') &&
+      bundle.includes('approvedAt: "2026-07-08"') &&
+      bundle.includes("#sales-finance-requests") &&
+      bundle.includes("#sales-tech-requests") &&
+      bundle.includes("#greenlight-requests"),
+    "bundle contains the original approved articles plus the Rich/Mike-approved July 7 and Rich/user-confirmed July 8 gap closures",
   );
 
   addCheck(
