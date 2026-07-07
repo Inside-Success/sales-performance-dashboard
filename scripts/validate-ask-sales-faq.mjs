@@ -93,8 +93,11 @@ if (missingFiles.length === 0) {
   addCheck(
     "runtime uses approved bundle and policy guard",
     runtime.includes("APPROVED_FAQ_ARTICLES") &&
+      runtime.includes("ASK_SALES_FAQ_POLICY_RULES") &&
+      runtime.includes("decidePolicyGuard") &&
+      runtime.includes("buildPolicyBlockedDecision") &&
       runtime.includes("policy-aware-rag-index.json"),
-    "runtime imports approved bundle and server-side RAG index",
+    "runtime imports approved bundle, policy rules, and server-side RAG index",
   );
 
   addCheck(
@@ -124,11 +127,14 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "bundle has nine approved rep-facing articles",
-    (bundle.match(/approvedAt: "/g) || []).length === 9 &&
+    "bundle has seventeen approved rep-facing articles",
+    (bundle.match(/approvedAt: "/g) || []).length === 17 &&
       bundle.includes('id: "call-1-flow"') &&
-      bundle.includes('approvedAt: "2026-07-03"'),
-    "bundle contains the original eight articles plus the approved Call 1 pricing boundary",
+      bundle.includes('id: "opt-out-dnc-and-security-escalation"') &&
+      bundle.includes('id: "qualification-and-show-fit-rubric"') &&
+      bundle.includes('id: "main-istv-call-2-cohort-reschedule-rules"') &&
+      bundle.includes('approvedAt: "2026-07-07"'),
+    "bundle contains the original approved articles plus the Rich/Mike-approved July 7 gap closures",
   );
 
   addCheck(
@@ -205,8 +211,9 @@ if (missingFiles.length === 0) {
     runtime.includes("Internally select the evidence by meaning, not by mechanical keyword overlap") &&
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
-      runtime.includes("buildEvidenceCandidates"),
-    "runtime asks the model to select evidence semantically inside the answer call",
+      runtime.includes("buildEvidenceCandidates") &&
+      runtime.includes("A deterministic policy guard has already selected the only approved source you may use."),
+    "runtime asks the model to answer only after the policy guard selects an approved source",
   );
 
   addCheck(
@@ -403,10 +410,20 @@ if (missingFiles.length === 0) {
     "source cards validate selected source IDs against question support",
     runtime.includes("filterQuestionSupportedEvidence") &&
       runtime.includes("evidenceSupportScore") &&
-      runtime.includes("matchedArticleId: primaryArticle?.id || null") &&
+      runtime.includes("matchedArticleId: primaryArticle?.id || input.policyDecision.articleId") &&
       runtime.includes("sourceTrustLabel") &&
       runtime.includes("FAQ source reviewed"),
     "runtime validates selected evidence before trusting source cards or matched article IDs",
+  );
+
+  addCheck(
+    "unmatched topics do not call the model or attach source cards",
+    runtime.includes("if (!policyDecision.safeToGenerate)") &&
+      runtime.includes("source: null") &&
+      runtime.includes("provider: null") &&
+      runtime.includes("matchedRuleId: \"default-abstain\"") &&
+      runtime.includes("I do not have a confirmed answer for that yet"),
+    "default-abstain and blocked policy decisions return safe route text before provider calls",
   );
 
   addCheck(

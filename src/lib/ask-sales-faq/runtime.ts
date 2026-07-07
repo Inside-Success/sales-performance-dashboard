@@ -4,7 +4,12 @@ import type {
   AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
-import { APPROVED_FAQ_ARTICLES, type ApprovedFaqArticle } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
+import {
+  APPROVED_FAQ_ARTICLES,
+  ASK_SALES_FAQ_POLICY_RULES,
+  type ApprovedFaqArticle,
+  type AskSalesFaqRule,
+} from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 
 type RagChunk = {
@@ -59,6 +64,16 @@ type RuntimeDecision = {
   matchedArticleId: string | null;
   primaryArticle: ApprovedFaqArticle | null;
   retrieved: EvidenceCandidate[];
+};
+
+type PolicyGuardDecision = {
+  decision: AskSalesFaqRule["decision"] | "abstain_unapproved";
+  safeToGenerate: boolean;
+  articleId: string | null;
+  blockedTopic: string | null;
+  matchedRuleId: string;
+  reason: string;
+  primaryArticle: ApprovedFaqArticle | null;
 };
 
 type ModelOutput = {
@@ -220,6 +235,7 @@ const REP_FACING_INTERNAL_PATTERNS = [
 ];
 
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
+const ARTICLE_BY_ID = new Map(APPROVED_FAQ_ARTICLES.map((article) => [article.id, article]));
 const INDEXED_CHUNKS: IndexedChunk[] = rawChunks.map((chunk) => {
   const normalized = normalizeText(`${chunk.source_title} ${chunk.heading} ${chunk.category} ${chunk.text}`);
   const tokens = tokenize(normalized, { expand: false });
@@ -239,13 +255,37 @@ export async function runAskSalesFaq(
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
   const conversationContext = buildConversationContext(conversationMessages);
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
-  const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext);
+  const policyDecision = decidePolicyGuard(sanitizedQuestion);
+  const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
+
+  if (!policyDecision.safeToGenerate) {
+    const decision = buildPolicyBlockedDecision(policyDecision);
+    const answer = policyBlockedAnswer(policyDecision);
+    return buildHandledResponse({
+      startedAt,
+      sanitizedQuestion,
+      contextualQuestion,
+      redactions,
+      decision,
+      answer,
+      structuredAnswer: structured({
+        summary: answer,
+        sections: [{ title: "What to do", body: answer, tone: policyDecision.decision === "admin_only" ? "default" : "route" }],
+        decision,
+      }),
+      source: null,
+      provider: null,
+      model: null,
+      errorClass: null,
+    });
+  }
 
   try {
     const answerResult = await generateProviderAnswer({
       currentQuestion: sanitizedQuestion,
       conversationContext,
       evidence: candidates,
+      policyDecision,
     });
     const finalOutput = await ensureRepFacingOutput({
       currentQuestion: sanitizedQuestion,
@@ -255,6 +295,7 @@ export async function runAskSalesFaq(
     const decision = buildDecision({
       output: finalOutput,
       evidence: selectedEvidence,
+      policyDecision,
     });
     const answer = sanitizeModelAnswer(finalOutput.answer);
 
@@ -335,7 +376,101 @@ function buildHandledResponse(input: {
   };
 }
 
-function buildEvidenceCandidates(question: string, conversationContext: string): EvidenceCandidate[] {
+function decidePolicyGuard(question: string): PolicyGuardDecision {
+  for (const [groupName, rules] of [
+    ["adminOnlyRules", ASK_SALES_FAQ_POLICY_RULES.adminOnlyRules],
+    ["abstainRules", ASK_SALES_FAQ_POLICY_RULES.abstainRules],
+    ["routeRules", ASK_SALES_FAQ_POLICY_RULES.routeRules],
+    ["answerRules", ASK_SALES_FAQ_POLICY_RULES.answerRules],
+  ] as const) {
+    for (const rule of rules) {
+      if (!policyRuleMatches(question, rule)) continue;
+
+      const article = rule.article_id ? ARTICLE_BY_ID.get(rule.article_id) || null : null;
+      const safeToGenerate =
+        (rule.decision === "answer_from_approved_article" || rule.decision === "route_from_approved_article") && Boolean(article);
+
+      return {
+        decision: safeToGenerate ? rule.decision : rule.decision === "admin_only" && groupName === "adminOnlyRules" ? "admin_only" : "abstain_unapproved",
+        safeToGenerate,
+        articleId: safeToGenerate ? rule.article_id || null : null,
+        blockedTopic: rule.blocked_topic || null,
+        matchedRuleId: rule.id,
+        reason: safeToGenerate && rule.reason ? rule.reason : rule.reason || "No approved answer is available for this question.",
+        primaryArticle: safeToGenerate ? article : null,
+      };
+    }
+  }
+
+  return {
+    decision: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.decision,
+    safeToGenerate: false,
+    articleId: null,
+    blockedTopic: null,
+    matchedRuleId: "default-abstain",
+    reason: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.reason,
+    primaryArticle: null,
+  };
+}
+
+function policyRuleMatches(question: string, rule: AskSalesFaqRule) {
+  const normalizedQuestion = normalizeText(question);
+
+  if (rule.match_all?.length && !rule.match_all.every((phrase) => phrasePresent(phrase, normalizedQuestion))) return false;
+  if (rule.match_any?.length && !rule.match_any.some((phrase) => phrasePresent(phrase, normalizedQuestion))) return false;
+
+  for (const group of rule.match_any_groups || []) {
+    if (!group.some((phrase) => phrasePresent(phrase, normalizedQuestion))) return false;
+  }
+
+  return Boolean(rule.match_all?.length || rule.match_any?.length || rule.match_any_groups?.length);
+}
+
+function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
+  if (policyDecision.decision === "admin_only") {
+    return "This is an admin or maintenance question, not a normal sales-call answer. Keep it in the admin workflow and do not use raw Slack messages to change what reps are told.";
+  }
+
+  if (policyDecision.blockedTopic === "greenlight-pdf-and-cohort-deadlines") {
+    return "I do not have a confirmed answer for that greenlight, PDF, no-show, reapply, or deadline case yet. Route this to the current greenlight owner or sales leadership before replying to the prospect.";
+  }
+
+  if (policyDecision.blockedTopic === "sales-tech-routing-and-support-requests") {
+    return "I do not have a confirmed sales-tech routing answer for that yet. Route this to the current support owner before telling the rep which channel or desk to use.";
+  }
+
+  if (policyDecision.blockedTopic === "calendars-recordings-and-zoom-phone") {
+    return "I do not have a confirmed calendar, rebooking, or Zoom Phone troubleshooting answer for that yet. Route it to the current sales-tech owner before giving exact steps.";
+  }
+
+  if (policyDecision.blockedTopic === "new-rep-onboarding-and-final-mock") {
+    return "I do not have a confirmed new-rep onboarding or final mock checklist yet. Route this to the current training owner before giving a final checklist.";
+  }
+
+  return "I do not have a confirmed answer for that yet. Route this to the current sales owner or the right help channel before replying to the prospect.";
+}
+
+function buildPolicyBlockedDecision(policyDecision: PolicyGuardDecision): RuntimeDecision {
+  return {
+    outcome: policyDecision.decision === "admin_only" ? "admin_only" : "abstain_unapproved",
+    sourceMode: "fallback",
+    confidenceLabel: "Low",
+    confidenceScore: 0,
+    reason: policyDecision.reason,
+    routeReason: policyDecision.decision === "admin_only" ? null : policyDecision.reason,
+    safeToGenerate: false,
+    matchedRuleId: policyDecision.matchedRuleId,
+    matchedArticleId: null,
+    primaryArticle: null,
+    retrieved: [],
+  };
+}
+
+function buildEvidenceCandidates(question: string, conversationContext: string, policyDecision: PolicyGuardDecision): EvidenceCandidate[] {
+  if (policyDecision.safeToGenerate && policyDecision.primaryArticle) {
+    return [approvedArticleToCandidate(policyDecision.primaryArticle)];
+  }
+
   const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
   const searchText = [question, conversationContext].filter(Boolean).join("\n");
   const chunkCandidates = retrieveCandidateChunks(searchText, 42, { expand: true })
@@ -412,7 +547,9 @@ async function generateProviderAnswer(input: {
   currentQuestion: string;
   conversationContext: string;
   evidence: EvidenceCandidate[];
+  policyDecision: PolicyGuardDecision;
 }): Promise<ProviderJsonResult<ModelOutput>> {
+  const routeRequired = input.policyDecision.decision === "route_from_approved_article";
   return generateProviderJson({
     purpose: "answer generation",
     maxTokens: 1800,
@@ -422,6 +559,10 @@ async function generateProviderAnswer(input: {
         content: [
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
           "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
+          "A deterministic policy guard has already selected the only approved source you may use.",
+          routeRequired
+            ? "This policy decision requires routing. Give the safe boundary from the approved source and set needs_route to true."
+            : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",
           "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
           "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
@@ -444,6 +585,15 @@ async function generateProviderAnswer(input: {
         content: [
           "CURRENT USER QUESTION:",
           input.currentQuestion,
+          "",
+          "POLICY DECISION:",
+          input.policyDecision.decision,
+          "",
+          "MATCHED POLICY REASON:",
+          input.policyDecision.reason,
+          "",
+          "ROUTE REQUIRED:",
+          routeRequired ? "yes" : "no",
           "",
           "RECENT CONVERSATION CONTEXT:",
           input.conversationContext || "None",
@@ -508,11 +658,13 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
 function buildDecision(input: {
   output: ModelOutput;
   evidence: EvidenceCandidate[];
+  policyDecision: PolicyGuardDecision;
 }): RuntimeDecision {
-  const primaryArticle = firstSelectedApprovedArticle(input.evidence);
+  const primaryArticle = input.policyDecision.primaryArticle || firstSelectedApprovedArticle(input.evidence);
   const selectedApproved = input.evidence.filter((candidate) => candidate.kind === "approved_article");
   const selectedEvidence = input.evidence.filter((candidate) => candidate.kind !== "approved_article");
-  const needsRoute = Boolean(input.output.needs_route);
+  const policyRequiresRoute = input.policyDecision.decision === "route_from_approved_article";
+  const needsRoute = policyRequiresRoute || Boolean(input.output.needs_route);
   const confidenceLabel = input.output.confidence_label || "Medium";
   const confidenceScore = clampConfidence(input.output.confidence_score ?? 72);
   const sourceMode =
@@ -523,26 +675,18 @@ function buildDecision(input: {
         : selectedEvidence.length
           ? "evidence"
           : "fallback";
-  const outcome: AskSalesFaqOutcome = needsRoute
-    ? sourceMode === "approved"
-      ? "route_from_approved_article"
-      : "route_from_evidence"
-    : sourceMode === "approved"
-      ? "answer_from_approved_article"
-      : sourceMode === "fallback"
-        ? "low_confidence_route"
-        : "answer_from_evidence";
+  const outcome: AskSalesFaqOutcome = needsRoute ? "route_from_approved_article" : "answer_from_approved_article";
 
   return {
     outcome,
-    sourceMode,
+    sourceMode: primaryArticle ? "approved" : sourceMode,
     confidenceLabel,
     confidenceScore,
-    reason: input.output.summary || "AI selected source evidence and generated an answer.",
-    routeReason: needsRoute ? input.output.route_reason || "Confirm this with the current owner before relying on it." : null,
+    reason: input.output.summary || input.policyDecision.reason,
+    routeReason: needsRoute ? input.output.route_reason || input.policyDecision.reason || "Confirm this with the current owner before relying on it." : null,
     safeToGenerate: true,
-    matchedRuleId: "ai-semantic-rag",
-    matchedArticleId: primaryArticle?.id || null,
+    matchedRuleId: input.policyDecision.matchedRuleId,
+    matchedArticleId: primaryArticle?.id || input.policyDecision.articleId,
     primaryArticle,
     retrieved: input.evidence,
   };
