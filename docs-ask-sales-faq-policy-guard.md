@@ -88,3 +88,29 @@ Verification:
 - Vercel errors-only build log check showed no build errors.
 - Vercel runtime errors/log check found no errors or warning/fatal logs after guard probes.
 - Signed-in production retest is still pending.
+
+## 2026-07-09 Duplicate Structured Summary Display Fix
+
+Status: dashboard UI fix implemented and locally verified without starting a local dev server.
+
+What changed:
+
+- The chat renderer now suppresses the top-level summary only when it is an exact duplicate of the first structured section titled `Answer`.
+- This fixes the signed-in screenshot where the DJ/NLCEO answer appeared once as a paragraph and again inside the `Answer` card.
+- The route note, source button, non-duplicate summaries, and all other answer sections still render normally.
+
+Safety kept:
+
+- No model, prompt, policy guard, approved article, RAG, API, database, Slack, Google, or n8n behavior changed.
+- The fix is presentation-only and does not make the bot more deterministic or freer-answering.
+
+Verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 65 / 65 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `1fe4877`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_D62c8NCEjzBysbZi2xK7BTDiXFYg`.
+- Signed-in visual retest is still pending.

@@ -129,3 +129,31 @@ Latest local verification:
 Still pending:
 
 - Signed-in live retest for naturalness, approved-policy authority, and response time.
+
+## Duplicate Structured Summary Display Fix
+
+The 2026-07-09 signed-in UI check found one presentation issue after the naturalness tightening pass: a structured approved answer could show the same text twice when the answer `summary` exactly matched the first section titled `Answer`.
+
+Implemented dashboard fix:
+
+- The chat UI now compares normalized text for `summary` and the first `Answer` section body.
+- If they are exact duplicates, the top summary is hidden and the structured card remains.
+- If the summary adds distinct value, it still renders.
+- Route notes, source cards, and later sections are unchanged.
+
+This does not affect the speed path or answer-quality path:
+
+- No provider/model/prompt/routing change.
+- No caching, fallback-to-any-approved-answer, approved-KB change, or new deterministic answer rule.
+- No API, database, Slack, Google, or n8n change.
+
+Latest verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 65 / 65 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `1fe4877`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_D62c8NCEjzBysbZi2xK7BTDiXFYg`.
+- Signed-in visual retest is still pending.
