@@ -62,7 +62,7 @@ Latest verified run:
 - `npm run build`: passed.
 - `git diff --check`: passed.
 - Dashboard commit: `28ae844`.
-- Vercel Production deployment: `dpl_7dWtZvzjbD5hizToNPJkmJqkuS83`.
+- Speed-code Vercel Production deployment: `dpl_7dWtZvzjbD5hizToNPJkmJqkuS83`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
 - Anonymous `/ask-sales-faq` redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
