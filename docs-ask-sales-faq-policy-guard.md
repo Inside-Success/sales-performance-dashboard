@@ -53,3 +53,38 @@ A later July 9 signed-in retest showed one remaining ordering bug: short follow-
 - Production error logs should be checked after guard probes.
 
 No local dev server was started.
+
+## 2026-07-09 Naturalness And Authority-Boundary Tightening
+
+Status: implemented, pushed to GitHub, and locally verified without starting a local dev server.
+
+What changed:
+
+- The DeepSeek conversation planner is now accepted only for natural chat turns, thank-yous, short rewrites, and short confirmations.
+- Fresh sales-policy/action questions about offers, deposits, payments, discounts, greenlights, qualification, holds, or exceptions cannot be accepted as casual `conversation_reply` answers.
+- `conversation_reply` output now saves as conversation source mode but renders as normal chat text, not as a structured policy card.
+- Planner summaries/sections are ignored for conversation replies so internal-looking lines like "Brief friendly reply..." do not appear above the answer.
+- Approved-answer prompting now starts with the shortest useful live-call answer and uses sections only when they add real boundaries or steps.
+- DJ/NLCEO critical fallback keeps the same safety boundaries but can honor explicit short-answer requests with a concise approved fallback.
+
+Safety kept:
+
+- Direct policy rules still run first.
+- Approved articles still control policy answers.
+- Broad unmatched retrieval-only answering remains blocked.
+- No caching, model downgrade, hard-coded social script, Slack write, Google write, n8n workflow write, or local dev server was used.
+
+Verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 65 / 65 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed after `next build` generated the required Next type artifacts.
+- Dashboard runtime code commit: `327c483`.
+- Vercel Production deployment reached Ready: `dpl_2mwVzPeVPoTev6eNYHmT7mxzg2bS`.
+- Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
+- Anonymous `/ask-sales-faq` redirected to sign-in.
+- Anonymous `POST /api/ask-sales-faq` returned controlled `not_signed_in` JSON.
+- Vercel errors-only build log check showed no build errors.
+- Vercel runtime errors/log check found no errors or warning/fatal logs after guard probes.
+- Signed-in production retest is still pending.
