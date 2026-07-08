@@ -903,7 +903,7 @@ export async function runAskSalesFaq(
       output: criticalOutputResult.output,
     });
     providerDiagnostics.push(...groundedOutputResult.diagnostics);
-    const finalOutput = groundedOutputResult.output;
+    const finalOutput = shapeModelOutputForDisplay(sanitizedQuestion, groundedOutputResult.output);
     const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
     const decision = buildDecision({
       output: finalOutput,
@@ -1429,7 +1429,7 @@ function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGua
     ...fallback,
     answer,
     summary: answer,
-    sections: [{ title: "Answer", body: answer, tone: "warning" }],
+    sections: [],
     needs_route: true,
     route_reason: fallback.route_reason || "DJ/NLCEO payment timing, hold, or exception requests should be confirmed with the current DJ/NLCEO owner.",
   };
@@ -1440,6 +1440,75 @@ function userRequestedShortAnswer(question: string) {
   return /\b(short|shorter|brief|concise|quick|one[- ]line|one[- ]sentence|summarize|condense|simplify|simple reply)\b/.test(
     normalizedQuestion,
   );
+}
+
+function shapeModelOutputForDisplay(question: string, output: ModelOutput): ModelOutput {
+  const shaped = cloneModelOutput(output);
+  const answer = sanitizeModelAnswer(shaped.answer || shaped.summary || "");
+
+  if (userRequestedShortAnswer(question) && answer) {
+    return {
+      ...shaped,
+      answer,
+      summary: answer,
+      sections: [],
+    };
+  }
+
+  return {
+    ...shaped,
+    sections: shaped.sections?.flatMap(splitDenseOptionSection),
+  };
+}
+
+function splitDenseOptionSection(section: NonNullable<ModelOutput["sections"]>[number]): NonNullable<ModelOutput["sections"]> {
+  if (!section.body || section.items?.length) return [section];
+
+  const optionList = extractDenseOptionList(section.body);
+  if (!optionList) return [section];
+
+  return [
+    {
+      ...section,
+      title: optionList.title,
+      body: optionList.intro || undefined,
+      items: optionList.items,
+    },
+    ...(optionList.boundary
+      ? [
+          {
+            title: "Boundary",
+            body: optionList.boundary,
+            tone: section.tone === "route" ? "route" : "warning",
+          },
+        ]
+      : []),
+  ];
+}
+
+function extractDenseOptionList(body: string) {
+  const optionPattern = /(?:^|[:,;]\s*|\bor\s+)([A-Z][A-Za-z0-9/& -]{1,35})\s*\(([^()]*?(?:\$|\d)[^()]*)\)/g;
+  const matches = [...body.matchAll(optionPattern)];
+  if (matches.length < 3) return null;
+
+  const firstMatch = matches[0];
+  const firstIndex = firstMatch.index ?? 0;
+  const items = matches.map((match) => `${match[1].trim()}: ${match[2].trim()}`);
+  const lastMatch = matches[matches.length - 1];
+  let suffix = body.slice((lastMatch.index ?? 0) + lastMatch[0].length).trim();
+
+  const pifMatch = suffix.match(/^[,;]?\s*(?:or\s+)?PIF\b\.?/i);
+  if (pifMatch) {
+    items.push("PIF");
+    suffix = suffix.slice(pifMatch[0].length).trim();
+  }
+
+  return {
+    title: /\b(pay|payment|deposit|plan|package|pif)\b/i.test(body) ? "Payment options" : "Options",
+    intro: body.slice(0, firstIndex).replace(/[:;,.\s]+$/, "").trim(),
+    items,
+    boundary: suffix.replace(/^[-:;,.\s]+/, "").trim(),
+  };
 }
 
 function validateCriticalAnswer(input: {

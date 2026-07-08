@@ -691,6 +691,18 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "short-answer and dense option formatting are presentation-only",
+    runtime.includes("shapeModelOutputForDisplay") &&
+      runtime.includes("summary: answer") &&
+      runtime.includes("sections: []") &&
+      runtime.includes("splitDenseOptionSection") &&
+      runtime.includes("extractDenseOptionList") &&
+      runtime.includes("Payment options") &&
+      runtime.includes("PIF"),
+    "explicit short-answer requests render as a single concise answer, while dense payment/package options can render as bullets without changing policy facts",
+  );
+
+  addCheck(
     "common approved-topic wording has guard coverage",
     [
       "refund policy",
