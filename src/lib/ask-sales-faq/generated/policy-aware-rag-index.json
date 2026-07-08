@@ -1,5 +1,5 @@
 {
-  "chunk_count": 1696,
+  "chunk_count": 1698,
   "chunks": [
     {
       "article_id": "americas-top-lawyers-passoff-boundary",
@@ -22745,15 +22745,45 @@
       "article_id": null,
       "article_status": "evidence",
       "authority": 42,
-      "category": "General Sales Process",
-      "heading": "2026-07-08 False-Abstain And Follow-Up Routing Gap Update",
-      "id": "rag_7200190c7e2fdc6e",
+      "category": "Payments, Refunds & Contracts",
+      "heading": "2026-07-08 DJ/NLCEO Delayed-Payment Wording Guard",
+      "id": "rag_6765b2d078360b97",
       "last_reviewed": "2026-07-01",
       "risk_level": "high",
       "source_path": "_logs/known-gaps.md",
       "source_title": "Known Gaps",
       "source_type": "governance_log",
-      "text": "## 2026-07-08 False-Abstain And Follow-Up Routing Gap Update\n\nThe user's hidden-beta testing found that the old policy guard was too brittle for some approved topics:\n\n- \"Are dispensaries allowed?\" and a greenlight-style dispensary follow-up fell back even though the approved qualification article covers regulated cannabis businesses.\n- A DJ/NLCEO deposit-timing follow-up fell back because the current message mentioned cohort/time/deposit but did not repeat \"DJ show\"; the old context policy matcher only handled very short follow-ups.\n\nDisposition: dashboard runtime hardening implemented locally.\n\n- Hard policy rules remain first and unchanged in purpose.\n- A high-confidence approved-article router now runs only after `default-abstain`; it can choose an existing approved article or no article, but it cannot answer freely.\n- Recent context is available for context-dependent follow-up routing across the last bounded chat turns.\n- Router-selected answers get an extra grounding validation against the selected approved guidance.\n- Critical answer guardrails now cover regulated cannabis/dispensary qualification and DJ/NLCEO no-cohort/deposit timing.\n\nRemaining risk:\n\n- This should reduce false abstains, but it is not a promise that every unseen valid question will answer. Questions still need an approved article that actually governs the answer.\n- Signed-in production retesting is still needed for the exact reported questions and paraphrases.",
+      "text": "## 2026-07-08 DJ/NLCEO Delayed-Payment Wording Guard\n\nSigned-in testing showed the DJ/NLCEO cohort answer was directionally correct but one phrase was too confident: it sounded like the rep could approve a specific future first-payment date.\n\nDisposition: minor dashboard-only wording guard implemented, pushed, production-deployed, and guard-verified.\n\n- DJ/NLCEO cohort/payment-timing answers can say the main ISTV cohort rule does not block the client.\n- They must not approve a specific future payment date or hold.\n- They should route or confirm delayed first-payment / hold exceptions before promising.\n- Dashboard validator, lint, typecheck, build, `git diff --check`, and a targeted no-provider runtime smoke passed.\n- Dashboard commit `225ef74`; Vercel Production deployment `dpl_GbJanatQLFwsmcDE89xudLqWvnpp`.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Payments, Refunds & Contracts",
+      "heading": "2026-07-08 False-Abstain And Follow-Up Routing Gap Update",
+      "id": "rag_59556e7b438d583b",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "- FAQ policy guard: 94 / 94.\n- FAQ retrieval simulation: 94 / 94.\n- FAQ answer contract/runtime: 102 / 102.\n- Dashboard static Ask Sales FAQ validator: 54 / 54.\n- Dashboard lint/typecheck/build and both repos' `git diff --check`: passed.\n- No-provider runtime smoke tests confirmed the reported questions now route to approved guidance instead of the generic fallback.\n- Dashboard commit `92ff4b0` and FAQ commit `facefc2` were pushed. Vercel Production deployment `dpl_5jrwgdGHHXTfdxoxdDGf6TNii7DE` reached Ready, production alias guard checks passed, and the deployment log stream showed no new error output while checked.\n\nRemaining risk:\n\n- This should reduce false abstains, but it is not a promise that every unseen valid question will answer. Questions still need an approved article that actually governs the answer.\n- Signed-in production retesting is still needed for the exact reported questions and paraphrases.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "General Sales Process",
+      "heading": "2026-07-08 False-Abstain And Follow-Up Routing Gap Update",
+      "id": "rag_b37bb05b65764648",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "## 2026-07-08 False-Abstain And Follow-Up Routing Gap Update\n\nThe user's hidden-beta testing found that the old policy guard was too brittle for some approved topics:\n\n- \"Are dispensaries allowed?\" and a greenlight-style dispensary follow-up fell back even though the approved qualification article covers regulated cannabis businesses.\n- A DJ/NLCEO deposit-timing follow-up fell back because the current message mentioned cohort/time/deposit but did not repeat \"DJ show\"; the old context policy matcher only handled very short follow-ups.\n\nDisposition: dashboard runtime hardening implemented, pushed, production-deployed, and guard-verified.\n\n- Hard policy rules remain first and unchanged in purpose.\n- A high-confidence approved-article router now runs only after `default-abstain`; it can choose an existing approved article or no article, but it cannot answer freely.\n- Recent context is available for context-dependent follow-up routing across the last bounded chat turns.\n- Router-selected answers get an extra grounding validation against the selected approved guidance.\n- Critical answer guardrails now cover regulated cannabis/dispensary qualification and DJ/NLCEO no-cohort/deposit timing.\n\nValidation:",
       "trust_label": "Governance log"
     },
     {

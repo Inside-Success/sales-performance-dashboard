@@ -582,6 +582,34 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "pay and sign"
         ]
       ]
+    },
+    {
+      "id": "route-dj-nlceo-payment-timing-exception",
+      "decision": "route_from_approved_article",
+      "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Daymond John / Next Level CEO first-payment timing exceptions need current owner confirmation before reps promise a future payment date or hold.",
+      "match_any_groups": [
+        [
+          "daymond john",
+          "next level ceo",
+          "dj",
+          "nlceo"
+        ],
+        [
+          "initial payment",
+          "first payment",
+          "payment timing",
+          "future payment date",
+          "specific future payment date",
+          "few weeks",
+          "need a few weeks",
+          "needs a few weeks",
+          "delay first payment",
+          "delay the first payment",
+          "need time to get initial deposit",
+          "needs time to get initial deposit"
+        ]
+      ]
     }
   ],
   "answerRules": [

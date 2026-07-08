@@ -403,6 +403,9 @@ if (missingFiles.length === 0) {
       runtime.includes("regulated, legal, licensed") &&
       runtime.includes("dj-nlceo-no-cohort-deposit-boundary") &&
       runtime.includes("dj-nlceo-pricing-no-cohort-deposit-boundary") &&
+      bundle.includes("route-dj-nlceo-payment-timing-exception") &&
+      bundle.includes("first payment") &&
+      bundle.includes("few weeks") &&
       runtime.includes("DJ/NLCEO has no cohort rule") &&
       runtime.includes("do not invent a custom plan or promise a hold") &&
       runtime.includes("never approve a specific future payment date or hold") &&
