@@ -546,10 +546,13 @@ if (missingFiles.length === 0) {
   addCheck(
     "show-list duplicate summary is suppressed",
     chatUi.includes("isDuplicatedSummary") &&
+      chatUi.includes("normalizeAnswerDisplayText") &&
+      chatUi.includes('firstSection?.title === "Answer"') &&
+      chatUi.includes("normalizeAnswerDisplayText(answer.summary) === normalizeAnswerDisplayText(firstSection.body)") &&
       chatUi.includes("duplicatedItems >= 4") &&
       bundle.includes("Legacy Makers") &&
       bundle.includes("Masters of Innovation"),
-    "show-list answers do not render the full list twice",
+    "show-list answers and exact summary/Answer-section duplicates do not render twice",
   );
 
   addCheck(

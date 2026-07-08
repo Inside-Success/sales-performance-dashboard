@@ -1361,6 +1361,15 @@ function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer 
 }
 
 function isDuplicatedSummary(answer: AskSalesFaqStructuredAnswer) {
+  const firstSection = answer.sections[0];
+  if (
+    firstSection?.title === "Answer" &&
+    firstSection.body &&
+    normalizeAnswerDisplayText(answer.summary) === normalizeAnswerDisplayText(firstSection.body)
+  ) {
+    return true;
+  }
+
   const firstListSection = answer.sections.find((section) => (section.items?.length || 0) >= 5);
   if (!firstListSection?.items?.length || answer.summary.length < 180) return false;
 
@@ -1370,6 +1379,10 @@ function isDuplicatedSummary(answer: AskSalesFaqStructuredAnswer) {
     .filter((item) => normalizedSummary.includes(item.toLowerCase())).length;
 
   return duplicatedItems >= 4;
+}
+
+function normalizeAnswerDisplayText(value: string) {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 function AnswerSection({ section }: { section: AskSalesFaqStructuredAnswer["sections"][number] }) {
