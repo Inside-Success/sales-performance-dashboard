@@ -258,6 +258,250 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\bchunk:[a-z0-9_-]+/i,
 ];
 
+type CriticalAnswerRule = {
+  id: string;
+  articleId: string;
+  matchAny?: string[];
+  matchAnyGroups?: string[][];
+  requiredAll?: string[];
+  requiredAnyGroups?: string[][];
+  forbiddenAny?: string[];
+  fallback: ModelOutput;
+};
+
+const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
+  {
+    id: "payment-no-custom-plans",
+    articleId: "payment-plan-and-link-boundaries",
+    matchAny: [
+      "custom payment plan",
+      "custom payment plans",
+      "custom plan",
+      "custom plans",
+      "custom installment",
+      "custom installments",
+      "custom split",
+      "custom splits",
+      "custom amount",
+      "custom amounts",
+      "custom payment link",
+      "different amount",
+      "custom payment terms",
+      "custom terms",
+    ],
+    requiredAnyGroups: [
+      ["no", "cannot", "can't", "not allowed", "do not", "should not"],
+      ["approved listed", "listed payment", "approved plans", "current spreadsheet", "spreadsheet", "official payment links"],
+    ],
+    forbiddenAny: ["#sales-finance-requests", "finance can approve", "must be routed", "route it", "routed"],
+    fallback: {
+      answer:
+        "No. You cannot offer or suggest custom payment plans, custom splits, custom amounts, or custom payment links. Use only the approved listed payment plans and current official links from the spreadsheet/source.",
+      summary: "Custom payment terms are not allowed; use only approved listed plans and links.",
+      sections: [
+        {
+          title: "Answer",
+          body: "No. You cannot offer or suggest custom payment plans, custom splits, custom amounts, or custom payment links.",
+          tone: "warning",
+        },
+        {
+          title: "What to use",
+          body: "Use only the approved listed payment plans and current official links from the spreadsheet/source.",
+          tone: "default",
+        },
+      ],
+      selected_source_ids: ["approved:payment-plan-and-link-boundaries"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 95,
+    },
+  },
+  {
+    id: "pricing-standard-upgrade-discount",
+    articleId: "istv-nlceo-pricing-and-same-day-discount",
+    matchAnyGroups: [
+      ["upgrade", "upgraded"],
+      ["standard"],
+      ["discount", "$2000", "$2,000", "same day"],
+    ],
+    requiredAll: ["carries forward"],
+    requiredAnyGroups: [
+      ["$18,000", "18000"],
+      ["$8,000", "8000"],
+    ],
+    forbiddenAny: ["does not carry forward", "doesn't carry forward"],
+    fallback: {
+      answer:
+        "Yes. For a main ISTV Lite client upgrading to Standard before filming, the $2,000 same-day discount carries forward. Discounted Standard is $18,000, so if they bought discounted Lite at $10,000, the difference is $8,000.",
+      summary: "Main ISTV Lite-to-Standard upgrade keeps the same-day discount before filming.",
+      sections: [
+        {
+          title: "Answer",
+          body: "Yes. For a main ISTV Lite client upgrading to Standard before filming, the $2,000 same-day discount carries forward.",
+          tone: "good",
+        },
+        {
+          title: "Numbers",
+          items: ["Discounted Standard total: $18,000.", "Difference from discounted Lite at $10,000: $8,000."],
+          tone: "default",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 95,
+    },
+  },
+  {
+    id: "pricing-vip-upgrade-discount",
+    articleId: "istv-nlceo-pricing-and-same-day-discount",
+    matchAnyGroups: [
+      ["upgrade", "upgraded"],
+      ["vip", "premium"],
+      ["discount", "$2000", "$2,000", "same day"],
+    ],
+    requiredAll: ["carries forward"],
+    requiredAnyGroups: [
+      ["$28,000", "28000"],
+      ["$18,000", "18000"],
+    ],
+    forbiddenAny: ["does not carry forward", "doesn't carry forward"],
+    fallback: {
+      answer:
+        "Yes. For a main ISTV Lite client upgrading to VIP/Premium before filming, the $2,000 same-day discount carries forward. Discounted VIP/Premium is $28,000, so if they bought discounted Lite at $10,000, the difference is $18,000.",
+      summary: "Main ISTV Lite-to-VIP/Premium upgrade keeps the same-day discount before filming.",
+      sections: [
+        {
+          title: "Answer",
+          body: "Yes. For a main ISTV Lite client upgrading to VIP/Premium before filming, the $2,000 same-day discount carries forward.",
+          tone: "good",
+        },
+        {
+          title: "Numbers",
+          items: ["Discounted VIP/Premium total: $28,000.", "Difference from discounted Lite at $10,000: $18,000."],
+          tone: "default",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 95,
+    },
+  },
+  {
+    id: "sales-tech-channel-route",
+    articleId: "sales-tech-routing-and-support-requests",
+    matchAnyGroups: [
+      ["where do i post", "where should i post", "which channel", "what channel", "who do i ask", "who should i ask"],
+      ["zoom", "keap", "calendar", "recording", "dropdown", "sales-tooling", "sales tooling", "sales-system", "sales system"],
+    ],
+    requiredAll: ["#sales-tech-requests"],
+    forbiddenAny: ["I do not have a confirmed answer", "default-abstain"],
+    fallback: {
+      answer: "Post sales-tech/tooling issues in #sales-tech-requests. That includes Zoom, Keap, calendars, recordings, forms/dropdowns, calls, and other sales-system issues.",
+      summary: "Sales-tech/tooling issues go to #sales-tech-requests.",
+      sections: [
+        {
+          title: "Where to post",
+          body: "Post sales-tech/tooling issues in #sales-tech-requests.",
+          tone: "route",
+        },
+        {
+          title: "Examples",
+          items: ["Zoom", "Keap", "calendars", "recordings", "forms/dropdowns", "calls", "other sales-system issues"],
+          tone: "default",
+        },
+      ],
+      selected_source_ids: ["approved:sales-tech-routing-and-support-requests"],
+      needs_route: true,
+      route_reason: "Sales-tech/tooling issues route to #sales-tech-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "greenlight-cap-route",
+    articleId: "greenlight-pdf-and-cohort-deadlines",
+    matchAny: ["greenlight approval cap", "current greenlight approval cap", "approval cap", "greenlight cap", "greenlights per day"],
+    requiredAll: ["#greenlight-requests"],
+    forbiddenAny: ["3 per day", "15 per week"],
+    fallback: {
+      answer: "For current greenlight caps, send windows, letter status, urgent sends, or stop questions, post in #greenlight-requests instead of quoting old cap numbers.",
+      summary: "Current greenlight live-ops details route to #greenlight-requests.",
+      sections: [
+        {
+          title: "Where to post",
+          body: "Post in #greenlight-requests for current caps, send windows, letter status, urgent sends, or stop questions.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Greenlight caps and live timing can drift, so use #greenlight-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "main-istv-reapply-minimum",
+    articleId: "greenlight-pdf-and-cohort-deadlines",
+    matchAnyGroups: [
+      ["reapply", "reapply after", "when can they reapply"],
+      ["no-show", "no show", "missed deadline", "missed cohort", "rejected", "not-fit", "not fit"],
+    ],
+    requiredAll: ["3 months"],
+    forbiddenAny: ["not confirmed", "6 months"],
+    fallback: {
+      answer:
+        "For main ISTV, if someone no-shows, misses the Sunday 11:59 PM ET pay/sign deadline, or is rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.",
+      summary: "Main ISTV reapply minimum is 3 months.",
+      sections: [
+        {
+          title: "Answer",
+          body: "For main ISTV, if someone no-shows, misses the Sunday 11:59 PM ET pay/sign deadline, or is rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.",
+          tone: "default",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 95,
+    },
+  },
+  {
+    id: "wire-ach-finance-route",
+    articleId: "payment-plan-and-link-boundaries",
+    matchAny: ["wire", "ach", "invoice"],
+    requiredAll: ["#sales-finance-requests"],
+    forbiddenAny: ["bank details", "wire instructions from memory"],
+    fallback: {
+      answer: "For wire/ACH or invoice requests, post in #sales-finance-requests before sending anything to the client. Do not provide bank or payment instructions from memory.",
+      summary: "Wire/ACH/invoice handling routes to #sales-finance-requests.",
+      sections: [
+        {
+          title: "Where to post",
+          body: "Post wire/ACH or invoice requests in #sales-finance-requests before sending anything to the client.",
+          tone: "route",
+        },
+        {
+          title: "Do not send from memory",
+          body: "Do not provide bank or payment instructions from memory.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:payment-plan-and-link-boundaries"],
+      needs_route: true,
+      route_reason: "Wire/ACH/invoice handling needs the finance route.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+];
+
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
 const ARTICLE_BY_ID = new Map(APPROVED_FAQ_ARTICLES.map((article) => [article.id, article]));
 const INDEXED_CHUNKS: IndexedChunk[] = rawChunks.map((chunk) => {
@@ -315,15 +559,22 @@ export async function runAskSalesFaq(
       currentQuestion: sanitizedQuestion,
       output: answerResult.output,
     });
-    const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
-    const decision = buildDecision({
+    const criticalOutput = await ensureCriticalAnswer({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+      evidence: candidates,
+      policyDecision,
       output: finalOutput,
+    });
+    const selectedEvidence = resolveSelectedEvidence(criticalOutput, candidates, sanitizedQuestion);
+    const decision = buildDecision({
+      output: criticalOutput,
       evidence: selectedEvidence,
       policyDecision,
     });
-    const answer = sanitizeModelAnswer(finalOutput.answer);
+    const answer = sanitizeModelAnswer(criticalOutput.answer);
 
-    if (!answer || modelOutputContainsHiddenTerms(finalOutput)) {
+    if (!answer || modelOutputContainsHiddenTerms(criticalOutput)) {
       throw new Error("AI output was empty or exposed hidden terms");
     }
 
@@ -334,7 +585,7 @@ export async function runAskSalesFaq(
       redactions,
       decision,
       answer,
-      structuredAnswer: normalizeModelStructuredAnswer(finalOutput, answer, decision),
+      structuredAnswer: normalizeModelStructuredAnswer(criticalOutput, answer, decision),
       source: sourceSummaryFromDecision(decision),
       provider: answerResult.provider,
       model: answerResult.model,
@@ -342,6 +593,31 @@ export async function runAskSalesFaq(
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
+    const fallbackOutput = buildCriticalFallbackOutput(sanitizedQuestion, policyDecision);
+    if (fallbackOutput) {
+      const selectedEvidence = resolveSelectedEvidence(fallbackOutput, candidates, sanitizedQuestion);
+      const decision = buildDecision({
+        output: fallbackOutput,
+        evidence: selectedEvidence.length ? selectedEvidence : candidates,
+        policyDecision,
+      });
+      const answer = sanitizeModelAnswer(fallbackOutput.answer);
+
+      return buildHandledResponse({
+        startedAt,
+        sanitizedQuestion,
+        contextualQuestion,
+        redactions,
+        decision,
+        answer,
+        structuredAnswer: normalizeModelStructuredAnswer(fallbackOutput, answer, decision),
+        source: sourceSummaryFromDecision(decision),
+        provider: null,
+        model: null,
+        errorClass: "ai_runtime_approved_fallback",
+      });
+    }
+
     const decision = buildUnavailableDecision(candidates);
     return buildHandledResponse({
       startedAt,
@@ -478,6 +754,74 @@ function policyRuleMatches(question: string, rule: AskSalesFaqRule) {
   }
 
   return Boolean(rule.match_all?.length || rule.match_any?.length || rule.match_any_groups?.length);
+}
+
+function criticalRuleMatchesQuestion(question: string, rule: CriticalAnswerRule) {
+  const normalizedQuestion = normalizeText(question);
+
+  if (rule.matchAny?.length && !rule.matchAny.some((phrase) => phrasePresent(phrase, normalizedQuestion))) return false;
+
+  for (const group of rule.matchAnyGroups || []) {
+    if (!group.some((phrase) => phrasePresent(phrase, normalizedQuestion))) return false;
+  }
+
+  return Boolean(rule.matchAny?.length || rule.matchAnyGroups?.length);
+}
+
+function matchingCriticalRules(question: string, policyDecision: PolicyGuardDecision) {
+  return CRITICAL_ANSWER_RULES.filter(
+    (rule) => rule.articleId === policyDecision.articleId && criticalRuleMatchesQuestion(question, rule),
+  );
+}
+
+function cloneModelOutput(output: ModelOutput): ModelOutput {
+  return {
+    ...output,
+    sections: output.sections?.map((section) => ({
+      ...section,
+      items: section.items ? [...section.items] : undefined,
+    })),
+    selected_source_ids: output.selected_source_ids ? [...output.selected_source_ids] : [],
+  };
+}
+
+function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGuardDecision) {
+  const fallbackRule = matchingCriticalRules(question, policyDecision)[0];
+  return fallbackRule ? cloneModelOutput(fallbackRule.fallback) : null;
+}
+
+function validateCriticalAnswer(input: {
+  currentQuestion: string;
+  policyDecision: PolicyGuardDecision;
+  output: ModelOutput;
+}) {
+  const errors: string[] = [];
+  const matchedRules = matchingCriticalRules(input.currentQuestion, input.policyDecision);
+  if (!matchedRules.length) return errors;
+
+  const answerText = modelOutputText(input.output).join(" ");
+
+  for (const rule of matchedRules) {
+    for (const phrase of rule.requiredAll || []) {
+      if (!phrasePresent(phrase, answerText)) {
+        errors.push(`${rule.id}: answer must include ${phrase}`);
+      }
+    }
+
+    for (const group of rule.requiredAnyGroups || []) {
+      if (!group.some((phrase) => phrasePresent(phrase, answerText))) {
+        errors.push(`${rule.id}: answer must include one of ${group.join(", ")}`);
+      }
+    }
+
+    for (const phrase of rule.forbiddenAny || []) {
+      if (phrasePresent(phrase, answerText)) {
+        errors.push(`${rule.id}: answer must not include ${phrase}`);
+      }
+    }
+  }
+
+  return errors;
 }
 
 function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
@@ -745,6 +1089,96 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
     });
     return input.output;
   }
+}
+
+async function ensureCriticalAnswer(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  evidence: EvidenceCandidate[];
+  policyDecision: PolicyGuardDecision;
+  output: ModelOutput;
+}) {
+  const validationErrors = validateCriticalAnswer({
+    currentQuestion: input.currentQuestion,
+    policyDecision: input.policyDecision,
+    output: input.output,
+  });
+  if (!validationErrors.length) return input.output;
+
+  try {
+    const repair = await generateProviderJson<ModelOutput>({
+      purpose: "critical answer repair",
+      maxTokens: 1600,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You repair Ask Sales FAQ answers only when they missed or contradicted approved high-risk sales facts.",
+            "Use only the evidence packet and the validation failures. Do not add new policies, links, owners, exceptions, or hidden source mechanics.",
+            "Keep the answer concise, direct, and written to the rep as you.",
+            "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
+            "Return valid JSON only. The first character must be { and the last character must be }.",
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: [
+            "CURRENT USER QUESTION:",
+            input.currentQuestion,
+            "",
+            "RECENT CONVERSATION CONTEXT:",
+            input.conversationContext || "None",
+            "",
+            "POLICY DECISION:",
+            input.policyDecision.decision,
+            "",
+            "VALIDATION FAILURES TO FIX:",
+            validationErrors.map((error) => `- ${error}`).join("\n"),
+            "",
+            "DRAFT ANSWER JSON:",
+            JSON.stringify(input.output),
+            "",
+            "EVIDENCE PACKET:",
+            formatEvidencePacket(input.evidence, { maxCharsPerItem: 1400 }),
+          ].join("\n"),
+        },
+      ],
+      parse: parseModelOutput,
+    });
+
+    const repairedOutput = await ensureRepFacingOutput({
+      currentQuestion: input.currentQuestion,
+      output: {
+        ...repair.output,
+        selected_source_ids: repair.output.selected_source_ids?.length
+          ? repair.output.selected_source_ids
+          : input.output.selected_source_ids,
+      },
+    });
+    const repairedErrors = validateCriticalAnswer({
+      currentQuestion: input.currentQuestion,
+      policyDecision: input.policyDecision,
+      output: repairedOutput,
+    });
+    if (!repairedErrors.length) return repairedOutput;
+
+    console.warn("Ask Sales FAQ critical answer repair still failed", {
+      matchedRuleId: input.policyDecision.matchedRuleId,
+      articleId: input.policyDecision.articleId,
+      errors: repairedErrors,
+    });
+  } catch (error) {
+    console.warn("Ask Sales FAQ critical answer repair failed", {
+      matchedRuleId: input.policyDecision.matchedRuleId,
+      articleId: input.policyDecision.articleId,
+      error: sanitizeProviderError(error),
+    });
+  }
+
+  const fallback = buildCriticalFallbackOutput(input.currentQuestion, input.policyDecision);
+  if (fallback) return fallback;
+
+  throw new Error(`AI output failed critical answer validation: ${validationErrors.join("; ")}`);
 }
 
 function buildDecision(input: {

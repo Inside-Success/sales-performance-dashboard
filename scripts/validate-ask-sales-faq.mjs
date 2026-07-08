@@ -128,14 +128,14 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "bundle has nineteen approved rep-facing articles",
-    (bundle.match(/approvedAt: "/g) || []).length === 19 &&
-      bundle.includes('id: "call-1-flow"') &&
-      bundle.includes('id: "opt-out-dnc-and-security-escalation"') &&
-      bundle.includes('id: "qualification-and-show-fit-rubric"') &&
-      bundle.includes('id: "main-istv-call-2-cohort-reschedule-rules"') &&
-      bundle.includes('id: "greenlight-pdf-and-cohort-deadlines"') &&
-      bundle.includes('id: "sales-tech-routing-and-support-requests"') &&
-      bundle.includes('approvedAt: "2026-07-08"') &&
+    (bundle.match(/"?approvedAt"?\s*:\s*"/g) || []).length === 19 &&
+      bundle.includes('"call-1-flow"') &&
+      bundle.includes('"opt-out-dnc-and-security-escalation"') &&
+      bundle.includes('"qualification-and-show-fit-rubric"') &&
+      bundle.includes('"main-istv-call-2-cohort-reschedule-rules"') &&
+      bundle.includes('"greenlight-pdf-and-cohort-deadlines"') &&
+      bundle.includes('"sales-tech-routing-and-support-requests"') &&
+      bundle.includes('"approvedAt": "2026-07-08"') &&
       bundle.includes("#sales-finance-requests") &&
       bundle.includes("#sales-tech-requests") &&
       bundle.includes("#greenlight-requests"),
@@ -373,6 +373,36 @@ if (missingFiles.length === 0) {
       runtime.includes("Do not dump every related fact.") &&
       runtime.includes("Answer the actual question asked."),
     "AI answer prompt blocks broad irrelevant sections and canned dumping",
+  );
+
+  addCheck(
+    "critical answer guardrails validate high-risk AI output",
+    runtime.includes("CRITICAL_ANSWER_RULES") &&
+      runtime.includes("validateCriticalAnswer") &&
+      runtime.includes("ensureCriticalAnswer") &&
+      runtime.includes("critical answer repair") &&
+      runtime.includes("buildCriticalFallbackOutput") &&
+      runtime.includes("payment-no-custom-plans") &&
+      runtime.includes("ai_runtime_approved_fallback"),
+    "AI-generated answers are checked and repaired for high-risk approved facts before returning to reps",
+  );
+
+  addCheck(
+    "custom payment plans are direct no, not finance approval route",
+    bundle.includes("Custom payment plans, custom splits, custom amounts, and custom payment links are not allowed.") &&
+      bundle.includes("No, you cannot offer a custom payment plan.") &&
+      bundle.includes("Do not route a custom payment plan request as if finance may approve a new plan") &&
+      !bundle.includes("custom payment terms, custom split requests"),
+    "Rich-confirmed custom payment requests return no/custom plans instead of suggesting finance approval",
+  );
+
+  addCheck(
+    "broad sales-tech route question is covered",
+    bundle.includes("route-sales-tech-channel-question") &&
+      bundle.includes("where do i post") &&
+      bundle.includes("sales-tooling") &&
+      bundle.includes("#sales-tech-requests"),
+    "Zoom/Keap/calendar/recording/dropdown channel questions map to the sales-tech route",
   );
 
   addCheck(
