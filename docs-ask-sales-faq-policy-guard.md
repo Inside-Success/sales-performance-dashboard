@@ -11,16 +11,20 @@ Runtime order:
 1. Redact sensitive text.
 2. Evaluate the current user question against `ASK_SALES_FAQ_POLICY_RULES`.
 3. If the current question does not match and looks like a short follow-up, use recent chat context only to resolve the policy topic.
-4. If no approved policy rule matches, return a normal route response without calling DeepSeek/Claude and without attaching a source card.
-5. If an approved answer or route rule matches, send the selected approved article as the controlling source.
-6. Add only tightly scoped supporting RAG chunks when they are tied to the matched approved article/topic.
-7. If the rule requires routing, force the final outcome to `route_from_approved_article` even if the model omits `needs_route`.
+4. If the strict guard reaches the default abstain state, ask DeepSeek to classify only the conversation mode: natural follow-up reply, high-confidence approved-article match, or unsupported.
+5. If the turn is only conversational, return a concise natural reply without source cards or new policy.
+6. If no approved policy rule or high-confidence approved article matches, return a normal route response without broad retrieval answering.
+7. If an approved answer or route rule matches, send the selected approved article as the controlling source.
+8. Add only tightly scoped supporting RAG chunks when they are tied to the matched approved article/topic.
+9. If the rule requires routing, force the final outcome to `route_from_approved_article` even if the model omits `needs_route`.
 
 ## Why
 
 The meeting with Rich/Mike showed the previous AI-first broad-RAG path could answer sensitive topics too confidently from nearby Slack/source evidence. The new policy-first path keeps useful model-generated wording while preventing unapproved retrieval-only answers.
 
 The 18-question live regression check also showed that overly strict exact matching can miss approved-topic follow-ups. The current hybrid keeps the policy guard as the safety gate while allowing short follow-ups and scoped supporting context.
+
+The July 9 signed-in follow-up check showed a second issue: harmless conversational turns felt unnatural because they were treated like new policy questions. The conversation planner is intentionally narrow so the bot can answer "thank you" or "so I should not promise that, right?" naturally without reopening broad hallucination-prone answering.
 
 ## Synced FAQ Runtime Data
 
@@ -33,6 +37,7 @@ The 18-question live regression check also showed that overly strict exact match
 ## Verification
 
 - `node scripts/validate-ask-sales-faq.mjs`: 54 / 54 passed.
+- Latest natural-conversation pass: `node scripts/validate-ask-sales-faq.mjs` 60 / 60 passed.
 - `npm run lint`: passed.
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.

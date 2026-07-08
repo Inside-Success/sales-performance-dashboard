@@ -2435,7 +2435,8 @@ export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
   await ensureSchema();
   const sql = getSql();
   const shouldCreateMiss =
-    payload.outcome !== "answer_from_approved_article" || payload.needsRoute || Boolean(payload.errorClass);
+    payload.outcome !== "conversation_reply" &&
+    (payload.outcome !== "answer_from_approved_article" || payload.needsRoute || Boolean(payload.errorClass));
   const answerPayload = payload.structuredAnswer
     ? {
         ...payload.structuredAnswer,

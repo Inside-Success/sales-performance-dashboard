@@ -55,7 +55,7 @@ type EvidenceCandidate = {
 
 type RuntimeDecision = {
   outcome: AskSalesFaqOutcome;
-  sourceMode: "approved" | "evidence" | "mixed" | "fallback";
+  sourceMode: "approved" | "evidence" | "mixed" | "fallback" | "conversation";
   confidenceLabel: "High" | "Medium" | "Low";
   confidenceScore: number;
   reason: string;
@@ -75,7 +75,7 @@ type PolicyGuardDecision = {
   matchedRuleId: string;
   reason: string;
   primaryArticle: ApprovedFaqArticle | null;
-  routingSource: "direct_rule" | "context_rule" | "article_router" | "default";
+  routingSource: "direct_rule" | "context_rule" | "article_router" | "conversation_planner" | "default";
   routingConfidence?: number;
   usedConversationContext?: boolean;
 };
@@ -94,6 +94,19 @@ type ModelOutput = {
 type ArticleRouterOutput = {
   article_id?: string | null;
   confidence_score?: number | string | null;
+  reason?: string | null;
+};
+
+type ConversationPlannerOutput = {
+  mode: "conversation_reply" | "approved_article" | "unsupported";
+  answer?: string;
+  summary?: string;
+  sections?: ModelOutput["sections"];
+  article_id?: string | null;
+  confidence_score?: number | string | null;
+  confidence_label?: "High" | "Medium" | "Low";
+  needs_route?: boolean;
+  route_reason?: string;
   reason?: string | null;
 };
 
@@ -745,12 +758,37 @@ export async function runAskSalesFaq(
   let policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
 
   if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision)) {
-    const routerResult = await tryRouteWithApprovedArticle({
+    const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
       conversationContext,
     });
-    if (routerResult.diagnostics) providerDiagnostics.push(routerResult.diagnostics);
-    if (routerResult.decision) policyDecision = routerResult.decision;
+    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
+    if (plannerResult.reply) {
+      const decision = buildConversationReplyDecision(plannerResult.reply);
+      const answer = sanitizeModelAnswer(plannerResult.reply.answer);
+
+      return buildHandledResponse({
+        startedAt,
+        sanitizedQuestion,
+        contextualQuestion,
+        redactions,
+        decision,
+        answer,
+        structuredAnswer: normalizeModelStructuredAnswer(plannerResult.reply, answer, decision),
+        source: null,
+        provider: plannerResult.provider,
+        model: plannerResult.model,
+        errorClass: null,
+        runtimeMetadata: buildRuntimeMetadata({
+          evidence: [],
+          modelEvidence: [],
+          providerDiagnostics,
+          criticalFallbackUsed: false,
+          policyDecision: buildConversationPlannerDecision(),
+        }),
+      });
+    }
+    if (plannerResult.decision) policyDecision = plannerResult.decision;
   }
 
   const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
@@ -943,7 +981,8 @@ function buildHandledResponse(input: {
       input.decision.outcome === "route_from_evidence" ||
       input.decision.outcome === "low_confidence_route" ||
       input.decision.outcome === "abstain_unapproved" ||
-      input.decision.outcome === "safe_fallback",
+      input.decision.outcome === "safe_fallback" ||
+      (input.decision.outcome === "conversation_reply" && Boolean(input.decision.routeReason)),
     routeReason: input.decision.routeReason,
     redactions: input.redactions,
     latencyMs: Date.now() - input.startedAt,
@@ -1019,27 +1058,38 @@ function shouldAttemptApprovedArticleRouter(policyDecision: PolicyGuardDecision)
   return policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
 }
 
-async function tryRouteWithApprovedArticle(input: {
+async function tryPlanConversationTurn(input: {
   currentQuestion: string;
   conversationContext: string;
-}): Promise<{ decision: PolicyGuardDecision | null; diagnostics?: ProviderCallDiagnostics }> {
+}): Promise<{
+  decision: PolicyGuardDecision | null;
+  reply: ModelOutput | null;
+  provider?: "deepseek" | "anthropic";
+  model?: string;
+  diagnostics?: ProviderCallDiagnostics;
+}> {
   try {
-    const router = await generateProviderJson<ArticleRouterOutput>({
-      purpose: "approved article routing",
-      maxTokens: 450,
+    const planner = await generateProviderJson<ConversationPlannerOutput>({
+      purpose: "conversation planning",
+      maxTokens: 650,
       messages: [
         {
           role: "system",
           content: [
-            "You are the internal Ask Sales FAQ article router.",
-            "Your only job is to decide whether the sales rep's current question is clearly governed by one approved article from the catalog.",
-            "Do not answer the sales question. Do not create policy. Do not infer exceptions, prices, discounts, owners, or process steps.",
-            "Use recent conversation context only to resolve product/show/topic references from the current question, such as this, they, the client, DJ show, cohort, package, or payment.",
+            "You are the Ask Sales FAQ conversation planner.",
+            "Decide whether the sales rep's current message needs a natural chat reply, an approved sales article, or a safe unsupported fallback.",
+            "Use mode conversation_reply only for conversational turns, acknowledgments, requests to shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
+            "For conversation_reply, write a natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
+            "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
+            "Use mode approved_article only when one approved article directly controls the answer.",
+            "Use mode unsupported when there is no clear approved article and it is not a conversational reply.",
+            "Use recent conversation context only to resolve product/show/topic references from the current question, such as this, they, the client, DJ show, cohort, package, payment, promise, or hold.",
             "The current user question is authoritative. If the current question names a different product/show/topic than the recent context, follow the current question.",
             "Choose an article only when its approved guidance directly controls the answer. Shared words or a loose topic match are not enough.",
-            "If none of the approved articles directly controls the answer, return article_id as null with a low confidence score.",
-            "Return valid JSON only with keys: article_id, confidence_score, reason.",
-            `Only scores ${ARTICLE_ROUTER_MIN_CONFIDENCE}-100 may be used for a clear approved article match.`,
+            "For a thank-you or similar social message, mode must be conversation_reply with a brief friendly reply.",
+            "For a short confirmation like 'so I should not promise that, right?', mode can be conversation_reply only if the prior assistant answer already gave that boundary.",
+            "Return valid JSON only with keys: mode, answer, summary, sections, article_id, confidence_score, confidence_label, needs_route, route_reason, reason.",
+            `For approved_article, confidence_score must be ${ARTICLE_ROUTER_MIN_CONFIDENCE}-100 for a clear approved article match.`,
           ].join("\n"),
         },
         {
@@ -1056,17 +1106,35 @@ async function tryRouteWithApprovedArticle(input: {
           ].join("\n"),
         },
       ],
-      parse: parseArticleRouterOutput,
+      parse: parseConversationPlannerOutput,
     });
+    if (planner.output.mode === "conversation_reply") {
+      const reply = conversationPlannerReplyToModelOutput(planner.output);
+      if (reply && !modelOutputContainsHiddenTerms(reply)) {
+        return {
+          decision: null,
+          reply,
+          provider: planner.provider,
+          model: planner.model,
+          diagnostics: planner.diagnostics,
+        };
+      }
+    }
     return {
-      decision: buildPolicyDecisionFromArticleRouter(router.output, Boolean(input.conversationContext)),
-      diagnostics: router.diagnostics,
+      decision:
+        planner.output.mode === "approved_article"
+          ? buildPolicyDecisionFromArticleRouter(planner.output, Boolean(input.conversationContext))
+          : null,
+      reply: null,
+      provider: planner.provider,
+      model: planner.model,
+      diagnostics: planner.diagnostics,
     };
   } catch (error) {
-    console.warn("Ask Sales FAQ approved article router failed", {
+    console.warn("Ask Sales FAQ conversation planner failed", {
       error: sanitizeProviderError(error),
     });
-    return { decision: null };
+    return { decision: null, reply: null };
   }
 }
 
@@ -1088,6 +1156,61 @@ function buildPolicyDecisionFromArticleRouter(output: ArticleRouterOutput, usedC
     routingSource: "article_router",
     routingConfidence: confidenceScore,
     usedConversationContext,
+  };
+}
+
+function conversationPlannerReplyToModelOutput(output: ConversationPlannerOutput): ModelOutput | null {
+  if (typeof output.answer !== "string" || !output.answer.trim()) return null;
+  const confidenceScore = parseConfidenceScore(output.confidence_score) ?? 88;
+  return normalizeModelOutput({
+    answer: output.answer,
+    summary: output.summary || output.answer,
+    sections: output.sections?.length
+      ? output.sections
+      : [
+          {
+            title: "Answer",
+            body: output.answer,
+            tone: output.needs_route ? "route" : "default",
+          },
+        ],
+    selected_source_ids: [],
+    needs_route: Boolean(output.needs_route),
+    route_reason: output.route_reason || "",
+    confidence_label: output.confidence_label || confidenceLabelFromScore(confidenceScore),
+    confidence_score: confidenceScore,
+  });
+}
+
+function buildConversationReplyDecision(output: ModelOutput): RuntimeDecision {
+  const confidenceScore = typeof output.confidence_score === "number" ? clampConfidence(output.confidence_score) : 88;
+  return {
+    outcome: "conversation_reply",
+    sourceMode: "conversation",
+    confidenceLabel: output.confidence_label || confidenceLabelFromScore(confidenceScore),
+    confidenceScore,
+    reason: output.summary || "Conversation reply.",
+    routeReason: output.needs_route ? output.route_reason || null : null,
+    safeToGenerate: true,
+    matchedRuleId: "conversation-planner",
+    matchedArticleId: null,
+    primaryArticle: null,
+    retrieved: [],
+  };
+}
+
+function buildConversationPlannerDecision(): PolicyGuardDecision {
+  return {
+    decision: "abstain_unapproved",
+    safeToGenerate: false,
+    articleId: null,
+    blockedTopic: null,
+    matchedRuleId: "conversation-planner",
+    reason: "AI handled this as a conversational turn without new sales-policy authority.",
+    primaryArticle: null,
+    routingSource: "conversation_planner",
+    routingConfidence: 88,
+    usedConversationContext: true,
   };
 }
 
@@ -1181,6 +1304,7 @@ function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGua
 
 function validateCriticalAnswer(input: {
   currentQuestion: string;
+  latestQuestion?: string;
   policyDecision: PolicyGuardDecision;
   output: ModelOutput;
 }) {
@@ -1191,6 +1315,21 @@ function validateCriticalAnswer(input: {
   const answerText = modelOutputText(input.output).join(" ");
 
   for (const rule of matchedRules) {
+    const forbiddenErrors: string[] = [];
+    for (const phrase of rule.forbiddenAny || []) {
+      if (phrasePresent(phrase, answerText)) {
+        forbiddenErrors.push(`${rule.id}: answer must not include ${phrase}`);
+      }
+    }
+    if (forbiddenErrors.length) {
+      errors.push(...forbiddenErrors);
+      continue;
+    }
+
+    if (criticalRuleAllowsConciseConfirmation({ rule, latestQuestion: input.latestQuestion || input.currentQuestion, answerText })) {
+      continue;
+    }
+
     for (const phrase of rule.requiredAll || []) {
       if (!phrasePresent(phrase, answerText)) {
         errors.push(`${rule.id}: answer must include ${phrase}`);
@@ -1203,14 +1342,32 @@ function validateCriticalAnswer(input: {
       }
     }
 
-    for (const phrase of rule.forbiddenAny || []) {
-      if (phrasePresent(phrase, answerText)) {
-        errors.push(`${rule.id}: answer must not include ${phrase}`);
-      }
-    }
   }
 
   return errors;
+}
+
+function criticalRuleAllowsConciseConfirmation(input: { rule: CriticalAnswerRule; latestQuestion: string; answerText: string }) {
+  if (!input.rule.id.startsWith("dj-nlceo-")) return false;
+  if (!isConcisePromiseConfirmation(input.latestQuestion)) return false;
+
+  const answer = normalizeText(input.answerText);
+  const hasNoPromiseBoundary =
+    /\b(do not|don't|dont|cannot|can't|cant|should not|shouldn't|shouldnt)\b/.test(answer) &&
+    /\b(promise|commit|guarantee|approve|hold|future payment|payment date|exception)\b/.test(answer);
+  const hasConfirmOrRouteBoundary = /\b(confirm|check|route|owner|before promising|before you promise)\b/.test(answer);
+
+  return hasNoPromiseBoundary && hasConfirmOrRouteBoundary;
+}
+
+function isConcisePromiseConfirmation(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  const tokens = tokenize(normalizedQuestion, { expand: false });
+  if (tokens.length > 24) return false;
+  return (
+    /^(so|basically|right|ok|okay|just to confirm)\b/.test(normalizedQuestion) ||
+    /\b(right|correct|basically|just to confirm|to confirm)\b/.test(normalizedQuestion)
+  ) && /\b(promise|promising|commit|hold|anything|confirm|route|payment date|future date)\b/.test(normalizedQuestion);
 }
 
 function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
@@ -1398,6 +1555,7 @@ async function generateProviderAnswer(input: {
           "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
           "The current user question is authoritative. Use recent conversation context only to resolve references or context-dependent follow-ups; never let old context override a clear current question.",
+          "If the current question is a short confirmation of the prior answer, answer in one or two direct sentences and do not repeat the full policy unless needed for safety.",
           "For DJ/NLCEO cohort or payment-timing questions, say the main ISTV cohort rule does not block them, but never approve a specific future payment date or hold; route or confirm payment-timing exceptions before promising.",
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
@@ -1510,6 +1668,7 @@ async function ensureCriticalAnswer(input: {
   });
   const validationErrors = validateCriticalAnswer({
     currentQuestion: validationQuestion,
+    latestQuestion: input.currentQuestion,
     policyDecision: input.policyDecision,
     output: input.output,
   });
@@ -1526,6 +1685,7 @@ async function ensureCriticalAnswer(input: {
             "You repair Ask Sales FAQ answers only when they missed or contradicted approved high-risk sales facts.",
             "Use only the evidence packet and the validation failures. Do not add new policies, links, owners, exceptions, or hidden source mechanics.",
             "Keep the answer concise, direct, and written to the rep as you.",
+            "If the current question is only a short confirmation of the prior answer, repair it as one or two direct sentences while preserving the safety boundary.",
             "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
             `JSON example shape: ${JSON_SCHEMA_EXAMPLE}`,
             "Return valid JSON only. The first character must be { and the last character must be }.",
@@ -1572,6 +1732,7 @@ async function ensureCriticalAnswer(input: {
     const diagnostics = [repair.diagnostics, ...repairedOutput.diagnostics];
     const repairedErrors = validateCriticalAnswer({
       currentQuestion: validationQuestion,
+      latestQuestion: input.currentQuestion,
       policyDecision: input.policyDecision,
       output: repairedOutput.output,
     });
@@ -2309,14 +2470,25 @@ function parseModelOutput(content: string): ModelOutput {
   return normalizeModelOutput(parsed);
 }
 
-function parseArticleRouterOutput(content: string): ArticleRouterOutput {
-  const parsed = parseJsonObject<Partial<ArticleRouterOutput>>(content);
-  const articleId = typeof parsed.article_id === "string" ? parsed.article_id.trim() : null;
+function parseConversationPlannerOutput(content: string): ConversationPlannerOutput {
+  const parsed = parseJsonObject<Partial<ConversationPlannerOutput>>(content);
+  const mode =
+    parsed.mode === "conversation_reply" || parsed.mode === "approved_article" || parsed.mode === "unsupported"
+      ? parsed.mode
+      : "unsupported";
   const confidenceScore = parseConfidenceScore(parsed.confidence_score) ?? 0;
+  const confidenceLabel = parseConfidenceLabel(parsed.confidence_label) || confidenceLabelFromScore(confidenceScore || 50);
 
   return {
-    article_id: articleId || null,
+    mode,
+    answer: typeof parsed.answer === "string" ? sanitizeModelAnswer(parsed.answer).slice(0, 900) : "",
+    summary: typeof parsed.summary === "string" ? sanitizeModelAnswer(parsed.summary).slice(0, 400) : "",
+    sections: Array.isArray(parsed.sections) ? parsed.sections : [],
+    article_id: typeof parsed.article_id === "string" ? parsed.article_id.trim() || null : null,
     confidence_score: confidenceScore,
+    confidence_label: confidenceLabel,
+    needs_route: Boolean(parsed.needs_route),
+    route_reason: typeof parsed.route_reason === "string" ? sanitizeModelAnswer(parsed.route_reason).slice(0, 400) : "",
     reason: typeof parsed.reason === "string" ? parsed.reason.trim().slice(0, 400) : "",
   };
 }

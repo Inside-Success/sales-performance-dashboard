@@ -203,8 +203,9 @@ if (missingFiles.length === 0) {
       chatRoute.includes("I am already working on that question") &&
       chatRoute.includes("route the question instead of guessing") &&
       types.includes('"rate_limited"') &&
-      types.includes('"duplicate_in_progress"'),
-    "rate-limit and duplicate-send states return clear rep-facing answers with typed outcomes",
+      types.includes('"duplicate_in_progress"') &&
+      types.includes('"conversation_reply"'),
+    "rate-limit, duplicate-send, and conversational states return clear typed outcomes",
   );
 
   addCheck(
@@ -400,15 +401,19 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "approved article router handles policy-guard false abstains",
-    runtime.includes("tryRouteWithApprovedArticle") &&
-      runtime.includes("approved article routing") &&
-      runtime.includes("ARTICLE_ROUTER_MIN_CONFIDENCE = 82") &&
-      runtime.includes("buildPolicyDecisionFromArticleRouter") &&
+    "AI conversation planner handles policy-guard false abstains",
+    runtime.includes("tryPlanConversationTurn") &&
+      runtime.includes("conversation planning") &&
+      runtime.includes("mode conversation_reply") &&
+      runtime.includes("mode approved_article") &&
+      runtime.includes("mode unsupported") &&
+      runtime.includes("Do not add new policy, prices, discounts, owners, links, exceptions, or process steps") &&
+      runtime.includes("buildConversationReplyDecision") &&
       runtime.includes("routingSource: \"article_router\"") &&
-      runtime.includes("article_id, confidence_score, reason") &&
-      runtime.includes("If none of the approved articles directly controls the answer, return article_id as null"),
-    "default-abstain questions can use a high-confidence approved-article router without letting AI answer freely",
+      runtime.includes("routingSource: \"conversation_planner\"") &&
+      types.includes("conversation_planner") &&
+      db.includes('\"conversation_reply\"'),
+    "default-abstain messages can become natural conversation replies, approved-article matches, or safe unsupported fallbacks without broad free answering",
   );
 
   addCheck(
@@ -506,6 +511,8 @@ if (missingFiles.length === 0) {
     runtime.includes("CRITICAL_ANSWER_RULES") &&
       runtime.includes("validateCriticalAnswer") &&
       runtime.includes("ensureCriticalAnswer") &&
+      runtime.includes("criticalRuleAllowsConciseConfirmation") &&
+      runtime.includes("isConcisePromiseConfirmation") &&
       runtime.includes("critical answer repair") &&
       runtime.includes("buildCriticalFallbackOutput") &&
       runtime.includes("payment-no-custom-plans") &&

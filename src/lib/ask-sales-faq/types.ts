@@ -16,6 +16,7 @@ export type AskSalesFaqOutcome =
   | "safe_fallback"
   | "rate_limited"
   | "duplicate_in_progress"
+  | "conversation_reply"
   | "feature_disabled"
   | "auth_blocked"
   | "validation_error";
@@ -24,7 +25,7 @@ export type AskSalesFaqSourceSummary = {
   label: string;
   lastReviewed: string;
   approved: boolean;
-  sourceMode?: "approved" | "evidence" | "mixed" | "fallback";
+  sourceMode?: "approved" | "evidence" | "mixed" | "fallback" | "conversation";
   confidenceLabel?: "High" | "Medium" | "Low";
   confidenceScore?: number;
   expandableDetails?: string;
@@ -42,7 +43,7 @@ export type AskSalesFaqStructuredAnswer = {
   sections: AskSalesFaqAnswerSection[];
   confidenceLabel: "High" | "Medium" | "Low";
   confidenceScore: number;
-  sourceMode: "approved" | "evidence" | "mixed" | "fallback";
+  sourceMode: "approved" | "evidence" | "mixed" | "fallback" | "conversation";
 };
 
 export type AskSalesFaqRuntimeMetadata = {
@@ -67,7 +68,7 @@ export type AskSalesFaqRuntimeMetadata = {
     promptChars: number;
   };
   routing?: {
-    source: "direct_rule" | "context_rule" | "article_router" | "default";
+    source: "direct_rule" | "context_rule" | "article_router" | "conversation_planner" | "default";
     matchedRuleId: string;
     articleId: string | null;
     confidenceScore?: number;
