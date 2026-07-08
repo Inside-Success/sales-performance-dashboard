@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
       model: result.model,
       latencyMs: result.latencyMs,
       errorClass: result.errorClass,
+      runtimeMetadata: result.runtimeMetadata,
     });
 
     return NextResponse.json(response);

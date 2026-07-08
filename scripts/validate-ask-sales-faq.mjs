@@ -242,6 +242,21 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "AI provider path has speed guardrails without broad deterministic answers",
+    runtime.includes("FAQ_DEEPSEEK_DISABLE_THINKING") &&
+      runtime.includes("thinking: { type: \"disabled\" }") &&
+      runtime.includes("FAQ_ALLOW_CLAUDE_FALLBACK") &&
+      runtime.includes("buildDeepSeekJsonRetryMessages") &&
+      runtime.includes("runtimeMetadata") &&
+      runtime.includes("modelEvidenceCandidates") &&
+      envExample.includes('FAQ_DEEPSEEK_DISABLE_THINKING="true"') &&
+      envExample.includes('FAQ_ALLOW_CLAUDE_FALLBACK="false"') &&
+      !runtime.includes("function buildDeterministicAnswer") &&
+      !runtime.includes("const deterministicAnswer"),
+    "DeepSeek stays primary, malformed JSON gets one DeepSeek retry, Claude fallback is opt-in, and normal answers still use AI with approved evidence",
+  );
+
+  addCheck(
     "Ask Sales FAQ defaults to DeepSeek V4 Pro",
     runtime.includes('process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro"') &&
       envExample.includes('FAQ_DEEPSEEK_MODEL="deepseek-v4-pro"') &&

@@ -43,6 +43,32 @@ export type AskSalesFaqStructuredAnswer = {
   sourceMode: "approved" | "evidence" | "mixed" | "fallback";
 };
 
+export type AskSalesFaqRuntimeMetadata = {
+  providerAttempts?: Array<{
+    provider: "deepseek" | "anthropic";
+    model: string;
+    purpose: string;
+    status: "success" | "failed";
+    latencyMs: number;
+    retry?: boolean;
+    error?: string;
+    promptCacheHitTokens?: number;
+    promptCacheMissTokens?: number;
+    completionTokens?: number;
+    totalTokens?: number;
+  }>;
+  evidence?: {
+    totalCandidates: number;
+    modelCandidates: number;
+    approvedCandidates: number;
+    sourceChunkCandidates: number;
+    promptChars: number;
+  };
+  deepSeekThinkingDisabled?: boolean;
+  claudeFallbackEnabled?: boolean;
+  criticalFallbackUsed?: boolean;
+};
+
 export type AskSalesFaqResponse = {
   ok: boolean;
   conversationId: string;
@@ -100,6 +126,7 @@ export type AskSalesFaqLogPayload = {
   model: string | null;
   latencyMs: number;
   errorClass: string | null;
+  runtimeMetadata?: AskSalesFaqRuntimeMetadata | null;
 };
 
 export type AskSalesFaqDiagnosticPayload = {

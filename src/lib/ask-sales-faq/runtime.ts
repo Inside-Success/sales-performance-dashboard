@@ -2,6 +2,7 @@ import type {
   AskSalesFaqChatMessage,
   AskSalesFaqOutcome,
   AskSalesFaqResponse,
+  AskSalesFaqRuntimeMetadata,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
 import {
@@ -91,6 +92,22 @@ type ProviderJsonResult<T> = {
   provider: "deepseek" | "anthropic";
   model: string;
   output: T;
+  diagnostics: ProviderCallDiagnostics;
+};
+
+type ProviderCallDiagnostics = {
+  purpose: string;
+  attempts: NonNullable<AskSalesFaqRuntimeMetadata["providerAttempts"]>;
+  deepSeekThinkingDisabled: boolean;
+  claudeFallbackEnabled: boolean;
+  promptChars: number;
+  maxTokens: number;
+};
+
+type ModelOutputResolution = {
+  output: ModelOutput;
+  diagnostics: ProviderCallDiagnostics[];
+  fallbackUsed?: boolean;
 };
 
 export type AskSalesFaqRuntimeResult = AskSalesFaqResponse & {
@@ -98,6 +115,7 @@ export type AskSalesFaqRuntimeResult = AskSalesFaqResponse & {
   contextualQuestion: string;
   matchedArticleId: string | null;
   errorClass: string | null;
+  runtimeMetadata: AskSalesFaqRuntimeMetadata | null;
 };
 
 const STOPWORDS = new Set([
@@ -195,6 +213,12 @@ const SCOPED_EVIDENCE_WEAK_TOKENS = new Set([
 
 const AI_UNAVAILABLE_RESPONSE =
   "I cannot generate a reliable answer right now. Do not guess from memory; route this to the current sales owner or the right help channel before replying.";
+
+const JSON_SCHEMA_EXAMPLE =
+  '{"answer":"Direct answer for the rep.","summary":"One-line summary.","sections":[{"title":"Answer","body":"Useful sales guidance.","tone":"default"}],"selected_source_ids":["approved:article-id"],"needs_route":false,"route_reason":"","confidence_label":"High","confidence_score":90}';
+
+const DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS = 2600;
+const DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS = 700;
 
 const REP_FACING_INTERNAL_TERMS = [
   "not approved in the knowledge base",
@@ -528,6 +552,12 @@ export async function runAskSalesFaq(
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
   const policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
   const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
+  const baseRuntimeMetadata = buildRuntimeMetadata({
+    evidence: candidates,
+    modelEvidence: [],
+    providerDiagnostics: [],
+    criticalFallbackUsed: false,
+  });
 
   if (!policyDecision.safeToGenerate) {
     const decision = buildPolicyBlockedDecision(policyDecision);
@@ -548,8 +578,11 @@ export async function runAskSalesFaq(
       provider: null,
       model: null,
       errorClass: null,
+      runtimeMetadata: baseRuntimeMetadata,
     });
   }
+
+  const providerDiagnostics: ProviderCallDiagnostics[] = [];
 
   try {
     const answerResult = await generateProviderAnswer({
@@ -558,17 +591,21 @@ export async function runAskSalesFaq(
       evidence: candidates,
       policyDecision,
     });
-    const finalOutput = await ensureRepFacingOutput({
+    providerDiagnostics.push(answerResult.diagnostics);
+    const finalOutputResult = await ensureRepFacingOutput({
       currentQuestion: sanitizedQuestion,
       output: answerResult.output,
     });
-    const criticalOutput = await ensureCriticalAnswer({
+    providerDiagnostics.push(...finalOutputResult.diagnostics);
+    const criticalOutputResult = await ensureCriticalAnswer({
       currentQuestion: sanitizedQuestion,
       conversationContext,
       evidence: candidates,
       policyDecision,
-      output: finalOutput,
+      output: finalOutputResult.output,
     });
+    providerDiagnostics.push(...criticalOutputResult.diagnostics);
+    const criticalOutput = criticalOutputResult.output;
     const selectedEvidence = resolveSelectedEvidence(criticalOutput, candidates, sanitizedQuestion);
     const decision = buildDecision({
       output: criticalOutput,
@@ -593,6 +630,12 @@ export async function runAskSalesFaq(
       provider: answerResult.provider,
       model: answerResult.model,
       errorClass: null,
+      runtimeMetadata: buildRuntimeMetadata({
+        evidence: candidates,
+        modelEvidence: modelEvidenceCandidates(candidates),
+        providerDiagnostics,
+        criticalFallbackUsed: Boolean(criticalOutputResult.fallbackUsed),
+      }),
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
@@ -618,6 +661,12 @@ export async function runAskSalesFaq(
         provider: null,
         model: null,
         errorClass: "ai_runtime_approved_fallback",
+        runtimeMetadata: buildRuntimeMetadata({
+          evidence: candidates,
+          modelEvidence: modelEvidenceCandidates(candidates),
+          providerDiagnostics,
+          criticalFallbackUsed: true,
+        }),
       });
     }
 
@@ -636,6 +685,12 @@ export async function runAskSalesFaq(
       }),
       source: null,
       errorClass: "ai_runtime_unavailable",
+      runtimeMetadata: buildRuntimeMetadata({
+        evidence: candidates,
+        modelEvidence: modelEvidenceCandidates(candidates),
+        providerDiagnostics,
+        criticalFallbackUsed: false,
+      }),
     });
   }
 }
@@ -652,6 +707,7 @@ function buildHandledResponse(input: {
   provider?: "deepseek" | "anthropic" | null;
   model?: string | null;
   errorClass: string | null;
+  runtimeMetadata?: AskSalesFaqRuntimeMetadata | null;
 }): AskSalesFaqRuntimeResult {
   return {
     ok: true,
@@ -676,6 +732,7 @@ function buildHandledResponse(input: {
     contextualQuestion: input.contextualQuestion,
     matchedArticleId: input.decision.matchedArticleId,
     errorClass: input.errorClass,
+    runtimeMetadata: input.runtimeMetadata || null,
   };
 }
 
@@ -897,7 +954,7 @@ function buildPolicyScopedEvidenceCandidates(question: string, conversationConte
     .filter((chunk) => scopedSupportChunkMatchesArticle(chunk, primaryArticle))
     .map((chunk) => chunkToCandidate(chunk))
     .sort((left, right) => right.score - left.score || right.authority - left.authority || left.id.localeCompare(right.id))
-    .slice(0, 4);
+    .slice(0, 2);
   const byId = new Map<string, EvidenceCandidate>();
 
   for (const candidate of [primary, ...scoped]) {
@@ -905,6 +962,12 @@ function buildPolicyScopedEvidenceCandidates(question: string, conversationConte
   }
 
   return Array.from(byId.values());
+}
+
+function modelEvidenceCandidates(candidates: EvidenceCandidate[]) {
+  const approved = candidates.filter((candidate) => candidate.kind === "approved_article").slice(0, 1);
+  const support = candidates.filter((candidate) => candidate.kind !== "approved_article").slice(0, 2);
+  return [...approved, ...support];
 }
 
 function scopedSupportChunkMatchesArticle(chunk: RetrievedChunk, article: ApprovedFaqArticle) {
@@ -988,9 +1051,10 @@ async function generateProviderAnswer(input: {
   policyDecision: PolicyGuardDecision;
 }): Promise<ProviderJsonResult<ModelOutput>> {
   const routeRequired = input.policyDecision.decision === "route_from_approved_article";
+  const modelEvidence = modelEvidenceCandidates(input.evidence);
   return generateProviderJson({
     purpose: "answer generation",
-    maxTokens: 1800,
+    maxTokens: answerGenerationMaxTokens(input.policyDecision),
     messages: [
       {
         role: "system",
@@ -1016,15 +1080,13 @@ async function generateProviderAnswer(input: {
           "sections must be an array of objects with title, optional body, optional items array, and optional tone: default, good, warning, or route.",
           "selected_source_ids must contain only IDs from the evidence packet and should list the sources actually used for the answer.",
           "confidence_score must be an integer from 0 to 100, not a 0-to-1 decimal. confidence_label must match the score: High 80-100, Medium 50-79, Low 0-49.",
+          `JSON example shape: ${JSON_SCHEMA_EXAMPLE}`,
           "Return valid JSON only. Do not use markdown. The first character must be { and the last character must be }.",
         ].join("\n"),
       },
       {
         role: "user",
         content: [
-          "CURRENT USER QUESTION:",
-          input.currentQuestion,
-          "",
           "POLICY DECISION:",
           input.policyDecision.decision,
           "",
@@ -1034,11 +1096,17 @@ async function generateProviderAnswer(input: {
           "ROUTE REQUIRED:",
           routeRequired ? "yes" : "no",
           "",
+          "EVIDENCE PACKET:",
+          formatEvidencePacket(modelEvidence, {
+            approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
+            sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
+          }),
+          "",
           "RECENT CONVERSATION CONTEXT:",
           input.conversationContext || "None",
           "",
-          "EVIDENCE PACKET:",
-          formatEvidencePacket(input.evidence, { maxCharsPerItem: 1600 }),
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
         ].join("\n"),
       },
     ],
@@ -1046,13 +1114,13 @@ async function generateProviderAnswer(input: {
   });
 }
 
-async function ensureRepFacingOutput(input: { currentQuestion: string; output: ModelOutput }) {
-  if (!modelOutputContainsHiddenTerms(input.output)) return input.output;
+async function ensureRepFacingOutput(input: { currentQuestion: string; output: ModelOutput }): Promise<ModelOutputResolution> {
+  if (!modelOutputContainsHiddenTerms(input.output)) return { output: input.output, diagnostics: [] };
 
   try {
     const rewrite = await generateProviderJson<ModelOutput>({
       purpose: "rep-facing wording repair",
-      maxTokens: 1600,
+      maxTokens: 900,
       messages: [
         {
           role: "system",
@@ -1063,6 +1131,7 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
             "If a detail needs confirmation, use normal sales wording such as: \"Confirm this with the current sales owner before promising it.\"",
             "Write directly to the rep using you, you can say, do not promise, and route this.",
             "Return valid JSON only with the same schema: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
+            `JSON example shape: ${JSON_SCHEMA_EXAMPLE}`,
           ].join("\n"),
         },
         {
@@ -1080,17 +1149,20 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
     });
 
     return {
-      ...rewrite.output,
-      selected_source_ids: input.output.selected_source_ids,
-      needs_route: input.output.needs_route,
-      confidence_label: input.output.confidence_label,
-      confidence_score: input.output.confidence_score,
+      output: {
+        ...rewrite.output,
+        selected_source_ids: input.output.selected_source_ids,
+        needs_route: input.output.needs_route,
+        confidence_label: input.output.confidence_label,
+        confidence_score: input.output.confidence_score,
+      },
+      diagnostics: [rewrite.diagnostics],
     };
   } catch (error) {
     console.warn("Ask Sales FAQ rep-facing wording repair failed", {
       error: sanitizeProviderError(error),
     });
-    return input.output;
+    return { output: input.output, diagnostics: [] };
   }
 }
 
@@ -1100,18 +1172,18 @@ async function ensureCriticalAnswer(input: {
   evidence: EvidenceCandidate[];
   policyDecision: PolicyGuardDecision;
   output: ModelOutput;
-}) {
+}): Promise<ModelOutputResolution> {
   const validationErrors = validateCriticalAnswer({
     currentQuestion: input.currentQuestion,
     policyDecision: input.policyDecision,
     output: input.output,
   });
-  if (!validationErrors.length) return input.output;
+  if (!validationErrors.length) return { output: input.output, diagnostics: [] };
 
   try {
     const repair = await generateProviderJson<ModelOutput>({
       purpose: "critical answer repair",
-      maxTokens: 1600,
+      maxTokens: 950,
       messages: [
         {
           role: "system",
@@ -1120,6 +1192,7 @@ async function ensureCriticalAnswer(input: {
             "Use only the evidence packet and the validation failures. Do not add new policies, links, owners, exceptions, or hidden source mechanics.",
             "Keep the answer concise, direct, and written to the rep as you.",
             "Return only JSON with keys: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
+            `JSON example shape: ${JSON_SCHEMA_EXAMPLE}`,
             "Return valid JSON only. The first character must be { and the last character must be }.",
           ].join("\n"),
         },
@@ -1142,7 +1215,10 @@ async function ensureCriticalAnswer(input: {
             JSON.stringify(input.output),
             "",
             "EVIDENCE PACKET:",
-            formatEvidencePacket(input.evidence, { maxCharsPerItem: 1400 }),
+            formatEvidencePacket(modelEvidenceCandidates(input.evidence), {
+              approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
+              sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
+            }),
           ].join("\n"),
         },
       ],
@@ -1158,12 +1234,13 @@ async function ensureCriticalAnswer(input: {
           : input.output.selected_source_ids,
       },
     });
+    const diagnostics = [repair.diagnostics, ...repairedOutput.diagnostics];
     const repairedErrors = validateCriticalAnswer({
       currentQuestion: input.currentQuestion,
       policyDecision: input.policyDecision,
-      output: repairedOutput,
+      output: repairedOutput.output,
     });
-    if (!repairedErrors.length) return repairedOutput;
+    if (!repairedErrors.length) return { output: repairedOutput.output, diagnostics };
 
     console.warn("Ask Sales FAQ critical answer repair still failed", {
       matchedRuleId: input.policyDecision.matchedRuleId,
@@ -1179,7 +1256,7 @@ async function ensureCriticalAnswer(input: {
   }
 
   const fallback = buildCriticalFallbackOutput(input.currentQuestion, input.policyDecision);
-  if (fallback) return fallback;
+  if (fallback) return { output: fallback, diagnostics: [], fallbackUsed: true };
 
   throw new Error(`AI output failed critical answer validation: ${validationErrors.join("; ")}`);
 }
@@ -1403,10 +1480,18 @@ function normalizeText(value: string) {
     .trim();
 }
 
-function formatEvidencePacket(candidates: EvidenceCandidate[], options: { maxCharsPerItem: number }) {
+function formatEvidencePacket(
+  candidates: EvidenceCandidate[],
+  options: { approvedArticleChars?: number; sourceChunkChars?: number; maxCharsPerItem?: number },
+) {
   return candidates
-    .map((candidate, index) =>
-      [
+    .map((candidate, index) => {
+      const maxChars =
+        candidate.kind === "approved_article"
+          ? options.approvedArticleChars || options.maxCharsPerItem || DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS
+          : options.sourceChunkChars || options.maxCharsPerItem || DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS;
+
+      return [
         `EVIDENCE ${index + 1}`,
         `ID: ${candidate.id}`,
         `Trust: ${candidate.trustLabel}`,
@@ -1416,25 +1501,134 @@ function formatEvidencePacket(candidates: EvidenceCandidate[], options: { maxCha
         `Last reviewed: ${candidate.lastReviewed || "unknown"}`,
         `Title: ${candidate.sourceTitle}`,
         `Heading: ${candidate.heading}`,
-        `Text: ${candidate.text.slice(0, options.maxCharsPerItem)}`,
-      ].join("\n"),
-    )
+        `Text: ${candidate.text.slice(0, maxChars)}`,
+      ].join("\n");
+    })
     .join("\n\n");
 }
 
-async function generateProviderJson<T>(input: {
+function evidencePromptCharCount(candidates: EvidenceCandidate[]) {
+  return formatEvidencePacket(candidates, {
+    approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
+    sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
+  }).length;
+}
+
+function answerGenerationMaxTokens(policyDecision: PolicyGuardDecision) {
+  if (policyDecision.decision === "route_from_approved_article") return 900;
+  if (policyDecision.articleId === "current-show-source") return 1300;
+  return 1100;
+}
+
+function buildRuntimeMetadata(input: {
+  evidence: EvidenceCandidate[];
+  modelEvidence: EvidenceCandidate[];
+  providerDiagnostics: ProviderCallDiagnostics[];
+  criticalFallbackUsed: boolean;
+}): AskSalesFaqRuntimeMetadata {
+  const providerAttempts = input.providerDiagnostics.flatMap((diagnostic) => diagnostic.attempts);
+  const latestDiagnostic = input.providerDiagnostics[input.providerDiagnostics.length - 1];
+
+  return {
+    providerAttempts,
+    evidence: {
+      totalCandidates: input.evidence.length,
+      modelCandidates: input.modelEvidence.length,
+      approvedCandidates: input.modelEvidence.filter((candidate) => candidate.kind === "approved_article").length,
+      sourceChunkCandidates: input.modelEvidence.filter((candidate) => candidate.kind !== "approved_article").length,
+      promptChars: evidencePromptCharCount(input.modelEvidence),
+    },
+    deepSeekThinkingDisabled: latestDiagnostic?.deepSeekThinkingDisabled ?? isDeepSeekThinkingDisabled(),
+    claudeFallbackEnabled: latestDiagnostic?.claudeFallbackEnabled ?? isClaudeFallbackEnabled(),
+    criticalFallbackUsed: input.criticalFallbackUsed,
+  };
+}
+
+function isClaudeFallbackEnabled() {
+  return process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true";
+}
+
+function isDeepSeekThinkingDisabled() {
+  return process.env.FAQ_DEEPSEEK_DISABLE_THINKING !== "false";
+}
+
+function providerPromptChars(messages: Array<{ role: "system" | "user"; content: string }>) {
+  return messages.reduce((total, message) => total + message.content.length, 0);
+}
+
+function buildProviderDiagnostics<T>(
+  input: ProviderJsonInput<T>,
+  options: {
+    attempts: NonNullable<AskSalesFaqRuntimeMetadata["providerAttempts"]>;
+    claudeFallbackEnabled: boolean;
+    deepSeekThinkingDisabled: boolean;
+    promptChars: number;
+  },
+): ProviderCallDiagnostics {
+  return {
+    purpose: input.purpose,
+    attempts: options.attempts,
+    deepSeekThinkingDisabled: options.deepSeekThinkingDisabled,
+    claudeFallbackEnabled: options.claudeFallbackEnabled,
+    promptChars: options.promptChars,
+    maxTokens: input.maxTokens,
+  };
+}
+
+function buildDeepSeekJsonRetryMessages<T>(input: ProviderJsonInput<T>, previousContent: string, parseError: string) {
+  return [
+    {
+      role: "system" as const,
+      content: [
+        "Your previous Ask Sales FAQ response was not valid JSON for the required schema.",
+        "Answer the same request again using only the approved evidence inside the original request below.",
+        "Do not add facts, prices, discounts, owners, links, exceptions, or policy not present in that original request.",
+        "Return one valid JSON object only. Do not use markdown.",
+        `Required JSON shape: ${JSON_SCHEMA_EXAMPLE}`,
+        `Previous parse/schema error: ${parseError}`,
+      ].join("\n"),
+    },
+    {
+      role: "user" as const,
+      content: [
+        "ORIGINAL REQUEST:",
+        input.messages.map((message) => `${message.role.toUpperCase()}:\n${message.content}`).join("\n\n"),
+        "",
+        "PREVIOUS INVALID RESPONSE:",
+        previousContent.slice(0, 2400) || "(empty response)",
+      ].join("\n"),
+    },
+  ];
+}
+
+function isLikelyThinkingParamError(error: string) {
+  return /\bthinking\b/i.test(error) && /\b(unknown|unsupported|invalid|extra|parameter|field)\b/i.test(error);
+}
+
+type ProviderJsonInput<T> = {
   purpose: string;
   messages: Array<{ role: "system" | "user"; content: string }>;
   maxTokens: number;
   parse: (content: string) => T;
-}): Promise<ProviderJsonResult<T>> {
+};
+
+async function generateProviderJson<T>(input: ProviderJsonInput<T>): Promise<ProviderJsonResult<T>> {
   const deepSeekKey = process.env.DEEPSEEK_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const claudeFallbackEnabled = isClaudeFallbackEnabled();
+  const deepSeekThinkingDisabled = isDeepSeekThinkingDisabled();
   const errors: string[] = [];
+  const attempts: NonNullable<AskSalesFaqRuntimeMetadata["providerAttempts"]> = [];
+  const promptChars = providerPromptChars(input.messages);
 
   if (deepSeekKey) {
     try {
-      return await callDeepSeekJson(input, deepSeekKey);
+      return await callDeepSeekJson(input, deepSeekKey, {
+        attempts,
+        claudeFallbackEnabled,
+        deepSeekThinkingDisabled,
+        promptChars,
+      });
     } catch (error) {
       const sanitizedError = sanitizeProviderError(error);
       errors.push(`deepseek: ${sanitizedError}`);
@@ -1446,9 +1640,14 @@ async function generateProviderJson<T>(input: {
     }
   }
 
-  if (anthropicKey) {
+  if (anthropicKey && claudeFallbackEnabled) {
     try {
-      return await callAnthropicJson(input, anthropicKey);
+      return await callAnthropicJson(input, anthropicKey, {
+        attempts,
+        claudeFallbackEnabled,
+        deepSeekThinkingDisabled,
+        promptChars,
+      });
     } catch (error) {
       const sanitizedError = sanitizeProviderError(error);
       errors.push(`anthropic: ${sanitizedError}`);
@@ -1460,29 +1659,124 @@ async function generateProviderJson<T>(input: {
     }
   }
 
+  if (anthropicKey && !claudeFallbackEnabled) {
+    errors.push("anthropic: skipped because FAQ_ALLOW_CLAUDE_FALLBACK is not true");
+  }
+
   throw new Error(`No Ask Sales FAQ provider succeeded for ${input.purpose}. Attempts: ${errors.length}. ${errors.join(" | ")}`);
 }
 
 async function callDeepSeekJson<T>(
-  input: {
-    purpose: string;
-    messages: Array<{ role: "system" | "user"; content: string }>;
-    maxTokens: number;
-    parse: (content: string) => T;
-  },
+  input: ProviderJsonInput<T>,
   apiKey: string,
+  options: {
+    attempts: NonNullable<AskSalesFaqRuntimeMetadata["providerAttempts"]>;
+    claudeFallbackEnabled: boolean;
+    deepSeekThinkingDisabled: boolean;
+    promptChars: number;
+  },
 ): Promise<ProviderJsonResult<T>> {
   const model = process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
+  const primary = await fetchDeepSeekJsonCompletion({
+    input,
+    apiKey,
+    model,
+    messages: input.messages,
+    maxTokens: input.maxTokens,
+    thinkingDisabled: options.deepSeekThinkingDisabled,
+    retry: false,
+  });
+  options.attempts.push(primary.attempt);
+
+  if (primary.output.ok) {
+    return {
+      provider: "deepseek",
+      model,
+      output: primary.output.value,
+      diagnostics: buildProviderDiagnostics(input, options),
+    };
+  }
+
+  let retrySource = primary;
+  let retryThinkingDisabled = options.deepSeekThinkingDisabled;
+
+  if (options.deepSeekThinkingDisabled && isLikelyThinkingParamError(primary.output.error)) {
+    const withoutThinking = await fetchDeepSeekJsonCompletion({
+      input,
+      apiKey,
+      model,
+      messages: input.messages,
+      maxTokens: input.maxTokens,
+      thinkingDisabled: false,
+      retry: true,
+    });
+    options.attempts.push(withoutThinking.attempt);
+
+    if (withoutThinking.output.ok) {
+      return {
+        provider: "deepseek",
+        model,
+        output: withoutThinking.output.value,
+        diagnostics: buildProviderDiagnostics(input, {
+          ...options,
+          deepSeekThinkingDisabled: false,
+        }),
+      };
+    }
+
+    retrySource = withoutThinking;
+    retryThinkingDisabled = false;
+  }
+
+  if (!retrySource.retryableJsonError) {
+    throw new Error(retrySource.output.ok ? `DeepSeek ${input.purpose} request failed` : retrySource.output.error);
+  }
+
+  const retryError = retrySource.output.ok ? "DeepSeek JSON output did not match schema" : retrySource.output.error;
+  const retry = await fetchDeepSeekJsonCompletion({
+    input,
+    apiKey,
+    model,
+    messages: buildDeepSeekJsonRetryMessages(input, retrySource.content, retryError),
+    maxTokens: Math.min(input.maxTokens, 1200),
+    thinkingDisabled: retryThinkingDisabled,
+    retry: true,
+  });
+  options.attempts.push(retry.attempt);
+
+  if (retry.output.ok) {
+    return {
+      provider: "deepseek",
+      model,
+      output: retry.output.value,
+      diagnostics: buildProviderDiagnostics(input, options),
+    };
+  }
+
+  throw new Error(retry.output.error || primary.output.error || `DeepSeek ${input.purpose} request failed`);
+}
+
+async function fetchDeepSeekJsonCompletion<T>(input: {
+  input: ProviderJsonInput<T>;
+  apiKey: string;
+  model: string;
+  messages: Array<{ role: "system" | "user"; content: string }>;
+  maxTokens: number;
+  thinkingDisabled: boolean;
+  retry: boolean;
+}) {
+  const startedAt = Date.now();
   const response = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
-      authorization: `Bearer ${apiKey}`,
+      authorization: `Bearer ${input.apiKey}`,
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      model,
+      model: input.model,
       max_tokens: input.maxTokens,
       response_format: { type: "json_object" },
+      ...(input.thinkingDisabled ? { thinking: { type: "disabled" } } : {}),
       messages: input.messages,
     }),
   });
@@ -1490,27 +1784,66 @@ async function callDeepSeekJson<T>(
   const data = (await safeJson(response)) as {
     choices?: Array<{ message?: { content?: string } }>;
     error?: { message?: string };
+    usage?: {
+      prompt_cache_hit_tokens?: number;
+      prompt_cache_miss_tokens?: number;
+      completion_tokens?: number;
+      total_tokens?: number;
+    };
   } | null;
 
-  if (!response.ok) throw new Error(data?.error?.message || `DeepSeek ${input.purpose} request failed with HTTP ${response.status}`);
-
+  const latencyMs = Date.now() - startedAt;
   const content = data?.choices?.[0]?.message?.content || "";
-  return { provider: "deepseek", model, output: input.parse(content) };
+  let output: { ok: true; value: T } | { ok: false; error: string };
+
+  if (!response.ok) {
+    output = {
+      ok: false,
+      error: data?.error?.message || `DeepSeek ${input.input.purpose} request failed with HTTP ${response.status}`,
+    };
+  } else {
+    try {
+      output = { ok: true, value: input.input.parse(content) };
+    } catch (error) {
+      output = { ok: false, error: sanitizeProviderError(error) };
+    }
+  }
+
+  return {
+    content,
+    output,
+    retryableJsonError: response.ok && !output.ok,
+    attempt: {
+      provider: "deepseek" as const,
+      model: input.model,
+      purpose: input.input.purpose,
+      status: output.ok ? ("success" as const) : ("failed" as const),
+      latencyMs,
+      retry: input.retry || undefined,
+      error: output.ok ? undefined : output.error,
+      promptCacheHitTokens: data?.usage?.prompt_cache_hit_tokens,
+      promptCacheMissTokens: data?.usage?.prompt_cache_miss_tokens,
+      completionTokens: data?.usage?.completion_tokens,
+      totalTokens: data?.usage?.total_tokens,
+    },
+  };
 }
 
 async function callAnthropicJson<T>(
-  input: {
-    purpose: string;
-    messages: Array<{ role: "system" | "user"; content: string }>;
-    maxTokens: number;
-    parse: (content: string) => T;
-  },
+  input: ProviderJsonInput<T>,
   apiKey: string,
+  options: {
+    attempts: NonNullable<AskSalesFaqRuntimeMetadata["providerAttempts"]>;
+    claudeFallbackEnabled: boolean;
+    deepSeekThinkingDisabled: boolean;
+    promptChars: number;
+  },
 ): Promise<ProviderJsonResult<T>> {
   const model = process.env.FAQ_CLAUDE_MODEL || "claude-sonnet-4-6";
   const system = input.messages.find((message) => message.role === "system")?.content || "";
   const user = input.messages.find((message) => message.role === "user")?.content || "";
 
+  const startedAt = Date.now();
   const response = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -1532,10 +1865,19 @@ async function callAnthropicJson<T>(
     error?: { message?: string };
   } | null;
 
+  const latencyMs = Date.now() - startedAt;
   if (!response.ok) throw new Error(data?.error?.message || `Anthropic ${input.purpose} request failed with HTTP ${response.status}`);
 
   const content = data?.content?.find((part) => part.type === "text" && part.text)?.text || "";
-  return { provider: "anthropic", model, output: input.parse(content) };
+  const output = input.parse(content);
+  options.attempts.push({
+    provider: "anthropic",
+    model,
+    purpose: input.purpose,
+    status: "success",
+    latencyMs,
+  });
+  return { provider: "anthropic", model, output, diagnostics: buildProviderDiagnostics(input, options) };
 }
 
 function parseModelOutput(content: string): ModelOutput {

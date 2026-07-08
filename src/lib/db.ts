@@ -2212,6 +2212,12 @@ export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
   const sql = getSql();
   const shouldCreateMiss =
     payload.outcome !== "answer_from_approved_article" || payload.needsRoute || Boolean(payload.errorClass);
+  const answerPayload = payload.structuredAnswer
+    ? {
+        ...payload.structuredAnswer,
+        ...(payload.runtimeMetadata ? { runtimeMetadata: payload.runtimeMetadata } : {}),
+      }
+    : null;
 
   await sql.query(
     `
@@ -2291,7 +2297,7 @@ export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
       payload.matchedArticleId,
       payload.sourceLabel,
       payload.sourceLastReviewed,
-      payload.structuredAnswer ? JSON.stringify(payload.structuredAnswer) : null,
+      answerPayload ? JSON.stringify(answerPayload) : null,
       payload.needsRoute,
       payload.routeReason,
       payload.provider,
