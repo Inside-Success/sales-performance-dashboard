@@ -1,6 +1,6 @@
 # Ask Sales FAQ Speed Optimization
 
-Status: implemented locally on 2026-07-08. Production push/deploy verification is tracked in the FAQ repo handoff docs.
+Status: implemented, pushed, deployed, and production guard-verified on 2026-07-08.
 
 This change optimizes the Ask Sales FAQ runtime without replacing normal answers with broad deterministic templates.
 
@@ -53,3 +53,17 @@ npx tsc --noEmit
 npm run build
 git diff --check
 ```
+
+Latest verified run:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 51 / 51 passed.
+- `npm run lint`: passed.
+- `npx tsc --noEmit`: passed.
+- `npm run build`: passed.
+- `git diff --check`: passed.
+- Dashboard commit: `28ae844`.
+- Vercel Production deployment: `dpl_7dWtZvzjbD5hizToNPJkmJqkuS83`.
+- Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
+- Anonymous `/ask-sales-faq` redirects to sign-in.
+- Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
+- Vercel production logs after guard probes showed no logs/errors.
