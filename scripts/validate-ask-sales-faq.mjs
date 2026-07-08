@@ -404,8 +404,11 @@ if (missingFiles.length === 0) {
       runtime.includes("dj-nlceo-no-cohort-deposit-boundary") &&
       runtime.includes("dj-nlceo-pricing-no-cohort-deposit-boundary") &&
       runtime.includes("DJ/NLCEO has no cohort rule") &&
-      runtime.includes("do not invent a custom plan or promise a hold"),
-    "critical answer guardrails cover regulated cannabis/dispensary qualification and DJ/NLCEO deposit/cohort follow-ups",
+      runtime.includes("do not invent a custom plan or promise a hold") &&
+      runtime.includes("never approve a specific future payment date or hold") &&
+      runtime.includes("you can give them until") &&
+      runtime.includes("start the payment plan when you're ready"),
+    "critical answer guardrails cover regulated cannabis/dispensary qualification and DJ/NLCEO deposit/cohort follow-ups without approving payment-date holds",
   );
 
   addCheck(
