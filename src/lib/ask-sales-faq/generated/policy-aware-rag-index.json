@@ -1162,13 +1162,13 @@
       "authority": 100,
       "category": "Sales Tech & Support Routing",
       "heading": "Answer",
-      "id": "rag_16dcf374194a7347",
+      "id": "rag_662941f4e0cef495",
       "last_reviewed": "2026-07-08",
       "risk_level": "high",
       "source_path": "knowledge-base/sales-tech-support/sales-tech-routing-and-support-requests.md",
       "source_title": "Sales-Tech Routing And Support Requests",
       "source_type": "approved_article",
-      "text": "## Answer\n\nUse issue-type routing. Do not tag one default person; post in the relevant Slack channel and the right owner will reply there.\n\nSales-tech issues go to `#sales-tech-requests`.\n\nUse `#sales-tech-requests` for calls, Zoom, Zoom Phone, Keap, forms, missing dropdowns, recordings, calendar/rebooking tooling, passoff/double-booking tooling, checkout/page errors, broken payment links, and other sales-system issues.\n\nUse `#sales-finance-requests` for finance/client billing issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoices, custom payment terms, refund/payment exceptions, and similar money-handling questions.\n\nUse `#sales-questions-requests` for sales-policy or approval questions that are not mainly finance or tech execution.\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, and greenlight-letter status/escalation requests.",
+      "text": "## Answer\n\nUse issue-type routing. Do not tag one default person; post in the relevant Slack channel and the right owner will reply there.\n\nSales-tech issues go to `#sales-tech-requests`.\n\nUse `#sales-tech-requests` for calls, Zoom, Zoom Phone, Keap, forms, missing dropdowns, recordings, calendar/rebooking tooling, passoff/double-booking tooling, checkout/page errors, broken payment links, and other sales-system issues.\n\nUse `#sales-finance-requests` for finance/client billing issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoices, refunds, billing questions, and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link.\n\nUse `#sales-questions-requests` for sales-policy or approval questions that are not mainly finance or tech execution.\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, and greenlight-letter status/escalation requests.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -1222,13 +1222,13 @@
       "authority": 100,
       "category": "Sales Tech & Support Routing",
       "heading": "What reps MUST NOT say",
-      "id": "rag_886208e5ae2a3661",
+      "id": "rag_e71a3ff4d9e6be84",
       "last_reviewed": "2026-07-08",
       "risk_level": "high",
       "source_path": "knowledge-base/sales-tech-support/sales-tech-routing-and-support-requests.md",
       "source_title": "Sales-Tech Routing And Support Requests",
       "source_type": "approved_article",
-      "text": "## What reps MUST NOT say\n\n- Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.\n- Do not tell reps to DM one individual person as the default route.\n- Do not put raw card numbers, bank details, private recording links, passwords, tokens, or private client data into Slack, the chatbot, notes, or local files.\n- Do not give exact troubleshooting steps, edit system records, change calendars, or create payment links unless a separate approved SOP covers that exact action.",
+      "text": "## What reps MUST NOT say\n\n- Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.\n- Do not tell reps to DM one individual person as the default route.\n- Do not route custom payment plan, custom split, custom amount, custom link, or custom payment-term requests as if finance may approve a new option; those are not allowed unless they are already listed in the approved payment source.\n- Do not put raw card numbers, bank details, private recording links, passwords, tokens, or private client data into Slack, the chatbot, notes, or local files.\n- Do not give exact troubleshooting steps, edit system records, change calendars, or create payment links unless a separate approved SOP covers that exact action.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -22732,13 +22732,13 @@
       "authority": 42,
       "category": "Offers, Pricing & Packages",
       "heading": "2026-07-08 Custom Payment And Critical Answer Guard Closure",
-      "id": "rag_bfa9f75ed8013f10",
+      "id": "rag_339a5071d26e7d7a",
       "last_reviewed": "2026-07-01",
       "risk_level": "high",
       "source_path": "_logs/known-gaps.md",
       "source_title": "Known Gaps",
       "source_type": "governance_log",
-      "text": "## 2026-07-08 Custom Payment And Critical Answer Guard Closure\n\nRich's latest custom-payment-plan answer supplied by the user closed the remaining ambiguity around custom plans:\n\n- Reps cannot suggest custom payment plans, custom splits, custom amounts, or custom payment links.\n- Reps should use only the approved listed payment/installment plans from the current spreadsheet/source.\n- Finance routing still applies for operational payment issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoice requests, refunds, and billing questions.\n- The chatbot should not phrase custom payment plans as something finance may approve.\n\nRuntime guardrail added:\n\n- AI remains the normal answer writer for approved topics.\n- High-risk approved facts now have targeted answer validation, one AI repair attempt, and a narrow approved fallback if repair/provider generation fails.\n- Covered guardrails: no custom payment plans, main ISTV upgrade discount carry-forward, sales-tech route, greenlight route, main ISTV 3-month reapply minimum, and wire/ACH finance route.\n\nValidation:\n\n- FAQ policy guard: 91 / 91.\n- FAQ answer contract/runtime: 99 / 99.\n- Dashboard static Ask Sales FAQ validator: 50 / 50.\n- Dashboard lint/build and `git diff --check`: passed.\n\nStill pending:\n\n- Signed-in allowlisted manual retest of the listed regression questions.\n- Speed optimization.\n- Weekly checkpoint-based Slack refresh/summarization automation.",
+      "text": "## 2026-07-08 Custom Payment And Critical Answer Guard Closure\n\nRich's latest custom-payment-plan answer supplied by the user closed the remaining ambiguity around custom plans:\n\n- Reps cannot suggest custom payment plans, custom splits, custom amounts, or custom payment links.\n- Reps should use only the approved listed payment/installment plans from the current spreadsheet/source.\n- Finance routing still applies for operational payment issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoice requests, refunds, and billing questions.\n- The chatbot should not phrase custom payment plans as something finance may approve.\n- Sales-tech/finance routing wording was tightened so custom payment terms, custom splits, custom amounts, and custom links are not treated as finance-approvable exceptions.\n\nRuntime guardrail added:\n\n- AI remains the normal answer writer for approved topics.\n- High-risk approved facts now have targeted answer validation, one AI repair attempt, and a narrow approved fallback if repair/provider generation fails.\n- Covered guardrails: no custom payment plans, main ISTV upgrade discount carry-forward, sales-tech route, greenlight route, main ISTV 3-month reapply minimum, and wire/ACH finance route.\n\nValidation:\n\n- FAQ policy guard: 92 / 92.\n- FAQ answer contract/runtime: 100 / 100.\n- Dashboard static Ask Sales FAQ validator: 50 / 50.\n- Dashboard lint/build and `git diff --check`: passed.\n\nStill pending:\n\n- Signed-in allowlisted manual retest of the listed regression questions.\n- Speed optimization.\n- Weekly checkpoint-based Slack refresh/summarization automation.",
       "trust_label": "Governance log"
     },
     {

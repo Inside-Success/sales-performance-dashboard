@@ -392,7 +392,11 @@ if (missingFiles.length === 0) {
     bundle.includes("Custom payment plans, custom splits, custom amounts, and custom payment links are not allowed.") &&
       bundle.includes("No, you cannot offer a custom payment plan.") &&
       bundle.includes("Do not route a custom payment plan request as if finance may approve a new plan") &&
-      !bundle.includes("custom payment terms, custom split requests"),
+      bundle.includes("payment-operation exceptions that are not requests for a custom payment plan") &&
+      bundle.includes("different payment split") &&
+      runtime.includes("different payment split") &&
+      !bundle.includes("custom payment terms, custom split requests") &&
+      !bundle.includes("invoices, custom payment terms, refund/payment exceptions"),
     "Rich-confirmed custom payment requests return no/custom plans instead of suggesting finance approval",
   );
 

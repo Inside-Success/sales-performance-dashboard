@@ -218,7 +218,7 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "approvedAt": "2026-07-08",
     "approvalReference": "User confirmation in chat, 2026-07-08: route by issue type; sales-tech issues go to #sales-tech-requests",
     "lastReviewed": "2026-07-08",
-    "body": "## Answer\n\nUse issue-type routing. Do not tag one default person; post in the relevant Slack channel and the right owner will reply there.\n\nSales-tech issues go to `#sales-tech-requests`.\n\nUse `#sales-tech-requests` for calls, Zoom, Zoom Phone, Keap, forms, missing dropdowns, recordings, calendar/rebooking tooling, passoff/double-booking tooling, checkout/page errors, broken payment links, and other sales-system issues.\n\nUse `#sales-finance-requests` for finance/client billing issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoices, custom payment terms, refund/payment exceptions, and similar money-handling questions.\n\nUse `#sales-questions-requests` for sales-policy or approval questions that are not mainly finance or tech execution.\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, and greenlight-letter status/escalation requests.\n\n## What Reps Can Say\n\n- \"For sales-tech issues like Zoom, Keap, call tools, dropdown/forms, recordings, calendars, or broken payment-link mechanics, post in `#sales-tech-requests`.\"\n- \"For client billing, failed payment, duplicate charge, wire/ACH, invoice, refund, card-update, or finance exception questions, post in `#sales-finance-requests`.\"\n- \"For sales-policy approval questions, use `#sales-questions-requests`.\"\n- \"For greenlight letter requests, use `#greenlight-requests`.\"\n\n## What reps MUST NOT say\n\n- Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.\n- Do not tell reps to DM one individual person as the default route.\n- Do not put raw card numbers, bank details, private recording links, passwords, tokens, or private client data into Slack, the chatbot, notes, or local files.\n- Do not give exact troubleshooting steps, edit system records, change calendars, or create payment links unless a separate approved SOP covers that exact action.\n\n## Route If Unclear\n\nIf the rep is asking for exact steps rather than routing, send them to the relevant channel instead of inventing the steps:\n\n- `#sales-tech-requests` for tech/tooling steps.\n- `#sales-finance-requests` for money/payment/billing steps.\n- `#sales-questions-requests` for policy approval.\n- `#greenlight-requests` for greenlight letters.\n\nInclude enough non-sensitive context for the channel to help: show/product, client name if appropriate, rep name, what happened, what link/tool failed, deadline/urgency, and screenshots only if they do not expose private payment or login details.\n\n## Pending Or Excluded\n\nThis article confirms channel routing only. It does not approve a full troubleshooting decision tree, coverage hours, ticket-desk replacement policy, calendar-link matrix, Zoom Phone fix steps, Keap data changes, payment-link creation, or sensitive-data handling beyond the red lines above."
+    "body": "## Answer\n\nUse issue-type routing. Do not tag one default person; post in the relevant Slack channel and the right owner will reply there.\n\nSales-tech issues go to `#sales-tech-requests`.\n\nUse `#sales-tech-requests` for calls, Zoom, Zoom Phone, Keap, forms, missing dropdowns, recordings, calendar/rebooking tooling, passoff/double-booking tooling, checkout/page errors, broken payment links, and other sales-system issues.\n\nUse `#sales-finance-requests` for finance/client billing issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoices, refunds, billing questions, and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link.\n\nUse `#sales-questions-requests` for sales-policy or approval questions that are not mainly finance or tech execution.\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, and greenlight-letter status/escalation requests.\n\n## What Reps Can Say\n\n- \"For sales-tech issues like Zoom, Keap, call tools, dropdown/forms, recordings, calendars, or broken payment-link mechanics, post in `#sales-tech-requests`.\"\n- \"For client billing, failed payment, duplicate charge, wire/ACH, invoice, refund, card-update, or finance exception questions, post in `#sales-finance-requests`.\"\n- \"For sales-policy approval questions, use `#sales-questions-requests`.\"\n- \"For greenlight letter requests, use `#greenlight-requests`.\"\n\n## What reps MUST NOT say\n\n- Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.\n- Do not tell reps to DM one individual person as the default route.\n- Do not route custom payment plan, custom split, custom amount, custom link, or custom payment-term requests as if finance may approve a new option; those are not allowed unless they are already listed in the approved payment source.\n- Do not put raw card numbers, bank details, private recording links, passwords, tokens, or private client data into Slack, the chatbot, notes, or local files.\n- Do not give exact troubleshooting steps, edit system records, change calendars, or create payment links unless a separate approved SOP covers that exact action.\n\n## Route If Unclear\n\nIf the rep is asking for exact steps rather than routing, send them to the relevant channel instead of inventing the steps:\n\n- `#sales-tech-requests` for tech/tooling steps.\n- `#sales-finance-requests` for money/payment/billing steps.\n- `#sales-questions-requests` for policy approval.\n- `#greenlight-requests` for greenlight letters.\n\nInclude enough non-sensitive context for the channel to help: show/product, client name if appropriate, rep name, what happened, what link/tool failed, deadline/urgency, and screenshots only if they do not expose private payment or login details.\n\n## Pending Or Excluded\n\nThis article confirms channel routing only. It does not approve a full troubleshooting decision tree, coverage hours, ticket-desk replacement policy, calendar-link matrix, Zoom Phone fix steps, Keap data changes, payment-link creation, or sensitive-data handling beyond the red lines above."
   },
   {
     "id": "twenty-percent-dial-out-sop",
@@ -251,8 +251,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "admin-rule-update-channel-watch",
       "decision": "admin_only",
-      "reason": "Update-channel governance is approved for admin/maintenance use only.",
       "article_id": "current-sales-rule-update-channels",
+      "reason": "Update-channel governance is approved for admin/maintenance use only.",
       "match_any_groups": [
         [
           "knowledge system",
@@ -268,8 +268,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "admin-rule-no-raw-slack-auto-approval",
       "decision": "admin_only",
-      "reason": "Raw Slack may signal changes, but it cannot bypass article approval.",
       "article_id": "current-sales-rule-update-channels",
+      "reason": "Raw Slack may signal changes, but it cannot bypass article approval.",
       "match_any_groups": [
         [
           "slack post",
@@ -288,8 +288,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "abstain-new-rep-onboarding",
       "decision": "abstain_unapproved",
-      "reason": "New-rep onboarding and final mock requirements are not approved for runtime answers.",
       "blocked_topic": "new-rep-onboarding-and-final-mock",
+      "reason": "New-rep onboarding and final mock requirements are not approved for runtime answers.",
       "match_any": [
         "new reps",
         "final mock",
@@ -301,8 +301,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-greenlight-live-ops",
       "decision": "route_from_approved_article",
-      "reason": "Greenlight caps, exact send windows, letter status, and emergency-stop mechanics route to #greenlight-requests.",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
+      "reason": "Greenlight caps, exact send windows, letter status, and emergency-stop mechanics route to #greenlight-requests.",
       "match_any": [
         "greenlight approval cap",
         "current greenlight approval cap",
@@ -330,8 +330,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-main-istv-proof-exception",
       "decision": "route_from_approved_article",
-      "reason": "Main ISTV genuine-reason or proof exceptions require Rich approval.",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
+      "reason": "Main ISTV genuine-reason or proof exceptions require Rich approval.",
       "match_any_groups": [
         [
           "proof",
@@ -356,8 +356,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-sales-tech-channel-question",
       "decision": "route_from_approved_article",
-      "reason": "Approved sales-tech article gives the channel route, not exact troubleshooting steps.",
       "article_id": "sales-tech-routing-and-support-requests",
+      "reason": "Approved sales-tech article gives the channel route, not exact troubleshooting steps.",
       "match_any_groups": [
         [
           "where do i post",
@@ -383,8 +383,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-sales-tech-exact-steps",
       "decision": "route_from_approved_article",
-      "reason": "Approved sales-tech article gives the channel route, not exact troubleshooting steps.",
       "article_id": "sales-tech-routing-and-support-requests",
+      "reason": "Approved sales-tech article gives the channel route, not exact troubleshooting steps.",
       "match_any": [
         "which calendar link",
         "calendar link",
@@ -402,8 +402,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-current-show-status",
       "decision": "route_from_approved_article",
-      "reason": "Current show status can drift; answer from the approved list and route newly added, paused, disputed, or missing-show cases to the current sales/ops owner.",
       "article_id": "current-show-source",
+      "reason": "Current show status can drift; answer from the approved list and route newly added, paused, disputed, or missing-show cases to the current sales/ops owner.",
       "match_any": [
         "is love experts active",
         "currently active",
@@ -418,8 +418,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-stale-standard-split",
       "decision": "route_from_approved_article",
-      "reason": "The old Standard 3 x $7,000 split is intentionally excluded from approved terms.",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "The old Standard 3 x $7,000 split is intentionally excluded from approved terms.",
       "match_any": [
         "3 payments of $7,000",
         "3 payments of 7000",
@@ -430,8 +430,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-special-discounts",
       "decision": "route_from_approved_article",
-      "reason": "Second-show, crossover, and special discounts remain pending Rich/owner confirmation.",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Second-show, crossover, and special discounts remain pending Rich/owner confirmation.",
       "match_any": [
         "second-show",
         "second show",
@@ -442,8 +442,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-refund-exceptions",
       "decision": "route_from_approved_article",
-      "reason": "Refund/payment exceptions must route through #sales-finance-requests unless the issue is legal/contract-specific.",
       "article_id": "refund-rules-by-product",
+      "reason": "Refund/payment exceptions must route through #sales-finance-requests unless the issue is legal/contract-specific.",
       "match_any": [
         "paid but did not sign",
         "paid but not signed"
@@ -452,8 +452,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-duplicate-charge",
       "decision": "route_from_approved_article",
-      "reason": "Duplicate-charge and charged-twice cases route through #sales-finance-requests.",
       "article_id": "payment-plan-and-link-boundaries",
+      "reason": "Duplicate-charge and charged-twice cases route through #sales-finance-requests.",
       "match_any": [
         "duplicate charge",
         "card was charged",
@@ -465,8 +465,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-wire-ach",
       "decision": "route_from_approved_article",
-      "reason": "Wire/ACH/invoice/payment exceptions route through #sales-finance-requests.",
       "article_id": "payment-plan-and-link-boundaries",
+      "reason": "Wire/ACH/invoice/payment exceptions route through #sales-finance-requests.",
       "match_any": [
         "wire",
         "ach",
@@ -476,8 +476,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-broken-payment-link",
       "decision": "route_from_approved_article",
-      "reason": "Broken payment-link mechanics route through #sales-tech-requests.",
       "article_id": "payment-plan-and-link-boundaries",
+      "reason": "Broken payment-link mechanics route through #sales-tech-requests.",
       "match_any": [
         "payment link is broken",
         "broken payment link",
@@ -487,8 +487,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-proof-links",
       "decision": "route_from_approved_article",
-      "reason": "Specific proof links and shareable proof assets still need the current approved source-owner material.",
       "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Specific proof links and shareable proof assets still need the current approved source-owner material.",
       "match_any": [
         "public proof",
         "proof links",
@@ -502,8 +502,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-client-recording-share",
       "decision": "route_from_approved_article",
-      "reason": "External sharing of call recordings needs explicit approval.",
       "article_id": "internal-material-sharing-boundaries",
+      "reason": "External sharing of call recordings needs explicit approval.",
       "match_any_groups": [
         [
           "call recording",
@@ -518,8 +518,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-content-usage-details",
       "decision": "route_from_approved_article",
-      "reason": "Detailed content usage rights need legal/contracts-approved wording.",
       "article_id": "platform-hosting-and-client-license-duration",
+      "reason": "Detailed content usage rights need legal/contracts-approved wording.",
       "match_any": [
         "upload the full episode",
         "youtube",
@@ -531,8 +531,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-recording-access-issue",
       "decision": "route_from_approved_article",
-      "reason": "Missing or denied recording access routes to the recording owner.",
       "article_id": "call-recording-storage-and-access",
+      "reason": "Missing or denied recording access routes to the recording owner.",
       "match_any": [
         "recording link is missing",
         "do not have access",
@@ -543,8 +543,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-contract-exceptions",
       "decision": "route_from_approved_article",
-      "reason": "Contract edits and legal-review exceptions can use the approved no-edit boundary, but still require routing for the exception.",
       "article_id": "contracts-edits-and-signature-process",
+      "reason": "Contract edits and legal-review exceptions can use the approved no-edit boundary, but still require routing for the exception.",
       "match_any": [
         "edit contract",
         "contract language",
@@ -561,8 +561,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-dj-nlceo-cohort-scope",
       "decision": "route_from_approved_article",
-      "reason": "Daymond John / Next Level CEO has no cohort rule and no same-day discount; route DJ/NLCEO edge cases to the current DJ/NLCEO channel or sales owner.",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
+      "reason": "Daymond John / Next Level CEO has no cohort rule and no same-day discount; route DJ/NLCEO edge cases to the current DJ/NLCEO channel or sales owner.",
       "match_any_groups": [
         [
           "daymond john",
@@ -588,8 +588,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-greenlight-letter-routing",
       "decision": "answer_from_approved_article",
-      "reason": "Approved greenlight article confirms #greenlight-requests for greenlight letter requests and urgent sends.",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
+      "reason": "Approved greenlight article confirms #greenlight-requests for greenlight letter requests and urgent sends.",
       "match_any": [
         "greenlight letter request",
         "greenlight requests",
@@ -604,8 +604,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-reapply-minimum",
       "decision": "answer_from_approved_article",
-      "reason": "Rich confirmed the main ISTV reapply minimum after no-show, missed deadline, rejection, or not-fit outcome.",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
+      "reason": "Rich confirmed the main ISTV reapply minimum after no-show, missed deadline, rejection, or not-fit outcome.",
       "match_any": [
         "reapply after a no-show",
         "reapply after no-show",
@@ -629,8 +629,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-sales-tech-routing",
       "decision": "answer_from_approved_article",
-      "reason": "Approved sales-tech article confirms issue-type routing across sales-tech, finance, sales questions, and greenlight requests.",
       "article_id": "sales-tech-routing-and-support-requests",
+      "reason": "Approved sales-tech article confirms issue-type routing across sales-tech, finance, sales questions, and greenlight requests.",
       "match_any_groups": [
         [
           "sales-tech",
@@ -651,8 +651,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-security-privacy-containment",
       "decision": "answer_from_approved_article",
-      "reason": "Approved opt-out/DNC article includes conservative security/privacy containment for exposed sensitive details.",
       "article_id": "opt-out-dnc-and-security-escalation",
+      "reason": "Approved opt-out/DNC article includes conservative security/privacy containment for exposed sensitive details.",
       "match_any_groups": [
         [
           "pasted",
@@ -673,8 +673,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-opt-out-dnc",
       "decision": "answer_from_approved_article",
-      "reason": "Approved opt-out/DNC article covers STOP replies, DNC checks, call cancellation, and immediate privacy/security routing.",
       "article_id": "opt-out-dnc-and-security-escalation",
+      "reason": "Approved opt-out/DNC article covers STOP replies, DNC checks, call cancellation, and immediate privacy/security routing.",
       "match_any": [
         "replied stop",
         "reply stop",
@@ -692,8 +692,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-outbound-20-percent",
       "decision": "answer_from_approved_article",
-      "reason": "Approved 20 percent article covers Keap check, 30-day ownership, first-booking rule, and reassignment boundary.",
       "article_id": "twenty-percent-dial-out-sop",
+      "reason": "Approved 20 percent article covers Keap check, 30-day ownership, first-booking rule, and reassignment boundary.",
       "match_any_groups": [
         [
           "20 percent",
@@ -730,8 +730,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-qualification-show-fit",
       "decision": "answer_from_approved_article",
-      "reason": "Approved qualification article covers doctors/hospital employment, nurses, regulated categories, and route boundaries for sensitive fit cases.",
       "article_id": "qualification-and-show-fit-rubric",
+      "reason": "Approved qualification article covers doctors/hospital employment, nurses, regulated categories, and route boundaries for sensitive fit cases.",
       "match_any": [
         "america's best doctors",
         "americas best doctors",
@@ -757,8 +757,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-contract-link-boundary",
       "decision": "answer_from_approved_article",
-      "reason": "Approved contract article covers sending current contract links and the no-edit boundary.",
       "article_id": "contracts-edits-and-signature-process",
+      "reason": "Approved contract article covers sending current contract links and the no-edit boundary.",
       "match_any": [
         "send the contract link",
         "send contract link",
@@ -771,8 +771,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-call-2-cohort",
       "decision": "answer_from_approved_article",
-      "reason": "Approved main ISTV cohort article covers same-week Call 2 reschedules, next-week approval, and proof exceptions.",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
+      "reason": "Approved main ISTV cohort article covers same-week Call 2 reschedules, next-week approval, and proof exceptions.",
       "match_any_groups": [
         [
           "call 2",
@@ -792,8 +792,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-payment-failed-boundary",
       "decision": "answer_from_approved_article",
-      "reason": "Approved payment article covers failed-payment follow-up boundary and same-day discount carry-forward after initial payment.",
       "article_id": "payment-plan-and-link-boundaries",
+      "reason": "Approved payment article covers failed-payment follow-up boundary and same-day discount carry-forward after initial payment.",
       "match_any": [
         "failed payment",
         "payment failed",
@@ -810,8 +810,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-events-mastermind",
       "decision": "answer_from_approved_article",
-      "reason": "Approved event article covers package access and the $200 non-refundable Mastermind food/drink fee while routing logistics.",
       "article_id": "events-mastermind-red-carpet",
+      "reason": "Approved event article covers package access and the $200 non-refundable Mastermind food/drink fee while routing logistics.",
       "match_any": [
         "mastermind",
         "red carpet",
@@ -824,8 +824,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-post-sale-handoff",
       "decision": "answer_from_approved_article",
-      "reason": "Approved post-sale article covers payment, signature, onboarding email, onboarding call, PayMe, and ACH boundary.",
       "article_id": "post-sale-handoff-after-close",
+      "reason": "Approved post-sale article covers payment, signature, onboarding email, onboarding call, PayMe, and ACH boundary.",
       "match_any_groups": [
         [
           "handoff",
@@ -848,8 +848,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-americas-top-lawyers-passoff",
       "decision": "answer_from_approved_article",
-      "reason": "Approved Top Lawyers article covers passoff/dummy-channel approval and Video 2 boundary.",
       "article_id": "americas-top-lawyers-passoff-boundary",
+      "reason": "Approved Top Lawyers article covers passoff/dummy-channel approval and Video 2 boundary.",
       "match_any": [
         "america's top lawyers",
         "americas top lawyers",
@@ -865,8 +865,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-scam-bad-reviews",
       "decision": "answer_from_approved_article",
-      "reason": "Approved platform/proof article covers brief scam/bad-review objection wording and UK name-confusion context.",
       "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Approved platform/proof article covers brief scam/bad-review objection wording and UK name-confusion context.",
       "match_any": [
         "bad reviews",
         "scam",
@@ -882,8 +882,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-vendor-value-boundary",
       "decision": "answer_from_approved_article",
-      "reason": "Approved platform/proof article covers vendor/value/ROI comparison boundaries.",
       "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Approved platform/proof article covers vendor/value/ROI comparison boundaries.",
       "match_any": [
         "vendor comparison",
         "cheaper production",
@@ -898,8 +898,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-apple-tv-extra-boundary",
       "decision": "answer_from_approved_article",
-      "reason": "Approved platform/proof article covers no guaranteed Apple TV streaming-app placement or paid extra submission.",
       "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Approved platform/proof article covers no guaranteed Apple TV streaming-app placement or paid extra submission.",
       "match_any": [
         "pay extra for apple tv",
         "extra apple tv",
@@ -911,8 +911,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-call-1-pricing-boundary",
       "decision": "answer_from_approved_article",
-      "reason": "Approved Call 1 article covers the default no-pricing rule and the narrow disqualification exception confirmed by Rich.",
       "article_id": "call-1-flow",
+      "reason": "Approved Call 1 article covers the default no-pricing rule and the narrow disqualification exception confirmed by Rich.",
       "match_any_groups": [
         [
           "call 1"
@@ -932,8 +932,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-current-show-source",
       "decision": "answer_from_approved_article",
-      "reason": "Approved article answers the latest approved show list and where updates are maintained.",
       "article_id": "current-show-source",
+      "reason": "Approved article answers the latest approved show list and where updates are maintained.",
       "match_any": [
         "current active show list",
         "current show list",
@@ -951,8 +951,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-refund-split",
       "decision": "answer_from_approved_article",
-      "reason": "Approved refund article covers current refund split by product.",
       "article_id": "refund-rules-by-product",
+      "reason": "Approved refund article covers current refund split by product.",
       "match_any": [
         "refund window",
         "refund policy",
@@ -969,8 +969,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-platform-and-claims",
       "decision": "answer_from_approved_article",
-      "reason": "Approved platform/proof article covers platform wording and banned claims.",
       "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Approved platform/proof article covers platform wording and banned claims.",
       "match_any": [
         "where do all tiers air",
         "isn app",
@@ -991,8 +991,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-pricing-and-same-day-discount",
       "decision": "answer_from_approved_article",
-      "reason": "Approved pricing article covers ISTV, NLCEO, and same-day discount boundaries.",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Approved pricing article covers ISTV, NLCEO, and same-day discount boundaries.",
       "match_any": [
         "lite istv",
         "standard istv",
@@ -1017,8 +1017,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-payment-boundaries",
       "decision": "answer_from_approved_article",
-      "reason": "Approved payment article covers custom-plan/link/card-detail boundaries.",
       "article_id": "payment-plan-and-link-boundaries",
+      "reason": "Approved payment article covers custom-plan/link/card-detail boundaries.",
       "match_any": [
         "payment link",
         "official payment link",
@@ -1038,6 +1038,9 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "custom payment link",
         "custom payment terms",
         "custom terms",
+        "different split",
+        "different payment split",
+        "different payment plan",
         "different installment",
         "different amount",
         "card details",
@@ -1050,8 +1053,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-internal-materials",
       "decision": "answer_from_approved_article",
-      "reason": "Approved internal-material article covers external sharing boundaries.",
       "article_id": "internal-material-sharing-boundaries",
+      "reason": "Approved internal-material article covers external sharing boundaries.",
       "match_any": [
         "internal slack screenshot",
         "slack screenshot",
@@ -1065,8 +1068,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-platform-hosting-duration",
       "decision": "answer_from_approved_article",
-      "reason": "Approved content-rights article covers platform hosting and license duration.",
       "article_id": "platform-hosting-and-client-license-duration",
+      "reason": "Approved content-rights article covers platform hosting and license duration.",
       "match_any": [
         "hosted on the istv platform",
         "how long is content hosted",
@@ -1084,8 +1087,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-recording-storage",
       "decision": "answer_from_approved_article",
-      "reason": "Approved recording article covers automatic Zoom recording and access via recording link.",
       "article_id": "call-recording-storage-and-access",
+      "reason": "Approved recording article covers automatic Zoom recording and access via recording link.",
       "match_any": [
         "recorded automatically",
         "access a call recording",
