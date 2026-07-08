@@ -1130,9 +1130,11 @@ async function tryPlanConversationTurn(input: {
             "You are the Ask Sales FAQ conversation planner.",
             "Decide whether the sales rep's current message needs a natural chat reply, an approved sales article, or a safe unsupported fallback.",
             "Use mode conversation_reply only for conversational turns, acknowledgments, requests to shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
-            "For conversation_reply, write a natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
+            "For conversation_reply, write only the natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
+            "For conversation_reply, set summary equal to the answer and leave sections empty. The UI will render it as a normal chat reply, not a policy card.",
             "For shorten/rephrase requests, use the most recent substantive assistant sales answer. Ignore brief social replies like 'You're welcome' when resolving what 'that' refers to.",
             "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless an approved article explicitly allows that exact handoff.",
+            "Never use conversation_reply for new sales-policy/action questions, especially money, deposit, payment, discount, contract, greenlight, qualification, offer, promise, hold, or exception questions.",
             "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
             "Use mode approved_article only when one approved article directly controls the answer.",
             "Use mode unsupported when there is no clear approved article and it is not a conversational reply.",
@@ -1163,7 +1165,7 @@ async function tryPlanConversationTurn(input: {
     });
     if (planner.output.mode === "conversation_reply") {
       const reply = conversationPlannerReplyToModelOutput(planner.output);
-      if (reply && !modelOutputContainsHiddenTerms(reply)) {
+      if (reply && shouldAcceptConversationPlannerReply(input.currentQuestion, planner.output) && !modelOutputContainsHiddenTerms(reply)) {
         return {
           decision: null,
           reply,
@@ -1215,21 +1217,14 @@ function buildPolicyDecisionFromArticleRouter(output: ArticleRouterOutput, usedC
 function conversationPlannerReplyToModelOutput(output: ConversationPlannerOutput): ModelOutput | null {
   if (typeof output.answer !== "string" || !output.answer.trim()) return null;
   const confidenceScore = parseConfidenceScore(output.confidence_score) ?? 88;
+  const answer = sanitizeModelAnswer(output.answer);
   return normalizeModelOutput({
-    answer: output.answer,
-    summary: output.summary || output.answer,
-    sections: output.sections?.length
-      ? output.sections
-      : [
-          {
-            title: "Answer",
-            body: output.answer,
-            tone: output.needs_route ? "route" : "default",
-          },
-        ],
+    answer,
+    summary: answer,
+    sections: [],
     selected_source_ids: [],
-    needs_route: Boolean(output.needs_route),
-    route_reason: output.route_reason || "",
+    needs_route: false,
+    route_reason: "",
     confidence_label: output.confidence_label || confidenceLabelFromScore(confidenceScore),
     confidence_score: confidenceScore,
   });
@@ -1301,20 +1296,46 @@ function shouldPlanConversationBeforeContextPolicy(question: string, conversatio
   if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
   if (isConcisePromiseConfirmation(question)) return true;
 
-  return (
-    tokens.length <= 18 &&
-    /\b(so|basically|right|correct|ok|okay|confirm|promise|promising|mean|meaning|should i|can i|do i|dont|don't|do not|cannot|can't|cant)\b/.test(
+  return false;
+}
+
+function shouldAcceptConversationPlannerReply(question: string, output: ConversationPlannerOutput) {
+  if (output.mode !== "conversation_reply") return false;
+
+  const normalizedQuestion = normalizeText(question);
+  const tokens = tokenize(normalizedQuestion, { expand: false });
+
+  if (isSocialConversationTurn(normalizedQuestion)) return true;
+  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (isConcisePromiseConfirmation(question)) return true;
+
+  return !isNewSalesPolicyActionQuestion(question);
+}
+
+function isNewSalesPolicyActionQuestion(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  if (!normalizedQuestion) return false;
+
+  const asksForAction =
+    /\b(can i|can we|could i|could we|should i|should we|may i|may we|am i allowed|are we allowed|is it okay|is this okay|is this allowed|are they allowed|can they|could they|should they|what should i tell|what do i tell|what can i say|what should we do|anything we can do)\b/.test(
       normalizedQuestion,
-    ) &&
-    /\b(that|this|it|him|her|them|client|prospect|promise|hold|route|confirm|anything|right|correct)\b/.test(
+    );
+  const hasMoneyOrPaymentAmount =
+    /[$€£]\s?\d/.test(question) ||
+    /\b\d+(?:,\d{3})*(?:\.\d+)?\s?(?:k|thousand|hundred|pif|x|times|payments?|installments?)\b/.test(
       normalizedQuestion,
-    )
-  );
+    );
+  const hasSalesAuthorityTerm =
+    /\b(offer|promise|approve|approval|greenlight|qualify|qualified|eligible|allowed|custom|deposit|payment|pay|discount|hold|exception|refund|contract|link|price|pricing|pif|installment|split|plan|cohort|deadline|client|prospect|spot|funds|wait|join|sign|signup|sign up|book|wire|invoice|card|ach)\b/.test(
+      normalizedQuestion,
+    );
+
+  return (asksForAction && hasSalesAuthorityTerm) || (hasMoneyOrPaymentAmount && hasSalesAuthorityTerm);
 }
 
 function isSocialConversationTurn(normalizedQuestion: string) {
   return (
-    /^(thanks|thank you|thankyou|appreciate it|got it|ok thanks|okay thanks|perfect thanks|great thanks|that helps)\b/.test(
+    /^(thanks|thank you|thankyou|appreciate it|got it|ok thanks|okay thanks|perfect thanks|great thanks|that helps|makes sense|sounds good|cool thanks|awesome thanks)\b/.test(
       normalizedQuestion,
     ) &&
     !/\b(price|payment|pay|call|client|prospect|show|contract|discount|cohort|greenlight|allowed|can i|should i|what|how|when|where|why)\b/.test(
@@ -1396,7 +1417,29 @@ function cloneModelOutput(output: ModelOutput): ModelOutput {
 
 function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGuardDecision) {
   const fallbackRule = matchingCriticalRules(question, policyDecision)[0];
-  return fallbackRule ? cloneModelOutput(fallbackRule.fallback) : null;
+  if (!fallbackRule) return null;
+
+  const fallback = cloneModelOutput(fallbackRule.fallback);
+  if (!userRequestedShortAnswer(question) || !fallbackRule.id.startsWith("dj-nlceo-")) return fallback;
+
+  const answer =
+    "For DJ/NLCEO, the main ISTV cohort rule does not apply: there is no cohort rule and no same-day discount. Use only the listed payment options; do not promise a hold, custom plan, or future payment date unless the current DJ/NLCEO owner confirms it.";
+
+  return {
+    ...fallback,
+    answer,
+    summary: answer,
+    sections: [{ title: "Answer", body: answer, tone: "warning" }],
+    needs_route: true,
+    route_reason: fallback.route_reason || "DJ/NLCEO payment timing, hold, or exception requests should be confirmed with the current DJ/NLCEO owner.",
+  };
+}
+
+function userRequestedShortAnswer(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return /\b(short|shorter|brief|concise|quick|one[- ]line|one[- ]sentence|summarize|condense|simplify|simple reply)\b/.test(
+    normalizedQuestion,
+  );
 }
 
 function validateCriticalAnswer(input: {
@@ -1651,6 +1694,10 @@ async function generateProviderAnswer(input: {
             : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",
           "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
+          "Start with the shortest useful direct answer for a rep on a live call.",
+          "If the rep asks for a short reply, answer in one or two sentences while preserving required safety boundaries.",
+          "Use sections only when they add useful steps, boundaries, or escalation details; do not create an Answer section just to repeat the first sentence.",
+          "Do not turn simple answers into policy memos.",
           "The current user question is authoritative. Use recent conversation context only to resolve references or context-dependent follow-ups; never let old context override a clear current question.",
           "If the current question is a short confirmation of the prior answer, answer in one or two direct sentences and do not repeat the full policy unless needed for safety.",
           "For DJ/NLCEO cohort or payment-timing questions, say the main ISTV cohort rule does not block them, but never approve a specific future payment date or hold; route or confirm payment-timing exceptions before promising.",

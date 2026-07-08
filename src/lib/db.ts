@@ -2682,7 +2682,7 @@ function normalizeAskSalesFaqAnswerPayload(value: unknown): AskSalesFaqStructure
   const payload = value as Partial<AskSalesFaqStructuredAnswer>;
   if (typeof payload.summary !== "string" || !Array.isArray(payload.sections)) return null;
   if (!["High", "Medium", "Low"].includes(String(payload.confidenceLabel))) return null;
-  if (!["approved", "evidence", "mixed", "fallback"].includes(String(payload.sourceMode))) return null;
+  if (!["approved", "evidence", "mixed", "fallback", "conversation"].includes(String(payload.sourceMode))) return null;
   const confidenceScore = normalizeAskSalesFaqConfidenceScore(payload.confidenceScore);
 
   const sections = payload.sections

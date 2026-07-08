@@ -1311,7 +1311,12 @@ function MessageRow({
       </span>
       <div className="min-w-0 flex-1 pt-1">
         <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Sales FAQ</p>
-        {message.structuredAnswer ? (
+        {message.outcome === "conversation_reply" ? (
+          <>
+            <AnswerText text={message.content} />
+            {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
+          </>
+        ) : message.structuredAnswer ? (
           <>
             <StructuredAnswerCard answer={message.structuredAnswer} />
             {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}

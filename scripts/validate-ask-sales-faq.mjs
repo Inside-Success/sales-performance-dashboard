@@ -409,6 +409,8 @@ if (missingFiles.length === 0) {
       runtime.includes("mode unsupported") &&
       runtime.includes("Do not add new policy, prices, discounts, owners, links, exceptions, or process steps") &&
       runtime.includes("For shorten/rephrase requests, use the most recent substantive assistant sales answer") &&
+      runtime.includes("Never use conversation_reply for new sales-policy/action questions") &&
+      runtime.includes("shouldAcceptConversationPlannerReply") &&
       runtime.includes("buildConversationReplyDecision") &&
       runtime.includes("routingSource: \"article_router\"") &&
       runtime.includes("routingSource: \"conversation_planner\"") &&
@@ -428,8 +430,30 @@ if (missingFiles.length === 0) {
       runtime.includes("isShortAnswerRewriteRequest") &&
       runtime.includes("isSocialConversationTurn") &&
       runtime.includes("isConcisePromiseConfirmation(question)") &&
+      runtime.includes("return false;") &&
       runtime.includes("Ignore brief social replies like 'You're welcome'"),
     "short confirmations, thank-yous, and rewrite requests reach the AI planner before recent context can force a full policy answer",
+  );
+
+  addCheck(
+    "fresh sales-policy action questions cannot become casual chat replies",
+    runtime.includes("isNewSalesPolicyActionQuestion") &&
+      runtime.includes("can i|can we|could i|could we|should i|should we") &&
+      runtime.includes("offer|promise|approve|approval|greenlight|qualify|qualified|eligible|allowed|custom|deposit|payment|pay|discount|hold|exception") &&
+      runtime.includes("hasMoneyOrPaymentAmount") &&
+      runtime.includes("return !isNewSalesPolicyActionQuestion(question)") &&
+      runtime.includes("money, deposit, payment, discount, contract, greenlight, qualification, offer, promise, hold, or exception questions"),
+    "short follow-up handling cannot bypass approved-policy routing for new offer/payment/hold/qualification questions",
+  );
+
+  addCheck(
+    "conversation replies render as plain chat instead of policy cards",
+    chatUi.includes('message.outcome === "conversation_reply"') &&
+      chatUi.includes("<AnswerText text={message.content} />") &&
+      db.includes('\"conversation\"') &&
+      runtime.includes("set summary equal to the answer and leave sections empty") &&
+      runtime.includes("sections: []"),
+    "thank-yous and rewrite replies no longer show internal planner summaries or forced answer-card blocks",
   );
 
   addCheck(
@@ -647,8 +671,20 @@ if (missingFiles.length === 0) {
     "structured answers are retained and rendered",
     chatRoute.includes("structuredAnswer: result.structuredAnswer") &&
       chatUi.includes("StructuredAnswerCard") &&
-      db.includes("normalizeAskSalesFaqAnswerPayload"),
+      db.includes("normalizeAskSalesFaqAnswerPayload") &&
+      db.includes('\"conversation\"'),
     "answers can render sectioned UI and persist structured payloads in Neon",
+  );
+
+  addCheck(
+    "approved-answer prompt favors concise live-call wording",
+    runtime.includes("Start with the shortest useful direct answer for a rep on a live call") &&
+      runtime.includes("If the rep asks for a short reply, answer in one or two sentences") &&
+      runtime.includes("Use sections only when they add useful steps") &&
+      runtime.includes("Do not turn simple answers into policy memos") &&
+      runtime.includes("userRequestedShortAnswer") &&
+      runtime.includes("For DJ/NLCEO, the main ISTV cohort rule does not apply"),
+    "approved answers and DJ/NLCEO critical fallback can stay safe without forcing long blocky replies",
   );
 
   addCheck(
