@@ -114,3 +114,29 @@ Verification:
 - Dashboard code commit: `1fe4877`.
 - Vercel Production deployment for the code commit reached Ready: `dpl_D62c8NCEjzBysbZi2xK7BTDiXFYg`.
 - Signed-in visual retest is still pending.
+
+## 2026-07-09 Short-Answer And Option-List Formatting Fix
+
+Status: dashboard runtime presentation shaping implemented, pushed, locally verified, and production-deployed without starting a local dev server.
+
+What changed:
+
+- Explicit short-answer requests such as "very short", "one line", "one sentence", "shorter", or "brief" now keep the visible structured answer to one concise answer line instead of adding an extra `Answer` card.
+- Dense option paragraphs with several parenthesized payment/package options can now be rendered as structured bullet items.
+- The formatter uses only text already returned by the approved answer path; it does not select policy, add prices, create offers, or change routing.
+
+Safety kept:
+
+- No model downgrade, caching, fallback-to-any-approved-answer behavior, approved-KB change, RAG expansion, API/database schema change, Slack write, Google write, or n8n workflow change.
+- Policy guard, approved articles, critical validation, grounding validation, route notes, request guards, and rate limits remain active.
+
+Verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 66 / 66 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `8e13e31`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_AmbnWDSMVxgjjVnaTEw7npYB1Lr9`.
+- Signed-in retest is still pending.

@@ -157,3 +157,29 @@ Latest verification:
 - Dashboard code commit: `1fe4877`.
 - Vercel Production deployment for the code commit reached Ready: `dpl_D62c8NCEjzBysbZi2xK7BTDiXFYg`.
 - Signed-in visual retest is still pending.
+
+## Short-Answer And Dense Option Formatting Fix
+
+The 2026-07-09 signed-in check after the duplicate-summary fix showed a separate presentation issue: an explicit one-line DJ/NLCEO question could still render a concise summary plus a long `Answer` card containing payment plans in one dense paragraph.
+
+Implemented dashboard fix:
+
+- Short-answer requests now force the structured visible answer to the direct answer only and remove extra sections from the display payload.
+- Dense option paragraphs are reshaped into bullet items when the model already returned several option groups such as package/payment-plan choices.
+- Route notes and source cards remain unchanged.
+
+This is not a new answer path:
+
+- It does not change provider/model selection, prompts that select policy, approved articles, RAG scope, route decisions, pricing facts, or critical validation.
+- It does not add caching, hard-coded answer content, or fallback-to-any-approved-answer behavior.
+
+Latest verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 66 / 66 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `8e13e31`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_AmbnWDSMVxgjjVnaTEw7npYB1Lr9`.
+- Signed-in retest is still pending.
