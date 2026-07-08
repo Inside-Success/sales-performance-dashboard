@@ -46,6 +46,8 @@ A later July 9 signed-in retest showed one remaining ordering bug: short follow-
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
+- Latest short-follow-up ordering code commit: `a8ae1c1`.
+- Latest short-follow-up ordering production deployment: `dpl_A73MBu86pzE6QcFEkSpRBqczrBNV`.
 - Verify the current Vercel deployment with `vercel inspect` after each pushed dashboard commit.
 - Anonymous page/API guards should pass after deployment.
 - Production error logs should be checked after guard probes.

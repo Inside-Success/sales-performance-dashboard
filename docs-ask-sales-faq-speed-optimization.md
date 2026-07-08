@@ -86,7 +86,8 @@ Latest verified run after the natural-conversation follow-up pass:
 - Touched-file `git diff --check`: passed.
 - Natural-conversation code commit: `96824fa`.
 - Natural-conversation code Vercel Production deployment: `dpl_JDh5X1zwoSemP69zaWLffQbwt7h6`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
-- Short-follow-up ordering code is covered by the current dashboard implementation commit and should be production-verified after push.
+- Short-follow-up ordering code commit: `a8ae1c1`.
+- Short-follow-up ordering code Vercel Production deployment: `dpl_A73MBu86pzE6QcFEkSpRBqczrBNV`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
 - Anonymous `/ask-sales-faq` redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
