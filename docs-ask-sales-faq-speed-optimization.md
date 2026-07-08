@@ -81,10 +81,11 @@ Latest verified run after the natural-conversation follow-up pass:
 - `npm run lint`: passed.
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
-- `git diff --check`: pending final commit check for this docs/code pass.
-- Dashboard commit: `28ae844`.
-- Speed-code Vercel Production deployment: `dpl_7dWtZvzjbD5hizToNPJkmJqkuS83`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
+- Touched-file `git diff --check`: passed.
+- Natural-conversation code commit: `96824fa`.
+- Natural-conversation Vercel Production deployment: `dpl_JDh5X1zwoSemP69zaWLffQbwt7h6`.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
 - Anonymous `/ask-sales-faq` redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
-- Vercel production logs after guard probes showed no logs/errors.
+- Vercel `/api/ask-sales-faq` runtime errors: none found after deployment checks.
+- Vercel warning/error logs for the deployment: none found after guard probes.
