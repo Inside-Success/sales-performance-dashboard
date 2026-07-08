@@ -1,5 +1,5 @@
 {
-  "chunk_count": 1695,
+  "chunk_count": 1696,
   "chunks": [
     {
       "article_id": "americas-top-lawyers-passoff-boundary",
@@ -967,13 +967,13 @@
       "authority": 100,
       "category": "Qualification & Show Fit",
       "heading": "Answer",
-      "id": "rag_af9d14273e039bf2",
+      "id": "rag_08db8f31cfb0dc9c",
       "last_reviewed": "2026-07-07",
       "risk_level": "high",
       "source_path": "knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md",
       "source_title": "Qualification And Show Fit Rubric",
       "source_type": "approved_article",
-      "text": "## Answer\n\nDo not turn qualification into a hard yes/no from one old Slack example. Use these approved boundaries only, then route edge cases.\n\nAmerica's Best Doctors:\n\n- A doctor can qualify even if they work in a hospital and do not own the practice.\n- Do not disqualify a doctor just because they are employed by a hospital.\n- Nurses do not qualify as doctors for America's Best Doctors.\n- Physical therapists / physiotherapists are case-by-case. Route before promising fit.\n\nGeneral qualification:\n\n- Look for a business, practice, platform, or story that can benefit from the episode.\n- Consider whether the business or platform is mature enough, whether the story is compelling, whether the person fits the network, and whether they seem likely to be a reasonable client.\n- Some legacy/story-led clients can be exceptions, so do not create a blanket \"business owner only\" rule across every show.\n\nBackground and reputation:\n\n- Daymond John / Next Level CEO is stricter: generally reject criminal history except minor issues such as speeding or parking tickets.\n- Main ISTV rejects serious red flags such as murder, pedophilia, sex-industry positioning, bank robbery, or gun crime.\n- Cannabis and firearms can be acceptable when they are regulated, legal, licensed, and positioned professionally.\n- Strong extremist political/religious positioning, racism, sexism, or similar reputational red flags should route and should not be approved by the bot.\n- Motivational speakers and personal brands can qualify when they are otherwise a fit and not in a disallowed category.",
+      "text": "## Answer\n\nDo not turn qualification into a hard yes/no from one old Slack example. Use these approved boundaries only, then route edge cases.\n\nAmerica's Best Doctors:\n\n- A doctor can qualify even if they work in a hospital and do not own the practice.\n- Do not disqualify a doctor just because they are employed by a hospital.\n- Nurses do not qualify as doctors for America's Best Doctors.\n- Physical therapists / physiotherapists are case-by-case. Route before promising fit.\n\nGeneral qualification:\n\n- Look for a business, practice, platform, or story that can benefit from the episode.\n- Consider whether the business or platform is mature enough, whether the story is compelling, whether the person fits the network, and whether they seem likely to be a reasonable client.\n- Some legacy/story-led clients can be exceptions, so do not create a blanket \"business owner only\" rule across every show.\n\nBackground and reputation:\n\n- Daymond John / Next Level CEO is stricter: generally reject criminal history except minor issues such as speeding or parking tickets.\n- Main ISTV rejects serious red flags such as murder, pedophilia, sex-industry positioning, bank robbery, or gun crime.\n- Cannabis and firearms can be acceptable when they are regulated, legal, licensed, and positioned professionally. Cannabis dispensaries / dispensary businesses must meet the same regulated, legal, licensed, and professional-positioning boundary.\n- Strong extremist political/religious positioning, racism, sexism, or similar reputational red flags should route and should not be approved by the bot.\n- Motivational speakers and personal brands can qualify when they are otherwise a fit and not in a disallowed category.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -982,13 +982,13 @@
       "authority": 100,
       "category": "Qualification & Show Fit",
       "heading": "Route If Unclear",
-      "id": "rag_3ac4854895ec0597",
+      "id": "rag_d2fb36963f4cdf93",
       "last_reviewed": "2026-07-07",
       "risk_level": "high",
       "source_path": "knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md",
       "source_title": "Qualification And Show Fit Rubric",
       "source_type": "approved_article",
-      "text": "## Route If Unclear\n\nRoute to sales leadership/compliance when the case involves:\n\n- physical therapists / physiotherapists or unusual medical roles;\n- criminal, legal, licensing, reputation, adult/sexual, political, religious, racism/sexism, firearms, cannabis, minors, or other sensitive background concerns;\n- uncertainty about whether the applicant has a business/platform/story that fits the show;\n- show-specific exceptions not listed above.",
+      "text": "## Route If Unclear\n\nRoute to sales leadership/compliance when the case involves:\n\n- physical therapists / physiotherapists or unusual medical roles;\n- criminal, legal, licensing, reputation, adult/sexual, political, religious, racism/sexism, firearms, cannabis / dispensary / dispensaries, minors, or other sensitive background concerns;\n- uncertainty about whether the applicant has a business/platform/story that fits the show;\n- show-specific exceptions not listed above.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -22657,13 +22657,13 @@
       "authority": 42,
       "category": "General Sales Process",
       "heading": "2026-07-07 Follow-Up Matching And Scoped RAG Hardening",
-      "id": "rag_d3ee12431970f0ca",
+      "id": "rag_fa5468ee1d929583",
       "last_reviewed": "2026-07-01",
       "risk_level": "medium",
       "source_path": "_logs/known-gaps.md",
       "source_title": "Known Gaps",
       "source_type": "governance_log",
-      "text": "## 2026-07-07 Follow-Up Matching And Scoped RAG Hardening\n\nThe live 18-question regression check found one approved-topic matching miss:\n\n- \"After 31 days with no contact, can another rep call the lead?\"\n\nDisposition: fixed in the policy guard and test bank.\n\n- `runtime/policy-guard-rules.json` now maps 31-day / ownership-window / another-rep wording to the approved `twenty-percent-dial-out-sop` article when paired with lead/contact/Keap/call wording.\n- `tests/kb-routing-test-bank.json` includes `OUTBOUND-003` for this exact question.\n- Dashboard runtime now uses recent chat context only for short/ambiguous follow-up policy matching.\n- Approved-topic generation now allows tightly scoped supporting RAG chunks while keeping the approved article as the controlling source.\n\nRemaining risk:\n\n- Continue monitoring Neon/admin logs for other false abstains, especially short follow-ups that omit the original topic.\n- Do not re-enable broad Slack/RAG answering for unmatched policy questions.\n- Speed optimization remains pending.\n- Weekly checkpoint-based Slack refresh/summarization automation remains pending.",
+      "text": "## 2026-07-07 Follow-Up Matching And Scoped RAG Hardening\n\nThe live 18-question regression check found one approved-topic matching miss:\n\n- \"After 31 days with no contact, can another rep call the lead?\"\n\nDisposition: fixed in the policy guard and test bank.\n\n- `runtime/policy-guard-rules.json` now maps 31-day / ownership-window / another-rep wording to the approved `twenty-percent-dial-out-sop` article when paired with lead/contact/Keap/call wording.\n- `tests/kb-routing-test-bank.json` includes `OUTBOUND-003` for this exact question.\n- Dashboard runtime now uses recent chat context for short or context-dependent follow-up policy matching, while keeping the latest user question authoritative.\n- Approved-topic generation now allows tightly scoped supporting RAG chunks while keeping the approved article as the controlling source.\n\nRemaining risk:\n\n- Continue monitoring Neon/admin logs for other false abstains, especially follow-ups that omit the original product/show/topic.\n- Do not re-enable broad Slack/RAG answering for unmatched policy questions.\n- Speed optimization remains pending.\n- Weekly checkpoint-based Slack refresh/summarization automation remains pending.",
       "trust_label": "Governance log"
     },
     {
@@ -22739,6 +22739,21 @@
       "source_title": "Known Gaps",
       "source_type": "governance_log",
       "text": "## 2026-07-08 Custom Payment And Critical Answer Guard Closure\n\nRich's latest custom-payment-plan answer supplied by the user closed the remaining ambiguity around custom plans:\n\n- Reps cannot suggest custom payment plans, custom splits, custom amounts, or custom payment links.\n- Reps should use only the approved listed payment/installment plans from the current spreadsheet/source.\n- Finance routing still applies for operational payment issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoice requests, refunds, and billing questions.\n- The chatbot should not phrase custom payment plans as something finance may approve.\n- Sales-tech/finance routing wording was tightened so custom payment terms, custom splits, custom amounts, and custom links are not treated as finance-approvable exceptions.\n\nRuntime guardrail added:\n\n- AI remains the normal answer writer for approved topics.\n- High-risk approved facts now have targeted answer validation, one AI repair attempt, and a narrow approved fallback if repair/provider generation fails.\n- Covered guardrails: no custom payment plans, main ISTV upgrade discount carry-forward, sales-tech route, greenlight route, main ISTV 3-month reapply minimum, and wire/ACH finance route.\n\nValidation:\n\n- FAQ policy guard: 92 / 92.\n- FAQ answer contract/runtime: 100 / 100.\n- Dashboard static Ask Sales FAQ validator: 50 / 50.\n- Dashboard lint/build and `git diff --check`: passed.\n\nStill pending:\n\n- Signed-in allowlisted manual retest of the listed regression questions.\n- Speed optimization.\n- Weekly checkpoint-based Slack refresh/summarization automation.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "General Sales Process",
+      "heading": "2026-07-08 False-Abstain And Follow-Up Routing Gap Update",
+      "id": "rag_7200190c7e2fdc6e",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "## 2026-07-08 False-Abstain And Follow-Up Routing Gap Update\n\nThe user's hidden-beta testing found that the old policy guard was too brittle for some approved topics:\n\n- \"Are dispensaries allowed?\" and a greenlight-style dispensary follow-up fell back even though the approved qualification article covers regulated cannabis businesses.\n- A DJ/NLCEO deposit-timing follow-up fell back because the current message mentioned cohort/time/deposit but did not repeat \"DJ show\"; the old context policy matcher only handled very short follow-ups.\n\nDisposition: dashboard runtime hardening implemented locally.\n\n- Hard policy rules remain first and unchanged in purpose.\n- A high-confidence approved-article router now runs only after `default-abstain`; it can choose an existing approved article or no article, but it cannot answer freely.\n- Recent context is available for context-dependent follow-up routing across the last bounded chat turns.\n- Router-selected answers get an extra grounding validation against the selected approved guidance.\n- Critical answer guardrails now cover regulated cannabis/dispensary qualification and DJ/NLCEO no-cohort/deposit timing.\n\nRemaining risk:\n\n- This should reduce false abstains, but it is not a promise that every unseen valid question will answer. Questions still need an approved article that actually governs the answer.\n- Signed-in production retesting is still needed for the exact reported questions and paraphrases.",
       "trust_label": "Governance log"
     },
     {

@@ -64,6 +64,13 @@ export type AskSalesFaqRuntimeMetadata = {
     sourceChunkCandidates: number;
     promptChars: number;
   };
+  routing?: {
+    source: "direct_rule" | "context_rule" | "article_router" | "default";
+    matchedRuleId: string;
+    articleId: string | null;
+    confidenceScore?: number;
+    usedConversationContext?: boolean;
+  };
   deepSeekThinkingDisabled?: boolean;
   claudeFallbackEnabled?: boolean;
   criticalFallbackUsed?: boolean;

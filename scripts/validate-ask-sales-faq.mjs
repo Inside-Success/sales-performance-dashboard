@@ -217,9 +217,9 @@ if (missingFiles.length === 0) {
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
       runtime.includes("buildEvidenceCandidates") &&
-      runtime.includes("A deterministic policy guard has already selected the approved article that controls this answer.") &&
+      runtime.includes("A policy guard or approved-article router has already selected the approved sales guidance that controls this answer.") &&
       runtime.includes("Use any supporting evidence only for consistent context or wording"),
-    "runtime asks the model to answer only after the policy guard selects the controlling approved article",
+    "runtime asks the model to answer only after the policy guard or approved-article router selects the controlling sales guidance",
   );
 
   addCheck(
@@ -324,9 +324,32 @@ if (missingFiles.length === 0) {
       runtime.includes("buildConversationContext") &&
       runtime.includes("decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
       runtime.includes("shouldUseConversationContextForPolicyGuard") &&
-      runtime.includes("Recent chat context was used only to resolve the short follow-up.") &&
+      runtime.includes("Recent chat context was used only to resolve the context-dependent follow-up.") &&
       runtime.includes("The current user question is authoritative."),
     "runtime sends recent conversation context to AI and policy matching while keeping current question authoritative",
+  );
+
+  addCheck(
+    "approved article router handles policy-guard false abstains",
+    runtime.includes("tryRouteWithApprovedArticle") &&
+      runtime.includes("approved article routing") &&
+      runtime.includes("ARTICLE_ROUTER_MIN_CONFIDENCE = 82") &&
+      runtime.includes("buildPolicyDecisionFromArticleRouter") &&
+      runtime.includes("routingSource: \"article_router\"") &&
+      runtime.includes("article_id, confidence_score, reason") &&
+      runtime.includes("If none of the approved articles directly controls the answer, return article_id as null"),
+    "default-abstain questions can use a high-confidence approved-article router without letting AI answer freely",
+  );
+
+  addCheck(
+    "article-router answers get grounding validation",
+    runtime.includes("ensureArticleRouterGrounding") &&
+      runtime.includes("approved article answer validation") &&
+      runtime.includes("Fail if the draft invents a policy") &&
+      runtime.includes("formatEvidencePacket([approvedArticleToCandidate(primaryArticle)]") &&
+      runtime.includes("check.output.verdict !== \"pass\"") &&
+      runtime.includes("parseGroundingCheckOutput"),
+    "AI-router-selected answers are validated against the selected approved sales guidance before return",
   );
 
   addCheck(
@@ -367,10 +390,22 @@ if (missingFiles.length === 0) {
   addCheck(
     "current question intent is not overwritten by old chat context",
     runtime.includes("CURRENT USER QUESTION:") &&
-      runtime.includes("Use conversation context only to resolve short or ambiguous follow-ups.") &&
+      runtime.includes("Use recent conversation context only to resolve references or context-dependent follow-ups") &&
       !runtime.includes("const decision = decideQuestion(contextualQuestion)") &&
       !runtime.includes("/\\b(it|that|this|they|them|those|same|there)\\b/i.test(question);"),
     "runtime prompts AI to prioritize the latest user question over history",
+  );
+
+  addCheck(
+    "reported dispensary and DJ cohort misses have guardrails",
+    runtime.includes("qualification-regulated-cannabis-business") &&
+      runtime.includes("dispensaries") &&
+      runtime.includes("regulated, legal, licensed") &&
+      runtime.includes("dj-nlceo-no-cohort-deposit-boundary") &&
+      runtime.includes("dj-nlceo-pricing-no-cohort-deposit-boundary") &&
+      runtime.includes("DJ/NLCEO has no cohort rule") &&
+      runtime.includes("do not invent a custom plan or promise a hold"),
+    "critical answer guardrails cover regulated cannabis/dispensary qualification and DJ/NLCEO deposit/cohort follow-ups",
   );
 
   addCheck(

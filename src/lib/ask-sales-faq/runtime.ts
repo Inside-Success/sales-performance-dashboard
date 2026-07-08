@@ -75,6 +75,9 @@ type PolicyGuardDecision = {
   matchedRuleId: string;
   reason: string;
   primaryArticle: ApprovedFaqArticle | null;
+  routingSource: "direct_rule" | "context_rule" | "article_router" | "default";
+  routingConfidence?: number;
+  usedConversationContext?: boolean;
 };
 
 type ModelOutput = {
@@ -86,6 +89,17 @@ type ModelOutput = {
   route_reason: string;
   confidence_label?: "High" | "Medium" | "Low";
   confidence_score?: number;
+};
+
+type ArticleRouterOutput = {
+  article_id?: string | null;
+  confidence_score?: number | string | null;
+  reason?: string | null;
+};
+
+type GroundingCheckOutput = {
+  verdict: "pass" | "fail";
+  reason?: string;
 };
 
 type ProviderJsonResult<T> = {
@@ -219,6 +233,9 @@ const JSON_SCHEMA_EXAMPLE =
 
 const DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS = 2600;
 const DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS = 700;
+const ARTICLE_ROUTER_MIN_CONFIDENCE = 82;
+const ARTICLE_ROUTER_MAX_BODY_CHARS = 900;
+const ARTICLE_ROUTER_MAX_CONTEXT_CHARS = 2600;
 
 const REP_FACING_INTERNAL_TERMS = [
   "not approved in the knowledge base",
@@ -294,6 +311,123 @@ type CriticalAnswerRule = {
 };
 
 const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
+  {
+    id: "qualification-regulated-cannabis-business",
+    articleId: "qualification-and-show-fit-rubric",
+    matchAny: ["cannabis", "dispensary", "dispensaries", "marijuana", "weed business", "regulated business"],
+    requiredAnyGroups: [
+      ["regulated, legal, licensed", "legal, licensed", "licensed"],
+      ["positioned professionally", "professionally"],
+      ["do not guarantee", "route", "before promising fit"],
+    ],
+    forbiddenAny: ["always allowed", "guarantee acceptance", "automatically approved", "green light him"],
+    fallback: {
+      answer:
+        "Cannabis or dispensary businesses can be acceptable only when they are regulated, legal, licensed, and positioned professionally. Do not guarantee fit or approval on the call; route licensing, legal, reputation, or positioning concerns before promising fit.",
+      summary: "Regulated cannabis businesses can be acceptable, but do not guarantee fit.",
+      sections: [
+        {
+          title: "Answer",
+          body: "Cannabis or dispensary businesses can be acceptable only when they are regulated, legal, licensed, and positioned professionally.",
+          tone: "default",
+        },
+        {
+          title: "Do not promise",
+          body: "Do not guarantee fit or approval on the call. Route licensing, legal, reputation, or positioning concerns before promising fit.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:qualification-and-show-fit-rubric"],
+      needs_route: true,
+      route_reason: "Sensitive qualification or regulated-business fit should be confirmed before promising acceptance.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "dj-nlceo-no-cohort-deposit-boundary",
+    articleId: "main-istv-call-2-cohort-reschedule-rules",
+    matchAnyGroups: [
+      ["daymond john", "next level ceo", "dj", "nlceo"],
+      ["cohort", "deadline", "initial deposit", "deposit", "funds", "need time", "pay/sign", "pay and sign", "sign up"],
+    ],
+    requiredAll: ["no cohort rule"],
+    requiredAnyGroups: [
+      ["no same-day discount", "same-day discount"],
+      ["do not apply the main ISTV cohort", "main ISTV cohort rule does not apply", "main ISTV cohort"],
+      ["do not promise", "route", "approved payment"],
+    ],
+    forbiddenAny: ["same rule applies", "main ISTV deadline applies", "custom payment plan", "custom split"],
+    fallback: {
+      answer:
+        "Because this is Daymond John / Next Level CEO, the main ISTV cohort rule does not apply. DJ/NLCEO has no cohort rule and no same-day discount. Use only the listed DJ/NLCEO payment options; if they cannot make the initial payment yet, do not invent a custom plan or promise a hold. Route any special exception or hold request to the current DJ/NLCEO owner.",
+      summary: "DJ/NLCEO has no main ISTV cohort rule, but do not invent payment or hold exceptions.",
+      sections: [
+        {
+          title: "Answer",
+          body: "Because this is Daymond John / Next Level CEO, the main ISTV cohort rule does not apply. DJ/NLCEO has no cohort rule and no same-day discount.",
+          tone: "default",
+        },
+        {
+          title: "Payment boundary",
+          body: "Use only the listed DJ/NLCEO payment options. If they cannot make the initial payment yet, do not invent a custom plan or promise a hold.",
+          tone: "warning",
+        },
+        {
+          title: "Route if needed",
+          body: "Route any special exception or hold request to the current DJ/NLCEO owner.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:main-istv-call-2-cohort-reschedule-rules"],
+      needs_route: true,
+      route_reason: "DJ/NLCEO cohort-like, pay/sign, deadline, or hold exceptions should go to the current DJ/NLCEO owner.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "dj-nlceo-pricing-no-cohort-deposit-boundary",
+    articleId: "istv-nlceo-pricing-and-same-day-discount",
+    matchAnyGroups: [
+      ["daymond john", "next level ceo", "dj", "nlceo"],
+      ["cohort", "deadline", "initial deposit", "deposit", "funds", "need time", "pay/sign", "pay and sign", "sign up", "opportunity"],
+    ],
+    requiredAll: ["no cohort rule"],
+    requiredAnyGroups: [
+      ["no same-day discount", "same-day discount"],
+      ["do not apply", "main ISTV cohort", "main ISTV"],
+      ["listed payment", "approved payment", "$2,500"],
+    ],
+    forbiddenAny: ["same rule applies", "main ISTV deadline applies", "custom payment plan", "custom split"],
+    fallback: {
+      answer:
+        "For Daymond John / Next Level CEO, use only the listed payment options: Lite can be $10,000 PIF or $2,500 x 4. The main ISTV cohort rule does not apply to DJ/NLCEO, DJ/NLCEO has no cohort rule, and there is no same-day discount. If they cannot make the initial payment yet, do not invent a custom plan or promise a hold; route any special exception or hold request to the current DJ/NLCEO owner.",
+      summary: "Use listed DJ/NLCEO payment options, and do not apply main ISTV cohort rules.",
+      sections: [
+        {
+          title: "What you can offer",
+          body: "For Daymond John / Next Level CEO Lite, use only the listed options: $10,000 PIF or $2,500 x 4.",
+          tone: "default",
+        },
+        {
+          title: "Cohort boundary",
+          body: "The main ISTV cohort rule does not apply to DJ/NLCEO, DJ/NLCEO has no cohort rule, and there is no same-day discount.",
+          tone: "warning",
+        },
+        {
+          title: "If they need time",
+          body: "Do not invent a custom plan or promise a hold. Route any special exception or hold request to the current DJ/NLCEO owner.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: true,
+      route_reason: "DJ/NLCEO payment timing, hold, or exception requests should be confirmed with the current DJ/NLCEO owner.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
   {
     id: "payment-no-custom-plans",
     articleId: "payment-plan-and-link-boundaries",
@@ -550,13 +684,25 @@ export async function runAskSalesFaq(
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
   const conversationContext = buildConversationContext(conversationMessages);
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
-  const policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
+  const providerDiagnostics: ProviderCallDiagnostics[] = [];
+  let policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
+
+  if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision)) {
+    const routerResult = await tryRouteWithApprovedArticle({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+    });
+    if (routerResult.diagnostics) providerDiagnostics.push(routerResult.diagnostics);
+    if (routerResult.decision) policyDecision = routerResult.decision;
+  }
+
   const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
   const baseRuntimeMetadata = buildRuntimeMetadata({
     evidence: candidates,
     modelEvidence: [],
-    providerDiagnostics: [],
+    providerDiagnostics,
     criticalFallbackUsed: false,
+    policyDecision,
   });
 
   if (!policyDecision.safeToGenerate) {
@@ -582,8 +728,6 @@ export async function runAskSalesFaq(
     });
   }
 
-  const providerDiagnostics: ProviderCallDiagnostics[] = [];
-
   try {
     const answerResult = await generateProviderAnswer({
       currentQuestion: sanitizedQuestion,
@@ -605,16 +749,24 @@ export async function runAskSalesFaq(
       output: finalOutputResult.output,
     });
     providerDiagnostics.push(...criticalOutputResult.diagnostics);
-    const criticalOutput = criticalOutputResult.output;
-    const selectedEvidence = resolveSelectedEvidence(criticalOutput, candidates, sanitizedQuestion);
+    const groundedOutputResult = await ensureArticleRouterGrounding({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+      evidence: candidates,
+      policyDecision,
+      output: criticalOutputResult.output,
+    });
+    providerDiagnostics.push(...groundedOutputResult.diagnostics);
+    const finalOutput = groundedOutputResult.output;
+    const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
     const decision = buildDecision({
-      output: criticalOutput,
+      output: finalOutput,
       evidence: selectedEvidence,
       policyDecision,
     });
-    const answer = sanitizeModelAnswer(criticalOutput.answer);
+    const answer = sanitizeModelAnswer(finalOutput.answer);
 
-    if (!answer || modelOutputContainsHiddenTerms(criticalOutput)) {
+    if (!answer || modelOutputContainsHiddenTerms(finalOutput)) {
       throw new Error("AI output was empty or exposed hidden terms");
     }
 
@@ -625,7 +777,7 @@ export async function runAskSalesFaq(
       redactions,
       decision,
       answer,
-      structuredAnswer: normalizeModelStructuredAnswer(criticalOutput, answer, decision),
+      structuredAnswer: normalizeModelStructuredAnswer(finalOutput, answer, decision),
       source: sourceSummaryFromDecision(decision),
       provider: answerResult.provider,
       model: answerResult.model,
@@ -635,11 +787,19 @@ export async function runAskSalesFaq(
         modelEvidence: modelEvidenceCandidates(candidates),
         providerDiagnostics,
         criticalFallbackUsed: Boolean(criticalOutputResult.fallbackUsed),
+        policyDecision,
       }),
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
-    const fallbackOutput = buildCriticalFallbackOutput(sanitizedQuestion, policyDecision);
+    const fallbackOutput = buildCriticalFallbackOutput(
+      criticalValidationQuestion({
+        currentQuestion: sanitizedQuestion,
+        conversationContext,
+        policyDecision,
+      }),
+      policyDecision,
+    );
     if (fallbackOutput) {
       const selectedEvidence = resolveSelectedEvidence(fallbackOutput, candidates, sanitizedQuestion);
       const decision = buildDecision({
@@ -666,6 +826,7 @@ export async function runAskSalesFaq(
           modelEvidence: modelEvidenceCandidates(candidates),
           providerDiagnostics,
           criticalFallbackUsed: true,
+          policyDecision,
         }),
       });
     }
@@ -690,6 +851,7 @@ export async function runAskSalesFaq(
         modelEvidence: modelEvidenceCandidates(candidates),
         providerDiagnostics,
         criticalFallbackUsed: false,
+        policyDecision,
       }),
     });
   }
@@ -745,7 +907,9 @@ function decidePolicyGuard(question: string, conversationContext = ""): PolicyGu
     if (contextualDecision.matchedRuleId !== "default-abstain") {
       return {
         ...contextualDecision,
-        reason: `${contextualDecision.reason} Recent chat context was used only to resolve the short follow-up.`,
+        reason: `${contextualDecision.reason} Recent chat context was used only to resolve the context-dependent follow-up.`,
+        routingSource: "context_rule",
+        usedConversationContext: true,
       };
     }
   }
@@ -775,6 +939,8 @@ function matchPolicyGuard(question: string): PolicyGuardDecision {
         matchedRuleId: rule.id,
         reason: safeToGenerate && rule.reason ? rule.reason : rule.reason || "No approved answer is available for this question.",
         primaryArticle: safeToGenerate ? article : null,
+        routingSource: "direct_rule",
+        usedConversationContext: false,
       };
     }
   }
@@ -787,19 +953,125 @@ function matchPolicyGuard(question: string): PolicyGuardDecision {
     matchedRuleId: "default-abstain",
     reason: ASK_SALES_FAQ_POLICY_RULES.defaultDecision.reason,
     primaryArticle: null,
+    routingSource: "default",
+    usedConversationContext: false,
   };
+}
+
+function shouldAttemptApprovedArticleRouter(policyDecision: PolicyGuardDecision) {
+  return policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
+}
+
+async function tryRouteWithApprovedArticle(input: {
+  currentQuestion: string;
+  conversationContext: string;
+}): Promise<{ decision: PolicyGuardDecision | null; diagnostics?: ProviderCallDiagnostics }> {
+  try {
+    const router = await generateProviderJson<ArticleRouterOutput>({
+      purpose: "approved article routing",
+      maxTokens: 450,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You are the internal Ask Sales FAQ article router.",
+            "Your only job is to decide whether the sales rep's current question is clearly governed by one approved article from the catalog.",
+            "Do not answer the sales question. Do not create policy. Do not infer exceptions, prices, discounts, owners, or process steps.",
+            "Use recent conversation context only to resolve product/show/topic references from the current question, such as this, they, the client, DJ show, cohort, package, or payment.",
+            "The current user question is authoritative. If the current question names a different product/show/topic than the recent context, follow the current question.",
+            "Choose an article only when its approved guidance directly controls the answer. Shared words or a loose topic match are not enough.",
+            "If none of the approved articles directly controls the answer, return article_id as null with a low confidence score.",
+            "Return valid JSON only with keys: article_id, confidence_score, reason.",
+            `Only scores ${ARTICLE_ROUTER_MIN_CONFIDENCE}-100 may be used for a clear approved article match.`,
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: [
+            "APPROVED ARTICLE CATALOG:",
+            formatArticleRouterCatalog(),
+            "",
+            "RECENT CONVERSATION CONTEXT:",
+            input.conversationContext ? input.conversationContext.slice(0, ARTICLE_ROUTER_MAX_CONTEXT_CHARS) : "None",
+            "",
+            "CURRENT USER QUESTION:",
+            input.currentQuestion,
+          ].join("\n"),
+        },
+      ],
+      parse: parseArticleRouterOutput,
+    });
+    return {
+      decision: buildPolicyDecisionFromArticleRouter(router.output, Boolean(input.conversationContext)),
+      diagnostics: router.diagnostics,
+    };
+  } catch (error) {
+    console.warn("Ask Sales FAQ approved article router failed", {
+      error: sanitizeProviderError(error),
+    });
+    return { decision: null };
+  }
+}
+
+function buildPolicyDecisionFromArticleRouter(output: ArticleRouterOutput, usedConversationContext: boolean): PolicyGuardDecision | null {
+  const articleId = typeof output.article_id === "string" ? output.article_id.trim() : "";
+  const confidenceScore = parseConfidenceScore(output.confidence_score) ?? 0;
+  const article = articleId ? ARTICLE_BY_ID.get(articleId) || null : null;
+
+  if (!article || confidenceScore < ARTICLE_ROUTER_MIN_CONFIDENCE) return null;
+
+  return {
+    decision: "answer_from_approved_article",
+    safeToGenerate: true,
+    articleId: article.id,
+    blockedTopic: null,
+    matchedRuleId: "approved-article-router",
+    reason: "Matched to a confirmed sales guidance area. Stay inside that guidance and route unclear edge cases.",
+    primaryArticle: article,
+    routingSource: "article_router",
+    routingConfidence: confidenceScore,
+    usedConversationContext,
+  };
+}
+
+function formatArticleRouterCatalog() {
+  return APPROVED_FAQ_ARTICLES.map((article, index) =>
+    [
+      `Article ${index + 1}`,
+      `ID: ${article.id}`,
+      `Title: ${article.title}`,
+      `Category: ${article.category}`,
+      `Risk: ${article.riskLevel}`,
+      `Last reviewed: ${article.lastReviewed}`,
+      `Guidance excerpt: ${compactArticleBodyForRouter(article.body)}`,
+    ].join("\n"),
+  ).join("\n\n");
+}
+
+function compactArticleBodyForRouter(body: string) {
+  return body
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*_|`[\]]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
 }
 
 function shouldUseConversationContextForPolicyGuard(question: string) {
   const normalizedQuestion = normalizeText(question);
   const tokens = tokenize(normalizedQuestion, { expand: false });
-  if (tokens.length > 14) return false;
-
-  return (
+  const hasContextReference =
     /^(and|also|then|so)\b/.test(normalizedQuestion) ||
     /\b(it|that|this|they|them|those|same|another|still|again|later|after|before|next|previous|above|there|one|ones)\b/.test(
       normalizedQuestion,
-    )
+    );
+  if (!hasContextReference) return false;
+  if (tokens.length <= 14) return true;
+  if (tokens.length > 44) return false;
+  if (/\b(main istv|daymond john|next level ceo|nlceo|dj show|dj)\b/.test(normalizedQuestion)) return false;
+
+  return /\b(cohort|deadline|deposit|funds|payment|pay|sign|greenlight|qualify|qualified|client|show|package|discount|approval|allowed|fit|reschedule|exception|contract)\b/.test(
+    normalizedQuestion,
   );
 }
 
@@ -1061,14 +1333,14 @@ async function generateProviderAnswer(input: {
         content: [
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
           "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
-          "A deterministic policy guard has already selected the approved article that controls this answer.",
+          "A policy guard or approved-article router has already selected the approved sales guidance that controls this answer.",
           "Treat the approved article as authoritative. Use any supporting evidence only for consistent context or wording; never use it to add, contradict, or extend policy.",
           routeRequired
             ? "This policy decision requires routing. Give the safe boundary from the approved source and set needs_route to true."
             : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",
           "Internally select the evidence by meaning, not by mechanical keyword overlap, then answer from that selected evidence.",
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
-          "The current user question is authoritative. Use conversation context only to resolve short or ambiguous follow-ups.",
+          "The current user question is authoritative. Use recent conversation context only to resolve references or context-dependent follow-ups; never let old context override a clear current question.",
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
           "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
@@ -1173,8 +1445,13 @@ async function ensureCriticalAnswer(input: {
   policyDecision: PolicyGuardDecision;
   output: ModelOutput;
 }): Promise<ModelOutputResolution> {
-  const validationErrors = validateCriticalAnswer({
+  const validationQuestion = criticalValidationQuestion({
     currentQuestion: input.currentQuestion,
+    conversationContext: input.conversationContext,
+    policyDecision: input.policyDecision,
+  });
+  const validationErrors = validateCriticalAnswer({
+    currentQuestion: validationQuestion,
     policyDecision: input.policyDecision,
     output: input.output,
   });
@@ -1236,7 +1513,7 @@ async function ensureCriticalAnswer(input: {
     });
     const diagnostics = [repair.diagnostics, ...repairedOutput.diagnostics];
     const repairedErrors = validateCriticalAnswer({
-      currentQuestion: input.currentQuestion,
+      currentQuestion: validationQuestion,
       policyDecision: input.policyDecision,
       output: repairedOutput.output,
     });
@@ -1255,10 +1532,86 @@ async function ensureCriticalAnswer(input: {
     });
   }
 
-  const fallback = buildCriticalFallbackOutput(input.currentQuestion, input.policyDecision);
+  const fallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
   if (fallback) return { output: fallback, diagnostics: [], fallbackUsed: true };
 
   throw new Error(`AI output failed critical answer validation: ${validationErrors.join("; ")}`);
+}
+
+async function ensureArticleRouterGrounding(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  evidence: EvidenceCandidate[];
+  policyDecision: PolicyGuardDecision;
+  output: ModelOutput;
+}): Promise<ModelOutputResolution> {
+  if (input.policyDecision.routingSource !== "article_router") {
+    return { output: input.output, diagnostics: [] };
+  }
+
+  const primaryArticle = input.policyDecision.primaryArticle;
+  if (!primaryArticle) {
+    throw new Error("Article router selected no primary article");
+  }
+
+  const check = await generateProviderJson<GroundingCheckOutput>({
+    purpose: "approved article answer validation",
+    maxTokens: 260,
+    messages: [
+      {
+        role: "system",
+        content: [
+          "You validate an Ask Sales FAQ draft answer before a sales rep sees it.",
+          "Return pass only if the draft answers the current question and every policy/fact in it is supported by the selected approved sales guidance.",
+          "Recent conversation context may be used only to resolve references from the current question. The current question remains authoritative.",
+          "Fail if the draft invents a policy, price, discount, owner, exception, hold, legal/compliance decision, or operational step not present in the selected guidance.",
+          "Fail if the draft ignores a key product/show context from the recent conversation that is needed to answer the current follow-up.",
+          "Return valid JSON only with keys: verdict, reason. verdict must be pass or fail.",
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: [
+          "CURRENT USER QUESTION:",
+          input.currentQuestion,
+          "",
+          "RECENT CONVERSATION CONTEXT:",
+          input.conversationContext || "None",
+          "",
+          "SELECTED APPROVED SALES GUIDANCE:",
+          formatEvidencePacket([approvedArticleToCandidate(primaryArticle)], {
+            approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
+            sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
+          }),
+          "",
+          "DRAFT ANSWER JSON:",
+          JSON.stringify(input.output),
+        ].join("\n"),
+      },
+    ],
+    parse: parseGroundingCheckOutput,
+  });
+
+  if (check.output.verdict !== "pass") {
+    throw new Error(`Article-router answer validation failed: ${check.output.reason || "unsupported answer"}`);
+  }
+
+  return { output: input.output, diagnostics: [check.diagnostics] };
+}
+
+function criticalValidationQuestion(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  policyDecision: PolicyGuardDecision;
+}) {
+  if (
+    input.conversationContext &&
+    (input.policyDecision.routingSource === "context_rule" || input.policyDecision.routingSource === "article_router")
+  ) {
+    return buildContextualQuestion(input.currentQuestion, input.conversationContext);
+  }
+
+  return input.currentQuestion;
 }
 
 function buildDecision(input: {
@@ -1525,6 +1878,7 @@ function buildRuntimeMetadata(input: {
   modelEvidence: EvidenceCandidate[];
   providerDiagnostics: ProviderCallDiagnostics[];
   criticalFallbackUsed: boolean;
+  policyDecision: PolicyGuardDecision;
 }): AskSalesFaqRuntimeMetadata {
   const providerAttempts = input.providerDiagnostics.flatMap((diagnostic) => diagnostic.attempts);
   const latestDiagnostic = input.providerDiagnostics[input.providerDiagnostics.length - 1];
@@ -1537,6 +1891,13 @@ function buildRuntimeMetadata(input: {
       approvedCandidates: input.modelEvidence.filter((candidate) => candidate.kind === "approved_article").length,
       sourceChunkCandidates: input.modelEvidence.filter((candidate) => candidate.kind !== "approved_article").length,
       promptChars: evidencePromptCharCount(input.modelEvidence),
+    },
+    routing: {
+      source: input.policyDecision.routingSource,
+      matchedRuleId: input.policyDecision.matchedRuleId,
+      articleId: input.policyDecision.articleId,
+      confidenceScore: input.policyDecision.routingConfidence,
+      usedConversationContext: input.policyDecision.usedConversationContext,
     },
     deepSeekThinkingDisabled: latestDiagnostic?.deepSeekThinkingDisabled ?? isDeepSeekThinkingDisabled(),
     claudeFallbackEnabled: latestDiagnostic?.claudeFallbackEnabled ?? isClaudeFallbackEnabled(),
@@ -1888,6 +2249,27 @@ function parseModelOutput(content: string): ModelOutput {
   }
 
   return normalizeModelOutput(parsed);
+}
+
+function parseArticleRouterOutput(content: string): ArticleRouterOutput {
+  const parsed = parseJsonObject<Partial<ArticleRouterOutput>>(content);
+  const articleId = typeof parsed.article_id === "string" ? parsed.article_id.trim() : null;
+  const confidenceScore = parseConfidenceScore(parsed.confidence_score) ?? 0;
+
+  return {
+    article_id: articleId || null,
+    confidence_score: confidenceScore,
+    reason: typeof parsed.reason === "string" ? parsed.reason.trim().slice(0, 400) : "",
+  };
+}
+
+function parseGroundingCheckOutput(content: string): GroundingCheckOutput {
+  const parsed = parseJsonObject<Partial<GroundingCheckOutput>>(content);
+  const verdict = typeof parsed.verdict === "string" && parsed.verdict.toLowerCase() === "pass" ? "pass" : "fail";
+  return {
+    verdict,
+    reason: typeof parsed.reason === "string" ? parsed.reason.trim().slice(0, 400) : "",
+  };
 }
 
 function parseJsonObject<T>(content: string): T {
