@@ -83,7 +83,7 @@ Latest verified run after the natural-conversation follow-up pass:
 - `npm run build`: passed.
 - Touched-file `git diff --check`: passed.
 - Natural-conversation code commit: `96824fa`.
-- Natural-conversation Vercel Production deployment: `dpl_JDh5X1zwoSemP69zaWLffQbwt7h6`.
+- Natural-conversation code Vercel Production deployment: `dpl_JDh5X1zwoSemP69zaWLffQbwt7h6`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
 - Anonymous `/ask-sales-faq` redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
