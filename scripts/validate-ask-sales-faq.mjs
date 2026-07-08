@@ -408,12 +408,42 @@ if (missingFiles.length === 0) {
       runtime.includes("mode approved_article") &&
       runtime.includes("mode unsupported") &&
       runtime.includes("Do not add new policy, prices, discounts, owners, links, exceptions, or process steps") &&
+      runtime.includes("For shorten/rephrase requests, use the most recent substantive assistant sales answer") &&
       runtime.includes("buildConversationReplyDecision") &&
       runtime.includes("routingSource: \"article_router\"") &&
       runtime.includes("routingSource: \"conversation_planner\"") &&
       types.includes("conversation_planner") &&
       db.includes('\"conversation_reply\"'),
     "default-abstain messages can become natural conversation replies, approved-article matches, or safe unsupported fallbacks without broad free answering",
+  );
+
+  addCheck(
+    "short conversational follow-ups plan before contextual policy routing",
+    runtime.includes("let policyDecision = matchPolicyGuard(sanitizedQuestion)") &&
+      runtime.includes("let conversationPlannerAttempted = false") &&
+      runtime.includes("shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, conversationContext)") &&
+      runtime.includes("conversationPlannerAttempted = true") &&
+      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
+      runtime.includes("!conversationPlannerAttempted") &&
+      runtime.includes("isShortAnswerRewriteRequest") &&
+      runtime.includes("isSocialConversationTurn") &&
+      runtime.includes("isConcisePromiseConfirmation(question)") &&
+      runtime.includes("Ignore brief social replies like 'You're welcome'"),
+    "short confirmations, thank-yous, and rewrite requests reach the AI planner before recent context can force a full policy answer",
+  );
+
+  addCheck(
+    "unapproved specialist handoffs are blocked",
+    runtime.includes("UNAPPROVED_HANDOFF_PATTERNS") &&
+      runtime.includes("let me connect") &&
+      runtime.includes("specialist for (?:this|the) program") &&
+      runtime.includes("someone|a specialist|our specialist") &&
+      runtime.includes("will|can") &&
+      runtime.includes("Do not tell the rep or prospect you will connect them with a specialist") &&
+      runtime.includes("someone will reach out") &&
+      runtime.includes("confirm with the current owner or post in the approved channel") &&
+      runtime.includes("UNAPPROVED_HANDOFF_PATTERNS.some((pattern) => pattern.test(answer))"),
+    "model output cannot tell reps/prospects a specialist will connect or reach out unless that handoff is explicitly approved",
   );
 
   addCheck(
@@ -555,6 +585,7 @@ if (missingFiles.length === 0) {
     "rep-facing internal status terms are sanitized",
     runtime.includes("REP_FACING_INTERNAL_TERMS") &&
       runtime.includes("REP_FACING_INTERNAL_PATTERNS") &&
+      runtime.includes("UNAPPROVED_HANDOFF_PATTERNS") &&
       runtime.includes("ensureRepFacingOutput") &&
       runtime.includes("rep-facing wording repair") &&
       runtime.includes("\\bnot approved\\b") &&

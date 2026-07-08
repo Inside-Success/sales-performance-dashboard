@@ -312,6 +312,14 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\bchunk:[a-z0-9_-]+/i,
 ];
 
+const UNAPPROVED_HANDOFF_PATTERNS = [
+  /\blet me connect (?:you|them|him|her|the client|the prospect) with\b/i,
+  /\bconnect (?:you|them|him|her|the client|the prospect) with (?:our|a|the) specialist\b/i,
+  /\bspecialist for (?:this|the) program\b/i,
+  /\b(?:someone|a specialist|our specialist) (?:will|can) (?:reach out|contact|call|follow up)\b/i,
+  /\btransfer (?:you|them|him|her|the client|the prospect) to (?:our|a|the) specialist\b/i,
+];
+
 type CriticalAnswerRule = {
   id: string;
   articleId: string;
@@ -755,9 +763,52 @@ export async function runAskSalesFaq(
   const conversationContext = buildConversationContext(conversationMessages);
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
   const providerDiagnostics: ProviderCallDiagnostics[] = [];
-  let policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
+  let policyDecision = matchPolicyGuard(sanitizedQuestion);
+  let conversationPlannerAttempted = false;
 
-  if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision)) {
+  if (
+    shouldAttemptApprovedArticleRouter(policyDecision) &&
+    shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, conversationContext)
+  ) {
+    conversationPlannerAttempted = true;
+    const plannerResult = await tryPlanConversationTurn({
+      currentQuestion: sanitizedQuestion,
+      conversationContext,
+    });
+    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
+    if (plannerResult.reply) {
+      const decision = buildConversationReplyDecision(plannerResult.reply);
+      const answer = sanitizeModelAnswer(plannerResult.reply.answer);
+
+      return buildHandledResponse({
+        startedAt,
+        sanitizedQuestion,
+        contextualQuestion,
+        redactions,
+        decision,
+        answer,
+        structuredAnswer: normalizeModelStructuredAnswer(plannerResult.reply, answer, decision),
+        source: null,
+        provider: plannerResult.provider,
+        model: plannerResult.model,
+        errorClass: null,
+        runtimeMetadata: buildRuntimeMetadata({
+          evidence: [],
+          modelEvidence: [],
+          providerDiagnostics,
+          criticalFallbackUsed: false,
+          policyDecision: buildConversationPlannerDecision(),
+        }),
+      });
+    }
+    if (plannerResult.decision) policyDecision = plannerResult.decision;
+  }
+
+  if (policyDecision.matchedRuleId === "default-abstain") {
+    policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
+  }
+
+  if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision) && !conversationPlannerAttempted) {
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
       conversationContext,
@@ -1080,6 +1131,8 @@ async function tryPlanConversationTurn(input: {
             "Decide whether the sales rep's current message needs a natural chat reply, an approved sales article, or a safe unsupported fallback.",
             "Use mode conversation_reply only for conversational turns, acknowledgments, requests to shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
             "For conversation_reply, write a natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
+            "For shorten/rephrase requests, use the most recent substantive assistant sales answer. Ignore brief social replies like 'You're welcome' when resolving what 'that' refers to.",
+            "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless an approved article explicitly allows that exact handoff.",
             "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
             "Use mode approved_article only when one approved article directly controls the answer.",
             "Use mode unsupported when there is no clear approved article and it is not a conversational reply.",
@@ -1235,6 +1288,50 @@ function compactArticleBodyForRouter(body: string) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
+}
+
+function shouldPlanConversationBeforeContextPolicy(question: string, conversationContext: string) {
+  if (!conversationContext.trim()) return false;
+
+  const normalizedQuestion = normalizeText(question);
+  const tokens = tokenize(normalizedQuestion, { expand: false });
+  if (!normalizedQuestion || tokens.length > 28) return false;
+
+  if (isSocialConversationTurn(normalizedQuestion)) return true;
+  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (isConcisePromiseConfirmation(question)) return true;
+
+  return (
+    tokens.length <= 18 &&
+    /\b(so|basically|right|correct|ok|okay|confirm|promise|promising|mean|meaning|should i|can i|do i|dont|don't|do not|cannot|can't|cant)\b/.test(
+      normalizedQuestion,
+    ) &&
+    /\b(that|this|it|him|her|them|client|prospect|promise|hold|route|confirm|anything|right|correct)\b/.test(
+      normalizedQuestion,
+    )
+  );
+}
+
+function isSocialConversationTurn(normalizedQuestion: string) {
+  return (
+    /^(thanks|thank you|thankyou|appreciate it|got it|ok thanks|okay thanks|perfect thanks|great thanks|that helps)\b/.test(
+      normalizedQuestion,
+    ) &&
+    !/\b(price|payment|pay|call|client|prospect|show|contract|discount|cohort|greenlight|allowed|can i|should i|what|how|when|where|why)\b/.test(
+      normalizedQuestion,
+    )
+  );
+}
+
+function isShortAnswerRewriteRequest(normalizedQuestion: string, tokenCount: number) {
+  if (tokenCount > 20) return false;
+
+  return (
+    /\b(make|keep|say|rewrite|rephrase|shorten|summarize|condense|simplify|shorter|brief|concise|simpler)\b/.test(
+      normalizedQuestion,
+    ) &&
+    /\b(that|this|it|answer|reply|response|shorter|brief|concise|simpler|simple|short)\b/.test(normalizedQuestion)
+  );
 }
 
 function shouldUseConversationContextForPolicyGuard(question: string) {
@@ -1558,6 +1655,7 @@ async function generateProviderAnswer(input: {
           "If the current question is a short confirmation of the prior answer, answer in one or two direct sentences and do not repeat the full policy unless needed for safety.",
           "For DJ/NLCEO cohort or payment-timing questions, say the main ISTV cohort rule does not block them, but never approve a specific future payment date or hold; route or confirm payment-timing exceptions before promising.",
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
+          "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless the approved evidence explicitly authorizes that exact handoff.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
           "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
           "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
@@ -1617,6 +1715,7 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
             "Preserve the answer's facts, warnings, route requirement, and confidence. Do not add new policy or remove useful sales guidance.",
             "Remove all internal source mechanics and review language. Never mention Slack, evidence numbers, source IDs, article IDs, knowledge base, approved articles, route-only labels, governance logs, internal guidance, RAG, manifests, or file paths.",
             "If a detail needs confirmation, use normal sales wording such as: \"Confirm this with the current sales owner before promising it.\"",
+            "Do not tell the rep or prospect you will connect them with a specialist or that someone will reach out unless the approved evidence explicitly authorizes that handoff; rewrite to confirm with the current owner or post in the approved channel.",
             "Write directly to the rep using you, you can say, do not promise, and route this.",
             "Return valid JSON only with the same schema: answer, summary, sections, selected_source_ids, needs_route, route_reason, confidence_label, confidence_score.",
             `JSON example shape: ${JSON_SCHEMA_EXAMPLE}`,
@@ -2643,7 +2742,8 @@ function containsHiddenTerms(answer: string) {
   const normalizedAnswer = answer.toLowerCase();
   return (
     REP_FACING_INTERNAL_TERMS.some((term) => normalizedAnswer.includes(term)) ||
-    REP_FACING_INTERNAL_PATTERNS.some((pattern) => pattern.test(answer))
+    REP_FACING_INTERNAL_PATTERNS.some((pattern) => pattern.test(answer)) ||
+    UNAPPROVED_HANDOFF_PATTERNS.some((pattern) => pattern.test(answer))
   );
 }
 

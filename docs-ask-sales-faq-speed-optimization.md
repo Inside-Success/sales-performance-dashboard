@@ -49,8 +49,9 @@ The 2026-07-09 follow-up pass addresses two signed-in testing issues without add
 
 - short confirmations like "so basically I should not promise him anything right?" should get a concise answer based on the previous assistant answer instead of a full repeated policy dump;
 - social turns like "thank you for your help" should get a short natural reply instead of the generic unconfirmed-answer fallback.
+- shorten/rephrase requests like "Can you make that shorter?" should shorten the previous substantive assistant answer instead of reopening the full policy article.
 
-The runtime now handles this as an AI planning step only after the hard policy guard reaches the default abstain state. The planner has three allowed outcomes:
+The runtime now handles this as an AI planning step only after the direct hard policy guard reaches the default abstain state. For short conversational follow-ups, the planner now runs before contextual policy routing so old DJ/cohort/payment context cannot force a long policy answer before the planner sees the rep's actual intent. The planner has three allowed outcomes:
 
 - `conversation_reply`: a natural reply for acknowledgments, rephrasing/shortening requests, or short confirmations that can be answered solely from the recent assistant answer;
 - `approved_article`: a high-confidence route into one existing approved article;
@@ -59,6 +60,7 @@ The runtime now handles this as an AI planning step only after the hard policy g
 Safety boundaries:
 
 - The planner is not allowed to add policy, prices, discounts, owners, links, exceptions, or process steps.
+- The model is not allowed to tell the rep or prospect that it will connect them with a specialist, have someone reach out, or transfer them unless an approved source explicitly authorizes that exact handoff.
 - New sales-policy questions still need an approved article or they fall back safely.
 - Normal approved-answer generation, high-risk critical validation, grounding checks, and route behavior remain unchanged.
 - Successful `conversation_reply` rows are logged as answers, not as admin misses.
@@ -77,13 +79,14 @@ git diff --check
 
 Latest verified run after the natural-conversation follow-up pass:
 
-- `node scripts/validate-ask-sales-faq.mjs`: 60 / 60 passed.
+- `node scripts/validate-ask-sales-faq.mjs`: 62 / 62 passed after the short-follow-up ordering and specialist-handoff guard update.
 - `npm run lint`: passed.
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
 - Touched-file `git diff --check`: passed.
 - Natural-conversation code commit: `96824fa`.
 - Natural-conversation code Vercel Production deployment: `dpl_JDh5X1zwoSemP69zaWLffQbwt7h6`; later docs-only deployments may supersede the exact alias deployment without changing the runtime code.
+- Short-follow-up ordering code is covered by the current dashboard implementation commit and should be production-verified after push.
 - Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
 - Anonymous `/ask-sales-faq` redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` returns controlled `not_signed_in` JSON.
