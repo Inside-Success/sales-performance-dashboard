@@ -493,6 +493,7 @@ export function AskSalesFaqChat() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           conversationId: activeConversationIdRef.current,
+          clientRequestId: createClientRequestId(),
           messages: buildRequestMessages(nextMessages),
         }),
       });
@@ -525,17 +526,21 @@ export function AskSalesFaqChat() {
       const message =
         requestError instanceof Error
           ? requestError.message
-          : "Ask Sales FAQ could not answer right now. Route the question instead of guessing.";
+          : "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.";
       setError(message);
       syncMessages([
         ...messagesRef.current,
         {
           id: `local-safe-${Date.now()}`,
           role: "assistant",
-          content: "Ask Sales FAQ could not answer reliably right now. Please route the question instead of guessing.",
+          content:
+            "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.",
           structuredAnswer: {
-            summary: "Ask Sales FAQ could not answer reliably right now. Please route the question instead of guessing.",
-            sections: [{ title: "What to do", items: ["Route the question instead of guessing."], tone: "route" }],
+            summary:
+              "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.",
+            sections: [
+              { title: "What to do", items: ["Try again in a few moments.", "Route urgent live-call questions instead of guessing."], tone: "route" },
+            ],
             confidenceLabel: "Low",
             confidenceScore: 0,
             sourceMode: "fallback",
@@ -551,6 +556,11 @@ export function AskSalesFaqChat() {
       syncIsLoading(false);
       if (shouldContinueQueue) runNextQueuedQuestion();
     }
+  }
+
+  function createClientRequestId() {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+    return `client-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
 
   async function saveFeedback(message: ChatMessage, rating: "up" | "down", comment = "") {

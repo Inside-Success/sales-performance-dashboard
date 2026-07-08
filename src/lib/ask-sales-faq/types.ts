@@ -14,6 +14,8 @@ export type AskSalesFaqOutcome =
   | "abstain_unapproved"
   | "admin_only"
   | "safe_fallback"
+  | "rate_limited"
+  | "duplicate_in_progress"
   | "feature_disabled"
   | "auth_blocked"
   | "validation_error";

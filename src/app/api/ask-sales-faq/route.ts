@@ -1,11 +1,20 @@
-import { randomUUID } from "crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { createHash, randomUUID } from "crypto";
+import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { getAskSalesFaqAccess } from "@/lib/ask-sales-faq/access";
 import { runAskSalesFaq } from "@/lib/ask-sales-faq/runtime";
-import type { AskSalesFaqResponse } from "@/lib/ask-sales-faq/types";
-import { ensureAskSalesFaqStorage, saveAskSalesFaqDiagnostic, saveAskSalesFaqExchange } from "@/lib/db";
+import type { AskSalesFaqLogPayload, AskSalesFaqResponse } from "@/lib/ask-sales-faq/types";
+import {
+  checkAskSalesFaqRateLimit,
+  completeAskSalesFaqRequest,
+  ensureAskSalesFaqStorage,
+  failAskSalesFaqRequest,
+  reserveAskSalesFaqRequest,
+  saveAskSalesFaqDiagnostic,
+  saveAskSalesFaqExchange,
+  type AskSalesFaqRateLimitStatus,
+} from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -89,11 +98,69 @@ export async function POST(request: NextRequest) {
   const conversationId = payload.conversationId || `faq_${randomUUID()}`;
   const userMessageId = `faq_user_${randomUUID()}`;
   const assistantMessageId = `faq_assistant_${randomUUID()}`;
+  const clientRequestId = normalizeClientRequestId(payload.clientRequestId) || `server_${randomUUID()}`;
+  const requestGuardId = buildRequestGuardId(access.viewerEmail, clientRequestId);
 
   try {
     const storageReady = await ensureAskSalesFaqStorage();
     if (!storageReady) {
       return NextResponse.json(buildSafeConfiguredResponse(conversationId, assistantMessageId));
+    }
+
+    const requestGuard = await reserveAskSalesFaqRequest({
+      id: requestGuardId,
+      viewerEmail: access.viewerEmail,
+      conversationId,
+      clientRequestId,
+    });
+
+    if (requestGuard.state === "existing") {
+      if (requestGuard.response) {
+        const replayed = NextResponse.json(requestGuard.response);
+        replayed.headers.set("X-Ask-Sales-FAQ-Replayed", "true");
+        if (requestGuard.status === "rate_limited") replayed.headers.set("Retry-After", "60");
+        return replayed;
+      }
+
+      if (requestGuard.status === "failed") {
+        return NextResponse.json(buildSafeConfiguredResponse(conversationId, assistantMessageId));
+      }
+
+      return NextResponse.json(buildDuplicateInProgressResponse(conversationId, assistantMessageId));
+    }
+
+    const rateLimit = await checkAskSalesFaqRateLimit(access.viewerEmail);
+    if (rateLimit.limited) {
+      const rateLimitedResponse = buildRateLimitedResponse(conversationId, assistantMessageId, rateLimit);
+      await failAskSalesFaqRequest({
+        id: requestGuardId,
+        status: "rate_limited",
+        assistantMessageId,
+        response: rateLimitedResponse,
+        errorClass: `rate_limited_${rateLimit.scope}`,
+      });
+      after(() =>
+        logDiagnostic({
+          conversationId,
+          viewerEmail: access.viewerEmail,
+          viewerName: access.viewerName,
+          eventType: "rate_limited",
+          detail: rateLimit.scope === "user" ? "Per-rep Ask Sales FAQ usage protection triggered." : "Global Ask Sales FAQ usage protection triggered.",
+          metadata: {
+            scope: rateLimit.scope,
+            userCount: rateLimit.userCount,
+            userLimit: rateLimit.userLimit,
+            userWindowMinutes: rateLimit.userWindowMinutes,
+            globalCount: rateLimit.globalCount,
+            globalLimit: rateLimit.globalLimit,
+            globalWindowSeconds: rateLimit.globalWindowSeconds,
+          },
+        }),
+      );
+
+      const limited = NextResponse.json(rateLimitedResponse);
+      limited.headers.set("Retry-After", String(rateLimit.retryAfterSeconds));
+      return limited;
     }
 
     const result = await runAskSalesFaq(lastMessage.content, messages);
@@ -113,7 +180,17 @@ export async function POST(request: NextRequest) {
       latencyMs: result.latencyMs,
     };
 
-    await saveAskSalesFaqExchange({
+    try {
+      await completeAskSalesFaqRequest({
+        id: requestGuardId,
+        assistantMessageId,
+        response,
+      });
+    } catch (error) {
+      console.error("Ask Sales FAQ request guard completion failed", error);
+    }
+
+    scheduleExchangeSave({
       conversationId,
       userMessageId,
       assistantMessageId,
@@ -140,6 +217,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     console.error("Ask Sales FAQ request failed", error);
+    await failAskSalesFaqRequest({
+      id: requestGuardId,
+      status: "failed",
+      assistantMessageId,
+      errorClass: error instanceof Error ? error.name : "runtime_error",
+    }).catch((guardError) => {
+      console.error("Ask Sales FAQ request guard failure update failed", guardError);
+    });
     await logDiagnostic({
       conversationId,
       viewerEmail: access.viewerEmail,
@@ -167,6 +252,17 @@ function buildConversationTitle(question: string) {
   const words = question.replace(/\s+/g, " ").trim().split(" ").filter(Boolean).slice(0, 9);
   const title = words.join(" ");
   return title.length > 4 ? title : "Ask Sales FAQ chat";
+}
+
+function normalizeClientRequestId(value: string | null | undefined) {
+  const normalized = (value || "").trim();
+  if (!normalized) return null;
+  return normalized.replace(/[^a-zA-Z0-9._:-]/g, "").slice(0, 120) || null;
+}
+
+function buildRequestGuardId(viewerEmail: string, clientRequestId: string) {
+  const digest = createHash("sha256").update(`${viewerEmail}:${clientRequestId}`).digest("hex").slice(0, 48);
+  return `askfaq_req_${digest}`;
 }
 
 function extractConversationId(payload: unknown) {
@@ -222,6 +318,28 @@ async function logDiagnostic(payload: {
   }
 }
 
+function scheduleExchangeSave(payload: AskSalesFaqLogPayload) {
+  after(async () => {
+    try {
+      await saveAskSalesFaqExchange(payload);
+    } catch (error) {
+      console.error("Ask Sales FAQ exchange logging failed after answer generation", error);
+      await logDiagnostic({
+        conversationId: payload.conversationId,
+        viewerEmail: payload.viewerEmail,
+        viewerName: payload.viewerName,
+        eventType: "exchange_logging_failed",
+        detail: "Ask Sales FAQ generated an answer, but message history logging failed.",
+        metadata: {
+          assistantMessageId: payload.assistantMessageId,
+          outcome: payload.outcome,
+          error: error instanceof Error ? error.message : "unknown",
+        },
+      });
+    }
+  });
+}
+
 function buildSafeValidationResponse(conversationId: string, messageId: string, routeReason: string): AskSalesFaqResponse {
   return {
     ok: true,
@@ -254,20 +372,96 @@ function buildSafeValidationResponse(conversationId: string, messageId: string, 
   };
 }
 
-function buildSafeConfiguredResponse(conversationId: string, messageId: string): AskSalesFaqResponse {
+function buildDuplicateInProgressResponse(conversationId: string, messageId: string): AskSalesFaqResponse {
+  const answer =
+    "I am already working on that question. Please wait for the current answer instead of sending it again.";
   return {
     ok: true,
     conversationId,
     messageId,
-    answer:
-      "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Route this to the current sales owner or the right help channel before replying.",
+    answer,
     structuredAnswer: {
-      summary:
-        "Ask Sales FAQ is not fully available right now, so do not rely on a generated answer. Route this to the current sales owner or the right help channel before replying.",
+      summary: answer,
       sections: [
         {
           title: "What to do",
-          items: ["Route this to the current sales owner or the right help channel.", "Do not guess before replying to the prospect."],
+          items: ["Wait for the current answer to finish.", "If you typed another question, send it after this answer is done."],
+          tone: "default",
+        },
+      ],
+      confidenceLabel: "Low",
+      confidenceScore: 0,
+      sourceMode: "fallback",
+    },
+    outcome: "duplicate_in_progress",
+    source: null,
+    model: null,
+    provider: null,
+    needsRoute: false,
+    routeReason: null,
+    redactions: [],
+    latencyMs: 0,
+  };
+}
+
+function buildRateLimitedResponse(
+  conversationId: string,
+  messageId: string,
+  rateLimit: Extract<AskSalesFaqRateLimitStatus, { limited: true }>,
+): AskSalesFaqResponse {
+  const answer =
+    rateLimit.scope === "user"
+      ? "You have sent a lot of questions in a short time. Please wait a few minutes and try again. If you are live with a prospect and this is urgent, route the question instead of guessing."
+      : "Ask Sales FAQ is getting a lot of questions at once. Please wait a minute and try again. If you are live with a prospect and this is urgent, route the question instead of guessing.";
+  return {
+    ok: true,
+    conversationId,
+    messageId,
+    answer,
+    structuredAnswer: {
+      summary: answer,
+      sections: [
+        {
+          title: "What to do",
+          items:
+            rateLimit.scope === "user"
+              ? ["Wait a few minutes before asking another question.", "Route urgent live-call questions instead of guessing."]
+              : ["Wait a minute before trying again.", "Route urgent live-call questions instead of guessing."],
+          tone: "route",
+        },
+      ],
+      confidenceLabel: "Low",
+      confidenceScore: 0,
+      sourceMode: "fallback",
+    },
+    outcome: "rate_limited",
+    source: null,
+    model: null,
+    provider: null,
+    needsRoute: true,
+    routeReason:
+      rateLimit.scope === "user"
+        ? "Temporary per-rep usage protection is active."
+        : "Temporary company-wide usage protection is active.",
+    redactions: [],
+    latencyMs: 0,
+  };
+}
+
+function buildSafeConfiguredResponse(conversationId: string, messageId: string): AskSalesFaqResponse {
+  const answer =
+    "Ask Sales FAQ is having trouble right now. Please try again in a few moments. If you are live with a prospect and this is urgent, route the question instead of guessing.";
+  return {
+    ok: true,
+    conversationId,
+    messageId,
+    answer,
+    structuredAnswer: {
+      summary: answer,
+      sections: [
+        {
+          title: "What to do",
+          items: ["Try again in a few moments.", "Route urgent live-call questions instead of guessing."],
           tone: "route",
         },
       ],
@@ -280,7 +474,7 @@ function buildSafeConfiguredResponse(conversationId: string, messageId: string):
     model: null,
     provider: null,
     needsRoute: true,
-    routeReason: "Ask Sales FAQ storage or runtime configuration is not available.",
+    routeReason: "Ask Sales FAQ is temporarily unavailable.",
     redactions: [],
     latencyMs: 0,
   };

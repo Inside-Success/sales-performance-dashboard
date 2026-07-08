@@ -50,6 +50,7 @@ if (missingFiles.length === 0) {
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
+  const types = read("src/lib/ask-sales-faq/types.ts");
   const bundle = read("src/lib/ask-sales-faq/generated/approved-faq-bundle.ts");
   const ragIndex = JSON.parse(read("src/lib/ask-sales-faq/generated/policy-aware-rag-index.json"));
   const db = read("src/lib/db.ts");
@@ -154,6 +155,75 @@ if (missingFiles.length === 0) {
       db.includes("getAskSalesFaqAdminOverview") &&
       db.includes("answer_payload"),
     "db includes ask sales faq tables, helpers, diagnostics, admin overview, and structured answer retention",
+  );
+
+  addCheck(
+    "rollout request guard table is present",
+    db.includes("ask_sales_faq_request_guards") &&
+      db.includes("client_request_id") &&
+      db.includes("status in ('in_progress', 'completed', 'failed', 'rate_limited')") &&
+      db.includes("ask_sales_faq_request_guards_viewer_created_idx") &&
+      db.includes("ask_sales_faq_request_guards_status_updated_idx"),
+    "db has the idempotency/rate-limit guard table and indexes",
+  );
+
+  addCheck(
+    "rollout guard helpers are present",
+    db.includes("reserveAskSalesFaqRequest") &&
+      db.includes("checkAskSalesFaqRateLimit") &&
+      db.includes("completeAskSalesFaqRequest") &&
+      db.includes("failAskSalesFaqRequest") &&
+      db.includes("FAQ_RATE_LIMIT_USER_WINDOW_MINUTES") &&
+      db.includes("FAQ_RATE_LIMIT_USER_MAX") &&
+      db.includes("FAQ_RATE_LIMIT_GLOBAL_WINDOW_SECONDS") &&
+      db.includes("FAQ_RATE_LIMIT_GLOBAL_MAX"),
+    "db exposes request reservation, completion/failure, and tunable rate-limit helpers",
+  );
+
+  addCheck(
+    "chat api uses request guards before model calls",
+    chatRoute.includes("clientRequestId: z.string().trim().max(120).optional().nullable()") &&
+      chatRoute.includes("normalizeClientRequestId") &&
+      chatRoute.includes("buildRequestGuardId") &&
+      chatRoute.includes("reserveAskSalesFaqRequest") &&
+      chatRoute.includes("checkAskSalesFaqRateLimit") &&
+      chatRoute.includes("completeAskSalesFaqRequest") &&
+      chatRoute.includes("failAskSalesFaqRequest") &&
+      chatRoute.includes("requestGuard.response") &&
+      chatRoute.includes("X-Ask-Sales-FAQ-Replayed"),
+    "route validates client request ids, replays completed protected responses, and reserves/checks requests before calling the model",
+  );
+
+  addCheck(
+    "chat api returns friendly protected-state messages",
+    chatRoute.includes("buildDuplicateInProgressResponse") &&
+      chatRoute.includes("buildRateLimitedResponse") &&
+      chatRoute.includes("You have sent a lot of questions in a short time") &&
+      chatRoute.includes("Ask Sales FAQ is getting a lot of questions at once") &&
+      chatRoute.includes("I am already working on that question") &&
+      chatRoute.includes("route the question instead of guessing") &&
+      types.includes('"rate_limited"') &&
+      types.includes('"duplicate_in_progress"'),
+    "rate-limit and duplicate-send states return clear rep-facing answers with typed outcomes",
+  );
+
+  addCheck(
+    "chat answer logging is non-blocking after generation",
+    chatRoute.includes("import { after, NextRequest, NextResponse } from \"next/server\"") &&
+      chatRoute.includes("function scheduleExchangeSave") &&
+      chatRoute.includes("after(async () =>") &&
+      chatRoute.includes("saveAskSalesFaqExchange(payload)") &&
+      chatRoute.includes("exchange_logging_failed"),
+    "successful answers are returned before background history logging finishes",
+  );
+
+  addCheck(
+    "browser sends a unique request id per question",
+    chatUi.includes("clientRequestId: createClientRequestId()") &&
+      chatUi.includes("function createClientRequestId") &&
+      chatUi.includes("crypto.randomUUID()") &&
+      chatUi.includes("Ask Sales FAQ is having trouble right now. Try again in a few moments"),
+    "client posts an idempotency key and has a friendly network/runtime fallback",
   );
 
   addCheck(
@@ -490,7 +560,7 @@ if (missingFiles.length === 0) {
       runtime.includes("knowledge base") &&
       runtime.includes("source coverage") &&
       runtime.includes("modelOutputContainsHiddenTerms") &&
-      chatRoute.includes("Route this to the current sales owner or the right help channel") &&
+      chatRoute.includes("route the question instead of guessing") &&
       !chatRoute.includes("Please check the approved source"),
     "answer/runtime fallbacks rewrite or reject KB/governance wording instead of relying on awkward direct replacements",
   );
@@ -567,6 +637,10 @@ if (missingFiles.length === 0) {
       "ASK_SALES_FAQ_ADMIN_EMAILS",
       "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_URL",
       "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_SECRET",
+      "FAQ_RATE_LIMIT_USER_WINDOW_MINUTES",
+      "FAQ_RATE_LIMIT_USER_MAX",
+      "FAQ_RATE_LIMIT_GLOBAL_WINDOW_SECONDS",
+      "FAQ_RATE_LIMIT_GLOBAL_MAX",
     ].every((name) => envExample.includes(name)),
     "env example includes faq flags",
   );

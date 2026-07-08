@@ -43,6 +43,7 @@ import type {
   AskSalesFaqDiagnosticPayload,
   AskSalesFaqFeedbackPayload,
   AskSalesFaqLogPayload,
+  AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
 
@@ -305,6 +306,24 @@ async function buildSchema() {
   await sql`create index if not exists ask_sales_faq_diagnostics_created_idx on ask_sales_faq_diagnostics (created_at desc)`;
   await sql`create index if not exists ask_sales_faq_diagnostics_event_created_idx on ask_sales_faq_diagnostics (event_type, created_at desc)`;
   await sql`create index if not exists ask_sales_faq_diagnostics_viewer_created_idx on ask_sales_faq_diagnostics (viewer_email, created_at desc)`;
+
+  await sql`
+    create table if not exists ask_sales_faq_request_guards (
+      id text primary key,
+      viewer_email text not null,
+      conversation_id text not null,
+      client_request_id text not null,
+      status text not null default 'in_progress' check (status in ('in_progress', 'completed', 'failed', 'rate_limited')),
+      assistant_message_id text,
+      response_payload jsonb,
+      error_class text,
+      created_at timestamptz not null default now(),
+      updated_at timestamptz not null default now()
+    )
+  `;
+  await sql`create index if not exists ask_sales_faq_request_guards_viewer_created_idx on ask_sales_faq_request_guards (viewer_email, created_at desc)`;
+  await sql`create index if not exists ask_sales_faq_request_guards_created_idx on ask_sales_faq_request_guards (created_at desc)`;
+  await sql`create index if not exists ask_sales_faq_request_guards_status_updated_idx on ask_sales_faq_request_guards (status, updated_at desc)`;
 
   await sql`
     create table if not exists sales_performance_snapshots (
@@ -2207,6 +2226,211 @@ export async function ensureAskSalesFaqStorage() {
   return true;
 }
 
+export type AskSalesFaqRequestGuardState =
+  | {
+      state: "reserved";
+    }
+  | {
+      state: "existing";
+      status: "in_progress" | "completed" | "failed" | "rate_limited";
+      response: AskSalesFaqResponse | null;
+      assistantMessageId: string | null;
+    };
+
+export type AskSalesFaqRateLimitStatus =
+  | {
+      limited: false;
+      userCount: number;
+      userLimit: number;
+      userWindowMinutes: number;
+      globalCount: number;
+      globalLimit: number;
+      globalWindowSeconds: number;
+    }
+  | {
+      limited: true;
+      scope: "user" | "global";
+      retryAfterSeconds: number;
+      userCount: number;
+      userLimit: number;
+      userWindowMinutes: number;
+      globalCount: number;
+      globalLimit: number;
+      globalWindowSeconds: number;
+    };
+
+export async function reserveAskSalesFaqRequest(payload: {
+  id: string;
+  viewerEmail: string;
+  conversationId: string;
+  clientRequestId: string;
+}): Promise<AskSalesFaqRequestGuardState> {
+  await ensureSchema();
+  const sql = getSql();
+  const inserted = (await sql.query(
+    `
+      insert into ask_sales_faq_request_guards (
+        id,
+        viewer_email,
+        conversation_id,
+        client_request_id,
+        status,
+        created_at,
+        updated_at
+      )
+      values ($1, $2, $3, $4, 'in_progress', now(), now())
+      on conflict (id) do nothing
+      returning id
+    `,
+    [payload.id, payload.viewerEmail, payload.conversationId, payload.clientRequestId],
+  )) as Array<{ id: string }>;
+
+  if (inserted.length) return { state: "reserved" };
+
+  const rows = (await sql.query(
+    `
+      select
+        status,
+        assistant_message_id,
+        response_payload
+      from ask_sales_faq_request_guards
+      where id = $1
+      limit 1
+    `,
+    [payload.id],
+  )) as Array<{
+    status: "in_progress" | "completed" | "failed" | "rate_limited";
+    assistant_message_id: string | null;
+    response_payload: unknown;
+  }>;
+
+  const existing = rows[0];
+  if (!existing) return { state: "reserved" };
+
+  return {
+    state: "existing",
+    status: existing.status,
+    assistantMessageId: existing.assistant_message_id,
+    response: normalizeAskSalesFaqResponsePayload(existing.response_payload),
+  };
+}
+
+export async function checkAskSalesFaqRateLimit(viewerEmail: string): Promise<AskSalesFaqRateLimitStatus> {
+  await ensureSchema();
+  const sql = getSql();
+  const userWindowMinutes = clampPositiveInt(process.env.FAQ_RATE_LIMIT_USER_WINDOW_MINUTES, 30, 5, 240);
+  const userLimit = clampPositiveInt(process.env.FAQ_RATE_LIMIT_USER_MAX, 50, 10, 200);
+  const globalWindowSeconds = clampPositiveInt(process.env.FAQ_RATE_LIMIT_GLOBAL_WINDOW_SECONDS, 60, 10, 600);
+  const globalLimit = clampPositiveInt(process.env.FAQ_RATE_LIMIT_GLOBAL_MAX, 300, 50, 2000);
+  const rows = (await sql.query(
+    `
+      select
+        (
+          select count(*)::int
+          from ask_sales_faq_request_guards
+          where viewer_email = $1
+            and created_at >= now() - ($2::int * interval '1 minute')
+            and status in ('in_progress', 'completed')
+        ) as user_count,
+        (
+          select count(*)::int
+          from ask_sales_faq_request_guards
+          where created_at >= now() - ($3::int * interval '1 second')
+            and status in ('in_progress', 'completed')
+        ) as global_count
+    `,
+    [viewerEmail, userWindowMinutes, globalWindowSeconds],
+  )) as Array<{ user_count: number; global_count: number }>;
+  const userCount = Number(rows[0]?.user_count || 0);
+  const globalCount = Number(rows[0]?.global_count || 0);
+
+  if (userCount > userLimit) {
+    return {
+      limited: true,
+      scope: "user",
+      retryAfterSeconds: Math.max(60, Math.ceil((userWindowMinutes * 60) / 4)),
+      userCount,
+      userLimit,
+      userWindowMinutes,
+      globalCount,
+      globalLimit,
+      globalWindowSeconds,
+    };
+  }
+
+  if (globalCount > globalLimit) {
+    return {
+      limited: true,
+      scope: "global",
+      retryAfterSeconds: Math.max(30, globalWindowSeconds),
+      userCount,
+      userLimit,
+      userWindowMinutes,
+      globalCount,
+      globalLimit,
+      globalWindowSeconds,
+    };
+  }
+
+  return {
+    limited: false,
+    userCount,
+    userLimit,
+    userWindowMinutes,
+    globalCount,
+    globalLimit,
+    globalWindowSeconds,
+  };
+}
+
+export async function completeAskSalesFaqRequest(payload: {
+  id: string;
+  assistantMessageId: string;
+  response: AskSalesFaqResponse;
+}) {
+  await ensureSchema();
+  await getSql().query(
+    `
+      update ask_sales_faq_request_guards
+      set status = 'completed',
+          assistant_message_id = $2,
+          response_payload = $3::jsonb,
+          error_class = null,
+          updated_at = now()
+      where id = $1
+    `,
+    [payload.id, payload.assistantMessageId, JSON.stringify(payload.response)],
+  );
+}
+
+export async function failAskSalesFaqRequest(payload: {
+  id: string;
+  status?: "failed" | "rate_limited";
+  assistantMessageId?: string | null;
+  response?: AskSalesFaqResponse | null;
+  errorClass?: string | null;
+}) {
+  await ensureSchema();
+  await getSql().query(
+    `
+      update ask_sales_faq_request_guards
+      set status = $2,
+          assistant_message_id = coalesce($3, assistant_message_id),
+          response_payload = coalesce($4::jsonb, response_payload),
+          error_class = $5,
+          updated_at = now()
+      where id = $1
+    `,
+    [
+      payload.id,
+      payload.status || "failed",
+      payload.assistantMessageId || null,
+      payload.response ? JSON.stringify(payload.response) : null,
+      payload.errorClass || null,
+    ],
+  );
+}
+
 export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
   await ensureSchema();
   const sql = getSql();
@@ -2486,6 +2710,51 @@ function normalizeAskSalesFaqAnswerPayload(value: unknown): AskSalesFaqStructure
   };
 }
 
+function normalizeAskSalesFaqResponsePayload(value: unknown): AskSalesFaqResponse | null {
+  if (!value || typeof value !== "object") return null;
+  const payload = value as Partial<AskSalesFaqResponse>;
+  const conversationId = typeof payload.conversationId === "string" ? payload.conversationId : "";
+  const messageId = typeof payload.messageId === "string" ? payload.messageId : "";
+  const answer = typeof payload.answer === "string" ? payload.answer : "";
+  const outcome = typeof payload.outcome === "string" ? payload.outcome : "";
+
+  if (!conversationId || !messageId || !answer || !outcome) return null;
+
+  return {
+    ok: Boolean(payload.ok),
+    conversationId,
+    messageId,
+    answer,
+    structuredAnswer: normalizeAskSalesFaqAnswerPayload(payload.structuredAnswer),
+    outcome: payload.outcome as AskSalesFaqResponse["outcome"],
+    source:
+      payload.source && typeof payload.source === "object"
+        ? {
+            label: typeof payload.source.label === "string" ? payload.source.label : "Ask Sales FAQ",
+            lastReviewed: typeof payload.source.lastReviewed === "string" ? payload.source.lastReviewed : "",
+            approved: Boolean(payload.source.approved),
+            sourceMode: payload.source.sourceMode,
+            confidenceLabel: payload.source.confidenceLabel,
+            confidenceScore:
+              typeof payload.source.confidenceScore === "number" ? payload.source.confidenceScore : undefined,
+            expandableDetails:
+              typeof payload.source.expandableDetails === "string" ? payload.source.expandableDetails : undefined,
+          }
+        : null,
+    model: typeof payload.model === "string" ? payload.model : null,
+    provider:
+      payload.provider === "deepseek" || payload.provider === "anthropic" || payload.provider === "mock"
+        ? payload.provider
+        : null,
+    needsRoute: Boolean(payload.needsRoute),
+    routeReason: typeof payload.routeReason === "string" ? payload.routeReason : null,
+    redactions: Array.isArray(payload.redactions)
+      ? payload.redactions.filter((item): item is string => typeof item === "string")
+      : [],
+    latencyMs: typeof payload.latencyMs === "number" ? payload.latencyMs : 0,
+  };
+}
+
 function normalizeAskSalesFaqConfidenceScore(value: unknown) {
   const numericValue = typeof value === "number" ? value : typeof value === "string" && value.trim() ? Number(value) : NaN;
   if (!Number.isFinite(numericValue)) return null;
@@ -2497,6 +2766,12 @@ function askSalesFaqConfidenceLabelFromScore(score: number): AskSalesFaqStructur
   if (score >= 80) return "High";
   if (score >= 50) return "Medium";
   return "Low";
+}
+
+function clampPositiveInt(value: string | undefined, fallback: number, min: number, max: number) {
+  const parsed = Number.parseInt(value || "", 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
 }
 
 export async function renameAskSalesFaqConversation(payload: {
