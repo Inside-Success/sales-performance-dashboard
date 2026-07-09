@@ -66,6 +66,12 @@ export type AskSalesFaqRuntimeMetadata = {
     approvedCandidates: number;
     sourceChunkCandidates: number;
     promptChars: number;
+    candidates?: Array<{
+      id: string;
+      sourceType: string;
+      articleStatus: string;
+      modelIncluded: boolean;
+    }>;
   };
   routing?: {
     source: "direct_rule" | "context_rule" | "article_router" | "conversation_planner" | "default";
@@ -77,6 +83,16 @@ export type AskSalesFaqRuntimeMetadata = {
   deepSeekThinkingDisabled?: boolean;
   claudeFallbackEnabled?: boolean;
   criticalFallbackUsed?: boolean;
+  policyPlan?: {
+    resolvedProductScope: "main_istv" | "dj_nlceo" | "comparison" | "unknown";
+    excludedProductScopes: Array<"main_istv" | "dj_nlceo">;
+    questionRelation: "social" | "rewrite" | "context_follow_up" | "new";
+    previousUserQuestionUsed: boolean;
+    selectedPolicyUnitIds: string[];
+    applicableCriticalRuleIds: string[];
+    clarificationRequired: boolean;
+    fallbackMode: "approved_answer" | "clarify" | "scope_safe_route";
+  };
 };
 
 export type AskSalesFaqResponse = {

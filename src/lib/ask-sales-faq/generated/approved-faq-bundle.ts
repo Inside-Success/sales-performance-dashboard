@@ -15,6 +15,7 @@ export type AskSalesFaqRule = {
   decision: "answer_from_approved_article" | "route_from_approved_article" | "abstain_unapproved" | "admin_only";
   article_id?: string;
   blocked_topic?: string;
+  product_scope?: "main_istv" | "dj_nlceo";
   reason: string;
   match_any?: string[];
   match_all?: string[];
@@ -379,6 +380,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-main-istv-proof-exception",
       "decision": "route_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
       "reason": "Main ISTV genuine-reason or proof exceptions require Rich approval.",
       "match_any_groups": [
@@ -702,6 +704,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-dj-nlceo-cohort-scope",
       "decision": "route_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
       "reason": "Daymond John / Next Level CEO has no cohort rule and no same-day discount; route DJ/NLCEO edge cases to the current DJ/NLCEO channel or sales owner.",
       "match_any_groups": [
@@ -727,6 +730,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-dj-nlceo-payment-timing-exception",
       "decision": "route_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Daymond John / Next Level CEO first-payment timing exceptions need current owner confirmation before reps promise a future payment date or hold.",
       "match_any_groups": [
@@ -807,6 +811,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-reapply-minimum",
       "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
       "reason": "Rich confirmed the main ISTV reapply minimum after no-show, missed deadline, rejection, or not-fit outcome.",
       "match_any": [
@@ -993,6 +998,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-call-2-cohort",
       "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
       "reason": "Approved main ISTV cohort article covers same-week Call 2 reschedules, next-week approval, and proof exceptions.",
       "match_any_groups": [
@@ -1353,6 +1359,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-legacy-makers-dj-passoff",
       "decision": "answer_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "current-show-source",
       "reason": "Madeline-confirmed guidance covers Legacy Makers info requests and the DJ-side passoff boundary.",
       "match_any_groups": [
@@ -1437,6 +1444,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-dj-nlceo-book-out-timing",
       "decision": "answer_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Madeline-confirmed guidance says DJ/NLCEO applicants are not under the main ISTV cohort rule and can book Call 2 out a few weeks if needed.",
       "match_any_groups": [

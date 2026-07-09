@@ -11,6 +11,14 @@ import {
   type ApprovedFaqArticle,
   type AskSalesFaqRule,
 } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
+import {
+  buildAnswerPlan,
+  type ApprovedPolicyUnit,
+  type ApprovedPolicyUnitsDocument,
+  type AskSalesAnswerPlan,
+} from "@/lib/ask-sales-faq/answer-plan";
+import { buildQuestionFrame, type QuestionFrame } from "@/lib/ask-sales-faq/question-frame";
+import approvedPolicyUnits from "@/lib/ask-sales-faq/generated/approved-policy-units.json";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 
 type RagChunk = {
@@ -247,10 +255,10 @@ const AI_UNAVAILABLE_RESPONSE =
 const JSON_SCHEMA_EXAMPLE =
   '{"answer":"Direct answer for the rep.","summary":"One-line summary.","sections":[{"title":"Answer","body":"Useful sales guidance.","tone":"default"}],"selected_source_ids":["approved:article-id"],"needs_route":false,"route_reason":"","confidence_label":"High","confidence_score":90}';
 
-const DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS = 2600;
+const DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS = 7000;
 const DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS = 700;
 const ARTICLE_ROUTER_MIN_CONFIDENCE = 82;
-const ARTICLE_ROUTER_MAX_BODY_CHARS = 900;
+const ARTICLE_ROUTER_MAX_BODY_CHARS = 1600;
 const ARTICLE_ROUTER_MAX_CONTEXT_CHARS = 2600;
 
 const REP_FACING_INTERNAL_TERMS = [
@@ -326,6 +334,7 @@ const UNAPPROVED_HANDOFF_PATTERNS = [
 type CriticalAnswerRule = {
   id: string;
   articleId: string;
+  productScopes?: Array<QuestionFrame["scope"]>;
   matchAny?: string[];
   matchAnyGroups?: string[][];
   requiredAll?: string[];
@@ -466,6 +475,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "dj-nlceo-no-cohort-deposit-boundary",
     articleId: "main-istv-call-2-cohort-reschedule-rules",
+    productScopes: ["dj_nlceo"],
     matchAnyGroups: [
       ["daymond john", "next level ceo", "dj", "nlceo"],
       ["cohort", "deadline", "initial deposit", "deposit", "funds", "need time", "pay/sign", "pay and sign", "sign up"],
@@ -525,6 +535,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "dj-nlceo-pricing-no-cohort-deposit-boundary",
     articleId: "istv-nlceo-pricing-and-same-day-discount",
+    productScopes: ["dj_nlceo"],
     matchAnyGroups: [
       ["daymond john", "next level ceo", "dj", "nlceo"],
       [
@@ -607,6 +618,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "pricing-ambiguous-payment-hold-product-check",
     articleId: "istv-nlceo-pricing-and-same-day-discount",
+    productScopes: ["unknown"],
     matchAnyGroups: [
       ["ability to find", "payment holding", "pmt holding", "holding them back", "2.5k", "$2,500", "$2500"],
       ["call 2", "close", "closing", "opportunity", "payment", "pay", "deposit", "continue later"],
@@ -625,18 +637,13 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     ],
     fallback: {
       answer:
-        "First confirm whether this is main ISTV or DJ/NLCEO. If it is main ISTV, do not use the DJ/NLCEO no-cohort exception; route payment/deadline exceptions before promising anything. If it is DJ/NLCEO, the main ISTV cohort rule does not apply and they can continue later if needed, but do not promise a specific payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it.",
+        "Is this for main ISTV or DJ/NLCEO? The payment-timing and cohort rules are different, so I do not want to apply the wrong policy.",
       summary: "Confirm main ISTV vs DJ/NLCEO before promising payment timing.",
       sections: [
         {
           title: "Product check",
           body: "Confirm whether this is main ISTV or DJ/NLCEO before applying a cohort/payment-timing rule.",
           tone: "default",
-        },
-        {
-          title: "Boundary",
-          body: "Do not promise a specific future payment date, hold, custom plan, or exception without owner confirmation.",
-          tone: "route",
         },
       ],
       selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
@@ -699,6 +706,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "pricing-standard-upgrade-discount",
     articleId: "istv-nlceo-pricing-and-same-day-discount",
+    productScopes: ["main_istv"],
     matchAnyGroups: [
       ["upgrade", "upgraded"],
       ["standard"],
@@ -736,6 +744,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "pricing-vip-upgrade-discount",
     articleId: "istv-nlceo-pricing-and-same-day-discount",
+    productScopes: ["main_istv"],
     matchAnyGroups: [
       ["upgrade", "upgraded"],
       ["vip", "premium"],
@@ -975,6 +984,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "greenlight-main-istv-proof-exception-route",
     articleId: "greenlight-pdf-and-cohort-deadlines",
+    productScopes: ["main_istv"],
     matchAnyGroups: [
       ["family emergency", "emergency", "out of town", "genuine reason", "proof", "car crash", "death in family", "death in the family"],
       ["cohort", "deadline", "call 2", "call two", "Sunday", "exception"],
@@ -1011,6 +1021,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
   {
     id: "main-istv-reapply-minimum",
     articleId: "greenlight-pdf-and-cohort-deadlines",
+    productScopes: ["main_istv"],
     matchAnyGroups: [
       ["reapply", "reapply after", "when can they reapply"],
       ["no-show", "no show", "missed deadline", "missed cohort", "rejected", "not-fit", "not fit"],
@@ -1066,6 +1077,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
 ];
 
 const rawChunks = (ragIndex as { chunks?: RagChunk[] }).chunks || [];
+const APPROVED_POLICY_UNITS = approvedPolicyUnits as ApprovedPolicyUnitsDocument;
 const ARTICLE_BY_ID = new Map(APPROVED_FAQ_ARTICLES.map((article) => [article.id, article]));
 const INDEXED_CHUNKS: IndexedChunk[] = rawChunks.map((chunk) => {
   const normalized = normalizeText(`${chunk.source_title} ${chunk.heading} ${chunk.category} ${chunk.text}`);
@@ -1084,17 +1096,25 @@ export async function runAskSalesFaq(
 ): Promise<AskSalesFaqRuntimeResult> {
   const startedAt = Date.now();
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
-  const conversationContext = buildConversationContext(conversationMessages);
-  const routingConversationContext = shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
+  const sanitizedConversationMessages = conversationMessages.map((message) => ({
+    role: message.role,
+    content: redactSensitiveText(message.content).text,
+  }));
+  const questionFrame = buildQuestionFrame(sanitizedQuestion, sanitizedConversationMessages);
+  const routingQuestion = questionFrame.effectiveQuestion;
+  const conversationContext = buildConversationContext(sanitizedConversationMessages);
+  const routingConversationContext =
+    questionFrame.relation === "context_follow_up" || shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
     ? conversationContext
     : "";
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, routingConversationContext);
   const providerDiagnostics: ProviderCallDiagnostics[] = [];
-  let policyDecision = matchPolicyGuard(sanitizedQuestion);
+  let policyDecision = matchPolicyGuard(routingQuestion, questionFrame);
   let conversationPlannerAttempted = false;
 
   if (
     shouldAttemptApprovedArticleRouter(policyDecision) &&
+    !questionFrame.isScopeCorrection &&
     shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)
   ) {
     conversationPlannerAttempted = true;
@@ -1132,10 +1152,15 @@ export async function runAskSalesFaq(
   }
 
   if (policyDecision.matchedRuleId === "default-abstain") {
-    policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext);
+    policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame);
   }
 
-  if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision) && !conversationPlannerAttempted) {
+  if (
+    !policyDecision.safeToGenerate &&
+    shouldAttemptApprovedArticleRouter(policyDecision) &&
+    !conversationPlannerAttempted &&
+    !questionFrame.isScopeCorrection
+  ) {
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
       conversationContext: routingConversationContext,
@@ -1169,13 +1194,20 @@ export async function runAskSalesFaq(
     if (plannerResult.decision) policyDecision = plannerResult.decision;
   }
 
-  const candidates = buildEvidenceCandidates(sanitizedQuestion, routingConversationContext, policyDecision);
+  const answerPlan = buildAnswerPlan({
+    questionFrame,
+    approvedArticleId: policyDecision.articleId,
+    policyUnits: APPROVED_POLICY_UNITS,
+  });
+  const candidates = buildEvidenceCandidates(routingQuestion, routingConversationContext, policyDecision, answerPlan);
   const baseRuntimeMetadata = buildRuntimeMetadata({
     evidence: candidates,
     modelEvidence: [],
     providerDiagnostics,
     criticalFallbackUsed: false,
     policyDecision,
+    questionFrame,
+    answerPlan,
   });
 
   if (!policyDecision.safeToGenerate) {
@@ -1201,12 +1233,45 @@ export async function runAskSalesFaq(
     });
   }
 
+  if (answerPlan.clarificationRequired) {
+    const clarification = buildPolicyPlanFallback(answerPlan, policyDecision);
+    if (clarification) {
+      const decision = buildDecision({ output: clarification, evidence: candidates, policyDecision });
+      const answer = sanitizeModelAnswer(clarification.answer);
+
+      return buildHandledResponse({
+        startedAt,
+        sanitizedQuestion,
+        contextualQuestion,
+        redactions,
+        decision,
+        answer,
+        structuredAnswer: normalizeModelStructuredAnswer(clarification, answer, decision),
+        source: sourceSummaryFromDecision(decision),
+        provider: null,
+        model: null,
+        errorClass: null,
+        runtimeMetadata: buildRuntimeMetadata({
+          evidence: candidates,
+          modelEvidence: modelEvidenceCandidates(candidates),
+          providerDiagnostics,
+          criticalFallbackUsed: false,
+          policyDecision,
+          questionFrame,
+          answerPlan,
+        }),
+      });
+    }
+  }
+
   try {
     const answerResult = await generateProviderAnswer({
       currentQuestion: sanitizedQuestion,
       conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
+      questionFrame,
+      answerPlan,
     });
     providerDiagnostics.push(answerResult.diagnostics);
     const finalOutputResult = await ensureRepFacingOutput({
@@ -1216,9 +1281,12 @@ export async function runAskSalesFaq(
     providerDiagnostics.push(...finalOutputResult.diagnostics);
     const criticalOutputResult = await ensureCriticalAnswer({
       currentQuestion: sanitizedQuestion,
+      routingQuestion,
       conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
+      questionFrame,
+      answerPlan,
       output: finalOutputResult.output,
     });
     providerDiagnostics.push(...criticalOutputResult.diagnostics);
@@ -1227,6 +1295,8 @@ export async function runAskSalesFaq(
       conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
+      questionFrame,
+      answerPlan,
       output: criticalOutputResult.output,
     });
     providerDiagnostics.push(...groundedOutputResult.diagnostics);
@@ -1261,14 +1331,18 @@ export async function runAskSalesFaq(
         providerDiagnostics,
         criticalFallbackUsed: Boolean(criticalOutputResult.fallbackUsed),
         policyDecision,
+        questionFrame,
+        answerPlan,
       }),
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
-    const fallbackOutput = buildApprovedArticleFallbackOutput({
+    const fallbackOutput = buildAndValidateApprovedFallback({
       currentQuestion: sanitizedQuestion,
       conversationContext: routingConversationContext,
       policyDecision,
+      questionFrame,
+      answerPlan,
     });
     if (fallbackOutput) {
       const selectedEvidence = resolveSelectedEvidence(fallbackOutput, candidates, sanitizedQuestion);
@@ -1297,6 +1371,8 @@ export async function runAskSalesFaq(
           providerDiagnostics,
           criticalFallbackUsed: true,
           policyDecision,
+          questionFrame,
+          answerPlan,
         }),
       });
     }
@@ -1322,6 +1398,8 @@ export async function runAskSalesFaq(
         providerDiagnostics,
         criticalFallbackUsed: false,
         policyDecision,
+        questionFrame,
+        answerPlan,
       }),
     });
   }
@@ -1369,14 +1447,24 @@ function buildHandledResponse(input: {
   };
 }
 
-function decidePolicyGuard(question: string, conversationContext = ""): PolicyGuardDecision {
-  const directDecision = matchPolicyGuard(question);
+function decidePolicyGuard(question: string, conversationContext = "", questionFrame?: QuestionFrame): PolicyGuardDecision {
+  const directDecision = matchPolicyGuard(question, questionFrame);
   if (directDecision.matchedRuleId !== "default-abstain") return directDecision;
   void conversationContext;
   return directDecision;
 }
 
-function matchPolicyGuard(question: string): PolicyGuardDecision {
+function policyRuleCompatibleWithFrame(rule: AskSalesFaqRule, questionFrame?: QuestionFrame) {
+  if (!questionFrame) return true;
+  const ruleScope = rule.product_scope;
+  if (!ruleScope) return true;
+  if (questionFrame.excludedScopes.includes(ruleScope)) return false;
+  if (questionFrame.scope === "comparison") return questionFrame.includedScopes.includes(ruleScope);
+  if (questionFrame.scope === "unknown") return true;
+  return questionFrame.scope === ruleScope;
+}
+
+function matchPolicyGuard(question: string, questionFrame?: QuestionFrame): PolicyGuardDecision {
   for (const [groupName, rules] of [
     ["adminOnlyRules", ASK_SALES_FAQ_POLICY_RULES.adminOnlyRules],
     ["abstainRules", ASK_SALES_FAQ_POLICY_RULES.abstainRules],
@@ -1384,6 +1472,7 @@ function matchPolicyGuard(question: string): PolicyGuardDecision {
     ["answerRules", ASK_SALES_FAQ_POLICY_RULES.answerRules],
   ] as const) {
     for (const rule of rules) {
+      if (!policyRuleCompatibleWithFrame(rule, questionFrame)) continue;
       if (!policyRuleMatches(question, rule)) continue;
 
       const article = rule.article_id ? ARTICLE_BY_ID.get(rule.article_id) || null : null;
@@ -1583,18 +1672,36 @@ function formatArticleRouterCatalog() {
       `Category: ${article.category}`,
       `Risk: ${article.riskLevel}`,
       `Last reviewed: ${article.lastReviewed}`,
+      `Approved question families: ${approvedQuestionFamiliesForArticle(article.id) || "Use the article title and topic summary."}`,
       `Guidance excerpt: ${compactArticleBodyForRouter(article.body)}`,
     ].join("\n"),
   ).join("\n\n");
 }
 
+function approvedQuestionFamiliesForArticle(articleId: string) {
+  const phrases: string[] = [];
+  for (const rules of [
+    ASK_SALES_FAQ_POLICY_RULES.routeRules,
+    ASK_SALES_FAQ_POLICY_RULES.answerRules,
+  ]) {
+    for (const rule of rules) {
+      if (rule.article_id !== articleId) continue;
+      phrases.push(...(rule.match_all || []), ...(rule.match_any || []), ...(rule.match_any_groups || []).flat());
+    }
+  }
+
+  return Array.from(new Set(phrases.map((phrase) => phrase.trim()).filter(Boolean))).slice(0, 36).join("; ").slice(0, 1100);
+}
+
 function compactArticleBodyForRouter(body: string) {
-  return body
+  const topicHeadings = Array.from(body.matchAll(/^#{1,4}\s+(.+)$/gm), (match) => match[1].trim());
+  const compactBody = body
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/[#>*_|`[\]]/g, " ")
     .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
+    .trim();
+
+  return [`Topics: ${topicHeadings.join("; ")}.`, compactBody].join(" ").slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
 }
 
 function shouldPlanConversationBeforeContextPolicy(question: string, conversationContext: string) {
@@ -1731,9 +1838,18 @@ function criticalRuleMatchesQuestion(question: string, rule: CriticalAnswerRule)
   return Boolean(rule.matchAny?.length || rule.matchAnyGroups?.length);
 }
 
-function matchingCriticalRules(question: string, policyDecision: PolicyGuardDecision) {
+function matchingCriticalRules(
+  question: string,
+  policyDecision: PolicyGuardDecision,
+  questionFrame?: QuestionFrame,
+  answerPlan?: AskSalesAnswerPlan,
+) {
   return CRITICAL_ANSWER_RULES.filter(
-    (rule) => rule.articleId === policyDecision.articleId && criticalRuleMatchesQuestion(question, rule),
+    (rule) =>
+      rule.articleId === policyDecision.articleId &&
+      (!rule.productScopes?.length || !questionFrame || rule.productScopes.includes(questionFrame.scope)) &&
+      (!answerPlan?.selectedPolicyUnits.length || answerPlan.applicableCriticalRuleIds.includes(rule.id)) &&
+      criticalRuleMatchesQuestion(question, rule),
   );
 }
 
@@ -1748,9 +1864,15 @@ function cloneModelOutput(output: ModelOutput): ModelOutput {
   };
 }
 
-function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGuardDecision) {
-  const fallbackRule = matchingCriticalRules(question, policyDecision)[0];
-  if (!fallbackRule) return null;
+function buildCriticalFallbackOutput(
+  question: string,
+  policyDecision: PolicyGuardDecision,
+  questionFrame?: QuestionFrame,
+  answerPlan?: AskSalesAnswerPlan,
+) {
+  const fallbackRules = matchingCriticalRules(question, policyDecision, questionFrame, answerPlan);
+  if (fallbackRules.length !== 1) return null;
+  const [fallbackRule] = fallbackRules;
 
   const fallback = cloneModelOutput(fallbackRule.fallback);
   if (!userRequestedShortAnswer(question) || !fallbackRule.id.startsWith("dj-nlceo-")) return fallback;
@@ -1772,15 +1894,26 @@ function buildApprovedArticleFallbackOutput(input: {
   currentQuestion: string;
   conversationContext: string;
   policyDecision: PolicyGuardDecision;
+  questionFrame?: QuestionFrame;
+  answerPlan?: AskSalesAnswerPlan;
 }) {
   if (!input.policyDecision.safeToGenerate || !input.policyDecision.primaryArticle) return null;
 
+  const plannedFallback = input.answerPlan ? buildPolicyPlanFallback(input.answerPlan, input.policyDecision) : null;
+  if (plannedFallback) return plannedFallback;
+
+  const fallbackQuestion = input.questionFrame?.effectiveQuestion || input.currentQuestion;
   const validationQuestion = criticalValidationQuestion({
-    currentQuestion: input.currentQuestion,
+    currentQuestion: fallbackQuestion,
     conversationContext: input.conversationContext,
     policyDecision: input.policyDecision,
   });
-  const criticalFallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
+  const criticalFallback = buildCriticalFallbackOutput(
+    validationQuestion,
+    input.policyDecision,
+    input.questionFrame,
+    input.answerPlan,
+  );
   if (criticalFallback) return criticalFallback;
 
   const article = input.policyDecision.primaryArticle;
@@ -1788,28 +1921,81 @@ function buildApprovedArticleFallbackOutput(input: {
     case "call-1-flow":
       return buildCallOnePricingFallback();
     case "current-show-source":
-      return buildCurrentShowListFallback(article, input.currentQuestion);
+      return buildCurrentShowListFallback(article, fallbackQuestion);
     case "istv-nlceo-pricing-and-same-day-discount":
-      return buildPricingAndTimingFallback(input.currentQuestion, input.policyDecision);
+      return buildPricingAndTimingFallback(fallbackQuestion, input.policyDecision, input.questionFrame);
     case "main-istv-call-2-cohort-reschedule-rules":
-      return buildMainIstvCohortFallback(input.currentQuestion, input.policyDecision);
+      return buildMainIstvCohortFallback(fallbackQuestion, input.policyDecision, input.questionFrame);
     case "platform-proof-and-claims-boundaries":
-      return buildPlatformProofFallback(input.currentQuestion, input.policyDecision);
+      return buildPlatformProofFallback(fallbackQuestion, input.policyDecision);
     case "internal-material-sharing-boundaries":
-      return buildInternalMaterialFallback(input.currentQuestion, input.policyDecision);
+      return buildInternalMaterialFallback(fallbackQuestion, input.policyDecision);
     case "greenlight-pdf-and-cohort-deadlines":
-      return buildGreenlightFallback(input.currentQuestion, input.policyDecision);
+      return buildGreenlightFallback(fallbackQuestion, input.policyDecision);
     case "qualification-and-show-fit-rubric":
-      return buildQualificationFallback(input.currentQuestion);
+      return buildQualificationFallback(fallbackQuestion);
     case "post-sale-handoff-after-close":
-      return buildPostSaleFallback(input.currentQuestion);
+      return buildPostSaleFallback(fallbackQuestion);
     case "events-mastermind-red-carpet":
-      return buildEventFallback(input.currentQuestion);
+      return buildEventFallback(fallbackQuestion);
     case "contracts-edits-and-signature-process":
-      return buildContractFallback(input.currentQuestion);
+      return buildContractFallback(fallbackQuestion);
     default:
       return buildGenericApprovedArticleFallback(article, input.policyDecision);
   }
+}
+
+function buildAndValidateApprovedFallback(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  policyDecision: PolicyGuardDecision;
+  questionFrame: QuestionFrame;
+  answerPlan: AskSalesAnswerPlan;
+}) {
+  const output = buildApprovedArticleFallbackOutput(input);
+  if (!output || modelOutputContainsHiddenTerms(output)) return null;
+
+  const errors = validateCriticalAnswer({
+    currentQuestion: input.questionFrame.effectiveQuestion,
+    latestQuestion: input.currentQuestion,
+    policyDecision: input.policyDecision,
+    questionFrame: input.questionFrame,
+    answerPlan: input.answerPlan,
+    output,
+  });
+  if (errors.length) {
+    console.warn("Ask Sales FAQ approved fallback failed validation", {
+      matchedRuleId: input.policyDecision.matchedRuleId,
+      articleId: input.policyDecision.articleId,
+      errors,
+    });
+    return null;
+  }
+
+  return output;
+}
+
+function buildPolicyPlanFallback(answerPlan: AskSalesAnswerPlan, policyDecision: PolicyGuardDecision): ModelOutput | null {
+  if (answerPlan.selectedPolicyUnits.length !== 1) return null;
+  const [unit] = answerPlan.selectedPolicyUnits;
+  const answer = unit.safe_fallback.trim();
+  if (!answer) return null;
+
+  const needsRoute = answerPlan.routeRequired || answerPlan.fallbackMode === "clarify";
+  return {
+    answer,
+    summary: answer,
+    sections: [],
+    selected_source_ids: policyDecision.articleId ? [`approved:${policyDecision.articleId}`] : [],
+    needs_route: needsRoute,
+    route_reason: needsRoute
+      ? answerPlan.fallbackMode === "clarify"
+        ? "Confirm the product before applying a payment-timing or cohort rule."
+        : policyDecision.reason
+      : "",
+    confidence_label: "High",
+    confidence_score: 96,
+  };
 }
 
 function buildCallOnePricingFallback(): ModelOutput {
@@ -1903,7 +2089,11 @@ function isLegacyMakersDocsQuestion(question: string) {
   );
 }
 
-function buildPricingAndTimingFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+function buildPricingAndTimingFallback(
+  question: string,
+  policyDecision: PolicyGuardDecision,
+  questionFrame?: QuestionFrame,
+): ModelOutput {
   if (isLicenseOptionsQuestion(question)) {
     return cloneModelOutput({
       answer:
@@ -1930,25 +2120,30 @@ function buildPricingAndTimingFallback(question: string, policyDecision: PolicyG
   }
 
   if (isPaymentTimingOrHoldQuestion(question) || policyDecision.matchedRuleId.includes("payment-timing")) {
-    const explicitDj = mentionsDjNlceo(question);
-    const explicitMainIstv = mentionsMainIstv(question);
+    const resolvedScope = questionFrame?.scope || "unknown";
+    const explicitDj = resolvedScope === "dj_nlceo";
+    const explicitMainIstv = resolvedScope === "main_istv";
     const answer = explicitDj
-      ? "For DJ/NLCEO, the main ISTV cohort rule does not apply, and they can continue later if needed. Still, do not promise a specific future payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it. Use only the listed DJ/NLCEO payment options."
+      ? "For DJ/NLCEO, there is no cohort rule. Use only the listed DJ/NLCEO payment options, and do not promise a specific future payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it."
       : explicitMainIstv
-        ? "For main ISTV, do not use the DJ/NLCEO no-cohort exception. If they cannot meet the normal payment/signature timing, route the exception to Rich or the current owner before promising anything."
-        : "First confirm whether this is main ISTV or DJ/NLCEO. If it is main ISTV, do not use the DJ/NLCEO no-cohort exception; route payment/deadline exceptions before promising anything. If it is DJ/NLCEO, the main ISTV cohort rule does not apply and they can continue later if needed, but do not promise a specific payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it.";
+        ? "For main ISTV, do not promise a payment hold, future payment date, custom plan, or unlisted exception. Route a nonstandard payment or deadline request to Rich or the current owner before promising anything."
+        : "Is this for main ISTV or DJ/NLCEO? The payment-timing and cohort rules are different, so I do not want to apply the wrong policy.";
 
     return cloneModelOutput({
       answer,
       summary: explicitDj
-        ? "DJ/NLCEO is not under the main ISTV cohort rule, but do not promise a hold or future payment date."
-        : "Confirm main ISTV vs DJ/NLCEO before promising payment timing.",
+        ? "DJ/NLCEO has no cohort rule, but do not promise a hold or future payment date."
+        : explicitMainIstv
+          ? "Main ISTV payment or deadline exceptions need current-owner approval."
+          : "Confirm main ISTV vs DJ/NLCEO before promising payment timing.",
       sections: [
         {
-          title: explicitDj ? "DJ/NLCEO" : "Product check",
+          title: explicitDj ? "DJ/NLCEO" : explicitMainIstv ? "Main ISTV" : "Product check",
           body: explicitDj
-            ? "The main ISTV cohort rule does not apply, and they can continue later if needed."
-            : "Confirm whether this is main ISTV or DJ/NLCEO before applying a cohort/payment-timing rule.",
+            ? "DJ/NLCEO has no cohort rule, but only listed payment options are approved."
+            : explicitMainIstv
+              ? "Use the main ISTV payment and cohort rules; do not promise a nonstandard exception."
+              : "Confirm whether this is main ISTV or DJ/NLCEO before applying a cohort/payment-timing rule.",
           tone: "default",
         },
         {
@@ -1986,10 +2181,14 @@ function buildPricingAndTimingFallback(question: string, policyDecision: PolicyG
   });
 }
 
-function buildMainIstvCohortFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
-  const explicitDj = mentionsDjNlceo(question);
+function buildMainIstvCohortFallback(
+  question: string,
+  policyDecision: PolicyGuardDecision,
+  questionFrame?: QuestionFrame,
+): ModelOutput {
+  const explicitDj = questionFrame?.scope === "dj_nlceo";
   const answer = explicitDj
-    ? "For DJ/NLCEO, the main ISTV cohort rule does not apply and there is no same-day discount. Route DJ/NLCEO reschedule, no-show, pay/sign, deadline, hold, or payment-timing edge cases to the current DJ/NLCEO owner before promising anything."
+    ? "DJ/NLCEO has no cohort rule and no same-day discount. Route DJ/NLCEO reschedule, no-show, pay/sign, deadline, hold, or payment-timing edge cases to the current DJ/NLCEO owner before promising anything."
     : "For main ISTV, Call 2 can be rescheduled within the same cohort week without Rich approval. Moving Call 2 into the next cohort needs Rich approval unless the approved proof exception applies. If someone no-shows, misses the Sunday 11:59 PM ET pay/sign deadline, or is rejected/not-fit, the minimum before they can reapply is 3 months.";
 
   return cloneModelOutput({
@@ -2480,16 +2679,6 @@ function isCriminalOrReputationQuestion(question: string) {
   );
 }
 
-function mentionsDjNlceo(question: string) {
-  const normalizedQuestion = normalizeText(question);
-  return /\b(daymond john|next level ceo)\b/.test(normalizedQuestion);
-}
-
-function mentionsMainIstv(question: string) {
-  const normalizedQuestion = normalizeText(question);
-  return /\b(main istv|istv|inside success)\b/.test(normalizedQuestion) && !mentionsDjNlceo(question);
-}
-
 function userRequestedShortAnswer(question: string) {
   const normalizedQuestion = normalizeText(question);
   return /\b(short|shorter|brief|concise|quick|one[- ]line|one[- ]sentence|summarize|condense|simplify|simple reply)\b/.test(
@@ -2801,9 +2990,19 @@ function validateCriticalAnswer(input: {
   latestQuestion?: string;
   policyDecision: PolicyGuardDecision;
   output: ModelOutput;
+  questionFrame?: QuestionFrame;
+  answerPlan?: AskSalesAnswerPlan;
 }) {
-  const errors: string[] = [];
-  const matchedRules = matchingCriticalRules(input.currentQuestion, input.policyDecision);
+  const errors = [
+    ...validateQuestionFrameScope(input.questionFrame, input.output),
+    ...validatePolicyUnitClaims(input.answerPlan, input.output),
+  ];
+  const matchedRules = matchingCriticalRules(
+    input.currentQuestion,
+    input.policyDecision,
+    input.questionFrame,
+    input.answerPlan,
+  );
   if (!matchedRules.length) return errors;
 
   const answerText = modelOutputText(input.output).join(" ");
@@ -2836,6 +3035,48 @@ function validateCriticalAnswer(input: {
       }
     }
 
+  }
+
+  return errors;
+}
+
+function validatePolicyUnitClaims(answerPlan: AskSalesAnswerPlan | undefined, output: ModelOutput) {
+  if (!answerPlan?.selectedPolicyUnits.length) return [];
+  const answerText = modelOutputText(output).join(" ");
+  const errors: string[] = [];
+
+  for (const unit of answerPlan.selectedPolicyUnits) {
+    for (const forbiddenClaim of unit.forbidden_claims) {
+      if (phrasePresent(forbiddenClaim, answerText)) {
+        errors.push(`${unit.id}: answer includes forbidden claim ${forbiddenClaim}`);
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateQuestionFrameScope(questionFrame: QuestionFrame | undefined, output: ModelOutput) {
+  if (!questionFrame || questionFrame.scope === "comparison") return [];
+
+  const answer = modelOutputText(output).join(" ");
+  const errors: string[] = [];
+  const mentionsDj = /\b(daymond\s+john|next\s+level\s+ceo|nlceo|dj(?:\s+show)?)\b/i.test(answer);
+  const mentionsMain = /\b(main\s+istv|inside\s+success(?:\s+tv)?)\b/i.test(answer);
+  const includesDjOnlyPolicy = /\$2,?500\s*(?:x|×)\s*4|\bno\s+cohort\s+rule\b/i.test(answer);
+  const includesMainOnlyPolicy = /\$2,?000\s+same[- ]day|\bsunday\s+11:59\s*pm\s*et\b/i.test(answer);
+
+  if (questionFrame.scope === "main_istv" && (mentionsDj || includesDjOnlyPolicy)) {
+    errors.push("product-scope: main ISTV answer must not include DJ/NLCEO policy or pricing");
+  }
+  if (questionFrame.scope === "dj_nlceo" && includesMainOnlyPolicy) {
+    errors.push("product-scope: DJ/NLCEO answer must not include main ISTV-only discount or deadline policy");
+  }
+  if (questionFrame.excludedScopes.includes("main_istv") && mentionsMain) {
+    errors.push("product-exclusion: answer mentions explicitly excluded main ISTV");
+  }
+  if (questionFrame.excludedScopes.includes("dj_nlceo") && mentionsDj) {
+    errors.push("product-exclusion: answer mentions explicitly excluded DJ/NLCEO");
   }
 
   return errors;
@@ -2908,9 +3149,14 @@ function buildPolicyBlockedDecision(policyDecision: PolicyGuardDecision): Runtim
   };
 }
 
-function buildEvidenceCandidates(question: string, conversationContext: string, policyDecision: PolicyGuardDecision): EvidenceCandidate[] {
+function buildEvidenceCandidates(
+  question: string,
+  conversationContext: string,
+  policyDecision: PolicyGuardDecision,
+  answerPlan?: AskSalesAnswerPlan,
+): EvidenceCandidate[] {
   if (policyDecision.safeToGenerate && policyDecision.primaryArticle) {
-    return buildPolicyScopedEvidenceCandidates(question, conversationContext, policyDecision.primaryArticle);
+    return buildPolicyScopedEvidenceCandidates(question, conversationContext, policyDecision.primaryArticle, answerPlan);
   }
 
   const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
@@ -2930,8 +3176,13 @@ function buildEvidenceCandidates(question: string, conversationContext: string, 
     .slice(0, 48);
 }
 
-function buildPolicyScopedEvidenceCandidates(question: string, conversationContext: string, primaryArticle: ApprovedFaqArticle): EvidenceCandidate[] {
-  const primary = approvedArticleToCandidate(primaryArticle);
+function buildPolicyScopedEvidenceCandidates(
+  question: string,
+  conversationContext: string,
+  primaryArticle: ApprovedFaqArticle,
+  answerPlan?: AskSalesAnswerPlan,
+): EvidenceCandidate[] {
+  const primary = approvedArticleToCandidate(primaryArticle, answerPlan?.selectedPolicyUnits);
   const searchText = [question, conversationContext].filter(Boolean).join("\n");
   const scoped = retrieveCandidateChunks(searchText, 18, { expand: true })
     .filter((chunk) => chunk.source_type !== "approved_article")
@@ -2949,9 +3200,10 @@ function buildPolicyScopedEvidenceCandidates(question: string, conversationConte
 }
 
 function modelEvidenceCandidates(candidates: EvidenceCandidate[]) {
-  const approved = candidates.filter((candidate) => candidate.kind === "approved_article").slice(0, 1);
-  const support = candidates.filter((candidate) => candidate.kind !== "approved_article").slice(0, 2);
-  return [...approved, ...support];
+  // Raw Slack, transcript, governance, draft, and conflict chunks are discovery
+  // evidence only. They may help offline coverage work, but they must never
+  // authorize or word a production answer.
+  return candidates.filter((candidate) => candidate.kind === "approved_article").slice(0, 1);
 }
 
 function scopedSupportChunkMatchesArticle(chunk: RetrievedChunk, article: ApprovedFaqArticle) {
@@ -2973,24 +3225,39 @@ function scopedSupportChunkMatchesArticle(chunk: RetrievedChunk, article: Approv
   return strongArticleTokenMatches.length >= 3 && chunk.score >= 4.5;
 }
 
-function approvedArticleToCandidate(article: ApprovedFaqArticle): EvidenceCandidate {
+function approvedArticleToCandidate(article: ApprovedFaqArticle, policyUnits: ApprovedPolicyUnit[] = []): EvidenceCandidate {
+  const policyText = policyUnits.length ? formatApprovedPolicyUnits(policyUnits) : article.body;
   return {
     id: `approved:${article.id}`,
     kind: "approved_article",
     articleId: article.id,
     articleStatus: "approved",
     sourceType: "approved_article",
-    sourceTitle: article.title,
-    heading: "Approved FAQ article",
+    sourceTitle: policyUnits.length === 1 ? policyUnits[0].title : article.title,
+    heading: policyUnits.length ? "Approved policy units" : "Approved FAQ article",
     category: article.category,
     riskLevel: article.riskLevel,
     authority: 100,
     trustLabel: "Approved FAQ article",
     lastReviewed: article.lastReviewed,
-    text: article.body,
+    text: policyText,
     score: 100,
     matchedTokens: [],
   };
+}
+
+function formatApprovedPolicyUnits(policyUnits: ApprovedPolicyUnit[]) {
+  return policyUnits
+    .map((unit) =>
+      [
+        `Policy unit: ${unit.title}`,
+        `Approved guidance: ${unit.approved_text}`,
+        `Route required: ${unit.route_required ? "yes" : "no"}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    )
+    .join("\n\n");
 }
 
 function chunkToCandidate(chunk: RetrievedChunk): EvidenceCandidate {
@@ -3033,8 +3300,10 @@ async function generateProviderAnswer(input: {
   conversationContext: string;
   evidence: EvidenceCandidate[];
   policyDecision: PolicyGuardDecision;
+  questionFrame: QuestionFrame;
+  answerPlan: AskSalesAnswerPlan;
 }): Promise<ProviderJsonResult<ModelOutput>> {
-  const routeRequired = input.policyDecision.decision === "route_from_approved_article";
+  const routeRequired = input.answerPlan.routeRequired || input.policyDecision.decision === "route_from_approved_article";
   const modelEvidence = modelEvidenceCandidates(input.evidence);
   return generateProviderJson({
     purpose: "answer generation",
@@ -3045,8 +3314,9 @@ async function generateProviderAnswer(input: {
         content: [
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
           "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
-          "A policy guard or approved-article router has already selected the approved sales guidance that controls this answer.",
-          "Treat the approved article as authoritative. Use any supporting evidence only for consistent context or wording; never use it to add, contradict, or extend policy.",
+          "A policy guard and answer planner have already selected the approved sales guidance that controls this answer.",
+          "Treat the approved policy units or approved article in the evidence packet as the complete authority for this answer.",
+          "Raw Slack messages, transcripts, drafts, conflicts, and governance notes are never included as answer authority.",
           routeRequired
             ? "This policy decision requires routing. Give the safe boundary from the approved source and set needs_route to true."
             : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",
@@ -3061,7 +3331,7 @@ async function generateProviderAnswer(input: {
           "The current user question is authoritative. Use recent conversation context only to resolve references or context-dependent follow-ups; never let old context override a clear current question.",
           "If payment/package context could refer to more than one product, use recent context only when it clearly names the product; otherwise label the product you are answering or ask a short clarifying question.",
           "If the current question is a short confirmation of the prior answer, answer in one or two direct sentences and do not repeat the full policy unless needed for safety.",
-          "For DJ/NLCEO cohort or payment-timing questions, say the main ISTV cohort rule does not block them, but never approve a specific future payment date or hold; route or confirm payment-timing exceptions before promising.",
+          "Never mention or apply a product listed as excluded. Do not contrast products unless the resolved scope is comparison.",
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
           "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless the approved evidence explicitly authorizes that exact handoff.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
@@ -3090,6 +3360,17 @@ async function generateProviderAnswer(input: {
           "ROUTE REQUIRED:",
           routeRequired ? "yes" : "no",
           "",
+          "RESOLVED PRODUCT SCOPE:",
+          input.answerPlan.resolvedProductScope,
+          "",
+          "EXCLUDED PRODUCT SCOPES:",
+          input.answerPlan.excludedScopes.length ? input.answerPlan.excludedScopes.join(", ") : "None",
+          "",
+          "SELECTED POLICY UNITS:",
+          input.answerPlan.selectedPolicyUnits.length
+            ? input.answerPlan.selectedPolicyUnits.map((unit) => unit.id).join(", ")
+            : "No atomic unit; use only the selected approved article.",
+          "",
           "EVIDENCE PACKET:",
           formatEvidencePacket(modelEvidence, {
             approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
@@ -3101,6 +3382,9 @@ async function generateProviderAnswer(input: {
           "",
           "CURRENT USER QUESTION:",
           input.currentQuestion,
+          "",
+          "RESOLVED QUESTION FOR POLICY:",
+          input.questionFrame.effectiveQuestion,
         ].join("\n"),
       },
     ],
@@ -3163,20 +3447,21 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
 
 async function ensureCriticalAnswer(input: {
   currentQuestion: string;
+  routingQuestion: string;
   conversationContext: string;
   evidence: EvidenceCandidate[];
   policyDecision: PolicyGuardDecision;
+  questionFrame: QuestionFrame;
+  answerPlan: AskSalesAnswerPlan;
   output: ModelOutput;
 }): Promise<ModelOutputResolution> {
-  const validationQuestion = criticalValidationQuestion({
-    currentQuestion: input.currentQuestion,
-    conversationContext: input.conversationContext,
-    policyDecision: input.policyDecision,
-  });
+  const validationQuestion = input.routingQuestion;
   const validationErrors = validateCriticalAnswer({
     currentQuestion: validationQuestion,
     latestQuestion: input.currentQuestion,
     policyDecision: input.policyDecision,
+    questionFrame: input.questionFrame,
+    answerPlan: input.answerPlan,
     output: input.output,
   });
   if (!validationErrors.length) return { output: input.output, diagnostics: [] };
@@ -3244,6 +3529,8 @@ async function ensureCriticalAnswer(input: {
       currentQuestion: validationQuestion,
       latestQuestion: input.currentQuestion,
       policyDecision: input.policyDecision,
+      questionFrame: input.questionFrame,
+      answerPlan: input.answerPlan,
       output: repairedOutput.output,
     });
     if (!repairedErrors.length) return { output: repairedOutput.output, diagnostics };
@@ -3251,12 +3538,19 @@ async function ensureCriticalAnswer(input: {
     repairFailure = error;
   }
 
-  const fallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
+  const fallback = buildCriticalFallbackOutput(
+    validationQuestion,
+    input.policyDecision,
+    input.questionFrame,
+    input.answerPlan,
+  );
   if (fallback) {
     const fallbackErrors = validateCriticalAnswer({
       currentQuestion: validationQuestion,
       latestQuestion: input.currentQuestion,
       policyDecision: input.policyDecision,
+      questionFrame: input.questionFrame,
+      answerPlan: input.answerPlan,
       output: fallback,
     });
     if (!fallbackErrors.length) return { output: fallback, diagnostics: [], fallbackUsed: true };
@@ -3290,6 +3584,8 @@ async function ensureArticleRouterGrounding(input: {
   conversationContext: string;
   evidence: EvidenceCandidate[];
   policyDecision: PolicyGuardDecision;
+  questionFrame: QuestionFrame;
+  answerPlan: AskSalesAnswerPlan;
   output: ModelOutput;
 }): Promise<ModelOutputResolution> {
   if (input.policyDecision.routingSource !== "article_router") {
@@ -3326,13 +3622,19 @@ async function ensureArticleRouterGrounding(input: {
           input.conversationContext || "None",
           "",
           "SELECTED APPROVED SALES GUIDANCE:",
-          formatEvidencePacket([approvedArticleToCandidate(primaryArticle)], {
+          formatEvidencePacket([approvedArticleToCandidate(primaryArticle, input.answerPlan.selectedPolicyUnits)], {
             approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
             sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
           }),
           "",
           "DRAFT ANSWER JSON:",
           JSON.stringify(input.output),
+          "",
+          "RESOLVED PRODUCT SCOPE:",
+          input.questionFrame.scope,
+          "",
+          "EXCLUDED PRODUCT SCOPES:",
+          input.questionFrame.excludedScopes.length ? input.questionFrame.excludedScopes.join(", ") : "None",
         ].join("\n"),
       },
     ],
@@ -3626,6 +3928,8 @@ function buildRuntimeMetadata(input: {
   providerDiagnostics: ProviderCallDiagnostics[];
   criticalFallbackUsed: boolean;
   policyDecision: PolicyGuardDecision;
+  questionFrame?: QuestionFrame;
+  answerPlan?: AskSalesAnswerPlan;
 }): AskSalesFaqRuntimeMetadata {
   const providerAttempts = input.providerDiagnostics.flatMap((diagnostic) => diagnostic.attempts);
   const latestDiagnostic = input.providerDiagnostics[input.providerDiagnostics.length - 1];
@@ -3638,6 +3942,12 @@ function buildRuntimeMetadata(input: {
       approvedCandidates: input.modelEvidence.filter((candidate) => candidate.kind === "approved_article").length,
       sourceChunkCandidates: input.modelEvidence.filter((candidate) => candidate.kind !== "approved_article").length,
       promptChars: evidencePromptCharCount(input.modelEvidence),
+      candidates: input.evidence.slice(0, 12).map((candidate) => ({
+        id: candidate.id,
+        sourceType: candidate.sourceType,
+        articleStatus: candidate.articleStatus,
+        modelIncluded: input.modelEvidence.some((modelCandidate) => modelCandidate.id === candidate.id),
+      })),
     },
     routing: {
       source: input.policyDecision.routingSource,
@@ -3649,6 +3959,19 @@ function buildRuntimeMetadata(input: {
     deepSeekThinkingDisabled: latestDiagnostic?.deepSeekThinkingDisabled ?? isDeepSeekThinkingDisabled(),
     claudeFallbackEnabled: latestDiagnostic?.claudeFallbackEnabled ?? isClaudeFallbackEnabled(),
     criticalFallbackUsed: input.criticalFallbackUsed,
+    policyPlan:
+      input.questionFrame && input.answerPlan
+        ? {
+            resolvedProductScope: input.answerPlan.resolvedProductScope,
+            excludedProductScopes: input.answerPlan.excludedScopes,
+            questionRelation: input.questionFrame.relation,
+            previousUserQuestionUsed: Boolean(input.questionFrame.rehydratedFromUserQuestion),
+            selectedPolicyUnitIds: input.answerPlan.selectedPolicyUnits.map((unit) => unit.id),
+            applicableCriticalRuleIds: input.answerPlan.applicableCriticalRuleIds,
+            clarificationRequired: input.answerPlan.clarificationRequired,
+            fallbackMode: input.answerPlan.fallbackMode,
+          }
+        : undefined,
   };
 }
 
