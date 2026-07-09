@@ -1379,7 +1379,11 @@ function MessageRow({
         <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Sales FAQ</p>
         {message.outcome === "conversation_reply" ? (
           <>
-            <AnswerText text={message.content} />
+            {hasStructuredConversationPresentation(message) && message.structuredAnswer ? (
+              <StructuredAnswerCard answer={message.structuredAnswer} />
+            ) : (
+              <AnswerText text={message.content} />
+            )}
             {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
           </>
         ) : message.structuredAnswer ? (
@@ -1411,6 +1415,14 @@ function MessageRow({
         />
       </div>
     </div>
+  );
+}
+
+function hasStructuredConversationPresentation(message: ChatMessage) {
+  return Boolean(
+    message.structuredAnswer?.sections.some(
+      (section) => (section.items?.length || 0) >= 2 || Boolean(section.body && section.title),
+    ),
   );
 }
 
