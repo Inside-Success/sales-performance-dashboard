@@ -144,6 +144,32 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBeNull();
   });
 
+  it("renders a simple route as one natural answer instead of a repeated policy card", async () => {
+    const answer =
+      "For main ISTV, do not promise a payment hold or later payment date; confirm the exception with Rich or the current owner first.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: "Confirm the exception with Rich or the current owner before promising it.",
+            sections: [
+              { title: "Answer", body: answer },
+              { title: "Route this", body: "Confirm the exception with Rich or the current owner." },
+            ],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      `${paymentQuestion} This is for main ISTV, not for any DJ show. Can I promise the hold?`,
+    );
+
+    expect(result.answer).toBe(answer);
+    expect(result.structuredAnswer?.sections).toEqual([]);
+  });
+
   it("rehydrates a product correction from the last substantive user question", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the exception to Rich or the current owner.";
@@ -330,12 +356,13 @@ function modelOutput(
     needsRoute?: boolean;
     routeReason?: string;
     selectedSourceIds?: string[];
+    sections?: Array<{ title?: string; body?: string; items?: string[]; tone?: string }>;
   } = {},
 ) {
   return {
     answer,
     summary: answer,
-    sections: [],
+    sections: options.sections || [],
     selected_source_ids: options.selectedSourceIds || ["approved:istv-nlceo-pricing-and-same-day-discount"],
     needs_route: options.needsRoute || false,
     route_reason: options.routeReason || "",

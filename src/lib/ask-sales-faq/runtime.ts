@@ -2690,7 +2690,7 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput): Mode
   const shaped = cloneModelOutput(output);
   const answer = sanitizeModelAnswer(shaped.answer || shaped.summary || "");
 
-  if (userRequestedShortAnswer(question) && answer) {
+  if ((userRequestedShortAnswer(question) || shouldUsePlainRouteAnswer(question, shaped, answer)) && answer) {
     return {
       ...shaped,
       answer,
@@ -2707,6 +2707,16 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput): Mode
     ...shaped,
     sections: mergeDuplicateDisplaySections(shaped.sections?.flatMap(normalizeStructuredAnswerSections) || []),
   };
+}
+
+function shouldUsePlainRouteAnswer(question: string, output: ModelOutput, answer: string) {
+  if (!output.needs_route || answer.length > 520) return false;
+  const normalizedQuestion = normalizeText(question);
+  const explicitlyRequestsStructure =
+    /\b(steps?|step by step|checklist|list|options?|script|what (?:can|should) i say|how do i|how should i|process|procedure)\b/.test(
+      normalizedQuestion,
+    );
+  return !explicitlyRequestsStructure && tokenize(normalizedQuestion, { expand: false }).length <= 60;
 }
 
 function normalizeStructuredAnswerSections(
@@ -3325,6 +3335,7 @@ async function generateProviderAnswer(input: {
           "Answer the actual question asked. If the user asks for only one product, package, show, or topic, do not include unrelated sections.",
           "Start with the shortest useful direct answer for a rep on a live call.",
           "If the rep asks for a short reply, answer in one or two sentences while preserving required safety boundaries.",
+          "For a simple route or confirmation question, put the complete useful answer in answer, keep it to one or two sentences, and leave sections empty unless the rep explicitly asks for steps, a checklist, options, or a script.",
           "Use sections only when they add useful steps, boundaries, or escalation details; do not create an Answer section just to repeat the first sentence.",
           "When the answer contains a list of shows, payment plans, packages, or steps, put the list entries in sections[].items instead of packing them into one paragraph.",
           "Use a section title like What you can say only for literal suggested wording. Use What you can do for action instructions.",
