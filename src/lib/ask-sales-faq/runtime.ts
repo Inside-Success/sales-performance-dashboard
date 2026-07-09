@@ -369,6 +369,101 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     },
   },
   {
+    id: "qualification-criminal-background-route",
+    articleId: "qualification-and-show-fit-rubric",
+    matchAny: [
+      "background issue",
+      "criminal history",
+      "criminal charge",
+      "came out of prison",
+      "prison",
+      "jail",
+      "felony",
+      "fraud",
+      "organized fraud",
+      "bail bonds",
+      "bounty hunter",
+    ],
+    requiredAnyGroups: [
+      ["route", "confirm", "sales leadership", "compliance"],
+      ["criminal", "background", "reputation", "legal"],
+      ["do not guarantee", "do not approve", "before promising fit", "before promising"],
+    ],
+    forbiddenAny: ["yes, you can cast", "safe to cast", "okay to cast", "approved to cast", "approve them"],
+    fallback: {
+      answer:
+        "Do not approve this from the chatbot. A recent prison history, fraud allegation, bail-bonds/bounty-hunter positioning, or other criminal/legal/reputation concern needs to be routed to sales leadership or compliance before you promise fit. For DJ/NLCEO, criminal history is generally rejected except minor issues such as speeding or parking tickets. For main ISTV, only the listed serious red flags are automatic rejects, but criminal or reputation edge cases still need review before you move forward.",
+      summary: "Criminal/background edge cases need owner review before promising fit.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route this to sales leadership or compliance before promising fit.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          items: [
+            "For DJ/NLCEO, criminal history is generally rejected except minor issues such as speeding or parking tickets.",
+            "For main ISTV, only the listed serious red flags are automatic rejects, but criminal/legal/reputation edge cases still need review.",
+          ],
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:qualification-and-show-fit-rubric"],
+      needs_route: true,
+      route_reason: "Criminal, legal, or reputation-sensitive qualification questions need sales leadership/compliance review.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "call-1-pricing-default-and-disqualification-exception",
+    articleId: "call-1-flow",
+    matchAnyGroups: [
+      ["call 1", "call one", "booked for tomorrow", "before attending", "attending"],
+      ["price", "pricing", "investment", "price range", "minimum investment", "cost"],
+    ],
+    requiredAnyGroups: [
+      ["do not discuss pricing", "save pricing", "keep pricing", "Call 2"],
+      ["no business and is not financially qualified", "no business", "not financially qualified", "disqualify"],
+      ["do not use that exception to pitch", "not to pitch", "not to close", "do not quote"],
+    ],
+    forbiddenAny: [
+      "always quote",
+      "give the price range",
+      "minimum investment is 10k",
+      "minimum investment is $10k",
+      "minimum investment is $10,000",
+    ],
+    fallback: {
+      answer:
+        "For Call 1, do not quote a price or range in this situation. Keep pricing for Call 2. The only narrow exception is when you are sure the prospect has no business and is not financially qualified; then you may mention the investment only to disqualify them, not to pitch, close, negotiate, or create urgency.",
+      summary: "Keep Call 1 pricing for Call 2 unless the narrow disqualification exception clearly applies.",
+      sections: [
+        {
+          title: "Default rule",
+          body: "For Call 1, do not quote a price or range. Keep pricing for Call 2.",
+          tone: "warning",
+        },
+        {
+          title: "Narrow exception",
+          body: "Only if you are sure the prospect has no business and is not financially qualified, you may mention the investment only to disqualify them.",
+          tone: "default",
+        },
+        {
+          title: "Do not use it for",
+          items: ["pitching", "closing", "negotiating", "pre-selling", "creating urgency"],
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:call-1-flow"],
+      needs_route: true,
+      route_reason: "If you are not sure both exception conditions are true, keep pricing for Call 2 or route to sales leadership.",
+      confidence_label: "High",
+      confidence_score: 95,
+    },
+  },
+  {
     id: "dj-nlceo-no-cohort-deposit-boundary",
     articleId: "main-istv-call-2-cohort-reschedule-rules",
     matchAnyGroups: [
@@ -976,14 +1071,11 @@ export async function runAskSalesFaq(
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
-    const fallbackOutput = buildCriticalFallbackOutput(
-      criticalValidationQuestion({
-        currentQuestion: sanitizedQuestion,
-        conversationContext: routingConversationContext,
-        policyDecision,
-      }),
+    const fallbackOutput = buildApprovedArticleFallbackOutput({
+      currentQuestion: sanitizedQuestion,
+      conversationContext: routingConversationContext,
       policyDecision,
-    );
+    });
     if (fallbackOutput) {
       const selectedEvidence = resolveSelectedEvidence(fallbackOutput, candidates, sanitizedQuestion);
       const decision = buildDecision({
@@ -1480,6 +1572,421 @@ function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGua
     needs_route: true,
     route_reason: fallback.route_reason || "DJ/NLCEO payment timing, hold, or exception requests should be confirmed with the current DJ/NLCEO owner.",
   };
+}
+
+function buildApprovedArticleFallbackOutput(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  policyDecision: PolicyGuardDecision;
+}) {
+  if (!input.policyDecision.safeToGenerate || !input.policyDecision.primaryArticle) return null;
+
+  const validationQuestion = criticalValidationQuestion({
+    currentQuestion: input.currentQuestion,
+    conversationContext: input.conversationContext,
+    policyDecision: input.policyDecision,
+  });
+  const criticalFallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
+  if (criticalFallback) return criticalFallback;
+
+  const article = input.policyDecision.primaryArticle;
+  switch (article.id) {
+    case "call-1-flow":
+      return buildCallOnePricingFallback();
+    case "current-show-source":
+      return buildCurrentShowListFallback(article);
+    case "istv-nlceo-pricing-and-same-day-discount":
+      return buildPricingAndTimingFallback(input.currentQuestion, input.policyDecision);
+    case "main-istv-call-2-cohort-reschedule-rules":
+      return buildMainIstvCohortFallback(input.currentQuestion, input.policyDecision);
+    case "qualification-and-show-fit-rubric":
+      return buildQualificationFallback(input.currentQuestion);
+    case "post-sale-handoff-after-close":
+      return buildPostSaleFallback(input.currentQuestion);
+    case "events-mastermind-red-carpet":
+      return buildEventFallback(input.currentQuestion);
+    case "contracts-edits-and-signature-process":
+      return buildContractFallback(input.currentQuestion);
+    default:
+      return buildGenericApprovedArticleFallback(article, input.policyDecision);
+  }
+}
+
+function buildCallOnePricingFallback(): ModelOutput {
+  return cloneModelOutput({
+    answer:
+      "For Call 1, do not quote a price or range in this situation. Keep pricing for Call 2. The only narrow exception is when you are sure the prospect has no business and is not financially qualified; then you may mention the investment only to disqualify them, not to pitch, close, negotiate, or create urgency.",
+    summary: "Keep Call 1 pricing for Call 2 unless the narrow disqualification exception clearly applies.",
+    sections: [
+      {
+        title: "Default rule",
+        body: "For Call 1, do not quote a price or range. Keep pricing for Call 2.",
+        tone: "warning",
+      },
+      {
+        title: "Narrow exception",
+        body: "Only if you are sure the prospect has no business and is not financially qualified, you may mention the investment only to disqualify them.",
+        tone: "default",
+      },
+      {
+        title: "Do not use it for",
+        items: ["pitching", "closing", "negotiating", "pre-selling", "creating urgency"],
+        tone: "warning",
+      },
+    ],
+    selected_source_ids: ["approved:call-1-flow"],
+    needs_route: true,
+    route_reason: "If you are not sure both exception conditions are true, keep pricing for Call 2 or route to sales leadership.",
+    confidence_label: "High",
+    confidence_score: 95,
+  });
+}
+
+function buildCurrentShowListFallback(article: ApprovedFaqArticle): ModelOutput {
+  const showList = extractMarkdownListItems(extractMarkdownSection(article.body, "Latest Approved Show List"));
+  const items = showList.length ? showList : ["Legacy Makers", "Women in Power", "Operation CEO", "America's Top Lawyers", "America's Best Doctors"];
+  const answer = `The latest approved show list I have is:\n${items.map((item) => `- ${item}`).join("\n")}`;
+
+  return cloneModelOutput({
+    answer,
+    summary: "Use the latest approved show list below.",
+    sections: [
+      {
+        title: "Current shows",
+        items,
+        tone: "default",
+      },
+      {
+        title: "If something is missing",
+        body: "If a show was just added, paused, disputed, or missing from a dropdown/form, route to tech or the current sales/ops owner instead of choosing a placeholder.",
+        tone: "route",
+      },
+    ],
+    selected_source_ids: [`approved:${article.id}`],
+    needs_route: false,
+    route_reason: "",
+    confidence_label: "High",
+    confidence_score: 95,
+  });
+}
+
+function buildPricingAndTimingFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  if (isLicenseOptionsQuestion(question)) {
+    return cloneModelOutput({
+      answer:
+        "Do not send the License Options document as the default way to compare Lite and Standard. It is better to go over the options on the call. The reuse license document can be sent if needed, but it is not advised because it often hurts the sale.",
+      summary: "Do not use the License Options document as the default comparison tool.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Go over the options on the call instead of sending the License Options document by default.",
+          tone: "default",
+        },
+        {
+          title: "Boundary",
+          body: "The reuse license document can be sent if needed, but it is not advised because it often hurts the sale.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 94,
+    });
+  }
+
+  if (isPaymentTimingOrHoldQuestion(question) || policyDecision.matchedRuleId.includes("payment-timing")) {
+    const explicitDj = mentionsDjNlceo(question);
+    const explicitMainIstv = mentionsMainIstv(question);
+    const answer = explicitDj
+      ? "For DJ/NLCEO, the main ISTV cohort rule does not apply, and they can continue later if needed. Still, do not promise a specific future payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it. Use only the listed DJ/NLCEO payment options."
+      : explicitMainIstv
+        ? "For main ISTV, do not use the DJ/NLCEO no-cohort exception. If they cannot meet the normal payment/signature timing, route the exception to Rich or the current owner before promising anything."
+        : "First confirm whether this is main ISTV or DJ/NLCEO. If it is main ISTV, do not use the DJ/NLCEO no-cohort exception; route payment/deadline exceptions before promising anything. If it is DJ/NLCEO, the main ISTV cohort rule does not apply and they can continue later if needed, but do not promise a specific payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it.";
+
+    return cloneModelOutput({
+      answer,
+      summary: explicitDj
+        ? "DJ/NLCEO is not under the main ISTV cohort rule, but do not promise a hold or future payment date."
+        : "Confirm main ISTV vs DJ/NLCEO before promising payment timing.",
+      sections: [
+        {
+          title: explicitDj ? "DJ/NLCEO" : "Product check",
+          body: explicitDj
+            ? "The main ISTV cohort rule does not apply, and they can continue later if needed."
+            : "Confirm whether this is main ISTV or DJ/NLCEO before applying a cohort/payment-timing rule.",
+          tone: "default",
+        },
+        {
+          title: "Boundary",
+          body: explicitMainIstv
+            ? "For main ISTV, route payment/deadline exceptions to Rich or the current owner before promising anything."
+            : "Do not promise a specific future payment date, hold, custom plan, or exception without owner confirmation.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: true,
+      route_reason: "Payment timing, hold, or exception promises need the current owner when the listed plan/timing is not enough.",
+      confidence_label: "High",
+      confidence_score: 93,
+    });
+  }
+
+  return cloneModelOutput({
+    answer:
+      "Use only the listed current package prices and payment options from the approved pricing guidance. Do not invent custom splits, custom amounts, special discounts, or old offer terms.",
+    summary: "Use listed pricing/payment options only.",
+    sections: [
+      {
+        title: "Boundary",
+        body: "Do not invent custom splits, custom amounts, special discounts, or old offer terms.",
+        tone: "warning",
+      },
+    ],
+    selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+    needs_route: policyDecision.decision === "route_from_approved_article",
+    route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
+    confidence_label: "High",
+    confidence_score: 90,
+  });
+}
+
+function buildMainIstvCohortFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  const explicitDj = mentionsDjNlceo(question);
+  const answer = explicitDj
+    ? "For DJ/NLCEO, the main ISTV cohort rule does not apply and there is no same-day discount. Route DJ/NLCEO reschedule, no-show, pay/sign, deadline, hold, or payment-timing edge cases to the current DJ/NLCEO owner before promising anything."
+    : "For main ISTV, Call 2 can be rescheduled within the same cohort week without Rich approval. Moving Call 2 into the next cohort needs Rich approval unless the approved proof exception applies. If someone no-shows, misses the Sunday 11:59 PM ET pay/sign deadline, or is rejected/not-fit, the minimum before they can reapply is 3 months.";
+
+  return cloneModelOutput({
+    answer,
+    summary: explicitDj ? "DJ/NLCEO has no main ISTV cohort rule." : "Use the main ISTV cohort-week rule for Call 2 timing.",
+    sections: [
+      {
+        title: explicitDj ? "DJ/NLCEO boundary" : "Main ISTV rule",
+        body: answer,
+        tone: explicitDj || policyDecision.decision === "route_from_approved_article" ? "route" : "default",
+      },
+    ],
+    selected_source_ids: ["approved:main-istv-call-2-cohort-reschedule-rules"],
+    needs_route: explicitDj || policyDecision.decision === "route_from_approved_article",
+    route_reason: explicitDj
+      ? "DJ/NLCEO cohort-like edge cases route to the current DJ/NLCEO owner."
+      : policyDecision.decision === "route_from_approved_article"
+        ? policyDecision.reason
+        : "",
+    confidence_label: "High",
+    confidence_score: 93,
+  });
+}
+
+function buildQualificationFallback(question: string): ModelOutput {
+  if (isCriminalOrReputationQuestion(question)) {
+    return cloneModelOutput({
+      answer:
+        "Do not approve this from the chatbot. A recent prison history, fraud allegation, bail-bonds/bounty-hunter positioning, or other criminal/legal/reputation concern needs to be routed to sales leadership or compliance before you promise fit. For DJ/NLCEO, criminal history is generally rejected except minor issues such as speeding or parking tickets. For main ISTV, only the listed serious red flags are automatic rejects, but criminal or reputation edge cases still need review before you move forward.",
+      summary: "Criminal/background edge cases need owner review before promising fit.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route this to sales leadership or compliance before promising fit.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          items: [
+            "For DJ/NLCEO, criminal history is generally rejected except minor issues such as speeding or parking tickets.",
+            "For main ISTV, only the listed serious red flags are automatic rejects, but criminal/legal/reputation edge cases still need review.",
+          ],
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:qualification-and-show-fit-rubric"],
+      needs_route: true,
+      route_reason: "Criminal, legal, or reputation-sensitive qualification questions need sales leadership/compliance review.",
+      confidence_label: "High",
+      confidence_score: 94,
+    });
+  }
+
+  return cloneModelOutput({
+    answer:
+      "Use the approved qualification boundaries only, and route sensitive edge cases before promising fit. That includes physical therapist/unusual medical roles, criminal/legal/reputation concerns, adult/sexual positioning, political or religious red flags, firearms, cannabis/hemp/dispensary questions, minors, or unclear business/platform fit.",
+    summary: "Use the approved qualification boundaries and route sensitive edge cases.",
+    sections: [
+      {
+        title: "Route if unclear",
+        body: "Route sensitive qualification or show-fit edge cases before promising fit.",
+        tone: "route",
+      },
+    ],
+    selected_source_ids: ["approved:qualification-and-show-fit-rubric"],
+    needs_route: true,
+    route_reason: "Sensitive qualification/show-fit edge cases need owner review.",
+    confidence_label: "High",
+    confidence_score: 90,
+  });
+}
+
+function buildPostSaleFallback(question: string): ModelOutput {
+  const shortNotice = /\b(short notice|same day|today|just closed|booked.*onboarding|onboarding.*booked)\b/i.test(question);
+  const answer = shortNotice
+    ? "Yes. For a same-day or short-notice onboarding that was just booked after a close, post in the fulfillment hotline channel with the client's name and email address so the production team is aware."
+    : "After payment and signature, review and send the onboarding email, book the onboarding call for the next day, and only confirm PayMe / All Payments after payment is actually confirmed.";
+
+  return cloneModelOutput({
+    answer,
+    summary: shortNotice ? "Notify fulfillment for same-day or short-notice onboarding." : "Follow the approved post-sale handoff steps.",
+    sections: [
+      {
+        title: shortNotice ? "What to do" : "Post-sale steps",
+        body: answer,
+        tone: shortNotice ? "route" : "default",
+      },
+    ],
+    selected_source_ids: ["approved:post-sale-handoff-after-close"],
+    needs_route: shortNotice,
+    route_reason: shortNotice ? "Same-day or short-notice onboarding should be posted in the fulfillment hotline." : "",
+    confidence_label: "High",
+    confidence_score: 94,
+  });
+}
+
+function buildEventFallback(question: string): ModelOutput {
+  const fourPayMastermind = /\b(4-pay|4 pay|four pay|payment plan)\b/i.test(question) && /\b(mastermind|film|filming|august|not pif)\b/i.test(question);
+  const answer = fourPayMastermind
+    ? "For a 4-pay client trying to film in August and attend Mastermind before the episode is fully PIF, post in the fulfillment hotline to double-check before promising the schedule. The guidance says it should be okay, but fulfillment still needs to confirm."
+    : "Mastermind/red-carpet access is included in all packages under the current rule, and there is a $200 non-refundable food/drink fee. Route current dates, logistics, travel, guest rules, or exceptions to the current event/source owner.";
+
+  return cloneModelOutput({
+    answer,
+    summary: fourPayMastermind ? "Double-check 4-pay/August filming/Mastermind timing with fulfillment." : "Use the approved Mastermind access and fee boundary.",
+    sections: [
+      {
+        title: fourPayMastermind ? "What to do" : "Event boundary",
+        body: answer,
+        tone: fourPayMastermind ? "route" : "default",
+      },
+    ],
+    selected_source_ids: ["approved:events-mastermind-red-carpet"],
+    needs_route: true,
+    route_reason: fourPayMastermind ? "Fulfillment should confirm before the rep promises the schedule." : "Event logistics or exceptions can drift.",
+    confidence_label: "High",
+    confidence_score: 92,
+  });
+}
+
+function buildContractFallback(question: string): ModelOutput {
+  const beforeCallTwo = /\bbefore call 2\b|\bbefore call two\b/i.test(question);
+  const answer = beforeCallTwo
+    ? "You can send the current contract link before Call 2, but it is not advised. Keep the normal sales process unless leadership approves a specific exception."
+    : "You can send the current contract link, but do not edit contract terms, create addenda, promise custom language, or interpret legal terms. Route edits, attorney review, wrong links, entity-name changes, or legal interpretation to Rich/contracts/legal.";
+
+  return cloneModelOutput({
+    answer,
+    summary: beforeCallTwo ? "Sending the contract before Call 2 is allowed but not advised." : "Use the current contract link and route contract exceptions.",
+    sections: [
+      {
+        title: "Answer",
+        body: answer,
+        tone: beforeCallTwo ? "warning" : "route",
+      },
+    ],
+    selected_source_ids: ["approved:contracts-edits-and-signature-process"],
+    needs_route: !beforeCallTwo,
+    route_reason: beforeCallTwo ? "" : "Contract edits, legal review, or wrong-link issues need Rich/contracts/legal.",
+    confidence_label: "High",
+    confidence_score: 92,
+  });
+}
+
+function buildGenericApprovedArticleFallback(article: ApprovedFaqArticle, policyDecision: PolicyGuardDecision): ModelOutput {
+  const repSayItems = extractMarkdownListItems(extractMarkdownSection(article.body, "What Reps Can Say")).slice(0, 4);
+  const answerSectionText = firstMeaningfulParagraph(extractMarkdownSection(article.body, "Answer")) || firstMeaningfulParagraph(article.body);
+  const items = repSayItems.length ? repSayItems : answerSectionText ? [answerSectionText] : [];
+  const answer = items.length
+    ? items[0]
+    : `Use the current approved guidance for ${article.title}. If the case is unusual, time-sensitive, or not directly covered, confirm with the current owner before promising it.`;
+  const needsRoute = policyDecision.decision === "route_from_approved_article";
+
+  return cloneModelOutput({
+    answer,
+    summary: answer,
+    sections: [
+      {
+        title: repSayItems.length ? "What you can say" : "Answer",
+        body: repSayItems.length ? undefined : answer,
+        items: repSayItems.length ? repSayItems : undefined,
+        tone: needsRoute ? "route" : "default",
+      },
+    ],
+    selected_source_ids: [`approved:${article.id}`],
+    needs_route: needsRoute,
+    route_reason: needsRoute ? policyDecision.reason : "",
+    confidence_label: "Medium",
+    confidence_score: needsRoute ? 82 : 86,
+  });
+}
+
+function extractMarkdownSection(markdown: string, heading: string) {
+  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = markdown.match(new RegExp(`(?:^|\\n)##\\s+${escapedHeading}\\s*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`, "i"));
+  return match?.[1]?.trim() || "";
+}
+
+function extractMarkdownListItems(markdown: string) {
+  return markdown
+    .split(/\n+/)
+    .map((line) => line.match(/^\s*[-*]\s+(.+?)\s*$/)?.[1]?.trim())
+    .filter((item): item is string => Boolean(item));
+}
+
+function firstMeaningfulParagraph(markdown: string) {
+  const withoutTables = markdown
+    .split(/\n+/)
+    .filter((line) => !/^\s*\|/.test(line) && !/^\s*[-*]\s+/.test(line) && !/^#{1,6}\s+/.test(line))
+    .join("\n");
+  return (
+    withoutTables
+      .split(/\n\s*\n/)
+      .map((paragraph) => paragraph.replace(/\s+/g, " ").trim())
+      .find((paragraph) => paragraph.length >= 30 && paragraph.length <= 320) || ""
+  );
+}
+
+function isLicenseOptionsQuestion(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return /\blicense options?\b|\breuse license\b/.test(normalizedQuestion);
+}
+
+function isPaymentTimingOrHoldQuestion(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return (
+    /\b(funds unavailable|funds unavail|cannot pay|can't pay|cant pay|unable to pay|initial deposit|first payment|future payment date|payment timing|hold|holding them back|payment holding|pmt holding|need until|aug 15|august 15|2\.5k|2500|2 500|\$2,500|\$2500)\b/.test(
+      normalizedQuestion,
+    ) &&
+    /\b(call 2|call two|greenlit|approved|close|closing|opportunity|payment|pay|deposit|sign|continue|later)\b/.test(
+      normalizedQuestion,
+    )
+  );
+}
+
+function isCriminalOrReputationQuestion(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return /\b(criminal|crime|charge|felony|fraud|prison|jail|bail bonds|bounty hunter|background|reputation)\b/.test(
+    normalizedQuestion,
+  );
+}
+
+function mentionsDjNlceo(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return /\b(daymond john|next level ceo)\b/.test(normalizedQuestion);
+}
+
+function mentionsMainIstv(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return /\b(main istv|istv|inside success)\b/.test(normalizedQuestion) && !mentionsDjNlceo(question);
 }
 
 function userRequestedShortAnswer(question: string) {
@@ -3094,16 +3601,87 @@ function normalizeModelStructuredAnswer(
           tone: parseSectionTone(section.tone),
         }))
     : [];
+  const summary = sanitizeModelAnswer(output.summary || answer);
+  const visibleSections = ensureAnswerVisibleInStructuredSections({
+    answer,
+    summary,
+    sections,
+    plainSummaryOnly: Boolean(output.display?.plainSummaryOnly),
+  });
 
   return structured({
-    summary: sanitizeModelAnswer(output.summary || answer),
-    sections: sections.length || output.display?.plainSummaryOnly ? sections : [{ title: "Answer", body: answer }],
+    summary,
+    sections: visibleSections,
     decision: {
       ...decision,
       confidenceLabel: output.confidence_label || decision.confidenceLabel,
       confidenceScore: typeof output.confidence_score === "number" ? clampConfidence(output.confidence_score) : decision.confidenceScore,
     },
   });
+}
+
+function ensureAnswerVisibleInStructuredSections(input: {
+  answer: string;
+  summary: string;
+  sections: AskSalesFaqStructuredAnswer["sections"];
+  plainSummaryOnly: boolean;
+}): AskSalesFaqStructuredAnswer["sections"] {
+  const sections = input.sections.length || input.plainSummaryOnly ? input.sections : [{ title: "Answer", body: input.answer }];
+  if (!input.answer.trim() || structuredVisibleTextCoversAnswer(input.answer, input.summary, sections)) return sections;
+
+  const answerSectionTitle = inferAnswerVisibilitySectionTitle(input.answer);
+  const answerSections = [{ title: answerSectionTitle, body: input.answer, tone: "default" as const }].flatMap((section) =>
+    normalizeStructuredAnswerSections(section),
+  ).filter((section): section is AskSalesFaqStructuredAnswer["sections"][number] => typeof section.title === "string");
+  return mergeDuplicateDisplaySections([...answerSections, ...sections])
+    .filter((section) => typeof section.title === "string")
+    .map((section) => ({
+      title: String(section.title),
+      body: section.body,
+      items: section.items,
+      tone: parseSectionTone(section.tone),
+    }));
+}
+
+function structuredVisibleTextCoversAnswer(
+  answer: string,
+  summary: string,
+  sections: AskSalesFaqStructuredAnswer["sections"],
+) {
+  const normalizedAnswer = normalizeAnswerForCoverage(answer);
+  if (!normalizedAnswer) return true;
+
+  const visibleText = normalizeAnswerForCoverage(
+    [
+      summary,
+      ...sections.flatMap((section) => [section.title, section.body, ...(section.items || [])]),
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+  if (!visibleText) return false;
+  if (visibleText.includes(normalizedAnswer)) return true;
+
+  const answerTokens = Array.from(new Set(tokenize(normalizedAnswer, { expand: false }).filter((token) => token.length > 2)));
+  if (answerTokens.length < 8) return answerTokens.every((token) => visibleText.includes(token));
+
+  const coveredTokens = answerTokens.filter((token) => visibleText.includes(token)).length;
+  return coveredTokens / answerTokens.length >= 0.68;
+}
+
+function normalizeAnswerForCoverage(value: string) {
+  return normalizeText(value.replace(/[$]/g, " $"));
+}
+
+function inferAnswerVisibilitySectionTitle(answer: string) {
+  const normalizedAnswer = normalizeText(answer);
+  if (/\b(show list|current shows|latest approved show list|legacy makers|masters of innovation)\b/.test(normalizedAnswer)) {
+    return "Current shows";
+  }
+  if (/\b(payment options?|payment plans?|packages?|pif)\b/.test(normalizedAnswer)) {
+    return "Payment options";
+  }
+  return "Answer";
 }
 
 function parseConfidenceLabel(value: unknown): "High" | "Medium" | "Low" | undefined {

@@ -1323,6 +1323,11 @@ function MessageRow({
           </>
         ) : message.structuredAnswer ? (
           <>
+            {shouldShowPlainAnswerWithStructured(message.content, message.structuredAnswer) ? (
+              <div className="mb-3">
+                <AnswerText text={message.content} />
+              </div>
+            ) : null}
             <StructuredAnswerCard answer={message.structuredAnswer} />
             {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
           </>
@@ -1365,6 +1370,27 @@ function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer 
   );
 }
 
+function shouldShowPlainAnswerWithStructured(content: string, answer: AskSalesFaqStructuredAnswer) {
+  const normalizedContent = normalizeAnswerDisplayText(content);
+  if (!normalizedContent || normalizedContent.length < 80) return false;
+
+  const visibleStructuredText = normalizeAnswerDisplayText(
+    [
+      answer.summary,
+      ...answer.sections.flatMap((section) => [section.title, section.body, ...(section.items || [])]),
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+  if (!visibleStructuredText) return true;
+  if (visibleStructuredText.includes(normalizedContent)) return false;
+
+  const contentTokens = uniqueDisplayTokens(normalizedContent);
+  if (contentTokens.length < 8) return false;
+  const coveredTokens = contentTokens.filter((token) => visibleStructuredText.includes(token)).length;
+  return coveredTokens / contentTokens.length < 0.68;
+}
+
 function isDuplicatedSummary(answer: AskSalesFaqStructuredAnswer) {
   const firstSection = answer.sections[0];
   if (
@@ -1388,6 +1414,10 @@ function isDuplicatedSummary(answer: AskSalesFaqStructuredAnswer) {
 
 function normalizeAnswerDisplayText(value: string) {
   return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function uniqueDisplayTokens(value: string) {
+  return Array.from(new Set(value.match(/[a-z0-9$]+/g)?.filter((token) => token.length > 2) || []));
 }
 
 function AnswerSection({ section }: { section: AskSalesFaqStructuredAnswer["sections"][number] }) {

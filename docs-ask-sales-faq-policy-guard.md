@@ -243,4 +243,32 @@ Safety kept:
 Validation target:
 
 - Dashboard validator now checks that context routing is filtered and that the generated bundle contains the real Slack regression rules.
-- FAQ policy guard has 107 regression cases after adding the real Slack questions.
+- FAQ policy guard has 111 regression cases after adding the real Slack questions and the July 9 screenshot follow-up cases.
+
+## 2026-07-09 July 9 Screenshot Follow-Up Hardening
+
+Status: implemented locally and verified without starting a local dev server. Deployment and signed-in retest are still required after commit/push.
+
+What changed:
+
+- Added approved fallback hierarchy in `src/lib/ask-sales-faq/runtime.ts` for matched approved articles when the provider is unavailable or returns unusable output. This stays scoped to the matched article; broad unmatched questions still fail closed.
+- Added criminal/prison/fraud/background routing under the qualification/reputation rubric.
+- Updated Call 1 pricing guidance so it preserves the default no-price-before-Call-2 rule while allowing Rich's narrow disqualification exception when the prospect clearly has no business and is not financially qualified.
+- Added payment-holding/funds-unavailable timing handling that distinguishes main ISTV from DJ/NLCEO and avoids promised holds, custom payment dates, or exceptions without the current owner.
+- Added a UI display guard so structured answer cards cannot hide the substantive raw answer.
+- Synced the generated approved FAQ bundle and policy-aware RAG index from the FAQ source repo.
+
+Validation:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 71 / 71 passed.
+- `npm run lint`: passed.
+- `npx tsc --noEmit`: passed.
+- `npm run build`: passed.
+- FAQ-side source validation also passed: policy guard 111 / 111, answer contract 119 / 119, runtime orchestrator 119 / 119, retrieval simulation 111 / 111.
+
+Safety kept:
+
+- No broad fallback-to-any-approved-answer behavior.
+- No model/provider/cache/API/database schema change.
+- No Slack, Google, Drive, Sheets, or n8n write.
+- No local dev server.
