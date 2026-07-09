@@ -5,14 +5,33 @@
     {
       "id": "main-istv-pricing-and-plans",
       "title": "Main ISTV pricing and listed payment plans",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "main_istv",
       "scope_behavior": "require",
       "critical_rule_ids": [],
-      "intents": ["pricing", "payment_plan"],
-      "match_any": ["price", "pricing", "package", "payment plan", "lite", "standard", "vip", "premium"],
+      "intents": [
+        "pricing",
+        "payment_plan"
+      ],
+      "match_any": [
+        "price",
+        "pricing",
+        "package",
+        "payment plan",
+        "lite",
+        "standard",
+        "vip",
+        "premium"
+      ],
       "approved_text": "Main ISTV prices are Lite $12,000, Standard $20,000, and VIP/Premium $30,000. Listed payment plans are Lite: 4 x $3,000, 3 x $4,000, or 2 x $6,000; Standard: 4 x $5,000 or 2 x $10,000; VIP/Premium: 4 x $7,500, 3 x $10,000, or 2 x $15,000. Use only listed plans and current official links.",
-      "forbidden_claims": ["DJ/NLCEO pricing", "$2,500 x 4", "no cohort rule", "custom payment plan"],
+      "forbidden_claims": [
+        "DJ/NLCEO pricing",
+        "$2,500 x 4",
+        "no cohort rule",
+        "custom payment plan"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "For main ISTV, use only the current listed package prices and payment plans, and do not invent a custom split.",
@@ -22,14 +41,37 @@
     {
       "id": "dj-nlceo-pricing-and-plans",
       "title": "DJ/NLCEO pricing and listed payment options",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "dj_nlceo",
       "scope_behavior": "require",
-      "critical_rule_ids": ["dj-nlceo-pricing-no-cohort-deposit-boundary"],
-      "intents": ["pricing", "payment_plan"],
-      "match_any": ["price", "pricing", "package", "payment plan", "lite", "standard", "vip", "premium", "ceo day"],
+      "critical_rule_ids": [
+        "dj-nlceo-pricing-no-cohort-deposit-boundary"
+      ],
+      "intents": [
+        "pricing",
+        "payment_plan"
+      ],
+      "match_any": [
+        "price",
+        "pricing",
+        "package",
+        "payment plan",
+        "lite",
+        "standard",
+        "vip",
+        "premium",
+        "ceo day"
+      ],
       "approved_text": "DJ/NLCEO prices and listed options are Lite: $10,000 PIF, $2,500 x 4, $3,600 x 3, or $5,000 x 2; Standard: $15,000 PIF, $4,000 x 4, $5,000 x 3, or $7,500 x 2; Premium VIP: $20,000 PIF, $5,000 x 4, $7,000 x 3, or $10,000 x 2; CEO Day upgrade: $5,000 PIF only. DJ/NLCEO has no same-day discount.",
-      "forbidden_claims": ["main ISTV pricing", "$3,000 x 4", "$2,000 same-day discount", "main ISTV cohort deadline", "custom payment plan"],
+      "forbidden_claims": [
+        "main ISTV pricing",
+        "$3,000 x 4",
+        "$2,000 same-day discount",
+        "main ISTV cohort deadline",
+        "custom payment plan"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "For DJ/NLCEO, use only the listed DJ/NLCEO prices and payment options, and do not invent a custom split or discount.",
@@ -39,14 +81,27 @@
     {
       "id": "main-istv-same-day-discount",
       "title": "Main ISTV same-day discount",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "main_istv",
       "scope_behavior": "require",
       "critical_rule_ids": [],
-      "intents": ["discount"],
-      "match_any": ["discount", "same day", "$2,000", "$2000"],
+      "intents": [
+        "discount"
+      ],
+      "match_any": [
+        "discount",
+        "same day",
+        "$2,000",
+        "$2000"
+      ],
       "approved_text": "The $2,000 same-day discount applies to main ISTV from Call 2 when the initial deposit is paid on the same calendar day as that Call 2. Payment may happen later that same calendar day after the call. Do not carry it into the next day.",
-      "forbidden_claims": ["DJ/NLCEO discount", "next-day discount", "discount applies to Call 1"],
+      "forbidden_claims": [
+        "DJ/NLCEO discount",
+        "next-day discount",
+        "discount applies to Call 1"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "For main ISTV, the $2,000 same-day discount is tied to Call 2 and same-calendar-day initial deposit payment. It does not carry into the next day.",
@@ -56,14 +111,39 @@
     {
       "id": "dj-nlceo-timing-no-cohort",
       "title": "DJ/NLCEO timing and no-cohort boundary",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount", "main-istv-call-2-cohort-reschedule-rules"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount",
+        "main-istv-call-2-cohort-reschedule-rules"
+      ],
       "product_scope": "dj_nlceo",
       "scope_behavior": "require",
-      "critical_rule_ids": ["dj-nlceo-no-cohort-deposit-boundary", "dj-nlceo-pricing-no-cohort-deposit-boundary"],
-      "intents": ["payment_timing", "cohort", "reschedule"],
-      "match_any": ["funds", "payment timing", "hold", "wait", "book out", "few weeks", "cohort", "deadline", "call 2"],
+      "critical_rule_ids": [
+        "dj-nlceo-no-cohort-deposit-boundary",
+        "dj-nlceo-pricing-no-cohort-deposit-boundary"
+      ],
+      "intents": [
+        "payment_timing",
+        "cohort",
+        "reschedule"
+      ],
+      "match_any": [
+        "funds",
+        "payment timing",
+        "hold",
+        "wait",
+        "book out",
+        "few weeks",
+        "cohort",
+        "deadline",
+        "call 2"
+      ],
       "approved_text": "DJ/NLCEO has no cohort rule and no same-day discount. A DJ/NLCEO Call 2 may be booked out a few weeks when needed, while still preferring to move the applicant forward promptly. Do not promise a hold, custom payment date, custom split, or unlisted exception without the current DJ/NLCEO owner confirming it.",
-      "forbidden_claims": ["main ISTV cohort deadline applies", "approved future payment date", "promised hold", "custom payment plan"],
+      "forbidden_claims": [
+        "main ISTV cohort deadline applies",
+        "approved future payment date",
+        "promised hold",
+        "custom payment plan"
+      ],
       "route_required": true,
       "fallback_mode": "scope_safe_route",
       "safe_fallback": "DJ/NLCEO has no cohort rule and no same-day discount. They do not have to reapply just because funds are unavailable, and Call 2 can be booked a few weeks out when needed. Use only listed payment options; do not promise a hold, future payment date, or exception without the current DJ/NLCEO owner confirming it.",
@@ -74,14 +154,37 @@
     {
       "id": "main-istv-payment-timing-exception",
       "title": "Main ISTV payment timing and exception boundary",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount", "main-istv-call-2-cohort-reschedule-rules"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount",
+        "main-istv-call-2-cohort-reschedule-rules"
+      ],
       "product_scope": "main_istv",
       "scope_behavior": "require",
       "critical_rule_ids": [],
-      "intents": ["payment_timing", "cohort", "reschedule"],
-      "match_any": ["funds", "payment timing", "hold", "wait", "few weeks", "cohort", "deadline", "call 2", "deposit"],
+      "intents": [
+        "payment_timing",
+        "cohort",
+        "reschedule"
+      ],
+      "match_any": [
+        "funds",
+        "payment timing",
+        "hold",
+        "wait",
+        "few weeks",
+        "cohort",
+        "deadline",
+        "call 2",
+        "deposit"
+      ],
       "approved_text": "For main ISTV, do not promise a payment hold, future payment date, custom plan, or unlisted exception. Next-cohort Call 2 exceptions require Rich/current-owner approval. Approved proof categories are a documented medical emergency or a bank block/inability to pay with bank proof; in the bank-block case the contract should still be signed.",
-      "forbidden_claims": ["DJ/NLCEO pricing", "$2,500 x 4", "no cohort rule", "can continue later", "approved hold"],
+      "forbidden_claims": [
+        "DJ/NLCEO pricing",
+        "$2,500 x 4",
+        "no cohort rule",
+        "can continue later",
+        "approved hold"
+      ],
       "route_required": true,
       "fallback_mode": "scope_safe_route",
       "safe_fallback": "For main ISTV, do not promise a hold, future payment date, custom plan, or exception; route the nonstandard payment or deadline request to Rich or the current owner.",
@@ -92,14 +195,36 @@
     {
       "id": "pricing-product-clarification",
       "title": "Pricing and payment timing product clarification",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "product_agnostic",
       "scope_behavior": "clarify_if_unknown",
-      "critical_rule_ids": ["pricing-ambiguous-payment-hold-product-check"],
-      "intents": ["payment_timing", "cohort"],
-      "match_any": ["funds", "payment timing", "hold", "wait", "2.5k", "$2,500", "cohort", "deadline", "call 2"],
+      "critical_rule_ids": [
+        "pricing-ambiguous-payment-hold-product-check"
+      ],
+      "intents": [
+        "payment_timing",
+        "cohort"
+      ],
+      "match_any": [
+        "funds",
+        "payment timing",
+        "hold",
+        "wait",
+        "2.5k",
+        "$2,500",
+        "cohort",
+        "deadline",
+        "call 2"
+      ],
       "approved_text": "Main ISTV and DJ/NLCEO have different payment-timing and cohort rules. Product scope must be known before applying either policy.",
-      "forbidden_claims": ["assume main ISTV", "assume DJ/NLCEO", "promised hold", "approved exception"],
+      "forbidden_claims": [
+        "assume main ISTV",
+        "assume DJ/NLCEO",
+        "promised hold",
+        "approved exception"
+      ],
       "route_required": true,
       "fallback_mode": "clarify",
       "safe_fallback": "Is this for main ISTV or DJ/NLCEO? The payment-timing and cohort rules are different, so I do not want to apply the wrong policy.",
@@ -110,14 +235,33 @@
     {
       "id": "twenty-percent-lead-ownership",
       "title": "20 percent lead ownership checks",
-      "source_article_ids": ["twenty-percent-dial-out-sop"],
+      "source_article_ids": [
+        "twenty-percent-dial-out-sop"
+      ],
       "product_scope": "product_agnostic",
       "scope_behavior": "product_agnostic",
-      "critical_rule_ids": ["lead-ownership-keap-window-boundary"],
-      "intents": ["lead_ownership"],
-      "match_any": ["20 percent", "20%", "lead ownership", "another rep", "30-day", "31 days", "first booking"],
+      "critical_rule_ids": [
+        "lead-ownership-keap-window-boundary"
+      ],
+      "intents": [
+        "lead_ownership"
+      ],
+      "match_any": [
+        "20 percent",
+        "20%",
+        "lead ownership",
+        "another rep",
+        "30-day",
+        "31 days",
+        "first booking"
+      ],
       "approved_text": "Check Keap before continuing. If the lead is assigned to another rep, do not contact it. Ownership lasts 30 days from a communication logged in Keap, and each newly logged contact refreshes that window. After 31 days with no contact, another rep may speak with the lead. If the same person is booked with two reps or shows, the first booking wins. Route conflicting Keap notes or assignments to the current 20 percent or sales owner.",
-      "forbidden_claims": ["territory rule", "first-touch rule", "formal split agreement", "ignore Keap assignment"],
+      "forbidden_claims": [
+        "territory rule",
+        "first-touch rule",
+        "formal split agreement",
+        "ignore Keap assignment"
+      ],
       "route_required": true,
       "fallback_mode": "scope_safe_route",
       "safe_fallback": "Check Keap first. If the lead is assigned to another rep, do not continue. Ownership lasts 30 days from a logged communication and refreshes with each newly logged contact; after 31 days with no contact, another rep may speak with the lead. For duplicate bookings, the first booking wins. Route conflicting Keap notes or assignments to the current 20 percent or sales owner.",
@@ -128,14 +272,26 @@
     {
       "id": "license-options-document",
       "title": "License Options and reuse-license document handling",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "product_agnostic",
       "scope_behavior": "product_agnostic",
       "critical_rule_ids": [],
-      "intents": ["document_sharing"],
-      "match_any": ["license options", "reuse license", "compare lite and standard", "send the document"],
+      "intents": [
+        "document_sharing"
+      ],
+      "match_any": [
+        "license options",
+        "reuse license",
+        "compare lite and standard",
+        "send the document"
+      ],
       "approved_text": "Do not use the License Options document as the default way to compare Lite and Standard. Go over the options on the call. The reuse-license document can be sent if needed, but it is not advised because it often hurts the sale.",
-      "forbidden_claims": ["must send the License Options document", "cannot ever send the reuse license"],
+      "forbidden_claims": [
+        "must send the License Options document",
+        "cannot ever send the reuse license"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "Go over Lite and Standard on the call instead of sending the License Options document as the default comparison. The reuse-license document can be sent if needed, but it is not advised.",
@@ -145,14 +301,28 @@
     {
       "id": "main-istv-upgrade-before-filming",
       "title": "Main ISTV upgrade before filming",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "main_istv",
       "scope_behavior": "require",
       "critical_rule_ids": [],
-      "intents": ["upgrade"],
-      "match_any": ["upgrade", "upgraded", "before filming", "after filming"],
+      "intents": [
+        "upgrade"
+      ],
+      "match_any": [
+        "upgrade",
+        "upgraded",
+        "before filming",
+        "after filming"
+      ],
       "approved_text": "Main ISTV clients can upgrade before filming, but not after filming. Use the proper upgraded contract and the current payment-difference route. Do not assume or quote a discount unless the question establishes that the client already received the approved same-day discount.",
-      "forbidden_claims": ["upgrade after filming", "custom upgrade link", "assume a same-day discount", "DJ/NLCEO upgrade discount"],
+      "forbidden_claims": [
+        "upgrade after filming",
+        "custom upgrade link",
+        "assume a same-day discount",
+        "DJ/NLCEO upgrade discount"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "For main ISTV, upgrades are allowed before filming, not after. Use the proper upgraded contract and the current payment-difference route. Do not quote discounted totals unless the client already received the approved same-day discount.",
@@ -162,14 +332,33 @@
     {
       "id": "main-istv-upgrade-discount-carry-forward",
       "title": "Main ISTV upgrade discount carry-forward",
-      "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],
+      "source_article_ids": [
+        "istv-nlceo-pricing-and-same-day-discount"
+      ],
       "product_scope": "main_istv",
       "scope_behavior": "require",
-      "critical_rule_ids": ["pricing-standard-upgrade-discount", "pricing-vip-upgrade-discount"],
-      "intents": ["upgrade_discount"],
-      "match_any": ["upgrade", "discount", "same-day discount", "$2,000", "discounted Lite"],
+      "critical_rule_ids": [
+        "pricing-standard-upgrade-discount",
+        "pricing-vip-upgrade-discount"
+      ],
+      "intents": [
+        "upgrade_discount"
+      ],
+      "match_any": [
+        "upgrade",
+        "discount",
+        "same-day discount",
+        "$2,000",
+        "discounted Lite"
+      ],
       "approved_text": "When a main ISTV client already received the approved $2,000 same-day discount, that discount carries forward to an upgrade completed before filming. Discounted Standard is $18,000 and discounted VIP/Premium is $28,000. From discounted Lite at $10,000, the difference is $8,000 to Standard or $18,000 to VIP/Premium. Use the proper upgraded contract and the current payment-difference route.",
-      "forbidden_claims": ["discount does not carry forward", "upgrade after filming", "custom upgrade link", "discount applies without prior eligibility", "DJ/NLCEO upgrade discount"],
+      "forbidden_claims": [
+        "discount does not carry forward",
+        "upgrade after filming",
+        "custom upgrade link",
+        "discount applies without prior eligibility",
+        "DJ/NLCEO upgrade discount"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "If this main ISTV client already received the approved $2,000 same-day discount, it carries forward to an upgrade before filming: discounted Standard is $18,000 and discounted VIP/Premium is $28,000. From discounted Lite at $10,000, the difference is $8,000 or $18,000 respectively. Use the proper upgraded contract and current payment-difference route.",
@@ -177,16 +366,193 @@
       "last_reviewed": "2026-07-10"
     },
     {
+      "id": "americas-best-doctors-employed-doctor",
+      "title": "America's Best Doctors hospital-employed doctor eligibility",
+      "source_article_ids": [
+        "qualification-and-show-fit-rubric"
+      ],
+      "product_scope": "product_agnostic",
+      "scope_behavior": "product_agnostic",
+      "critical_rule_ids": [],
+      "intents": [
+        "qualification"
+      ],
+      "match_any": [
+        "doctor",
+        "physician",
+        "hospital employed",
+        "works at a hospital",
+        "private practice",
+        "own practice",
+        "practice ownership"
+      ],
+      "approved_text": "A doctor can qualify for America's Best Doctors even when they work for a hospital or another practice and do not own the practice. Do not disqualify a doctor solely because they are hospital-employed or lack practice ownership.",
+      "forbidden_claims": [
+        "practice ownership is required",
+        "hospital-employed doctors are disqualified",
+        "business owners only"
+      ],
+      "required_any_groups": [
+        [
+          "can qualify",
+          "eligible",
+          "does not have to own",
+          "do not disqualify"
+        ]
+      ],
+      "route_required": false,
+      "fallback_mode": "approved_answer",
+      "safe_fallback": "Yes. A hospital-employed doctor can qualify for America's Best Doctors even if they do not own the practice. Do not disqualify them solely because they work for a hospital or another practice.",
+      "approval_reference": "2026-07-07 Rich Allen and Mike Wisner meeting decision, consistent with Rudy Mawer Slack replies and reconfirmed by the user on 2026-07-10",
+      "last_reviewed": "2026-07-10"
+    },
+    {
+      "id": "americas-best-doctors-nurse-boundary",
+      "title": "America's Best Doctors nurse boundary",
+      "source_article_ids": [
+        "qualification-and-show-fit-rubric"
+      ],
+      "product_scope": "product_agnostic",
+      "scope_behavior": "product_agnostic",
+      "critical_rule_ids": [],
+      "intents": [
+        "qualification"
+      ],
+      "match_any": [
+        "nurse",
+        "nursing",
+        "registered nurse",
+        "rn"
+      ],
+      "approved_text": "Nurses do not qualify as doctors for America's Best Doctors. Do not present a nursing role as equivalent to being a doctor for this show.",
+      "forbidden_claims": [
+        "nurses qualify as doctors",
+        "nursing role is equivalent to doctor"
+      ],
+      "required_any_groups": [
+        [
+          "do not qualify",
+          "not qualify",
+          "not a doctor"
+        ]
+      ],
+      "route_required": false,
+      "fallback_mode": "approved_answer",
+      "safe_fallback": "No. Nurses do not qualify as doctors for America's Best Doctors.",
+      "approval_reference": "2026-07-07 Rich Allen and Mike Wisner meeting decision reconfirmed by the user on 2026-07-10",
+      "last_reviewed": "2026-07-10"
+    },
+    {
+      "id": "americas-best-doctors-physical-therapist-boundary",
+      "title": "America's Best Doctors physical therapist boundary",
+      "source_article_ids": [
+        "qualification-and-show-fit-rubric"
+      ],
+      "product_scope": "product_agnostic",
+      "scope_behavior": "product_agnostic",
+      "critical_rule_ids": [],
+      "intents": [
+        "qualification"
+      ],
+      "match_any": [
+        "physical therapist",
+        "physiotherapist",
+        "physio",
+        "pt"
+      ],
+      "approved_text": "Physical therapists and physiotherapists are case-by-case for America's Best Doctors. Do not promise qualification or rejection; confirm the fit with the current qualification owner.",
+      "forbidden_claims": [
+        "physical therapists automatically qualify",
+        "physical therapists are automatically disqualified"
+      ],
+      "required_any_groups": [
+        [
+          "case-by-case",
+          "case by case"
+        ],
+        [
+          "confirm",
+          "route"
+        ]
+      ],
+      "route_required": true,
+      "fallback_mode": "scope_safe_route",
+      "safe_fallback": "Physical therapists and physiotherapists are case-by-case for America's Best Doctors. Confirm the fit with the current qualification owner before promising qualification or rejection.",
+      "route_reason": "Confirm physical therapist or physiotherapist fit with the current qualification owner before replying.",
+      "approval_reference": "2026-07-07 Rich Allen and Mike Wisner meeting decision",
+      "last_reviewed": "2026-07-10"
+    },
+    {
+      "id": "english-only-production-and-translation",
+      "title": "English-only production and translation boundary",
+      "source_article_ids": [
+        "production-language-and-translation-boundary"
+      ],
+      "product_scope": "product_agnostic",
+      "scope_behavior": "product_agnostic",
+      "critical_rule_ids": [],
+      "intents": [
+        "production_language"
+      ],
+      "match_any": [
+        "spanish",
+        "non english",
+        "another language",
+        "translation",
+        "translate",
+        "bilingual",
+        "english speaking partner"
+      ],
+      "approved_text": "ISTV currently produces shows in English. Do not promise a Spanish-language or other non-English episode, translation, interpreted production, or translated production assets. An English-speaking person may be auditioned instead only when they are a genuine owner or partner in the business and otherwise qualify. A bilingual sales rep does not change the English-only production boundary.",
+      "forbidden_claims": [
+        "Spanish-language episode is available",
+        "translation support is included",
+        "a bilingual sales rep changes production language",
+        "any English speaker can replace the owner"
+      ],
+      "required_any_groups": [
+        [
+          "in English",
+          "English-only",
+          "English only"
+        ],
+        [
+          "do not promise",
+          "cannot",
+          "not available",
+          "do not support"
+        ]
+      ],
+      "route_required": false,
+      "fallback_mode": "approved_answer",
+      "safe_fallback": "ISTV currently produces shows in English, so do not promise a Spanish-language episode or translation support. An English-speaking person can be considered only if they are a genuine owner or partner and otherwise qualify.",
+      "approval_reference": "Rudy Mawer and Madeline Cary Slack decisions, plus user confirmation on 2026-07-10",
+      "last_reviewed": "2026-07-10"
+    },
+    {
       "id": "dj-nlceo-greenlight-letter-no-cohort",
       "title": "DJ/NLCEO greenlight conditional-section boundary",
-      "source_article_ids": ["main-istv-call-2-cohort-reschedule-rules"],
+      "source_article_ids": [
+        "main-istv-call-2-cohort-reschedule-rules"
+      ],
       "product_scope": "dj_nlceo",
       "scope_behavior": "require",
       "critical_rule_ids": [],
-      "intents": ["greenlight_letter", "cohort"],
-      "match_any": ["greenlight letter", "conditional approval", "expiration section", "cohort deadline"],
+      "intents": [
+        "greenlight_letter",
+        "cohort"
+      ],
+      "match_any": [
+        "greenlight letter",
+        "conditional approval",
+        "expiration section",
+        "cohort deadline"
+      ],
       "approved_text": "DJ/NLCEO greenlight letters do not use a cohort-based conditional-approval-expiration section. Remove that section for DJ/NLCEO. Route live letter-generation or status issues through the current greenlight process.",
-      "forbidden_claims": ["keep the main ISTV conditional section", "main ISTV cohort deadline applies"],
+      "forbidden_claims": [
+        "keep the main ISTV conditional section",
+        "main ISTV cohort deadline applies"
+      ],
       "route_required": false,
       "fallback_mode": "approved_answer",
       "safe_fallback": "For a DJ/NLCEO greenlight letter, remove the cohort-based conditional-approval-expiration section. DJ/NLCEO does not use a cohort rule.",

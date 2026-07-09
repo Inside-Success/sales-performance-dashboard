@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   BookText,
@@ -175,6 +175,9 @@ export function AskSalesFaqChat() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [browseOpen, setBrowseOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [conversationNextCursor, setConversationNextCursor] = useState<string | null>(null);
+  const [conversationHistoryLoading, setConversationHistoryLoading] = useState(false);
+  const [conversationHistoryError, setConversationHistoryError] = useState<string | null>(null);
   const [feedbackByMessageId, setFeedbackByMessageId] = useState<Record<string, FeedbackState>>({});
   const [error, setError] = useState<string | null>(null);
   const [conversationMenuId, setConversationMenuId] = useState<string | null>(null);
@@ -190,29 +193,15 @@ export function AskSalesFaqChat() {
   const isLoadingRef = useRef(false);
   const queuedQuestionsRef = useRef<QueuedQuestion[]>([]);
   const queuePausedRef = useRef(false);
+  const conversationLoadSequenceRef = useRef(0);
 
-  const topicGroups = useMemo(buildTopicGroups, []);
+  const topicGroups = useMemo(() => buildTopicGroups(), []);
   const isComposerEmpty = !input.trim();
-  const visibleConversations = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return conversations;
-    return conversations.filter((conversation) => {
-      const title = titleForConversation(conversation).toLowerCase();
-      return (
-        title.includes(query) ||
-        conversation.messages.some((message) => message.content.toLowerCase().includes(query))
-      );
-    });
-  }, [conversations, searchQuery]);
 
   const activeConversation = useMemo(
     () => conversations.find((conversation) => conversation.id === activeConversationId) || null,
     [activeConversationId, conversations],
   );
-
-  useEffect(() => {
-    void loadConversations();
-  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ block: "end" });
@@ -284,20 +273,55 @@ export function AskSalesFaqChat() {
     return true;
   }
 
-  async function loadConversations() {
+  const loadConversations = useCallback(async function loadConversations(
+    options: { query?: string; cursor?: string | null; append?: boolean } = {},
+  ) {
+    const sequence = conversationLoadSequenceRef.current + 1;
+    conversationLoadSequenceRef.current = sequence;
+    const query = (options.query ?? searchQuery).replace(/\s+/g, " ").trim();
+    const parameters = new URLSearchParams();
+    if (query) parameters.set("q", query);
+    if (options.cursor) parameters.set("cursor", options.cursor);
+    setConversationHistoryLoading(true);
+    setConversationHistoryError(null);
     try {
-      const response = await fetch("/api/ask-sales-faq/conversations", { cache: "no-store" });
+      const response = await fetch(
+        `/api/ask-sales-faq/conversations${parameters.size ? `?${parameters.toString()}` : ""}`,
+        { cache: "no-store" },
+      );
       const data = (await response.json()) as {
         ok?: boolean;
         conversations?: AskSalesFaqConversationSummary[];
+        nextCursor?: string | null;
+        error?: string;
       };
-      if (response.ok && data.ok) {
-        setConversations(data.conversations || []);
-      }
+      if (!response.ok || !data.ok) throw new Error(data.error || "Chat history could not be loaded.");
+      if (sequence !== conversationLoadSequenceRef.current) return;
+      const nextConversations = data.conversations || [];
+      setConversations((current) =>
+        options.append
+          ? Array.from(
+              new Map([...current, ...nextConversations].map((conversation) => [conversation.id, conversation])).values(),
+            )
+          : nextConversations,
+      );
+      setConversationNextCursor(data.nextCursor || null);
     } catch {
-      setConversations([]);
+      if (sequence !== conversationLoadSequenceRef.current) return;
+      if (!options.append) setConversations([]);
+      setConversationHistoryError("Chat history could not be loaded. Try again.");
+    } finally {
+      if (sequence === conversationLoadSequenceRef.current) setConversationHistoryLoading(false);
     }
-  }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () => void loadConversations({ query: searchQuery, append: false }),
+      searchQuery.trim() ? 250 : 0,
+    );
+    return () => window.clearTimeout(timer);
+  }, [loadConversations, searchQuery]);
 
   function startNewConversation() {
     if (blockConversationChangeWhileBusy()) return;
@@ -477,7 +501,7 @@ export function AskSalesFaqChat() {
 
   async function sendQuestion(question: string) {
     const userMessage: ChatMessage = {
-      id: `local-user-${Date.now()}`,
+      id: `local-user-${createClientRequestId()}`,
       role: "user",
       content: question,
     };
@@ -512,7 +536,7 @@ export function AskSalesFaqChat() {
       syncMessages([
         ...messagesRef.current,
         {
-          id: data.messageId || `local-assistant-${Date.now()}`,
+          id: data.messageId,
           role: "assistant",
           content: data.answer || "",
           structuredAnswer: data.structuredAnswer || null,
@@ -536,7 +560,7 @@ export function AskSalesFaqChat() {
       syncMessages([
         ...messagesRef.current,
         {
-          id: `local-safe-${Date.now()}`,
+          id: `local-safe-${createClientRequestId()}`,
           role: "assistant",
           content:
             "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.",
@@ -650,7 +674,7 @@ export function AskSalesFaqChat() {
       data-screen-label="Ask Sales FAQ"
     >
       <FaqSidebar
-        conversations={visibleConversations}
+        conversations={conversations}
         activeConversationId={activeConversationId}
         searchQuery={searchQuery}
         drawerOpen={drawerOpen}
@@ -664,6 +688,12 @@ export function AskSalesFaqChat() {
         }
         onRenameConversation={beginRenameConversation}
         onDeleteConversation={beginDeleteConversation}
+        hasMoreConversations={Boolean(conversationNextCursor)}
+        conversationHistoryLoading={conversationHistoryLoading}
+        conversationHistoryError={conversationHistoryError}
+        onLoadMoreConversations={() =>
+          void loadConversations({ cursor: conversationNextCursor, append: true })
+        }
         onBrowse={() => {
           setBrowseOpen(true);
           setDrawerOpen(false);
@@ -1053,6 +1083,10 @@ function FaqSidebar({
   onToggleConversationMenu,
   onRenameConversation,
   onDeleteConversation,
+  hasMoreConversations,
+  conversationHistoryLoading,
+  conversationHistoryError,
+  onLoadMoreConversations,
   onBrowse,
   onCloseDrawer,
   onCollapse,
@@ -1069,6 +1103,10 @@ function FaqSidebar({
   onToggleConversationMenu: (conversationId: string) => void;
   onRenameConversation: (conversation: AskSalesFaqConversationSummary) => void;
   onDeleteConversation: (conversation: AskSalesFaqConversationSummary) => void;
+  hasMoreConversations: boolean;
+  conversationHistoryLoading: boolean;
+  conversationHistoryError: string | null;
+  onLoadMoreConversations: () => void;
   onBrowse: () => void;
   onCloseDrawer: () => void;
   onCollapse: () => void;
@@ -1223,12 +1261,35 @@ function FaqSidebar({
                 ) : null}
               </div>
             ))}
+            {hasMoreConversations ? (
+              <div className="px-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-9 w-full rounded-xl border-slate-200 bg-white text-[12.5px] font-bold text-slate-600 hover:bg-slate-50"
+                  onClick={onLoadMoreConversations}
+                  disabled={conversationHistoryLoading}
+                >
+                  {conversationHistoryLoading ? <Loader2 className="size-3.5 animate-spin" /> : <ChevronDown className="size-3.5" />}
+                  {searchQuery.trim() ? "Load more results" : "Load older chats"}
+                </Button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <p className="px-5 py-6 text-[13px] font-medium leading-relaxed text-slate-400">
-            {searchQuery.trim() ? "No chats match your search." : "No saved chats yet."}
+            {conversationHistoryLoading
+              ? "Loading chats…"
+              : searchQuery.trim()
+                ? "No chats match your search."
+                : "No saved chats yet."}
           </p>
         )}
+        {conversationHistoryError ? (
+          <p className="mx-4 mt-2 rounded-xl bg-amber-50 px-3 py-2 text-[11.5px] font-semibold leading-4 text-amber-800">
+            {conversationHistoryError}
+          </p>
+        ) : null}
       </div>
 
       <div className="shrink-0 border-t border-slate-200/80 bg-[#FBFAFB] px-3 pb-4 pt-3">

@@ -21,6 +21,8 @@ export type ApprovedPolicyUnit = {
   match_any: string[];
   approved_text: string;
   forbidden_claims: string[];
+  required_all?: string[];
+  required_any_groups?: string[][];
   route_required: boolean;
   fallback_mode: ApprovedPolicyUnitFallbackMode;
   safe_fallback: string;
@@ -65,7 +67,9 @@ type PolicyIntent =
   | "lead_ownership"
   | "upgrade"
   | "upgrade_discount"
-  | "greenlight_letter";
+  | "greenlight_letter"
+  | "qualification"
+  | "production_language";
 
 const PRODUCT_SENSITIVE_INTENTS = new Set<PolicyIntent>([
   "pricing",
@@ -87,7 +91,11 @@ const SPECIFIC_INTENTS = new Set<PolicyIntent>([
   "upgrade",
   "upgrade_discount",
   "discount",
+  "qualification",
+  "production_language",
 ]);
+
+const CLAIM_TARGETED_INTENTS = new Set<PolicyIntent>(["qualification", "production_language"]);
 
 const CRITICAL_RULE_ARTICLE_IDS: Record<string, string> = {
   "dj-nlceo-no-cohort-deposit-boundary": "main-istv-call-2-cohort-reschedule-rules",
@@ -109,7 +117,7 @@ export function buildAnswerPlan(input: BuildAnswerPlanInput): AskSalesAnswerPlan
   const selectedPolicyUnits = validPolicyUnits(input.policyUnits).filter((unit) => {
     if (!unitMatchesApprovedArticle(unit, input.approvedArticleId)) return false;
     if (!unitIsProductCompatible(unit, input.questionFrame)) return false;
-    return unitMatchesFocusedIntent(unit, focusedIntents, clarificationRequired);
+    return unitMatchesFocusedIntent(unit, focusedIntents, clarificationRequired, question);
   });
 
   const allowedArticleIds = uniqueSorted(
@@ -183,6 +191,7 @@ function unitMatchesFocusedIntent(
   unit: ApprovedPolicyUnit,
   focusedIntents: ReadonlySet<PolicyIntent>,
   clarificationRequired: boolean,
+  question: string,
 ) {
   if (unit.scope_behavior === "clarify_if_unknown") {
     return clarificationRequired;
@@ -190,10 +199,28 @@ function unitMatchesFocusedIntent(
 
   const unitSpecificIntents = unit.intents.filter((intent) => SPECIFIC_INTENTS.has(intent as PolicyIntent));
   if (unitSpecificIntents.length) {
-    return unitSpecificIntents.some((intent) => focusedIntents.has(intent as PolicyIntent));
+    const matchesIntent = unitSpecificIntents.some((intent) => focusedIntents.has(intent as PolicyIntent));
+    if (!matchesIntent) return false;
+    if (unitSpecificIntents.some((intent) => CLAIM_TARGETED_INTENTS.has(intent as PolicyIntent))) {
+      const claimTargetText = normalizeClaimTargetText(question);
+      return unit.match_any.some((phrase) => phrasePresentInPlanText(phrase, claimTargetText));
+    }
+    return true;
   }
 
   return unit.intents.some((intent) => focusedIntents.has(intent as PolicyIntent));
+}
+
+function normalizeClaimTargetText(question: string) {
+  // A show name identifies the destination, not necessarily the prospect's role.
+  // Likewise, the role after "qualify as" is the category being tested, not
+  // the applicant's role. Removing both prevents a nurse or physical therapist
+  // question from also selecting a generic doctor fact.
+  return question
+    .replace(/\bamerica(?:'s|s)?\s+best\s+doctors?\b/g, " ")
+    .replace(/\bqualif(?:y|ies|ied)\s+as\b.*$/g, " qualify ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function detectPolicyIntents(question: string) {
@@ -229,6 +256,20 @@ function detectPolicyIntents(question: string) {
     intents.add("payment_plan");
   }
   if (/\b(?:price|pricing|cost|how much|package prices?|package options?)\b/.test(question)) intents.add("pricing");
+  if (
+    /\b(?:doctor|physician|nurse|nursing|physical therapist|physiotherapist|physio|medical practice|practice ownership|qualif(?:y|ied|ication)|eligible)\b/.test(
+      question,
+    )
+  ) {
+    intents.add("qualification");
+  }
+  if (
+    /\b(?:spanish|non english|another language|other language|translation|translate|translated|bilingual|english speaking partner|language support)\b/.test(
+      question,
+    )
+  ) {
+    intents.add("production_language");
+  }
 
   return intents;
 }
@@ -254,6 +295,8 @@ function focusPolicyIntents(detected: ReadonlySet<PolicyIntent>) {
   if (detected.has("upgrade_discount")) return new Set<PolicyIntent>(["upgrade_discount"]);
   if (detected.has("upgrade")) return new Set<PolicyIntent>(["upgrade"]);
   if (detected.has("discount")) return new Set<PolicyIntent>(["discount"]);
+  if (detected.has("production_language")) return new Set<PolicyIntent>(["production_language"]);
+  if (detected.has("qualification")) return new Set<PolicyIntent>(["qualification"]);
 
   const timing = Array.from(detected).filter((intent) => TIMING_INTENTS.has(intent));
   if (timing.length) return new Set<PolicyIntent>(timing);
@@ -313,6 +356,13 @@ function normalizePlanText(value: string) {
     .replace(/[-_]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function phrasePresentInPlanText(phrase: string, question: string) {
+  const normalizedPhrase = normalizePlanText(phrase);
+  if (!normalizedPhrase) return false;
+  const escaped = normalizedPhrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  return new RegExp(`(?:^|\\b)${escaped}(?:\\b|$)`).test(question);
 }
 
 function uniqueSorted(values: string[]) {

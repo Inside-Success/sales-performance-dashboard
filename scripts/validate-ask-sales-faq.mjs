@@ -13,6 +13,7 @@ const requiredFiles = [
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
+  "src/lib/ask-sales-faq/conversation-history.ts",
   "src/lib/ask-sales-faq/question-frame.ts",
   "src/lib/ask-sales-faq/answer-plan.ts",
   "src/lib/ask-sales-faq/runtime.ts",
@@ -49,6 +50,7 @@ if (missingFiles.length === 0) {
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
+  const conversationHistory = read("src/lib/ask-sales-faq/conversation-history.ts");
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
@@ -213,11 +215,12 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "bundle has nineteen approved rep-facing articles",
-    (bundle.match(/"?approvedAt"?\s*:\s*"/g) || []).length === 19 &&
+    "bundle has twenty approved rep-facing articles",
+    (bundle.match(/"?approvedAt"?\s*:\s*"/g) || []).length === 20 &&
       bundle.includes('"call-1-flow"') &&
       bundle.includes('"opt-out-dnc-and-security-escalation"') &&
       bundle.includes('"qualification-and-show-fit-rubric"') &&
+      bundle.includes('"production-language-and-translation-boundary"') &&
       bundle.includes('"main-istv-call-2-cohort-reschedule-rules"') &&
       bundle.includes('"greenlight-pdf-and-cohort-deadlines"') &&
       bundle.includes('"sales-tech-routing-and-support-requests"') &&
@@ -225,7 +228,16 @@ if (missingFiles.length === 0) {
       bundle.includes("#sales-finance-requests") &&
       bundle.includes("#sales-tech-requests") &&
       bundle.includes("#greenlight-requests"),
-    "bundle contains the original approved articles plus the Rich/Mike-approved July 7 and Rich/user-confirmed July 8 gap closures",
+    "bundle contains the prior approved baseline plus the resolved doctor and English-only production policies",
+  );
+
+  addCheck(
+    "resolved policy authority cannot be shadowed by an abstention",
+    !bundle.includes("abstain-hospital-employed-doctor-owner-conflict") &&
+      bundle.includes("answer-production-language-boundary") &&
+      bundle.includes("A doctor can qualify even if they work in a hospital") &&
+      bundle.includes("currently produces and films its shows in English"),
+    "resolved doctor and language claims route to their approved articles instead of a higher-priority generic abstention",
   );
 
   addCheck(
@@ -336,6 +348,20 @@ if (missingFiles.length === 0) {
       chatUi.includes("[data-conversation-menu-root]") &&
       chatUi.includes("document.addEventListener(\"keydown\", closeConversationMenuWithKeyboard)"),
     "recent-chat action menu has click-away and escape-key closing behavior",
+  );
+
+  addCheck(
+    "conversation history is paginated and searched across all saved chats",
+    historyRoute.includes("decodeAskSalesFaqConversationCursor") &&
+      historyRoute.includes('url.searchParams.get("q")') &&
+      historyRoute.includes("nextCursor") &&
+      conversationHistory.includes("encodeAskSalesFaqConversationCursor") &&
+      db.includes("order by c.updated_at desc, c.id desc") &&
+      db.includes("position(") &&
+      chatUi.includes("Load older chats") &&
+      chatUi.includes("Load more results") &&
+      chatUi.includes("conversationNextCursor"),
+    "the sidebar can page through every saved conversation and server-side search is not limited to the first page",
   );
 
   addCheck(
@@ -497,7 +523,7 @@ if (missingFiles.length === 0) {
       runtime.includes("mode approved_article") &&
       runtime.includes("mode unsupported") &&
       runtime.includes("Do not add new policy, prices, discounts, owners, links, exceptions, or process steps") &&
-      runtime.includes("For shorten/rephrase requests, use the most recent substantive assistant sales answer") &&
+      runtime.includes("For format/shorten/rephrase requests, use the most recent substantive assistant sales answer") &&
       runtime.includes("Never use conversation_reply for new sales-policy/action questions") &&
       runtime.includes("shouldAcceptConversationPlannerReply") &&
       runtime.includes("buildConversationReplyDecision") &&
@@ -517,7 +543,7 @@ if (missingFiles.length === 0) {
       runtime.includes("conversationPlannerAttempted = true") &&
       runtime.includes("policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame)") &&
       runtime.includes("!conversationPlannerAttempted") &&
-      runtime.includes("isShortAnswerRewriteRequest") &&
+      runtime.includes("classifyRewriteIntent(question)") &&
       runtime.includes("isSocialConversationTurn") &&
       runtime.includes("isConcisePromiseConfirmation(question)") &&
       runtime.includes("return false;") &&
@@ -825,6 +851,9 @@ if (missingFiles.length === 0) {
       runtime.includes("splitCommaListSection") &&
       runtime.includes("splitDenseOptionSection") &&
       runtime.includes("extractDenseOptionList") &&
+      runtime.includes("buildDeterministicPresentationReply") &&
+      runtime.includes("shapeApprovedArticlePresentation") &&
+      questionFrame.includes("classifyRewriteIntent") &&
       runtime.includes("When the answer contains a list of shows, payment plans, packages, or steps") &&
       runtime.includes("Use What you can do for action instructions") &&
       runtime.includes("Payment options") &&
@@ -892,7 +921,7 @@ if (missingFiles.length === 0) {
     "access gate checks flag and allowlist",
   );
 
-  const scanned = [page, adminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, runtime, access, bundle, db, envExample];
+  const scanned = [page, adminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, conversationHistory, runtime, access, bundle, db, envExample];
   const secretHit = scanned.some((content) => secretPatterns.some((pattern) => pattern.test(content)));
   addCheck("no committed api-key-like secrets", !secretHit, secretHit ? "secret-like value found" : "no secret-like value found");
 }
