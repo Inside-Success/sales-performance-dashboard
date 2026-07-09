@@ -153,6 +153,32 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).not.toContain("without leadership approval");
   });
 
+  it("removes first-person handoff promises from route answers", async () => {
+    const cleanAnswer =
+      "Do not share or send the recording. Do not delete or vault it yourself. Acknowledge the request and route it to the source owner or compliance process.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(modelOutput("I'll make sure it gets to the people who can delete it.")),
+      ],
+      "rep-facing wording repair": [
+        outputStep(
+          modelOutput(cleanAnswer, {
+            needsRoute: true,
+            routeReason: "Route recording deletion requests to the source owner or compliance process.",
+            selectedSourceIds: ["approved:internal-material-sharing-boundaries"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      "The applicant wants her audition recording deleted or vaulted because we cannot send it. What is the process?",
+    );
+
+    expect(result.answer).toBe(cleanAnswer);
+    expect(result.answer).not.toMatch(/I'll make sure|I'll connect/i);
+  });
+
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the payment/deadline exception to Rich or the current owner before promising anything.";

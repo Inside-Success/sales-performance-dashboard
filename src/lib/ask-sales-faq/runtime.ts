@@ -309,6 +309,7 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\binternal guidance\b/i,
   /\binternal discussions?\b/i,
   /\bthe evidence\b/i,
+  /\bapproved evidence\b/i,
   /\bSlack(?:[- ]level|[- ]sourced)? (?:evidence|notes|guidance|discussion|source)/i,
   /\bcurated (?:Slack|source) evidence\b/i,
   /\b(?:Evidence|Source)\s+\d+\b/i,
@@ -329,6 +330,8 @@ const UNAPPROVED_HANDOFF_PATTERNS = [
   /\bspecialist for (?:this|the) program\b/i,
   /\b(?:someone|a specialist|our specialist) (?:will|can) (?:reach out|contact|call|follow up)\b/i,
   /\btransfer (?:you|them|him|her|the client|the prospect) to (?:our|a|the) specialist\b/i,
+  /\b(?:i will|i['’]ll) (?:connect with|make sure|ensure|send this|pass this|forward this|get this to)\b/i,
+  /\bwe['’]ll get (?:this|that|it) reviewed\b/i,
 ];
 
 type CriticalAnswerRule = {
@@ -2047,6 +2050,7 @@ function buildPolicyPlanFallback(answerPlan: AskSalesAnswerPlan, policyDecision:
       : "",
     confidence_label: "High",
     confidence_score: 96,
+    display: { plainSummaryOnly: true },
   };
 }
 
@@ -3098,7 +3102,7 @@ function validateCriticalAnswer(input: {
   for (const rule of matchedRules) {
     const forbiddenErrors: string[] = [];
     for (const phrase of rule.forbiddenAny || []) {
-      if (phrasePresent(phrase, answerText)) {
+      if (forbiddenPhrasePresent(phrase, answerText)) {
         forbiddenErrors.push(`${rule.id}: answer must not include ${phrase}`);
       }
     }
@@ -3135,13 +3139,36 @@ function validatePolicyUnitClaims(answerPlan: AskSalesAnswerPlan | undefined, ou
 
   for (const unit of answerPlan.selectedPolicyUnits) {
     for (const forbiddenClaim of unit.forbidden_claims) {
-      if (phrasePresent(forbiddenClaim, answerText)) {
+      if (forbiddenPhrasePresent(forbiddenClaim, answerText)) {
         errors.push(`${unit.id}: answer includes forbidden claim ${forbiddenClaim}`);
       }
     }
   }
 
   return errors;
+}
+
+function forbiddenPhrasePresent(phrase: string, answerText: string) {
+  const normalizedPhrase = normalizeText(phrase);
+  const normalizedAnswer = normalizeText(answerText);
+  if (!normalizedPhrase || !normalizedAnswer.includes(normalizedPhrase)) return false;
+  if (/^(?:no|not|never|cannot|can't|do not|don't|must not|should not)\b/.test(normalizedPhrase)) return true;
+
+  let searchFrom = 0;
+  while (searchFrom < normalizedAnswer.length) {
+    const index = normalizedAnswer.indexOf(normalizedPhrase, searchFrom);
+    if (index < 0) return false;
+    const prefix = normalizedAnswer.slice(Math.max(0, index - 72), index);
+    const currentClause = prefix.split(/[.!?;:]/).at(-1) || "";
+    const isNegated =
+      /\b(?:no|not|never|cannot|can't|do not|don't|must not|should not)\b(?:\s+[a-z0-9'/-]+){0,4}\s*$/.test(
+        currentClause,
+      );
+    if (!isNegated) return true;
+    searchFrom = index + normalizedPhrase.length;
+  }
+
+  return false;
 }
 
 function validateQuestionFrameScope(questionFrame: QuestionFrame | undefined, output: ModelOutput) {
