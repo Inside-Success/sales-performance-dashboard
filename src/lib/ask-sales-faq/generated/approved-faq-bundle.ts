@@ -15,6 +15,7 @@ export type AskSalesFaqRule = {
   decision: "answer_from_approved_article" | "route_from_approved_article" | "abstain_unapproved" | "admin_only";
   article_id?: string;
   blocked_topic?: string;
+  product_scope?: "main_istv" | "dj_nlceo";
   reason: string;
   match_any?: string[];
   match_all?: string[];
@@ -286,6 +287,77 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
   ],
   "abstainRules": [
     {
+      "id": "abstain-hospital-employed-doctor-owner-conflict",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "qualification-hospital-employed-doctor-conflict",
+      "reason": "Current guidance conflicts on whether a hospital-employed doctor without an owned practice qualifies. Confirm with the current qualification owner before promising fit.",
+      "match_any_groups": [
+        [
+          "doctor",
+          "physician"
+        ],
+        [
+          "hospital employed",
+          "hospital-employed",
+          "works at a hospital",
+          "does not own a practice",
+          "doesn't own a practice",
+          "no private practice",
+          "without their own practice"
+        ]
+      ]
+    },
+    {
+      "id": "abstain-bankruptcy-qualification",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "qualification-bankruptcy-unconfirmed",
+      "reason": "No current approved qualification rule makes a past bankruptcy an automatic approval or disqualification.",
+      "match_any": [
+        "bankruptcy",
+        "bankrupt"
+      ]
+    },
+    {
+      "id": "abstain-dual-product-opportunity-ownership",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "dual-product-opportunity-ownership-unconfirmed",
+      "reason": "Ownership and passoff rules for one prospect considering both main ISTV and DJ/NLCEO are not confirmed in a current approved article.",
+      "match_any_groups": [
+        [
+          "main istv",
+          "inside success"
+        ],
+        [
+          "dj",
+          "daymond john",
+          "next level ceo",
+          "nlceo"
+        ],
+        [
+          "which rep",
+          "keep the opportunity",
+          "owns the opportunity",
+          "opportunity ownership",
+          "passoff",
+          "pass off",
+          "handoff",
+          "hand off"
+        ]
+      ]
+    },
+    {
+      "id": "abstain-accessibility-accommodation",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "accessibility-accommodation-unconfirmed",
+      "reason": "Current audio-description and accessibility accommodation options are not confirmed for rep-facing promises.",
+      "match_any": [
+        "audio description",
+        "audio descriptions",
+        "accessibility accommodation",
+        "accessibility accommodations"
+      ]
+    },
+    {
       "id": "abstain-new-rep-onboarding",
       "decision": "abstain_unapproved",
       "blocked_topic": "new-rep-onboarding-and-final-mock",
@@ -379,6 +451,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-main-istv-proof-exception",
       "decision": "route_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
       "reason": "Main ISTV genuine-reason or proof exceptions require Rich approval.",
       "match_any_groups": [
@@ -402,6 +475,24 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "cohort",
           "exception"
         ]
+      ]
+    },
+    {
+      "id": "route-sales-tech-record-assignment-or-contract-automation",
+      "decision": "route_from_approved_article",
+      "article_id": "sales-tech-routing-and-support-requests",
+      "reason": "Use #sales-tech-requests for sales-system record assignment or automatic contract-generation issues.",
+      "match_any": [
+        "no casting manager assigned",
+        "missing casting manager",
+        "casting manager not assigned",
+        "contract was not generated",
+        "contract wasn't generated",
+        "contract not generated",
+        "contract email missing",
+        "contract was not emailed",
+        "automatic contract missing",
+        "auto-generated contract missing"
       ]
     },
     {
@@ -702,6 +793,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-dj-nlceo-cohort-scope",
       "decision": "route_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
       "reason": "Daymond John / Next Level CEO has no cohort rule and no same-day discount; route DJ/NLCEO edge cases to the current DJ/NLCEO channel or sales owner.",
       "match_any_groups": [
@@ -727,6 +819,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "route-dj-nlceo-payment-timing-exception",
       "decision": "route_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Daymond John / Next Level CEO first-payment timing exceptions need current owner confirmation before reps promise a future payment date or hold.",
       "match_any_groups": [
@@ -807,6 +900,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-reapply-minimum",
       "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
       "reason": "Rich confirmed the main ISTV reapply minimum after no-show, missed deadline, rejection, or not-fit outcome.",
       "match_any": [
@@ -993,6 +1087,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-main-istv-call-2-cohort",
       "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
       "article_id": "main-istv-call-2-cohort-reschedule-rules",
       "reason": "Approved main ISTV cohort article covers same-week Call 2 reschedules, next-week approval, and proof exceptions.",
       "match_any_groups": [
@@ -1224,23 +1319,52 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       "decision": "answer_from_approved_article",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Approved pricing article covers ISTV, NLCEO, and same-day discount boundaries.",
+      "match_any_groups": [
+        [
+          "lite istv",
+          "standard istv",
+          "premium istv",
+          "vip or premium istv",
+          "istv",
+          "main istv",
+          "inside success",
+          "next level ceo",
+          "daymond john",
+          "dj",
+          "nlceo",
+          "package",
+          "lite",
+          "standard",
+          "premium",
+          "vip"
+        ],
+        [
+          "price",
+          "prices",
+          "pricing",
+          "cost",
+          "included",
+          "include",
+          "payment",
+          "plan",
+          "options",
+          "same day",
+          "discount",
+          "offer",
+          "difference"
+        ]
+      ]
+    },
+    {
+      "id": "answer-main-istv-upgrade-boundary",
+      "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
+      "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Main ISTV upgrade eligibility and any established discount carry-forward come from the approved pricing article.",
       "match_any": [
-        "lite istv",
-        "standard istv",
-        "premium istv",
-        "vip or premium istv",
-        "current istv prices",
-        "istv prices",
-        "istv pricing",
-        "current packages and prices",
-        "package prices",
-        "payment plans",
-        "price and payment plans",
-        "next level ceo",
-        "daymond john",
-        "dj",
-        "same day discount",
         "upgrade",
+        "upgraded",
+        "upgrading",
         "before filming",
         "after filming"
       ]
@@ -1353,6 +1477,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-legacy-makers-dj-passoff",
       "decision": "answer_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "current-show-source",
       "reason": "Madeline-confirmed guidance covers Legacy Makers info requests and the DJ-side passoff boundary.",
       "match_any_groups": [
@@ -1437,6 +1562,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
     {
       "id": "answer-dj-nlceo-book-out-timing",
       "decision": "answer_from_approved_article",
+      "product_scope": "dj_nlceo",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Madeline-confirmed guidance says DJ/NLCEO applicants are not under the main ISTV cohort rule and can book Call 2 out a few weeks if needed.",
       "match_any_groups": [
@@ -1448,8 +1574,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         ],
         [
           "book out a few weeks",
-          "funds unavail",
           "funds unavailable",
+          "funds are unavailable",
           "aug 15",
           "august 15",
           "need until august",

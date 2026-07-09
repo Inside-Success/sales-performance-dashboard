@@ -13,9 +13,12 @@ const requiredFiles = [
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
+  "src/lib/ask-sales-faq/question-frame.ts",
+  "src/lib/ask-sales-faq/answer-plan.ts",
   "src/lib/ask-sales-faq/runtime.ts",
   "src/lib/ask-sales-faq/types.ts",
   "src/lib/ask-sales-faq/generated/approved-faq-bundle.ts",
+  "src/lib/ask-sales-faq/generated/approved-policy-units.json",
   "src/lib/ask-sales-faq/generated/policy-aware-rag-index.json",
 ];
 
@@ -49,10 +52,13 @@ if (missingFiles.length === 0) {
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
+  const questionFrame = read("src/lib/ask-sales-faq/question-frame.ts");
+  const answerPlan = read("src/lib/ask-sales-faq/answer-plan.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
   const types = read("src/lib/ask-sales-faq/types.ts");
   const bundle = read("src/lib/ask-sales-faq/generated/approved-faq-bundle.ts");
   const ragIndex = JSON.parse(read("src/lib/ask-sales-faq/generated/policy-aware-rag-index.json"));
+  const policyUnits = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-policy-units.json"));
   const db = read("src/lib/db.ts");
   const envExample = read(".env.example");
 
@@ -99,6 +105,60 @@ if (missingFiles.length === 0) {
       runtime.includes("buildPolicyBlockedDecision") &&
       runtime.includes("policy-aware-rag-index.json"),
     "runtime imports approved bundle, policy rules, and server-side RAG index",
+  );
+
+  addCheck(
+    "runtime resolves a structured question frame before policy routing",
+    runtime.includes("buildQuestionFrame") &&
+      runtime.includes("const routingQuestion = questionFrame.effectiveQuestion") &&
+      runtime.includes("matchPolicyGuard(routingQuestion, questionFrame)") &&
+      questionFrame.includes("excludedScopes") &&
+      questionFrame.includes("rehydratedFromUserQuestion") &&
+      questionFrame.includes('scope: scopeFromSignals(resolvedSignals)'),
+    "product scope, explicit exclusions, and user-only follow-up rehydration are resolved before routing",
+  );
+
+  addCheck(
+    "runtime uses approved atomic answer plans",
+    runtime.includes("buildAnswerPlan") &&
+      runtime.includes("selectedPolicyUnits") &&
+      runtime.includes("buildPolicyPlanFallback") &&
+      answerPlan.includes("unitIsProductCompatible") &&
+      answerPlan.includes("clarificationRequired") &&
+      Array.isArray(policyUnits.units) &&
+      policyUnits.units.length >= 9 &&
+      policyUnits.units.every(
+        (unit) => unit.id && unit.approved_text && unit.safe_fallback && Array.isArray(unit.source_article_ids),
+      ),
+    `runtime has ${policyUnits.units.length} scoped approved policy units and a fail-closed answer planner`,
+  );
+
+  addCheck(
+    "product-specific direct rules carry canonical scope metadata",
+    bundle.includes('"product_scope": "main_istv"') &&
+      bundle.includes('"product_scope": "dj_nlceo"') &&
+      runtime.includes("policyRuleCompatibleWithFrame") &&
+      runtime.includes("questionFrame.excludedScopes.includes(ruleScope)"),
+    "explicit scope and exclusions veto incompatible deterministic route rules",
+  );
+
+  addCheck(
+    "raw discovery evidence is excluded from answer prompts",
+    runtime.includes("Raw Slack, transcript, governance, draft, and conflict chunks are discovery") &&
+      runtime.includes('return candidates.filter((candidate) => candidate.kind === "approved_article").slice(0, 1)') &&
+      runtime.includes("formatApprovedPolicyUnits") &&
+      runtime.includes("Raw Slack messages, transcripts, drafts, conflicts, and governance notes are never included"),
+    "only approved policy units or the controlling approved article can be shown to the answer model",
+  );
+
+  addCheck(
+    "all article fallbacks are scope-validated before return",
+    runtime.includes("buildAndValidateApprovedFallback") &&
+      runtime.includes("validateQuestionFrameScope") &&
+      runtime.includes("validatePolicyUnitClaims") &&
+      runtime.includes("approved fallback failed validation") &&
+      !runtime.includes("const fallbackOutput = buildApprovedArticleFallbackOutput({\n      currentQuestion: sanitizedQuestion"),
+    "outer provider failures cannot bypass critical, product-scope, exclusion, or hidden-term validation",
   );
 
   addCheck(
@@ -301,31 +361,34 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "pricing starter prompt has approved guard coverage",
-    bundle.includes("current istv prices") &&
-      bundle.includes("price and payment plans") &&
-      bundle.includes("payment plans"),
-    "common pricing/payment-plan phrasing routes to approved pricing article",
+    bundle.includes('"id": "answer-pricing-and-same-day-discount"') &&
+      bundle.includes('"match_any_groups"') &&
+      bundle.includes('"prices"') &&
+      bundle.includes('"payment"') &&
+      bundle.includes('"id": "answer-main-istv-upgrade-boundary"'),
+    "pricing requires product/package plus pricing intent, while main ISTV upgrades use a separate scoped rule",
   );
 
   addCheck(
-    "runtime uses AI semantic evidence selection over broad evidence",
-    runtime.includes("Internally select the evidence by meaning, not by mechanical keyword overlap") &&
+    "runtime uses AI wording over approved scoped evidence",
+    runtime.includes("A policy guard and answer planner have already selected the approved sales guidance") &&
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
       runtime.includes("buildEvidenceCandidates") &&
-      runtime.includes("A policy guard or approved-article router has already selected the approved sales guidance that controls this answer.") &&
-      runtime.includes("Use any supporting evidence only for consistent context or wording"),
-    "runtime asks the model to answer only after the policy guard or approved-article router selects the controlling sales guidance",
+      runtime.includes("Treat the approved policy units or approved article in the evidence packet as the complete authority") &&
+      runtime.includes("Never mention or apply a product listed as excluded"),
+    "runtime uses the model for natural wording only after deterministic scope and approved-fact planning",
   );
 
   addCheck(
-    "approved-topic RAG is scoped to the matched article",
+    "approved-topic retrieval stays observable but out of model authority",
     runtime.includes("buildPolicyScopedEvidenceCandidates") &&
       runtime.includes("scopedSupportChunkMatchesArticle") &&
       runtime.includes("SCOPED_EVIDENCE_WEAK_TOKENS") &&
       runtime.includes('chunk.source_type !== "approved_article"') &&
-      runtime.includes("strongArticleTokenMatches.length >= 3"),
-    "approved answers can include tightly scoped support, but broad unmatched retrieval stays blocked",
+      runtime.includes("strongArticleTokenMatches.length >= 3") &&
+      runtime.includes("modelIncluded"),
+    "discovery candidates remain logged for diagnosis while model authority stays approved-only",
   );
 
   addCheck(
@@ -418,12 +481,12 @@ if (missingFiles.length === 0) {
     "follow-up questions use filtered recent chat context",
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&
-      runtime.includes("const routingConversationContext = shouldUseConversationContextForRouting") &&
-      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext)") &&
+      runtime.includes('questionFrame.relation === "context_follow_up"') &&
+      runtime.includes("policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame)") &&
       runtime.includes("conversationContext: routingConversationContext") &&
-      runtime.includes("isContextDependentFollowUpQuestion") &&
+      runtime.includes("rehydratedFromUserQuestion") &&
       runtime.includes("The current user question is authoritative."),
-    "runtime filters recent context before AI routing and keeps direct policy matching current-question-first",
+    "runtime rehydrates true follow-ups from user turns while keeping the current product correction authoritative",
   );
 
   addCheck(
@@ -447,11 +510,12 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "short conversational follow-ups plan before broad routing",
-    runtime.includes("let policyDecision = matchPolicyGuard(sanitizedQuestion)") &&
+    runtime.includes("let policyDecision = matchPolicyGuard(routingQuestion, questionFrame)") &&
       runtime.includes("let conversationPlannerAttempted = false") &&
+      runtime.includes("!questionFrame.isScopeCorrection") &&
       runtime.includes("shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)") &&
       runtime.includes("conversationPlannerAttempted = true") &&
-      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext)") &&
+      runtime.includes("policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame)") &&
       runtime.includes("!conversationPlannerAttempted") &&
       runtime.includes("isShortAnswerRewriteRequest") &&
       runtime.includes("isSocialConversationTurn") &&
@@ -501,7 +565,7 @@ if (missingFiles.length === 0) {
     runtime.includes("ensureArticleRouterGrounding") &&
       runtime.includes("approved article answer validation") &&
       runtime.includes("Fail if the draft invents a policy") &&
-      runtime.includes("formatEvidencePacket([approvedArticleToCandidate(primaryArticle)]") &&
+      runtime.includes("approvedArticleToCandidate(primaryArticle, input.answerPlan.selectedPolicyUnits)") &&
       runtime.includes("check.output.verdict !== \"pass\"") &&
       runtime.includes("parseGroundingCheckOutput"),
     "AI-router-selected answers are validated against the selected approved sales guidance before return",
@@ -572,7 +636,7 @@ if (missingFiles.length === 0) {
       bundle.includes("few weeks") &&
       runtime.includes("DJ/NLCEO has no cohort rule") &&
       runtime.includes("do not invent a custom plan or promise a hold") &&
-      runtime.includes("never approve a specific future payment date or hold") &&
+      runtime.includes("Never mention or apply a product listed as excluded") &&
       runtime.includes("you can give them until") &&
       runtime.includes("start the payment plan when you're ready"),
     "critical answer guardrails cover regulated cannabis/dispensary qualification and DJ/NLCEO deposit/cohort follow-ups without approving payment-date holds",
