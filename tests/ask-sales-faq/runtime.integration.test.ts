@@ -142,7 +142,7 @@ describe("runAskSalesFaq integration safety", () => {
   it("does not invent a leadership-approval prerequisite for sending a contract before Call 2", async () => {
     installProviderStub({
       "answer generation": [
-        outputStep(modelOutput("You can send it only when leadership has approved the exception.")),
+        outputStep(modelOutput("Sending the contract before Call 2 is allowed but not recommended without leadership approval.")),
       ],
     });
 
@@ -150,7 +150,7 @@ describe("runAskSalesFaq integration safety", () => {
 
     expect(result.answer).toContain("you can send the current contract before Call 2");
     expect(result.answer).toContain("not advised");
-    expect(result.answer).not.toContain("only when leadership has approved");
+    expect(result.answer).not.toContain("without leadership approval");
   });
 
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {

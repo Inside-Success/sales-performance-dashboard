@@ -737,6 +737,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
       "only when leadership has approved",
       "only if leadership has approved",
       "requires leadership approval to send",
+      "not recommended without leadership approval",
     ],
     fallback: {
       answer:
