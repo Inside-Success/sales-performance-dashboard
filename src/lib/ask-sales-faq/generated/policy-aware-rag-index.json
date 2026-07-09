@@ -202,13 +202,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "Answer",
-      "id": "rag_47ae23c3900c812b",
+      "id": "rag_1118b097694c0940",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
       "source_title": "Internal Material Sharing Boundaries",
       "source_type": "approved_article",
-      "text": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.",
+      "text": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- audition recordings\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\nIf a prospect or applicant asks for an audition recording or call recording to be deleted, vaulted, sent, or handled after they are not a fit, do not send, delete, or vault it yourself. Do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance owner, or current process owner so it can be handled through the approved process.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -217,13 +217,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "Route If Unclear",
-      "id": "rag_24218a6e17a16298",
+      "id": "rag_278200f8c7911b24",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
       "source_title": "Internal Material Sharing Boundaries",
       "source_type": "approved_article",
-      "text": "## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned.",
+      "text": "## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned.\n\nIf the request is about deleting, vaulting, or removing an audition/call recording, route it to the source owner/compliance owner or current process owner. Do not take the action yourself from the chatbot answer.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -232,13 +232,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "What Reps Can Say",
-      "id": "rag_a13002c52b705dec",
+      "id": "rag_548fad0bf0cdab2d",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
       "source_title": "Internal Material Sharing Boundaries",
       "source_type": "approved_article",
-      "text": "## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"",
+      "text": "## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n- \"For a recording deletion or vaulting request, do not handle it yourself. Route it to the source owner/compliance owner.\"",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -247,13 +247,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "What Reps Must Not Do",
-      "id": "rag_3ad7d3472e28c470",
+      "id": "rag_fa37a67959d90c0e",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
       "source_title": "Internal Material Sharing Boundaries",
       "source_type": "approved_article",
-      "text": "## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.",
+      "text": "## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n- Do not delete, vault, or promise deletion/vaulting for audition recordings or call recordings yourself.",
       "trust_label": "Approved FAQ article"
     },
     {

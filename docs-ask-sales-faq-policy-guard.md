@@ -272,3 +272,38 @@ Safety kept:
 - No model/provider/cache/API/database schema change.
 - No Slack, Google, Drive, Sheets, or n8n write.
 - No local dev server.
+
+## 2026-07-09 Second-Pass Live Retest Hardening
+
+Status: implemented locally and verified without starting a local dev server. Commit/push and signed-in production retest are still required.
+
+What the signed-in 20-question retest still exposed:
+
+- The internal-material route handled an audition recording deletion/vault request but returned only generic "check whether approved to share" wording.
+- The greenlight/cohort route handled a family emergency / out-of-town cohort exception but returned the wrong `#greenlight-requests` answer.
+- The payment-hold route handled a funds/2.5k question but assumed DJ/NLCEO even though the question did not say which product/show it was.
+
+Runtime changes:
+
+- Added critical answer guard `pricing-ambiguous-payment-hold-product-check` so ambiguous payment-hold answers must first confirm main ISTV vs DJ/NLCEO and cannot assume DJ/NLCEO.
+- Added critical answer guard `internal-recording-delete-vault-route` so recording answers cannot suggest sending, deleting, or vaulting recordings yourself.
+- Added critical answer guard `greenlight-main-istv-proof-exception-route` so genuine documented emergency/cohort exceptions route to Rich/current owner, not generic greenlight-letter handling.
+- Added approved article-specific fallback builders for:
+  - `internal-material-sharing-boundaries`
+  - `greenlight-pdf-and-cohort-deadlines`
+- Synced the generated approved FAQ bundle and policy-aware RAG index from the FAQ source repo after updating the approved internal-material article.
+
+Validation:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 71 / 71 passed.
+- `npm run lint`: passed.
+- `npx tsc --noEmit`: passed.
+- `npm run build`: passed.
+- FAQ-side source validation also passed: policy guard 113 / 113, answer contract 121 / 121, runtime orchestrator 121 / 121, retrieval simulation 113 / 113.
+
+Safety kept:
+
+- No broad fallback-to-any-approved-answer behavior.
+- No model/provider/cache/API/database schema change.
+- No Slack, Google, Drive, Sheets, or n8n write.
+- No local dev server.

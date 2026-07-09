@@ -605,6 +605,48 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     },
   },
   {
+    id: "pricing-ambiguous-payment-hold-product-check",
+    articleId: "istv-nlceo-pricing-and-same-day-discount",
+    matchAnyGroups: [
+      ["ability to find", "payment holding", "pmt holding", "holding them back", "2.5k", "$2,500", "$2500"],
+      ["call 2", "close", "closing", "opportunity", "payment", "pay", "deposit", "continue later"],
+    ],
+    requiredAnyGroups: [
+      ["confirm whether this is main ISTV or DJ/NLCEO", "confirm main ISTV vs DJ/NLCEO", "First confirm"],
+      ["main ISTV", "DJ/NLCEO", "Daymond John", "Next Level CEO"],
+      ["do not promise", "route", "owner"],
+    ],
+    forbiddenAny: [
+      "For a Next Level CEO / Daymond John applicant",
+      "For Daymond John / Next Level CEO applicant",
+      "Because this is Daymond John",
+      "Because this is Next Level CEO",
+      "approved to wait",
+    ],
+    fallback: {
+      answer:
+        "First confirm whether this is main ISTV or DJ/NLCEO. If it is main ISTV, do not use the DJ/NLCEO no-cohort exception; route payment/deadline exceptions before promising anything. If it is DJ/NLCEO, the main ISTV cohort rule does not apply and they can continue later if needed, but do not promise a specific payment date, hold, custom plan, or exception without the current DJ/NLCEO owner confirming it.",
+      summary: "Confirm main ISTV vs DJ/NLCEO before promising payment timing.",
+      sections: [
+        {
+          title: "Product check",
+          body: "Confirm whether this is main ISTV or DJ/NLCEO before applying a cohort/payment-timing rule.",
+          tone: "default",
+        },
+        {
+          title: "Boundary",
+          body: "Do not promise a specific future payment date, hold, custom plan, or exception without owner confirmation.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+      needs_route: true,
+      route_reason: "Payment timing, hold, or exception promises need the current owner when the listed plan/timing is not enough.",
+      confidence_label: "High",
+      confidence_score: 93,
+    },
+  },
+  {
     id: "payment-no-custom-plans",
     articleId: "payment-plan-and-link-boundaries",
     matchAny: [
@@ -760,6 +802,42 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     },
   },
   {
+    id: "internal-recording-delete-vault-route",
+    articleId: "internal-material-sharing-boundaries",
+    matchAnyGroups: [
+      ["audition recording", "call recording", "recording"],
+      ["delete", "deleted", "vault", "vaulted", "send it to her", "send it to them", "send"],
+    ],
+    requiredAnyGroups: [
+      ["do not delete", "do not vault", "do not promise deletion", "do not promise"],
+      ["route", "source owner", "compliance", "current owner"],
+      ["do not share", "cannot send", "not externally share"],
+    ],
+    forbiddenAny: ["send the recording", "delete it yourself", "vault it yourself", "you can delete it", "you can vault it"],
+    fallback: {
+      answer:
+        "Do not send, delete, or vault the recording yourself, and do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance, or current process owner so they can handle it through the approved process.",
+      summary: "Recording sharing/deletion requests need the source owner or compliance.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Acknowledge the request and route it to the source owner, compliance, or current process owner.",
+          tone: "route",
+        },
+        {
+          title: "Do not do yourself",
+          items: ["Do not send the recording.", "Do not delete or vault it yourself.", "Do not promise deletion or vaulting."],
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+      needs_route: true,
+      route_reason: "External recording access or deletion/vault requests need the source owner/compliance process.",
+      confidence_label: "High",
+      confidence_score: 93,
+    },
+  },
+  {
     id: "greenlight-cap-route",
     articleId: "greenlight-pdf-and-cohort-deadlines",
     matchAny: ["greenlight approval cap", "current greenlight approval cap", "approval cap", "greenlight cap", "greenlights per day"],
@@ -810,6 +888,42 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
       selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
       needs_route: true,
       route_reason: "Greenlight letter requests, urgent sends, and status questions route to #greenlight-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "greenlight-main-istv-proof-exception-route",
+    articleId: "greenlight-pdf-and-cohort-deadlines",
+    matchAnyGroups: [
+      ["family emergency", "emergency", "out of town", "genuine reason", "proof", "car crash", "death in family", "death in the family"],
+      ["cohort", "deadline", "call 2", "call two", "Sunday", "exception"],
+    ],
+    requiredAnyGroups: [
+      ["Rich", "route"],
+      ["proof", "documented", "genuine"],
+      ["do not approve", "do not approve it yourself", "owner"],
+    ],
+    forbiddenAny: ["#greenlight-requests", "greenlight letter", "urgent letter", "post in #greenlight-requests"],
+    fallback: {
+      answer:
+        "Do not approve the exception yourself. For main ISTV, if they have a genuine documented emergency or proof, route it to Rich or the current owner for approval before telling the prospect they can move outside the normal cohort/deadline rule.",
+      summary: "Main ISTV proof exceptions need Rich/current-owner approval.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route the documented emergency/proof to Rich or the current owner before promising a deadline or cohort exception.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          body: "Do not approve the exception yourself or tell the prospect they can move outside the normal rule until the owner confirms it.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Main ISTV genuine-reason/proof exceptions require Rich or current-owner approval.",
       confidence_label: "High",
       confidence_score: 94,
     },
@@ -1599,6 +1713,10 @@ function buildApprovedArticleFallbackOutput(input: {
       return buildPricingAndTimingFallback(input.currentQuestion, input.policyDecision);
     case "main-istv-call-2-cohort-reschedule-rules":
       return buildMainIstvCohortFallback(input.currentQuestion, input.policyDecision);
+    case "internal-material-sharing-boundaries":
+      return buildInternalMaterialFallback(input.currentQuestion, input.policyDecision);
+    case "greenlight-pdf-and-cohort-deadlines":
+      return buildGreenlightFallback(input.currentQuestion, input.policyDecision);
     case "qualification-and-show-fit-rubric":
       return buildQualificationFallback(input.currentQuestion);
     case "post-sale-handoff-after-close":
@@ -1826,6 +1944,174 @@ function buildQualificationFallback(question: string): ModelOutput {
     route_reason: "Sensitive qualification/show-fit edge cases need owner review.",
     confidence_label: "High",
     confidence_score: 90,
+  });
+}
+
+function buildInternalMaterialFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  if (/\b(pre[- ]?audition video|video before (?:her|his|their) audition|before (?:her|his|their) audition)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "You cannot send the pre-audition video out manually. Do not share pre-audition video materials externally unless the current approved process explicitly allows it.",
+      summary: "Do not manually send pre-audition video materials.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Do not manually send the pre-audition video. Use the current approved process if the prospect did not receive it.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+      needs_route: policyDecision.decision === "route_from_approved_article",
+      route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
+      confidence_label: "High",
+      confidence_score: 92,
+    });
+  }
+
+  if (/\b(recording|audition recording|call recording)\b/i.test(question) && /\b(delete|deleted|vault|vaulted|send|share)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "Do not send, delete, or vault the recording yourself, and do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance, or current process owner so they can handle it through the approved process.",
+      summary: "Recording sharing/deletion requests need the source owner or compliance.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Acknowledge the request and route it to the source owner, compliance, or current process owner.",
+          tone: "route",
+        },
+        {
+          title: "Do not do yourself",
+          items: ["Do not send the recording.", "Do not delete or vault it yourself.", "Do not promise deletion or vaulting."],
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+      needs_route: true,
+      route_reason: "External recording access or deletion/vault requests need the source owner/compliance process.",
+      confidence_label: "High",
+      confidence_score: 93,
+    });
+  }
+
+  return cloneModelOutput({
+    answer:
+      "Do not externally share internal materials unless they are explicitly approved for that use. If a client asks for an internal recording, screenshot, training video, document, or similar material, route to the source owner or compliance before sending anything.",
+    summary: "Do not externally share internal materials without explicit approval.",
+    sections: [
+      {
+        title: "Boundary",
+        body: "Do not externally share internal materials unless they are explicitly approved for that use.",
+        tone: "warning",
+      },
+      {
+        title: "Route if asked",
+        body: "Route client requests for internal recordings, screenshots, training videos, documents, or similar materials to the source owner or compliance.",
+        tone: "route",
+      },
+    ],
+    selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+    needs_route: policyDecision.decision === "route_from_approved_article",
+    route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
+    confidence_label: "High",
+    confidence_score: 90,
+  });
+}
+
+function buildGreenlightFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  if (/\b(passed social check|social check|see why|not approved|failed|fail)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "If the Greenlight PDF or tracking sheet shows an internal failed social check or unclear status, route that internal question to #greenlight-requests before telling the applicant anything beyond the approved rejection process.",
+      summary: "Greenlight internal status questions route to #greenlight-requests.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route the internal status question to #greenlight-requests.",
+          tone: "route",
+        },
+        {
+          title: "Client-facing boundary",
+          body: "Do not tell the applicant an internal social-check reason unless the current owner confirms what can be shared.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Greenlight internal status questions route to #greenlight-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    });
+  }
+
+  if (
+    /\b(family emergency|emergency|out of town|genuine reason|proof|car crash|death in (?:the )?family)\b/i.test(question) &&
+    /\b(cohort|deadline|call 2|call two|sunday|exception|make it|out for this cohort)\b/i.test(question)
+  ) {
+    return cloneModelOutput({
+      answer:
+        "Do not approve the exception yourself. For main ISTV, if they have a genuine documented emergency or proof, route it to Rich or the current owner for approval before telling the prospect they can move outside the normal cohort/deadline rule.",
+      summary: "Main ISTV proof exceptions need Rich/current-owner approval.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route the documented emergency/proof to Rich or the current owner before promising a deadline or cohort exception.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          body: "Do not approve the exception yourself or tell the prospect they can move outside the normal rule until the owner confirms it.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Main ISTV genuine-reason/proof exceptions require Rich or current-owner approval.",
+      confidence_label: "High",
+      confidence_score: 94,
+    });
+  }
+
+  if (/\b(greenlight letter|greenlight request|urgent greenlight|send a greenlight|approval letter|approval pdf)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "For greenlight letter requests, urgent sends, letter status, current caps, send windows, or stop/send uncertainty, post in #greenlight-requests instead of quoting old caps or timing.",
+      summary: "Greenlight live-ops questions route to #greenlight-requests.",
+      sections: [
+        {
+          title: "Where to post",
+          body: "Post in #greenlight-requests for greenlight letter requests, urgent sends, letter status, current caps, send windows, or stop/send uncertainty.",
+          tone: "route",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Greenlight live-ops questions route to #greenlight-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    });
+  }
+
+  return cloneModelOutput({
+    answer:
+      "For main ISTV, if someone no-shows, misses the Sunday 11:59 PM ET payment/signature deadline, or is rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months. Genuine documented emergency/proof exceptions route to Rich or the current owner; do not approve those yourself.",
+    summary: "Use the main ISTV reapply rule, and route proof exceptions.",
+    sections: [
+      {
+        title: "Main ISTV rule",
+        body: "If someone no-shows, misses the Sunday 11:59 PM ET pay/sign deadline, or is rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.",
+        tone: "default",
+      },
+      {
+        title: "Proof exception",
+        body: "Genuine documented emergency/proof exceptions route to Rich or the current owner; do not approve those yourself.",
+        tone: "route",
+      },
+    ],
+    selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+    needs_route: policyDecision.decision === "route_from_approved_article",
+    route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
+    confidence_label: "High",
+    confidence_score: 92,
   });
 }
 

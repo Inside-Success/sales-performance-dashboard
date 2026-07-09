@@ -106,9 +106,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary; Madeline Cary Slack reply on pre-audition video sharing reviewed 2026-07-09",
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary; Madeline Cary Slack reply on pre-audition video sharing reviewed 2026-07-09; 2026-07-09 live retest guardrail for recording deletion/vault requests",
     "lastReviewed": "2026-07-09",
-    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned."
+    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- audition recordings\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\nIf a prospect or applicant asks for an audition recording or call recording to be deleted, vaulted, sent, or handled after they are not a fit, do not send, delete, or vault it yourself. Do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance owner, or current process owner so it can be handled through the approved process.\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n- \"For a recording deletion or vaulting request, do not handle it yourself. Route it to the source owner/compliance owner.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n- Do not delete, vault, or promise deletion/vaulting for audition recordings or call recordings yourself.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned.\n\nIf the request is about deleting, vaulting, or removing an audition/call recording, route it to the source owner/compliance owner or current process owner. Do not take the action yourself from the chatbot answer."
   },
   {
     "id": "istv-nlceo-pricing-and-same-day-discount",
@@ -389,7 +389,9 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "death in the family",
           "genuine reason",
           "serious reason",
-          "emergency"
+          "family emergency",
+          "emergency",
+          "out of town"
         ],
         [
           "deadline",
@@ -561,6 +563,29 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         [
           "client wants",
           "send"
+        ]
+      ]
+    },
+    {
+      "id": "route-client-recording-delete-vault",
+      "decision": "route_from_approved_article",
+      "article_id": "internal-material-sharing-boundaries",
+      "reason": "Recording deletion, vaulting, or external-sharing requests need the source owner or compliance-approved process.",
+      "match_any_groups": [
+        [
+          "audition recording",
+          "call recording",
+          "recording"
+        ],
+        [
+          "delete",
+          "deleted",
+          "vault",
+          "vaulted",
+          "send it to her",
+          "send it to them",
+          "can't send",
+          "cannot send"
         ]
       ]
     },
