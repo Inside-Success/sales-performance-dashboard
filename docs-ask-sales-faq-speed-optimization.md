@@ -248,3 +248,31 @@ Latest verification:
 - Vercel runtime errors/log check showed no errors, warnings, or fatal logs for the new deployment check window.
 - Anonymous `/ask-sales-faq` still redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` still returns controlled `not_signed_in` JSON.
+
+## Composer Draft Preservation
+
+The 2026-07-09 signed-in UI use found one queue-state issue separate from answer quality: if the rep typed a new draft while the bot was finishing or auto-sending a queued follow-up, the composer could clear that draft.
+
+Implemented dashboard fix:
+
+- Added a guarded composer clear helper so the UI only clears the exact question that was just sent or queued.
+- Preserved intentional behavior: when the rep sends/queues the text currently in the composer, that text clears.
+- Preserved draft behavior: if the composer now contains different text, queued auto-sends leave it alone.
+- Added a static Ask Sales FAQ validator check for this queue/composer edge case.
+
+This is not a speed or answer-quality change:
+
+- No model, approved KB, policy guard, route decision, RAG scope, API schema, DB schema, Slack, Google, n8n, caching, or answer-generation behavior changed.
+
+Latest verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 69 / 69 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `2feef7d` (`Preserve Ask Sales FAQ composer drafts`).
+- Vercel Production deployment reached Ready: `dpl_AJ1MdM3bg6o58cXsQHogoxhANx8D`.
+- Vercel build errors-only check showed no build errors.
+- Vercel runtime error/log checks showed no errors, warnings, or fatal logs for the deployment check window.
+- Anonymous `/ask-sales-faq` still redirects to sign-in.
+- Anonymous `POST /api/ask-sales-faq` still returns controlled `not_signed_in` JSON.
