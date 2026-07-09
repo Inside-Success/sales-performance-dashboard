@@ -275,6 +275,90 @@ describe("runAskSalesFaq integration safety", () => {
     ]);
   });
 
+  it("replaces generic lead-ownership inventions with the approved Keap checks", async () => {
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput("Check first-touch, territory, or a formal split agreement, then ask your team lead."),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      "Another rep says this is their 20% lead, but I reached the prospect. What should I check before continuing?",
+    );
+
+    expect(result.answer).toContain("Check Keap first");
+    expect(result.answer).toContain("30 days");
+    expect(result.answer).toContain("first booking wins");
+    expect(result.answer).not.toMatch(/territory|first-touch|formal split/i);
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual(["twenty-percent-lead-ownership"]);
+  });
+
+  it("does not let a bare DJ product mention turn bankruptcy into a pricing answer", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runAskSalesFaq(
+      "Does a past bankruptcy automatically disqualify a DJ/NLCEO applicant, or can I approve them?",
+    );
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).toContain("Do not automatically approve or disqualify");
+    expect(result.answer).not.toMatch(/listed current package prices|payment options/i);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("abstain-bankruptcy-qualification");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("does not let two product names turn opportunity ownership into pricing", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runAskSalesFaq(
+      "If a prospect is interested in both main ISTV and DJ/NLCEO, which rep should keep the opportunity and who should handle the passoff?",
+    );
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).toContain("ownership and passoff rule");
+    expect(result.answer).not.toMatch(/listed current package prices|payment options/i);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe(
+      "abstain-dual-product-opportunity-ownership",
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rewrites first-person verification promises as a rep action", async () => {
+    const cleanAnswer =
+      "Do not promise full-episode YouTube rights. Confirm the exact usage rights with the current contracts or legal owner before replying.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput("I need to verify the exact rights. I'll confirm with contracts and get back to you.", {
+            needsRoute: true,
+            routeReason: "Detailed content usage rights require contracts-approved wording.",
+            selectedSourceIds: ["approved:platform-hosting-and-client-license-duration"],
+          }),
+        ),
+      ],
+      "rep-facing wording repair": [
+        outputStep(
+          modelOutput(cleanAnswer, {
+            needsRoute: true,
+            routeReason: "Confirm exact usage rights with the current contracts or legal owner.",
+            selectedSourceIds: ["approved:platform-hosting-and-client-license-duration"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      "Can a client upload their full completed episode to YouTube, or should I promise only clips and approved reuse?",
+    );
+
+    expect(result.answer).toBe(cleanAnswer);
+    expect(result.answer).not.toMatch(/I need to verify|I'll confirm|I will confirm/i);
+  });
+
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the payment/deadline exception to Rich or the current owner before promising anything.";

@@ -308,6 +308,44 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       ]
     },
     {
+      "id": "abstain-bankruptcy-qualification",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "qualification-bankruptcy-unconfirmed",
+      "reason": "No current approved qualification rule makes a past bankruptcy an automatic approval or disqualification.",
+      "match_any": [
+        "bankruptcy",
+        "bankrupt"
+      ]
+    },
+    {
+      "id": "abstain-dual-product-opportunity-ownership",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "dual-product-opportunity-ownership-unconfirmed",
+      "reason": "Ownership and passoff rules for one prospect considering both main ISTV and DJ/NLCEO are not confirmed in a current approved article.",
+      "match_any_groups": [
+        [
+          "main istv",
+          "inside success"
+        ],
+        [
+          "dj",
+          "daymond john",
+          "next level ceo",
+          "nlceo"
+        ],
+        [
+          "which rep",
+          "keep the opportunity",
+          "owns the opportunity",
+          "opportunity ownership",
+          "passoff",
+          "pass off",
+          "handoff",
+          "hand off"
+        ]
+      ]
+    },
+    {
       "id": "abstain-accessibility-accommodation",
       "decision": "abstain_unapproved",
       "blocked_topic": "accessibility-accommodation-unconfirmed",
@@ -1281,23 +1319,52 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       "decision": "answer_from_approved_article",
       "article_id": "istv-nlceo-pricing-and-same-day-discount",
       "reason": "Approved pricing article covers ISTV, NLCEO, and same-day discount boundaries.",
+      "match_any_groups": [
+        [
+          "lite istv",
+          "standard istv",
+          "premium istv",
+          "vip or premium istv",
+          "istv",
+          "main istv",
+          "inside success",
+          "next level ceo",
+          "daymond john",
+          "dj",
+          "nlceo",
+          "package",
+          "lite",
+          "standard",
+          "premium",
+          "vip"
+        ],
+        [
+          "price",
+          "prices",
+          "pricing",
+          "cost",
+          "included",
+          "include",
+          "payment",
+          "plan",
+          "options",
+          "same day",
+          "discount",
+          "offer",
+          "difference"
+        ]
+      ]
+    },
+    {
+      "id": "answer-main-istv-upgrade-boundary",
+      "decision": "answer_from_approved_article",
+      "product_scope": "main_istv",
+      "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Main ISTV upgrade eligibility and any established discount carry-forward come from the approved pricing article.",
       "match_any": [
-        "lite istv",
-        "standard istv",
-        "premium istv",
-        "vip or premium istv",
-        "current istv prices",
-        "istv prices",
-        "istv pricing",
-        "current packages and prices",
-        "package prices",
-        "payment plans",
-        "price and payment plans",
-        "next level ceo",
-        "daymond john",
-        "dj",
-        "same day discount",
         "upgrade",
+        "upgraded",
+        "upgrading",
         "before filming",
         "after filming"
       ]
@@ -1507,8 +1574,8 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         ],
         [
           "book out a few weeks",
-          "funds unavail",
           "funds unavailable",
+          "funds are unavailable",
           "aug 15",
           "august 15",
           "need until august",

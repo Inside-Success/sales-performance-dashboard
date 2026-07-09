@@ -118,6 +118,17 @@ describe("buildAnswerPlan", () => {
     expect(result.fallbackMode).toBe("approved_answer");
   });
 
+  it("selects the grounded lead-ownership unit instead of generic sales advice", () => {
+    const result = plan(
+      "Another rep says this is their 20% lead, but I reached the prospect. What should I check?",
+      "twenty-percent-dial-out-sop",
+    );
+
+    expect(result.selectedPolicyUnits.map((unit) => unit.id)).toEqual(["twenty-percent-lead-ownership"]);
+    expect(result.applicableCriticalRuleIds).toEqual(["lead-ownership-keap-window-boundary"]);
+    expect(result.routeRequired).toBe(true);
+  });
+
   it("fails closed when there is no compatible approved unit", () => {
     const result = plan("How do I reset my dashboard password?", null);
 

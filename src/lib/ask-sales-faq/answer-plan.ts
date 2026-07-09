@@ -62,6 +62,7 @@ type PolicyIntent =
   | "cohort"
   | "reschedule"
   | "document_sharing"
+  | "lead_ownership"
   | "upgrade"
   | "upgrade_discount"
   | "greenlight_letter";
@@ -82,6 +83,7 @@ const TIMING_INTENTS = new Set<PolicyIntent>(["payment_timing", "cohort", "resch
 const SPECIFIC_INTENTS = new Set<PolicyIntent>([
   "document_sharing",
   "greenlight_letter",
+  "lead_ownership",
   "upgrade",
   "upgrade_discount",
   "discount",
@@ -93,6 +95,7 @@ const CRITICAL_RULE_ARTICLE_IDS: Record<string, string> = {
   "pricing-ambiguous-payment-hold-product-check": "istv-nlceo-pricing-and-same-day-discount",
   "pricing-standard-upgrade-discount": "istv-nlceo-pricing-and-same-day-discount",
   "pricing-vip-upgrade-discount": "istv-nlceo-pricing-and-same-day-discount",
+  "lead-ownership-keap-window-boundary": "twenty-percent-dial-out-sop",
 };
 
 export function buildAnswerPlan(input: BuildAnswerPlanInput): AskSalesAnswerPlan {
@@ -202,6 +205,13 @@ function detectPolicyIntents(question: string) {
   if (/\b(?:license options?|reuse license|licensing options?)\b/.test(question)) {
     intents.add("document_sharing");
   }
+  if (
+    /\b20\s*percent\b|20%|\blead ownership\b|\banother rep\b|\b30 day\b|\b31 days?\b|\bfirst booking\b|\bclaim(?:ed|s)? (?:the )?lead\b/.test(
+      question,
+    )
+  ) {
+    intents.add("lead_ownership");
+  }
   const hasUpgrade = /\b(?:upgrade|upgraded|upgrading)\b/.test(question);
   const hasDiscount =
     /\b(?:discount|discounted|same day offer|same day discount|same day price|money off)\b/.test(question);
@@ -240,6 +250,7 @@ function isPaymentTimingQuestion(question: string) {
 function focusPolicyIntents(detected: ReadonlySet<PolicyIntent>) {
   if (detected.has("document_sharing")) return new Set<PolicyIntent>(["document_sharing"]);
   if (detected.has("greenlight_letter")) return new Set<PolicyIntent>(["greenlight_letter"]);
+  if (detected.has("lead_ownership")) return new Set<PolicyIntent>(["lead_ownership"]);
   if (detected.has("upgrade_discount")) return new Set<PolicyIntent>(["upgrade_discount"]);
   if (detected.has("upgrade")) return new Set<PolicyIntent>(["upgrade"]);
   if (detected.has("discount")) return new Set<PolicyIntent>(["discount"]);

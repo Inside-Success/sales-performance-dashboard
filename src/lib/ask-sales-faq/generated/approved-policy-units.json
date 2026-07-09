@@ -108,6 +108,24 @@
       "last_reviewed": "2026-07-09"
     },
     {
+      "id": "twenty-percent-lead-ownership",
+      "title": "20 percent lead ownership checks",
+      "source_article_ids": ["twenty-percent-dial-out-sop"],
+      "product_scope": "product_agnostic",
+      "scope_behavior": "product_agnostic",
+      "critical_rule_ids": ["lead-ownership-keap-window-boundary"],
+      "intents": ["lead_ownership"],
+      "match_any": ["20 percent", "20%", "lead ownership", "another rep", "30-day", "31 days", "first booking"],
+      "approved_text": "Check Keap before continuing. If the lead is assigned to another rep, do not contact it. Ownership lasts 30 days from a communication logged in Keap, and each newly logged contact refreshes that window. After 31 days with no contact, another rep may speak with the lead. If the same person is booked with two reps or shows, the first booking wins. Route conflicting Keap notes or assignments to the current 20 percent or sales owner.",
+      "forbidden_claims": ["territory rule", "first-touch rule", "formal split agreement", "ignore Keap assignment"],
+      "route_required": true,
+      "fallback_mode": "scope_safe_route",
+      "safe_fallback": "Check Keap first. If the lead is assigned to another rep, do not continue. Ownership lasts 30 days from a logged communication and refreshes with each newly logged contact; after 31 days with no contact, another rep may speak with the lead. For duplicate bookings, the first booking wins. Route conflicting Keap notes or assignments to the current 20 percent or sales owner.",
+      "route_reason": "Route conflicting Keap notes, assignments, or ownership claims to the current 20 percent or sales owner.",
+      "approval_reference": "Rich Allen and Mike Wisner approved 20 Percent Dial-Out SOP",
+      "last_reviewed": "2026-07-10"
+    },
+    {
       "id": "license-options-document",
       "title": "License Options and reuse-license document handling",
       "source_article_ids": ["istv-nlceo-pricing-and-same-day-discount"],

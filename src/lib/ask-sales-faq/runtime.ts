@@ -333,6 +333,8 @@ const UNAPPROVED_HANDOFF_PATTERNS = [
   /\b(?:someone|a specialist|our specialist) (?:will|can) (?:reach out|contact|call|follow up)\b/i,
   /\btransfer (?:you|them|him|her|the client|the prospect) to (?:our|a|the) specialist\b/i,
   /\b(?:i will|i['’]ll) (?:connect with|make sure|ensure|send this|pass this|forward this|get this to)\b/i,
+  /\b(?:i will|i['’]ll) (?:confirm|check|verify|ask|contact|follow up)\b/i,
+  /\bi need to (?:confirm|check|verify)\b/i,
   /\bwe['’]ll get (?:this|that|it) reviewed\b/i,
 ];
 
@@ -428,6 +430,32 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
       route_reason: "Criminal, legal, or reputation-sensitive qualification questions need sales leadership/compliance review.",
       confidence_label: "High",
       confidence_score: 94,
+    },
+  },
+  {
+    id: "lead-ownership-keap-window-boundary",
+    articleId: "twenty-percent-dial-out-sop",
+    matchAnyGroups: [
+      ["20 percent", "20%", "lead ownership", "another rep", "claim", "claimed", "claims"],
+      ["lead", "prospect", "keap", "assigned", "contact", "booked", "ownership"],
+    ],
+    requiredAll: ["Keap"],
+    requiredAnyGroups: [
+      ["assigned to another rep", "another rep is assigned", "another rep owns"],
+      ["30 days", "30-day", "31 days", "first booking"],
+      ["route", "current 20 percent", "sales owner"],
+    ],
+    forbiddenAny: ["territory", "first-touch", "first touch", "formal split"],
+    fallback: {
+      answer:
+        "Check Keap first. If the lead is assigned to another rep, do not continue. Ownership lasts 30 days from a logged communication and refreshes with each newly logged contact; after 31 days with no contact, another rep may speak with the lead. For duplicate bookings, the first booking wins. Route conflicting Keap notes or assignments to the current 20 percent or sales owner.",
+      summary: "Check Keap assignment, the 30-day logged-contact window, and the first-booking rule.",
+      sections: [],
+      selected_source_ids: ["approved:twenty-percent-dial-out-sop"],
+      needs_route: true,
+      route_reason: "Route conflicting Keap notes, assignments, or ownership claims to the current 20 percent or sales owner.",
+      confidence_label: "High",
+      confidence_score: 96,
     },
   },
   {
@@ -3247,6 +3275,14 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
     return "Current guidance conflicts on hospital-employed doctors who do not own a practice. Confirm this case with the current qualification owner before telling the prospect they qualify or do not qualify.";
   }
 
+  if (policyDecision.blockedTopic === "qualification-bankruptcy-unconfirmed") {
+    return "A past bankruptcy is not covered by a confirmed automatic qualification rule. Do not automatically approve or disqualify the applicant; confirm the case with the current qualification owner before replying.";
+  }
+
+  if (policyDecision.blockedTopic === "dual-product-opportunity-ownership-unconfirmed") {
+    return "The ownership and passoff rule for one prospect considering both main ISTV and DJ/NLCEO is not confirmed. Do not claim the opportunity or promise a passoff path; confirm it with the current sales owner before proceeding.";
+  }
+
   if (policyDecision.blockedTopic === "accessibility-accommodation-unconfirmed") {
     return "Audio-description and other accessibility accommodation options are not confirmed. Check with the current production or accessibility owner before promising an accommodation to the prospect.";
   }
@@ -3261,6 +3297,12 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
 function policyBlockedRouteReason(policyDecision: PolicyGuardDecision) {
   if (policyDecision.blockedTopic === "qualification-hospital-employed-doctor-conflict") {
     return "Confirm this case with the current qualification owner before replying.";
+  }
+  if (policyDecision.blockedTopic === "qualification-bankruptcy-unconfirmed") {
+    return "Confirm the qualification decision with the current qualification owner before approving or disqualifying the applicant.";
+  }
+  if (policyDecision.blockedTopic === "dual-product-opportunity-ownership-unconfirmed") {
+    return "Confirm opportunity ownership and the passoff path with the current sales owner before proceeding.";
   }
   if (policyDecision.blockedTopic === "accessibility-accommodation-unconfirmed") {
     return "Confirm available accommodations with the current production or accessibility owner before promising them.";
@@ -4019,7 +4061,14 @@ function tokenize(value: string, options: { expand: boolean }) {
 }
 
 function phrasePresent(needle: string, haystack: string) {
-  return normalizeText(haystack).includes(normalizeText(needle));
+  const normalizedNeedle = normalizeText(needle);
+  const normalizedHaystack = normalizeText(haystack);
+  if (!normalizedNeedle) return false;
+
+  const escapedNeedle = normalizedNeedle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const leftBoundary = /^[a-z0-9]/i.test(normalizedNeedle) ? "(?:^|[^a-z0-9])" : "";
+  const rightBoundary = /[a-z0-9]$/i.test(normalizedNeedle) ? "(?=$|[^a-z0-9])" : "";
+  return new RegExp(`${leftBoundary}${escapedNeedle}${rightBoundary}`, "i").test(normalizedHaystack);
 }
 
 function normalizeText(value: string) {

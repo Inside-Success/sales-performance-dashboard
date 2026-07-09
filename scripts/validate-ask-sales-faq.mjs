@@ -361,10 +361,12 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "pricing starter prompt has approved guard coverage",
-    bundle.includes("current istv prices") &&
-      bundle.includes("price and payment plans") &&
-      bundle.includes("payment plans"),
-    "common pricing/payment-plan phrasing routes to approved pricing article",
+    bundle.includes('"id": "answer-pricing-and-same-day-discount"') &&
+      bundle.includes('"match_any_groups"') &&
+      bundle.includes('"prices"') &&
+      bundle.includes('"payment"') &&
+      bundle.includes('"id": "answer-main-istv-upgrade-boundary"'),
+    "pricing requires product/package plus pricing intent, while main ISTV upgrades use a separate scoped rule",
   );
 
   addCheck(
