@@ -179,6 +179,20 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).not.toMatch(/I'll make sure|I'll connect/i);
   });
 
+  it("routes the unresolved hospital-employed doctor ownership conflict without choosing a side", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runAskSalesFaq(
+      "Does a hospital-employed doctor qualify if she does not own a private practice?",
+    );
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).toContain("Current guidance conflicts");
+    expect(result.answer).toContain("current qualification owner");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the payment/deadline exception to Rich or the current owner before promising anything.";

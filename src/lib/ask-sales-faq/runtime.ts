@@ -3241,6 +3241,10 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
     return "I do not have a confirmed new-rep onboarding or final mock checklist yet. Route this to the current training owner before giving a final checklist.";
   }
 
+  if (policyDecision.blockedTopic === "qualification-hospital-employed-doctor-conflict") {
+    return "Current guidance conflicts on hospital-employed doctors who do not own a practice. Confirm this case with the current qualification owner before telling the prospect they qualify or do not qualify.";
+  }
+
   if (policyDecision.blockedTopic === "commission-tier-and-leaderboard") {
     return "I do not have your live commission tier, leaderboard, or payout data. Check with the current sales/commission owner before relying on a number.";
   }

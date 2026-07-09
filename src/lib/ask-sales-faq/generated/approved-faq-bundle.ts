@@ -287,6 +287,27 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
   ],
   "abstainRules": [
     {
+      "id": "abstain-hospital-employed-doctor-owner-conflict",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "qualification-hospital-employed-doctor-conflict",
+      "reason": "Current guidance conflicts on whether a hospital-employed doctor without an owned practice qualifies. Confirm with the current qualification owner before promising fit.",
+      "match_any_groups": [
+        [
+          "doctor",
+          "physician"
+        ],
+        [
+          "hospital employed",
+          "hospital-employed",
+          "works at a hospital",
+          "does not own a practice",
+          "doesn't own a practice",
+          "no private practice",
+          "without their own practice"
+        ]
+      ]
+    },
+    {
       "id": "abstain-new-rep-onboarding",
       "decision": "abstain_unapproved",
       "blocked_topic": "new-rep-onboarding-and-final-mock",
