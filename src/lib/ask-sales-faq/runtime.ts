@@ -1990,8 +1990,8 @@ function buildPolicyPlanFallback(answerPlan: AskSalesAnswerPlan, policyDecision:
     needs_route: needsRoute,
     route_reason: needsRoute
       ? answerPlan.fallbackMode === "clarify"
-        ? "Confirm the product before applying a payment-timing or cohort rule."
-        : policyDecision.reason
+        ? unit.route_reason || "Confirm the product before applying a payment-timing or cohort rule."
+        : unit.route_reason || "Confirm this nonstandard request with the current owner before promising it."
       : "",
     confidence_label: "High",
     confidence_score: 96,
@@ -3253,6 +3253,7 @@ function formatApprovedPolicyUnits(policyUnits: ApprovedPolicyUnit[]) {
         `Policy unit: ${unit.title}`,
         `Approved guidance: ${unit.approved_text}`,
         `Route required: ${unit.route_required ? "yes" : "no"}`,
+        unit.route_reason ? `Rep-facing route note: ${unit.route_reason}` : "",
       ]
         .filter(Boolean)
         .join("\n"),

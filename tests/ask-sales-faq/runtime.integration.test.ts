@@ -255,6 +255,9 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBe("ai_runtime_approved_fallback");
     expect(result.answer).toContain("For main ISTV");
     expect(result.answer).not.toMatch(/DJ\/NLCEO|Daymond John|Next Level CEO|\$2,500\s*x\s*4|no cohort rule/i);
+    expect(result.routeReason).toBe(
+      "Confirm any nonstandard main ISTV payment or deadline exception with Rich or the current owner before promising it.",
+    );
     expect(result.runtimeMetadata?.policyPlan?.resolvedProductScope).toBe("main_istv");
     expect(result.runtimeMetadata?.policyPlan?.excludedProductScopes).toEqual(["dj_nlceo"]);
   });

@@ -24,6 +24,7 @@ export type ApprovedPolicyUnit = {
   route_required: boolean;
   fallback_mode: ApprovedPolicyUnitFallbackMode;
   safe_fallback: string;
+  route_reason?: string;
   approval_reference: string;
   last_reviewed: string;
 };

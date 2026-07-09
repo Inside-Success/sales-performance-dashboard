@@ -67,6 +67,7 @@
       "route_required": true,
       "fallback_mode": "scope_safe_route",
       "safe_fallback": "For DJ/NLCEO, there is no cohort rule. Do not promise a hold, future payment date, custom plan, or exception; confirm any nonstandard timing with the current DJ/NLCEO owner.",
+      "route_reason": "Confirm any nonstandard DJ/NLCEO payment timing, hold, or exception with the current DJ/NLCEO owner before promising it.",
       "approval_reference": "Madeline Cary Slack timing guidance reviewed 2026-07-09 and Rich/Mike cohort decision",
       "last_reviewed": "2026-07-09"
     },
@@ -84,6 +85,7 @@
       "route_required": true,
       "fallback_mode": "scope_safe_route",
       "safe_fallback": "For main ISTV, do not promise a hold, future payment date, custom plan, or exception; route the nonstandard payment or deadline request to Rich or the current owner.",
+      "route_reason": "Confirm any nonstandard main ISTV payment or deadline exception with Rich or the current owner before promising it.",
       "approval_reference": "Rich/Mike main ISTV cohort decision and current approved pricing/timing article",
       "last_reviewed": "2026-07-09"
     },
@@ -101,6 +103,7 @@
       "route_required": true,
       "fallback_mode": "clarify",
       "safe_fallback": "Is this for main ISTV or DJ/NLCEO? The payment-timing and cohort rules are different, so I do not want to apply the wrong policy.",
+      "route_reason": "Confirm the product before applying a payment-timing or cohort rule.",
       "approval_reference": "Current approved pricing and cohort articles",
       "last_reviewed": "2026-07-09"
     },
