@@ -201,3 +201,46 @@ Verification:
 - Vercel runtime errors/log check showed no errors, warnings, or fatal logs for the new deployment check window.
 - Anonymous `/ask-sales-faq` still redirects to sign-in.
 - Anonymous `POST /api/ask-sales-faq` still returns controlled `not_signed_in` JSON.
+
+## 2026-07-09 Real Slack Question Context-Routing Fix
+
+Status: implemented locally without starting a local dev server.
+
+What the first 20-question real Slack retest showed:
+
+- The bot had a real context-leakage failure mode: unrelated standalone questions could inherit old greenlight/cohort context from earlier messages in the same chat.
+- The issue was not solved by adding more broad deterministic answers. The correct fix was to make current-question routing authoritative and only use recent context for true follow-ups.
+- Some misses had current Madeline Slack replies, so those were added as approved KB coverage instead of leaving them as generic fallbacks.
+
+Runtime change:
+
+- `runAskSalesFaq` now derives `routingConversationContext` from `shouldUseConversationContextForRouting`.
+- Direct policy rules run against the current question only.
+- The old direct `matchPolicyGuard(recent context + current question)` path was removed.
+- Recent context is still available for natural follow-ups such as "make that shorter", "thank you", and short pronoun-based confirmations.
+
+KB/rule coverage added from confirmed owner replies:
+
+- America's Authors episode availability and correction wording.
+- Legacy Makers docs/info plus DJ-side passoff boundary.
+- Pre-audition video sharing boundary.
+- VIP conversion page / $30K rebrand example handling.
+- Minors with parent/guardian present.
+- Legal/regulated hemp and dispensary fit wording.
+- License Options / reuse license document caution.
+- DJ/NLCEO no-main-cohort timing for delayed Call 2 / funds-unavailable situations.
+- 4-pay / August filming / Mastermind fulfillment hotline double-check.
+- Short-notice onboarding fulfillment hotline notification.
+- Contract before Call 2: allowed but not advised.
+- Greenlight social-check/internal-status clarification.
+
+Safety kept:
+
+- No broad answer fallback was added.
+- No local dev server, Slack write, Google write, n8n change, API schema change, DB schema change, cache change, or provider/model change.
+- Unsupported questions still fail closed unless current approved guidance controls the answer.
+
+Validation target:
+
+- Dashboard validator now checks that context routing is filtered and that the generated bundle contains the real Slack regression rules.
+- FAQ policy guard has 107 regression cases after adding the real Slack questions.

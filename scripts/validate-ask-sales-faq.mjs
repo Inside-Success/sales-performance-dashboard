@@ -108,6 +108,28 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "runtime filters recent chat context before policy routing",
+    runtime.includes("routingConversationContext") &&
+      runtime.includes("shouldUseConversationContextForRouting") &&
+      runtime.includes("isContextDependentFollowUpQuestion") &&
+      !runtime.includes("decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
+      !runtime.includes("matchPolicyGuard(buildContextualQuestion(question, conversationContext))"),
+    "old chat context is only available to routing for true follow-ups, not every new standalone question",
+  );
+
+  addCheck(
+    "bundle includes real Slack question regression rules",
+    bundle.includes("answer-americas-authors-episode-availability") &&
+      bundle.includes("answer-pre-audition-video-sharing") &&
+      bundle.includes("answer-license-options-document") &&
+      bundle.includes("answer-short-notice-onboarding") &&
+      bundle.includes("answer-dj-nlceo-book-out-timing") &&
+      bundle.includes("answer-four-pay-mastermind-filming") &&
+      bundle.includes("answer-rebrand-examples"),
+    "source-backed Slack regression topics are represented without adding a broad fallback answer path",
+  );
+
+  addCheck(
     "chat requests send bounded recent context",
     chatUi.includes("MAX_CONTEXT_MESSAGES_TO_SEND = 10") &&
       chatUi.includes("MAX_CONTEXT_MESSAGE_CHARS = 1800") &&
@@ -390,14 +412,15 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "follow-up questions include recent chat context",
+    "follow-up questions use filtered recent chat context",
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&
-      runtime.includes("decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
-      runtime.includes("shouldUseConversationContextForPolicyGuard") &&
-      runtime.includes("Recent chat context was used only to resolve the context-dependent follow-up.") &&
+      runtime.includes("const routingConversationContext = shouldUseConversationContextForRouting") &&
+      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext)") &&
+      runtime.includes("conversationContext: routingConversationContext") &&
+      runtime.includes("isContextDependentFollowUpQuestion") &&
       runtime.includes("The current user question is authoritative."),
-    "runtime sends recent conversation context to AI and policy matching while keeping current question authoritative",
+    "runtime filters recent context before AI routing and keeps direct policy matching current-question-first",
   );
 
   addCheck(
@@ -420,19 +443,19 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "short conversational follow-ups plan before contextual policy routing",
+    "short conversational follow-ups plan before broad routing",
     runtime.includes("let policyDecision = matchPolicyGuard(sanitizedQuestion)") &&
       runtime.includes("let conversationPlannerAttempted = false") &&
-      runtime.includes("shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, conversationContext)") &&
+      runtime.includes("shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)") &&
       runtime.includes("conversationPlannerAttempted = true") &&
-      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
+      runtime.includes("policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext)") &&
       runtime.includes("!conversationPlannerAttempted") &&
       runtime.includes("isShortAnswerRewriteRequest") &&
       runtime.includes("isSocialConversationTurn") &&
       runtime.includes("isConcisePromiseConfirmation(question)") &&
       runtime.includes("return false;") &&
       runtime.includes("Ignore brief social replies like 'You're welcome'"),
-    "short confirmations, thank-yous, and rewrite requests reach the AI planner before recent context can force a full policy answer",
+    "short confirmations, thank-yous, and rewrite requests reach the AI planner without letting old context force a full policy answer",
   );
 
   addCheck(

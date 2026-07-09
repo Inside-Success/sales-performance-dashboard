@@ -62,9 +62,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Rich Allen and Mike Wisner",
     "approvedAt": "2026-07-07",
-    "approvalReference": "2026-07-07 Rich/Mike meeting contract-link and no-edit boundary",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nReps can send the current contract link.\n\nThe contract is set. Reps should not edit contract terms, create addenda, rewrite clauses, promise custom language, or interpret legal terms.\n\nIf a client asks for contract edits, attorney review, custom language, a special addendum, entity-name changes, wrong amount/show/deliverable links, or legal interpretation, route to Rich / contracts / legal instead of handling it in the bot.\n\n## What Reps Can Say\n\n- \"You can send the current contract link.\"\n- \"We do not make contract changes on the sales call. If they need something reviewed, route it to Rich / contracts / legal.\"\n- \"Do not promise edits or custom terms. Use the current link or route the issue.\"\n\n## What reps MUST NOT say\n\n- Do not edit or promise edits to contract terms.\n- Do not use a nearby-looking contract/payment link when the amount, show, company, or deliverables do not match.\n- Do not give legal interpretation of contract clauses.\n- Do not promise attorney-review handling, special addenda, wet signatures, entity-name changes, or custom clauses from memory.\n\n## Route If Unclear\n\nRoute to Rich / contracts / legal for:\n\n- requested contract edits or addenda;\n- attorney review;\n- wrong contract amount, package, show, company, or deliverables;\n- client asks for the full contract before payment and the current link/process is unclear;\n- signature/payment order issues;\n- any legal interpretation."
+    "approvalReference": "2026-07-07 Rich/Mike meeting contract-link and no-edit boundary; Madeline Cary Slack reply on sending contracts before Call 2 reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nReps can send the current contract link.\n\nReps can send the contract before Call 2, but it is not advised. The normal sales process should still keep contract/payment mechanics for the proper close flow unless leadership approves a specific exception.\n\nThe contract is set. Reps should not edit contract terms, create addenda, rewrite clauses, promise custom language, or interpret legal terms.\n\nIf a client asks for contract edits, attorney review, custom language, a special addendum, entity-name changes, wrong amount/show/deliverable links, or legal interpretation, route to Rich / contracts / legal instead of handling it in the bot.\n\n## What Reps Can Say\n\n- \"You can send the current contract link.\"\n- \"You can send the contract before Call 2, but it is not advised. Keep the normal close flow unless leadership confirms otherwise.\"\n- \"We do not make contract changes on the sales call. If they need something reviewed, route it to Rich / contracts / legal.\"\n- \"Do not promise edits or custom terms. Use the current link or route the issue.\"\n\n## What reps MUST NOT say\n\n- Do not edit or promise edits to contract terms.\n- Do not present early contract sending as the recommended default process.\n- Do not use a nearby-looking contract/payment link when the amount, show, company, or deliverables do not match.\n- Do not give legal interpretation of contract clauses.\n- Do not promise attorney-review handling, special addenda, wet signatures, entity-name changes, or custom clauses from memory.\n\n## Route If Unclear\n\nRoute to Rich / contracts / legal for:\n\n- requested contract edits or addenda;\n- attorney review;\n- wrong contract amount, package, show, company, or deliverables;\n- client asks for the full contract before payment and the current link/process is unclear;\n- signature/payment order issues;\n- any legal interpretation."
   },
   {
     "id": "current-show-source",
@@ -73,9 +73,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Luke Gent show-source note shared by user on 2026-06-30",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nUse the latest approved show list below when a rep asks what shows we currently do.\n\nThe internal maintenance source for show changes is project operations, where new shows are added. Normal reps may not have access to that channel, so the bot should answer from this approved list and route only brand-new, paused, disputed, or missing-show status questions to the current sales/ops owner.\n\nIf a current show is missing from a dropdown or form, route to tech / the current sales-ops owner. Do not tell the rep to choose a placeholder or wrong show and fix it later.\n\n## Latest Approved Show List\n\n- Legacy Makers\n- Women in Power\n- Operation CEO\n- America's Top Lawyers\n- America's Best Doctors\n- America's Top Trainers\n- America's Top Agents\n- Kingdom Creators\n- Mompreneurs\n- Couples of America\n- Builders of America\n- Legal Titans\n- Life Changers\n- Project Beauty\n- Mindset Masters\n- Love Experts\n- Live Longer\n- Americas Top Contractors\n- Blue Collar America\n- America's Authors\n- America's Top Physicians\n- Doctors of America\n- Rise of Her\n- Made It In America\n- Wealth Makers\n- Beyond Success\n- American Founders\n- Leading with Purpose\n- Impact Makers TV\n- Masters of Innovation\n\n## What Reps Can Say\n\n- \"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.\"\n- \"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"\n- \"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"\n\n## What Reps Must Not Say\n\n- Do not rely on old show lists, old dropdowns, old examples, or public pages as the final source.\n- Do not tell reps to check project operations directly if they do not have access.\n- Do not promise that a newly mentioned, paused, missing, or disputed show is active unless it is confirmed by the current sales/ops owner.\n- Do not treat this list as permanently current after a new approved update supersedes it.\n- Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.\n\n## Route If Unclear\n\nIf a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing."
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Luke Gent show-source note shared by user on 2026-06-30; Madeline Cary Slack replies in #sales-questions-requests reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nUse the latest approved show list below when a rep asks what shows we currently do.\n\nThe internal maintenance source for show changes is project operations, where new shows are added. Normal reps may not have access to that channel, so the bot should answer from this approved list and route only brand-new, paused, disputed, or missing-show status questions to the current sales/ops owner.\n\nIf a current show is missing from a dropdown or form, route to tech / the current sales-ops owner. Do not tell the rep to choose a placeholder or wrong show and fix it later.\n\nAmerica's Authors is on the approved show list, but if a prospect asks for an America's Authors episode and none have aired yet, be transparent: it is a newer show being cast and no episodes have aired yet. If the rep accidentally told the prospect to Google it or offered an episode link, follow up quickly and correct that. For future episode-watching requests, send prospects to the approved site/app/TV viewing paths rather than telling them to Google it.\n\nFor Legacy Makers info/docs, use the current Sales Ops-approved Legacy Makers materials. If the rep is on the Daymond John side, they should only sell Daymond John. If a DJ-side applicant wants an ISTV show such as Legacy Makers, the applicant needs to be passed to an ISTV-assigned rep.\n\n## Latest Approved Show List\n\n- Legacy Makers\n- Women in Power\n- Operation CEO\n- America's Top Lawyers\n- America's Best Doctors\n- America's Top Trainers\n- America's Top Agents\n- Kingdom Creators\n- Mompreneurs\n- Couples of America\n- Builders of America\n- Legal Titans\n- Life Changers\n- Project Beauty\n- Mindset Masters\n- Love Experts\n- Live Longer\n- Americas Top Contractors\n- Blue Collar America\n- America's Authors\n- America's Top Physicians\n- Doctors of America\n- Rise of Her\n- Made It In America\n- Wealth Makers\n- Beyond Success\n- American Founders\n- Leading with Purpose\n- Impact Makers TV\n- Masters of Innovation\n\n## What Reps Can Say\n\n- \"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.\"\n- \"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"\n- \"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"\n- \"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\"\n- \"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\"\n\n## What Reps Must Not Say\n\n- Do not rely on old show lists, old dropdowns, old examples, or public pages as the final source.\n- Do not tell reps to check project operations directly if they do not have access.\n- Do not promise that a newly mentioned, paused, missing, or disputed show is active unless it is confirmed by the current sales/ops owner.\n- Do not treat this list as permanently current after a new approved update supersedes it.\n- Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.\n- Do not tell a prospect to Google for an episode when the show is still being cast and no episodes have aired.\n- Do not let DJ-side reps sell ISTV shows directly; pass ISTV-show interest to an ISTV-assigned rep.\n\n## Route If Unclear\n\nIf a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing."
   },
   {
     "id": "events-mastermind-red-carpet",
@@ -84,9 +84,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Rich Allen and Mike Wisner",
     "approvedAt": "2026-07-07",
-    "approvalReference": "2026-07-07 Rich/Mike meeting Mastermind access and fee confirmation",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nMastermind / red-carpet access is included in all packages under the current meeting-confirmed rule.\n\nThere is a $200 non-refundable fee to attend Mastermind. The fee is for food and drinks.\n\nEvent dates, venue details, logistics, travel, guest rules, and any current event changes can drift. Route those to the current event/source owner.\n\n## What Reps Can Say\n\n- \"Mastermind / red-carpet access is included in all packages under the current rule.\"\n- \"There is a $200 non-refundable Mastermind attendance fee for food and drinks.\"\n- \"For dates, venue details, guest rules, or current logistics, confirm with the current event/source owner before promising anything.\"\n\n## What Reps Must Not Say\n\n- Do not quote old event dates, old venue details, old links, or old package/event posts as current.\n- Do not waive or change the $200 fee.\n- Do not promise travel, guests, venue access, filming access, refundability beyond this fee rule, or current logistics from memory.\n- Do not use historical Slack posts or old source links as final answer authority.\n\n## Route If Unclear\n\nRoute any time the question is about a specific upcoming event, date, hotel, travel, guest, venue, current event availability, or exception."
+    "approvalReference": "2026-07-07 Rich/Mike meeting Mastermind access and fee confirmation; Madeline Cary Slack reply on 4-pay/August filming/Mastermind double-check reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nMastermind / red-carpet access is included in all packages under the current meeting-confirmed rule.\n\nThere is a $200 non-refundable fee to attend Mastermind. The fee is for food and drinks.\n\nEvent dates, venue details, logistics, travel, guest rules, and any current event changes can drift. Route those to the current event/source owner.\n\nIf a cast member buys on a 4-pay plan and wants to film in August so they can attend Mastermind before the episode is fully PIF, post in the fulfillment hotline to double-check. The Slack guidance said this should be okay, but reps should still confirm through fulfillment before promising the schedule.\n\n## What Reps Can Say\n\n- \"Mastermind / red-carpet access is included in all packages under the current rule.\"\n- \"There is a $200 non-refundable Mastermind attendance fee for food and drinks.\"\n- \"For dates, venue details, guest rules, or current logistics, confirm with the current event/source owner before promising anything.\"\n- \"For a 4-pay client trying to film in August and attend Mastermind before PIF, post in the fulfillment hotline to double-check before promising it.\"\n\n## What Reps Must Not Say\n\n- Do not quote old event dates, old venue details, old links, or old package/event posts as current.\n- Do not waive or change the $200 fee.\n- Do not promise travel, guests, venue access, filming access, refundability beyond this fee rule, or current logistics from memory.\n- Do not use historical Slack posts or old source links as final answer authority.\n- Do not promise a filming/Mastermind schedule exception before fulfillment confirms it.\n\n## Route If Unclear\n\nRoute any time the question is about a specific upcoming event, date, hotel, travel, guest, venue, current event availability, or exception."
   },
   {
     "id": "greenlight-pdf-and-cohort-deadlines",
@@ -95,9 +95,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Rich Allen and Syed Moonis Haider",
     "approvedAt": "2026-07-08",
-    "approvalReference": "Rich Allen Slack answers supplied by user on 2026-07-08; user-confirmed #greenlight-requests channel",
-    "lastReviewed": "2026-07-08",
-    "body": "## Answer\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, same-day greenlight letter requests, greenlight-letter status/escalations, and questions about whether a letter should or should not go out.\n\nMain ISTV no-show / missed-deadline / rejection / reapply rule:\n\n- If someone no-shows Call 1, no-shows Call 2 after being greenlit, completes Call 2 but does not pay/sign by Sunday 11:59 PM ET, or is rejected/not-fit, the rep should tell them on the front end that they can reapply at some point in the future.\n- The actual minimum is 3 months before they can reapply.\n- If the person claims a serious genuine reason such as a car crash or death in the family and can provide proof, route it to Rich for approval. Do not approve the exception yourself.\n\nGreenlight caps, exact daily/weekly limits, cutoff times, send windows, status definitions, and emergency-stop mechanics can drift. Route those to `#greenlight-requests` instead of quoting old Slack numbers or old sheet/process timing.\n\n## What Reps Can Say\n\n- \"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\"\n- \"For main ISTV, if they no-show, miss the Sunday 11:59 PM ET payment/signature deadline, or are rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.\"\n- \"If they have a genuine documented emergency, route it to Rich for approval.\"\n- \"For current caps, exact send timing, or whether a letter should go out, use `#greenlight-requests`.\"\n\n## What reps MUST NOT say\n\n- Do not promise that an approval PDF/greenlight letter will be sent by a specific time unless the current SOP confirms it.\n- Do not quote old approval caps, old send windows, old PDF timing, or old status definitions as current.\n- Do not make deadline exceptions or same-day discount promises without Rich/current owner confirmation.\n- Do not approve a proof exception yourself, even if the reason sounds genuine.\n- Do not apply the main ISTV cohort/deadline/reapply rule to Daymond John / Next Level CEO.\n\n## Route If Unclear\n\nRoute to `#greenlight-requests` when the question involves:\n\n- greenlight-letter requests or urgent sends;\n- current approval caps;\n- exact cutoff/send windows;\n- a letter that may need to be stopped;\n- current letter status;\n- whether a same-day greenlight letter can still go out.\n\nRoute to Rich when the question is a main ISTV proof exception, next-cohort exception, disputed rejection/not-fit decision, or any nonstandard deadline exception.\n\n## Pending Or Excluded\n\nThis article does not approve exact greenlight caps, daily/weekly capacity, PDF send windows, tracking-sheet status definitions, or an automated/manual letter workflow. It only approves the channel route and the Rich-confirmed main ISTV 3-month reapply minimum."
+    "approvalReference": "Rich Allen Slack answers supplied by user on 2026-07-08; user-confirmed #greenlight-requests channel; real Slack-question retest clarification reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nUse `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, same-day greenlight letter requests, greenlight-letter status/escalations, and questions about whether a letter should or should not go out.\n\nIf a Greenlight PDF or tracking sheet shows a failed social check or similar internal status, route the rep's internal process/status question to `#greenlight-requests`. Do not present the internal status explanation to the applicant as the reason unless the current owner confirms what can be shared.\n\nMain ISTV no-show / missed-deadline / rejection / reapply rule:\n\n- If someone no-shows Call 1, no-shows Call 2 after being greenlit, completes Call 2 but does not pay/sign by Sunday 11:59 PM ET, or is rejected/not-fit, the rep should tell them on the front end that they can reapply at some point in the future.\n- The actual minimum is 3 months before they can reapply.\n- If the person claims a serious genuine reason such as a car crash or death in the family and can provide proof, route it to Rich for approval. Do not approve the exception yourself.\n\nGreenlight caps, exact daily/weekly limits, cutoff times, send windows, status definitions, and emergency-stop mechanics can drift. Route those to `#greenlight-requests` instead of quoting old Slack numbers or old sheet/process timing.\n\n## What Reps Can Say\n\n- \"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\"\n- \"If the PDF/status shows a failed social check or unclear internal status, route that internal question to `#greenlight-requests` before telling the applicant anything beyond the approved rejection process.\"\n- \"For main ISTV, if they no-show, miss the Sunday 11:59 PM ET payment/signature deadline, or are rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.\"\n- \"If they have a genuine documented emergency, route it to Rich for approval.\"\n- \"For current caps, exact send timing, or whether a letter should go out, use `#greenlight-requests`.\"\n\n## What reps MUST NOT say\n\n- Do not promise that an approval PDF/greenlight letter will be sent by a specific time unless the current SOP confirms it.\n- Do not quote old approval caps, old send windows, old PDF timing, or old status definitions as current.\n- Do not tell the applicant an internal social-check reason unless the current owner confirms what can be shared.\n- Do not make deadline exceptions or same-day discount promises without Rich/current owner confirmation.\n- Do not approve a proof exception yourself, even if the reason sounds genuine.\n- Do not apply the main ISTV cohort/deadline/reapply rule to Daymond John / Next Level CEO.\n\n## Route If Unclear\n\nRoute to `#greenlight-requests` when the question involves:\n\n- greenlight-letter requests or urgent sends;\n- current approval caps;\n- exact cutoff/send windows;\n- a letter that may need to be stopped;\n- current letter status;\n- whether a same-day greenlight letter can still go out.\n\nRoute to Rich when the question is a main ISTV proof exception, next-cohort exception, disputed rejection/not-fit decision, or any nonstandard deadline exception.\n\n## Pending Or Excluded\n\nThis article does not approve exact greenlight caps, daily/weekly capacity, PDF send windows, tracking-sheet status definitions, or an automated/manual letter workflow. It only approves the channel route and the Rich-confirmed main ISTV 3-month reapply minimum."
   },
   {
     "id": "internal-material-sharing-boundaries",
@@ -106,9 +106,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned."
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary; Madeline Cary Slack reply on pre-audition video sharing reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned."
   },
   {
     "id": "istv-nlceo-pricing-and-same-day-discount",
@@ -117,9 +117,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed; Rich Allen Slack answer supplied by user on 2026-07-08",
-    "lastReviewed": "2026-07-08",
-    "body": "## Answer\n\nMain ISTV program:\n\n| Package | Price | Core deliverables |\n| --- | ---: | --- |\n| Lite | $12,000 | 12-15 minute episode, no pre-promo views, no Tier-1 submission, ISN app only |\n| Standard | $20,000 | 16-20 minute episode, 100,000 pre-promo views, no Tier-1 submission, ISN app only |\n| VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted |\n\nMain ISTV listed payment plans:\n\n| Package | Listed plans |\n| --- | --- |\n| Lite | 4 x $3,000, 3 x $4,000, or 2 x $6,000 |\n| Standard | 4 x $5,000 or 2 x $10,000 |\n| VIP / Premium | 4 x $7,500, 3 x $10,000, or 2 x $15,000 |\n\nNext Level CEO / Daymond John pricing and payment options:\n\n| Package | PIF | Listed payment options |\n| --- | ---: | --- |\n| Lite | $10,000 | $2,500 x 4, $3,600 x 3, or $5,000 x 2 |\n| Standard | $15,000 | $4,000 x 4, $5,000 x 3, or $7,500 x 2 |\n| Premium VIP | $20,000 | $5,000 x 4, $7,000 x 3, or $10,000 x 2 |\n| CEO Day upgrade | $5,000 | PIF only |\n\nSame-day discount:\n\n- The same-day discount applies only to the main ISTV program.\n- It is $2,000 off the main ISTV program.\n- It applies only from Call 2.\n- The client must pay the initial deposit on the same calendar day as that Call 2.\n- If Call 2 ends before payment but the client pays later that same calendar day, the same-day discount can still be honored.\n- It does not apply to Next Level CEO / Daymond John.\n- Daymond John / Next Level CEO also has no cohort rule.\n- Do not carry the discount into the next day.\n\nMain ISTV upgrade before filming:\n\n- Main ISTV clients can upgrade before filming.\n- After filming, it is too late to upgrade the package.\n- If the client received the main ISTV $2,000 same-day discount, that discount carries forward to the upgraded main ISTV package.\n- Discounted Standard total is $18,000.\n- Discounted VIP/Premium total is $28,000.\n- If the client bought discounted Lite at $10,000, the difference is $8,000 to Standard or $18,000 to VIP/Premium.\n- Use the proper upgraded contract and payment-difference link through the current sales-tech or finance route. Do not create custom links manually.\n\n## What Reps Can Say\n\n- Use the listed package prices and listed payment plans above.\n- For Next Level CEO / Daymond John, use only the listed PIF and split-payment options above.\n- For Next Level CEO / Daymond John, do not offer a same-day discount and do not use main ISTV cohort rules.\n- For same-day discount, keep the rule tied to main ISTV, Call 2, and same-calendar-day initial deposit payment.\n- If a discounted main ISTV Lite client upgrades before filming, carry the $2,000 same-day discount forward to the upgraded main ISTV package and charge only the proper difference.\n\n## What Reps Must Not Say\n\n- Do not invent payment splits, custom amounts, special discounts, or exception terms.\n- Do not apply the same-day discount to Next Level CEO / Daymond John.\n- Do not apply main ISTV cohort rules to Next Level CEO / Daymond John.\n- Do not promise the same-day discount if payment will happen after that calendar day.\n- Do not carry the main ISTV same-day discount into any Next Level CEO / Daymond John package.\n- Do not upgrade a client after filming.\n- Do not create custom upgrade links or payment splits manually.\n- Do not promise a second-show, crossover, VIP-to-VIP, or special discount unless a separate approved article covers that exact case.\n- Do not quote old/spare pricing videos as current.\n\n## Pending Or Excluded\n\nThe older Standard 3-payment split that totals $21,000 is intentionally not listed here. If someone asks about it, route to the current offer owner before quoting it.\n\nSecond-show, crossover, and special-discount rules remain pending Rich/owner confirmation."
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed; Rich Allen Slack answer supplied by user on 2026-07-08; Madeline Cary Slack replies on DJ timing and license-options doc reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nMain ISTV program:\n\n| Package | Price | Core deliverables |\n| --- | ---: | --- |\n| Lite | $12,000 | 12-15 minute episode, no pre-promo views, no Tier-1 submission, ISN app only |\n| Standard | $20,000 | 16-20 minute episode, 100,000 pre-promo views, no Tier-1 submission, ISN app only |\n| VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted |\n\nMain ISTV listed payment plans:\n\n| Package | Listed plans |\n| --- | --- |\n| Lite | 4 x $3,000, 3 x $4,000, or 2 x $6,000 |\n| Standard | 4 x $5,000 or 2 x $10,000 |\n| VIP / Premium | 4 x $7,500, 3 x $10,000, or 2 x $15,000 |\n\nNext Level CEO / Daymond John pricing and payment options:\n\n| Package | PIF | Listed payment options |\n| --- | ---: | --- |\n| Lite | $10,000 | $2,500 x 4, $3,600 x 3, or $5,000 x 2 |\n| Standard | $15,000 | $4,000 x 4, $5,000 x 3, or $7,500 x 2 |\n| Premium VIP | $20,000 | $5,000 x 4, $7,000 x 3, or $10,000 x 2 |\n| CEO Day upgrade | $5,000 | PIF only |\n\nSame-day discount:\n\n- The same-day discount applies only to the main ISTV program.\n- It is $2,000 off the main ISTV program.\n- It applies only from Call 2.\n- The client must pay the initial deposit on the same calendar day as that Call 2.\n- If Call 2 ends before payment but the client pays later that same calendar day, the same-day discount can still be honored.\n- It does not apply to Next Level CEO / Daymond John.\n- Daymond John / Next Level CEO also has no cohort rule.\n- Do not carry the discount into the next day.\n\nDaymond John / Next Level CEO timing boundary:\n\n- Daymond John / Next Level CEO applicants are not under the main ISTV cohort rule.\n- If a DJ/NLCEO applicant needs to book out a few weeks for Call 2, that can be okay for DJ/NLCEO applicants only, although reps should still prefer to move them forward as soon as possible.\n- Do not apply main ISTV reapply/cohort-deadline pressure to DJ/NLCEO applicants.\n- Do not invent custom payment plans, custom split amounts, or unlisted payment links.\n\nLicense Options / reuse license document:\n\n- Reps are advised not to send the License Options document just to compare Lite and Standard advantages.\n- It is better to go over the options on the call with the applicant.\n- The reuse license document can be sent if needed, but it is not advised because it often hurts the sale.\n\nMain ISTV upgrade before filming:\n\n- Main ISTV clients can upgrade before filming.\n- After filming, it is too late to upgrade the package.\n- If the client received the main ISTV $2,000 same-day discount, that discount carries forward to the upgraded main ISTV package.\n- Discounted Standard total is $18,000.\n- Discounted VIP/Premium total is $28,000.\n- If the client bought discounted Lite at $10,000, the difference is $8,000 to Standard or $18,000 to VIP/Premium.\n- Use the proper upgraded contract and payment-difference link through the current sales-tech or finance route. Do not create custom links manually.\n\n## What Reps Can Say\n\n- Use the listed package prices and listed payment plans above.\n- For Next Level CEO / Daymond John, use only the listed PIF and split-payment options above.\n- For Next Level CEO / Daymond John, do not offer a same-day discount and do not use main ISTV cohort rules.\n- For same-day discount, keep the rule tied to main ISTV, Call 2, and same-calendar-day initial deposit payment.\n- If a discounted main ISTV Lite client upgrades before filming, carry the $2,000 same-day discount forward to the upgraded main ISTV package and charge only the proper difference.\n- For Daymond John / Next Level CEO, a few-week Call 2 booking delay can be okay for DJ/NLCEO applicants only, but keep pushing to move them forward as soon as possible.\n- Do not send the License Options document as the default comparison tool. Go over the options on the call; the reuse license document can be sent if needed but is not advised.\n\n## What Reps Must Not Say\n\n- Do not invent payment splits, custom amounts, special discounts, or exception terms.\n- Do not apply the same-day discount to Next Level CEO / Daymond John.\n- Do not apply main ISTV cohort rules to Next Level CEO / Daymond John.\n- Do not promise the same-day discount if payment will happen after that calendar day.\n- Do not carry the main ISTV same-day discount into any Next Level CEO / Daymond John package.\n- Do not tell DJ/NLCEO applicants they must reapply just because they cannot follow a main ISTV cohort deadline.\n- Do not use the License Options/reuse license document as the default way to sell or compare packages.\n- Do not upgrade a client after filming.\n- Do not create custom upgrade links or payment splits manually.\n- Do not promise a second-show, crossover, VIP-to-VIP, or special discount unless a separate approved article covers that exact case.\n- Do not quote old/spare pricing videos as current.\n\n## Pending Or Excluded\n\nThe older Standard 3-payment split that totals $21,000 is intentionally not listed here. If someone asks about it, route to the current offer owner before quoting it.\n\nSecond-show, crossover, and special-discount rules remain pending Rich/owner confirmation."
   },
   {
     "id": "main-istv-call-2-cohort-reschedule-rules",
@@ -172,9 +172,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nApproved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.\n\nApproved scam / bad-review objection boundary:\n\n- Keep it short. Do not go down a long defense path.\n- If the prospect truly believes it is a scam, it may not be for them.\n- A brief clarification is allowed: many bad search results come from confusion with a separate UK company named Inside Success. Searching `InsideSuccessTV` points to the correct ISTV brand context.\n- Reps can point to the correct ISTV review context and public proof that is currently approved to share, but must not over-argue or promise outcomes.\n\nApproved value / vendor comparison boundary:\n\n- Avoid perceived-value, vendor comparison, and cheaper-production arguments because they drift into ROI/value guarantees.\n- Do not compare the cost of producing a show with another vendor as the reason the client should buy.\n\n## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n\n## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n\n## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, view language, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved."
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed; Madeline Cary Slack reply on VIP conversion page example reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nApproved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.\n\nApproved scam / bad-review objection boundary:\n\n- Keep it short. Do not go down a long defense path.\n- If the prospect truly believes it is a scam, it may not be for them.\n- A brief clarification is allowed: many bad search results come from confusion with a separate UK company named Inside Success. Searching `InsideSuccessTV` points to the correct ISTV brand context.\n- Reps can point to the correct ISTV review context and public proof that is currently approved to share, but must not over-argue or promise outcomes.\n\nApproved value / vendor comparison boundary:\n\n- Avoid perceived-value, vendor comparison, and cheaper-production arguments because they drift into ROI/value guarantees.\n- Do not compare the cost of producing a show with another vendor as the reason the client should buy.\n\nWebpage/social rebrand examples for the $30K license are proof/example assets. Sales Ops has shared a VIP conversion page example, but the bot does not maintain a full public list of examples. Use only the current Sales Ops-approved example/link and do not invent or imply a broader example library.\n\n## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n\n## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n- Do not create or share an unapproved proof/example list from memory.\n\n## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, view language, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved."
   },
   {
     "id": "post-sale-handoff-after-close",
@@ -183,9 +183,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Rich Allen and Mike Wisner",
     "approvedAt": "2026-07-07",
-    "approvalReference": "2026-07-07 Rich/Mike meeting post-sale handoff confirmation",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nAfter a sale, follow the \"How to close a sale\" cheat sheet from onboarding.\n\nConfirmed sales-side handoff steps:\n\n- Close the call.\n- Take payment.\n- Get the contract signed.\n- Review the onboarding email with the client.\n- Send the onboarding email.\n- Book the onboarding call for the next day.\n- Confirm payment in the All Payments / PayMe process once payment is actually confirmed.\n\nIf waiting on ACH, do not post PayMe / payment confirmation until ACH clears through the current tech/finance process.\n\nThe studio executive team handles detailed onboarding-call questions. Reps should avoid overpromising fulfillment details.\n\n## What Reps Can Say\n\n- \"After payment and signature, review and send the onboarding email and book the onboarding call for the next day.\"\n- \"Only confirm PayMe / All Payments after the payment is actually confirmed.\"\n- \"If ACH is pending, wait until it clears through the current tech/finance process.\"\n- \"Detailed onboarding questions are handled by the studio executive team on the onboarding call.\"\n\n## What Reps Must Not Say\n\n- Do not post payment confirmation while ACH or another payment method is still pending.\n- Do not promise fulfillment details that belong to the studio executive / onboarding team.\n- Do not skip contract signature or onboarding-call booking.\n- Do not invent custom post-sale steps beyond the current cheat sheet.\n\n## Route If Unclear\n\nRoute to the current sales/ops, finance, tech, or onboarding owner if payment has not cleared, the contract is not signed, ACH is pending, onboarding email details are missing, or the client asks detailed fulfillment questions."
+    "approvalReference": "2026-07-07 Rich/Mike meeting post-sale handoff confirmation; Madeline Cary Slack reply on short-notice onboarding reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nAfter a sale, follow the \"How to close a sale\" cheat sheet from onboarding.\n\nConfirmed sales-side handoff steps:\n\n- Close the call.\n- Take payment.\n- Get the contract signed.\n- Review the onboarding email with the client.\n- Send the onboarding email.\n- Book the onboarding call for the next day.\n- Confirm payment in the All Payments / PayMe process once payment is actually confirmed.\n\nIf waiting on ACH, do not post PayMe / payment confirmation until ACH clears through the current tech/finance process.\n\nThe studio executive team handles detailed onboarding-call questions. Reps should avoid overpromising fulfillment details.\n\nIf a same-day or short-notice onboarding call has just been booked after a close, post in the fulfillment hotline channel to inform the production team. Include the client's name and email address, and avoid sharing extra sensitive details beyond what the fulfillment team needs.\n\n## What Reps Can Say\n\n- \"After payment and signature, review and send the onboarding email and book the onboarding call for the next day.\"\n- \"Only confirm PayMe / All Payments after the payment is actually confirmed.\"\n- \"If ACH is pending, wait until it clears through the current tech/finance process.\"\n- \"Detailed onboarding questions are handled by the studio executive team on the onboarding call.\"\n- \"For same-day or short-notice onboarding, post in the fulfillment hotline with the client's name and email address so production is aware.\"\n\n## What Reps Must Not Say\n\n- Do not post payment confirmation while ACH or another payment method is still pending.\n- Do not promise fulfillment details that belong to the studio executive / onboarding team.\n- Do not skip contract signature or onboarding-call booking.\n- Do not invent custom post-sale steps beyond the current cheat sheet.\n- Do not assume production saw a same-day onboarding booking without notifying the fulfillment hotline.\n\n## Route If Unclear\n\nRoute to the current sales/ops, finance, tech, or onboarding owner if payment has not cleared, the contract is not signed, ACH is pending, onboarding email details are missing, or the client asks detailed fulfillment questions."
   },
   {
     "id": "qualification-and-show-fit-rubric",
@@ -194,9 +194,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Rich Allen and Mike Wisner",
     "approvedAt": "2026-07-07",
-    "approvalReference": "2026-07-07 Rich/Mike meeting qualification and background decisions",
-    "lastReviewed": "2026-07-07",
-    "body": "## Answer\n\nDo not turn qualification into a hard yes/no from one old Slack example. Use these approved boundaries only, then route edge cases.\n\nAmerica's Best Doctors:\n\n- A doctor can qualify even if they work in a hospital and do not own the practice.\n- Do not disqualify a doctor just because they are employed by a hospital.\n- Nurses do not qualify as doctors for America's Best Doctors.\n- Physical therapists / physiotherapists are case-by-case. Route before promising fit.\n\nGeneral qualification:\n\n- Look for a business, practice, platform, or story that can benefit from the episode.\n- Consider whether the business or platform is mature enough, whether the story is compelling, whether the person fits the network, and whether they seem likely to be a reasonable client.\n- Some legacy/story-led clients can be exceptions, so do not create a blanket \"business owner only\" rule across every show.\n\nBackground and reputation:\n\n- Daymond John / Next Level CEO is stricter: generally reject criminal history except minor issues such as speeding or parking tickets.\n- Main ISTV rejects serious red flags such as murder, pedophilia, sex-industry positioning, bank robbery, or gun crime.\n- Cannabis and firearms can be acceptable when they are regulated, legal, licensed, and positioned professionally. Cannabis dispensaries / dispensary businesses must meet the same regulated, legal, licensed, and professional-positioning boundary.\n- Strong extremist political/religious positioning, racism, sexism, or similar reputational red flags should route and should not be approved by the bot.\n- Motivational speakers and personal brands can qualify when they are otherwise a fit and not in a disallowed category.\n\n## What Reps Can Say\n\n- \"A doctor does not have to own the practice to be considered for America's Best Doctors.\"\n- \"If they are a doctor working in a hospital, do not disqualify them just for that.\"\n- \"A nurse is not the same as a doctor for America's Best Doctors.\"\n- \"For physical therapists, unusual medical roles, background issues, or reputational red flags, route it before promising fit.\"\n\n## What reps MUST NOT say\n\n- Do not guarantee acceptance or disqualification for sensitive edge cases unless the approved rubric directly covers the case.\n- Do not use another prospect's Slack case as precedent.\n- Do not make legal, medical, criminal, licensing, or reputational determinations from memory.\n- Do not say America's Best Doctors requires practice ownership.\n- Do not apply main ISTV flexibility to Daymond John / Next Level CEO background cases.\n\n## Route If Unclear\n\nRoute to sales leadership/compliance when the case involves:\n\n- physical therapists / physiotherapists or unusual medical roles;\n- criminal, legal, licensing, reputation, adult/sexual, political, religious, racism/sexism, firearms, cannabis / dispensary / dispensaries, minors, or other sensitive background concerns;\n- uncertainty about whether the applicant has a business/platform/story that fits the show;\n- show-specific exceptions not listed above."
+    "approvalReference": "2026-07-07 Rich/Mike meeting qualification and background decisions; Madeline Cary Slack replies on minors, dispensaries, and hemp/business-fit examples reviewed 2026-07-09",
+    "lastReviewed": "2026-07-09",
+    "body": "## Answer\n\nDo not turn qualification into a hard yes/no from one old Slack example. Use these approved boundaries only, then route edge cases.\n\nAmerica's Best Doctors:\n\n- A doctor can qualify even if they work in a hospital and do not own the practice.\n- Do not disqualify a doctor just because they are employed by a hospital.\n- Nurses do not qualify as doctors for America's Best Doctors.\n- Physical therapists / physiotherapists are case-by-case. Route before promising fit.\n\nGeneral qualification:\n\n- Look for a business, practice, platform, or story that can benefit from the episode.\n- Consider whether the business or platform is mature enough, whether the story is compelling, whether the person fits the network, and whether they seem likely to be a reasonable client.\n- Some legacy/story-led clients can be exceptions, so do not create a blanket \"business owner only\" rule across every show.\n- Minors can be considered when a parent/guardian is present and okay with the call. If parent/guardian permission or legal consent is unclear, route before proceeding.\n\nBackground and reputation:\n\n- Daymond John / Next Level CEO is stricter: generally reject criminal history except minor issues such as speeding or parking tickets.\n- Main ISTV rejects serious red flags such as murder, pedophilia, sex-industry positioning, bank robbery, or gun crime.\n- Cannabis, hemp, dispensaries, and firearms can be acceptable when they are regulated, legal, licensed, and positioned professionally. Cannabis/hemp/dispensary businesses must meet the same regulated, legal, licensed, and professional-positioning boundary.\n- Strong extremist political/religious positioning, racism, sexism, or similar reputational red flags should route and should not be approved by the bot.\n- Motivational speakers and personal brands can qualify when they are otherwise a fit and not in a disallowed category.\n\n## What Reps Can Say\n\n- \"A doctor does not have to own the practice to be considered for America's Best Doctors.\"\n- \"If they are a doctor working in a hospital, do not disqualify them just for that.\"\n- \"A nurse is not the same as a doctor for America's Best Doctors.\"\n- \"For physical therapists, unusual medical roles, background issues, or reputational red flags, route it before promising fit.\"\n- \"A minor can be okay if the parent/guardian is present and okay with it. If consent is unclear, route it.\"\n- \"A legal, regulated, licensed, professionally positioned cannabis/hemp/dispensary business can be a fit, but do not guarantee acceptance if there are licensing, legal, or reputation concerns.\"\n\n## What reps MUST NOT say\n\n- Do not guarantee acceptance or disqualification for sensitive edge cases unless the approved rubric directly covers the case.\n- Do not use another prospect's Slack case as precedent.\n- Do not make legal, medical, criminal, licensing, or reputational determinations from memory.\n- Do not say America's Best Doctors requires practice ownership.\n- Do not apply main ISTV flexibility to Daymond John / Next Level CEO background cases.\n- Do not proceed with a minor if parent/guardian permission is unclear.\n\n## Route If Unclear\n\nRoute to sales leadership/compliance when the case involves:\n\n- physical therapists / physiotherapists or unusual medical roles;\n- criminal, legal, licensing, reputation, adult/sexual, political, religious, racism/sexism, firearms, cannabis / hemp / dispensary / dispensaries, minors, or other sensitive background concerns;\n- uncertainty about whether the applicant has a business/platform/story that fits the show;\n- show-specific exceptions not listed above."
   },
   {
     "id": "refund-rules-by-product",
@@ -327,7 +327,7 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       "id": "route-greenlight-letter-requests",
       "decision": "route_from_approved_article",
       "article_id": "greenlight-pdf-and-cohort-deadlines",
-      "reason": "Greenlight letter requests, urgent sends, and letter-status questions route to #greenlight-requests.",
+      "reason": "Greenlight letter status, failed checks, stop/send uncertainty, and unresolved escalation questions route to #greenlight-requests.",
       "match_any_groups": [
         [
           "greenlight",
@@ -336,16 +336,14 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "approval pdf"
         ],
         [
-          "letter",
-          "pdf",
-          "urgent",
-          "urgently",
-          "send",
-          "request",
-          "ask",
-          "where should",
-          "where do",
-          "status"
+          "status",
+          "failed",
+          "fail",
+          "why",
+          "should not go out",
+          "stop the letter",
+          "letter sent by",
+          "approval letter sent by"
         ]
       ]
     },
@@ -838,7 +836,12 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "motivational speaker",
         "personal brand",
         "background issue",
-        "gun crime"
+        "gun crime",
+        "hemp",
+        "hemp business",
+        "11 years old",
+        "minor with parent",
+        "mum is in the background"
       ]
     },
     {
@@ -852,7 +855,10 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "current contract link",
         "can i send the contract",
         "contract is set",
-        "contract terms"
+        "contract terms",
+        "contract before call 2",
+        "send a contract before call 2",
+        "send contract before call 2"
       ]
     },
     {
@@ -1032,7 +1038,11 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "shows that we do",
         "what shows do we do",
         "list all shows",
-        "all shows we do"
+        "all shows we do",
+        "america's authors episode",
+        "americas authors episode",
+        "legacy makers docs",
+        "docs for legacy makers"
       ]
     },
     {
@@ -1186,13 +1196,172 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "zoom recordings",
         "access zoom recordings"
       ]
+    },
+    {
+      "id": "answer-americas-authors-episode-availability",
+      "decision": "answer_from_approved_article",
+      "article_id": "current-show-source",
+      "reason": "Madeline-confirmed guidance covers America's Authors episode availability and how to correct an accidental episode-link promise.",
+      "match_any_groups": [
+        [
+          "america's authors",
+          "americas authors"
+        ],
+        [
+          "episode",
+          "episodes",
+          "aired",
+          "watch",
+          "google"
+        ]
+      ]
+    },
+    {
+      "id": "answer-legacy-makers-dj-passoff",
+      "decision": "answer_from_approved_article",
+      "article_id": "current-show-source",
+      "reason": "Madeline-confirmed guidance covers Legacy Makers info requests and the DJ-side passoff boundary.",
+      "match_any_groups": [
+        [
+          "legacy makers",
+          "legacymakers"
+        ],
+        [
+          "docs",
+          "info",
+          "information",
+          "daymond john",
+          "dj side",
+          "sell"
+        ]
+      ]
+    },
+    {
+      "id": "answer-pre-audition-video-sharing",
+      "decision": "answer_from_approved_article",
+      "article_id": "internal-material-sharing-boundaries",
+      "reason": "Madeline-confirmed guidance says pre-audition videos cannot be sent out manually.",
+      "match_any_groups": [
+        [
+          "pre-audition video",
+          "pre audition video",
+          "video before her audition",
+          "video before audition",
+          "before her audition",
+          "receives before her audition"
+        ],
+        [
+          "send",
+          "send over",
+          "find",
+          "get that video",
+          "get the video"
+        ]
+      ]
+    },
+    {
+      "id": "answer-rebrand-examples",
+      "decision": "answer_from_approved_article",
+      "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Madeline-confirmed guidance says Sales Ops has a VIP conversion page example, but the bot should not invent a full proof/example library.",
+      "match_any_groups": [
+        [
+          "rebrand examples",
+          "webpage and social rebrand",
+          "social rebrand",
+          "conversion page example"
+        ],
+        [
+          "$30k",
+          "30k",
+          "vip",
+          "license"
+        ]
+      ]
+    },
+    {
+      "id": "answer-license-options-document",
+      "decision": "answer_from_approved_article",
+      "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Madeline-confirmed guidance says the License Options document/reuse license doc is not advised as the default comparison tool.",
+      "match_any_groups": [
+        [
+          "license options document",
+          "license options doc",
+          "reuse license doc",
+          "reuse license document"
+        ],
+        [
+          "send",
+          "allowed",
+          "compare",
+          "lite",
+          "standard"
+        ]
+      ]
+    },
+    {
+      "id": "answer-dj-nlceo-book-out-timing",
+      "decision": "answer_from_approved_article",
+      "article_id": "istv-nlceo-pricing-and-same-day-discount",
+      "reason": "Madeline-confirmed guidance says DJ/NLCEO applicants are not under the main ISTV cohort rule and can book Call 2 out a few weeks if needed.",
+      "match_any_groups": [
+        [
+          "daymond john",
+          "next level ceo",
+          "dj",
+          "nlceo"
+        ],
+        [
+          "book out a few weeks",
+          "funds unavail",
+          "funds unavailable",
+          "aug 15",
+          "august 15",
+          "need until august",
+          "few weeks for call2",
+          "few weeks for call 2"
+        ]
+      ]
+    },
+    {
+      "id": "answer-four-pay-mastermind-filming",
+      "decision": "answer_from_approved_article",
+      "article_id": "events-mastermind-red-carpet",
+      "reason": "Madeline-confirmed guidance says 4-pay/August filming/Mastermind timing should be posted in fulfillment hotline to double-check.",
+      "match_any_groups": [
+        [
+          "4-pay",
+          "4 pay",
+          "four pay",
+          "payment plan"
+        ],
+        [
+          "film in august",
+          "filming in august",
+          "mastermind",
+          "not pif",
+          "episode won't be pif"
+        ]
+      ]
+    },
+    {
+      "id": "answer-short-notice-onboarding",
+      "decision": "answer_from_approved_article",
+      "article_id": "post-sale-handoff-after-close",
+      "reason": "Madeline-confirmed guidance says short-notice or same-day onboarding bookings should be posted in fulfillment hotline.",
+      "match_any": [
+        "short notice onboarding",
+        "same day onboarding",
+        "onboarding today"
+      ]
     }
   ]
 };
 
 export const ASK_SALES_FAQ_BUNDLE_META = {
   schemaVersion: 1,
-  generatedFrom: "Inside-Success/faq-chatbot@custom-payment-guard-2026-07-08",
-  generatedAt: "2026-07-08",
+  generatedFrom: "Inside-Success/faq-chatbot@slack-regression-routing-2026-07-09",
+  generatedAt: "2026-07-09",
   approvedArticleCount: APPROVED_FAQ_ARTICLES.length,
 };

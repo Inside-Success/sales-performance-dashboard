@@ -796,19 +796,22 @@ export async function runAskSalesFaq(
   const startedAt = Date.now();
   const { text: sanitizedQuestion, redactions } = redactSensitiveText(question);
   const conversationContext = buildConversationContext(conversationMessages);
-  const contextualQuestion = buildContextualQuestion(sanitizedQuestion, conversationContext);
+  const routingConversationContext = shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
+    ? conversationContext
+    : "";
+  const contextualQuestion = buildContextualQuestion(sanitizedQuestion, routingConversationContext);
   const providerDiagnostics: ProviderCallDiagnostics[] = [];
   let policyDecision = matchPolicyGuard(sanitizedQuestion);
   let conversationPlannerAttempted = false;
 
   if (
     shouldAttemptApprovedArticleRouter(policyDecision) &&
-    shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, conversationContext)
+    shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)
   ) {
     conversationPlannerAttempted = true;
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
-      conversationContext,
+      conversationContext: routingConversationContext,
     });
     if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
     if (plannerResult.reply) {
@@ -840,13 +843,13 @@ export async function runAskSalesFaq(
   }
 
   if (policyDecision.matchedRuleId === "default-abstain") {
-    policyDecision = decidePolicyGuard(sanitizedQuestion, conversationContext);
+    policyDecision = decidePolicyGuard(sanitizedQuestion, routingConversationContext);
   }
 
   if (!policyDecision.safeToGenerate && shouldAttemptApprovedArticleRouter(policyDecision) && !conversationPlannerAttempted) {
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
-      conversationContext,
+      conversationContext: routingConversationContext,
     });
     if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
     if (plannerResult.reply) {
@@ -877,7 +880,7 @@ export async function runAskSalesFaq(
     if (plannerResult.decision) policyDecision = plannerResult.decision;
   }
 
-  const candidates = buildEvidenceCandidates(sanitizedQuestion, conversationContext, policyDecision);
+  const candidates = buildEvidenceCandidates(sanitizedQuestion, routingConversationContext, policyDecision);
   const baseRuntimeMetadata = buildRuntimeMetadata({
     evidence: candidates,
     modelEvidence: [],
@@ -912,7 +915,7 @@ export async function runAskSalesFaq(
   try {
     const answerResult = await generateProviderAnswer({
       currentQuestion: sanitizedQuestion,
-      conversationContext,
+      conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
     });
@@ -924,7 +927,7 @@ export async function runAskSalesFaq(
     providerDiagnostics.push(...finalOutputResult.diagnostics);
     const criticalOutputResult = await ensureCriticalAnswer({
       currentQuestion: sanitizedQuestion,
-      conversationContext,
+      conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
       output: finalOutputResult.output,
@@ -932,7 +935,7 @@ export async function runAskSalesFaq(
     providerDiagnostics.push(...criticalOutputResult.diagnostics);
     const groundedOutputResult = await ensureArticleRouterGrounding({
       currentQuestion: sanitizedQuestion,
-      conversationContext,
+      conversationContext: routingConversationContext,
       evidence: candidates,
       policyDecision,
       output: criticalOutputResult.output,
@@ -976,7 +979,7 @@ export async function runAskSalesFaq(
     const fallbackOutput = buildCriticalFallbackOutput(
       criticalValidationQuestion({
         currentQuestion: sanitizedQuestion,
-        conversationContext,
+        conversationContext: routingConversationContext,
         policyDecision,
       }),
       policyDecision,
@@ -1083,19 +1086,7 @@ function buildHandledResponse(input: {
 function decidePolicyGuard(question: string, conversationContext = ""): PolicyGuardDecision {
   const directDecision = matchPolicyGuard(question);
   if (directDecision.matchedRuleId !== "default-abstain") return directDecision;
-
-  if (conversationContext && shouldUseConversationContextForPolicyGuard(question)) {
-    const contextualDecision = matchPolicyGuard(buildContextualQuestion(question, conversationContext));
-    if (contextualDecision.matchedRuleId !== "default-abstain") {
-      return {
-        ...contextualDecision,
-        reason: `${contextualDecision.reason} Recent chat context was used only to resolve the context-dependent follow-up.`,
-        routingSource: "context_rule",
-        usedConversationContext: true,
-      };
-    }
-  }
-
+  void conversationContext;
   return directDecision;
 }
 
@@ -1334,6 +1325,20 @@ function shouldPlanConversationBeforeContextPolicy(question: string, conversatio
   return false;
 }
 
+function shouldUseConversationContextForRouting(question: string, conversationContext: string) {
+  if (!conversationContext.trim()) return false;
+
+  const normalizedQuestion = normalizeText(question);
+  const tokens = tokenize(normalizedQuestion, { expand: false });
+  if (!normalizedQuestion) return false;
+
+  if (isSocialConversationTurn(normalizedQuestion)) return true;
+  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (isConcisePromiseConfirmation(question)) return true;
+
+  return isContextDependentFollowUpQuestion(normalizedQuestion, tokens.length);
+}
+
 function shouldAcceptConversationPlannerReply(question: string, output: ConversationPlannerOutput) {
   if (output.mode !== "conversation_reply") return false;
 
@@ -1390,18 +1395,25 @@ function isShortAnswerRewriteRequest(normalizedQuestion: string, tokenCount: num
   );
 }
 
-function shouldUseConversationContextForPolicyGuard(question: string) {
-  const normalizedQuestion = normalizeText(question);
-  const tokens = tokenize(normalizedQuestion, { expand: false });
+function isContextDependentFollowUpQuestion(normalizedQuestion: string, tokenCount: number) {
   const hasContextReference =
     /^(and|also|then|so)\b/.test(normalizedQuestion) ||
-    /\b(it|that|this|they|them|those|same|another|still|again|later|after|before|next|previous|above|there|one|ones)\b/.test(
+    /\b(it|that|this|they|them|their|him|her|those|same|another|still|again|previous|above|one|ones)\b/.test(
       normalizedQuestion,
     );
   if (!hasContextReference) return false;
-  if (tokens.length <= 14) return true;
-  if (tokens.length > 44) return false;
+  if (tokenCount > 28) return false;
   if (/\b(main istv|daymond john|next level ceo|nlceo|dj show|dj)\b/.test(normalizedQuestion)) return false;
+
+  const pronounOnlyFollowUp =
+    tokenCount <= 16 &&
+    /\b(it|that|this|they|them|their|him|her|those|same|another|still|again|previous|above|one|ones)\b/.test(
+      normalizedQuestion,
+    );
+  if (pronounOnlyFollowUp) return true;
+
+  if (tokenCount <= 18 && /^(and|also|then|so)\b/.test(normalizedQuestion)) return true;
+  if (tokenCount > 22) return false;
 
   return /\b(cohort|deadline|deposit|funds|payment|pay|sign|greenlight|qualify|qualified|client|show|package|discount|approval|allowed|fit|reschedule|exception|contract)\b/.test(
     normalizedQuestion,
