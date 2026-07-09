@@ -588,6 +588,15 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "current-show fallback handles Legacy Makers docs",
+    runtime.includes("isLegacyMakersDocsQuestion") &&
+      runtime.includes("current Sales Ops-approved Legacy Makers materials") &&
+      runtime.includes("ISTV-assigned rep") &&
+      runtime.includes("only sell Daymond John"),
+    "current-show-source approved fallback returns Legacy Makers docs/passoff guidance instead of the generic show list",
+  );
+
+  addCheck(
     "AI answer prompt requires scoped useful answers",
     runtime.includes("If the user asks for only one product, package, show, or topic, do not include unrelated sections.") &&
       runtime.includes("Do not dump every related fact.") &&

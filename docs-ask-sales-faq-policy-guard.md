@@ -243,6 +243,14 @@ Safety kept:
 Validation target:
 
 - Dashboard validator now checks that context routing is filtered and that the generated bundle contains the real Slack regression rules.
+
+### 2026-07-09 Live Retest Fallback Cleanup
+
+The final live retest showed the approved source article was correct for Legacy Makers docs/info, but the dashboard fallback for `current-show-source` was too generic when the AI provider path fell back. The fallback now detects Legacy Makers docs/info/materials questions and returns the approved Sales Ops materials plus DJ-side passoff wording instead of dumping the full show list.
+
+Validation target:
+
+- Dashboard validator now checks that the current-show fallback contains the Legacy Makers docs/passoff branch.
 - FAQ policy guard has 111 regression cases after adding the real Slack questions and the July 9 screenshot follow-up cases.
 
 ## 2026-07-09 July 9 Screenshot Follow-Up Hardening

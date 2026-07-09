@@ -1788,7 +1788,7 @@ function buildApprovedArticleFallbackOutput(input: {
     case "call-1-flow":
       return buildCallOnePricingFallback();
     case "current-show-source":
-      return buildCurrentShowListFallback(article);
+      return buildCurrentShowListFallback(article, input.currentQuestion);
     case "istv-nlceo-pricing-and-same-day-discount":
       return buildPricingAndTimingFallback(input.currentQuestion, input.policyDecision);
     case "main-istv-call-2-cohort-reschedule-rules":
@@ -1842,7 +1842,32 @@ function buildCallOnePricingFallback(): ModelOutput {
   });
 }
 
-function buildCurrentShowListFallback(article: ApprovedFaqArticle): ModelOutput {
+function buildCurrentShowListFallback(article: ApprovedFaqArticle, question = ""): ModelOutput {
+  if (isLegacyMakersDocsQuestion(question)) {
+    return cloneModelOutput({
+      answer:
+        "For Legacy Makers info/docs, use the current Sales Ops-approved Legacy Makers materials. If you are on the DJ side, only sell Daymond John; if the applicant wants an ISTV show such as Legacy Makers, pass them to an ISTV-assigned rep.",
+      summary: "Use the current Sales Ops-approved Legacy Makers materials and keep DJ-side applicants with the DJ/NLCEO path.",
+      sections: [
+        {
+          title: "What to use",
+          body: "Use the current Sales Ops-approved Legacy Makers materials.",
+          tone: "default",
+        },
+        {
+          title: "DJ-side boundary",
+          body: "If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show such as Legacy Makers, pass them to an ISTV-assigned rep.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: [`approved:${article.id}`],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 95,
+    });
+  }
+
   const showList = extractMarkdownListItems(extractMarkdownSection(article.body, "Latest Approved Show List"));
   const items = showList.length ? showList : ["Legacy Makers", "Women in Power", "Operation CEO", "America's Top Lawyers", "America's Best Doctors"];
   const answer = `The latest approved show list I have is:\n${items.map((item) => `- ${item}`).join("\n")}`;
@@ -1868,6 +1893,14 @@ function buildCurrentShowListFallback(article: ApprovedFaqArticle): ModelOutput 
     confidence_label: "High",
     confidence_score: 95,
   });
+}
+
+function isLegacyMakersDocsQuestion(question: string) {
+  const normalizedQuestion = normalizeText(question);
+  return (
+    /\blegacy makers?\b/.test(normalizedQuestion) &&
+    /\b(doc|docs|document|documents|info|information|material|materials)\b/.test(normalizedQuestion)
+  );
 }
 
 function buildPricingAndTimingFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
