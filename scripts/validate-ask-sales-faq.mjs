@@ -700,7 +700,7 @@ if (missingFiles.length === 0) {
       runtime.includes("Use sections only when they add useful steps") &&
       runtime.includes("Do not turn simple answers into policy memos") &&
       runtime.includes("userRequestedShortAnswer") &&
-      runtime.includes("For DJ/NLCEO, the main ISTV cohort rule does not apply"),
+      runtime.includes("For DJ/NLCEO: no cohort rule, no same-day discount"),
     "approved answers and DJ/NLCEO critical fallback can stay safe without forcing long blocky replies",
   );
 
@@ -722,6 +722,16 @@ if (missingFiles.length === 0) {
       runtime.includes("Payment options") &&
       runtime.includes("PIF"),
     "explicit short-answer requests render as a single concise answer, while dense payment/package options can render as bullets without changing policy facts",
+  );
+
+  addCheck(
+    "final presentation polish stays generic and validation-safe",
+    runtime.includes("mergeDuplicateDisplaySections") &&
+      runtime.includes("mergeSectionBodies") &&
+      runtime.includes("strongerSectionTone") &&
+      runtime.includes("For DJ/NLCEO: no cohort rule, no same-day discount") &&
+      runtime.includes("Ask Sales FAQ critical fallback failed validation"),
+    "duplicate adjacent display sections are merged, short DJ/NLCEO fallbacks stay concise, and critical-repair warnings are emitted only when the final fallback cannot validate",
   );
 
   addCheck(

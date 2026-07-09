@@ -1458,7 +1458,7 @@ function buildCriticalFallbackOutput(question: string, policyDecision: PolicyGua
   if (!userRequestedShortAnswer(question) || !fallbackRule.id.startsWith("dj-nlceo-")) return fallback;
 
   const answer =
-    "For DJ/NLCEO, the main ISTV cohort rule does not apply: there is no cohort rule and no same-day discount. Use only the listed payment options; do not promise a hold, custom plan, or future payment date unless the current DJ/NLCEO owner confirms it.";
+    "For DJ/NLCEO: no cohort rule, no same-day discount, and main ISTV cohort rules do not apply. Use only listed payment options; do not promise a hold or future payment date without owner approval.";
 
   return {
     ...fallback,
@@ -1496,7 +1496,7 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput): Mode
 
   return {
     ...shaped,
-    sections: shaped.sections?.flatMap(normalizeStructuredAnswerSections),
+    sections: mergeDuplicateDisplaySections(shaped.sections?.flatMap(normalizeStructuredAnswerSections) || []),
   };
 }
 
@@ -1713,6 +1713,67 @@ function extractCommaSeparatedList(body: string, title?: string) {
   if (items.some((item) => item.split(/\s+/).length > 8)) return null;
 
   return { intro, items };
+}
+
+function mergeDuplicateDisplaySections(
+  sections: NonNullable<ModelOutput["sections"]>,
+): NonNullable<ModelOutput["sections"]> {
+  const merged: NonNullable<ModelOutput["sections"]> = [];
+
+  for (const section of sections) {
+    const last = merged.at(-1);
+    if (!last || normalizeText(last.title || "") !== normalizeText(section.title || "")) {
+      merged.push(section);
+      continue;
+    }
+
+    const body = mergeSectionBodies(last.body, section.body);
+    const items = mergeSectionItems(last.items, section.items);
+    merged[merged.length - 1] = {
+      ...last,
+      body,
+      items,
+      tone: strongerSectionTone(last.tone, section.tone),
+    };
+  }
+
+  return merged;
+}
+
+function mergeSectionBodies(first?: string, second?: string) {
+  if (!first) return second;
+  if (!second) return first;
+  if (normalizeText(first) === normalizeText(second)) return first;
+  return `${first} ${second}`;
+}
+
+function mergeSectionItems(first: string[] = [], second: string[] = []) {
+  const items: string[] = [];
+  const seen = new Set<string>();
+
+  for (const item of [...first, ...second]) {
+    const key = normalizeText(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    items.push(item);
+  }
+
+  return items.length ? items : undefined;
+}
+
+function strongerSectionTone(
+  first?: NonNullable<ModelOutput["sections"]>[number]["tone"],
+  second?: NonNullable<ModelOutput["sections"]>[number]["tone"],
+) {
+  return sectionToneRank(second) > sectionToneRank(first) ? second : first;
+}
+
+function sectionToneRank(tone?: NonNullable<ModelOutput["sections"]>[number]["tone"]) {
+  if (tone === "route") return 4;
+  if (tone === "warning") return 3;
+  if (tone === "good") return 2;
+  if (tone === "default") return 1;
+  return 0;
 }
 
 function validateCriticalAnswer(input: {
@@ -2100,6 +2161,9 @@ async function ensureCriticalAnswer(input: {
   });
   if (!validationErrors.length) return { output: input.output, diagnostics: [] };
 
+  let repairFailure: unknown = null;
+  let repairedErrors: string[] = [];
+
   try {
     const repair = await generateProviderJson<ModelOutput>({
       purpose: "critical answer repair",
@@ -2156,29 +2220,47 @@ async function ensureCriticalAnswer(input: {
       },
     });
     const diagnostics = [repair.diagnostics, ...repairedOutput.diagnostics];
-    const repairedErrors = validateCriticalAnswer({
+    repairedErrors = validateCriticalAnswer({
       currentQuestion: validationQuestion,
       latestQuestion: input.currentQuestion,
       policyDecision: input.policyDecision,
       output: repairedOutput.output,
     });
     if (!repairedErrors.length) return { output: repairedOutput.output, diagnostics };
+  } catch (error) {
+    repairFailure = error;
+  }
 
+  const fallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
+  if (fallback) {
+    const fallbackErrors = validateCriticalAnswer({
+      currentQuestion: validationQuestion,
+      latestQuestion: input.currentQuestion,
+      policyDecision: input.policyDecision,
+      output: fallback,
+    });
+    if (!fallbackErrors.length) return { output: fallback, diagnostics: [], fallbackUsed: true };
+
+    console.warn("Ask Sales FAQ critical fallback failed validation", {
+      matchedRuleId: input.policyDecision.matchedRuleId,
+      articleId: input.policyDecision.articleId,
+      errors: fallbackErrors,
+    });
+  }
+
+  if (repairedErrors.length) {
     console.warn("Ask Sales FAQ critical answer repair still failed", {
       matchedRuleId: input.policyDecision.matchedRuleId,
       articleId: input.policyDecision.articleId,
       errors: repairedErrors,
     });
-  } catch (error) {
+  } else if (repairFailure) {
     console.warn("Ask Sales FAQ critical answer repair failed", {
       matchedRuleId: input.policyDecision.matchedRuleId,
       articleId: input.policyDecision.articleId,
-      error: sanitizeProviderError(error),
+      error: sanitizeProviderError(repairFailure),
     });
   }
-
-  const fallback = buildCriticalFallbackOutput(validationQuestion, input.policyDecision);
-  if (fallback) return { output: fallback, diagnostics: [], fallbackUsed: true };
 
   throw new Error(`AI output failed critical answer validation: ${validationErrors.join("; ")}`);
 }
