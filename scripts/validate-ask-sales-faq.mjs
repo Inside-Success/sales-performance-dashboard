@@ -123,6 +123,9 @@ if (missingFiles.length === 0) {
       bundle.includes("answer-pre-audition-video-sharing") &&
       bundle.includes("answer-license-options-document") &&
       bundle.includes("answer-short-notice-onboarding") &&
+      bundle.includes("do not need to notify anyone separately") &&
+      !bundle.includes("same-day or short-notice onboarding, post in the fulfillment hotline") &&
+      runtime.includes("No separate notification is needed when required post-sale steps are complete.") &&
       bundle.includes("answer-dj-nlceo-book-out-timing") &&
       bundle.includes("answer-four-pay-mastermind-filming") &&
       bundle.includes("answer-rebrand-examples"),

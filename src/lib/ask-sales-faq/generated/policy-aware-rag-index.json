@@ -142,13 +142,13 @@
       "authority": 100,
       "category": "Call Process & Scripts",
       "heading": "Answer",
-      "id": "rag_1642bc8f88dad83f",
+      "id": "rag_5c69eda52d1d59f9",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/call-process/post-sale-handoff-after-close.md",
       "source_title": "Post-Sale Handoff After Close",
       "source_type": "approved_article",
-      "text": "## Answer\n\nAfter a sale, follow the \"How to close a sale\" cheat sheet from onboarding.\n\nConfirmed sales-side handoff steps:\n\n- Close the call.\n- Take payment.\n- Get the contract signed.\n- Review the onboarding email with the client.\n- Send the onboarding email.\n- Book the onboarding call for the next day.\n- Confirm payment in the All Payments / PayMe process once payment is actually confirmed.\n\nIf waiting on ACH, do not post PayMe / payment confirmation until ACH clears through the current tech/finance process.\n\nThe studio executive team handles detailed onboarding-call questions. Reps should avoid overpromising fulfillment details.\n\nIf a same-day or short-notice onboarding call has just been booked after a close, post in the fulfillment hotline channel to inform the production team. Include the client's name and email address, and avoid sharing extra sensitive details beyond what the fulfillment team needs.",
+      "text": "## Answer\n\nAfter a sale, follow the \"How to close a sale\" cheat sheet from onboarding.\n\nConfirmed sales-side handoff steps:\n\n- Close the call.\n- Take payment.\n- Get the contract signed.\n- Review the onboarding email with the client.\n- Send the onboarding email.\n- Book the onboarding call for the next day.\n- Confirm payment in the All Payments / PayMe process once payment is actually confirmed.\n\nIf waiting on ACH, do not post PayMe / payment confirmation until ACH clears through the current tech/finance process.\n\nThe studio executive team handles detailed onboarding-call questions. Reps should avoid overpromising fulfillment details.\n\nIf a same-day or short-notice onboarding call has just been booked after a close, the rep does not need to notify anyone separately as long as all required post-sale steps are complete: payment taken, contract signed, onboarding email reviewed and sent, and the onboarding call booked. The onboarding call itself is handled by the studio executive team.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -172,13 +172,13 @@
       "authority": 100,
       "category": "Call Process & Scripts",
       "heading": "What Reps Can Say",
-      "id": "rag_be1308fb838a3252",
+      "id": "rag_5d6a4b76843ac186",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/call-process/post-sale-handoff-after-close.md",
       "source_title": "Post-Sale Handoff After Close",
       "source_type": "approved_article",
-      "text": "## What Reps Can Say\n\n- \"After payment and signature, review and send the onboarding email and book the onboarding call for the next day.\"\n- \"Only confirm PayMe / All Payments after the payment is actually confirmed.\"\n- \"If ACH is pending, wait until it clears through the current tech/finance process.\"\n- \"Detailed onboarding questions are handled by the studio executive team on the onboarding call.\"\n- \"For same-day or short-notice onboarding, post in the fulfillment hotline with the client's name and email address so production is aware.\"",
+      "text": "## What Reps Can Say\n\n- \"After payment and signature, review and send the onboarding email and book the onboarding call for the next day.\"\n- \"Only confirm PayMe / All Payments after the payment is actually confirmed.\"\n- \"If ACH is pending, wait until it clears through the current tech/finance process.\"\n- \"Detailed onboarding questions are handled by the studio executive team on the onboarding call.\"\n- \"You do not need to notify anyone separately for a same-day onboarding call booking as long as payment is taken, the contract is signed, the onboarding email is reviewed and sent, and the call is booked. The onboarding call itself is handled by the studio executive team.\"",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -187,13 +187,13 @@
       "authority": 100,
       "category": "Call Process & Scripts",
       "heading": "What Reps Must Not Say",
-      "id": "rag_2a82d129405c11a6",
+      "id": "rag_8d24faacd9c9f7ca",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/call-process/post-sale-handoff-after-close.md",
       "source_title": "Post-Sale Handoff After Close",
       "source_type": "approved_article",
-      "text": "## What Reps Must Not Say\n\n- Do not post payment confirmation while ACH or another payment method is still pending.\n- Do not promise fulfillment details that belong to the studio executive / onboarding team.\n- Do not skip contract signature or onboarding-call booking.\n- Do not invent custom post-sale steps beyond the current cheat sheet.\n- Do not assume production saw a same-day onboarding booking without notifying the fulfillment hotline.",
+      "text": "## What Reps Must Not Say\n\n- Do not post payment confirmation while ACH or another payment method is still pending.\n- Do not promise fulfillment details that belong to the studio executive / onboarding team.\n- Do not skip contract signature or onboarding-call booking.\n- Do not invent custom post-sale steps beyond the current cheat sheet.\n- Do not skip or gloss over required post-sale steps before treating a same-day onboarding booking as handled.",
       "trust_label": "Approved FAQ article"
     },
     {

@@ -230,7 +230,7 @@ KB/rule coverage added from confirmed owner replies:
 - License Options / reuse license document caution.
 - DJ/NLCEO no-main-cohort timing for delayed Call 2 / funds-unavailable situations.
 - 4-pay / August filming / Mastermind fulfillment hotline double-check.
-- Short-notice onboarding fulfillment hotline notification.
+- Mike/Rich-approved same-day onboarding no-separate-notification wording when required post-sale steps are complete.
 - Contract before Call 2: allowed but not advised.
 - Greenlight social-check/internal-status clarification.
 

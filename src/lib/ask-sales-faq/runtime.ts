@@ -2333,22 +2333,22 @@ function buildGreenlightFallback(question: string, policyDecision: PolicyGuardDe
 function buildPostSaleFallback(question: string): ModelOutput {
   const shortNotice = /\b(short notice|same day|today|just closed|booked.*onboarding|onboarding.*booked)\b/i.test(question);
   const answer = shortNotice
-    ? "Yes. For a same-day or short-notice onboarding that was just booked after a close, post in the fulfillment hotline channel with the client's name and email address so the production team is aware."
+    ? "You do not need to notify anyone separately for a same-day onboarding call booking, as long as you have completed all required post-sale steps: taken payment, gotten the contract signed, reviewed and sent the onboarding email, and booked the call for today. The onboarding call itself is handled by the studio executive team, so they will be ready."
     : "After payment and signature, review and send the onboarding email, book the onboarding call for the next day, and only confirm PayMe / All Payments after payment is actually confirmed.";
 
   return cloneModelOutput({
     answer,
-    summary: shortNotice ? "Notify fulfillment for same-day or short-notice onboarding." : "Follow the approved post-sale handoff steps.",
+    summary: shortNotice ? "No separate notification is needed when required post-sale steps are complete." : "Follow the approved post-sale handoff steps.",
     sections: [
       {
-        title: shortNotice ? "What to do" : "Post-sale steps",
+        title: shortNotice ? "Same-day onboarding" : "Post-sale steps",
         body: answer,
-        tone: shortNotice ? "route" : "default",
+        tone: "default",
       },
     ],
     selected_source_ids: ["approved:post-sale-handoff-after-close"],
-    needs_route: shortNotice,
-    route_reason: shortNotice ? "Same-day or short-notice onboarding should be posted in the fulfillment hotline." : "",
+    needs_route: false,
+    route_reason: "",
     confidence_label: "High",
     confidence_score: 94,
   });
