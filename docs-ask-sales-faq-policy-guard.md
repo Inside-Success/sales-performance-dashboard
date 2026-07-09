@@ -140,3 +140,36 @@ Verification:
 - Dashboard code commit: `8e13e31`.
 - Vercel Production deployment for the code commit reached Ready: `dpl_AmbnWDSMVxgjjVnaTEw7npYB1Lr9`.
 - Signed-in retest is still pending.
+
+## 2026-07-09 Source Routing And Presentation Contract Hardening
+
+Status: dashboard runtime/source-policy fix implemented, pushed, locally verified, and production-deployed without starting a local dev server.
+
+What changed:
+
+- Added a source-level route rule for greenlight letter requests, urgent greenlight sends, and greenlight-letter status/escalations. These route to `#greenlight-requests`.
+- Added a critical greenlight-letter validator/fallback so greenlight answers cannot substitute `#sales-finance-requests`.
+- Added an abstain guard for live account-specific commission tier, leaderboard, Bill.com, and payout questions.
+- Added short-answer display metadata so explicit one-line/short requests do not rebuild a duplicate `Answer` card.
+- Expanded presentation-only normalization for markdown bullets, inline labeled payment options, dense option groups, and comma-separated show lists.
+- Added a section-label contract: use `What you can say` only for literal script wording; use `What you can do` for actions.
+
+Safety kept:
+
+- No fallback-to-any-approved-answer behavior.
+- No caching, model downgrade, broad deterministic answer path, RAG expansion, API schema change, database schema change, Slack write, Google write, or n8n workflow change.
+- The AI answer path still runs after approved source selection and still passes rep-facing cleanup, critical validation, grounding validation, and presentation shaping.
+
+Verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 67 / 67 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed for runtime/generated/validator files.
+- Dashboard code commit: `5f4e959`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_7gfgHvjo7gnA5BNtt9hLPwGVnEJV`.
+- Vercel build errors-only log check showed no build errors.
+- Vercel runtime error/log check showed no runtime errors, warnings, or fatal logs for the deployment check window.
+- Anonymous signed-out page/API guards still returned sign-in / `not_signed_in`.
+- User signed-in 28-question retest is still pending.

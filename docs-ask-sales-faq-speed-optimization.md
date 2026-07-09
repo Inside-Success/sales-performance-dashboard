@@ -183,3 +183,36 @@ Latest verification:
 - Dashboard code commit: `8e13e31`.
 - Vercel Production deployment for the code commit reached Ready: `dpl_AmbnWDSMVxgjjVnaTEw7npYB1Lr9`.
 - Signed-in retest is still pending.
+
+## Source Routing And Presentation Contract Hardening
+
+The 2026-07-09 28-question review found correctness/presentation issues that were not speed issues:
+
+- greenlight-letter questions could select finance/payment routing;
+- live commission-tier questions could borrow the wrong finance article;
+- explicit short answers could still rebuild a duplicate `Answer` card;
+- show/payment lists could still render as dense paragraphs.
+
+Implemented dashboard fix:
+
+- Added greenlight-letter source routing and critical validation for `#greenlight-requests`.
+- Added an abstain guard for live commission tier, leaderboard, Bill.com, and payout questions.
+- Added explicit short-answer display metadata to prevent duplicate `Answer` fallback cards.
+- Expanded presentation-only formatting for existing list-like answer text and section labels.
+
+This does not change the speed path:
+
+- No provider/model downgrade, caching, fallback-to-any-approved-answer, API schema change, DB schema change, Slack write, Google write, or n8n workflow change.
+- The normal answer-quality path remains source selection -> AI answer -> rep-facing cleanup -> critical validation -> grounding validation -> display shaping.
+
+Latest verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 67 / 67 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- `npx tsc --noEmit`: passed.
+- Touched-file `git diff --check`: passed for runtime/generated/validator files.
+- Dashboard code commit: `5f4e959`.
+- Vercel Production deployment for the code commit reached Ready: `dpl_7gfgHvjo7gnA5BNtt9hLPwGVnEJV`.
+- Vercel build/runtime checks were clean in the deployment check window.
+- Signed-in 28-question retest is still pending.
