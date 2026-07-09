@@ -4,6 +4,8 @@ export type QuestionScope = CanonicalProductScope | "comparison" | "unknown";
 
 export type QuestionRelation = "social" | "rewrite" | "context_follow_up" | "new";
 
+export type RewriteIntent = "format_list" | "shorten" | "rewrite";
+
 export type QuestionFrameMessage = {
   role: "user" | "assistant";
   content: string;
@@ -54,8 +56,15 @@ const SOCIAL_PATTERN =
   /^(?:thanks|thank\s+you|thankyou|appreciate\s+it|got\s+it|ok(?:ay)?\s+thanks|perfect(?:,?\s+thanks)?|great(?:,?\s+thanks)?|that\s+helps|makes\s+sense|sounds\s+good|cool(?:,?\s+thanks)?|awesome(?:,?\s+thanks)?)[.! ]*$/;
 
 const REWRITE_ACTION_PATTERN =
-  /\b(?:make|keep|rewrite|rephrase|shorten|summarize|condense|simplify|format|formatting|reformat)\b/;
-const REWRITE_TARGET_PATTERN = /\b(?:that|this|it|answer|reply|response|list|shorter|brief|concise|simpler|simple|properly)\b/;
+  /\b(?:make|keep|put|rewrite|rephrase|shorten|summarize|condense|simplify|format|formatting|reformat|organize|arrange)\b/;
+const LIST_REWRITE_ACTION_PATTERN = /\b(?:list|bullet|bullets|number|numbered)\b/;
+const REWRITE_TARGET_PATTERN =
+  /\b(?:that|this|it|these|those|answer|reply|response|list|items|shows|options|shorter|brief|concise|simpler|simple|properly|bullets|table)\b/;
+const REWRITE_REFERENCE_PATTERN =
+  /\b(?:that|this|it|these|those|them|answer|reply|response|previous|earlier|above|properly)\b/;
+const LIST_FORMAT_PATTERN =
+  /\b(?:format|formatting|reformat|organize|arrange|list|bullet|bullets|number|numbered|table)\b/;
+const SHORTEN_PATTERN = /\b(?:shorten|summarize|condense|shorter|brief|concise|simplify|simpler|simple)\b/;
 
 const CONTEXT_REFERENCE_PATTERN =
   /(?:^(?:and|also|then|so|but|what\s+about|how\s+about|what\s+if)\b|\b(?:previous|last|earlier)\s+(?:question|message|one)\b|\b(?:as\s+i\s+said|as\s+mentioned|already\s+told\s+you|already\s+said|same\s+(?:question|case|client|prospect))\b)/;
@@ -124,7 +133,7 @@ function classifyRelation(input: {
   isScopeCorrection: boolean;
 }): QuestionRelation {
   if (SOCIAL_PATTERN.test(input.normalizedCurrent)) return "social";
-  if (isRewriteRequest(input.normalizedCurrent)) return "rewrite";
+  if (input.previousSubstantiveUserQuestion && isRewriteRequest(input.normalizedCurrent)) return "rewrite";
   if (!input.previousSubstantiveUserQuestion) return "new";
   if (input.isScopeCorrection) return "context_follow_up";
   if (isContextFollowUp(input.normalizedCurrent)) return "context_follow_up";
@@ -132,7 +141,16 @@ function classifyRelation(input: {
 }
 
 function isRewriteRequest(normalizedQuestion: string) {
-  return REWRITE_ACTION_PATTERN.test(normalizedQuestion) && REWRITE_TARGET_PATTERN.test(normalizedQuestion);
+  if (REWRITE_ACTION_PATTERN.test(normalizedQuestion) && REWRITE_TARGET_PATTERN.test(normalizedQuestion)) return true;
+  return LIST_REWRITE_ACTION_PATTERN.test(normalizedQuestion) && REWRITE_REFERENCE_PATTERN.test(normalizedQuestion);
+}
+
+export function classifyRewriteIntent(question: string): RewriteIntent | null {
+  const normalizedQuestion = normalizeForFrame(question);
+  if (!isRewriteRequest(normalizedQuestion)) return null;
+  if (LIST_FORMAT_PATTERN.test(normalizedQuestion)) return "format_list";
+  if (SHORTEN_PATTERN.test(normalizedQuestion)) return "shorten";
+  return "rewrite";
 }
 
 function isContextFollowUp(normalizedQuestion: string) {

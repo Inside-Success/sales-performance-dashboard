@@ -129,6 +129,36 @@ describe("buildAnswerPlan", () => {
     expect(result.routeRequired).toBe(true);
   });
 
+  it("selects only the applicable medical qualification fact", () => {
+    const doctor = plan(
+      "Can a physician employed by a hospital qualify without owning the practice?",
+      "qualification-and-show-fit-rubric",
+    );
+    const nurse = plan(
+      "Can a registered nurse qualify as a doctor for America's Best Doctors?",
+      "qualification-and-show-fit-rubric",
+    );
+
+    expect(doctor.selectedPolicyUnits.map((unit) => unit.id)).toEqual([
+      "americas-best-doctors-employed-doctor",
+    ]);
+    expect(nurse.selectedPolicyUnits.map((unit) => unit.id)).toEqual([
+      "americas-best-doctors-nurse-boundary",
+    ]);
+  });
+
+  it("selects the English-only production fact for unseen language wording", () => {
+    const result = plan(
+      "Could we translate and produce this client's full show in Spanish?",
+      "production-language-and-translation-boundary",
+    );
+
+    expect(result.selectedPolicyUnits.map((unit) => unit.id)).toEqual([
+      "english-only-production-and-translation",
+    ]);
+    expect(result.fallbackMode).toBe("approved_answer");
+  });
+
   it("fails closed when there is no compatible approved unit", () => {
     const result = plan("How do I reset my dashboard password?", null);
 

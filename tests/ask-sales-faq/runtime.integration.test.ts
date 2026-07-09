@@ -179,18 +179,68 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).not.toMatch(/I'll make sure|I'll connect/i);
   });
 
-  it("routes the unresolved hospital-employed doctor ownership conflict without choosing a side", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
-
+  it("answers the approved hospital-employed doctor rule without reviving superseded ownership guidance", async () => {
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(
+            "Yes. A hospital-employed doctor can qualify for America's Best Doctors even if they do not own the practice.",
+            { selectedSourceIds: ["approved:qualification-and-show-fit-rubric"] },
+          ),
+        ),
+      ],
+    });
     const result = await runAskSalesFaq(
       "Does a hospital-employed doctor qualify if she does not own a private practice?",
     );
 
-    expect(result.outcome).toBe("abstain_unapproved");
-    expect(result.answer).toContain("Current guidance conflicts");
-    expect(result.answer).toContain("current qualification owner");
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result.outcome).toBe("answer_from_approved_article");
+    expect(result.answer).toContain("can qualify");
+    expect(result.answer).not.toMatch(/guidance conflicts|must own|does not qualify/i);
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
+      "americas-best-doctors-employed-doctor",
+    ]);
+  });
+
+  it("keeps nurses outside the America's Best Doctors doctor category", async () => {
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput("No. Nurses do not qualify as doctors for America's Best Doctors.", {
+            selectedSourceIds: ["approved:qualification-and-show-fit-rubric"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Can a registered nurse qualify as a doctor for America's Best Doctors?");
+
+    expect(result.answer).toContain("do not qualify");
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
+      "americas-best-doctors-nurse-boundary",
+    ]);
+  });
+
+  it("answers unseen Spanish-production wording from the approved English-only fact", async () => {
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(
+            "ISTV currently produces shows in English. Do not promise a Spanish-language episode or translation support.",
+            { selectedSourceIds: ["approved:production-language-and-translation-boundary"] },
+          ),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Could production record the entire show in Spanish for this client?");
+
+    expect(result.outcome).toBe("answer_from_approved_article");
+    expect(result.answer).toContain("in English");
+    expect(result.answer).toContain("Do not promise");
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
+      "english-only-production-and-translation",
+    ]);
   });
 
   it("keeps a generic unsupported answer natural and hides internal routing reasons", async () => {
@@ -507,6 +557,60 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBe("ai_runtime_approved_fallback");
     expect(result.answer).toContain("Legacy Makers");
     expect(result.answer).toContain("Masters of Innovation");
+  });
+
+  it("keeps an approved enumeration structured even when the model returns one dense paragraph", async () => {
+    const denseShowList =
+      "The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_article",
+          article_id: "current-show-source",
+          confidence_score: 97,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The approved current-show article controls this question.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(denseShowList, {
+            selectedSourceIds: ["approved:current-show-source"],
+            sections: [{ title: "What you can say", body: denseShowList }],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("What shows do we currently offer?");
+    const list = result.structuredAnswer?.sections.find((section) => section.title === "Latest Approved Show List");
+
+    expect(list?.items).toHaveLength(30);
+    expect(list?.items?.[0]).toBe("Legacy Makers");
+    expect(list?.items?.at(-1)).toBe("Masters of Innovation");
+  });
+
+  it("formats the previous list without re-routing policy or calling a provider", async () => {
+    const previousAnswer =
+      "The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.";
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const messages: AskSalesFaqChatMessage[] = [
+      { role: "user", content: "What shows do we offer?" },
+      { role: "assistant", content: previousAnswer },
+      { role: "user", content: "Format these properly as a list." },
+    ];
+
+    const result = await runAskSalesFaq(messages.at(-1)?.content || "", messages);
+    const list = result.structuredAnswer?.sections.find((section) => section.title === "Current shows");
+
+    expect(result.outcome).toBe("conversation_reply");
+    expect(list?.items).toHaveLength(30);
+    expect(result.answer).toContain("- Legacy Makers");
+    expect(result.answer).toContain("- Masters of Innovation");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("keeps a provider-timeout fallback inside an explicit main ISTV scope", async () => {

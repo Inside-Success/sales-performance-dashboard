@@ -131,6 +131,11 @@ export type AskSalesFaqConversationSummary = {
   }>;
 };
 
+export type AskSalesFaqConversationPage = {
+  conversations: AskSalesFaqConversationSummary[];
+  nextCursor: string | null;
+};
+
 export type AskSalesFaqLogPayload = {
   conversationId: string;
   userMessageId: string;

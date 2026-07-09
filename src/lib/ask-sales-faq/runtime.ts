@@ -17,7 +17,11 @@ import {
   type ApprovedPolicyUnitsDocument,
   type AskSalesAnswerPlan,
 } from "@/lib/ask-sales-faq/answer-plan";
-import { buildQuestionFrame, type QuestionFrame } from "@/lib/ask-sales-faq/question-frame";
+import {
+  buildQuestionFrame,
+  classifyRewriteIntent,
+  type QuestionFrame,
+} from "@/lib/ask-sales-faq/question-frame";
 import approvedPolicyUnits from "@/lib/ask-sales-faq/generated/approved-policy-units.json";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 
@@ -1185,11 +1189,44 @@ export async function runAskSalesFaq(
   const routingQuestion = questionFrame.effectiveQuestion;
   const conversationContext = buildConversationContext(sanitizedConversationMessages);
   const routingConversationContext =
-    questionFrame.relation === "context_follow_up" || shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
+    questionFrame.relation === "context_follow_up" ||
+    questionFrame.relation === "rewrite" ||
+    shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
     ? conversationContext
     : "";
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, routingConversationContext);
   const providerDiagnostics: ProviderCallDiagnostics[] = [];
+
+  const deterministicPresentationReply =
+    questionFrame.relation === "rewrite"
+      ? buildDeterministicPresentationReply(sanitizedQuestion, sanitizedConversationMessages)
+      : null;
+  if (deterministicPresentationReply) {
+    const decision = buildConversationReplyDecision(deterministicPresentationReply);
+    const answer = sanitizeModelAnswer(deterministicPresentationReply.answer);
+    return buildHandledResponse({
+      startedAt,
+      sanitizedQuestion,
+      contextualQuestion,
+      redactions,
+      decision,
+      answer,
+      structuredAnswer: normalizeModelStructuredAnswer(deterministicPresentationReply, answer, decision),
+      source: null,
+      provider: null,
+      model: null,
+      errorClass: null,
+      runtimeMetadata: buildRuntimeMetadata({
+        evidence: [],
+        modelEvidence: [],
+        providerDiagnostics,
+        criticalFallbackUsed: false,
+        policyDecision: buildConversationPlannerDecision(),
+        questionFrame,
+      }),
+    });
+  }
+
   let policyDecision = matchPolicyGuard(routingQuestion, questionFrame);
   let conversationPlannerAttempted = false;
 
@@ -1381,9 +1418,14 @@ export async function runAskSalesFaq(
       output: criticalOutputResult.output,
     });
     providerDiagnostics.push(...groundedOutputResult.diagnostics);
+    const presentationSafeOutput = shapeApprovedArticlePresentation(
+      sanitizedQuestion,
+      policyDecision.primaryArticle,
+      groundedOutputResult.output,
+    );
     const finalOutput = shapeModelOutputForDisplay(
       sanitizedQuestion,
-      groundedOutputResult.output,
+      presentationSafeOutput,
       policyDecision.decision === "route_from_approved_article",
     );
     const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
@@ -1430,13 +1472,23 @@ export async function runAskSalesFaq(
       answerPlan,
     });
     if (fallbackOutput) {
-      const selectedEvidence = resolveSelectedEvidence(fallbackOutput, candidates, sanitizedQuestion);
+      const presentationSafeFallback = shapeApprovedArticlePresentation(
+        sanitizedQuestion,
+        policyDecision.primaryArticle,
+        fallbackOutput,
+      );
+      const finalFallback = shapeModelOutputForDisplay(
+        sanitizedQuestion,
+        presentationSafeFallback,
+        policyDecision.decision === "route_from_approved_article",
+      );
+      const selectedEvidence = resolveSelectedEvidence(finalFallback, candidates, sanitizedQuestion);
       const decision = buildDecision({
-        output: fallbackOutput,
+        output: finalFallback,
         evidence: selectedEvidence.length ? selectedEvidence : candidates,
         policyDecision,
       });
-      const answer = sanitizeModelAnswer(fallbackOutput.answer);
+      const answer = sanitizeModelAnswer(finalFallback.answer);
 
       return buildHandledResponse({
         startedAt,
@@ -1445,7 +1497,7 @@ export async function runAskSalesFaq(
         redactions,
         decision,
         answer,
-        structuredAnswer: normalizeModelStructuredAnswer(fallbackOutput, answer, decision),
+        structuredAnswer: normalizeModelStructuredAnswer(finalFallback, answer, decision),
         source: sourceSummaryFromDecision(decision),
         provider: null,
         model: null,
@@ -1615,10 +1667,10 @@ async function tryPlanConversationTurn(input: {
           content: [
             "You are the Ask Sales FAQ conversation planner.",
             "Decide whether the sales rep's current message needs a natural chat reply, an approved sales article, or a safe unsupported fallback.",
-            "Use mode conversation_reply only for conversational turns, acknowledgments, requests to shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
+            "Use mode conversation_reply only for conversational turns, acknowledgments, requests to format/shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
             "For conversation_reply, write only the natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
             "For conversation_reply, set summary equal to the answer and leave sections empty. The UI will render it as a normal chat reply, not a policy card.",
-            "For shorten/rephrase requests, use the most recent substantive assistant sales answer. Ignore brief social replies like 'You're welcome' when resolving what 'that' refers to.",
+            "For format/shorten/rephrase requests, use the most recent substantive assistant sales answer. Preserve every list item and policy fact; change presentation only. Ignore brief social replies like 'You're welcome' when resolving what 'that' refers to.",
             "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless an approved article explicitly allows that exact handoff.",
             "Never use conversation_reply for new sales-policy/action questions, especially money, deposit, payment, discount, contract, greenlight, qualification, offer, promise, hold, or exception questions.",
             "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
@@ -1733,6 +1785,47 @@ function buildConversationReplyDecision(output: ModelOutput): RuntimeDecision {
   };
 }
 
+function buildDeterministicPresentationReply(
+  question: string,
+  conversationMessages: AskSalesFaqChatMessage[],
+): ModelOutput | null {
+  if (classifyRewriteIntent(question) !== "format_list") return null;
+
+  const previousAssistantAnswer = [...conversationMessages]
+    .reverse()
+    .find((message) => message.role === "assistant" && message.content.trim())
+    ?.content.trim();
+  if (!previousAssistantAnswer) return null;
+
+  const normalizedSections = normalizeStructuredAnswerSections({
+    title: "List",
+    body: previousAssistantAnswer,
+    tone: "default",
+  });
+  const listSection = normalizedSections.find((section) => Array.isArray(section.items) && section.items.length >= 2);
+  if (!listSection?.items?.length) return null;
+
+  const listTitle = /\bshow(?:s| list)?\b/i.test(previousAssistantAnswer) ? "Current shows" : "Formatted list";
+  const summary = listTitle === "Current shows" ? "Here’s the show list in an easier format." : "Here it is in an easier format.";
+  return normalizeModelOutput({
+    answer: `${summary}\n${listSection.items.map((item) => `- ${item}`).join("\n")}`,
+    summary,
+    sections: [
+      {
+        title: listTitle,
+        body: listSection.body,
+        items: listSection.items,
+        tone: "default",
+      },
+    ],
+    selected_source_ids: [],
+    needs_route: false,
+    route_reason: "",
+    confidence_label: "High",
+    confidence_score: 100,
+  });
+}
+
 function buildConversationPlannerDecision(): PolicyGuardDecision {
   return {
     decision: "abstain_unapproved",
@@ -1797,7 +1890,7 @@ function shouldPlanConversationBeforeContextPolicy(question: string, conversatio
   if (!normalizedQuestion || tokens.length > 28) return false;
 
   if (isSocialConversationTurn(normalizedQuestion)) return true;
-  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (classifyRewriteIntent(question)) return true;
   if (isConcisePromiseConfirmation(question)) return true;
 
   return false;
@@ -1811,7 +1904,7 @@ function shouldUseConversationContextForRouting(question: string, conversationCo
   if (!normalizedQuestion) return false;
 
   if (isSocialConversationTurn(normalizedQuestion)) return true;
-  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (classifyRewriteIntent(question)) return true;
   if (isConcisePromiseConfirmation(question)) return true;
 
   return isContextDependentFollowUpQuestion(normalizedQuestion, tokens.length);
@@ -1821,10 +1914,9 @@ function shouldAcceptConversationPlannerReply(question: string, output: Conversa
   if (output.mode !== "conversation_reply") return false;
 
   const normalizedQuestion = normalizeText(question);
-  const tokens = tokenize(normalizedQuestion, { expand: false });
 
   if (isSocialConversationTurn(normalizedQuestion)) return true;
-  if (isShortAnswerRewriteRequest(normalizedQuestion, tokens.length)) return true;
+  if (classifyRewriteIntent(question)) return true;
   if (isConcisePromiseConfirmation(question)) return true;
 
   return !isNewSalesPolicyActionQuestion(question);
@@ -1859,17 +1951,6 @@ function isSocialConversationTurn(normalizedQuestion: string) {
     !/\b(price|payment|pay|call|client|prospect|show|contract|discount|cohort|greenlight|allowed|can i|should i|what|how|when|where|why)\b/.test(
       normalizedQuestion,
     )
-  );
-}
-
-function isShortAnswerRewriteRequest(normalizedQuestion: string, tokenCount: number) {
-  if (tokenCount > 20) return false;
-
-  return (
-    /\b(make|keep|say|rewrite|rephrase|shorten|summarize|condense|simplify|shorter|brief|concise|simpler)\b/.test(
-      normalizedQuestion,
-    ) &&
-    /\b(that|this|it|answer|reply|response|shorter|brief|concise|simpler|simple|short)\b/.test(normalizedQuestion)
   );
 }
 
@@ -2772,6 +2853,54 @@ function userRequestedShortAnswer(question: string) {
   );
 }
 
+function shapeApprovedArticlePresentation(
+  question: string,
+  article: ApprovedFaqArticle | null,
+  output: ModelOutput,
+): ModelOutput {
+  if (article?.presentationKind !== "enumeration" || !article.presentationHeading) return output;
+
+  const items = extractMarkdownListItems(extractMarkdownSection(article.body, article.presentationHeading));
+  if (items.length < 3) return output;
+
+  const normalizedQuestion = normalizeText(question);
+  const questionRequestsEnumeration =
+    /\b(?:list|which|what)\b[^?]{0,80}\b(?:show|shows|options|items|offerings)\b/.test(normalizedQuestion) ||
+    /\bshows?\s+(?:do|does|are|we|you)\b/.test(normalizedQuestion);
+  const outputText = modelOutputText(output).join(" ");
+  const mentionedItems = items.filter((item) => textContainsApprovedItem(outputText, item)).length;
+  if (!questionRequestsEnumeration && mentionedItems < 3) return output;
+
+  const supportingSections = (output.sections || []).filter((section) => {
+    const sectionText = [section.title, section.body, ...(section.items || [])].filter(Boolean).join(" ");
+    const sectionMentions = items.filter((item) => textContainsApprovedItem(sectionText, item)).length;
+    return sectionMentions < 3;
+  });
+  const summary = /\bshow/.test(normalizeText(article.presentationHeading))
+    ? "Here’s the current approved show list."
+    : `Here’s the current ${article.presentationHeading.toLowerCase()}.`;
+
+  return normalizeModelOutput({
+    ...output,
+    answer: `${summary}\n${items.map((item) => `- ${item}`).join("\n")}`,
+    summary,
+    sections: [
+      {
+        title: article.presentationHeading,
+        items,
+        tone: "default",
+      },
+      ...supportingSections,
+    ],
+  });
+}
+
+function textContainsApprovedItem(text: string, item: string) {
+  const normalizedText = normalizeText(text);
+  const normalizedItem = normalizeText(item);
+  return Boolean(normalizedItem) && normalizedText.includes(normalizedItem);
+}
+
 function shapeModelOutputForDisplay(question: string, output: ModelOutput, policyRequiresRoute = false): ModelOutput {
   const shaped = cloneModelOutput(output);
   const answer = sanitizeModelAnswer(shaped.answer || shaped.summary || "");
@@ -3027,9 +3156,11 @@ function splitCommaListSection(section: NonNullable<ModelOutput["sections"]>[num
 
 function extractCommaSeparatedList(body: string, title?: string) {
   const titleText = normalizeText(title || "");
+  const bodyText = normalizeText(body);
   const titleSupportsCommaList = /\b(show|shows|show list|current shows|available shows)\b/.test(titleText);
   const genericListWithoutMoney = /\blist\b/.test(titleText) && !/\$/.test(body);
-  if (!titleSupportsCommaList && !genericListWithoutMoney) return null;
+  const bodySupportsCommaList = /\b(?:show list|current shows|approved shows|shows we offer)\b/.test(bodyText) && !/\$/.test(body);
+  if (!titleSupportsCommaList && !genericListWithoutMoney && !bodySupportsCommaList) return null;
 
   const colonIndex = body.indexOf(":");
   const hasShortIntro = colonIndex > 0 && colonIndex < 140 && body.slice(colonIndex + 1).split(",").length >= 6;
@@ -3173,6 +3304,16 @@ function validatePolicyUnitClaims(answerPlan: AskSalesAnswerPlan | undefined, ou
         errors.push(`${unit.id}: answer includes forbidden claim ${forbiddenClaim}`);
       }
     }
+    for (const requiredClaim of unit.required_all || []) {
+      if (!phrasePresent(requiredClaim, answerText)) {
+        errors.push(`${unit.id}: answer must include ${requiredClaim}`);
+      }
+    }
+    for (const requiredGroup of unit.required_any_groups || []) {
+      if (!requiredGroup.some((requiredClaim) => phrasePresent(requiredClaim, answerText))) {
+        errors.push(`${unit.id}: answer must include one of ${requiredGroup.join(", ")}`);
+      }
+    }
   }
 
   return errors;
@@ -3271,10 +3412,6 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
     return "I do not have a confirmed new-rep onboarding or final mock checklist yet. Route this to the current training owner before giving a final checklist.";
   }
 
-  if (policyDecision.blockedTopic === "qualification-hospital-employed-doctor-conflict") {
-    return "Current guidance conflicts on hospital-employed doctors who do not own a practice. Confirm this case with the current qualification owner before telling the prospect they qualify or do not qualify.";
-  }
-
   if (policyDecision.blockedTopic === "qualification-bankruptcy-unconfirmed") {
     return "A past bankruptcy is not covered by a confirmed automatic qualification rule. Do not automatically approve or disqualify the applicant; confirm the case with the current qualification owner before replying.";
   }
@@ -3295,9 +3432,6 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
 }
 
 function policyBlockedRouteReason(policyDecision: PolicyGuardDecision) {
-  if (policyDecision.blockedTopic === "qualification-hospital-employed-doctor-conflict") {
-    return "Confirm this case with the current qualification owner before replying.";
-  }
   if (policyDecision.blockedTopic === "qualification-bankruptcy-unconfirmed") {
     return "Confirm the qualification decision with the current qualification owner before approving or disqualifying the applicant.";
   }

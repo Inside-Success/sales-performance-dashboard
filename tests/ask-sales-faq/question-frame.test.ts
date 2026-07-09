@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildQuestionFrame, type QuestionFrameMessage } from "@/lib/ask-sales-faq/question-frame";
+import {
+  buildQuestionFrame,
+  classifyRewriteIntent,
+  type QuestionFrameMessage,
+} from "@/lib/ask-sales-faq/question-frame";
 
 const paymentQuestion =
   "Just got off a good Call 2. Funds are unavailable until August 15 and the payment is holding them back. Can they continue later?";
@@ -88,5 +92,23 @@ describe("buildQuestionFrame", () => {
 
     expect(buildQuestionFrame("Thank you!", messages).relation).toBe("social");
     expect(buildQuestionFrame("Can you make that answer shorter?", messages).relation).toBe("rewrite");
+    expect(buildQuestionFrame("Format these properly as bullets.", messages).relation).toBe("rewrite");
+    expect(classifyRewriteIntent("Format these properly as bullets.")).toBe("format_list");
+  });
+
+  it("treats a self-contained request for a formatted list as a new question", () => {
+    const frame = buildQuestionFrame("Give me the list of shows properly formatted.");
+    expect(frame.relation).toBe("new");
+  });
+
+  it("keeps a new list question independent even when an older question exists", () => {
+    const messages: QuestionFrameMessage[] = [
+      { role: "user", content: "Can a hospital-employed doctor qualify?" },
+      { role: "assistant", content: "Yes. Hospital employment alone does not disqualify a doctor." },
+    ];
+    const frame = buildQuestionFrame("List the main ISTV payment plans.", messages);
+
+    expect(frame.relation).toBe("new");
+    expect(classifyRewriteIntent("List the main ISTV payment plans.")).toBeNull();
   });
 });

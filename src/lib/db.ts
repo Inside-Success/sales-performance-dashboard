@@ -37,6 +37,7 @@ import type { PromptBenchmarkIngestPayload } from "@/lib/prompt-benchmark";
 import type { UsageEventPayload } from "@/lib/usage-events";
 import type {
   AskSalesFaqConversationSummary,
+  AskSalesFaqConversationPage,
   AskSalesFaqAdminOverview,
   AskSalesFaqAdminLogItem,
   AskSalesFaqFeedbackContext,
@@ -46,6 +47,10 @@ import type {
   AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
+import {
+  encodeAskSalesFaqConversationCursor,
+  type AskSalesFaqConversationCursor,
+} from "@/lib/ask-sales-faq/conversation-history";
 
 type SqlClient = ReturnType<typeof neon>;
 
@@ -2595,29 +2600,63 @@ export async function saveAskSalesFaqDiagnostic(payload: AskSalesFaqDiagnosticPa
 
 export async function getAskSalesFaqConversations(
   viewerEmail: string,
-  limit = 20,
-): Promise<AskSalesFaqConversationSummary[]> {
-  if (!hasDatabase()) return [];
+  options: {
+    limit?: number;
+    cursor?: AskSalesFaqConversationCursor | null;
+    query?: string;
+  } = {},
+): Promise<AskSalesFaqConversationPage> {
+  if (!hasDatabase()) return { conversations: [], nextCursor: null };
 
   await ensureSchema();
   const sql = getSql();
+  const limit = Math.max(1, Math.min(options.limit || 20, 50));
+  const query = String(options.query || "").replace(/\s+/g, " ").trim().toLowerCase().slice(0, 120);
+  const params: unknown[] = [viewerEmail];
+  const where = ["c.viewer_email = $1", "c.status = 'active'"];
+
+  if (query) {
+    params.push(query);
+    const queryParam = `$${params.length}`;
+    where.push(`(
+      position(${queryParam} in lower(coalesce(c.title, ''))) > 0
+      or exists (
+        select 1
+        from ask_sales_faq_messages search_message
+        where search_message.conversation_id = c.id
+          and position(${queryParam} in lower(search_message.content_redacted)) > 0
+      )
+    )`);
+  }
+
+  if (options.cursor) {
+    params.push(options.cursor.updatedAt, options.cursor.id);
+    const updatedAtParam = `$${params.length - 1}`;
+    const idParam = `$${params.length}`;
+    where.push(`(c.updated_at < ${updatedAtParam}::timestamptz or (c.updated_at = ${updatedAtParam}::timestamptz and c.id < ${idParam}))`);
+  }
+
+  params.push(limit + 1);
+  const limitParam = `$${params.length}`;
   const conversations = (await sql.query(
     `
       select
-        id,
-        title,
-        updated_at::text as updated_at
-      from ask_sales_faq_conversations
-      where viewer_email = $1
-        and status = 'active'
-      order by updated_at desc
-      limit $2
+        c.id,
+        c.title,
+        c.updated_at::text as updated_at
+      from ask_sales_faq_conversations c
+      where ${where.join("\n        and ")}
+      order by c.updated_at desc, c.id desc
+      limit ${limitParam}
     `,
-    [viewerEmail, Math.max(1, Math.min(limit, 50))],
+    params,
   )) as Array<{ id: string; title: string | null; updated_at: string }>;
 
+  const hasMore = conversations.length > limit;
+  const pageConversations = hasMore ? conversations.slice(0, limit) : conversations;
+
   const result: AskSalesFaqConversationSummary[] = [];
-  for (const conversation of conversations) {
+  for (const conversation of pageConversations) {
     const messages = (await sql.query(
       `
         select
@@ -2674,7 +2713,14 @@ export async function getAskSalesFaqConversations(
     });
   }
 
-  return result;
+  const lastConversation = pageConversations.at(-1);
+  return {
+    conversations: result,
+    nextCursor:
+      hasMore && lastConversation
+        ? encodeAskSalesFaqConversationCursor({ updatedAt: lastConversation.updated_at, id: lastConversation.id })
+        : null,
+  };
 }
 
 function normalizeAskSalesFaqAnswerPayload(value: unknown): AskSalesFaqStructuredAnswer | null {
