@@ -296,6 +296,10 @@ Runtime changes:
   - critical answer guard `platform-media-kit-refund-exception-route`;
   - approved platform/proof fallback handling for media-kit, Nielsen, audience-stat, and proof-deck requests;
   - generated bundle/index sync after adding FAQ source coverage for media-kit/audience-stat routing and force-majeure refund/reschedule exception wording.
+- The same full retest exposed an internal-dashboard overreach: the HQ dashboard access question answered as if the bot could infer access/public talking points. Follow-up hardening added:
+  - critical answer guard `internal-dashboard-access-route`;
+  - approved internal-material fallback handling for HQ/internal dashboard access and dashboard-proof questions;
+  - generated bundle/index sync after adding FAQ source coverage for internal dashboard access routing.
 
 Validation:
 
@@ -303,7 +307,7 @@ Validation:
 - `npm run lint`: passed.
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
-- FAQ-side source validation also passed: policy guard 114 / 114, answer contract 122 / 122, runtime orchestrator 122 / 122, retrieval simulation 114 / 114.
+- FAQ-side source validation also passed: policy guard 115 / 115, answer contract 123 / 123, runtime orchestrator 123 / 123, retrieval simulation 115 / 115.
 
 Safety kept:
 

@@ -882,6 +882,42 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     },
   },
   {
+    id: "internal-dashboard-access-route",
+    articleId: "internal-material-sharing-boundaries",
+    matchAnyGroups: [
+      ["hq dashboard", "rudy dashboard", "dashboard that rudy shows", "internal dashboard", "training dashboard"],
+      ["closers have access", "have access", "access to", "authors are interested", "extra training", "potential introductions", "events"],
+    ],
+    requiredAnyGroups: [
+      ["dashboard"],
+      ["route", "current owner", "dashboard/source owner", "sales leadership"],
+      ["do not guess", "do not assume", "do not share", "do not use internal"],
+    ],
+    forbiddenAny: ["closers have access", "I can tell you about", "share the dashboard", "they have access"],
+    fallback: {
+      answer:
+        "Do not guess whether closers, prospects, or clients have access to the internal dashboard. Do not use internal dashboard content as shareable proof. Route dashboard access and approved public talking-point questions to the current owner, dashboard/source owner, or sales leadership before replying.",
+      summary: "Internal dashboard access needs current-owner confirmation.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route dashboard access and approved public talking-point questions to the current owner, dashboard/source owner, or sales leadership.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          body: "Do not guess access permissions or use internal dashboard content as shareable proof.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+      needs_route: true,
+      route_reason: "Internal dashboard access and dashboard-proof questions need the current owner, dashboard/source owner, or sales leadership.",
+      confidence_label: "High",
+      confidence_score: 93,
+    },
+  },
+  {
     id: "greenlight-cap-route",
     articleId: "greenlight-pdf-and-cohort-deadlines",
     matchAny: ["greenlight approval cap", "current greenlight approval cap", "approval cap", "greenlight cap", "greenlights per day"],
@@ -2069,6 +2105,31 @@ function buildPlatformProofFallback(question: string, policyDecision: PolicyGuar
 }
 
 function buildInternalMaterialFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  if (/\b(hq dashboard|rudy dashboard|dashboard that rudy shows|internal dashboard|training dashboard)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "Do not guess whether closers, prospects, or clients have access to the internal dashboard. Do not use internal dashboard content as shareable proof. Route dashboard access and approved public talking-point questions to the current owner, dashboard/source owner, or sales leadership before replying.",
+      summary: "Internal dashboard access needs current-owner confirmation.",
+      sections: [
+        {
+          title: "What to do",
+          body: "Route dashboard access and approved public talking-point questions to the current owner, dashboard/source owner, or sales leadership.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          body: "Do not guess access permissions or use internal dashboard content as shareable proof.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:internal-material-sharing-boundaries"],
+      needs_route: true,
+      route_reason: "Internal dashboard access and dashboard-proof questions need the current owner, dashboard/source owner, or sales leadership.",
+      confidence_label: "High",
+      confidence_score: 93,
+    });
+  }
+
   if (/\b(pre[- ]?audition video|video before (?:her|his|their) audition|before (?:her|his|their) audition)\b/i.test(question)) {
     return cloneModelOutput({
       answer:

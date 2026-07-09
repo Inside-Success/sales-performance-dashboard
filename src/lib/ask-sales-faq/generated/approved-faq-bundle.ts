@@ -106,9 +106,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary; Madeline Cary Slack reply on pre-audition video sharing reviewed 2026-07-09; 2026-07-09 live retest guardrail for recording deletion/vault requests",
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Syed approved internal/confidential material boundary; Madeline Cary Slack reply on pre-audition video sharing reviewed 2026-07-09; 2026-07-09 live retest guardrail for recording deletion/vault requests; 2026-07-09 live retest guardrail for internal dashboard access requests",
     "lastReviewed": "2026-07-09",
-    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- source docs\n- confidential notes\n- audition recordings\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\nIf a prospect or applicant asks for an audition recording or call recording to be deleted, vaulted, sent, or handled after they are not a fit, do not send, delete, or vault it yourself. Do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance owner, or current process owner so it can be handled through the approved process.\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n- \"For a recording deletion or vaulting request, do not handle it yourself. Route it to the source owner/compliance owner.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n- Do not delete, vault, or promise deletion/vaulting for audition recordings or call recordings yourself.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned.\n\nIf the request is about deleting, vaulting, or removing an audition/call recording, route it to the source owner/compliance owner or current process owner. Do not take the action yourself from the chatbot answer."
+    "body": "## Answer\n\nReps should not externally share internal materials unless explicitly approved.\n\nThis includes:\n\n- internal Slack content\n- payment details\n- dashboards\n- internal HQ dashboards\n- source docs\n- confidential notes\n- audition recordings\n- call recordings\n- stats decks\n- training videos\n- internal sales materials\n\nIf a prospect asks for the video they received before the audition, do not send that pre-audition video out. If the prospect is looking for an email/video assignment they already received, they should search their email inbox; the rep can resend the pre-call email with the assignment to watch episodes and ask the prospect to check spam.\n\nIf a prospect or applicant asks for an audition recording or call recording to be deleted, vaulted, sent, or handled after they are not a fit, do not send, delete, or vault it yourself. Do not promise deletion or vaulting. Acknowledge the request and route it to the source owner, compliance owner, or current process owner so it can be handled through the approved process.\n\nIf a rep asks whether closers, prospects, or clients have access to an internal HQ dashboard, Rudy dashboard, internal training dashboard, or dashboard shown in a Call 1 video, do not guess access permissions and do not present internal dashboard content as shareable proof. Route dashboard access and approved public talking-point questions to the current dashboard/source owner or sales leadership.\n\n## What Reps Can Say\n\n- \"I need to check whether that material is approved to share externally.\"\n- \"I can share approved public-facing materials, but not internal docs or recordings unless they are explicitly approved.\"\n- \"If this is the pre-audition video, we cannot send that one out. Have them check their inbox/spam, or resend the pre-call email with the episode-watching assignment.\"\n- \"For a recording deletion or vaulting request, do not handle it yourself. Route it to the source owner/compliance owner.\"\n- \"For internal dashboard access or whether dashboard content can be used with prospects, route to the current dashboard/source owner or sales leadership.\"\n\n## What Reps Must Not Do\n\n- Do not send internal Slack screenshots or source-doc excerpts to prospects or clients.\n- Do not share call recordings, private training videos, dashboards, confidential notes, payment details, or stats decks externally unless explicitly approved.\n- Do not assume a file is shareable just because a rep can access it internally.\n- Do not send the pre-audition video out manually.\n- Do not delete, vault, or promise deletion/vaulting for audition recordings or call recordings yourself.\n- Do not assume closers, prospects, or clients have access to internal dashboards unless the current owner confirms it.\n- Do not use internal dashboard screenshots or training-dashboard details as public proof unless explicitly approved.\n\n## Route If Unclear\n\nIf a prospect or client asks for material that looks internal, route to the source owner/compliance owner before sharing.\n\nIf a client wants a call recording, do not send it automatically. Treat call recordings as internal/private material unless external sharing is explicitly approved and permissioned.\n\nIf the request is about deleting, vaulting, or removing an audition/call recording, route it to the source owner/compliance owner or current process owner. Do not take the action yourself from the chatbot answer.\n\nIf the request is about internal dashboard access, approved dashboard talking points, or whether dashboard content can be shown externally, route to the current dashboard/source owner or sales leadership."
   },
   {
     "id": "istv-nlceo-pricing-and-same-day-discount",
@@ -629,6 +629,30 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "send it to them",
           "can't send",
           "cannot send"
+        ]
+      ]
+    },
+    {
+      "id": "route-internal-dashboard-access",
+      "decision": "route_from_approved_article",
+      "article_id": "internal-material-sharing-boundaries",
+      "reason": "Internal HQ/dashboard access and dashboard-proof questions need the current dashboard/source owner or sales leadership.",
+      "match_any_groups": [
+        [
+          "hq dashboard",
+          "rudy dashboard",
+          "dashboard that rudy shows",
+          "internal dashboard",
+          "training dashboard"
+        ],
+        [
+          "closers have access",
+          "have access",
+          "access to",
+          "authors are interested",
+          "extra training",
+          "potential introductions",
+          "events"
         ]
       ]
     },
