@@ -566,10 +566,12 @@ if (missingFiles.length === 0) {
     "conversation replies render as plain chat instead of policy cards",
     chatUi.includes('message.outcome === "conversation_reply"') &&
       chatUi.includes("<AnswerText text={message.content} />") &&
+      chatUi.includes("hasStructuredConversationPresentation(message)") &&
+      chatUi.includes("<StructuredAnswerCard answer={message.structuredAnswer} />") &&
       db.includes('\"conversation\"') &&
       runtime.includes("set summary equal to the answer and leave sections empty") &&
       runtime.includes("sections: []"),
-    "thank-yous and rewrite replies no longer show internal planner summaries or forced answer-card blocks",
+    "social replies stay plain while presentation rewrites can render their structured list instead of flattening it",
   );
 
   addCheck(
