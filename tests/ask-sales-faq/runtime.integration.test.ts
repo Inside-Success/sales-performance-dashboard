@@ -193,6 +193,88 @@ describe("runAskSalesFaq integration safety", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("keeps a generic unsupported answer natural and hides internal routing reasons", async () => {
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          confidence_score: 0,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "No supported policy answer is available.",
+        }),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Can the company buy a prospect a laptop for filming?");
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).not.toMatch(/No approved policy rule|retrieval alone|knowledge base/i);
+    expect(result.routeReason).toBe(
+      "Confirm this with the current sales owner or the right help channel before replying.",
+    );
+    expect(result.structuredAnswer?.sections).toEqual([]);
+  });
+
+  it("does not promise an unconfirmed accessibility accommodation", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runAskSalesFaq("Can we add audio descriptions as an accessibility accommodation?");
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).toContain("not confirmed");
+    expect(result.answer).toContain("production or accessibility owner");
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("abstain-accessibility-accommodation");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("routes record-assignment and automatic-contract failures to sales tech", async () => {
+    const answer =
+      "Post this in #sales-tech-requests with the lead record and a short description of the missing casting-manager assignment.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: "Use #sales-tech-requests for the record-assignment issue.",
+            selectedSourceIds: ["approved:sales-tech-routing-and-support-requests"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("A lead has no casting manager assigned in HubSpot. Where should I report it?");
+
+    expect(result.answer).toContain("#sales-tech-requests");
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe(
+      "route-sales-tech-record-assignment-or-contract-automation",
+    );
+  });
+
+  it("does not include discount totals in an upgrade question without prior discount eligibility", async () => {
+    const answer =
+      "A main ISTV client can upgrade before filming, but not after filming. Use the proper upgraded contract and current payment-difference route.";
+    const provider = installProviderStub({
+      "answer generation": [outputStep(modelOutput(answer))],
+    });
+
+    const result = await runAskSalesFaq(
+      "Can a main ISTV client start with Lite and upgrade to Standard before filming?",
+    );
+    const generationCall = provider.calls.find((call) => call.purpose === "answer generation");
+    const prompt = generationCall ? providerPrompt(generationCall) : "";
+
+    expect(prompt).toContain("Policy unit: Main ISTV upgrade before filming");
+    expect(prompt).not.toContain("Policy unit: Main ISTV upgrade discount carry-forward");
+    expect(prompt).not.toContain("$18,000");
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
+      "main-istv-upgrade-before-filming",
+    ]);
+  });
+
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the payment/deadline exception to Rich or the current owner before promising anything.";

@@ -308,6 +308,18 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
       ]
     },
     {
+      "id": "abstain-accessibility-accommodation",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "accessibility-accommodation-unconfirmed",
+      "reason": "Current audio-description and accessibility accommodation options are not confirmed for rep-facing promises.",
+      "match_any": [
+        "audio description",
+        "audio descriptions",
+        "accessibility accommodation",
+        "accessibility accommodations"
+      ]
+    },
+    {
       "id": "abstain-new-rep-onboarding",
       "decision": "abstain_unapproved",
       "blocked_topic": "new-rep-onboarding-and-final-mock",
@@ -425,6 +437,24 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
           "cohort",
           "exception"
         ]
+      ]
+    },
+    {
+      "id": "route-sales-tech-record-assignment-or-contract-automation",
+      "decision": "route_from_approved_article",
+      "article_id": "sales-tech-routing-and-support-requests",
+      "reason": "Use #sales-tech-requests for sales-system record assignment or automatic contract-generation issues.",
+      "match_any": [
+        "no casting manager assigned",
+        "missing casting manager",
+        "casting manager not assigned",
+        "contract was not generated",
+        "contract wasn't generated",
+        "contract not generated",
+        "contract email missing",
+        "contract was not emailed",
+        "automatic contract missing",
+        "auto-generated contract missing"
       ]
     },
     {

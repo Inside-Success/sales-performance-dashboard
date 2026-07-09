@@ -63,6 +63,7 @@ type PolicyIntent =
   | "reschedule"
   | "document_sharing"
   | "upgrade"
+  | "upgrade_discount"
   | "greenlight_letter";
 
 const PRODUCT_SENSITIVE_INTENTS = new Set<PolicyIntent>([
@@ -73,11 +74,18 @@ const PRODUCT_SENSITIVE_INTENTS = new Set<PolicyIntent>([
   "cohort",
   "reschedule",
   "upgrade",
+  "upgrade_discount",
 ]);
 
 const TIMING_INTENTS = new Set<PolicyIntent>(["payment_timing", "cohort", "reschedule"]);
 
-const SPECIFIC_INTENTS = new Set<PolicyIntent>(["document_sharing", "greenlight_letter", "upgrade", "discount"]);
+const SPECIFIC_INTENTS = new Set<PolicyIntent>([
+  "document_sharing",
+  "greenlight_letter",
+  "upgrade",
+  "upgrade_discount",
+  "discount",
+]);
 
 const CRITICAL_RULE_ARTICLE_IDS: Record<string, string> = {
   "dj-nlceo-no-cohort-deposit-boundary": "main-istv-call-2-cohort-reschedule-rules",
@@ -194,8 +202,14 @@ function detectPolicyIntents(question: string) {
   if (/\b(?:license options?|reuse license|licensing options?)\b/.test(question)) {
     intents.add("document_sharing");
   }
-  if (/\b(?:upgrade|upgraded|upgrading)\b/.test(question)) intents.add("upgrade");
-  if (/\b(?:discount|same day offer|same day price|money off)\b/.test(question)) intents.add("discount");
+  const hasUpgrade = /\b(?:upgrade|upgraded|upgrading)\b/.test(question);
+  const hasDiscount =
+    /\b(?:discount|discounted|same day offer|same day discount|same day price|money off)\b/.test(question);
+  if (hasUpgrade && hasDiscount) intents.add("upgrade_discount");
+  else {
+    if (hasUpgrade) intents.add("upgrade");
+    if (hasDiscount) intents.add("discount");
+  }
   if (/\b(?:cohort|pay\s*\/\s*sign|pay and sign|reapply|re apply)\b/.test(question)) intents.add("cohort");
   if (/\b(?:reschedule|rescheduled|rescheduling|move (?:the )?call|book out)\b/.test(question)) {
     intents.add("reschedule");
@@ -226,6 +240,7 @@ function isPaymentTimingQuestion(question: string) {
 function focusPolicyIntents(detected: ReadonlySet<PolicyIntent>) {
   if (detected.has("document_sharing")) return new Set<PolicyIntent>(["document_sharing"]);
   if (detected.has("greenlight_letter")) return new Set<PolicyIntent>(["greenlight_letter"]);
+  if (detected.has("upgrade_discount")) return new Set<PolicyIntent>(["upgrade_discount"]);
   if (detected.has("upgrade")) return new Set<PolicyIntent>(["upgrade"]);
   if (detected.has("discount")) return new Set<PolicyIntent>(["discount"]);
 
@@ -260,11 +275,11 @@ function criticalRuleApplies(input: {
   }
 
   if (input.ruleId === "pricing-standard-upgrade-discount") {
-    return input.focusedIntents.has("upgrade") && /\bstandard\b/.test(input.question);
+    return input.focusedIntents.has("upgrade_discount") && /\bstandard\b/.test(input.question);
   }
 
   if (input.ruleId === "pricing-vip-upgrade-discount") {
-    return input.focusedIntents.has("upgrade") && /\b(?:vip|premium)\b/.test(input.question);
+    return input.focusedIntents.has("upgrade_discount") && /\b(?:vip|premium)\b/.test(input.question);
   }
 
   return true;

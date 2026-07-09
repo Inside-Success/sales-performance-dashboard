@@ -80,15 +80,33 @@ describe("buildAnswerPlan", () => {
     expect(result.applicableCriticalRuleIds).toEqual(["dj-nlceo-no-cohort-deposit-boundary"]);
   });
 
-  it("selects upgrade critical rules by package condition", () => {
+  it("keeps upgrade eligibility separate from discount math", () => {
     const standard = plan("For main ISTV, can a client upgrade to Standard before filming?");
     const vip = plan("For main ISTV, can a client upgrade to Premium before filming?");
     const unspecified = plan("For main ISTV, can a client upgrade before filming?");
 
     expect(standard.selectedPolicyUnits.map((unit) => unit.id)).toEqual(["main-istv-upgrade-before-filming"]);
-    expect(standard.applicableCriticalRuleIds).toEqual(["pricing-standard-upgrade-discount"]);
-    expect(vip.applicableCriticalRuleIds).toEqual(["pricing-vip-upgrade-discount"]);
+    expect(standard.applicableCriticalRuleIds).toEqual([]);
+    expect(vip.applicableCriticalRuleIds).toEqual([]);
     expect(unspecified.applicableCriticalRuleIds).toEqual([]);
+  });
+
+  it("selects discount carry-forward rules only when the prior discount is established", () => {
+    const standard = plan(
+      "A main ISTV Lite client already received the $2,000 same-day discount. What is the upgrade to Standard?",
+    );
+    const vip = plan(
+      "A main ISTV Lite client already received the same-day discount. What is the upgrade to Premium?",
+    );
+
+    expect(standard.selectedPolicyUnits.map((unit) => unit.id)).toEqual([
+      "main-istv-upgrade-discount-carry-forward",
+    ]);
+    expect(standard.applicableCriticalRuleIds).toEqual(["pricing-standard-upgrade-discount"]);
+    expect(vip.selectedPolicyUnits.map((unit) => unit.id)).toEqual([
+      "main-istv-upgrade-discount-carry-forward",
+    ]);
+    expect(vip.applicableCriticalRuleIds).toEqual(["pricing-vip-upgrade-discount"]);
   });
 
   it("does not force a product clarification for product-agnostic document guidance", () => {

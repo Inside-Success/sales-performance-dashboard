@@ -310,6 +310,8 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\binternal discussions?\b/i,
   /\bthe evidence\b/i,
   /\bapproved evidence\b/i,
+  /\bper (?:the )?approved\b/i,
+  /\bapproved (?:event|sales|policy) guidance\b/i,
   /\bSlack(?:[- ]level|[- ]sourced)? (?:evidence|notes|guidance|discussion|source)/i,
   /\bcurated (?:Slack|source) evidence\b/i,
   /\b(?:Evidence|Source)\s+\d+\b/i,
@@ -1273,7 +1275,7 @@ export async function runAskSalesFaq(
       answer,
       structuredAnswer: structured({
         summary: answer,
-        sections: [{ title: "What to do", body: answer, tone: policyDecision.decision === "admin_only" ? "default" : "route" }],
+        sections: [],
         decision,
       }),
       source: null,
@@ -3245,11 +3247,31 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
     return "Current guidance conflicts on hospital-employed doctors who do not own a practice. Confirm this case with the current qualification owner before telling the prospect they qualify or do not qualify.";
   }
 
+  if (policyDecision.blockedTopic === "accessibility-accommodation-unconfirmed") {
+    return "Audio-description and other accessibility accommodation options are not confirmed. Check with the current production or accessibility owner before promising an accommodation to the prospect.";
+  }
+
   if (policyDecision.blockedTopic === "commission-tier-and-leaderboard") {
     return "I do not have your live commission tier, leaderboard, or payout data. Check with the current sales/commission owner before relying on a number.";
   }
 
   return "I do not have a confirmed answer for that yet. Route this to the current sales owner or the right help channel before replying to the prospect.";
+}
+
+function policyBlockedRouteReason(policyDecision: PolicyGuardDecision) {
+  if (policyDecision.blockedTopic === "qualification-hospital-employed-doctor-conflict") {
+    return "Confirm this case with the current qualification owner before replying.";
+  }
+  if (policyDecision.blockedTopic === "accessibility-accommodation-unconfirmed") {
+    return "Confirm available accommodations with the current production or accessibility owner before promising them.";
+  }
+  if (policyDecision.blockedTopic === "new-rep-onboarding-and-final-mock") {
+    return "Confirm the current checklist with the training owner before relying on it.";
+  }
+  if (policyDecision.blockedTopic === "commission-tier-and-leaderboard") {
+    return "Confirm live account-specific data with the current sales or commission owner.";
+  }
+  return "Confirm this with the current sales owner or the right help channel before replying.";
 }
 
 function buildPolicyBlockedDecision(policyDecision: PolicyGuardDecision): RuntimeDecision {
@@ -3259,7 +3281,7 @@ function buildPolicyBlockedDecision(policyDecision: PolicyGuardDecision): Runtim
     confidenceLabel: "Low",
     confidenceScore: 0,
     reason: policyDecision.reason,
-    routeReason: policyDecision.decision === "admin_only" ? null : policyDecision.reason,
+    routeReason: policyDecision.decision === "admin_only" ? null : policyBlockedRouteReason(policyDecision),
     safeToGenerate: false,
     matchedRuleId: policyDecision.matchedRuleId,
     matchedArticleId: null,
