@@ -1348,7 +1348,11 @@ export async function runAskSalesFaq(
       output: criticalOutputResult.output,
     });
     providerDiagnostics.push(...groundedOutputResult.diagnostics);
-    const finalOutput = shapeModelOutputForDisplay(sanitizedQuestion, groundedOutputResult.output);
+    const finalOutput = shapeModelOutputForDisplay(
+      sanitizedQuestion,
+      groundedOutputResult.output,
+      policyDecision.decision === "route_from_approved_article",
+    );
     const selectedEvidence = resolveSelectedEvidence(finalOutput, candidates, sanitizedQuestion);
     const decision = buildDecision({
       output: finalOutput,
@@ -2734,11 +2738,16 @@ function userRequestedShortAnswer(question: string) {
   );
 }
 
-function shapeModelOutputForDisplay(question: string, output: ModelOutput): ModelOutput {
+function shapeModelOutputForDisplay(question: string, output: ModelOutput, policyRequiresRoute = false): ModelOutput {
   const shaped = cloneModelOutput(output);
   const answer = sanitizeModelAnswer(shaped.answer || shaped.summary || "");
 
-  if ((userRequestedShortAnswer(question) || shouldUsePlainRouteAnswer(question, shaped, answer)) && answer) {
+  if (
+    (userRequestedShortAnswer(question) ||
+      shouldUsePlainRouteAnswer(question, shaped, answer, policyRequiresRoute) ||
+      shouldUsePlainDirectAnswer(question, shaped, answer, policyRequiresRoute)) &&
+    answer
+  ) {
     return {
       ...shaped,
       answer,
@@ -2757,14 +2766,35 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput): Mode
   };
 }
 
-function shouldUsePlainRouteAnswer(question: string, output: ModelOutput, answer: string) {
-  if (!output.needs_route || answer.length > 520) return false;
+function shouldUsePlainRouteAnswer(
+  question: string,
+  output: ModelOutput,
+  answer: string,
+  policyRequiresRoute: boolean,
+) {
+  if ((!output.needs_route && !policyRequiresRoute) || answer.length > 520) return false;
   const normalizedQuestion = normalizeText(question);
-  const explicitlyRequestsStructure =
-    /\b(steps?|step by step|checklist|list|options?|script|what (?:can|should) i say|how do i|how should i|process|procedure)\b/.test(
-      normalizedQuestion,
-    );
+  const explicitlyRequestsStructure = questionExplicitlyRequestsStructure(normalizedQuestion);
   return !explicitlyRequestsStructure && tokenize(normalizedQuestion, { expand: false }).length <= 60;
+}
+
+function shouldUsePlainDirectAnswer(
+  question: string,
+  output: ModelOutput,
+  answer: string,
+  policyRequiresRoute: boolean,
+) {
+  if (output.needs_route || policyRequiresRoute || answer.length < 80 || answer.length > 420) return false;
+  const normalizedQuestion = normalizeText(question);
+  if (questionExplicitlyRequestsStructure(normalizedQuestion)) return false;
+  if (tokenize(normalizedQuestion, { expand: false }).length > 35) return false;
+  return /\b(yes|no|can|cannot|can't|allowed|not advised|do not|don't|use|send)\b/i.test(answer);
+}
+
+function questionExplicitlyRequestsStructure(normalizedQuestion: string) {
+  return /\b(steps?|step by step|checklist|list|options?|script|what (?:can|should) i say|what should i do|how do i|how should i|process|procedure)\b/.test(
+    normalizedQuestion,
+  );
 }
 
 function normalizeStructuredAnswerSections(
