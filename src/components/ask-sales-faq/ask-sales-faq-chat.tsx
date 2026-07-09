@@ -268,6 +268,11 @@ export function AskSalesFaqChat() {
     window.requestAnimationFrame(() => inputRef.current?.focus());
   }
 
+  function clearComposerIfCurrentQuestion(question: string) {
+    const normalizedQuestion = question.trim();
+    setInput((currentInput) => (currentInput.trim() === normalizedQuestion ? "" : currentInput));
+  }
+
   function hasPendingQuestionWork() {
     return isLoadingRef.current || queuedQuestionsRef.current.length > 0;
   }
@@ -436,7 +441,7 @@ export function AskSalesFaqChat() {
     ];
 
     syncQueuedQuestions(nextQueuedQuestions);
-    setInput("");
+    clearComposerIfCurrentQuestion(question);
     setError(null);
     focusComposer();
   }
@@ -479,7 +484,7 @@ export function AskSalesFaqChat() {
 
     const nextMessages = [...messagesRef.current, userMessage];
     syncMessages(nextMessages);
-    setInput("");
+    clearComposerIfCurrentQuestion(question);
     syncIsLoading(true);
     syncQueuePaused(false);
     setError(null);

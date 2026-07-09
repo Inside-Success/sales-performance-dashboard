@@ -493,6 +493,15 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "composer draft survives queued auto-sends",
+    chatUi.includes("function clearComposerIfCurrentQuestion") &&
+      chatUi.includes("setInput((currentInput) => (currentInput.trim() === normalizedQuestion ? \"\" : currentInput))") &&
+      chatUi.includes("clearComposerIfCurrentQuestion(question)") &&
+      !chatUi.includes("syncMessages(nextMessages);\n    setInput(\"\");"),
+    "queued or auto-started questions only clear the composer when they are still the current draft",
+  );
+
+  addCheck(
     "queued follow-ups drain sequentially after successful answers",
     chatUi.includes("function queueQuestion") &&
       chatUi.includes("function runNextQueuedQuestion") &&
