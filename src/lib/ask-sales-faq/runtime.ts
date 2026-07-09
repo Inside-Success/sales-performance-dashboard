@@ -483,7 +483,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     requiredAll: ["no cohort rule"],
     requiredAnyGroups: [
       ["no same-day discount", "same-day discount"],
-      ["do not apply the main ISTV cohort", "main ISTV cohort rule does not apply", "main ISTV cohort"],
+      ["do not apply the main ISTV cohort", "main ISTV cohort rule does not apply", "main ISTV cohort", "DJ/NLCEO has no cohort rule"],
       ["do not promise", "route", "approved payment"],
     ],
     forbiddenAny: [
@@ -566,7 +566,7 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     requiredAll: ["no cohort rule"],
     requiredAnyGroups: [
       ["no same-day discount", "same-day discount"],
-      ["do not apply", "main ISTV cohort", "main ISTV"],
+      ["do not apply", "main ISTV cohort", "main ISTV", "DJ/NLCEO has no cohort rule"],
       ["listed payment", "approved payment", "$2,500"],
     ],
     forbiddenAny: [
@@ -701,6 +701,53 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
       route_reason: "",
       confidence_label: "High",
       confidence_score: 95,
+    },
+  },
+  {
+    id: "current-show-legacy-makers-materials-passoff",
+    articleId: "current-show-source",
+    matchAnyGroups: [
+      ["legacy makers", "legacy maker"],
+      ["doc", "docs", "document", "documents", "info", "information", "material", "materials"],
+    ],
+    requiredAll: ["Legacy Makers", "Sales Ops-approved", "DJ", "ISTV-assigned rep"],
+    forbiddenAny: ["I do not have a confirmed answer", "DJ-side reps can sell Legacy Makers"],
+    fallback: {
+      answer:
+        "Use the current Sales Ops-approved Legacy Makers materials. If you are on the DJ side, only sell Daymond John; pass any Legacy Makers or other ISTV-show interest to an ISTV-assigned rep.",
+      summary: "Use the approved Legacy Makers materials and preserve the DJ-to-ISTV passoff boundary.",
+      sections: [],
+      selected_source_ids: ["approved:current-show-source"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 96,
+    },
+  },
+  {
+    id: "contract-before-call-2-boundary",
+    articleId: "contracts-edits-and-signature-process",
+    matchAnyGroups: [
+      ["contract", "contract link"],
+      ["before call 2", "before call two", "prior to call 2", "early"],
+    ],
+    requiredAll: ["can send", "not advised"],
+    forbiddenAny: [
+      "cannot send",
+      "only when leadership has approved",
+      "only if leadership has approved",
+      "requires leadership approval to send",
+    ],
+    fallback: {
+      answer:
+        "Yes, you can send the current contract before Call 2, but it is not advised as the default. Keep contract and payment mechanics in the normal close flow, and do not edit or promise changes to the contract.",
+      summary: "The current contract can be sent before Call 2, but it is not the advised default.",
+      sections: [],
+      selected_source_ids: ["approved:contracts-edits-and-signature-process"],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 96,
     },
   },
   {
@@ -3477,6 +3524,21 @@ async function ensureCriticalAnswer(input: {
     output: input.output,
   });
   if (!validationErrors.length) return { output: input.output, diagnostics: [] };
+
+  const plannedFallback = buildPolicyPlanFallback(input.answerPlan, input.policyDecision);
+  if (plannedFallback) {
+    const plannedFallbackErrors = validateCriticalAnswer({
+      currentQuestion: validationQuestion,
+      latestQuestion: input.currentQuestion,
+      policyDecision: input.policyDecision,
+      questionFrame: input.questionFrame,
+      answerPlan: input.answerPlan,
+      output: plannedFallback,
+    });
+    if (!plannedFallbackErrors.length) {
+      return { output: plannedFallback, diagnostics: [], fallbackUsed: true };
+    }
+  }
 
   let repairFailure: unknown = null;
   let repairedErrors: string[] = [];

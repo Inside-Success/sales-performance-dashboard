@@ -114,6 +114,45 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual(["pricing-product-clarification"]);
   });
 
+  it("uses the concise approved DJ timing plan when a draft promises a wait", async () => {
+    installProviderStub({
+      "answer generation": [outputStep(modelOutput("They can wait until August 15 because DJ has no cohort."))],
+    });
+
+    const result = await runAskSalesFaq(
+      "This is a DJ applicant and funds are unavailable until Aug 15th. Do they have to re-apply or can they continue later?",
+    );
+
+    expect(result.answer).toContain("They do not have to reapply");
+    expect(result.answer).toContain("Call 2 can be booked a few weeks out");
+    expect(result.answer).not.toMatch(/main ISTV|\$2,500\s*x\s*4/i);
+  });
+
+  it("preserves the Legacy Makers DJ-to-ISTV passoff boundary", async () => {
+    installProviderStub({
+      "answer generation": [outputStep(modelOutput("Use the current Sales Ops materials for Legacy Makers."))],
+    });
+
+    const result = await runAskSalesFaq("Can you send me the current info and docs for Legacy Makers?");
+
+    expect(result.answer).toContain("DJ side");
+    expect(result.answer).toContain("ISTV-assigned rep");
+  });
+
+  it("does not invent a leadership-approval prerequisite for sending a contract before Call 2", async () => {
+    installProviderStub({
+      "answer generation": [
+        outputStep(modelOutput("You can send it only when leadership has approved the exception.")),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Are we allowed to send a contract before Call 2?");
+
+    expect(result.answer).toContain("you can send the current contract before Call 2");
+    expect(result.answer).toContain("not advised");
+    expect(result.answer).not.toContain("only when leadership has approved");
+  });
+
   it("honors main ISTV plus an explicit DJ exclusion even when critical repair is needed", async () => {
     const mainIstvAnswer =
       "For main ISTV, do not promise a hold or delayed payment date. Route the payment/deadline exception to Rich or the current owner before promising anything.";

@@ -66,7 +66,7 @@
       "forbidden_claims": ["main ISTV cohort deadline applies", "approved future payment date", "promised hold", "custom payment plan"],
       "route_required": true,
       "fallback_mode": "scope_safe_route",
-      "safe_fallback": "For DJ/NLCEO, there is no cohort rule. Do not promise a hold, future payment date, custom plan, or exception; confirm any nonstandard timing with the current DJ/NLCEO owner.",
+      "safe_fallback": "DJ/NLCEO has no cohort rule and no same-day discount. They do not have to reapply just because funds are unavailable, and Call 2 can be booked a few weeks out when needed. Use only listed payment options; do not promise a hold, future payment date, or exception without the current DJ/NLCEO owner confirming it.",
       "route_reason": "Confirm any nonstandard DJ/NLCEO payment timing, hold, or exception with the current DJ/NLCEO owner before promising it.",
       "approval_reference": "Madeline Cary Slack timing guidance reviewed 2026-07-09 and Rich/Mike cohort decision",
       "last_reviewed": "2026-07-09"
