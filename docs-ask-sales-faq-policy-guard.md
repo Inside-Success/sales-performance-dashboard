@@ -292,6 +292,10 @@ Runtime changes:
   - `internal-material-sharing-boundaries`
   - `greenlight-pdf-and-cohort-deadlines`
 - Synced the generated approved FAQ bundle and policy-aware RAG index from the FAQ source repo after updating the approved internal-material article.
+- A later full retest exposed one more bad fallback: the media-kit/Nielsen/refund-policy question returned generic platform wording. Third-pass hardening added:
+  - critical answer guard `platform-media-kit-refund-exception-route`;
+  - approved platform/proof fallback handling for media-kit, Nielsen, audience-stat, and proof-deck requests;
+  - generated bundle/index sync after adding FAQ source coverage for media-kit/audience-stat routing and force-majeure refund/reschedule exception wording.
 
 Validation:
 
@@ -299,7 +303,7 @@ Validation:
 - `npm run lint`: passed.
 - `npx tsc --noEmit`: passed.
 - `npm run build`: passed.
-- FAQ-side source validation also passed: policy guard 113 / 113, answer contract 121 / 121, runtime orchestrator 121 / 121, retrieval simulation 113 / 113.
+- FAQ-side source validation also passed: policy guard 114 / 114, answer contract 122 / 122, runtime orchestrator 122 / 122, retrieval simulation 114 / 114.
 
 Safety kept:
 

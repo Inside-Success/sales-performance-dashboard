@@ -172,9 +172,9 @@ export const APPROVED_FAQ_ARTICLES: ApprovedFaqArticle[] = [
     "riskLevel": "high",
     "approvedBy": "Syed Moonis Haider",
     "approvedAt": "2026-06-30",
-    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed; Madeline Cary Slack reply on VIP conversion page example reviewed 2026-07-09",
+    "approvalReference": "FAQ Bot - Recommended Answers Pack 1 review status; Magic Mike ISTV context pack reviewed by Syed; Madeline Cary Slack reply on VIP conversion page example reviewed 2026-07-09; 2026-07-09 live retest guardrail for media-kit and audience-stat requests",
     "lastReviewed": "2026-07-09",
-    "body": "## Answer\n\nApproved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.\n\nApproved scam / bad-review objection boundary:\n\n- Keep it short. Do not go down a long defense path.\n- If the prospect truly believes it is a scam, it may not be for them.\n- A brief clarification is allowed: many bad search results come from confusion with a separate UK company named Inside Success. Searching `InsideSuccessTV` points to the correct ISTV brand context.\n- Reps can point to the correct ISTV review context and public proof that is currently approved to share, but must not over-argue or promise outcomes.\n\nApproved value / vendor comparison boundary:\n\n- Avoid perceived-value, vendor comparison, and cheaper-production arguments because they drift into ROI/value guarantees.\n- Do not compare the cost of producing a show with another vendor as the reason the client should buy.\n\nWebpage/social rebrand examples for the $30K license are proof/example assets. Sales Ops has shared a VIP conversion page example, but the bot does not maintain a full public list of examples. Use only the current Sales Ops-approved example/link and do not invent or imply a broader example library.\n\n## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n\n## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n- Do not create or share an unapproved proof/example list from memory.\n\n## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, view language, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved."
+    "body": "## Answer\n\nApproved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.\n\nApproved scam / bad-review objection boundary:\n\n- Keep it short. Do not go down a long defense path.\n- If the prospect truly believes it is a scam, it may not be for them.\n- A brief clarification is allowed: many bad search results come from confusion with a separate UK company named Inside Success. Searching `InsideSuccessTV` points to the correct ISTV brand context.\n- Reps can point to the correct ISTV review context and public proof that is currently approved to share, but must not over-argue or promise outcomes.\n\nApproved value / vendor comparison boundary:\n\n- Avoid perceived-value, vendor comparison, and cheaper-production arguments because they drift into ROI/value guarantees.\n- Do not compare the cost of producing a show with another vendor as the reason the client should buy.\n\nWebpage/social rebrand examples for the $30K license are proof/example assets. Sales Ops has shared a VIP conversion page example, but the bot does not maintain a full public list of examples. Use only the current Sales Ops-approved example/link and do not invent or imply a broader example library.\n\nOfficial third-party media kits, Nielsen statistics, audience statistics, demographics, rankings, view counts, and current proof decks are proof/claims assets. Do not quote those from memory or from old screenshots. Route requests for current media-kit, Nielsen, audience-stat, demographic, or proof-deck material to the approved proof/source owner.\n\n## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n- \"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\"\n\n## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n- Do not create or share an unapproved proof/example list from memory.\n\n## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, media kits, Nielsen statistics, audience statistics, demographics, view language, proof decks, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved."
   },
   {
     "id": "post-sale-handoff-after-close",
@@ -548,6 +548,49 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "celebrity proof",
         "specific review links",
         "approved public proof links"
+      ]
+    },
+    {
+      "id": "route-media-kit-audience-stats",
+      "decision": "route_from_approved_article",
+      "article_id": "platform-proof-and-claims-boundaries",
+      "reason": "Official media kits, Nielsen statistics, audience statistics, demographics, and proof decks need the current approved proof/source owner material.",
+      "match_any": [
+        "media kit",
+        "third-party media kit",
+        "third party media kit",
+        "nielsen",
+        "audience statistics",
+        "audience stats",
+        "audience data",
+        "demographics",
+        "proof deck",
+        "stats deck"
+      ]
+    },
+    {
+      "id": "route-refund-reschedule-force-majeure",
+      "decision": "route_from_approved_article",
+      "article_id": "refund-rules-by-product",
+      "reason": "Refund, rescheduling, cancellation, force-majeure, travel-restriction, illness, or production-disruption exceptions require finance/contracts/current-owner routing before reps promise an outcome.",
+      "match_any_groups": [
+        [
+          "refund",
+          "reschedule",
+          "rescheduling",
+          "cancellation",
+          "policy"
+        ],
+        [
+          "pandemic",
+          "lockdown",
+          "travel restriction",
+          "serious illness",
+          "production disruption",
+          "outside their control",
+          "force majeure",
+          "exception"
+        ]
       ]
     },
     {

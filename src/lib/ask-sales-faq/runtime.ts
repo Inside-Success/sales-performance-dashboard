@@ -802,6 +802,50 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
     },
   },
   {
+    id: "platform-media-kit-refund-exception-route",
+    articleId: "platform-proof-and-claims-boundaries",
+    matchAny: [
+      "media kit",
+      "third-party media kit",
+      "third party media kit",
+      "nielsen",
+      "audience statistics",
+      "audience stats",
+      "audience data",
+      "demographics",
+      "proof deck",
+      "stats deck",
+    ],
+    requiredAnyGroups: [
+      ["media kit", "Nielsen", "audience-stat", "audience statistic", "audience stats"],
+      ["source owner", "proof/source owner", "approved proof"],
+      ["do not quote", "do not promise", "route"],
+    ],
+    forbiddenAny: ["All tiers air", "Inside Success Network app", "guarantee", "official refund exception"],
+    fallback: {
+      answer:
+        "Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory. Route requests for current media-kit/Nielsen/audience-stat material to the approved proof/source owner. For refund or rescheduling exceptions such as pandemic, lockdown, travel restriction, illness, or production disruption, do not promise an outcome; route to finance, contracts/legal, or the current owner before replying.",
+      summary: "Media-kit/stat requests and refund/reschedule exceptions need current owner routing.",
+      sections: [
+        {
+          title: "Media kit and stats",
+          body: "Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory. Route current proof material to the approved proof/source owner.",
+          tone: "route",
+        },
+        {
+          title: "Refund or reschedule exceptions",
+          body: "For exceptions such as pandemic, lockdown, travel restriction, illness, or production disruption, do not promise an outcome; route to finance, contracts/legal, or the current owner before replying.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:platform-proof-and-claims-boundaries", "approved:refund-rules-by-product"],
+      needs_route: true,
+      route_reason: "Media-kit/Nielsen/audience-stat requests and refund/rescheduling exceptions need current owner-approved material.",
+      confidence_label: "High",
+      confidence_score: 92,
+    },
+  },
+  {
     id: "internal-recording-delete-vault-route",
     articleId: "internal-material-sharing-boundaries",
     matchAnyGroups: [
@@ -1713,6 +1757,8 @@ function buildApprovedArticleFallbackOutput(input: {
       return buildPricingAndTimingFallback(input.currentQuestion, input.policyDecision);
     case "main-istv-call-2-cohort-reschedule-rules":
       return buildMainIstvCohortFallback(input.currentQuestion, input.policyDecision);
+    case "platform-proof-and-claims-boundaries":
+      return buildPlatformProofFallback(input.currentQuestion, input.policyDecision);
     case "internal-material-sharing-boundaries":
       return buildInternalMaterialFallback(input.currentQuestion, input.policyDecision);
     case "greenlight-pdf-and-cohort-deadlines":
@@ -1942,6 +1988,81 @@ function buildQualificationFallback(question: string): ModelOutput {
     selected_source_ids: ["approved:qualification-and-show-fit-rubric"],
     needs_route: true,
     route_reason: "Sensitive qualification/show-fit edge cases need owner review.",
+    confidence_label: "High",
+    confidence_score: 90,
+  });
+}
+
+function buildPlatformProofFallback(question: string, policyDecision: PolicyGuardDecision): ModelOutput {
+  if (/\b(media kit|nielsen|audience statistics|audience stats|audience data|demographics|proof deck|stats deck)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory. Route requests for current media-kit/Nielsen/audience-stat material to the approved proof/source owner. For refund or rescheduling exceptions such as pandemic, lockdown, travel restriction, illness, or production disruption, do not promise an outcome; route to finance, contracts/legal, or the current owner before replying.",
+      summary: "Media-kit/stat requests and refund/reschedule exceptions need current owner routing.",
+      sections: [
+        {
+          title: "Media kit and stats",
+          body: "Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory. Route current proof material to the approved proof/source owner.",
+          tone: "route",
+        },
+        {
+          title: "Refund or reschedule exceptions",
+          body: "For exceptions such as pandemic, lockdown, travel restriction, illness, or production disruption, do not promise an outcome; route to finance, contracts/legal, or the current owner before replying.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:platform-proof-and-claims-boundaries", "approved:refund-rules-by-product"],
+      needs_route: true,
+      route_reason: "Media-kit/Nielsen/audience-stat requests and refund/rescheduling exceptions need current owner-approved material.",
+      confidence_label: "High",
+      confidence_score: 92,
+    });
+  }
+
+  if (/\b(rebrand examples|webpage and social rebrand|social rebrand|conversion page example)\b/i.test(question)) {
+    return cloneModelOutput({
+      answer:
+        "For the $30K VIP webpage/social rebrand, Sales Ops has a VIP conversion page example. Use the current approved example/link only; do not invent or imply a broader approved example library.",
+      summary: "Use only the Sales Ops-approved VIP conversion page example.",
+      sections: [
+        {
+          title: "Approved example boundary",
+          body: "Sales Ops has a VIP conversion page example. Use that current approved example/link only.",
+          tone: "default",
+        },
+        {
+          title: "Do not imply",
+          body: "Do not invent or imply a broader approved example library unless Sales Ops confirms it.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:platform-proof-and-claims-boundaries"],
+      needs_route: policyDecision.decision === "route_from_approved_article",
+      route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
+      confidence_label: "High",
+      confidence_score: 92,
+    });
+  }
+
+  return cloneModelOutput({
+    answer:
+      "Use only approved platform and proof wording. Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results. Route specific proof links, press, review links, media kits, audience stats, or proof decks to the approved proof/source owner.",
+    summary: "Use approved platform/proof wording and route specific proof assets.",
+    sections: [
+      {
+        title: "Boundary",
+        body: "Use only approved platform and proof wording. Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.",
+        tone: "warning",
+      },
+      {
+        title: "Route specific proof assets",
+        body: "Route specific proof links, press, review links, media kits, audience stats, or proof decks to the approved proof/source owner.",
+        tone: "route",
+      },
+    ],
+    selected_source_ids: ["approved:platform-proof-and-claims-boundaries"],
+    needs_route: policyDecision.decision === "route_from_approved_article",
+    route_reason: policyDecision.decision === "route_from_approved_article" ? policyDecision.reason : "",
     confidence_label: "High",
     confidence_score: 90,
   });

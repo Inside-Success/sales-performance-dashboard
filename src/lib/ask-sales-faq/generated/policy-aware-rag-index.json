@@ -1,5 +1,5 @@
 {
-  "chunk_count": 1711,
+  "chunk_count": 1712,
   "chunks": [
     {
       "article_id": "americas-top-lawyers-passoff-boundary",
@@ -262,6 +262,21 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "Answer",
+      "id": "rag_6395c11be113afa9",
+      "last_reviewed": "2026-07-09",
+      "risk_level": "high",
+      "source_path": "knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+      "source_title": "Platform, Proof, And Claims Boundaries",
+      "source_type": "approved_article",
+      "text": "Official third-party media kits, Nielsen statistics, audience statistics, demographics, rankings, view counts, and current proof decks are proof/claims assets. Do not quote those from memory or from old screenshots. Route requests for current media-kit, Nielsen, audience-stat, demographic, or proof-deck material to the approved proof/source owner.",
+      "trust_label": "Approved FAQ article"
+    },
+    {
+      "article_id": "platform-proof-and-claims-boundaries",
+      "article_status": "approved",
+      "authority": 100,
+      "category": "Compliance, Proof & Claims",
+      "heading": "Answer",
       "id": "rag_cc8668f995c8a965",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
@@ -277,13 +292,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "Route If Asked For Proof Links Or Claims",
-      "id": "rag_ea3adef80a9fcdbd",
+      "id": "rag_71e3d6d2a48eb6a4",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
       "source_title": "Platform, Proof, And Claims Boundaries",
       "source_type": "approved_article",
-      "text": "## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, view language, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved.",
+      "text": "## Route If Asked For Proof Links Or Claims\n\nIf the rep needs specific review links, press, episode examples, celebrity proof, media kits, Nielsen statistics, audience statistics, demographics, view language, proof decks, or approved public proof links, route to the approved proof/source owner until the current proof pack is approved.",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -292,13 +307,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "What Reps Can Say",
-      "id": "rag_992f4fc67da0de0b",
+      "id": "rag_e20e3e8f88bcd2d8",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
       "source_title": "Platform, Proof, And Claims Boundaries",
       "source_type": "approved_article",
-      "text": "## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"",
+      "text": "## What Reps Can Say\n\n- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n- \"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\"",
       "trust_label": "Approved FAQ article"
     },
     {
@@ -307,13 +322,13 @@
       "authority": 100,
       "category": "Compliance, Proof & Claims",
       "heading": "What Reps Must Not Say",
-      "id": "rag_01e77bf7ebb0b66e",
+      "id": "rag_b6c8f6d52382a71d",
       "last_reviewed": "2026-07-09",
       "risk_level": "high",
       "source_path": "knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
       "source_title": "Platform, Proof, And Claims Boundaries",
       "source_type": "approved_article",
-      "text": "## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n- Do not create or share an unapproved proof/example list from memory.",
+      "text": "## What Reps Must Not Say\n\n- Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.\n- Do not say a client can pay extra to guarantee Apple TV streaming-app submission or placement.\n- Do not say ISTV works directly with Amazon or Apple.\n- Do not promise ROI, revenue, leads, fundraising, PR outcomes, platform placement, views, demographics, celebrity outcomes, or guaranteed business results.\n- Do not use unsupported public proof, old examples, screenshots, dashboards, or stats decks as proof.\n- Do not quote media-kit, Nielsen, audience-stat, demographic, ranking, view-count, or proof-deck numbers from memory.\n- Do not argue at length with someone calling it a scam.\n- Do not claim every bad review is fake or removed.\n- Do not use vendor-production cost comparisons to justify the price.\n- Do not create or share an unapproved proof/example list from memory.",
       "trust_label": "Approved FAQ article"
     },
     {
