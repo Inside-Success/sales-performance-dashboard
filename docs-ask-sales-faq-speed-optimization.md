@@ -216,3 +216,35 @@ Latest verification:
 - Vercel Production deployment for the code commit reached Ready: `dpl_7gfgHvjo7gnA5BNtt9hLPwGVnEJV`.
 - Vercel build/runtime checks were clean in the deployment check window.
 - Signed-in 28-question retest is still pending.
+
+## Final Presentation Polish
+
+The 2026-07-09 signed-in 28-question retest after source-routing hardening showed no policy-critical wrong answers, but it still exposed small product-polish issues:
+
+- adjacent structured sections could repeat the same title, especially duplicate `What you can do` blocks;
+- the DJ/NLCEO short fallback was safe but longer than needed for an explicit one-line request;
+- critical-repair warnings could appear in Vercel logs even when the final approved fallback shown to the rep was valid.
+
+Implemented dashboard fix:
+
+- Adjacent duplicate display sections are merged generically after existing section normalization.
+- The DJ/NLCEO short-answer critical fallback keeps the required safety facts while using a shorter direct sentence.
+- Critical-repair warnings are held until after approved fallback validation, so a successful final fallback does not create misleading warning noise.
+
+This does not change the speed path or answer authority:
+
+- No approved-KB fact, policy guard, route rule, RAG scope, model, API schema, DB schema, Slack, Google, n8n, caching, or fallback-to-any-approved-answer change.
+- The normal answer-quality path remains source selection -> AI answer -> rep-facing cleanup -> critical validation -> grounding validation -> display shaping.
+
+Latest verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 68 / 68 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `a2ec01a` (`Polish Ask Sales FAQ presentation validation`).
+- Vercel Production deployment for the code commit reached Ready: `dpl_GarRvRj6cWQ4HJoYXLVx8CHkroBW`.
+- Vercel build errors-only check showed no build errors.
+- Vercel runtime errors/log check showed no errors, warnings, or fatal logs for the new deployment check window.
+- Anonymous `/ask-sales-faq` still redirects to sign-in.
+- Anonymous `POST /api/ask-sales-faq` still returns controlled `not_signed_in` JSON.

@@ -173,3 +173,31 @@ Verification:
 - Vercel runtime error/log check showed no runtime errors, warnings, or fatal logs for the deployment check window.
 - Anonymous signed-out page/API guards still returned sign-in / `not_signed_in`.
 - User signed-in 28-question retest is still pending.
+
+## 2026-07-09 Final Presentation Polish
+
+Status: dashboard runtime polish implemented, pushed, locally verified, and production-deployed without starting a local dev server.
+
+What changed:
+
+- Adjacent duplicate structured sections are merged after presentation normalization. This fixes repeated section headers such as two `What you can do` cards without changing the answer facts.
+- Explicit short DJ/NLCEO fallback answers now use a shorter direct sentence while preserving the required high-risk facts: no cohort rule, no same-day discount, main ISTV cohort rules do not apply, listed payment options only, and no promised hold/future payment date without owner approval.
+- Critical-answer repair warnings are emitted only when the repaired answer and the approved fallback both fail validation. A valid final fallback no longer creates misleading warning logs.
+
+Safety kept:
+
+- No approved article, source route, policy guard fact, RAG scope, model, API, database, Slack, Google, n8n, caching, or fallback-to-any-approved-answer behavior changed.
+- Critical validation and approved fallback validation still run before reps see high-risk answers.
+
+Verification:
+
+- `node scripts/validate-ask-sales-faq.mjs`: 68 / 68 passed.
+- `npm run lint`: passed.
+- `npm run build`: passed.
+- Touched-file `git diff --check`: passed.
+- Dashboard code commit: `a2ec01a` (`Polish Ask Sales FAQ presentation validation`).
+- Vercel Production deployment for the code commit reached Ready: `dpl_GarRvRj6cWQ4HJoYXLVx8CHkroBW`.
+- Vercel build errors-only check showed no build errors.
+- Vercel runtime errors/log check showed no errors, warnings, or fatal logs for the new deployment check window.
+- Anonymous `/ask-sales-faq` still redirects to sign-in.
+- Anonymous `POST /api/ask-sales-faq` still returns controlled `not_signed_in` JSON.
