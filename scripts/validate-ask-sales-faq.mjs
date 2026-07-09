@@ -573,8 +573,22 @@ if (missingFiles.length === 0) {
       runtime.includes("critical answer repair") &&
       runtime.includes("buildCriticalFallbackOutput") &&
       runtime.includes("payment-no-custom-plans") &&
+      runtime.includes("greenlight-letter-route") &&
       runtime.includes("ai_runtime_approved_fallback"),
     "AI-generated answers are checked and repaired for high-risk approved facts before returning to reps",
+  );
+
+  addCheck(
+    "greenlight letters and live commission tiers cannot borrow wrong routes",
+    bundle.includes("route-greenlight-letter-requests") &&
+      bundle.includes("greenlight letter urgently") &&
+      bundle.includes("#greenlight-requests") &&
+      runtime.includes("greenlight-letter-route") &&
+      runtime.includes("forbiddenAny: [\"#sales-finance-requests\"") &&
+      bundle.includes("abstain-account-specific-commission-tier") &&
+      bundle.includes("commission-tier-and-leaderboard") &&
+      runtime.includes("live commission tier, leaderboard, or payout data"),
+    "greenlight-letter questions route to the greenlight channel, while account-specific commission tiers abstain instead of using finance/payment guidance",
   );
 
   addCheck(
@@ -695,8 +709,16 @@ if (missingFiles.length === 0) {
     runtime.includes("shapeModelOutputForDisplay") &&
       runtime.includes("summary: answer") &&
       runtime.includes("sections: []") &&
+      runtime.includes("plainSummaryOnly") &&
+      runtime.includes("normalizeStructuredAnswerSections") &&
+      runtime.includes("normalizeActionInstructionSectionTitle") &&
+      runtime.includes("splitInlineLabeledOptionSection") &&
+      runtime.includes("splitMarkdownListSection") &&
+      runtime.includes("splitCommaListSection") &&
       runtime.includes("splitDenseOptionSection") &&
       runtime.includes("extractDenseOptionList") &&
+      runtime.includes("When the answer contains a list of shows, payment plans, packages, or steps") &&
+      runtime.includes("Use What you can do for action instructions") &&
       runtime.includes("Payment options") &&
       runtime.includes("PIF"),
     "explicit short-answer requests render as a single concise answer, while dense payment/package options can render as bullets without changing policy facts",

@@ -89,6 +89,9 @@ type ModelOutput = {
   route_reason: string;
   confidence_label?: "High" | "Medium" | "Low";
   confidence_score?: number;
+  display?: {
+    plainSummaryOnly?: boolean;
+  };
 };
 
 type ArticleRouterOutput = {
@@ -680,6 +683,38 @@ const CRITICAL_ANSWER_RULES: CriticalAnswerRule[] = [
       selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
       needs_route: true,
       route_reason: "Greenlight caps and live timing can drift, so use #greenlight-requests.",
+      confidence_label: "High",
+      confidence_score: 94,
+    },
+  },
+  {
+    id: "greenlight-letter-route",
+    articleId: "greenlight-pdf-and-cohort-deadlines",
+    matchAnyGroups: [
+      ["greenlight", "green light", "approval letter", "approval pdf"],
+      ["letter", "pdf", "urgent", "urgently", "request", "send", "status", "where should", "where do"],
+    ],
+    requiredAll: ["#greenlight-requests"],
+    forbiddenAny: ["#sales-finance-requests", "sales-finance-requests", "finance requests"],
+    fallback: {
+      answer:
+        "Post greenlight letter requests, urgent sends, and letter-status questions in #greenlight-requests. Do not promise the letter, timing, or outcome unless the current greenlight owner confirms it.",
+      summary: "Greenlight letter requests go to #greenlight-requests.",
+      sections: [
+        {
+          title: "Where to post",
+          body: "Post greenlight letter requests, urgent sends, and letter-status questions in #greenlight-requests.",
+          tone: "route",
+        },
+        {
+          title: "Boundary",
+          body: "Do not promise the letter, timing, or outcome unless the current greenlight owner confirms it.",
+          tone: "warning",
+        },
+      ],
+      selected_source_ids: ["approved:greenlight-pdf-and-cohort-deadlines"],
+      needs_route: true,
+      route_reason: "Greenlight letter requests, urgent sends, and status questions route to #greenlight-requests.",
       confidence_label: "High",
       confidence_score: 94,
     },
@@ -1452,13 +1487,146 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput): Mode
       answer,
       summary: answer,
       sections: [],
+      display: {
+        ...shaped.display,
+        plainSummaryOnly: true,
+      },
     };
   }
 
   return {
     ...shaped,
-    sections: shaped.sections?.flatMap(splitDenseOptionSection),
+    sections: shaped.sections?.flatMap(normalizeStructuredAnswerSections),
   };
+}
+
+function normalizeStructuredAnswerSections(
+  section: NonNullable<ModelOutput["sections"]>[number],
+): NonNullable<ModelOutput["sections"]> {
+  return [normalizeActionInstructionSectionTitle(section)]
+    .flatMap(splitInlineLabeledOptionSection)
+    .flatMap(splitMarkdownListSection)
+    .flatMap(splitDenseOptionSection)
+    .flatMap(splitCommaListSection);
+}
+
+function normalizeActionInstructionSectionTitle(
+  section: NonNullable<ModelOutput["sections"]>[number],
+): NonNullable<ModelOutput["sections"]>[number] {
+  if (!section.title || !/^what you can say$/i.test(section.title.trim())) return section;
+
+  const text = [section.body || "", ...(section.items || [])].join(" ");
+  if (/["]/.test(text) || /\byou can say\b/i.test(text)) return section;
+
+  return {
+    ...section,
+    title: "What you can do",
+  };
+}
+
+function splitInlineLabeledOptionSection(
+  section: NonNullable<ModelOutput["sections"]>[number],
+): NonNullable<ModelOutput["sections"]> {
+  if (!section.body || section.items?.length) return [section];
+
+  const optionList = extractInlineLabeledOptionList(section.body, section.title);
+  if (!optionList) return [section];
+
+  return [
+    {
+      ...section,
+      title: optionList.title || section.title || "Options",
+      body: optionList.intro || undefined,
+      items: optionList.items,
+    },
+    ...(optionList.boundary
+      ? [
+          {
+            title: "Boundary",
+            body: optionList.boundary,
+            tone: section.tone === "route" ? "route" : "warning",
+          },
+        ]
+      : []),
+  ];
+}
+
+function extractInlineLabeledOptionList(body: string, title?: string) {
+  const titleText = normalizeText(title || "");
+  const bodyText = normalizeText(body);
+  if (!/\b(payment|payments|plan|plans|package|packages|pif|deposit|daymond|nlceo|next level ceo)\b/.test(`${titleText} ${bodyText}`)) {
+    return null;
+  }
+
+  const normalizedBody = body.replace(
+    /\s+-\s+(?=(?:Lite|Standard|Premium VIP|VIP \/ Premium|CEO Day upgrade)\s*:)/gi,
+    "\n",
+  );
+  const optionPattern = /(?:^|\n|[.;]\s+)(Lite|Standard|Premium VIP|VIP \/ Premium|CEO Day upgrade)\s*:\s*/gi;
+  const matches = [...normalizedBody.matchAll(optionPattern)];
+  if (matches.length < 2) return null;
+
+  const firstIndex = matches[0].index ?? 0;
+  const intro = normalizedBody.slice(0, firstIndex).replace(/[-:;,.\s]+$/, "").trim();
+  const items = matches
+    .map((match, index) => {
+      const nextMatch = matches[index + 1];
+      const startIndex = (match.index ?? 0) + match[0].length;
+      const endIndex = nextMatch?.index ?? normalizedBody.length;
+      const value = normalizedBody.slice(startIndex, endIndex).replace(/^[-:;,.\s]+|[-:;,.\s]+$/g, "").trim();
+      return value ? `${match[1].trim()}: ${value}` : "";
+    })
+    .filter(Boolean);
+
+  if (items.length < 2) return null;
+
+  return {
+    title: title && !/^answer$/i.test(title) ? title : "Payment options",
+    intro,
+    items,
+    boundary: "",
+  };
+}
+
+function splitMarkdownListSection(section: NonNullable<ModelOutput["sections"]>[number]): NonNullable<ModelOutput["sections"]> {
+  if (!section.body || section.items?.length) return [section];
+
+  const lines = section.body
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const firstBulletIndex = lines.findIndex((line) => /^[-*•]\s+/.test(line));
+  if (firstBulletIndex < 0) return [section];
+
+  const items: string[] = [];
+  const trailingLines: string[] = [];
+  for (const line of lines.slice(firstBulletIndex)) {
+    const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+    if (bulletMatch && !trailingLines.length) {
+      items.push(bulletMatch[1].trim());
+      continue;
+    }
+    trailingLines.push(line);
+  }
+  if (items.length < 2) return [section];
+
+  const intro = lines.slice(0, firstBulletIndex).join(" ").replace(/[-:;,.\s]+$/, "").trim();
+  return [
+    {
+      ...section,
+      body: intro || undefined,
+      items,
+    },
+    ...(trailingLines.length
+      ? [
+          {
+            title: "Boundary",
+            body: trailingLines.join(" "),
+            tone: section.tone === "route" ? "route" : "warning",
+          },
+        ]
+      : []),
+  ];
 }
 
 function splitDenseOptionSection(section: NonNullable<ModelOutput["sections"]>[number]): NonNullable<ModelOutput["sections"]> {
@@ -1509,6 +1677,42 @@ function extractDenseOptionList(body: string) {
     items,
     boundary: suffix.replace(/^[-:;,.\s]+/, "").trim(),
   };
+}
+
+function splitCommaListSection(section: NonNullable<ModelOutput["sections"]>[number]): NonNullable<ModelOutput["sections"]> {
+  if (!section.body || section.items?.length) return [section];
+
+  const list = extractCommaSeparatedList(section.body, section.title);
+  if (!list) return [section];
+
+  return [
+    {
+      ...section,
+      body: list.intro || undefined,
+      items: list.items,
+    },
+  ];
+}
+
+function extractCommaSeparatedList(body: string, title?: string) {
+  const titleText = normalizeText(title || "");
+  const titleSupportsCommaList = /\b(show|shows|show list|current shows|available shows)\b/.test(titleText);
+  const genericListWithoutMoney = /\blist\b/.test(titleText) && !/\$/.test(body);
+  if (!titleSupportsCommaList && !genericListWithoutMoney) return null;
+
+  const colonIndex = body.indexOf(":");
+  const hasShortIntro = colonIndex > 0 && colonIndex < 140 && body.slice(colonIndex + 1).split(",").length >= 6;
+  const intro = hasShortIntro ? body.slice(0, colonIndex).replace(/[-:;,.\s]+$/, "").trim() : "";
+  const listText = (hasShortIntro ? body.slice(colonIndex + 1) : body).replace(/[.\s]+$/, "").trim();
+  const items = listText
+    .split(/\s*,\s*/)
+    .map((item) => item.replace(/^and\s+/i, "").trim())
+    .filter(Boolean);
+
+  if (items.length < 6) return null;
+  if (items.some((item) => item.split(/\s+/).length > 8)) return null;
+
+  return { intro, items };
 }
 
 function validateCriticalAnswer(input: {
@@ -1598,6 +1802,10 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
 
   if (policyDecision.blockedTopic === "new-rep-onboarding-and-final-mock") {
     return "I do not have a confirmed new-rep onboarding or final mock checklist yet. Route this to the current training owner before giving a final checklist.";
+  }
+
+  if (policyDecision.blockedTopic === "commission-tier-and-leaderboard") {
+    return "I do not have your live commission tier, leaderboard, or payout data. Check with the current sales/commission owner before relying on a number.";
   }
 
   return "I do not have a confirmed answer for that yet. Route this to the current sales owner or the right help channel before replying to the prospect.";
@@ -1766,8 +1974,11 @@ async function generateProviderAnswer(input: {
           "Start with the shortest useful direct answer for a rep on a live call.",
           "If the rep asks for a short reply, answer in one or two sentences while preserving required safety boundaries.",
           "Use sections only when they add useful steps, boundaries, or escalation details; do not create an Answer section just to repeat the first sentence.",
+          "When the answer contains a list of shows, payment plans, packages, or steps, put the list entries in sections[].items instead of packing them into one paragraph.",
+          "Use a section title like What you can say only for literal suggested wording. Use What you can do for action instructions.",
           "Do not turn simple answers into policy memos.",
           "The current user question is authoritative. Use recent conversation context only to resolve references or context-dependent follow-ups; never let old context override a clear current question.",
+          "If payment/package context could refer to more than one product, use recent context only when it clearly names the product; otherwise label the product you are answering or ask a short clarifying question.",
           "If the current question is a short confirmation of the prior answer, answer in one or two direct sentences and do not repeat the full policy unless needed for safety.",
           "For DJ/NLCEO cohort or payment-timing questions, say the main ISTV cohort rule does not block them, but never approve a specific future payment date or hold; route or confirm payment-timing exceptions before promising.",
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
@@ -2792,7 +3003,7 @@ function normalizeModelStructuredAnswer(
 
   return structured({
     summary: sanitizeModelAnswer(output.summary || answer),
-    sections: sections.length ? sections : [{ title: "Answer", body: answer }],
+    sections: sections.length || output.display?.plainSummaryOnly ? sections : [{ title: "Answer", body: answer }],
     decision: {
       ...decision,
       confidenceLabel: output.confidence_label || decision.confidenceLabel,

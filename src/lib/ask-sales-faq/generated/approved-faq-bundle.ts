@@ -295,9 +295,60 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "final mock",
         "new rep"
       ]
+    },
+    {
+      "id": "abstain-account-specific-commission-tier",
+      "decision": "abstain_unapproved",
+      "blocked_topic": "commission-tier-and-leaderboard",
+      "reason": "Live individual commission tier, leaderboard, and payout data are not available in Ask Sales FAQ.",
+      "match_any_groups": [
+        [
+          "commission",
+          "commission tier",
+          "leaderboard",
+          "bill.com",
+          "bill com",
+          "payout"
+        ],
+        [
+          "my",
+          "am i",
+          "this month",
+          "what tier",
+          "which tier",
+          "where am i",
+          "rank"
+        ]
+      ]
     }
   ],
   "routeRules": [
+    {
+      "id": "route-greenlight-letter-requests",
+      "decision": "route_from_approved_article",
+      "article_id": "greenlight-pdf-and-cohort-deadlines",
+      "reason": "Greenlight letter requests, urgent sends, and letter-status questions route to #greenlight-requests.",
+      "match_any_groups": [
+        [
+          "greenlight",
+          "green light",
+          "approval letter",
+          "approval pdf"
+        ],
+        [
+          "letter",
+          "pdf",
+          "urgent",
+          "urgently",
+          "send",
+          "request",
+          "ask",
+          "where should",
+          "where do",
+          "status"
+        ]
+      ]
+    },
     {
       "id": "route-greenlight-live-ops",
       "decision": "route_from_approved_article",
@@ -623,6 +674,10 @@ export const ASK_SALES_FAQ_POLICY_RULES: {
         "greenlight requests",
         "#greenlight-requests",
         "urgent greenlight letter",
+        "greenlight letter urgent",
+        "greenlight letter urgently",
+        "needs a greenlight letter",
+        "where should they ask for a greenlight letter",
         "send a greenlight letter",
         "same-day greenlight letter",
         "same day greenlight letter",
