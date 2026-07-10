@@ -277,6 +277,31 @@ const CLAIM_ROUTER_MIN_RETRIEVAL_SCORE = 40;
 const CLAIM_ROUTER_MAX_CANDIDATES = 12;
 const CLAIM_PROMPT_CHARS = 2200;
 
+const OWNER_CLAIM_GENERIC_TITLE_TOKENS = new Set([
+  "applicant",
+  "approved",
+  "boundary",
+  "call",
+  "calls",
+  "client",
+  "current",
+  "issue",
+  "payment",
+  "percent",
+  "phone",
+  "process",
+  "prospect",
+  "qualification",
+  "questions",
+  "route",
+  "routing",
+  "sales",
+  "scheduling",
+  "show",
+  "status",
+  "twenty",
+]);
+
 const REP_FACING_INTERNAL_TERMS = [
   "not approved in the knowledge base",
   "not approved in kb",
@@ -285,6 +310,7 @@ const REP_FACING_INTERNAL_TERMS = [
   "approved faq article",
   "approved claim",
   "approved claims",
+  "approved policy",
   "route-only",
   "route only",
   "manifest",
@@ -313,6 +339,7 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\bpending approval\b/i,
   /\bapproved (faq )?article\b/i,
   /\bapproved claims?\b/i,
+  /\bapproved policy\b/i,
   /\bknowledge base\b/i,
   /\broute[- ]only\b/i,
   /\bRAG\b/,
@@ -1698,11 +1725,12 @@ function findStrongOwnerApprovedClaimDecision(
   questionFrame: QuestionFrame,
   policyDecision: PolicyGuardDecision,
 ): PolicyGuardDecision | null {
-  const mayRefineBroadRoute =
-    policyDecision.routingSource === "direct_rule" && policyDecision.decision === "route_from_approved_article";
+  const mayRefineBroadDirectRule =
+    policyDecision.routingSource === "direct_rule" &&
+    (policyDecision.decision === "answer_from_approved_article" || policyDecision.decision === "route_from_approved_article");
   const mayResolveDefaultAbstain =
     policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
-  if (!mayRefineBroadRoute && !mayResolveDefaultAbstain) return null;
+  if (!mayRefineBroadDirectRule && !mayResolveDefaultAbstain) return null;
 
   const strongOwnerMatches = retrieveApprovedClaims(questionFrame.effectiveQuestion, {
     scope: questionFrame.scope,
@@ -1715,7 +1743,8 @@ function findStrongOwnerApprovedClaimDecision(
       match.claim.authority >= 110 &&
       match.score >= 88 &&
       match.matchedTokens.length >= 4 &&
-      match.matchedBigrams.length >= 1,
+      match.matchedBigrams.length >= 1 &&
+      ownerClaimHasDistinctiveTitleMatch(match),
   );
 
   // This fast path is intentionally narrow. A single, strongly matched current
@@ -1739,6 +1768,16 @@ function findStrongOwnerApprovedClaimDecision(
     usedConversationContext: false,
     selectedClaimIds: [claim.id],
   };
+}
+
+function ownerClaimHasDistinctiveTitleMatch(match: ApprovedClaimMatch) {
+  const normalizedTitle = normalizeText(match.claim.title);
+  return match.matchedTokens.some(
+    (token) =>
+      token.length >= 3 &&
+      !OWNER_CLAIM_GENERIC_TITLE_TOKENS.has(token) &&
+      normalizedTitle.includes(token),
+  );
 }
 
 function findApprovedClaimRefinements(
