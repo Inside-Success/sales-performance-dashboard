@@ -2115,11 +2115,13 @@ function buildPolicyDecisionFromClaimRouter(
   if (confidenceScore < CLAIM_ROUTER_MIN_CONFIDENCE) return null;
 
   const available = new Map(claimMatches.map((match) => [match.claim.id, match]));
-  const selectedMatches = uniqueStrings(output.claim_ids || [])
+  const rawSelectedMatches = uniqueStrings(output.claim_ids || [])
     .map((id) => available.get(id))
     .filter((match): match is ApprovedClaimMatch => Boolean(match))
     .filter((match) => match.score >= CLAIM_ROUTER_MIN_RETRIEVAL_SCORE)
     .slice(0, 6);
+  const selectedNonArticleClaims = rawSelectedMatches.filter((match) => match.claim.source_kind !== "approved_article");
+  const selectedMatches = selectedNonArticleClaims.length ? selectedNonArticleClaims : rawSelectedMatches;
   if (!selectedMatches.length) return null;
 
   const routeRequired = Boolean(output.needs_route) || selectedMatches.some((match) => match.claim.route_required);
