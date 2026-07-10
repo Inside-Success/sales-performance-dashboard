@@ -100,6 +100,11 @@ describe("buildQuestionFrame", () => {
     expect(buildQuestionFrame("Hey there!").relation).toBe("social");
     expect(buildQuestionFrame("Hi, I'll be asking a few sales questions today.").relation).toBe("social");
     expect(buildQuestionFrame("Hi! I’m checking a few sales questions today.").relation).toBe("social");
+    expect(buildQuestionFrame("Hey there! Hope you’re doing well—can you help me with a few qualification questions?").relation).toBe("social");
+    expect(buildQuestionFrame("Thanks. I’m switching to payments, contracts, and content rights now.").relation).toBe("social");
+    expect(buildQuestionFrame("Appreciate it. Next I have questions about calls, greenlights, and recordings.").relation).toBe("social");
+    expect(buildQuestionFrame("Last section—I have questions about production, resources, and events.").relation).toBe("social");
+    expect(buildQuestionFrame("I have several unrelated sales questions. Can you keep your answers short and practical?").relation).toBe("social");
     expect(buildQuestionFrame("Hi, can I send the payment link by text?").relation).toBe("new");
   });
 

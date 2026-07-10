@@ -600,19 +600,23 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "short conversational follow-ups plan before broad routing",
+    "conversation, semantic recall, and policy selection are separated before broad routing",
     runtime.includes("const deterministicPolicyDecision = matchPolicyGuard(routingQuestion, questionFrame)") &&
-      runtime.includes("const semanticClaimMatches = retrieveApprovedClaims") &&
+      runtime.includes("tryExpandApprovedClaimSearch") &&
+      runtime.includes("const directSemanticClaimMatches = retrieveApprovedClaims") &&
+      runtime.includes("const semanticClaimMatches = searchExpansion") &&
+      runtime.includes("selectArticleRouterCandidates") &&
       runtime.includes("await tryPlanConversationTurn") &&
       runtime.includes("if (plannerResult.reply)") &&
       runtime.includes("if (plannerResult.decision)") &&
-      runtime.includes("evidenceBacksDeterministicDecision") &&
+      runtime.includes("scopedPolicyPlanBacksDeterministicDecision") &&
+      !runtime.includes("shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)") &&
       runtime.includes("classifyRewriteIntent(question)") &&
       runtime.includes("isSocialConversationTurn") &&
       runtime.includes("isConcisePromiseConfirmation(question)") &&
       questionFrame.includes("TOPIC_TRANSITION_PATTERN") &&
       runtime.includes("Ignore brief social replies like 'You're welcome'"),
-    "all non-blocked turns reach semantic planning before broad legacy routing, including confirmations, social transitions, and rewrites",
+    "conversation handling, semantic query expansion, approved-claim selection, and compact article candidates are isolated; old context and broad policy plans cannot override a clear current question",
   );
 
   addCheck(

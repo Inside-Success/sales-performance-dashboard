@@ -96,8 +96,13 @@ export const BLOCKED_CLAIMS = DOCUMENT.blocked_claims;
 const STOP_WORDS = new Set([
   "a", "an", "and", "are", "as", "at", "be", "been", "but", "by", "can", "could", "do", "does", "for",
   "from", "had", "has", "have", "how", "i", "if", "in", "is", "it", "may", "of", "on", "or", "our",
-  "should", "that", "the", "their", "there", "they", "this", "to", "was", "we", "what", "when", "where",
+  "not", "should", "still", "that", "the", "their", "there", "they", "this", "to", "was", "we", "what", "when", "where",
   "which", "who", "why", "with", "would", "you",
+]);
+
+const WEAK_RETRIEVAL_TOKENS = new Set([
+  "applicant", "busines", "call", "ceo", "client", "company", "daymond", "istv", "john", "level", "main",
+  "owner", "prospect", "question", "rep", "sale", "show",
 ]);
 
 const DOMAIN_PATTERNS: Record<string, string[]> = {
@@ -114,7 +119,7 @@ const DOMAIN_PATTERNS: Record<string, string[]> = {
   compliance: ["opt out", "dnc", "do not contact", "consent", "recording", "confidential", "privacy", "security"],
   sales_tech: ["keap", "zoom phone", "technical", "tech", "login", "access", "notification"],
   lead_ownership: ["lead ownership", "assigned rep", "pass off", "20 percent", "twenty percent"],
-  communications: ["email", "text", "sms", "message", "call", "contact", "follow up"],
+  communications: ["email", "text", "sms", "message", "contact", "follow up"],
   commissions: ["commission", "ledger", "bill com", "leaderboard"],
 };
 
@@ -136,7 +141,7 @@ const ACTION_PATTERNS: Record<string, string[]> = {
   explain: ["explain", "tell", "say", "what is", "how does", "why"],
   promise: ["promise", "offer", "allowed", "can we", "can i", "may we"],
   record: ["record", "recording", "fathom", "transcript"],
-  contact: ["contact", "call", "text", "email", "outreach", "follow up"],
+  contact: ["contact", "text", "email", "outreach", "follow up"],
   opt_out: ["opt out", "unsubscribe", "do not contact", "dnc", "stop messaging"],
   invite_or_attend: ["guest", "bring", "invite", "attend", "accompan", "tour"],
   produce: ["produce", "film", "episode", "translate", "spanish", "english"],
@@ -200,6 +205,7 @@ function claimSpecificityRank(claim: ApprovedClaim) {
 export function retrieveBlockedClaims(question: string, options: ApprovedClaimSearchOptions = {}): BlockedClaimMatch[] {
   const normalizedQuestion = normalizeClaimText(question);
   const questionTokens = unique(tokenizeClaimText(normalizedQuestion));
+  const distinctiveQuestionTokens = questionTokens.filter((token) => !WEAK_RETRIEVAL_TOKENS.has(token));
   const queryDomains = inferTags(normalizedQuestion, DOMAIN_PATTERNS);
   const queryActions = inferTags(normalizedQuestion, ACTION_PATTERNS);
   if (!questionTokens.length) return [];
@@ -209,14 +215,17 @@ export function retrieveBlockedClaims(question: string, options: ApprovedClaimSe
       const searchText = normalizeClaimText([claim.title, ...claim.question_families, ...claim.entities].join(" "));
       const tokenSet = new Set(tokenizeClaimText(searchText));
       const matchedTokens = questionTokens.filter((token) => tokenSet.has(token));
+      const matchedDistinctiveTokens = matchedTokens.filter((token) => !WEAK_RETRIEVAL_TOKENS.has(token));
+      const scoringQuestionTokens = distinctiveQuestionTokens.length ? distinctiveQuestionTokens : questionTokens;
+      const scoringMatchedTokens = distinctiveQuestionTokens.length ? matchedDistinctiveTokens : matchedTokens;
       const matchedDomains = queryDomains.filter((domain) => claim.domains.includes(domain));
       const matchedActions = queryActions.filter((action) => claim.actions.includes(action));
-      const coverage = matchedTokens.length / Math.max(1, questionTokens.length);
-      const score = matchedTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0) * 5.2 +
+      const coverage = scoringMatchedTokens.length / Math.max(1, scoringQuestionTokens.length);
+      const score = scoringMatchedTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0) * 5.2 +
         coverage * 34 + matchedDomains.length * 7 + matchedActions.length * 9;
-      return { claim, score: roundScore(score), matchedTokens, matchedDomains, matchedActions };
+      return { claim, score: scoringMatchedTokens.length >= 2 ? roundScore(score) : 0, matchedTokens, matchedDomains, matchedActions };
     })
-    .filter((match) => match.matchedTokens.length >= 2 && match.score >= (options.minimumScore ?? 48))
+    .filter((match) => match.score >= (options.minimumScore ?? 48))
     .sort((left, right) => right.score - left.score || right.claim.effective_at.localeCompare(left.claim.effective_at))
     .slice(0, options.limit ?? 4);
 }
@@ -251,18 +260,24 @@ function scoreClaim(
   const supportTokens = SUPPORT_TOKEN_SETS.get(claim.id) || new Set<string>();
   const matchedTokens = questionTokens.filter((token) => primaryTokens.has(token));
   const supportOnlyTokens = questionTokens.filter((token) => !primaryTokens.has(token) && supportTokens.has(token));
+  const distinctiveQuestionTokens = questionTokens.filter((token) => !WEAK_RETRIEVAL_TOKENS.has(token));
+  const matchedDistinctiveTokens = matchedTokens.filter((token) => !WEAK_RETRIEVAL_TOKENS.has(token));
+  const supportDistinctiveTokens = supportOnlyTokens.filter((token) => !WEAK_RETRIEVAL_TOKENS.has(token));
+  const scoringQuestionTokens = distinctiveQuestionTokens.length ? distinctiveQuestionTokens : questionTokens;
+  const scoringMatchedTokens = distinctiveQuestionTokens.length ? matchedDistinctiveTokens : matchedTokens;
   const matchedBigrams = questionBigrams.filter((bigram) => primaryText.includes(bigram.replace("::", " ")));
   const matchedDomains = queryDomains.filter((domain) => claim.domains.includes(domain));
   const matchedActions = queryActions.filter((action) => claim.actions.includes(action));
   const hasStructuredSemanticBridge =
-    matchedTokens.length === 1 && matchedDomains.length > 0 && matchedActions.length > 0;
-  if (matchedTokens.length < 2 && !hasStructuredSemanticBridge) {
+    scoringMatchedTokens.length === 1 && matchedDomains.length > 0 && matchedActions.length > 0;
+  const hasDistinctivePhraseBridge = scoringMatchedTokens.length === 1 && matchedBigrams.length > 0;
+  if (scoringMatchedTokens.length < 2 && !hasStructuredSemanticBridge && !hasDistinctivePhraseBridge) {
     return { claim, score: 0, matchedTokens, matchedBigrams, matchedDomains, matchedActions };
   }
 
-  const idfScore = matchedTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0);
-  const supportScore = supportOnlyTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0);
-  const coverage = matchedTokens.length / Math.max(1, questionTokens.length);
+  const idfScore = scoringMatchedTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0);
+  const supportScore = supportDistinctiveTokens.reduce((sum, token) => sum + inverseDocumentFrequency(token), 0);
+  const coverage = scoringMatchedTokens.length / Math.max(1, scoringQuestionTokens.length);
   const bestFamilyCoverage = Math.max(
     0,
     ...claim.question_families.map((family) => familyCoverage(questionTokens, tokenizeClaimText(normalizeClaimText(family)))),
@@ -278,8 +293,8 @@ function scoreClaim(
         ? 4
         : 0;
   const authorityBonus = Math.max(0, claim.authority - 75) * 0.12;
-  const broadArticlePenalty = claim.source_kind === "approved_article" && matchedTokens.length < 3 ? 14 : 0;
-  const actionMismatchPenalty = queryActions.length && !matchedActions.length && matchedTokens.length < 3 ? 10 : 0;
+  const broadArticlePenalty = claim.source_kind === "approved_article" && scoringMatchedTokens.length < 3 ? 14 : 0;
+  const actionMismatchPenalty = queryActions.length && !matchedActions.length && scoringMatchedTokens.length < 3 ? 10 : 0;
   const structuredBridgeBonus = hasStructuredSemanticBridge
     ? Math.min(34, Math.max(...matchedActions.map((action) => inverseTagDocumentFrequency(action, ACTION_DOCUMENT_FREQUENCY))) * 8)
     : 0;

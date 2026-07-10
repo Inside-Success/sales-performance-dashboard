@@ -135,6 +135,10 @@ type ConversationPlannerOutput = {
   reason?: string | null;
 };
 
+type SemanticSearchExpansionOutput = {
+  search_terms: string[];
+};
+
 type GroundingCheckOutput = {
   verdict: "pass" | "fail";
   reason?: string;
@@ -1240,8 +1244,7 @@ export async function runAskSalesFaq(
   const conversationContext = buildConversationContext(sanitizedConversationMessages);
   const routingConversationContext =
     questionFrame.relation === "context_follow_up" ||
-    questionFrame.relation === "rewrite" ||
-    shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)
+    questionFrame.relation === "rewrite"
     ? conversationContext
     : "";
   const contextualQuestion = buildContextualQuestion(sanitizedQuestion, routingConversationContext);
@@ -1280,7 +1283,7 @@ export async function runAskSalesFaq(
   const deterministicPolicyDecision = matchPolicyGuard(routingQuestion, questionFrame);
   let policyDecision = deterministicPolicyDecision;
   const semanticSearchText = [routingQuestion, routingConversationContext].filter(Boolean).join("\n");
-  const semanticClaimMatches = retrieveApprovedClaims(semanticSearchText, {
+  const directSemanticClaimMatches = retrieveApprovedClaims(semanticSearchText, {
     scope: questionFrame.scope,
     excludedScopes: questionFrame.excludedScopes,
     limit: CLAIM_ROUTER_MAX_CANDIDATES,
@@ -1292,6 +1295,22 @@ export async function runAskSalesFaq(
     limit: 4,
     minimumScore: BLOCKED_CLAIM_MIN_SCORE,
   });
+  const searchExpansion =
+    !isNonNegotiablePolicyBlock(deterministicPolicyDecision) &&
+    blockedMatches.length === 0 &&
+    (questionFrame.relation === "new" || questionFrame.relation === "context_follow_up")
+      ? await tryExpandApprovedClaimSearch(sanitizedQuestion, routingConversationContext, questionFrame)
+      : null;
+  if (searchExpansion?.diagnostics) providerDiagnostics.push(searchExpansion.diagnostics);
+  const expandedClaimSearchText = [semanticSearchText, ...(searchExpansion?.terms || [])].filter(Boolean).join("\n");
+  const semanticClaimMatches = searchExpansion
+    ? retrieveApprovedClaims(expandedClaimSearchText, {
+        scope: questionFrame.scope,
+        excludedScopes: questionFrame.excludedScopes,
+        limit: CLAIM_ROUTER_MAX_CANDIDATES,
+        minimumScore: 24,
+      })
+    : directSemanticClaimMatches;
 
   if (!isNonNegotiablePolicyBlock(deterministicPolicyDecision)) {
     const blockedMatch = chooseApplicableBlockedClaim(blockedMatches, semanticClaimMatches);
@@ -1303,6 +1322,7 @@ export async function runAskSalesFaq(
         conversationContext: routingConversationContext,
         questionFrame,
         claimMatches: semanticClaimMatches,
+        deterministicDecision: deterministicPolicyDecision,
       });
       if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
 
@@ -1374,8 +1394,7 @@ export async function runAskSalesFaq(
         // A deterministic article may survive only when an atomic claim from
         // that same article independently has a strong action/phrase match.
         policyDecision =
-          evidenceBacksDeterministicDecision(deterministicPolicyDecision, semanticClaimMatches) ||
-          policyPlanBacksDeterministicDecision(deterministicPolicyDecision, questionFrame) ||
+          scopedPolicyPlanBacksDeterministicDecision(deterministicPolicyDecision, questionFrame) ||
           buildSemanticUnsupportedDecision();
       } else {
         // Provider failure is the only case where the narrow deterministic
@@ -1735,32 +1754,23 @@ function buildSemanticUnsupportedDecision(): PolicyGuardDecision {
   };
 }
 
-function evidenceBacksDeterministicDecision(
-  deterministicDecision: PolicyGuardDecision,
-  approvedMatches: ApprovedClaimMatch[],
-): PolicyGuardDecision | null {
-  if (!deterministicDecision.safeToGenerate || !deterministicDecision.articleId) return null;
-  const supportingClaim = approvedMatches.find(
-    (match) =>
-      match.claim.source_article_id === deterministicDecision.articleId &&
-      match.score >= 86 &&
-      match.matchedTokens.length >= 3 &&
-      (match.matchedActions.length > 0 || match.matchedDomains.length > 0 || match.matchedBigrams.length > 0),
-  );
-  return supportingClaim ? deterministicDecision : null;
-}
-
-function policyPlanBacksDeterministicDecision(
+function scopedPolicyPlanBacksDeterministicDecision(
   deterministicDecision: PolicyGuardDecision,
   questionFrame: QuestionFrame,
 ): PolicyGuardDecision | null {
   if (!deterministicDecision.safeToGenerate || !deterministicDecision.articleId) return null;
+  if (questionFrame.scope === "unknown" || questionFrame.scope === "comparison" || questionFrame.scopeSource === "none") return null;
   const plan = buildAnswerPlan({
     questionFrame,
     approvedArticleId: deterministicDecision.articleId,
     policyUnits: APPROVED_POLICY_UNITS,
   });
-  if (plan.clarificationRequired || plan.selectedPolicyUnits.length === 0) return null;
+  if (plan.clarificationRequired || plan.selectedPolicyUnits.length !== 1) return null;
+  const [unit] = plan.selectedPolicyUnits;
+  if (unit.product_scope !== questionFrame.scope || unit.scope_behavior !== "require") return null;
+  const normalizedQuestion = normalizeText(questionFrame.effectiveQuestion);
+  const matchedIntentPhrases = unit.match_any.filter((phrase) => phrasePresent(phrase, normalizedQuestion));
+  if (matchedIntentPhrases.length < 2) return null;
   return deterministicDecision;
 }
 
@@ -1875,11 +1885,58 @@ function ownerClaimHasDistinctiveTitleMatch(match: ApprovedClaimMatch) {
   );
 }
 
+async function tryExpandApprovedClaimSearch(
+  currentQuestion: string,
+  conversationContext: string,
+  questionFrame: QuestionFrame,
+): Promise<{ terms: string[]; diagnostics: ProviderCallDiagnostics } | null> {
+  try {
+    const expansion = await generateProviderJson<SemanticSearchExpansionOutput>({
+      purpose: "semantic query expansion",
+      maxTokens: 220,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You rewrite an internal sales question into compact semantic retrieval terms.",
+            "Do not answer the question and do not invent a policy.",
+            "Return 3 to 8 short phrases that preserve the requested action, entity, product scope, and any negation while using likely policy-catalog wording.",
+            "Include only phrases that mean the same thing as the current question. Do not broaden it to neighboring topics.",
+            "Return valid JSON only with one key: search_terms, an array of strings.",
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: [
+            "CURRENT QUESTION:",
+            currentQuestion,
+            "",
+            "RESOLVED QUESTION RELATION:",
+            questionFrame.relation,
+            "",
+            "RESOLVED PRODUCT SCOPE:",
+            questionFrame.scope,
+            "",
+            "RECENT CONTEXT FOR A TRUE FOLLOW-UP ONLY:",
+            conversationContext ? conversationContext.slice(0, 1200) : "None",
+          ].join("\n"),
+        },
+      ],
+      parse: parseSemanticSearchExpansionOutput,
+    });
+    return { terms: expansion.output.search_terms, diagnostics: expansion.diagnostics };
+  } catch (error) {
+    console.warn("Ask Sales FAQ semantic query expansion failed", { error: sanitizeProviderError(error) });
+    return null;
+  }
+}
+
 async function tryPlanConversationTurn(input: {
   currentQuestion: string;
   conversationContext: string;
   questionFrame: QuestionFrame;
   claimMatches?: ApprovedClaimMatch[];
+  deterministicDecision: PolicyGuardDecision;
 }): Promise<{
   decision: PolicyGuardDecision | null;
   reply: ModelOutput | null;
@@ -1900,6 +1957,12 @@ async function tryPlanConversationTurn(input: {
         minimumScore: 24,
       },
     );
+  const articleCandidates = selectArticleRouterCandidates(
+    input.questionFrame.effectiveQuestion,
+    input.deterministicDecision,
+    claimMatches,
+  );
+  const isConversationTurn = input.questionFrame.relation === "social" || input.questionFrame.relation === "rewrite";
   try {
     const planner = await generateProviderJson<ConversationPlannerOutput>({
       purpose: "conversation planning",
@@ -1907,9 +1970,21 @@ async function tryPlanConversationTurn(input: {
       messages: [
         {
           role: "system",
-          content: [
-            "You are the Ask Sales FAQ conversation planner.",
-            "Decide whether the sales rep's current message needs a natural chat reply, an approved atomic claim, an approved sales article, or a safe unsupported fallback.",
+          content: isConversationTurn
+            ? [
+                "You are the Ask Sales FAQ conversation planner.",
+                "The current message has already been classified as a conversational or presentation turn, not a new policy question.",
+                "Reply naturally and briefly in mode conversation_reply.",
+                "For a greeting, topic preface, or acknowledgment, sound like a helpful internal chat assistant and invite the rep to continue.",
+                "For a format, shorten, simplify, or rephrase request, use only the most recent substantive assistant answer and preserve every policy fact.",
+                "Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
+                "Return valid JSON only with keys: mode, answer, summary, sections, article_id, claim_ids, confidence_score, confidence_label, needs_route, route_reason, reason.",
+                "mode must be conversation_reply, article_id must be null, claim_ids must be empty, needs_route must be false, and sections should be empty unless the user explicitly requests formatting.",
+              ].join("\n")
+            : [
+            "You are the Ask Sales FAQ conversation planner operating as a narrow evidence selector for this policy question.",
+            "Decide whether the current sales-policy question is directly answered by one or more approved atomic claims, by one approved sales article candidate, or is unsupported.",
+            "Do not draft the final sales answer. Your job is only to select the smallest directly supporting evidence set.",
             "Use mode conversation_reply only for conversational turns, acknowledgments, requests to format/shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
             "For conversation_reply, write only the natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
             "For conversation_reply, set summary equal to the answer and leave sections empty. The UI will render it as a normal chat reply, not a policy card.",
@@ -1939,9 +2014,20 @@ async function tryPlanConversationTurn(input: {
         },
         {
           role: "user",
-          content: [
-            "APPROVED ARTICLE CATALOG:",
-            formatArticleRouterCatalog(),
+          content: isConversationTurn
+            ? [
+                "RECENT CONVERSATION CONTEXT:",
+                input.conversationContext ? input.conversationContext.slice(0, ARTICLE_ROUTER_MAX_CONTEXT_CHARS) : "None",
+                "",
+                "CURRENT USER MESSAGE:",
+                input.currentQuestion,
+                "",
+                "QUESTION RELATION:",
+                input.questionFrame.relation,
+              ].join("\n")
+            : [
+            "APPROVED ARTICLE CANDIDATES:",
+            formatArticleRouterCatalog(articleCandidates),
             "",
             "APPROVED CLAIM CATALOG:",
             formatClaimRouterCatalog(claimMatches),
@@ -2185,8 +2271,31 @@ function buildApprovedClaimAnswerPlan(
   };
 }
 
-function formatArticleRouterCatalog() {
-  return APPROVED_FAQ_ARTICLES.map((article, index) =>
+function selectArticleRouterCandidates(
+  question: string,
+  deterministicDecision: PolicyGuardDecision,
+  claimMatches: ApprovedClaimMatch[],
+) {
+  const articleIds: string[] = [];
+  const addArticleId = (articleId?: string | null) => {
+    if (!articleId || articleIds.includes(articleId) || !ARTICLE_BY_ID.has(articleId)) return;
+    articleIds.push(articleId);
+  };
+
+  addArticleId(deterministicDecision.articleId);
+  for (const match of claimMatches) addArticleId(match.claim.source_article_id);
+  for (const chunk of retrieveCandidateChunks(question, 36, { expand: true })) {
+    if (chunk.source_type === "approved_article" && chunk.article_status === "approved") addArticleId(chunk.article_id);
+    if (articleIds.length >= 10) break;
+  }
+
+  return articleIds.slice(0, 10).map((articleId) => ARTICLE_BY_ID.get(articleId)).filter((article): article is ApprovedFaqArticle => Boolean(article));
+}
+
+function formatArticleRouterCatalog(articles: ApprovedFaqArticle[]) {
+  if (!articles.length) return "No approved article candidates matched this message.";
+
+  return articles.map((article, index) =>
     [
       `Article ${index + 1}`,
       `ID: ${article.id}`,
@@ -2194,8 +2303,8 @@ function formatArticleRouterCatalog() {
       `Category: ${article.category}`,
       `Risk: ${article.riskLevel}`,
       `Last reviewed: ${article.lastReviewed}`,
-      `Approved question families: ${approvedQuestionFamiliesForArticle(article.id) || "Use the article title and topic summary."}`,
-      `Guidance excerpt: ${compactArticleBodyForRouter(article.body)}`,
+      `Approved question families: ${(approvedQuestionFamiliesForArticle(article.id) || "Use the article title and topic summary.").slice(0, 700)}`,
+      `Guidance excerpt: ${compactArticleBodyForRouter(article.body).slice(0, 900)}`,
     ].join("\n"),
   ).join("\n\n");
 }
@@ -2260,20 +2369,6 @@ function compactArticleBodyForRouter(body: string) {
   return [`Topics: ${topicHeadings.join("; ")}.`, compactBody].join(" ").slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
 }
 
-function shouldUseConversationContextForRouting(question: string, conversationContext: string) {
-  if (!conversationContext.trim()) return false;
-
-  const normalizedQuestion = normalizeText(question);
-  const tokens = tokenize(normalizedQuestion, { expand: false });
-  if (!normalizedQuestion) return false;
-
-  if (isSocialConversationTurn(normalizedQuestion)) return true;
-  if (classifyRewriteIntent(question)) return true;
-  if (isConcisePromiseConfirmation(question)) return true;
-
-  return isContextDependentFollowUpQuestion(normalizedQuestion, tokens.length);
-}
-
 function shouldAcceptConversationPlannerReply(
   question: string,
   output: ConversationPlannerOutput,
@@ -2329,31 +2424,6 @@ function isSocialConversationTurn(normalizedQuestion: string) {
     !/\b(?:can i|can we|should i|should we|am i allowed|are we allowed|what should|how do|where do|when do|why do)\b/.test(
       normalizedQuestion,
     )
-  );
-}
-
-function isContextDependentFollowUpQuestion(normalizedQuestion: string, tokenCount: number) {
-  const hasContextReference =
-    /^(and|also|then|so)\b/.test(normalizedQuestion) ||
-    /\b(it|that|this|they|them|their|him|her|those|same|another|still|again|previous|above|one|ones)\b/.test(
-      normalizedQuestion,
-    );
-  if (!hasContextReference) return false;
-  if (tokenCount > 28) return false;
-  if (/\b(main istv|daymond john|next level ceo|nlceo|dj show|dj)\b/.test(normalizedQuestion)) return false;
-
-  const pronounOnlyFollowUp =
-    tokenCount <= 16 &&
-    /\b(it|that|this|they|them|their|him|her|those|same|another|still|again|previous|above|one|ones)\b/.test(
-      normalizedQuestion,
-    );
-  if (pronounOnlyFollowUp) return true;
-
-  if (tokenCount <= 18 && /^(and|also|then|so)\b/.test(normalizedQuestion)) return true;
-  if (tokenCount > 22) return false;
-
-  return /\b(cohort|deadline|deposit|funds|payment|pay|sign|greenlight|qualify|qualified|client|show|package|discount|approval|allowed|fit|reschedule|exception|contract)\b/.test(
-    normalizedQuestion,
   );
 }
 
@@ -5276,6 +5346,19 @@ function parseConversationPlannerOutput(content: string): ConversationPlannerOut
     route_reason: typeof parsed.route_reason === "string" ? sanitizeModelAnswer(parsed.route_reason).slice(0, 400) : "",
     reason: typeof parsed.reason === "string" ? parsed.reason.trim().slice(0, 400) : "",
   };
+}
+
+function parseSemanticSearchExpansionOutput(content: string): SemanticSearchExpansionOutput {
+  const parsed = parseJsonObject<Partial<SemanticSearchExpansionOutput>>(content);
+  const searchTerms = Array.isArray(parsed.search_terms)
+    ? parsed.search_terms
+        .filter((term): term is string => typeof term === "string")
+        .map((term) => normalizeText(term).slice(0, 140))
+        .filter(Boolean)
+        .slice(0, 8)
+    : [];
+  if (!searchTerms.length) throw new Error("Semantic search expansion did not return usable terms");
+  return { search_terms: searchTerms };
 }
 
 function parseGroundingCheckOutput(content: string): GroundingCheckOutput {
