@@ -609,8 +609,9 @@ if (missingFiles.length === 0) {
       runtime.includes("const semanticClaimMatches = searchExpansion") &&
       runtime.includes("selectArticleRouterCandidates") &&
       runtime.includes("await tryPlanConversationTurn") &&
+      runtime.includes("trySelectPartialApprovedClaims") &&
       runtime.includes("if (plannerResult.reply)") &&
-      runtime.includes("if (plannerResult.decision)") &&
+      runtime.includes("const selectedSemanticDecision = plannerResult.decision || partialClaimResult?.decision || null") &&
       runtime.includes("scopedPolicyPlanBacksDeterministicDecision") &&
       !runtime.includes("shouldUseConversationContextForRouting(sanitizedQuestion, conversationContext)") &&
       runtime.includes("classifyRewriteIntent(question)") &&
@@ -618,7 +619,7 @@ if (missingFiles.length === 0) {
       runtime.includes("isConcisePromiseConfirmation(question)") &&
       questionFrame.includes("TOPIC_TRANSITION_PATTERN") &&
       runtime.includes("Ignore brief social replies like 'You're welcome'"),
-    "conversation handling, semantic query expansion, approved-claim selection, and compact article candidates are isolated; old context and broad policy plans cannot override a clear current question",
+    "conversation handling, semantic query expansion, approved-claim selection, partial atomic-claim recovery, and compact article candidates are isolated; old context and broad policy plans cannot override a clear current question",
   );
 
   addCheck(
