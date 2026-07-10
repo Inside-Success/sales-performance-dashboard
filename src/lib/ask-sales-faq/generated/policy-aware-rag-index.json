@@ -1,5 +1,5 @@
 {
-  "chunk_count": 1732,
+  "chunk_count": 1735,
   "chunks": [
     {
       "article_id": "americas-top-lawyers-passoff-boundary",
@@ -23135,6 +23135,36 @@
       "article_id": null,
       "article_status": "evidence",
       "authority": 42,
+      "category": "Compliance, Proof & Claims",
+      "heading": "2026-07-10 Generalized Claim Production QA Closure",
+      "id": "rag_4c71c6cddd49359e",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "medium",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "This release does not claim universal correctness. Bankruptcy, cross-product ownership/passoff, accessibility/audio-description capability, and unapproved structured resource links remain deliberate owner-confirmation gaps. New source conflicts must continue through the coverage ledger and approval compiler rather than being exposed directly to the answer model.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Payments, Refunds & Contracts",
+      "heading": "2026-07-10 Generalized Claim Production QA Closure",
+      "id": "rag_d25f7c7cb5cdc1b3",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "## 2026-07-10 Generalized Claim Production QA Closure\n\nThe generalized claim runtime was merged and production-tested rather than accepted from local checks alone.\n\nClosed generalized regressions:\n\n- standalone questions containing a possessive pronoun no longer inherit an unrelated prior topic;\n- a single strong current owner claim can supersede a broad article answer/route only when the requested action has a distinctive match;\n- adjacent same-program topics remain separate, verified live with 20-percent recording/disclosure versus 20-percent lead ownership;\n- visible answers and route notes reject claim IDs, `approved claims`, and `approved policy` mechanics;\n- acknowledgments render as plain conversation, and structured answers suppress redundant summary/Answer presentation;\n- the exact Spanish-production, custom-split, Zoom Phone payment-link, 20-percent recording, training, and nearby ownership questions were replayed successfully after their fixes.\n\nRelease evidence:\n\n- FAQ PR #7: `1284585`;\n- dashboard PRs #7-#12: `e4bb53d`, `cb263d8`, `5bd7f98`, `0d33d9f`, `9a1d54c`, `7a3df8f`;\n- final production deployment: `dpl_BtppfrnBC9zDDRqhLg87F3FyrtDV`;\n- dashboard verification: `86/86` Vitest, `82/82` validator, TypeScript, scoped lint, diff check, and production build;\n- 28 signed-in Chrome submissions; zero browser console warnings/errors;\n- zero Vercel runtime error clusters and zero production error/warning/fatal logs in the final checked window;\n- zero recent Neon route notes containing internal claim/policy mechanics.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
       "category": "Offers, Pricing & Packages",
       "heading": "2026-07-10 Routing/Grounding Gap Disposition",
       "id": "rag_70939fcb3029903c",
@@ -23759,6 +23789,21 @@
       "source_title": "Source To Kb Coverage Matrix",
       "source_type": "governance_log",
       "text": "| Source/question cluster | Primary evidence | Controlling artifact | Current disposition | Runtime behavior |\n| --- | --- | --- | --- | --- |\n| Hospital-employed doctor without own practice | Rich/Mike meeting decision, existing approved qualification article, user reconfirmation | `knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md`; `runtime/policy-authority-resolutions.json`; atomic doctor unit | resolved approved direct answer | Practice ownership is not required; stale conflict abstain removed. |\n| Nurse and PT/physio distinction | Rich/Mike meeting decision and user reconfirmation | qualification article plus nurse/PT units | nurse resolved no; PT/physio case-by-case | Select only the applicable role fact and validate required wording. |\n| Spanish/non-English production and translation | Rudy/Madeline Slack decisions reviewed in collected evidence; user confirmation | `knowledge-base/qualification-show-fit/production-language-and-translation-boundary.md`; English-only unit | resolved approved boundary | English-only current production; no promised translation/non-English episode; genuine owner/partner may qualify normally. |\n| Show-list presentation | approved current-show source | `current-show-source.md` presentation metadata | implementation/presentation resolved | Always render the exact approved enumeration as a list when the question requests the current shows. |\n| Format/rewrite follow-up | previous stored assistant answer; no new policy source | shared rewrite classifier plus presentation-only formatter | implementation resolved | Preserve existing facts/items and change presentation only; standalone list questions remain new. |\n| Full saved-chat history | Neon conversation/message tables | cursor-pagination API and server-side sea",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Payments, Refunds & Contracts",
+      "heading": "2026-07-10 Production Authority Verification",
+      "id": "rag_465a26bf11aac9da",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/source-to-kb-coverage-matrix.md",
+      "source_title": "Source To Kb Coverage Matrix",
+      "source_type": "governance_log",
+      "text": "## 2026-07-10 Production Authority Verification\n\nThe signed-in production run confirmed that the registry is not merely generated: the runtime selected and answered from the intended controlling claims for follower count, authors, custom splits, Zoom Phone payment-link delivery, Fathom/Zoom, 20-percent recording/disclosure, missing show recovery, scriptwriter routing, residuals/revenue, podcast purpose, and discontinued training.\n\nThe same run also verified separation between adjacent authority:\n\n- `owner-twenty-percent-recording-and-disclosure` controlled the recording/disclosure question;\n- the approved `twenty-percent-dial-out-sop` article still controlled the separate Keap ownership question;\n- `owner-zoom-phone-payment-link-email-only` superseded a broad sales-tech route only for the communication-channel question;\n- `owner-unlisted-payment-split-boundary` returned a direct no without inheriting the broader payment article's route requirement;\n- the production-language article handled a new Spanish question without borrowing prior nurse qualification context.\n\nFinal release: FAQ `1284585`; dashboard through `7a3df8f`; production deployment `dpl_BtppfrnBC9zDDRqhLg87F3FyrtDV` Ready. Remaining non-live ledger items were not promoted by this QA.",
       "trust_label": "Governance log"
     },
     {
