@@ -2324,7 +2324,7 @@ export async function checkAskSalesFaqRateLimit(viewerEmail: string): Promise<As
   await ensureSchema();
   const sql = getSql();
   const userWindowMinutes = clampPositiveInt(process.env.FAQ_RATE_LIMIT_USER_WINDOW_MINUTES, 30, 5, 240);
-  const userLimit = clampPositiveInt(process.env.FAQ_RATE_LIMIT_USER_MAX, 50, 10, 200);
+  const userLimit = clampPositiveInt(process.env.FAQ_RATE_LIMIT_USER_MAX, 100, 10, 200);
   const globalWindowSeconds = clampPositiveInt(process.env.FAQ_RATE_LIMIT_GLOBAL_WINDOW_SECONDS, 60, 10, 600);
   const globalLimit = clampPositiveInt(process.env.FAQ_RATE_LIMIT_GLOBAL_MAX, 300, 50, 2000);
   const rows = (await sql.query(
