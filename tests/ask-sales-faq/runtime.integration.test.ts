@@ -376,6 +376,79 @@ describe("runAskSalesFaq integration safety", () => {
     expect(providerPrompt(selectionCall!)).toContain("Early-stage/startup applicant fit");
   });
 
+  it("drops broad article-derived claims when a specific trusted atomic claim directly answers the question", async () => {
+    const franchiseClaim = "claim_c068cf9ac8f5d089";
+    installProviderStub({
+      "semantic query expansion": [outputStep({ search_terms: ["franchise owner qualification", "franchisee eligibility"] })],
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [franchiseClaim, "claim_bf4a7941c58cca94"],
+          article_id: null,
+          confidence_score: 92,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The franchise claim directly answers eligibility; the broad rubric is only background.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput("Yes. A franchise owner or part owner can qualify.", {
+            selectedSourceIds: [`approved-claim:${franchiseClaim}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("Is a franchise owner eligible for Next Level CEO?");
+
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toBe("Yes. A franchise owner or part owner can qualify.");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([franchiseClaim]);
+  });
+
+  it("keeps a specific promotional-assets boundary and removes selected pricing blocks", async () => {
+    const socialClaim = "claim_3a43cb9eed71cb37";
+    const answer =
+      "This is not a full social-media package. Explain only the current listed promotional deliverables, and do not promise ongoing social-media management.";
+    installProviderStub({
+      "semantic query expansion": [outputStep({ search_terms: ["next level ceo promotional assets", "social package promise boundary"] })],
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [socialClaim, "claim_26780013d013e10b", "claim_28235f97538aac88"],
+          article_id: null,
+          confidence_score: 95,
+          confidence_label: "High",
+          needs_route: true,
+          route_reason: "Confirm the exact current deliverables before listing them.",
+          reason: "The specific social-assets claim controls the answer; the pricing blocks are not responsive.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            selectedSourceIds: [`approved-claim:${socialClaim}`],
+            needsRoute: true,
+            routeReason: "Confirm the exact current deliverables before listing them.",
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq(
+      "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+    );
+
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toBe(answer);
+    expect(result.answer).not.toMatch(/\$2,500|payment options|same-day discount/i);
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([socialClaim]);
+  });
+
   it("does not revive a broad pricing article when the semantic selector finds no direct promotional-assets answer", async () => {
     installProviderStub({
       "semantic query expansion": [

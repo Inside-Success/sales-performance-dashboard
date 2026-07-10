@@ -176,8 +176,10 @@ if (missingFiles.length === 0) {
   addCheck(
     "runtime filters recent chat context before policy routing",
     runtime.includes("routingConversationContext") &&
-      runtime.includes("shouldUseConversationContextForRouting") &&
-      runtime.includes("isContextDependentFollowUpQuestion") &&
+      runtime.includes('questionFrame.relation === "context_follow_up"') &&
+      runtime.includes('questionFrame.relation === "rewrite"') &&
+      !runtime.includes("shouldUseConversationContextForRouting") &&
+      !runtime.includes("isContextDependentFollowUpQuestion") &&
       !runtime.includes("decidePolicyGuard(sanitizedQuestion, conversationContext)") &&
       !runtime.includes("matchPolicyGuard(buildContextualQuestion(question, conversationContext))"),
     "old chat context is only available to routing for true follow-ups, not every new standalone question",
