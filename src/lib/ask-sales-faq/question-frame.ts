@@ -54,6 +54,9 @@ const SCOPE_PATTERNS: Record<CanonicalProductScope, RegExp[]> = {
 
 const SOCIAL_PATTERN =
   /^(?:thanks|thank\s+you|thankyou|appreciate\s+it|got\s+it|ok(?:ay)?\s+thanks|perfect(?:,?\s+thanks)?|great(?:,?\s+thanks)?|that\s+helps|makes\s+sense|sounds\s+good|cool(?:,?\s+thanks)?|awesome(?:,?\s+thanks)?)[.! ]*$/;
+const GREETING_PATTERN = /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)(?:\s+(?:there|team|everyone))?[!,. ]*$/;
+const GREETING_INTRO_PATTERN =
+  /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)\b.*\b(?:i\s+am|i'm|i\s+will|i'll|we\s+will|we'll|ready|going\s+to|about\s+to|starting)\b/;
 
 const REWRITE_ACTION_PATTERN =
   /\b(?:make|keep|put|rewrite|rephrase|shorten|summarize|condense|simplify|format|formatting|reformat|organize|arrange)\b/;
@@ -132,7 +135,7 @@ function classifyRelation(input: {
   previousSubstantiveUserQuestion: string | null;
   isScopeCorrection: boolean;
 }): QuestionRelation {
-  if (SOCIAL_PATTERN.test(input.normalizedCurrent)) return "social";
+  if (isSocialTurn(input.normalizedCurrent)) return "social";
   if (input.previousSubstantiveUserQuestion && isRewriteRequest(input.normalizedCurrent)) return "rewrite";
   if (!input.previousSubstantiveUserQuestion) return "new";
   if (input.isScopeCorrection) return "context_follow_up";
@@ -182,11 +185,19 @@ function findPreviousSubstantiveUserQuestion(currentQuestion: string, messages: 
 
 function isSubstantiveUserQuestion(question: string) {
   const normalized = normalizeForFrame(question);
-  if (!normalized || SOCIAL_PATTERN.test(normalized) || isRewriteRequest(normalized)) return false;
+  if (!normalized || isSocialTurn(normalized) || isRewriteRequest(normalized)) return false;
 
   const signals = extractScopeSignals(normalized);
   if (looksLikeScopeOnlyStatement(normalized, signals)) return false;
   return true;
+}
+
+function isSocialTurn(normalizedQuestion: string) {
+  if (SOCIAL_PATTERN.test(normalizedQuestion) || GREETING_PATTERN.test(normalizedQuestion)) return true;
+  if (!GREETING_INTRO_PATTERN.test(normalizedQuestion) || normalizedQuestion.includes("?")) return false;
+  return !/\b(?:can\s+i|can\s+we|should\s+i|should\s+we|am\s+i\s+allowed|are\s+we\s+allowed|what\s+should|how\s+do|where\s+do|when\s+do|why\s+do)\b/.test(
+    normalizedQuestion,
+  );
 }
 
 function looksLikeScopeOnlyStatement(normalizedQuestion: string, signals: ScopeSignals) {

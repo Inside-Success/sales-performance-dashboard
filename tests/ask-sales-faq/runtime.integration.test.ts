@@ -268,6 +268,146 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.structuredAnswer?.sections).toEqual([]);
   });
 
+  it("answers an unseen follower-count question from the approved atomic claim", async () => {
+    const claimId = "owner-social-followers-qualification-weight";
+    const answer =
+      "Follower count does not qualify or disqualify an applicant. Evaluate the overall business, story, reputation, and fit.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          article_id: null,
+          confidence_score: 96,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The approved follower-count claim directly answers the qualification question.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("Does a small Instagram following mean I should disqualify an otherwise strong applicant?");
+
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toContain("does not qualify or disqualify");
+    expect(result.source?.approved).toBe(true);
+    expect(result.runtimeMetadata?.routing?.source).toBe("claim_router");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+  });
+
+  it("answers the requested payment-link delivery channel instead of returning generic tech routing", async () => {
+    const claimId = "owner-zoom-phone-payment-link-email-only";
+    const answer = "Send the approved payment link by email, not through a Zoom Phone message.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          confidence_score: 97,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The approved delivery-channel claim directly answers whether Zoom Phone is allowed.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(modelOutput(answer, { selectedSourceIds: [`approved-claim:${claimId}`] })),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("The prospect left the call. May I text the payment link through Zoom Phone?");
+
+    expect(result.answer).toBe(answer);
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.needsRoute).toBe(false);
+  });
+
+  it("uses a current owner-backed route claim when fulfillment owns the next step", async () => {
+    const claimId = "owner-scriptwriter-scheduling-fulfillment-route";
+    const answer = "Post the scriptwriter scheduling issue in the fulfillment channel so the current team can advise.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          confidence_score: 96,
+          confidence_label: "High",
+          needs_route: true,
+          route_reason: "Use the fulfillment channel for current scriptwriter scheduling help.",
+          reason: "The approved current-process claim routes scriptwriter scheduling to fulfillment.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: "Use the fulfillment channel for current scriptwriter scheduling help.",
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("A past client cannot find any scriptwriter-call times. Where should I send this?");
+
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toContain("fulfillment channel");
+    expect(result.needsRoute).toBe(true);
+  });
+
+  it("keeps greetings and topic-switch statements conversational without injecting policy", async () => {
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "conversation_reply",
+          answer: "Hi! Ask me anything about the current sales process, and I’ll keep the answer concise.",
+          summary: "Hi! Ask me anything about the current sales process, and I’ll keep the answer concise.",
+          sections: [],
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 98,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "Greeting without a policy request.",
+        }),
+        outputStep({
+          mode: "conversation_reply",
+          answer: "Sure—what would you like to know about payments or contracts?",
+          summary: "Sure—what would you like to know about payments or contracts?",
+          sections: [],
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 97,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "Topic switch without a question.",
+        }),
+      ],
+    });
+
+    const greeting = await runAskSalesFaq("Hey there!");
+    const topicSwitch = await runAskSalesFaq("Thanks. I’m switching to payments and contracts now.");
+
+    expect(greeting.outcome).toBe("conversation_reply");
+    expect(greeting.answer).toMatch(/^Hi!/);
+    expect(topicSwitch.outcome).toBe("conversation_reply");
+    expect(topicSwitch.answer).toContain("what would you like to know");
+    expect(topicSwitch.answer).not.toMatch(/rights|license duration|route this/i);
+  });
+
   it("does not promise an unconfirmed accessibility accommodation", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
@@ -557,6 +697,35 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBe("ai_runtime_approved_fallback");
     expect(result.answer).toContain("Legacy Makers");
     expect(result.answer).toContain("Masters of Innovation");
+  });
+
+  it("does not turn a lower-authority curated Slack claim into a deterministic provider fallback", async () => {
+    const claimId = "claim_e421c70ea1db445d";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          confidence_score: 95,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The curated low-risk call-format claim is directly relevant.",
+        }),
+      ],
+      "answer generation": [
+        {
+          kind: "throw",
+          error: new DOMException("The operation was aborted", "AbortError"),
+        },
+      ],
+    });
+
+    const result = await runAskSalesFaq("Can I do Call 1 by phone instead of Zoom?");
+
+    expect(result.errorClass).toBe("ai_runtime_unavailable");
+    expect(result.answer).not.toContain("company policy to do the audition over Zoom");
+    expect(result.source).toBeNull();
   });
 
   it("keeps an approved enumeration structured even when the model returns one dense paragraph", async () => {
