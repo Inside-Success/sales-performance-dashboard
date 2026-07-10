@@ -1973,16 +1973,19 @@ function conversationPlannerReplyToModelOutput(output: ConversationPlannerOutput
   if (typeof output.answer !== "string" || !output.answer.trim()) return null;
   const confidenceScore = parseConfidenceScore(output.confidence_score) ?? 88;
   const answer = sanitizeModelAnswer(output.answer);
-  return normalizeModelOutput({
-    answer,
-    summary: answer,
-    sections: [],
-    selected_source_ids: [],
-    needs_route: false,
-    route_reason: "",
-    confidence_label: output.confidence_label || confidenceLabelFromScore(confidenceScore),
-    confidence_score: confidenceScore,
-  });
+  return {
+    ...normalizeModelOutput({
+      answer,
+      summary: answer,
+      sections: [],
+      selected_source_ids: [],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: output.confidence_label || confidenceLabelFromScore(confidenceScore),
+      confidence_score: confidenceScore,
+    }),
+    display: { plainSummaryOnly: true },
+  };
 }
 
 function buildConversationReplyDecision(output: ModelOutput): RuntimeDecision {
@@ -5167,12 +5170,15 @@ function normalizeModelStructuredAnswer(
         }))
     : [];
   const summary = sanitizeModelAnswer(output.summary || answer);
-  const visibleSections = ensureAnswerVisibleInStructuredSections({
-    answer,
+  const visibleSections = removeSemanticallyDuplicatedAnswerSection(
     summary,
-    sections,
-    plainSummaryOnly: Boolean(output.display?.plainSummaryOnly),
-  });
+    ensureAnswerVisibleInStructuredSections({
+      answer,
+      summary,
+      sections,
+      plainSummaryOnly: Boolean(output.display?.plainSummaryOnly),
+    }),
+  );
 
   return structured({
     summary,
@@ -5183,6 +5189,32 @@ function normalizeModelStructuredAnswer(
       confidenceScore: typeof output.confidence_score === "number" ? clampConfidence(output.confidence_score) : decision.confidenceScore,
     },
   });
+}
+
+function removeSemanticallyDuplicatedAnswerSection(
+  summary: string,
+  sections: AskSalesFaqStructuredAnswer["sections"],
+) {
+  const firstSection = sections[0];
+  if (
+    firstSection?.title.trim().toLowerCase() !== "answer" ||
+    !firstSection.body?.trim() ||
+    firstSection.items?.length
+  ) {
+    return sections;
+  }
+
+  const summaryTokens = new Set(tokenize(normalizeAnswerForCoverage(summary), { expand: false }).filter((token) => token.length > 2));
+  const bodyTokens = new Set(
+    tokenize(normalizeAnswerForCoverage(firstSection.body), { expand: false }).filter((token) => token.length > 2),
+  );
+  if (summaryTokens.size < 4 || bodyTokens.size < 4) return sections;
+
+  const overlap = Array.from(summaryTokens).filter((token) => bodyTokens.has(token)).length;
+  const smallerCoverage = overlap / Math.min(summaryTokens.size, bodyTokens.size);
+  const largerCoverage = overlap / Math.max(summaryTokens.size, bodyTokens.size);
+
+  return smallerCoverage >= 0.8 && largerCoverage >= 0.65 ? sections.slice(1) : sections;
 }
 
 function ensureAnswerVisibleInStructuredSections(input: {

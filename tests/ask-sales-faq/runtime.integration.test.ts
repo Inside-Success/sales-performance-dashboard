@@ -401,6 +401,30 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
   });
 
+  it("removes a near-duplicate Answer section while preserving a useful follow-up section", async () => {
+    const claimId = "owner-six-month-training-discontinued";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput("No, the six-month weekly training program has been discontinued.", {
+            summary: "The six-month weekly training program is discontinued; do not promise it.",
+            sections: [
+              { title: "Answer", body: "No, the six-month weekly training program has been discontinued." },
+              { title: "What you can do", body: "Use the current client education materials instead." },
+            ],
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("Do cast members still get weekly training for six months after they join?");
+
+    expect(result.structuredAnswer?.summary).toContain("program is discontinued");
+    expect(result.structuredAnswer?.sections.map((section) => section.title)).toEqual(["What you can do"]);
+  });
+
   it("does not let a nearby Zoom Phone issue trigger the payment-link owner claim", async () => {
     const answer = "Post the missing Zoom Phone number issue in #sales-tech-requests so the current tech owner can fix it.";
     installProviderStub({
@@ -525,9 +549,11 @@ describe("runAskSalesFaq integration safety", () => {
 
     expect(greeting.outcome).toBe("conversation_reply");
     expect(greeting.answer).toMatch(/^Hi!/);
+    expect(greeting.structuredAnswer?.sections).toEqual([]);
     expect(topicSwitch.outcome).toBe("conversation_reply");
     expect(topicSwitch.answer).toContain("what would you like to know");
     expect(topicSwitch.answer).not.toMatch(/rights|license duration|route this/i);
+    expect(topicSwitch.structuredAnswer?.sections).toEqual([]);
   });
 
   it("does not promise an unconfirmed accessibility accommodation", async () => {
@@ -997,11 +1023,12 @@ function modelOutput(
     routeReason?: string;
     selectedSourceIds?: string[];
     sections?: Array<{ title?: string; body?: string; items?: string[]; tone?: string }>;
+    summary?: string;
   } = {},
 ) {
   return {
     answer,
-    summary: answer,
+    summary: options.summary || answer,
     sections: options.sections || [],
     selected_source_ids: options.selectedSourceIds || ["approved:istv-nlceo-pricing-and-same-day-discount"],
     needs_route: options.needsRoute || false,
