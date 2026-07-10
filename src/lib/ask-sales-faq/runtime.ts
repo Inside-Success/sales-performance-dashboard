@@ -2537,13 +2537,14 @@ function buildApprovedClaimFallback(candidates: EvidenceCandidate[], policyDecis
   const answer = sanitizeModelAnswer(claim.approved_text);
   if (!answer || modelOutputContainsHiddenTerms({ answer, needs_route: false, route_reason: "" })) return null;
   const needsRoute = policyDecision.decision === "route_from_approved_claim" || claim.route_required;
+  const answerIncludesExactRoute = answerContainsExplicitRoute(answer);
   return normalizeModelOutput({
     answer,
     summary: answer,
     sections: [],
     selected_source_ids: [candidate.id],
     needs_route: needsRoute,
-    route_reason: needsRoute
+    route_reason: needsRoute && !answerIncludesExactRoute
       ? claim.route_reason || "Confirm the unresolved part with the current owner before promising it."
       : "",
     confidence_label: "High",
@@ -4552,6 +4553,7 @@ function buildDecision(input: {
     input.policyDecision.decision === "route_from_approved_article" ||
     input.policyDecision.decision === "route_from_approved_claim";
   const needsRoute = policyRequiresRoute || Boolean(input.output.needs_route);
+  const answerIncludesExactRoute = policyRequiresRoute && answerContainsExplicitRoute(input.output.answer);
   const confidenceLabel = input.output.confidence_label || "Medium";
   const confidenceScore = clampConfidence(input.output.confidence_score ?? 72);
   const sourceMode =
@@ -4577,13 +4579,22 @@ function buildDecision(input: {
     confidenceLabel,
     confidenceScore,
     reason: input.output.summary || input.policyDecision.reason,
-    routeReason: needsRoute ? input.output.route_reason || input.policyDecision.reason || "Confirm this with the current owner before relying on it." : null,
+    routeReason: needsRoute
+      ? input.output.route_reason ||
+        (answerIncludesExactRoute
+          ? null
+          : input.policyDecision.reason || "Confirm this with the current owner before relying on it.")
+      : null,
     safeToGenerate: true,
     matchedRuleId: input.policyDecision.matchedRuleId,
     matchedArticleId: primaryArticle?.id || input.policyDecision.articleId,
     primaryArticle,
     retrieved: input.evidence,
   };
+}
+
+function answerContainsExplicitRoute(answer: string) {
+  return /(?:#[a-z0-9_-]+|\b(?:channel|form|hotline)\b)/i.test(answer);
 }
 
 function buildUnavailableDecision(candidates: EvidenceCandidate[]): RuntimeDecision {

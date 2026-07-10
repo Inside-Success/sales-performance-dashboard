@@ -361,7 +361,7 @@ describe("runAskSalesFaq integration safety", () => {
   });
 
   it("keeps an exact approved channel route instead of inventing a generic owner escalation", async () => {
-    const selectedClaimIds = ["claim_544dc79d0ccbfd52", "claim_c1c350512e0d9a6e"];
+    const selectedClaimIds = ["claim_544dc79d0ccbfd52"];
     const answer =
       "Check the DJ payments channel and confirm the payment post; successful payments also appear in the all-payments channel. Once confirmed, post the sale in PayMe.";
     const provider = installProviderStub({
@@ -385,7 +385,12 @@ describe("runAskSalesFaq integration safety", () => {
           }),
         ),
       ],
-      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Fully supported." })],
+      "approved article answer validation": [
+        outputStep({
+          verdict: "fail",
+          reason: "The draft replaces the exact approved channel with a generic owner escalation.",
+        }),
+      ],
     });
 
     const result = await runAskSalesFaq(
@@ -397,8 +402,9 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).toContain("DJ payments channel");
     expect(result.answer).toContain("PayMe");
     expect(result.answer).not.toMatch(/generic owner|specialist|right help channel/i);
+    expect(result.routeReason).toBeNull();
     expect(systemPrompt).toContain("use only that exact route");
-    expect(result.errorClass).toBeNull();
+    expect(result.errorClass).toBe("ai_runtime_approved_fallback");
   });
 
   it("uses the current owner boundary alone for an unlisted split instead of inheriting a broader article route", async () => {
