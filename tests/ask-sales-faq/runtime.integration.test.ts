@@ -425,6 +425,46 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.structuredAnswer?.sections.map((section) => section.title)).toEqual(["What you can do"]);
   });
 
+  it("removes all extra sections when they only repeat a concise direct answer", async () => {
+    const claimId = "claim_4d14d445a904a4af";
+    const answer = "No, a client can bring up to three guests for filming.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          confidence_score: 95,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The studio guest-limit claim directly answers the question.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            summary: answer,
+            sections: [
+              { title: "Answer", body: answer },
+              {
+                title: "What you can do",
+                body: "Based on our policy, you can bring up to three guests into the studio for filming. Four guests would exceed that limit.",
+              },
+            ],
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("Can a client bring four guests into the studio for filming?");
+
+    expect(result.answer).toBe(answer);
+    expect(result.structuredAnswer?.summary).toBe(answer);
+    expect(result.structuredAnswer?.sections).toEqual([]);
+  });
+
   it("does not let a nearby Zoom Phone issue trigger the payment-link owner claim", async () => {
     const answer = "Post the missing Zoom Phone number issue in #sales-tech-requests so the current tech owner can fix it.";
     installProviderStub({
