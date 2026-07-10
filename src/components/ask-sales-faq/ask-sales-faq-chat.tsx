@@ -1466,6 +1466,10 @@ function shouldShowPlainAnswerWithStructured(content: string, answer: AskSalesFa
 
 function isDuplicatedSummary(answer: AskSalesFaqStructuredAnswer) {
   const firstSection = answer.sections[0];
+  if (firstSection?.title === "Answer" && firstSection.body && answer.sections.length > 1) {
+    return true;
+  }
+
   if (
     firstSection?.title === "Answer" &&
     firstSection.body &&
