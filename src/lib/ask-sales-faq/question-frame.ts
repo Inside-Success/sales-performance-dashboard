@@ -72,7 +72,8 @@ const SHORTEN_PATTERN = /\b(?:shorten|summarize|condense|shorter|brief|concise|s
 const CONTEXT_REFERENCE_PATTERN =
   /(?:^(?:and|also|then|so|but|what\s+about|how\s+about|what\s+if)\b|\b(?:previous|last|earlier)\s+(?:question|message|one)\b|\b(?:as\s+i\s+said|as\s+mentioned|already\s+told\s+you|already\s+said|same\s+(?:question|case|client|prospect))\b)/;
 
-const SHORT_CONTEXT_PRONOUN_PATTERN = /\b(?:this|that|it|they|them|their|those|same|previous|above)\b/;
+const SHORT_CONTEXT_PRONOUN_PATTERN =
+  /^(?:(?:can|could|should|would|do|does|did|are|is|was|were|will)\s+)?(?:this|that|it|they|them|their|those|same|previous|above)\b/;
 
 const CORRECTION_CUE_PATTERN =
   /\b(?:previous\s+question|last\s+question|earlier\s+question|actually|to\s+clarify|clarification|i\s+(?:already\s+)?(?:said|told|mentioned)|what\s+if|this\s+(?:is|was)|that\s+(?:is|was)|it\s+(?:is|was))\b/;
