@@ -624,7 +624,8 @@ if (missingFiles.length === 0) {
       chatUi.includes("<StructuredAnswerCard answer={message.structuredAnswer} />") &&
       db.includes('\"conversation\"') &&
       runtime.includes("set summary equal to the answer and leave sections empty") &&
-      runtime.includes("sections: []"),
+      runtime.includes("sections: []") &&
+      runtime.includes("display: { plainSummaryOnly: true }"),
     "social replies stay plain while presentation rewrites can render their structured list instead of flattening it",
   );
 
@@ -732,9 +733,11 @@ if (missingFiles.length === 0) {
       chatUi.includes('firstSection?.title === "Answer"') &&
       chatUi.includes("normalizeAnswerDisplayText(answer.summary) === normalizeAnswerDisplayText(firstSection.body)") &&
       chatUi.includes("duplicatedItems >= 4") &&
+      runtime.includes("removeSemanticallyDuplicatedAnswerSection") &&
+      runtime.includes("smallerCoverage >= 0.8 && largerCoverage >= 0.65") &&
       bundle.includes("Legacy Makers") &&
       bundle.includes("Masters of Innovation"),
-    "show-list answers and exact summary/Answer-section duplicates do not render twice",
+    "show-list answers and semantically duplicate summary/Answer sections do not render twice",
   );
 
   addCheck(
