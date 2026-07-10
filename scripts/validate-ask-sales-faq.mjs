@@ -728,9 +728,10 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "show-list duplicate summary is suppressed",
-    chatUi.includes("isDuplicatedSummary") &&
+      chatUi.includes("isDuplicatedSummary") &&
       chatUi.includes("normalizeAnswerDisplayText") &&
       chatUi.includes('firstSection?.title === "Answer"') &&
+      chatUi.includes("answer.sections.length > 1") &&
       chatUi.includes("normalizeAnswerDisplayText(answer.summary) === normalizeAnswerDisplayText(firstSection.body)") &&
       chatUi.includes("duplicatedItems >= 4") &&
       runtime.includes("removeSemanticallyDuplicatedAnswerSection") &&
