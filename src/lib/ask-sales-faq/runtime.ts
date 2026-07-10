@@ -1325,6 +1325,19 @@ export async function runAskSalesFaq(
         deterministicDecision: deterministicPolicyDecision,
       });
       if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
+      const partialClaimResult =
+        plannerResult.completed &&
+        plannerResult.mode === "unsupported" &&
+        questionFrame.relation !== "social" &&
+        questionFrame.relation !== "rewrite"
+          ? await trySelectPartialApprovedClaims({
+              currentQuestion: sanitizedQuestion,
+              conversationContext: routingConversationContext,
+              questionFrame,
+              claimMatches: semanticClaimMatches,
+            })
+          : null;
+      if (partialClaimResult?.diagnostics) providerDiagnostics.push(partialClaimResult.diagnostics);
 
       if (plannerResult.reply) {
         const decision = buildConversationReplyDecision(plannerResult.reply);
@@ -1379,8 +1392,9 @@ export async function runAskSalesFaq(
         });
       }
 
-      if (plannerResult.decision) {
-        policyDecision = plannerResult.decision;
+      const selectedSemanticDecision = plannerResult.decision || partialClaimResult?.decision || null;
+      if (selectedSemanticDecision) {
+        policyDecision = selectedSemanticDecision;
       } else if (
         plannerResult.completed &&
         plannerResult.mode === "unsupported" &&
@@ -2082,6 +2096,65 @@ async function tryPlanConversationTurn(input: {
       error: sanitizeProviderError(error),
     });
     return { decision: null, reply: null, completed: false, mode: null };
+  }
+}
+
+async function trySelectPartialApprovedClaims(input: {
+  currentQuestion: string;
+  conversationContext: string;
+  questionFrame: QuestionFrame;
+  claimMatches: ApprovedClaimMatch[];
+}): Promise<{ decision: PolicyGuardDecision | null; diagnostics?: ProviderCallDiagnostics }> {
+  const specificClaims = input.claimMatches
+    .filter((match) => match.claim.source_kind !== "approved_article")
+    .slice(0, 8);
+  if (!specificClaims.length) return { decision: null };
+
+  try {
+    const selection = await generateProviderJson<ConversationPlannerOutput>({
+      purpose: "partial claim selection",
+      maxTokens: 360,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You are the Ask Sales FAQ partial-evidence selector.",
+            "The main selector found no complete answer. Check whether one or more specific approved atomic claims still answer a useful, substantial part of the current question.",
+            "Do not draft the final answer and do not choose a broad neighboring topic.",
+            "Use mode approved_claim when a claim directly supports a useful answer or safety boundary, even if another requested detail is unresolved.",
+            "When the selected claims do not answer every requested detail, set needs_route true and state only the unresolved detail in route_reason.",
+            "Use mode unsupported only when none of the listed claims directly answer any substantial part of the current question.",
+            "Return only claim_ids from the catalog and select the smallest useful set.",
+            "Return valid JSON only with keys: mode, answer, summary, sections, article_id, claim_ids, confidence_score, confidence_label, needs_route, route_reason, reason.",
+            `For approved_claim, confidence_score must be ${CLAIM_ROUTER_MIN_CONFIDENCE}-100.`,
+          ].join("\n"),
+        },
+        {
+          role: "user",
+          content: [
+            "SPECIFIC APPROVED CLAIM CANDIDATES:",
+            formatClaimRouterCatalog(specificClaims),
+            "",
+            "CURRENT USER QUESTION:",
+            input.currentQuestion,
+            "",
+            "RECENT CONTEXT FOR A TRUE FOLLOW-UP ONLY:",
+            input.conversationContext || "None",
+          ].join("\n"),
+        },
+      ],
+      parse: parseConversationPlannerOutput,
+    });
+    return {
+      decision:
+        selection.output.mode === "approved_claim"
+          ? buildPolicyDecisionFromClaimRouter(selection.output, specificClaims, Boolean(input.conversationContext))
+          : null,
+      diagnostics: selection.diagnostics,
+    };
+  } catch (error) {
+    console.warn("Ask Sales FAQ partial claim selection failed", { error: sanitizeProviderError(error) });
+    return { decision: null };
   }
 }
 

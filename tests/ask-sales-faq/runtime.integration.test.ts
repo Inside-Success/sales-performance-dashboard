@@ -5,6 +5,7 @@ import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 type ProviderPurpose =
   | "semantic query expansion"
   | "conversation planning"
+  | "partial claim selection"
   | "answer generation"
   | "rep-facing wording repair"
   | "critical answer repair"
@@ -447,6 +448,59 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).toBe(answer);
     expect(result.answer).not.toMatch(/\$2,500|payment options|same-day discount/i);
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([socialClaim]);
+  });
+
+  it("uses a specific partial claim after the main selector cannot answer every requested detail", async () => {
+    const socialClaim = "claim_3a43cb9eed71cb37";
+    const answer =
+      "This is not a full social-media package. Explain only the current listed promotional deliverables, and do not promise ongoing social-media management.";
+    installProviderStub({
+      "semantic query expansion": [outputStep({ search_terms: ["next level ceo promotional assets", "social package boundary"] })],
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 0,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "No selected evidence lists every asset.",
+        }),
+      ],
+      "partial claim selection": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [socialClaim],
+          article_id: null,
+          confidence_score: 94,
+          confidence_label: "High",
+          needs_route: true,
+          route_reason: "Confirm the exact current promotional deliverables before listing them.",
+          reason: "The claim directly answers the promise boundary even though it does not enumerate every asset.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            selectedSourceIds: [`approved-claim:${socialClaim}`],
+            needsRoute: true,
+            routeReason: "Confirm the exact current promotional deliverables before listing them.",
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported partial answer." })],
+    });
+
+    const result = await runAskSalesFaq(
+      "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+    );
+
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toBe(answer);
+    expect(result.routeReason).toContain("exact current promotional deliverables");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([socialClaim]);
+    expect(result.runtimeMetadata?.providerAttempts?.some((attempt) => attempt.purpose === "partial claim selection")).toBe(true);
   });
 
   it("does not revive a broad pricing article when the semantic selector finds no direct promotional-assets answer", async () => {
@@ -1372,6 +1426,7 @@ function detectProviderPurpose(messages: Array<{ role?: string; content?: string
   const prompt = messages.map((message) => message.content || "").join("\n");
 
   if (prompt.includes("You rewrite an internal sales question into compact semantic retrieval terms")) return "semantic query expansion";
+  if (prompt.includes("Ask Sales FAQ partial-evidence selector")) return "partial claim selection";
   if (prompt.includes("Ask Sales FAQ conversation planner")) return "conversation planning";
   if (prompt.includes("You rewrite Ask Sales FAQ answers")) return "rep-facing wording repair";
   if (prompt.includes("You repair Ask Sales FAQ answers")) return "critical answer repair";
