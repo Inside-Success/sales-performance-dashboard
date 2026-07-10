@@ -386,22 +386,28 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "approved claim registry is organized, authority-tiered, and safe for runtime retrieval",
-    approvedClaims.schema_version === 1 &&
+    approvedClaims.schema_version === 2 &&
       approvedClaims.approved_claim_count === approvedClaims.claims.length &&
-      approvedClaims.claims.length > 450 &&
+      approvedClaims.blocked_claim_count === approvedClaims.blocked_claims.length &&
+      approvedClaims.claims.length > 550 &&
       approvedClaims.claims.some((claim) => claim.source_kind === "approved_article") &&
       approvedClaims.claims.some((claim) => claim.source_kind === "trusted_slack_summary") &&
       approvedClaims.claims.some((claim) => claim.source_kind === "curated_slack_summary") &&
       approvedClaims.claims.some((claim) => claim.source_kind === "owner_approved_override") &&
+      approvedClaims.claims.some((claim) => claim.source_kind === "trusted_transcript_summary") &&
       approvedClaims.claims.every(
         (claim) =>
           claim.id &&
           claim.topic_key &&
+          claim.policy_key &&
           claim.approved_text &&
           claim.effective_at &&
           claim.last_reviewed &&
           Array.isArray(claim.question_families) &&
           Array.isArray(claim.product_scopes) &&
+          Array.isArray(claim.domains) &&
+          Array.isArray(claim.actions) &&
+          Array.isArray(claim.entities) &&
           Array.isArray(claim.source_ids) &&
           !/\[internal source\]|no visible (?:final )?answer|moved (?:the )?(?:answer|discussion)?\s*to dm/i.test(
             claim.approved_text,
@@ -410,7 +416,7 @@ if (missingFiles.length === 0) {
       approvedClaims.claims
         .filter((claim) => claim.source_kind === "curated_slack_summary")
         .every((claim) => claim.authority < 90),
-    `registry has ${approvedClaims.claims.length} atomic claims with topic, scope, authority, recency, and source lineage`,
+    `registry has ${approvedClaims.claims.length} atomic claims plus ${approvedClaims.blocked_claims.length} conflict blockers with policy key, scope, action, authority, recency, and source lineage`,
   );
 
   addCheck(
@@ -418,12 +424,16 @@ if (missingFiles.length === 0) {
     approvedClaimRuntime.includes("retrieveApprovedClaims") &&
       approvedClaimRuntime.includes("inverseDocumentFrequency") &&
       approvedClaimRuntime.includes("claimMatchesScope") &&
+      approvedClaimRuntime.includes("PRIMARY_SEARCH_TEXT") &&
+      approvedClaimRuntime.includes("matchedActions") &&
+      approvedClaimRuntime.includes("retrieveBlockedClaims") &&
       runtime.includes("formatClaimRouterCatalog") &&
       runtime.includes("buildPolicyDecisionFromClaimRouter") &&
-      runtime.includes("findApprovedClaimRefinements") &&
-      runtime.includes('match.claim.source_kind === "owner_approved_override"') &&
-      runtime.includes('!["owner_approved_override", "approved_article"].includes(claim.source_kind)'),
-    "claim retrieval is scope-filtered, model-selected, grounding-checked, and only owner/article claims may become provider fallbacks",
+      runtime.includes("chooseApplicableBlockedClaim") &&
+      runtime.includes("semanticClaimMatches") &&
+      runtime.includes('plannerResult.mode === "unsupported"') &&
+      runtime.includes('policyDecision.routingSource === "claim_router"'),
+    "hybrid claim retrieval is scope/action filtered, semantically model-selected, conflict-aware, grounding-checked, and fail-closed",
   );
 
   addCheck(
@@ -562,7 +572,8 @@ if (missingFiles.length === 0) {
     chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&
       runtime.includes('questionFrame.relation === "context_follow_up"') &&
-      runtime.includes("policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame)") &&
+      runtime.includes("deterministicPolicyDecision.matchedRuleId !== \"default-abstain\"") &&
+      runtime.includes("policyDecision = deterministicPolicyDecision") &&
       runtime.includes("conversationContext: routingConversationContext") &&
       runtime.includes("rehydratedFromUserQuestion") &&
       runtime.includes("The current user question is authoritative."),
@@ -590,19 +601,18 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "short conversational follow-ups plan before broad routing",
-    runtime.includes("let policyDecision = matchPolicyGuard(routingQuestion, questionFrame)") &&
-      runtime.includes("let conversationPlannerAttempted = false") &&
-      runtime.includes("!questionFrame.isScopeCorrection") &&
-      runtime.includes("shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)") &&
-      runtime.includes("conversationPlannerAttempted = true") &&
-      runtime.includes("policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame)") &&
-      runtime.includes("!conversationPlannerAttempted") &&
+    runtime.includes("const deterministicPolicyDecision = matchPolicyGuard(routingQuestion, questionFrame)") &&
+      runtime.includes("const semanticClaimMatches = retrieveApprovedClaims") &&
+      runtime.includes("await tryPlanConversationTurn") &&
+      runtime.includes("if (plannerResult.reply)") &&
+      runtime.includes("if (plannerResult.decision)") &&
+      runtime.includes("evidenceBacksDeterministicDecision") &&
       runtime.includes("classifyRewriteIntent(question)") &&
       runtime.includes("isSocialConversationTurn") &&
       runtime.includes("isConcisePromiseConfirmation(question)") &&
-      runtime.includes("return false;") &&
+      questionFrame.includes("TOPIC_TRANSITION_PATTERN") &&
       runtime.includes("Ignore brief social replies like 'You're welcome'"),
-    "short confirmations, thank-yous, and rewrite requests reach the AI planner without letting old context force a full policy answer",
+    "all non-blocked turns reach semantic planning before broad legacy routing, including confirmations, social transitions, and rewrites",
   );
 
   addCheck(

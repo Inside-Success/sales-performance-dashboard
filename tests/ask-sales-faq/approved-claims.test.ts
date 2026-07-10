@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { APPROVED_CLAIMS, retrieveApprovedClaims } from "@/lib/ask-sales-faq/approved-claims";
+import { APPROVED_CLAIMS, retrieveApprovedClaims, retrieveBlockedClaims } from "@/lib/ask-sales-faq/approved-claims";
 
 describe("approved claim registry", () => {
   it("loads a broad, authority-tiered claim set", () => {
@@ -61,5 +61,22 @@ describe("approved claim registry", () => {
     });
 
     expect(matches.every((match) => !match.claim.product_scopes.includes("dj_nlceo"))).toBe(true);
+  });
+
+  it.each([
+    ["Can a nonprofit organization qualify for Operation CEO?", "Operation CEO nonprofit eligibility"],
+    ["Do I need another PayMe post for the next recurring installment?", "Recurring payments do not need a second PayMe post"],
+    ["Where do I verify the current Next Level CEO contract?", "Next Level CEO contract verification route"],
+    ["What should I do if a prospect photographs our confidential sales slides?", "Photographing confidential slides during a call"],
+    ["Can a client bring four guests into the studio for filming?", "Studio tours and guest limit for filming"],
+    ["Does freelance work by itself make someone an entrepreneur for qualification?", "Freelancing alone is not treated as entrepreneurship"],
+  ])("places the directly applicable current claim in the top three for %s", (question, expectedTitle) => {
+    const titles = retrieveApprovedClaims(question, { limit: 3 }).map((match) => match.claim.title);
+    expect(titles).toContain(expectedTitle);
+  });
+
+  it("surfaces a current unresolved offer conflict instead of a neighboring pricing claim", () => {
+    const matches = retrieveBlockedClaims("Is CEO Day currently available to sell?", { limit: 3 });
+    expect(matches[0]?.claim.title).toBe("CEO Day current availability conflict");
   });
 });
