@@ -454,18 +454,18 @@ describe("runAskSalesFaq integration safety", () => {
     const socialClaim = "claim_3a43cb9eed71cb37";
     const answer =
       "This is not a full social-media package. Explain only the current listed promotional deliverables, and do not promise ongoing social-media management.";
-    installProviderStub({
+    const provider = installProviderStub({
       "semantic query expansion": [outputStep({ search_terms: ["next level ceo promotional assets", "social package boundary"] })],
       "conversation planning": [
         outputStep({
-          mode: "unsupported",
+          mode: "approved_claim",
           article_id: null,
-          claim_ids: [],
-          confidence_score: 0,
-          confidence_label: "Low",
+          claim_ids: ["claim_not_in_the_candidate_pool"],
+          confidence_score: 90,
+          confidence_label: "High",
           needs_route: false,
           route_reason: "",
-          reason: "No selected evidence lists every asset.",
+          reason: "The main selector attempted an unusable claim choice.",
         }),
       ],
       "partial claim selection": [
@@ -495,12 +495,14 @@ describe("runAskSalesFaq integration safety", () => {
     const result = await runAskSalesFaq(
       "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
     );
+    const partialCall = provider.calls.find((call) => call.purpose === "partial claim selection");
 
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).toBe(answer);
     expect(result.routeReason).toContain("exact current promotional deliverables");
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([socialClaim]);
     expect(result.runtimeMetadata?.providerAttempts?.some((attempt) => attempt.purpose === "partial claim selection")).toBe(true);
+    expect(providerPrompt(partialCall!)).toContain("Daymond John social-media assets are not a full social package");
   });
 
   it("does not revive a broad pricing article when the semantic selector finds no direct promotional-assets answer", async () => {

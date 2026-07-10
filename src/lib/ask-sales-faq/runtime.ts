@@ -1304,12 +1304,16 @@ export async function runAskSalesFaq(
   if (searchExpansion?.diagnostics) providerDiagnostics.push(searchExpansion.diagnostics);
   const expandedClaimSearchText = [semanticSearchText, ...(searchExpansion?.terms || [])].filter(Boolean).join("\n");
   const semanticClaimMatches = searchExpansion
-    ? retrieveApprovedClaims(expandedClaimSearchText, {
-        scope: questionFrame.scope,
-        excludedScopes: questionFrame.excludedScopes,
-        limit: CLAIM_ROUTER_MAX_CANDIDATES,
-        minimumScore: 24,
-      })
+    ? mergeApprovedClaimMatches(
+        directSemanticClaimMatches,
+        retrieveApprovedClaims(expandedClaimSearchText, {
+          scope: questionFrame.scope,
+          excludedScopes: questionFrame.excludedScopes,
+          limit: CLAIM_ROUTER_MAX_CANDIDATES,
+          minimumScore: 24,
+        }),
+        CLAIM_ROUTER_MAX_CANDIDATES,
+      )
     : directSemanticClaimMatches;
 
   if (!isNonNegotiablePolicyBlock(deterministicPolicyDecision)) {
@@ -1327,7 +1331,8 @@ export async function runAskSalesFaq(
       if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
       const partialClaimResult =
         plannerResult.completed &&
-        plannerResult.mode === "unsupported" &&
+        !plannerResult.decision &&
+        !plannerResult.reply &&
         questionFrame.relation !== "social" &&
         questionFrame.relation !== "rewrite"
           ? await trySelectPartialApprovedClaims({
@@ -1943,6 +1948,25 @@ async function tryExpandApprovedClaimSearch(
     console.warn("Ask Sales FAQ semantic query expansion failed", { error: sanitizeProviderError(error) });
     return null;
   }
+}
+
+function mergeApprovedClaimMatches(
+  directMatches: ApprovedClaimMatch[],
+  expandedMatches: ApprovedClaimMatch[],
+  limit: number,
+) {
+  const merged: ApprovedClaimMatch[] = [];
+  const seen = new Set<string>();
+  const add = (match: ApprovedClaimMatch) => {
+    if (merged.length >= limit || seen.has(match.claim.id)) return;
+    seen.add(match.claim.id);
+    merged.push(match);
+  };
+
+  directMatches.slice(0, Math.min(12, limit)).forEach(add);
+  expandedMatches.forEach(add);
+  directMatches.forEach(add);
+  return merged;
 }
 
 async function tryPlanConversationTurn(input: {
