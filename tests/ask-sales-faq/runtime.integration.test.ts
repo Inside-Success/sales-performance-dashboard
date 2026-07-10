@@ -289,7 +289,7 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.outcome).toBe("abstain_unapproved");
     expect(result.answer).not.toMatch(/No approved policy rule|retrieval alone|knowledge base/i);
     expect(result.routeReason).toBe(
-      "Confirm this with the current sales owner or the right help channel before replying.",
+      "Confirm the exact requested decision with the responsible owner; no directly applicable approved guidance was found.",
     );
     expect(result.structuredAnswer?.sections).toEqual([]);
   });
@@ -356,7 +356,7 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).toBe(answer);
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.needsRoute).toBe(false);
-    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("strong-owner-approved-claim");
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("approved-claim-router");
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
   });
 
@@ -876,6 +876,78 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.source).toBeNull();
   });
 
+  it("blocks a newer unresolved offer conflict before an older pricing article can answer", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await runAskSalesFaq("Is CEO Day currently available to sell as an upgrade?");
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).toContain("conflicting guidance");
+    expect(result.answer).not.toMatch(/\$5,000|PIF only|currently available/i);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("current-policy-conflict");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("does not relabel a validator rejection as provider unavailability or return a neighboring article fallback", async () => {
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_article",
+          article_id: "current-show-source",
+          confidence_score: 96,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The current-show article is the candidate authority.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(modelOutput("Main ISTV Lite costs $12,000.", { selectedSourceIds: ["approved:current-show-source"] })),
+      ],
+      "approved article answer validation": [
+        outputStep({ verdict: "fail", reason: "The draft answers pricing, not the requested show list." }),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Which shows are currently offered?");
+
+    expect(result.errorClass).toBe("ai_grounding_rejected");
+    expect(result.answer).toContain("could not verify that it directly answers");
+    expect(result.answer).not.toContain("$12,000");
+    expect(result.source).toBeNull();
+  });
+
+  it("allows a high-specificity atomic claim to back an approved article when the planner is overly conservative", async () => {
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 20,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "The planner was overly conservative.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput("Main ISTV Lite is $12,000.", {
+            selectedSourceIds: ["approved:istv-nlceo-pricing-and-same-day-discount"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("What is the current main ISTV Lite package price?");
+
+    expect(result.outcome).toBe("answer_from_approved_article");
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("answer-pricing-and-same-day-discount");
+    expect(result.answer).toContain("$12,000");
+  });
+
   it("keeps an approved enumeration structured even when the model returns one dense paragraph", async () => {
     const denseShowList =
       "The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.";
@@ -899,6 +971,7 @@ describe("runAskSalesFaq integration safety", () => {
           }),
         ),
       ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "The list is supported." })],
     });
 
     const result = await runAskSalesFaq("What shows do we currently offer?");

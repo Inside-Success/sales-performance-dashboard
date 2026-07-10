@@ -25,8 +25,10 @@ import {
 import {
   approvedClaimById,
   retrieveApprovedClaims,
+  retrieveBlockedClaims,
   type ApprovedClaim,
   type ApprovedClaimMatch,
+  type BlockedClaimMatch,
 } from "@/lib/ask-sales-faq/approved-claims";
 import approvedPolicyUnits from "@/lib/ask-sales-faq/generated/approved-policy-units.json";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
@@ -263,6 +265,8 @@ const SCOPED_EVIDENCE_WEAK_TOKENS = new Set([
 
 const AI_UNAVAILABLE_RESPONSE =
   "I cannot generate a reliable answer right now. Do not guess from memory; route this to the current sales owner or the right help channel before replying.";
+const GROUNDING_REJECTED_RESPONSE =
+  "I found related approved guidance, but I could not verify that it directly answers this exact question. Please confirm the specific decision with the responsible owner rather than relying on a nearby policy.";
 
 const JSON_SCHEMA_EXAMPLE =
   '{"answer":"Direct answer for the rep.","summary":"One-line summary.","sections":[{"title":"Answer","body":"Useful sales guidance.","tone":"default"}],"selected_source_ids":["approved:article-id"],"needs_route":false,"route_reason":"","confidence_label":"High","confidence_score":90}';
@@ -274,8 +278,9 @@ const ARTICLE_ROUTER_MAX_BODY_CHARS = 1600;
 const ARTICLE_ROUTER_MAX_CONTEXT_CHARS = 2600;
 const CLAIM_ROUTER_MIN_CONFIDENCE = 84;
 const CLAIM_ROUTER_MIN_RETRIEVAL_SCORE = 40;
-const CLAIM_ROUTER_MAX_CANDIDATES = 12;
-const CLAIM_PROMPT_CHARS = 2200;
+const CLAIM_ROUTER_MAX_CANDIDATES = 20;
+const CLAIM_PROMPT_CHARS = 900;
+const BLOCKED_CLAIM_MIN_SCORE = 58;
 
 const OWNER_CLAIM_GENERIC_TITLE_TOKENS = new Set([
   "applicant",
@@ -1272,114 +1277,85 @@ export async function runAskSalesFaq(
     });
   }
 
-  let policyDecision = matchPolicyGuard(routingQuestion, questionFrame);
-  let conversationPlannerAttempted = false;
+  const deterministicPolicyDecision = matchPolicyGuard(routingQuestion, questionFrame);
+  let policyDecision = deterministicPolicyDecision;
+  const semanticSearchText = [routingQuestion, routingConversationContext].filter(Boolean).join("\n");
+  const semanticClaimMatches = retrieveApprovedClaims(semanticSearchText, {
+    scope: questionFrame.scope,
+    excludedScopes: questionFrame.excludedScopes,
+    limit: CLAIM_ROUTER_MAX_CANDIDATES,
+    minimumScore: 24,
+  });
+  const blockedMatches = retrieveBlockedClaims(semanticSearchText, {
+    scope: questionFrame.scope,
+    excludedScopes: questionFrame.excludedScopes,
+    limit: 4,
+    minimumScore: BLOCKED_CLAIM_MIN_SCORE,
+  });
 
-  const strongOwnerClaimDecision = findStrongOwnerApprovedClaimDecision(questionFrame, policyDecision);
-  if (strongOwnerClaimDecision && !questionFrame.isScopeCorrection) {
-    policyDecision = strongOwnerClaimDecision;
-  }
-
-  const claimRefinements = strongOwnerClaimDecision ? [] : findApprovedClaimRefinements(questionFrame, policyDecision);
-  if (claimRefinements.length && !questionFrame.isScopeCorrection) {
-    conversationPlannerAttempted = true;
-    const plannerResult = await tryPlanConversationTurn({
-      currentQuestion: sanitizedQuestion,
-      conversationContext: routingConversationContext,
-      questionFrame,
-      claimMatches: claimRefinements,
-    });
-    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
-
-    // A current owner-approved claim may refine a broad legacy route, but it may
-    // not replace that route with a conversational reply or a looser article.
-    if (plannerResult.decision?.routingSource === "claim_router") {
-      policyDecision = plannerResult.decision;
-    }
-  }
-
-  if (
-    shouldAttemptApprovedArticleRouter(policyDecision) &&
-    !questionFrame.isScopeCorrection &&
-    shouldPlanConversationBeforeContextPolicy(sanitizedQuestion, routingConversationContext)
-  ) {
-    conversationPlannerAttempted = true;
-    const plannerResult = await tryPlanConversationTurn({
-      currentQuestion: sanitizedQuestion,
-      conversationContext: routingConversationContext,
-      questionFrame,
-    });
-    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
-    if (plannerResult.reply) {
-      const decision = buildConversationReplyDecision(plannerResult.reply);
-      const answer = sanitizeModelAnswer(plannerResult.reply.answer);
-
-      return buildHandledResponse({
-        startedAt,
-        sanitizedQuestion,
-        contextualQuestion,
-        redactions,
-        decision,
-        answer,
-        structuredAnswer: normalizeModelStructuredAnswer(plannerResult.reply, answer, decision),
-        source: null,
-        provider: plannerResult.provider,
-        model: plannerResult.model,
-        errorClass: null,
-        runtimeMetadata: buildRuntimeMetadata({
-          evidence: [],
-          modelEvidence: [],
-          providerDiagnostics,
-          criticalFallbackUsed: false,
-          policyDecision: buildConversationPlannerDecision(),
-        }),
+  if (!isNonNegotiablePolicyBlock(deterministicPolicyDecision)) {
+    const blockedMatch = chooseApplicableBlockedClaim(blockedMatches, semanticClaimMatches);
+    if (blockedMatch) {
+      policyDecision = buildBlockedClaimDecision(blockedMatch);
+    } else {
+      const plannerResult = await tryPlanConversationTurn({
+        currentQuestion: sanitizedQuestion,
+        conversationContext: routingConversationContext,
+        questionFrame,
+        claimMatches: semanticClaimMatches,
       });
+      if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
+
+      if (plannerResult.reply) {
+        const decision = buildConversationReplyDecision(plannerResult.reply);
+        const answer = sanitizeModelAnswer(plannerResult.reply.answer);
+        return buildHandledResponse({
+          startedAt,
+          sanitizedQuestion,
+          contextualQuestion,
+          redactions,
+          decision,
+          answer,
+          structuredAnswer: normalizeModelStructuredAnswer(plannerResult.reply, answer, decision),
+          source: null,
+          provider: plannerResult.provider,
+          model: plannerResult.model,
+          errorClass: null,
+          runtimeMetadata: buildRuntimeMetadata({
+            evidence: [],
+            modelEvidence: [],
+            providerDiagnostics,
+            criticalFallbackUsed: false,
+            policyDecision: buildConversationPlannerDecision(),
+            questionFrame,
+          }),
+        });
+      }
+
+      if (plannerResult.decision) {
+        policyDecision = plannerResult.decision;
+      } else if (
+        plannerResult.completed &&
+        plannerResult.mode === "unsupported" &&
+        questionFrame.relation === "context_follow_up" &&
+        deterministicPolicyDecision.matchedRuleId !== "default-abstain"
+      ) {
+        policyDecision = deterministicPolicyDecision;
+      } else if (plannerResult.completed) {
+        // An explicit semantic "unsupported" decision blocks broad substring
+        // routing from turning it into a neighboring policy answer.
+        // A deterministic article may survive only when an atomic claim from
+        // that same article independently has a strong action/phrase match.
+        policyDecision =
+          evidenceBacksDeterministicDecision(deterministicPolicyDecision, semanticClaimMatches) ||
+          buildSemanticUnsupportedDecision();
+      } else {
+        // Provider failure is the only case where the narrow deterministic
+        // policy path remains an availability fallback.
+        const strongOwnerClaimDecision = findStrongOwnerApprovedClaimDecision(questionFrame, deterministicPolicyDecision);
+        policyDecision = strongOwnerClaimDecision || decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame);
+      }
     }
-    if (plannerResult.decision) policyDecision = plannerResult.decision;
-  }
-
-  if (policyDecision.matchedRuleId === "default-abstain") {
-    policyDecision = decidePolicyGuard(routingQuestion, routingConversationContext, questionFrame);
-  }
-
-  if (
-    !policyDecision.safeToGenerate &&
-    shouldAttemptApprovedArticleRouter(policyDecision) &&
-    !conversationPlannerAttempted &&
-    !questionFrame.isScopeCorrection
-  ) {
-    const plannerResult = await tryPlanConversationTurn({
-      currentQuestion: sanitizedQuestion,
-      conversationContext: routingConversationContext,
-      questionFrame,
-    });
-    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
-    if (plannerResult.reply) {
-      const decision = buildConversationReplyDecision(plannerResult.reply);
-      const answer = sanitizeModelAnswer(plannerResult.reply.answer);
-
-      return buildHandledResponse({
-        startedAt,
-        sanitizedQuestion,
-        contextualQuestion,
-        redactions,
-        decision,
-        answer,
-        structuredAnswer: normalizeModelStructuredAnswer(plannerResult.reply, answer, decision),
-        source: null,
-        provider: plannerResult.provider,
-        model: plannerResult.model,
-        errorClass: null,
-        runtimeMetadata: buildRuntimeMetadata({
-          evidence: [],
-          modelEvidence: [],
-          providerDiagnostics,
-          criticalFallbackUsed: false,
-          policyDecision: buildConversationPlannerDecision(),
-        }),
-      });
-    }
-    if (plannerResult.decision) policyDecision = plannerResult.decision;
   }
 
   const answerPlan =
@@ -1538,13 +1514,17 @@ export async function runAskSalesFaq(
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
     const fallbackOutput =
-      buildAndValidateApprovedFallback({
-        currentQuestion: sanitizedQuestion,
-        conversationContext: routingConversationContext,
-        policyDecision,
-        questionFrame,
-        answerPlan,
-      }) || buildApprovedClaimFallback(candidates, policyDecision);
+      policyDecision.routingSource === "claim_router"
+        ? buildApprovedClaimFallback(candidates, policyDecision)
+        : policyDecision.routingSource === "direct_rule"
+          ? buildAndValidateApprovedFallback({
+              currentQuestion: sanitizedQuestion,
+              conversationContext: routingConversationContext,
+              policyDecision,
+              questionFrame,
+              answerPlan,
+            })
+          : null;
     if (fallbackOutput) {
       const presentationSafeFallback = shapeApprovedArticlePresentation(
         sanitizedQuestion,
@@ -1588,21 +1568,29 @@ export async function runAskSalesFaq(
       });
     }
 
-    const decision = buildUnavailableDecision(candidates);
+    const providerAttempts = providerDiagnostics.flatMap((diagnostic) => diagnostic.attempts);
+    const runtimeError = sanitizeProviderError(error).toLowerCase();
+    const providerUnavailable =
+      (providerAttempts.length > 0 && providerAttempts.every((attempt) => attempt.status === "failed")) ||
+      /(?:aborted|timeout|timed out|provider request failed|provider unavailable|missing .*api key|http [45]\d\d|fetch failed|network)/.test(
+        runtimeError,
+      );
+    const safeFailureAnswer = providerUnavailable ? AI_UNAVAILABLE_RESPONSE : GROUNDING_REJECTED_RESPONSE;
+    const decision = buildUnavailableDecision([]);
     return buildHandledResponse({
       startedAt,
       sanitizedQuestion,
       contextualQuestion,
       redactions,
       decision,
-      answer: AI_UNAVAILABLE_RESPONSE,
+      answer: safeFailureAnswer,
       structuredAnswer: structured({
-        summary: AI_UNAVAILABLE_RESPONSE,
+        summary: safeFailureAnswer,
         sections: [{ title: "What to do", items: ["Route this to the current sales owner or the right help channel.", "Do not guess before replying to the prospect."], tone: "route" }],
         decision,
       }),
       source: null,
-      errorClass: "ai_runtime_unavailable",
+      errorClass: providerUnavailable ? "ai_runtime_unavailable" : "ai_grounding_rejected",
       runtimeMetadata: buildRuntimeMetadata({
         evidence: candidates,
         modelEvidence: modelEvidenceCandidates(candidates),
@@ -1665,6 +1653,75 @@ function decidePolicyGuard(question: string, conversationContext = "", questionF
   return directDecision;
 }
 
+function isNonNegotiablePolicyBlock(policyDecision: PolicyGuardDecision) {
+  return (
+    policyDecision.decision === "admin_only" ||
+    (policyDecision.decision === "abstain_unapproved" && policyDecision.matchedRuleId !== "default-abstain")
+  );
+}
+
+function chooseApplicableBlockedClaim(
+  blockedMatches: BlockedClaimMatch[],
+  approvedMatches: ApprovedClaimMatch[],
+): BlockedClaimMatch | null {
+  for (const blocked of blockedMatches) {
+    if (blocked.score < BLOCKED_CLAIM_MIN_SCORE) continue;
+    const samePolicyApproved = approvedMatches.find((match) => match.claim.policy_key === blocked.claim.policy_key);
+    if (samePolicyApproved && samePolicyApproved.claim.effective_at > blocked.claim.effective_at) continue;
+    const newerCompetingApproved = approvedMatches.find(
+      (match) => match.score >= blocked.score - 10 && match.claim.effective_at >= blocked.claim.effective_at,
+    );
+    if (newerCompetingApproved) continue;
+    if (!samePolicyApproved && (blocked.score < 85 || blocked.matchedTokens.length < 3)) continue;
+    return blocked;
+  }
+  return null;
+}
+
+function buildBlockedClaimDecision(match: BlockedClaimMatch): PolicyGuardDecision {
+  return {
+    decision: "abstain_unapproved",
+    safeToGenerate: false,
+    articleId: null,
+    blockedTopic: `current-conflict:${match.claim.id}`,
+    matchedRuleId: "current-policy-conflict",
+    reason: `Current guidance conflicts for ${match.claim.title}. ${match.claim.reason}`,
+    primaryArticle: null,
+    routingSource: "default",
+    routingConfidence: Math.round(match.score),
+    usedConversationContext: false,
+  };
+}
+
+function buildSemanticUnsupportedDecision(): PolicyGuardDecision {
+  return {
+    decision: "abstain_unapproved",
+    safeToGenerate: false,
+    articleId: null,
+    blockedTopic: "semantic-unsupported",
+    matchedRuleId: "semantic-unsupported",
+    reason: "No approved claim or article directly answered the requested decision or action.",
+    primaryArticle: null,
+    routingSource: "default",
+    usedConversationContext: false,
+  };
+}
+
+function evidenceBacksDeterministicDecision(
+  deterministicDecision: PolicyGuardDecision,
+  approvedMatches: ApprovedClaimMatch[],
+): PolicyGuardDecision | null {
+  if (!deterministicDecision.safeToGenerate || !deterministicDecision.articleId) return null;
+  const supportingClaim = approvedMatches.find(
+    (match) =>
+      match.claim.source_article_id === deterministicDecision.articleId &&
+      match.score >= 86 &&
+      match.matchedTokens.length >= 3 &&
+      (match.matchedActions.length > 0 || match.matchedDomains.length > 0 || match.matchedBigrams.length > 0),
+  );
+  return supportingClaim ? deterministicDecision : null;
+}
+
 function policyRuleCompatibleWithFrame(rule: AskSalesFaqRule, questionFrame?: QuestionFrame) {
   if (!questionFrame) return true;
   const ruleScope = rule.product_scope;
@@ -1715,10 +1772,6 @@ function matchPolicyGuard(question: string, questionFrame?: QuestionFrame): Poli
     routingSource: "default",
     usedConversationContext: false,
   };
-}
-
-function shouldAttemptApprovedArticleRouter(policyDecision: PolicyGuardDecision) {
-  return policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
 }
 
 function findStrongOwnerApprovedClaimDecision(
@@ -1780,27 +1833,6 @@ function ownerClaimHasDistinctiveTitleMatch(match: ApprovedClaimMatch) {
   );
 }
 
-function findApprovedClaimRefinements(
-  questionFrame: QuestionFrame,
-  policyDecision: PolicyGuardDecision,
-): ApprovedClaimMatch[] {
-  if (policyDecision.decision !== "route_from_approved_article" || policyDecision.routingSource !== "direct_rule") {
-    return [];
-  }
-
-  return retrieveApprovedClaims(questionFrame.effectiveQuestion, {
-    scope: questionFrame.scope,
-    excludedScopes: questionFrame.excludedScopes,
-    limit: 8,
-    minimumScore: 60,
-  }).filter(
-    (match) =>
-      match.claim.source_kind === "owner_approved_override" &&
-      match.claim.authority >= 110 &&
-      match.matchedTokens.length >= 2,
-  );
-}
-
 async function tryPlanConversationTurn(input: {
   currentQuestion: string;
   conversationContext: string;
@@ -1809,6 +1841,8 @@ async function tryPlanConversationTurn(input: {
 }): Promise<{
   decision: PolicyGuardDecision | null;
   reply: ModelOutput | null;
+  completed: boolean;
+  mode: ConversationPlannerOutput["mode"] | null;
   provider?: "deepseek" | "anthropic";
   model?: string;
   diagnostics?: ProviderCallDiagnostics;
@@ -1843,6 +1877,7 @@ async function tryPlanConversationTurn(input: {
             "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
             "Use mode approved_article only when one approved article directly controls the answer.",
             "Prefer mode approved_claim when one or more approved claims directly answer the requested decision, action, location, timing, permission, or explanation.",
+            "The claim catalog is a recall pool, not a list of correct answers. Retrieval score only means possible relevance; independently reject every candidate that answers a different action or entity.",
             "For approved_claim, return only claim_ids from the approved claim catalog. Select the smallest complete set of claims and do not select a nearby topic that fails to answer the requested action.",
             "When same-topic claims disagree, use the highest authority tier. Within the same tier, prefer the newest applicable effective date. Do not blend conflicting claims or let a newer unrelated topic override the applicable one.",
             "Low-risk curated claims may answer only the clear process fact they contain. Do not extrapolate them into pricing, qualification, contract, payment, compliance, or exception policy.",
@@ -1888,6 +1923,8 @@ async function tryPlanConversationTurn(input: {
         return {
           decision: null,
           reply,
+          completed: true,
+          mode: planner.output.mode,
           provider: planner.provider,
           model: planner.model,
           diagnostics: planner.diagnostics,
@@ -1902,6 +1939,8 @@ async function tryPlanConversationTurn(input: {
             ? buildPolicyDecisionFromClaimRouter(planner.output, claimMatches, Boolean(input.conversationContext))
             : null,
       reply: null,
+      completed: true,
+      mode: planner.output.mode,
       provider: planner.provider,
       model: planner.model,
       diagnostics: planner.diagnostics,
@@ -1910,7 +1949,7 @@ async function tryPlanConversationTurn(input: {
     console.warn("Ask Sales FAQ conversation planner failed", {
       error: sanitizeProviderError(error),
     });
-    return { decision: null, reply: null };
+    return { decision: null, reply: null, completed: false, mode: null };
   }
 }
 
@@ -2097,17 +2136,22 @@ function formatClaimRouterCatalog(matches: ApprovedClaimMatch[]) {
   if (!matches.length) return "No approved claim candidates matched this message.";
 
   return matches
-    .map(({ claim, score }, index) =>
+    .map(({ claim, score, matchedDomains, matchedActions }, index) =>
       [
         `Claim ${index + 1}`,
         `ID: ${claim.id}`,
         `Title: ${claim.title}`,
         `Product scope: ${claim.product_scopes.join(", ")}`,
+        `Policy domains: ${claim.domains.join(", ")}`,
+        `Requested actions covered: ${claim.actions.join(", ")}`,
+        `Question families: ${claim.question_families.join(" | ").slice(0, 700)}`,
+        `Distinct entities: ${claim.entities.join(", ")}`,
         `Risk: ${claim.risk_level}`,
         `Authority tier: ${claimAuthorityLabel(claim)}`,
         `Effective date: ${claim.effective_at}`,
         `Route required: ${claim.route_required ? "yes" : "no"}`,
         `Retrieval score: ${score}`,
+        `Matched domain/action hints: ${[...matchedDomains, ...matchedActions].join(", ") || "none"}`,
         `Approved guidance: ${claim.approved_text.slice(0, CLAIM_PROMPT_CHARS)}`,
       ].join("\n"),
     )
@@ -2118,6 +2162,7 @@ function claimAuthorityLabel(claim: ApprovedClaim) {
   if (claim.source_kind === "owner_approved_override") return "explicit current owner decision";
   if (claim.source_kind === "approved_article") return "approved KB article";
   if (claim.source_kind === "trusted_slack_summary") return "trusted-author reviewed summary";
+  if (claim.source_kind === "trusted_transcript_summary") return "approved-speaker reviewed meeting decision";
   return "project-owner promoted low-risk curated summary";
 }
 
@@ -2145,20 +2190,6 @@ function compactArticleBodyForRouter(body: string) {
     .trim();
 
   return [`Topics: ${topicHeadings.join("; ")}.`, compactBody].join(" ").slice(0, ARTICLE_ROUTER_MAX_BODY_CHARS);
-}
-
-function shouldPlanConversationBeforeContextPolicy(question: string, conversationContext: string) {
-  if (!conversationContext.trim()) return false;
-
-  const normalizedQuestion = normalizeText(question);
-  const tokens = tokenize(normalizedQuestion, { expand: false });
-  if (!normalizedQuestion || tokens.length > 28) return false;
-
-  if (isSocialConversationTurn(normalizedQuestion)) return true;
-  if (classifyRewriteIntent(question)) return true;
-  if (isConcisePromiseConfirmation(question)) return true;
-
-  return false;
 }
 
 function shouldUseConversationContextForRouting(question: string, conversationContext: string) {
@@ -2422,11 +2453,18 @@ function buildAndValidateApprovedFallback(input: {
 
 function buildApprovedClaimFallback(candidates: EvidenceCandidate[], policyDecision: PolicyGuardDecision): ModelOutput | null {
   if (policyDecision.routingSource !== "claim_router") return null;
+  if (policyDecision.selectedClaimIds?.length !== 1) return null;
   const candidate = candidates.find((item) => item.kind === "approved_claim");
   if (!candidate) return null;
   const claimId = candidate.id.replace(/^approved-claim:/, "");
   const claim = approvedClaimById(claimId);
-  if (!claim || !["owner_approved_override", "approved_article"].includes(claim.source_kind)) return null;
+  if (
+    !claim ||
+    !["owner_approved_override", "approved_article", "trusted_slack_summary", "trusted_transcript_summary"].includes(
+      claim.source_kind,
+    )
+  )
+    return null;
 
   const answer = sanitizeModelAnswer(claim.approved_text);
   if (!answer || modelOutputContainsHiddenTerms({ answer, needs_route: false, route_reason: "" })) return null;
@@ -3732,10 +3770,24 @@ function policyBlockedAnswer(policyDecision: PolicyGuardDecision) {
     return "I do not have your live commission tier, leaderboard, or payout data. Check with the current sales/commission owner before relying on a number.";
   }
 
+  if (policyDecision.blockedTopic?.startsWith("current-conflict:")) {
+    return "I found conflicting guidance on this, so I cannot give you a reliable yes-or-no answer yet. Please confirm the current rule with the sales or offer owner before promising it to the prospect.";
+  }
+
+  if (policyDecision.blockedTopic === "semantic-unsupported") {
+    return "I could not find approved guidance that directly answers that exact question. Please check with the owner for that area before replying to the prospect; I do not want to give you a nearby policy that may be wrong.";
+  }
+
   return "I do not have a confirmed answer for that yet. Route this to the current sales owner or the right help channel before replying to the prospect.";
 }
 
 function policyBlockedRouteReason(policyDecision: PolicyGuardDecision) {
+  if (policyDecision.blockedTopic?.startsWith("current-conflict:")) {
+    return "Confirm the current rule with the responsible sales or offer owner because the available guidance conflicts.";
+  }
+  if (policyDecision.blockedTopic === "semantic-unsupported") {
+    return "Confirm the exact requested decision with the responsible owner; no directly applicable approved guidance was found.";
+  }
   if (policyDecision.blockedTopic === "qualification-bankruptcy-unconfirmed") {
     return "Confirm the qualification decision with the current qualification owner before approving or disqualifying the applicant.";
   }

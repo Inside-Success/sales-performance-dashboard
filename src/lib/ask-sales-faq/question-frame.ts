@@ -57,6 +57,8 @@ const SOCIAL_PATTERN =
 const GREETING_PATTERN = /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)(?:\s+(?:there|team|everyone))?[!,. ]*$/;
 const GREETING_INTRO_PATTERN =
   /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)\b.*\b(?:i\s+am|i'm|i\s+will|i'll|we\s+will|we'll|ready|going\s+to|about\s+to|starting)\b/;
+const TOPIC_TRANSITION_PATTERN =
+  /^(?:ok(?:ay)?|alright|great|thanks|thank you)?[,! ]*(?:let(?:'s| us)|we can|i(?:'d| would) like to)\s+(?:move|switch|go|turn)\s+(?:on\s+)?to\b[^?]*[.! ]*$/;
 
 const REWRITE_ACTION_PATTERN =
   /\b(?:make|keep|put|rewrite|rephrase|shorten|summarize|condense|simplify|format|formatting|reformat|organize|arrange)\b/;
@@ -194,7 +196,7 @@ function isSubstantiveUserQuestion(question: string) {
 }
 
 function isSocialTurn(normalizedQuestion: string) {
-  if (SOCIAL_PATTERN.test(normalizedQuestion) || GREETING_PATTERN.test(normalizedQuestion)) return true;
+  if (SOCIAL_PATTERN.test(normalizedQuestion) || GREETING_PATTERN.test(normalizedQuestion) || TOPIC_TRANSITION_PATTERN.test(normalizedQuestion)) return true;
   if (!GREETING_INTRO_PATTERN.test(normalizedQuestion) || normalizedQuestion.includes("?")) return false;
   return !/\b(?:can\s+i|can\s+we|should\s+i|should\s+we|am\s+i\s+allowed|are\s+we\s+allowed|what\s+should|how\s+do|where\s+do|when\s+do|why\s+do)\b/.test(
     normalizedQuestion,
