@@ -360,6 +360,47 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
   });
 
+  it("keeps an exact approved channel route instead of inventing a generic owner escalation", async () => {
+    const selectedClaimIds = ["claim_544dc79d0ccbfd52", "claim_c1c350512e0d9a6e"];
+    const answer =
+      "Check the DJ payments channel and confirm the payment post; successful payments also appear in the all-payments channel. Once confirmed, post the sale in PayMe.";
+    const provider = installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: selectedClaimIds,
+          confidence_score: 95,
+          confidence_label: "High",
+          needs_route: true,
+          route_reason: "Check the DJ payments channel.",
+          reason: "The approved payment-confirmation claims directly answer where to check.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            selectedSourceIds: selectedClaimIds.map((id) => `approved-claim:${id}`),
+            needsRoute: true,
+            routeReason: "Check the DJ payments channel and confirm the payment post.",
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Fully supported." })],
+    });
+
+    const result = await runAskSalesFaq(
+      "For Next Level CEO, not main ISTV, how do I check whether the first DJ payment went through?",
+    );
+    const generationCall = provider.calls.find((call) => call.purpose === "answer generation");
+    const systemPrompt = generationCall?.messages[0]?.content || "";
+
+    expect(result.answer).toContain("DJ payments channel");
+    expect(result.answer).toContain("PayMe");
+    expect(result.answer).not.toMatch(/generic owner|specialist|right help channel/i);
+    expect(systemPrompt).toContain("use only that exact route");
+    expect(result.errorClass).toBeNull();
+  });
+
   it("uses the current owner boundary alone for an unlisted split instead of inheriting a broader article route", async () => {
     const claimId = "owner-unlisted-payment-split-boundary";
     const answer = "No, you cannot offer that custom split. Use one of the current listed payment plans.";
@@ -1018,6 +1059,8 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBe("ai_grounding_rejected");
     expect(result.answer).toContain("could not verify that it directly answers");
     expect(result.answer).not.toContain("$12,000");
+    expect(result.routeReason).not.toMatch(/provider unavailable/i);
+    expect(result.routeReason).toContain("not directly supported");
     expect(result.source).toBeNull();
   });
 

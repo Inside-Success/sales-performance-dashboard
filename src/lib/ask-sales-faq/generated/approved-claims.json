@@ -15453,7 +15453,7 @@
       "approved_by": [
         "Madeline Cary"
       ],
-      "approved_text": "The rep to the DJ payments channel, confirmed the payment post, and reminded the rep to post in PayMe.",
+      "approved_text": "Check the DJ payments channel and confirm the payment post. Then post in PayMe.",
       "authority": 90,
       "domains": [
         "payments",
@@ -15476,7 +15476,7 @@
         "was",
         "used"
       ],
-      "id": "claim_420cbaf96473f681",
+      "id": "claim_544dc79d0ccbfd52",
       "last_reviewed": "2026-07-10",
       "policy_key": "checking-whether-first-dj-sale-payment-went-through",
       "product_scopes": [
@@ -17583,7 +17583,7 @@
       "approved_by": [
         "Rudy Mawer"
       ],
-      "approved_text": "The rep to put the items in daily stats; the rep later found/copied to the manual stats button/path.",
+      "approved_text": "Put the items in daily stats; the rep later found/copied to the manual stats button/path.",
       "authority": 90,
       "domains": [
         "general_sales"
@@ -17599,7 +17599,7 @@
         "the",
         "button"
       ],
-      "id": "claim_5a7e134f026ac61e",
+      "id": "claim_2b5b531c2d6e5d3d",
       "last_reviewed": "2026-07-10",
       "policy_key": "daily-stats-form-not-working",
       "product_scopes": [
@@ -25014,13 +25014,14 @@
         "schedule",
         "route",
         "contact",
+        "use_or_promote",
         "onboard"
       ],
       "answerability": "direct",
       "approved_by": [
         "Madeline Cary"
       ],
-      "approved_text": "The rep to the fulfillment hotline channel.",
+      "approved_text": "Use the fulfillment hotline channel.",
       "authority": 90,
       "domains": [
         "scheduling",
@@ -25042,7 +25043,7 @@
         "enough",
         "out"
       ],
-      "id": "claim_b09c2c86e6df2442",
+      "id": "claim_b270249d498e0e51",
       "last_reviewed": "2026-07-10",
       "policy_key": "onboarding-date-beyond-welcome-email-calendar",
       "product_scopes": [
@@ -25387,7 +25388,7 @@
       "approved_by": [
         "Madeline Cary"
       ],
-      "approved_text": "The rep to put the person's information into the official opt-out channel and complete the internal opt-out steps rather than trying to contact the person again.",
+      "approved_text": "Put the person's information into the official opt-out channel and complete the internal opt-out steps rather than trying to contact the person again.",
       "authority": 90,
       "domains": [
         "payments",
@@ -25407,7 +25408,7 @@
         "another",
         "message"
       ],
-      "id": "claim_995aee95e1b086eb",
+      "id": "claim_29ecf8b8cbed836a",
       "last_reviewed": "2026-07-10",
       "policy_key": "opt-out-when-the-rep-cannot-reach-the-person-again",
       "product_scopes": [
@@ -25864,13 +25865,14 @@
     {
       "actions": [
         "route",
+        "use_or_promote",
         "report"
       ],
       "answerability": "route",
       "approved_by": [
         "Madeline Cary"
       ],
-      "approved_text": "The rep to Rich's criminal-history post in the channel.",
+      "approved_text": "Use Rich's criminal-history post in the channel.",
       "authority": 90,
       "domains": [
         "general_sales"
@@ -25891,7 +25893,7 @@
         "considerations",
         "apply"
       ],
-      "id": "claim_2a6ffa832b008759",
+      "id": "claim_2f0dc14826f01228",
       "last_reviewed": "2026-07-10",
       "policy_key": "past-incarceration-history",
       "product_scopes": [
@@ -29025,20 +29027,24 @@
       "actions": [
         "qualify",
         "pay",
+        "route",
         "contact",
         "opt_out",
-        "reapply"
+        "reapply",
+        "report"
       ],
       "answerability": "direct",
       "approved_by": [
         "Madeline Cary"
       ],
-      "approved_text": "To the official opt-out process. Do not keep engaging the person through normal outreach.",
+      "approved_text": "Post the case in the tech channel so the contact can be unsubscribed or blocked and added to the official opt-out process. Do not keep engaging the person through normal outreach.",
       "authority": 90,
       "domains": [
         "qualification",
         "payments",
-        "compliance"
+        "compliance",
+        "sales_tech",
+        "communications"
       ],
       "effective_at": "2026-07-06T19:12:51.377379+00:00",
       "entities": [
@@ -29052,7 +29058,7 @@
         "reapplying",
         "receiving"
       ],
-      "id": "claim_51613004d36483d1",
+      "id": "claim_4c5932f5c97e68ed",
       "last_reviewed": "2026-07-10",
       "policy_key": "repeated-disqualified-applicant-and-automated-outreach",
       "product_scopes": [

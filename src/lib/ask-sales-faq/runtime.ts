@@ -1604,7 +1604,7 @@ export async function runAskSalesFaq(
         runtimeError,
       );
     const safeFailureAnswer = providerUnavailable ? AI_UNAVAILABLE_RESPONSE : GROUNDING_REJECTED_RESPONSE;
-    const decision = buildUnavailableDecision([]);
+    const decision = providerUnavailable ? buildUnavailableDecision([]) : buildGroundingRejectedDecision([]);
     return buildHandledResponse({
       startedAt,
       sanitizedQuestion,
@@ -4185,6 +4185,7 @@ async function generateProviderAnswer(input: {
           "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless the approved evidence explicitly authorizes that exact handoff.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
           "If the approved claims support only part of the question, answer the supported part and add one clear route note for the unresolved part without pretending certainty.",
+          "When approved guidance names a specific channel, form, or owner, use only that exact route. Do not replace it with a generic owner, specialist, team, or confirmation route.",
           "Before returning JSON, verify that the answer directly addresses the user's requested action, permission, location, timing, comparison, or explanation. A nearby topic is not an answer.",
           "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
           "Never expose source IDs, file paths, article statuses, Slack links, implementation details, knowledge base wording, approved article wording, route-only labels, RAG, manifests, source coverage, or pending approval wording.",
@@ -4595,6 +4596,22 @@ function buildUnavailableDecision(candidates: EvidenceCandidate[]): RuntimeDecis
     routeReason: "AI provider unavailable.",
     safeToGenerate: false,
     matchedRuleId: "ai-provider-unavailable",
+    matchedArticleId: null,
+    primaryArticle: null,
+    retrieved: candidates.slice(0, 8),
+  };
+}
+
+function buildGroundingRejectedDecision(candidates: EvidenceCandidate[]): RuntimeDecision {
+  return {
+    outcome: "safe_fallback",
+    sourceMode: "fallback",
+    confidenceLabel: "Low",
+    confidenceScore: 0,
+    reason: "The generated draft did not pass approved-guidance validation.",
+    routeReason: "The draft was not directly supported by the selected approved guidance.",
+    safeToGenerate: false,
+    matchedRuleId: "ai-grounding-rejected",
     matchedArticleId: null,
     primaryArticle: null,
     retrieved: candidates.slice(0, 8),
