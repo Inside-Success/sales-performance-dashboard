@@ -356,6 +356,80 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.answer).toBe(answer);
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.needsRoute).toBe(false);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("strong-owner-approved-claim");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+  });
+
+  it("uses the current owner boundary alone for an unlisted split instead of inheriting a broader article route", async () => {
+    const claimId = "owner-unlisted-payment-split-boundary";
+    const answer = "No, you cannot offer that custom split. Use one of the current listed payment plans.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(modelOutput(answer, { selectedSourceIds: [`approved-claim:${claimId}`] })),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("Can I offer a custom payment split of $3,000 now and $17,000 later?");
+
+    expect(result.answer).toBe(answer);
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.needsRoute).toBe(false);
+    expect(result.routeReason).toBeNull();
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+  });
+
+  it("does not let a nearby Zoom Phone issue trigger the payment-link owner claim", async () => {
+    const answer = "Post the missing Zoom Phone number issue in #sales-tech-requests so the current tech owner can fix it.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: "Use #sales-tech-requests for the missing Zoom Phone number.",
+            selectedSourceIds: ["approved:sales-tech-routing-and-support-requests"],
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq("My Zoom Phone number is missing. Should I email tech?");
+
+    expect(result.outcome).toBe("route_from_approved_article");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toBeUndefined();
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).not.toBe("strong-owner-approved-claim");
+  });
+
+  it("repairs claim IDs out of route notes before returning them to a rep", async () => {
+    const claimId = "owner-scriptwriter-scheduling-fulfillment-route";
+    const answer = "Post the scriptwriter scheduling issue in the fulfillment channel so the current team can advise.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: `Claim ${claimId} states that fulfillment owns this route.`,
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "rep-facing wording repair": [
+        outputStep(
+          modelOutput(answer, {
+            needsRoute: true,
+            routeReason: "Use the fulfillment channel for current scriptwriter scheduling help.",
+            selectedSourceIds: [`approved-claim:${claimId}`],
+          }),
+        ),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq("A client cannot find any scriptwriter-call times. Where should I send this?");
+
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.routeReason).toBe("Use the fulfillment channel for current scriptwriter scheduling help.");
+    expect(result.routeReason).not.toMatch(/claim|owner-scriptwriter/i);
   });
 
   it("uses a current owner-backed route claim when fulfillment owns the next step", async () => {
