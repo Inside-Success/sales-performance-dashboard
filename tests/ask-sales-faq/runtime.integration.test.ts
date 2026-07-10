@@ -243,6 +243,32 @@ describe("runAskSalesFaq integration safety", () => {
     ]);
   });
 
+  it("does not let a prior qualification question hijack a new Spanish-production question", async () => {
+    const question = "A prospect wants their entire episode filmed in Spanish. Can we offer that?";
+    installProviderStub({
+      "answer generation": [
+        outputStep(
+          modelOutput("No. ISTV currently produces shows in English, so do not promise a Spanish-language episode.", {
+            selectedSourceIds: ["approved:production-language-and-translation-boundary"],
+          }),
+        ),
+      ],
+    });
+
+    const messages: AskSalesFaqChatMessage[] = [
+      { role: "user", content: "Would a registered nurse qualify as a doctor for America's Best Doctors?" },
+      { role: "assistant", content: "No. A registered nurse does not qualify as a doctor for that show." },
+      { role: "user", content: question },
+    ];
+    const result = await runAskSalesFaq(question, messages);
+
+    expect(result.outcome).toBe("answer_from_approved_article");
+    expect(result.answer).toContain("produces shows in English");
+    expect(result.runtimeMetadata?.routing?.articleId).toBe("production-language-and-translation-boundary");
+    expect(result.runtimeMetadata?.policyPlan?.questionRelation).toBe("new");
+    expect(result.runtimeMetadata?.policyPlan?.previousUserQuestionUsed).toBe(false);
+  });
+
   it("keeps a generic unsupported answer natural and hides internal routing reasons", async () => {
     installProviderStub({
       "conversation planning": [

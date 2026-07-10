@@ -117,4 +117,27 @@ describe("buildQuestionFrame", () => {
     expect(frame.relation).toBe("new");
     expect(classifyRewriteIntent("List the main ISTV payment plans.")).toBeNull();
   });
+
+  it("does not treat a new named prospect as a follow-up just because the sentence uses their", () => {
+    const messages: QuestionFrameMessage[] = [
+      { role: "user", content: "Would a registered nurse qualify as a doctor for America's Best Doctors?" },
+      { role: "assistant", content: "No. A registered nurse does not qualify as a doctor for that show." },
+    ];
+
+    const frame = buildQuestionFrame("A prospect wants their entire episode filmed in Spanish. Can we offer that?", messages);
+
+    expect(frame.relation).toBe("new");
+    expect(frame.previousSubstantiveUserQuestion).toContain("registered nurse");
+    expect(frame.rehydratedFromUserQuestion).toBeNull();
+    expect(frame.effectiveQuestion).toBe("A prospect wants their entire episode filmed in Spanish. Can we offer that?");
+  });
+
+  it("still recognizes a genuinely dependent short pronoun follow-up", () => {
+    const messages: QuestionFrameMessage[] = [
+      { role: "user", content: "Can a hospital-employed doctor qualify?" },
+      { role: "assistant", content: "Yes, hospital employment alone does not disqualify a doctor." },
+    ];
+
+    expect(buildQuestionFrame("Can they qualify without owning the practice?", messages).relation).toBe("context_follow_up");
+  });
 });
