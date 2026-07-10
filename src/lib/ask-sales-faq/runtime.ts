@@ -22,6 +22,12 @@ import {
   classifyRewriteIntent,
   type QuestionFrame,
 } from "@/lib/ask-sales-faq/question-frame";
+import {
+  approvedClaimById,
+  retrieveApprovedClaims,
+  type ApprovedClaim,
+  type ApprovedClaimMatch,
+} from "@/lib/ask-sales-faq/approved-claims";
 import approvedPolicyUnits from "@/lib/ask-sales-faq/generated/approved-policy-units.json";
 import ragIndex from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 
@@ -49,10 +55,10 @@ type IndexedChunk = RagChunk & {
 
 type EvidenceCandidate = {
   id: string;
-  kind: "approved_article" | "source_chunk";
+  kind: "approved_article" | "approved_claim" | "source_chunk";
   articleId: string | null;
   articleStatus: string;
-  sourceType: RagChunk["source_type"] | "approved_article";
+  sourceType: RagChunk["source_type"] | "approved_article" | "approved_claim";
   sourceTitle: string;
   heading: string;
   category: string;
@@ -80,16 +86,17 @@ type RuntimeDecision = {
 };
 
 type PolicyGuardDecision = {
-  decision: AskSalesFaqRule["decision"] | "abstain_unapproved";
+  decision: AskSalesFaqRule["decision"] | "abstain_unapproved" | "answer_from_approved_claim" | "route_from_approved_claim";
   safeToGenerate: boolean;
   articleId: string | null;
   blockedTopic: string | null;
   matchedRuleId: string;
   reason: string;
   primaryArticle: ApprovedFaqArticle | null;
-  routingSource: "direct_rule" | "context_rule" | "article_router" | "conversation_planner" | "default";
+  routingSource: "direct_rule" | "context_rule" | "article_router" | "claim_router" | "conversation_planner" | "default";
   routingConfidence?: number;
   usedConversationContext?: boolean;
+  selectedClaimIds?: string[];
 };
 
 type ModelOutput = {
@@ -113,11 +120,12 @@ type ArticleRouterOutput = {
 };
 
 type ConversationPlannerOutput = {
-  mode: "conversation_reply" | "approved_article" | "unsupported";
+  mode: "conversation_reply" | "approved_article" | "approved_claim" | "unsupported";
   answer?: string;
   summary?: string;
   sections?: ModelOutput["sections"];
   article_id?: string | null;
+  claim_ids?: string[];
   confidence_score?: number | string | null;
   confidence_label?: "High" | "Medium" | "Low";
   needs_route?: boolean;
@@ -264,6 +272,10 @@ const DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS = 700;
 const ARTICLE_ROUTER_MIN_CONFIDENCE = 82;
 const ARTICLE_ROUTER_MAX_BODY_CHARS = 1600;
 const ARTICLE_ROUTER_MAX_CONTEXT_CHARS = 2600;
+const CLAIM_ROUTER_MIN_CONFIDENCE = 84;
+const CLAIM_ROUTER_MIN_RETRIEVAL_SCORE = 40;
+const CLAIM_ROUTER_MAX_CANDIDATES = 12;
+const CLAIM_PROMPT_CHARS = 2200;
 
 const REP_FACING_INTERNAL_TERMS = [
   "not approved in the knowledge base",
@@ -320,6 +332,8 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\bcurated (?:Slack|source) evidence\b/i,
   /\b(?:Evidence|Source)\s+\d+\b/i,
   /\bwhat the evidence says\b/i,
+  /\baccording to (?:Raul|Madeline|Rich|Mike|Rudy|Syed)\b/i,
+  /\b(?:Raul|Madeline|Rich|Mike|Rudy|Syed) (?:said|confirmed|clarified|replied|linked|responded)\b/i,
   /\bcandidate answer\b/i,
   /\bdecision candidates\b/i,
   /\bcandidate q and a\b/i,
@@ -1230,6 +1244,24 @@ export async function runAskSalesFaq(
   let policyDecision = matchPolicyGuard(routingQuestion, questionFrame);
   let conversationPlannerAttempted = false;
 
+  const claimRefinements = findApprovedClaimRefinements(questionFrame, policyDecision);
+  if (claimRefinements.length && !questionFrame.isScopeCorrection) {
+    conversationPlannerAttempted = true;
+    const plannerResult = await tryPlanConversationTurn({
+      currentQuestion: sanitizedQuestion,
+      conversationContext: routingConversationContext,
+      questionFrame,
+      claimMatches: claimRefinements,
+    });
+    if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
+
+    // A current owner-approved claim may refine a broad legacy route, but it may
+    // not replace that route with a conversational reply or a looser article.
+    if (plannerResult.decision?.routingSource === "claim_router") {
+      policyDecision = plannerResult.decision;
+    }
+  }
+
   if (
     shouldAttemptApprovedArticleRouter(policyDecision) &&
     !questionFrame.isScopeCorrection &&
@@ -1239,6 +1271,7 @@ export async function runAskSalesFaq(
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
       conversationContext: routingConversationContext,
+      questionFrame,
     });
     if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
     if (plannerResult.reply) {
@@ -1282,6 +1315,7 @@ export async function runAskSalesFaq(
     const plannerResult = await tryPlanConversationTurn({
       currentQuestion: sanitizedQuestion,
       conversationContext: routingConversationContext,
+      questionFrame,
     });
     if (plannerResult.diagnostics) providerDiagnostics.push(plannerResult.diagnostics);
     if (plannerResult.reply) {
@@ -1312,11 +1346,14 @@ export async function runAskSalesFaq(
     if (plannerResult.decision) policyDecision = plannerResult.decision;
   }
 
-  const answerPlan = buildAnswerPlan({
-    questionFrame,
-    approvedArticleId: policyDecision.articleId,
-    policyUnits: APPROVED_POLICY_UNITS,
-  });
+  const answerPlan =
+    policyDecision.routingSource === "claim_router"
+      ? buildApprovedClaimAnswerPlan(questionFrame, policyDecision)
+      : buildAnswerPlan({
+          questionFrame,
+          approvedArticleId: policyDecision.articleId,
+          policyUnits: APPROVED_POLICY_UNITS,
+        });
   const candidates = buildEvidenceCandidates(routingQuestion, routingConversationContext, policyDecision, answerPlan);
   const baseRuntimeMetadata = buildRuntimeMetadata({
     evidence: candidates,
@@ -1464,13 +1501,14 @@ export async function runAskSalesFaq(
     });
   } catch (error) {
     console.error("Ask Sales FAQ AI runtime failed", error);
-    const fallbackOutput = buildAndValidateApprovedFallback({
-      currentQuestion: sanitizedQuestion,
-      conversationContext: routingConversationContext,
-      policyDecision,
-      questionFrame,
-      answerPlan,
-    });
+    const fallbackOutput =
+      buildAndValidateApprovedFallback({
+        currentQuestion: sanitizedQuestion,
+        conversationContext: routingConversationContext,
+        policyDecision,
+        questionFrame,
+        answerPlan,
+      }) || buildApprovedClaimFallback(candidates, policyDecision);
     if (fallbackOutput) {
       const presentationSafeFallback = shapeApprovedArticlePresentation(
         sanitizedQuestion,
@@ -1647,9 +1685,32 @@ function shouldAttemptApprovedArticleRouter(policyDecision: PolicyGuardDecision)
   return policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
 }
 
+function findApprovedClaimRefinements(
+  questionFrame: QuestionFrame,
+  policyDecision: PolicyGuardDecision,
+): ApprovedClaimMatch[] {
+  if (policyDecision.decision !== "route_from_approved_article" || policyDecision.routingSource !== "direct_rule") {
+    return [];
+  }
+
+  return retrieveApprovedClaims(questionFrame.effectiveQuestion, {
+    scope: questionFrame.scope,
+    excludedScopes: questionFrame.excludedScopes,
+    limit: 8,
+    minimumScore: 60,
+  }).filter(
+    (match) =>
+      match.claim.source_kind === "owner_approved_override" &&
+      match.claim.authority >= 110 &&
+      match.matchedTokens.length >= 2,
+  );
+}
+
 async function tryPlanConversationTurn(input: {
   currentQuestion: string;
   conversationContext: string;
+  questionFrame: QuestionFrame;
+  claimMatches?: ApprovedClaimMatch[];
 }): Promise<{
   decision: PolicyGuardDecision | null;
   reply: ModelOutput | null;
@@ -1657,6 +1718,17 @@ async function tryPlanConversationTurn(input: {
   model?: string;
   diagnostics?: ProviderCallDiagnostics;
 }> {
+  const claimMatches =
+    input.claimMatches ||
+    retrieveApprovedClaims(
+      [input.questionFrame.effectiveQuestion, input.conversationContext].filter(Boolean).join("\n"),
+      {
+        scope: input.questionFrame.scope,
+        excludedScopes: input.questionFrame.excludedScopes,
+        limit: CLAIM_ROUTER_MAX_CANDIDATES,
+        minimumScore: 24,
+      },
+    );
   try {
     const planner = await generateProviderJson<ConversationPlannerOutput>({
       purpose: "conversation planning",
@@ -1666,7 +1738,7 @@ async function tryPlanConversationTurn(input: {
           role: "system",
           content: [
             "You are the Ask Sales FAQ conversation planner.",
-            "Decide whether the sales rep's current message needs a natural chat reply, an approved sales article, or a safe unsupported fallback.",
+            "Decide whether the sales rep's current message needs a natural chat reply, an approved atomic claim, an approved sales article, or a safe unsupported fallback.",
             "Use mode conversation_reply only for conversational turns, acknowledgments, requests to format/shorten/rephrase the previous answer, or short confirmations that can be answered only from the recent assistant answer.",
             "For conversation_reply, write only the natural concise answer in your own words. Do not copy a template. Do not add new policy, prices, discounts, owners, links, exceptions, or process steps.",
             "For conversation_reply, set summary equal to the answer and leave sections empty. The UI will render it as a normal chat reply, not a policy card.",
@@ -1675,14 +1747,21 @@ async function tryPlanConversationTurn(input: {
             "Never use conversation_reply for new sales-policy/action questions, especially money, deposit, payment, discount, contract, greenlight, qualification, offer, promise, hold, or exception questions.",
             "If the current message asks a new sales-policy question or needs facts beyond the recent assistant answer, do not use conversation_reply.",
             "Use mode approved_article only when one approved article directly controls the answer.",
+            "Prefer mode approved_claim when one or more approved claims directly answer the requested decision, action, location, timing, permission, or explanation.",
+            "For approved_claim, return only claim_ids from the approved claim catalog. Select the smallest complete set of claims and do not select a nearby topic that fails to answer the requested action.",
+            "When same-topic claims disagree, use the highest authority tier. Within the same tier, prefer the newest applicable effective date. Do not blend conflicting claims or let a newer unrelated topic override the applicable one.",
+            "Low-risk curated claims may answer only the clear process fact they contain. Do not extrapolate them into pricing, qualification, contract, payment, compliance, or exception policy.",
+            "A trusted-author claim is approved runtime authority after conflict and recency checks; do not treat it as raw Slack or cite its author in the rep-facing answer.",
+            "If a claim answers only part of a multi-part question, select it only when the supported portion is useful and set needs_route true for the unresolved portion.",
             "Use mode unsupported when there is no clear approved article and it is not a conversational reply.",
             "Use recent conversation context only to resolve product/show/topic references from the current question, such as this, they, the client, DJ show, cohort, package, payment, promise, or hold.",
             "The current user question is authoritative. If the current question names a different product/show/topic than the recent context, follow the current question.",
             "Choose an article only when its approved guidance directly controls the answer. Shared words or a loose topic match are not enough.",
             "For a thank-you or similar social message, mode must be conversation_reply with a brief friendly reply.",
             "For a short confirmation like 'so I should not promise that, right?', mode can be conversation_reply only if the prior assistant answer already gave that boundary.",
-            "Return valid JSON only with keys: mode, answer, summary, sections, article_id, confidence_score, confidence_label, needs_route, route_reason, reason.",
+            "Return valid JSON only with keys: mode, answer, summary, sections, article_id, claim_ids, confidence_score, confidence_label, needs_route, route_reason, reason.",
             `For approved_article, confidence_score must be ${ARTICLE_ROUTER_MIN_CONFIDENCE}-100 for a clear approved article match.`,
+            `For approved_claim, confidence_score must be ${CLAIM_ROUTER_MIN_CONFIDENCE}-100 and every selected claim must directly support the answer.`,
           ].join("\n"),
         },
         {
@@ -1690,6 +1769,9 @@ async function tryPlanConversationTurn(input: {
           content: [
             "APPROVED ARTICLE CATALOG:",
             formatArticleRouterCatalog(),
+            "",
+            "APPROVED CLAIM CATALOG:",
+            formatClaimRouterCatalog(claimMatches),
             "",
             "RECENT CONVERSATION CONTEXT:",
             input.conversationContext ? input.conversationContext.slice(0, ARTICLE_ROUTER_MAX_CONTEXT_CHARS) : "None",
@@ -1703,7 +1785,11 @@ async function tryPlanConversationTurn(input: {
     });
     if (planner.output.mode === "conversation_reply") {
       const reply = conversationPlannerReplyToModelOutput(planner.output);
-      if (reply && shouldAcceptConversationPlannerReply(input.currentQuestion, planner.output) && !modelOutputContainsHiddenTerms(reply)) {
+      if (
+        reply &&
+        shouldAcceptConversationPlannerReply(input.currentQuestion, planner.output, claimMatches) &&
+        !modelOutputContainsHiddenTerms(reply)
+      ) {
         return {
           decision: null,
           reply,
@@ -1717,7 +1803,9 @@ async function tryPlanConversationTurn(input: {
       decision:
         planner.output.mode === "approved_article"
           ? buildPolicyDecisionFromArticleRouter(planner.output, Boolean(input.conversationContext))
-          : null,
+          : planner.output.mode === "approved_claim"
+            ? buildPolicyDecisionFromClaimRouter(planner.output, claimMatches, Boolean(input.conversationContext))
+            : null,
       reply: null,
       provider: planner.provider,
       model: planner.model,
@@ -1749,6 +1837,40 @@ function buildPolicyDecisionFromArticleRouter(output: ArticleRouterOutput, usedC
     routingSource: "article_router",
     routingConfidence: confidenceScore,
     usedConversationContext,
+  };
+}
+
+function buildPolicyDecisionFromClaimRouter(
+  output: ConversationPlannerOutput,
+  claimMatches: ApprovedClaimMatch[],
+  usedConversationContext: boolean,
+): PolicyGuardDecision | null {
+  const confidenceScore = parseConfidenceScore(output.confidence_score) ?? 0;
+  if (confidenceScore < CLAIM_ROUTER_MIN_CONFIDENCE) return null;
+
+  const available = new Map(claimMatches.map((match) => [match.claim.id, match]));
+  const selectedMatches = uniqueStrings(output.claim_ids || [])
+    .map((id) => available.get(id))
+    .filter((match): match is ApprovedClaimMatch => Boolean(match))
+    .filter((match) => match.score >= CLAIM_ROUTER_MIN_RETRIEVAL_SCORE)
+    .slice(0, 6);
+  if (!selectedMatches.length) return null;
+
+  const routeRequired = Boolean(output.needs_route) || selectedMatches.some((match) => match.claim.route_required);
+  return {
+    decision: routeRequired ? "route_from_approved_claim" : "answer_from_approved_claim",
+    safeToGenerate: true,
+    articleId: null,
+    blockedTopic: null,
+    matchedRuleId: "approved-claim-router",
+    reason:
+      output.reason?.trim() ||
+      "Matched current approved sales claims. Answer only from those claims and route any unresolved portion.",
+    primaryArticle: null,
+    routingSource: "claim_router",
+    routingConfidence: confidenceScore,
+    usedConversationContext,
+    selectedClaimIds: selectedMatches.map((match) => match.claim.id),
   };
 }
 
@@ -1841,6 +1963,23 @@ function buildConversationPlannerDecision(): PolicyGuardDecision {
   };
 }
 
+function buildApprovedClaimAnswerPlan(
+  questionFrame: QuestionFrame,
+  policyDecision: PolicyGuardDecision,
+): AskSalesAnswerPlan {
+  const routeRequired = policyDecision.decision === "route_from_approved_claim";
+  return {
+    selectedPolicyUnits: [],
+    resolvedProductScope: questionFrame.scope,
+    excludedScopes: questionFrame.excludedScopes,
+    allowedArticleIds: [],
+    applicableCriticalRuleIds: [],
+    clarificationRequired: false,
+    routeRequired,
+    fallbackMode: routeRequired ? "scope_safe_route" : "approved_answer",
+  };
+}
+
 function formatArticleRouterCatalog() {
   return APPROVED_FAQ_ARTICLES.map((article, index) =>
     [
@@ -1854,6 +1993,34 @@ function formatArticleRouterCatalog() {
       `Guidance excerpt: ${compactArticleBodyForRouter(article.body)}`,
     ].join("\n"),
   ).join("\n\n");
+}
+
+function formatClaimRouterCatalog(matches: ApprovedClaimMatch[]) {
+  if (!matches.length) return "No approved claim candidates matched this message.";
+
+  return matches
+    .map(({ claim, score }, index) =>
+      [
+        `Claim ${index + 1}`,
+        `ID: ${claim.id}`,
+        `Title: ${claim.title}`,
+        `Product scope: ${claim.product_scopes.join(", ")}`,
+        `Risk: ${claim.risk_level}`,
+        `Authority tier: ${claimAuthorityLabel(claim)}`,
+        `Effective date: ${claim.effective_at}`,
+        `Route required: ${claim.route_required ? "yes" : "no"}`,
+        `Retrieval score: ${score}`,
+        `Approved guidance: ${claim.approved_text.slice(0, CLAIM_PROMPT_CHARS)}`,
+      ].join("\n"),
+    )
+    .join("\n\n");
+}
+
+function claimAuthorityLabel(claim: ApprovedClaim) {
+  if (claim.source_kind === "owner_approved_override") return "explicit current owner decision";
+  if (claim.source_kind === "approved_article") return "approved KB article";
+  if (claim.source_kind === "trusted_slack_summary") return "trusted-author reviewed summary";
+  return "project-owner promoted low-risk curated summary";
 }
 
 function approvedQuestionFamiliesForArticle(articleId: string) {
@@ -1910,7 +2077,11 @@ function shouldUseConversationContextForRouting(question: string, conversationCo
   return isContextDependentFollowUpQuestion(normalizedQuestion, tokens.length);
 }
 
-function shouldAcceptConversationPlannerReply(question: string, output: ConversationPlannerOutput) {
+function shouldAcceptConversationPlannerReply(
+  question: string,
+  output: ConversationPlannerOutput,
+  claimMatches: ApprovedClaimMatch[] = [],
+) {
   if (output.mode !== "conversation_reply") return false;
 
   const normalizedQuestion = normalizeText(question);
@@ -1919,6 +2090,7 @@ function shouldAcceptConversationPlannerReply(question: string, output: Conversa
   if (classifyRewriteIntent(question)) return true;
   if (isConcisePromiseConfirmation(question)) return true;
 
+  if (claimMatches.some((match) => match.score >= CLAIM_ROUTER_MIN_RETRIEVAL_SCORE)) return false;
   return !isNewSalesPolicyActionQuestion(question);
 }
 
@@ -1944,11 +2116,20 @@ function isNewSalesPolicyActionQuestion(question: string) {
 }
 
 function isSocialConversationTurn(normalizedQuestion: string) {
-  return (
+  const gratitude =
     /^(thanks|thank you|thankyou|appreciate it|got it|ok thanks|okay thanks|perfect thanks|great thanks|that helps|makes sense|sounds good|cool thanks|awesome thanks)\b/.test(
       normalizedQuestion,
-    ) &&
-    !/\b(price|payment|pay|call|client|prospect|show|contract|discount|cohort|greenlight|allowed|can i|should i|what|how|when|where|why)\b/.test(
+    );
+  const greeting = /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?: there| team| everyone)?[!,. ]*$/.test(
+    normalizedQuestion,
+  );
+  const conversationalIntroduction =
+    /^(?:hi|hello|hey|good morning|good afternoon|good evening)\b/.test(normalizedQuestion) &&
+    !normalizedQuestion.includes("?") &&
+    /\b(?:i am|i'm|i will|i'll|we will|we'll|ready|going to|about to|starting)\b/.test(normalizedQuestion);
+  return (
+    (gratitude || greeting || conversationalIntroduction) &&
+    !/\b(?:can i|can we|should i|should we|am i allowed|are we allowed|what should|how do|where do|when do|why do)\b/.test(
       normalizedQuestion,
     )
   );
@@ -2139,6 +2320,31 @@ function buildAndValidateApprovedFallback(input: {
   }
 
   return output;
+}
+
+function buildApprovedClaimFallback(candidates: EvidenceCandidate[], policyDecision: PolicyGuardDecision): ModelOutput | null {
+  if (policyDecision.routingSource !== "claim_router") return null;
+  const candidate = candidates.find((item) => item.kind === "approved_claim");
+  if (!candidate) return null;
+  const claimId = candidate.id.replace(/^approved-claim:/, "");
+  const claim = approvedClaimById(claimId);
+  if (!claim || !["owner_approved_override", "approved_article"].includes(claim.source_kind)) return null;
+
+  const answer = sanitizeModelAnswer(claim.approved_text);
+  if (!answer || modelOutputContainsHiddenTerms({ answer, needs_route: false, route_reason: "" })) return null;
+  const needsRoute = policyDecision.decision === "route_from_approved_claim" || claim.route_required;
+  return normalizeModelOutput({
+    answer,
+    summary: answer,
+    sections: [],
+    selected_source_ids: [candidate.id],
+    needs_route: needsRoute,
+    route_reason: needsRoute
+      ? claim.route_reason || "Confirm the unresolved part with the current owner before promising it."
+      : "",
+    confidence_label: "High",
+    confidence_score: 94,
+  });
 }
 
 function buildPolicyPlanFallback(answerPlan: AskSalesAnswerPlan, policyDecision: PolicyGuardDecision): ModelOutput | null {
@@ -3472,18 +3678,28 @@ function buildEvidenceCandidates(
   policyDecision: PolicyGuardDecision,
   answerPlan?: AskSalesAnswerPlan,
 ): EvidenceCandidate[] {
+  if (policyDecision.routingSource === "claim_router" && policyDecision.selectedClaimIds?.length) {
+    return policyDecision.selectedClaimIds
+      .map((id) => approvedClaimById(id))
+      .filter((claim): claim is ApprovedClaim => Boolean(claim))
+      .map((claim, index) => approvedClaimToCandidate(claim, 100 - index));
+  }
+
   if (policyDecision.safeToGenerate && policyDecision.primaryArticle) {
     return buildPolicyScopedEvidenceCandidates(question, conversationContext, policyDecision.primaryArticle, answerPlan);
   }
 
   const approved = APPROVED_FAQ_ARTICLES.map((article) => approvedArticleToCandidate(article));
   const searchText = [question, conversationContext].filter(Boolean).join("\n");
+  const approvedClaims = retrieveApprovedClaims(searchText, { limit: 18, minimumScore: 32 }).map((match) =>
+    approvedClaimToCandidate(match.claim, match.score, match.matchedTokens),
+  );
   const chunkCandidates = retrieveCandidateChunks(searchText, 42, { expand: true })
     .filter((chunk) => chunk.source_type !== "approved_article")
     .map((chunk) => chunkToCandidate(chunk));
   const byId = new Map<string, EvidenceCandidate>();
 
-  for (const candidate of [...approved, ...chunkCandidates]) {
+  for (const candidate of [...approvedClaims, ...approved, ...chunkCandidates]) {
     const existing = byId.get(candidate.id);
     if (!existing || candidate.score > existing.score) byId.set(candidate.id, candidate);
   }
@@ -3501,6 +3717,14 @@ function buildPolicyScopedEvidenceCandidates(
 ): EvidenceCandidate[] {
   const primary = approvedArticleToCandidate(primaryArticle, answerPlan?.selectedPolicyUnits);
   const searchText = [question, conversationContext].filter(Boolean).join("\n");
+  const policyUnitClaims = (answerPlan?.selectedPolicyUnits || []).map((unit) => approvedPolicyUnitToCandidate(unit));
+  const approvedClaims = policyUnitClaims.length
+    ? []
+    : retrieveApprovedClaims(searchText, {
+        sourceArticleId: primaryArticle.id,
+        limit: 5,
+        minimumScore: CLAIM_ROUTER_MIN_RETRIEVAL_SCORE,
+      }).map((match) => approvedClaimToCandidate(match.claim, match.score, match.matchedTokens));
   const scoped = retrieveCandidateChunks(searchText, 18, { expand: true })
     .filter((chunk) => chunk.source_type !== "approved_article")
     .filter((chunk) => scopedSupportChunkMatchesArticle(chunk, primaryArticle))
@@ -3509,7 +3733,7 @@ function buildPolicyScopedEvidenceCandidates(
     .slice(0, 2);
   const byId = new Map<string, EvidenceCandidate>();
 
-  for (const candidate of [primary, ...scoped]) {
+  for (const candidate of [primary, ...policyUnitClaims, ...approvedClaims, ...scoped]) {
     if (!byId.has(candidate.id)) byId.set(candidate.id, candidate);
   }
 
@@ -3520,6 +3744,8 @@ function modelEvidenceCandidates(candidates: EvidenceCandidate[]) {
   // Raw Slack, transcript, governance, draft, and conflict chunks are discovery
   // evidence only. They may help offline coverage work, but they must never
   // authorize or word a production answer.
+  const claims = candidates.filter((candidate) => candidate.kind === "approved_claim");
+  if (claims.length) return claims.slice(0, 6);
   return candidates.filter((candidate) => candidate.kind === "approved_article").slice(0, 1);
 }
 
@@ -3559,6 +3785,46 @@ function approvedArticleToCandidate(article: ApprovedFaqArticle, policyUnits: Ap
     lastReviewed: article.lastReviewed,
     text: policyText,
     score: 100,
+    matchedTokens: [],
+  };
+}
+
+function approvedClaimToCandidate(claim: ApprovedClaim, score = 100, matchedTokens: string[] = []): EvidenceCandidate {
+  return {
+    id: `approved-claim:${claim.id}`,
+    kind: "approved_claim",
+    articleId: claim.source_article_id || null,
+    articleStatus: "approved",
+    sourceType: "approved_claim",
+    sourceTitle: claim.title,
+    heading: "Approved atomic claim",
+    category: claim.topic_key.replaceAll("-", " "),
+    riskLevel: claim.risk_level,
+    authority: claim.authority,
+    trustLabel: "Approved sales guidance",
+    lastReviewed: claim.last_reviewed,
+    text: claim.approved_text,
+    score,
+    matchedTokens,
+  };
+}
+
+function approvedPolicyUnitToCandidate(unit: ApprovedPolicyUnit): EvidenceCandidate {
+  return {
+    id: `approved-policy-unit:${unit.id}`,
+    kind: "approved_claim",
+    articleId: unit.source_article_ids[0] || null,
+    articleStatus: "approved",
+    sourceType: "approved_claim",
+    sourceTitle: unit.title,
+    heading: "Approved policy unit",
+    category: unit.intents.join(", "),
+    riskLevel: "high",
+    authority: 105,
+    trustLabel: "Approved sales guidance",
+    lastReviewed: unit.last_reviewed,
+    text: formatApprovedPolicyUnits([unit]),
+    score: 105,
     matchedTokens: [],
   };
 }
@@ -3621,7 +3887,10 @@ async function generateProviderAnswer(input: {
   questionFrame: QuestionFrame;
   answerPlan: AskSalesAnswerPlan;
 }): Promise<ProviderJsonResult<ModelOutput>> {
-  const routeRequired = input.answerPlan.routeRequired || input.policyDecision.decision === "route_from_approved_article";
+  const routeRequired =
+    input.answerPlan.routeRequired ||
+    input.policyDecision.decision === "route_from_approved_article" ||
+    input.policyDecision.decision === "route_from_approved_claim";
   const modelEvidence = modelEvidenceCandidates(input.evidence);
   return generateProviderJson({
     purpose: "answer generation",
@@ -3633,8 +3902,9 @@ async function generateProviderAnswer(input: {
           "You are Ask Sales FAQ, an internal AI assistant for sales reps on live calls.",
           "Use only the evidence packet. Do not invent facts, prices, discounts, owners, links, or exceptions.",
           "A policy guard and answer planner have already selected the approved sales guidance that controls this answer.",
-          "Treat the approved policy units or approved article in the evidence packet as the complete authority for this answer.",
+          "Treat the approved atomic claims, approved policy units, or approved article in the evidence packet as the complete authority for this answer.",
           "Raw Slack messages, transcripts, drafts, conflicts, and governance notes are never included as answer authority.",
+          "Do not cite Raul, Madeline, Rich, Mike, Rudy, Syed, Slack, or another source person as the reason for the answer. State the approved guidance directly unless the guidance itself tells the rep to contact a named owner.",
           routeRequired
             ? "This policy decision requires routing. Give the safe boundary from the approved source and set needs_route to true."
             : "This policy decision allows a direct answer from the selected approved source unless the source itself says to route an edge case.",
@@ -3654,7 +3924,8 @@ async function generateProviderAnswer(input: {
           "Write directly to the rep using you, you can say, do not promise, and route this. Do not write in third person as the rep should.",
           "Do not tell the rep or prospect you will connect them with a specialist, have someone reach out, or transfer them unless the approved evidence explicitly authorizes that exact handoff.",
           "Do not dump every related fact. Be direct first, then add only the context the rep needs.",
-          "If the evidence is incomplete, say what is known and add a clear route note without pretending certainty.",
+          "If the approved claims support only part of the question, answer the supported part and add one clear route note for the unresolved part without pretending certainty.",
+          "Before returning JSON, verify that the answer directly addresses the user's requested action, permission, location, timing, comparison, or explanation. A nearby topic is not an answer.",
           "If the user asks where to check the current show list, answer from the approved show-list evidence and do not tell normal reps to check inaccessible internal channels as the primary answer.",
           "Never expose source IDs, file paths, article statuses, Slack links, implementation details, knowledge base wording, approved article wording, route-only labels, RAG, manifests, source coverage, or pending approval wording.",
           "Never say Slack evidence, Slack-level evidence, internal guidance, governance log, candidate answer, decision candidates, Evidence 1, Source 2, or similar source-review language.",
@@ -3725,6 +3996,7 @@ async function ensureRepFacingOutput(input: { currentQuestion: string; output: M
             "You rewrite Ask Sales FAQ answers so they sound like a polished internal sales assistant, not an internal QA or source-review tool.",
             "Preserve the answer's facts, warnings, route requirement, and confidence. Do not add new policy or remove useful sales guidance.",
             "Remove all internal source mechanics and review language. Never mention Slack, evidence numbers, source IDs, article IDs, knowledge base, approved articles, route-only labels, governance logs, internal guidance, RAG, manifests, or file paths.",
+            "Do not write according to Raul, Madeline, Rich, Mike, Rudy, or Syed, and do not say that one of them said or confirmed the answer. State the approved rule directly unless the answer is instructing the rep to contact that named owner.",
             "If a detail needs confirmation, use normal sales wording such as: \"Confirm this with the current sales owner before promising it.\"",
             "Do not tell the rep or prospect you will connect them with a specialist or that someone will reach out unless the approved evidence explicitly authorizes that handoff; rewrite to confirm with the current owner or post in the approved channel.",
             "Write directly to the rep using you, you can say, do not promise, and route this.",
@@ -3922,14 +4194,19 @@ async function ensureArticleRouterGrounding(input: {
   answerPlan: AskSalesAnswerPlan;
   output: ModelOutput;
 }): Promise<ModelOutputResolution> {
-  if (input.policyDecision.routingSource !== "article_router") {
+  if (input.policyDecision.routingSource !== "article_router" && input.policyDecision.routingSource !== "claim_router") {
     return { output: input.output, diagnostics: [] };
   }
 
   const primaryArticle = input.policyDecision.primaryArticle;
-  if (!primaryArticle) {
+  if (input.policyDecision.routingSource === "article_router" && !primaryArticle) {
     throw new Error("Article router selected no primary article");
   }
+  const approvedGroundingEvidence =
+    input.policyDecision.routingSource === "claim_router"
+      ? modelEvidenceCandidates(input.evidence)
+      : [approvedArticleToCandidate(primaryArticle as ApprovedFaqArticle, input.answerPlan.selectedPolicyUnits)];
+  if (!approvedGroundingEvidence.length) throw new Error("Approved router selected no grounding evidence");
 
   const check = await generateProviderJson<GroundingCheckOutput>({
     purpose: "approved article answer validation",
@@ -3939,10 +4216,12 @@ async function ensureArticleRouterGrounding(input: {
         role: "system",
         content: [
           "You validate an Ask Sales FAQ draft answer before a sales rep sees it.",
-          "Return pass only if the draft answers the current question and every policy/fact in it is supported by the selected approved sales guidance.",
+          "Return pass only if the draft directly answers the requested action or decision and every policy/fact in it is supported by the selected approved sales guidance.",
           "Recent conversation context may be used only to resolve references from the current question. The current question remains authoritative.",
           "Fail if the draft invents a policy, price, discount, owner, exception, hold, legal/compliance decision, or operational step not present in the selected guidance.",
           "Fail if the draft ignores a key product/show context from the recent conversation that is needed to answer the current follow-up.",
+          "Fail if the draft answers a nearby topic but does not answer the requested permission, location, timing, choice, or explanation.",
+          "Fail if the draft cites a source person or source system instead of stating the approved guidance directly, unless the selected guidance explicitly instructs the rep to contact that person or channel.",
           "Return valid JSON only with keys: verdict, reason. verdict must be pass or fail.",
         ].join("\n"),
       },
@@ -3956,7 +4235,7 @@ async function ensureArticleRouterGrounding(input: {
           input.conversationContext || "None",
           "",
           "SELECTED APPROVED SALES GUIDANCE:",
-          formatEvidencePacket([approvedArticleToCandidate(primaryArticle, input.answerPlan.selectedPolicyUnits)], {
+          formatEvidencePacket(approvedGroundingEvidence, {
             approvedArticleChars: DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS,
             sourceChunkChars: DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS,
           }),
@@ -3989,7 +4268,9 @@ function criticalValidationQuestion(input: {
 }) {
   if (
     input.conversationContext &&
-    (input.policyDecision.routingSource === "context_rule" || input.policyDecision.routingSource === "article_router")
+    (input.policyDecision.routingSource === "context_rule" ||
+      input.policyDecision.routingSource === "article_router" ||
+      input.policyDecision.routingSource === "claim_router")
   ) {
     return buildContextualQuestion(input.currentQuestion, input.conversationContext);
   }
@@ -4004,20 +4285,30 @@ function buildDecision(input: {
 }): RuntimeDecision {
   const primaryArticle = input.policyDecision.primaryArticle || firstSelectedApprovedArticle(input.evidence);
   const selectedApproved = input.evidence.filter((candidate) => candidate.kind === "approved_article");
-  const selectedEvidence = input.evidence.filter((candidate) => candidate.kind !== "approved_article");
-  const policyRequiresRoute = input.policyDecision.decision === "route_from_approved_article";
+  const selectedClaims = input.evidence.filter((candidate) => candidate.kind === "approved_claim");
+  const selectedEvidence = input.evidence.filter((candidate) => candidate.kind === "source_chunk");
+  const policyRequiresRoute =
+    input.policyDecision.decision === "route_from_approved_article" ||
+    input.policyDecision.decision === "route_from_approved_claim";
   const needsRoute = policyRequiresRoute || Boolean(input.output.needs_route);
   const confidenceLabel = input.output.confidence_label || "Medium";
   const confidenceScore = clampConfidence(input.output.confidence_score ?? 72);
   const sourceMode =
-    selectedApproved.length && selectedEvidence.length
+    (selectedApproved.length || selectedClaims.length) && selectedEvidence.length
       ? "mixed"
-      : selectedApproved.length
+      : selectedApproved.length || selectedClaims.length
         ? "approved"
         : selectedEvidence.length
           ? "evidence"
           : "fallback";
-  const outcome: AskSalesFaqOutcome = needsRoute ? "route_from_approved_article" : "answer_from_approved_article";
+  const claimControlled = input.policyDecision.routingSource === "claim_router" || Boolean(selectedClaims.length && !primaryArticle);
+  const outcome: AskSalesFaqOutcome = claimControlled
+    ? needsRoute
+      ? "route_from_evidence"
+      : "answer_from_evidence"
+    : needsRoute
+      ? "route_from_approved_article"
+      : "answer_from_approved_article";
 
   return {
     outcome,
@@ -4072,13 +4363,16 @@ function sourceSummaryFromDecision(decision: RuntimeDecision): AskSalesFaqRuntim
   }
   if (top) {
     return {
-      label: sourceTrustLabel(top.trustLabel),
+      label: top.kind === "approved_claim" ? top.sourceTitle : sourceTrustLabel(top.trustLabel),
       lastReviewed: top.lastReviewed || "2026-07-01",
-      approved: top.kind === "approved_article",
+      approved: top.kind === "approved_article" || top.kind === "approved_claim",
       sourceMode: decision.sourceMode,
       confidenceLabel: decision.confidenceLabel,
       confidenceScore: decision.confidenceScore,
-      expandableDetails: `Related sales guidance area: ${top.category}. Confirm unusual or time-sensitive cases with the current owner before promising them.`,
+      expandableDetails:
+        top.kind === "approved_claim"
+          ? `Approved sales guidance reviewed on ${top.lastReviewed}.`
+          : `Related sales guidance area: ${top.category}. Confirm unusual or time-sensitive cases with the current owner before promising them.`,
     };
   }
   return null;
@@ -4232,6 +4526,8 @@ function formatEvidencePacket(
       const maxChars =
         candidate.kind === "approved_article"
           ? options.approvedArticleChars || options.maxCharsPerItem || DEFAULT_APPROVED_ARTICLE_PROMPT_CHARS
+          : candidate.kind === "approved_claim"
+            ? options.approvedArticleChars || options.maxCharsPerItem || CLAIM_PROMPT_CHARS
           : options.sourceChunkChars || options.maxCharsPerItem || DEFAULT_SUPPORT_CHUNK_PROMPT_CHARS;
 
       return [
@@ -4258,7 +4554,7 @@ function evidencePromptCharCount(candidates: EvidenceCandidate[]) {
 }
 
 function answerGenerationMaxTokens(policyDecision: PolicyGuardDecision) {
-  if (policyDecision.decision === "route_from_approved_article") return 900;
+  if (policyDecision.decision === "route_from_approved_article" || policyDecision.decision === "route_from_approved_claim") return 900;
   if (policyDecision.articleId === "current-show-source") return 1300;
   return 1100;
 }
@@ -4280,8 +4576,10 @@ function buildRuntimeMetadata(input: {
     evidence: {
       totalCandidates: input.evidence.length,
       modelCandidates: input.modelEvidence.length,
-      approvedCandidates: input.modelEvidence.filter((candidate) => candidate.kind === "approved_article").length,
-      sourceChunkCandidates: input.modelEvidence.filter((candidate) => candidate.kind !== "approved_article").length,
+      approvedCandidates: input.modelEvidence.filter(
+        (candidate) => candidate.kind === "approved_article" || candidate.kind === "approved_claim",
+      ).length,
+      sourceChunkCandidates: input.modelEvidence.filter((candidate) => candidate.kind === "source_chunk").length,
       promptChars: evidencePromptCharCount(input.modelEvidence),
       candidates: input.evidence.slice(0, 12).map((candidate) => ({
         id: candidate.id,
@@ -4294,6 +4592,7 @@ function buildRuntimeMetadata(input: {
       source: input.policyDecision.routingSource,
       matchedRuleId: input.policyDecision.matchedRuleId,
       articleId: input.policyDecision.articleId,
+      selectedClaimIds: input.policyDecision.selectedClaimIds,
       confidenceScore: input.policyDecision.routingConfidence,
       usedConversationContext: input.policyDecision.usedConversationContext,
     },
@@ -4665,7 +4964,10 @@ function parseModelOutput(content: string): ModelOutput {
 function parseConversationPlannerOutput(content: string): ConversationPlannerOutput {
   const parsed = parseJsonObject<Partial<ConversationPlannerOutput>>(content);
   const mode =
-    parsed.mode === "conversation_reply" || parsed.mode === "approved_article" || parsed.mode === "unsupported"
+    parsed.mode === "conversation_reply" ||
+    parsed.mode === "approved_article" ||
+    parsed.mode === "approved_claim" ||
+    parsed.mode === "unsupported"
       ? parsed.mode
       : "unsupported";
   const confidenceScore = parseConfidenceScore(parsed.confidence_score) ?? 0;
@@ -4677,6 +4979,9 @@ function parseConversationPlannerOutput(content: string): ConversationPlannerOut
     summary: typeof parsed.summary === "string" ? sanitizeModelAnswer(parsed.summary).slice(0, 400) : "",
     sections: Array.isArray(parsed.sections) ? parsed.sections : [],
     article_id: typeof parsed.article_id === "string" ? parsed.article_id.trim() || null : null,
+    claim_ids: Array.isArray(parsed.claim_ids)
+      ? parsed.claim_ids.filter((id): id is string => typeof id === "string" && Boolean(id.trim())).map((id) => id.trim())
+      : [],
     confidence_score: confidenceScore,
     confidence_label: confidenceLabel,
     needs_route: Boolean(parsed.needs_route),
@@ -4927,6 +5232,10 @@ function modelOutputText(output: ModelOutput) {
 function sourceTrustLabel(value: string) {
   if (/approved/i.test(value)) return "FAQ source";
   return "Sales guidance";
+}
+
+function uniqueStrings(values: string[]) {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
 function filterQuestionSupportedEvidence(candidates: EvidenceCandidate[], currentQuestion: string, output: ModelOutput) {

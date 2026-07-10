@@ -16,10 +16,12 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/conversation-history.ts",
   "src/lib/ask-sales-faq/question-frame.ts",
   "src/lib/ask-sales-faq/answer-plan.ts",
+  "src/lib/ask-sales-faq/approved-claims.ts",
   "src/lib/ask-sales-faq/runtime.ts",
   "src/lib/ask-sales-faq/types.ts",
   "src/lib/ask-sales-faq/generated/approved-faq-bundle.ts",
   "src/lib/ask-sales-faq/generated/approved-policy-units.json",
+  "src/lib/ask-sales-faq/generated/approved-claims.json",
   "src/lib/ask-sales-faq/generated/policy-aware-rag-index.json",
 ];
 
@@ -56,11 +58,13 @@ if (missingFiles.length === 0) {
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
   const questionFrame = read("src/lib/ask-sales-faq/question-frame.ts");
   const answerPlan = read("src/lib/ask-sales-faq/answer-plan.ts");
+  const approvedClaimRuntime = read("src/lib/ask-sales-faq/approved-claims.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
   const types = read("src/lib/ask-sales-faq/types.ts");
   const bundle = read("src/lib/ask-sales-faq/generated/approved-faq-bundle.ts");
   const ragIndex = JSON.parse(read("src/lib/ask-sales-faq/generated/policy-aware-rag-index.json"));
   const policyUnits = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-policy-units.json"));
+  const approvedClaims = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-claims.json"));
   const db = read("src/lib/db.ts");
   const envExample = read(".env.example");
 
@@ -381,6 +385,48 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "approved claim registry is organized, authority-tiered, and safe for runtime retrieval",
+    approvedClaims.schema_version === 1 &&
+      approvedClaims.approved_claim_count === approvedClaims.claims.length &&
+      approvedClaims.claims.length > 450 &&
+      approvedClaims.claims.some((claim) => claim.source_kind === "approved_article") &&
+      approvedClaims.claims.some((claim) => claim.source_kind === "trusted_slack_summary") &&
+      approvedClaims.claims.some((claim) => claim.source_kind === "curated_slack_summary") &&
+      approvedClaims.claims.some((claim) => claim.source_kind === "owner_approved_override") &&
+      approvedClaims.claims.every(
+        (claim) =>
+          claim.id &&
+          claim.topic_key &&
+          claim.approved_text &&
+          claim.effective_at &&
+          claim.last_reviewed &&
+          Array.isArray(claim.question_families) &&
+          Array.isArray(claim.product_scopes) &&
+          Array.isArray(claim.source_ids) &&
+          !/\[internal source\]|no visible (?:final )?answer|moved (?:the )?(?:answer|discussion)?\s*to dm/i.test(
+            claim.approved_text,
+          ),
+      ) &&
+      approvedClaims.claims
+        .filter((claim) => claim.source_kind === "curated_slack_summary")
+        .every((claim) => claim.authority < 90),
+    `registry has ${approvedClaims.claims.length} atomic claims with topic, scope, authority, recency, and source lineage`,
+  );
+
+  addCheck(
+    "runtime retrieves claims by meaning and keeps weak evidence fail-closed",
+    approvedClaimRuntime.includes("retrieveApprovedClaims") &&
+      approvedClaimRuntime.includes("inverseDocumentFrequency") &&
+      approvedClaimRuntime.includes("claimMatchesScope") &&
+      runtime.includes("formatClaimRouterCatalog") &&
+      runtime.includes("buildPolicyDecisionFromClaimRouter") &&
+      runtime.includes("findApprovedClaimRefinements") &&
+      runtime.includes('match.claim.source_kind === "owner_approved_override"') &&
+      runtime.includes('!["owner_approved_override", "approved_article"].includes(claim.source_kind)'),
+    "claim retrieval is scope-filtered, model-selected, grounding-checked, and only owner/article claims may become provider fallbacks",
+  );
+
+  addCheck(
     "normal FAQ answers are AI-first, not deterministic templates",
     runtime.includes("generateProviderAnswer") &&
       runtime.includes("selected_source_ids") &&
@@ -389,7 +435,7 @@ if (missingFiles.length === 0) {
       !runtime.includes("reviewAnswerWithAi") &&
       !runtime.includes("function buildDeterministicAnswer") &&
       !runtime.includes("const deterministicAnswer"),
-    "normal FAQ path uses a single AI call for evidence selection and answer generation",
+    "normal FAQ path uses AI for semantic planning and natural wording over approved evidence",
   );
 
   addCheck(
@@ -408,7 +454,8 @@ if (missingFiles.length === 0) {
       runtime.includes("formatEvidencePacket") &&
       runtime.includes("selected_source_ids") &&
       runtime.includes("buildEvidenceCandidates") &&
-      runtime.includes("Treat the approved policy units or approved article in the evidence packet as the complete authority") &&
+      runtime.includes("Treat the approved atomic claims, approved policy units, or approved article in the evidence packet as the complete authority") &&
+      runtime.includes("Raw Slack messages, transcripts, drafts, conflicts, and governance notes are never included as answer authority") &&
       runtime.includes("Never mention or apply a product listed as excluded"),
     "runtime uses the model for natural wording only after deterministic scope and approved-fact planning",
   );
@@ -600,10 +647,11 @@ if (missingFiles.length === 0) {
     runtime.includes("ensureArticleRouterGrounding") &&
       runtime.includes("approved article answer validation") &&
       runtime.includes("Fail if the draft invents a policy") &&
-      runtime.includes("approvedArticleToCandidate(primaryArticle, input.answerPlan.selectedPolicyUnits)") &&
+      runtime.includes('input.policyDecision.routingSource === "claim_router"') &&
+      runtime.includes("approvedArticleToCandidate(primaryArticle as ApprovedFaqArticle, input.answerPlan.selectedPolicyUnits)") &&
       runtime.includes("check.output.verdict !== \"pass\"") &&
       runtime.includes("parseGroundingCheckOutput"),
-    "AI-router-selected answers are validated against the selected approved sales guidance before return",
+    "AI-router-selected article and claim answers are validated against the selected approved sales guidance before return",
   );
 
   addCheck(
@@ -789,7 +837,8 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "evidence source cards use rep-facing labels",
-    runtime.includes("label: sourceTrustLabel(top.trustLabel)") &&
+    runtime.includes('top.kind === "approved_claim" ? top.sourceTitle : sourceTrustLabel(top.trustLabel)') &&
+      runtime.includes("Approved sales guidance reviewed on") &&
       runtime.includes('return "Sales guidance"') &&
       runtime.includes("Related sales guidance area") &&
       !runtime.includes("AI selected evidence category"),

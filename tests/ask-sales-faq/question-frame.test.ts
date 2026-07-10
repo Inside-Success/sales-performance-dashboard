@@ -96,6 +96,12 @@ describe("buildQuestionFrame", () => {
     expect(classifyRewriteIntent("Format these properly as bullets.")).toBe("format_list");
   });
 
+  it("classifies greetings and conversational introductions as social without swallowing a real question", () => {
+    expect(buildQuestionFrame("Hey there!").relation).toBe("social");
+    expect(buildQuestionFrame("Hi, I'll be asking a few sales questions today.").relation).toBe("social");
+    expect(buildQuestionFrame("Hi, can I send the payment link by text?").relation).toBe("new");
+  });
+
   it("treats a self-contained request for a formatted list as a new question", () => {
     const frame = buildQuestionFrame("Give me the list of shows properly formatted.");
     expect(frame.relation).toBe("new");

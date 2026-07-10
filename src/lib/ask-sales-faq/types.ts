@@ -74,9 +74,10 @@ export type AskSalesFaqRuntimeMetadata = {
     }>;
   };
   routing?: {
-    source: "direct_rule" | "context_rule" | "article_router" | "conversation_planner" | "default";
+    source: "direct_rule" | "context_rule" | "article_router" | "claim_router" | "conversation_planner" | "default";
     matchedRuleId: string;
     articleId: string | null;
+    selectedClaimIds?: string[];
     confidenceScore?: number;
     usedConversationContext?: boolean;
   };

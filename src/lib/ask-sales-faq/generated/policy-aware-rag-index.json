@@ -1,5 +1,5 @@
 {
-  "chunk_count": 1729,
+  "chunk_count": 1732,
   "chunks": [
     {
       "article_id": "americas-top-lawyers-passoff-boundary",
@@ -23090,6 +23090,21 @@
       "article_id": null,
       "article_status": "evidence",
       "authority": 42,
+      "category": "Compliance, Proof & Claims",
+      "heading": "2026-07-10 Approved-Claim Coverage Update",
+      "id": "rag_5eeed83b1b985f48",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "medium",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "## 2026-07-10 Approved-Claim Coverage Update\n\nThe unseen-QA architecture gaps are now addressed generically in the local implementation:\n\n- fresh policy/action questions and ordinary greetings use separate conversation-planning constraints;\n- approved knowledge is decomposed into atomic claims rather than treating article topic overlap as entailment;\n- final claim/article-router answers receive a direct-relevance and grounding check;\n- current owner-approved claims may refine broad legacy routes, while lower-authority summaries cannot;\n- 484 live claims make previously stored approved and trusted knowledge available to unseen paraphrases;\n- 388 curated Slack records remain non-live because they are candidate-only, conflicting, needs-owner, or superseded.\n\nThis reduces coverage loss without declaring unresolved evidence correct. The remaining deliberate owner gaps are bankruptcy, cross-product ownership/passoff, accessibility/audio-description capability, and current structured resource links. The coverage ledger, not the runtime prompt, is the queue for those decisions.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
       "category": "Payments, Refunds & Contracts",
       "heading": "2026-07-10 Authority And UX Gap Closure",
       "id": "rag_0f5793709c5914c6",
@@ -23129,6 +23144,21 @@
       "source_title": "Known Gaps",
       "source_type": "governance_log",
       "text": "## 2026-07-10 Routing/Grounding Gap Disposition\n\nThe product-scope regression documented above is closed in the deployed implementation.\n\nResolved classes:\n\n- main ISTV versus DJ/NLCEO scope and explicit exclusions;\n- short scope corrections that need the previous substantive user question;\n- cross-product critical fallback leakage;\n- `ACH` substring matching inside unrelated words such as `reached`;\n- bare product-name pricing routing without pricing intent;\n- upgrade eligibility leaking same-day-discount math;\n- lead-ownership hallucination outside the approved Keap/30-day/31-day/first-booking policy;\n- duplicated/internal blocked wording and first-person operational promises.\n\nThe solution is architectural rather than an answer map for the previous 20 or fresh 18 prompts: question framing, approved atomic policy units, answer planning, boundary-aware matching, and global answer-contract validation apply to paraphrases and future questions in the same classes.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Payments, Refunds & Contracts",
+      "heading": "2026-07-10 Unseen-Question QA Gaps",
+      "id": "rag_de5876b8d825a641",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/known-gaps.md",
+      "source_title": "Known Gaps",
+      "source_type": "governance_log",
+      "text": "## 2026-07-10 Unseen-Question QA Gaps\n\nThe later 32-question signed-in holdout shows that product-scope hardening remains valuable but does not solve general answer quality by itself.\n\n- 16/32 substantive questions safely abstained; this prevents hallucination but is not sufficiently helpful for common sales work.\n- 9/32 were problematic because of unsupported conversation replies, article-to-claim overreach, or answers that addressed a nearby topic instead of the requested action.\n- Clear examples include unsupported two-business and Operation CEO veteran rules, an overbroad franchise answer, unsupported ACH mechanics/contract visibility claims, and failure to answer whether a rep may edit a template or send a payment link through Zoom Phone.\n- A custom `$3K + $17K` split abstained even though the approved payment boundary already says no custom splits or amounts; this is a matching miss, not a missing-policy gap.\n- Greetings remain inconsistent: one abstained and one dumped an unrelated rights policy, while later greetings and rewrite/thanks follow-ups were natural.\n- Full evidence: `_logs/unseen-32-question-browser-qa-2026-07-10.md`.\n\nDo not solve these findings with an exact 32-question answer map, broad synonym lists, or unrestricted raw-Slack answering. The next architecture work should enforce policy-intent classification, claim-level entailment, and answer relevance before expanding owner-approved operational coverage.",
       "trust_label": "Governance log"
     },
     {
@@ -23302,13 +23332,13 @@
       "authority": 42,
       "category": "General Sales Process",
       "heading": "Open owner-confirmation gaps",
-      "id": "rag_c4ba08317a26c56a",
+      "id": "rag_8187a2a311610985",
       "last_reviewed": "2026-07-01",
       "risk_level": "medium",
       "source_path": "_logs/known-gaps.md",
       "source_title": "Known Gaps",
       "source_type": "governance_log",
-      "text": "### Open owner-confirmation gaps\n\n- Bankruptcy: no current approved outcome establishes how the rep should qualify, reject, or escalate the case.\n- Dual-product ownership/passoff: current approved guidance does not fully establish ownership when main ISTV and DJ/NLCEO overlap.\n- Accessibility/audio description: production capability and approved promise language are not confirmed.\n- Hospital-employed doctor without a practice: recent source guidance conflicts with stronger approved Rich/Mike qualification guidance.\n\nDisposition: these topics must abstain or route naturally until a current owner resolves them. A safe owner-confirmation response is not a hallucination failure; a definitive invented answer would be.",
+      "text": "### Open owner-confirmation gaps\n\n- Bankruptcy: no current approved outcome establishes how the rep should qualify, reject, or escalate the case.\n- Dual-product ownership/passoff: current approved guidance does not fully establish ownership when main ISTV and DJ/NLCEO overlap.\n- Accessibility/audio description: production capability and approved promise language are not confirmed.\n- Hospital-employed doctor without a practice: superseded by the resolved approved policy in the following section; this is no longer an open gap.\n\nDisposition: these topics must abstain or route naturally until a current owner resolves them. A safe owner-confirmation response is not a hallucination failure; a definitive invented answer would be.",
       "trust_label": "Governance log"
     },
     {
@@ -23676,6 +23706,21 @@
       "article_status": "evidence",
       "authority": 42,
       "category": "Compliance, Proof & Claims",
+      "heading": "2026-07-10 Atomic Claim Coverage Layer",
+      "id": "rag_0ffee50bc6e95c7b",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "medium",
+      "source_path": "_logs/source-to-kb-coverage-matrix.md",
+      "source_title": "Source To Kb Coverage Matrix",
+      "source_type": "governance_log",
+      "text": "## 2026-07-10 Atomic Claim Coverage Layer\n\n| Source class | Registry treatment | Live authority | Notes |\n| --- | --- | --- | --- |\n| Approved rep-facing KB articles | Decomposed by article section | 85 claims | Highest normal KB authority; article lineage retained. |\n| Explicit current owner decisions | Maintained as structured overrides | 12 claims | Highest claim authority; can supersede named older topic keys. |\n| Curated summaries explicitly attributing a decision to Raul, Madeline, Rich, Mike, or Rudy | Attribution, conflict, uncertainty, recency, scope, and source-quality gates | 383 claims | A name mention alone does not grant authority; raw Slack is not copied into the prompt. |\n| Clear low-risk curated summaries without a named trusted author | Conservative project-owner promotion | 4 claims | Lower authority; excluded from deterministic provider fallbacks and high-risk topics. |\n| Link-only, DM-only, no-visible-answer, uncertain, conflicting, stale, or risky untrusted material | Retained in `runtime/claim-coverage-ledger.json` | none | Remains available for owner review and future source/resource extraction. |\n| Zoom/training transcripts and other discovery corpus | Existing policy-aware RAG index and coverage logs | none by itself | May identify a gap or support a later explicit owner promotion. |\n\nThe live registry has 484 claims. The coverage ledger records all 775 curated Slack entries and keeps 388 non-live dispositions visible. This is the current control against both source loss and accidental raw-evidence promotion.",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Compliance, Proof & Claims",
       "heading": "2026-07-10 Authority-Resolution And UX Delta",
       "id": "rag_0954af38456970d1",
       "last_reviewed": "2026-07-01",
@@ -23722,6 +23767,21 @@
       "authority": 42,
       "category": "Offers, Pricing & Packages",
       "heading": "2026-07-10 Runtime Authority And Holdout Delta",
+      "id": "rag_3068d93f0c71acad",
+      "last_reviewed": "2026-07-01",
+      "risk_level": "high",
+      "source_path": "_logs/source-to-kb-coverage-matrix.md",
+      "source_title": "Source To Kb Coverage Matrix",
+      "source_type": "governance_log",
+      "text": "| Source/question cluster | Runtime authority now | Current disposition | Required next action |\n| --- | --- | --- | --- |\n| Main ISTV vs DJ/NLCEO payment, cohort, and pricing | Approved scoped policy units plus approved rep-facing article | Scope/exclusion enforced; incompatible product units vetoed | Monitor paraphrases; do not add product-name-only routes. |\n| Lead ownership | Approved Keap 30-day, day-31, and first-booking rules | Direct answer allowed only inside those boundaries | Escalate any new reassignment exception for owner approval. |\n| Upgrade before filming | Eligibility unit separate from discounted-upgrade unit | Eligibility can answer without discount figures; carry-forward math requires discount context | Keep future discount exceptions owner-approved and product-scoped. |\n| Bankruptcy | Raw Slack holdout question; no controlling approved outcome | Owner-confirmation gap; abstain/route | Obtain a current finance/legal/sales-owner decision before promoting policy. |\n| Dual-product ownership/passoff | Partial approved product-specific guidance; overlap unresolved | Owner-confirmation gap; abstain/route | Confirm which owner/channel controls overlapping main ISTV and DJ/NLCEO cases. |\n| Accessibility/audio-description accommodation | Raw holdout question; capability not confirmed in approved article | Owner-confirmation gap; abstain/route | Confirm production capability and rep-safe promise language. |\n| Hospital-employed doctor without own practice | Historical conflict record | Superseded by the resolved approved direct-answer row below | Do not restore the old abstain route. |",
+      "trust_label": "Governance log"
+    },
+    {
+      "article_id": null,
+      "article_status": "evidence",
+      "authority": 42,
+      "category": "Offers, Pricing & Packages",
+      "heading": "2026-07-10 Runtime Authority And Holdout Delta",
       "id": "rag_917128ca4e27e569",
       "last_reviewed": "2026-07-01",
       "risk_level": "high",
@@ -23744,21 +23804,6 @@
       "source_title": "Source To Kb Coverage Matrix",
       "source_type": "governance_log",
       "text": "## 2026-07-10 Runtime Authority And Holdout Delta\n\nThe deployed grounding change now enforces the source separation recommended by the audit:\n\n- Approved rep-facing article bodies and 11 approved atomic policy units are the only content authorities supplied to answer generation.\n- Raw Slack, Zoom transcript, draft, conflict, and governance chunks remain indexed and visible to coverage diagnostics/human review, so they are not ignored.\n- Those raw sources are not model-answer evidence and cannot silently override an approved owner-backed policy.",
-      "trust_label": "Governance log"
-    },
-    {
-      "article_id": null,
-      "article_status": "evidence",
-      "authority": 42,
-      "category": "Offers, Pricing & Packages",
-      "heading": "2026-07-10 Runtime Authority And Holdout Delta",
-      "id": "rag_d9b0fa8c272891e9",
-      "last_reviewed": "2026-07-01",
-      "risk_level": "high",
-      "source_path": "_logs/source-to-kb-coverage-matrix.md",
-      "source_title": "Source To Kb Coverage Matrix",
-      "source_type": "governance_log",
-      "text": "| Source/question cluster | Runtime authority now | Current disposition | Required next action |\n| --- | --- | --- | --- |\n| Main ISTV vs DJ/NLCEO payment, cohort, and pricing | Approved scoped policy units plus approved rep-facing article | Scope/exclusion enforced; incompatible product units vetoed | Monitor paraphrases; do not add product-name-only routes. |\n| Lead ownership | Approved Keap 30-day, day-31, and first-booking rules | Direct answer allowed only inside those boundaries | Escalate any new reassignment exception for owner approval. |\n| Upgrade before filming | Eligibility unit separate from discounted-upgrade unit | Eligibility can answer without discount figures; carry-forward math requires discount context | Keep future discount exceptions owner-approved and product-scoped. |\n| Bankruptcy | Raw Slack holdout question; no controlling approved outcome | Owner-confirmation gap; abstain/route | Obtain a current finance/legal/sales-owner decision before promoting policy. |\n| Dual-product ownership/passoff | Partial approved product-specific guidance; overlap unresolved | Owner-confirmation gap; abstain/route | Confirm which owner/channel controls overlapping main ISTV and DJ/NLCEO cases. |\n| Accessibility/audio-description accommodation | Raw holdout question; capability not confirmed in approved article | Owner-confirmation gap; abstain/route | Confirm production capability and rep-safe promise language. |\n| Hospital-employed doctor without own practice | Recent source guidance conflicts with stronger approved Rich/Mike qualification guidance | Conflict retained; abstain/route | Resolve conflict with the current policy owner and record precedence. |",
       "trust_label": "Governance log"
     },
     {
