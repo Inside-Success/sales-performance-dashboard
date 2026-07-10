@@ -1332,6 +1332,33 @@ export async function runAskSalesFaq(
         });
       }
 
+      if (questionFrame.relation === "social") {
+        const socialFallback = buildNaturalSocialFallback(sanitizedQuestion);
+        const decision = buildConversationReplyDecision(socialFallback);
+        const answer = sanitizeModelAnswer(socialFallback.answer);
+        return buildHandledResponse({
+          startedAt,
+          sanitizedQuestion,
+          contextualQuestion,
+          redactions,
+          decision,
+          answer,
+          structuredAnswer: normalizeModelStructuredAnswer(socialFallback, answer, decision),
+          source: null,
+          provider: plannerResult.provider,
+          model: plannerResult.model,
+          errorClass: null,
+          runtimeMetadata: buildRuntimeMetadata({
+            evidence: [],
+            modelEvidence: [],
+            providerDiagnostics,
+            criticalFallbackUsed: false,
+            policyDecision: buildConversationPlannerDecision(),
+            questionFrame,
+          }),
+        });
+      }
+
       if (plannerResult.decision) {
         policyDecision = plannerResult.decision;
       } else if (
@@ -1888,6 +1915,7 @@ async function tryPlanConversationTurn(input: {
             "The current user question is authoritative. If the current question names a different product/show/topic than the recent context, follow the current question.",
             "Choose an article only when its approved guidance directly controls the answer. Shared words or a loose topic match are not enough.",
             "For a thank-you or similar social message, mode must be conversation_reply with a brief friendly reply.",
+            "When QUESTION RELATION is social, mode must be conversation_reply. Never return unsupported for a greeting, acknowledgment, or explicit topic transition.",
             "For a short confirmation like 'so I should not promise that, right?', mode can be conversation_reply only if the prior assistant answer already gave that boundary.",
             "Return valid JSON only with keys: mode, answer, summary, sections, article_id, claim_ids, confidence_score, confidence_label, needs_route, route_reason, reason.",
             `For approved_article, confidence_score must be ${ARTICLE_ROUTER_MIN_CONFIDENCE}-100 for a clear approved article match.`,
@@ -1908,6 +1936,9 @@ async function tryPlanConversationTurn(input: {
             "",
             "CURRENT USER QUESTION:",
             input.currentQuestion,
+            "",
+            "QUESTION RELATION:",
+            input.questionFrame.relation,
           ].join("\n"),
         },
       ],
@@ -2022,6 +2053,28 @@ function conversationPlannerReplyToModelOutput(output: ConversationPlannerOutput
       route_reason: "",
       confidence_label: output.confidence_label || confidenceLabelFromScore(confidenceScore),
       confidence_score: confidenceScore,
+    }),
+    display: { plainSummaryOnly: true },
+  };
+}
+
+function buildNaturalSocialFallback(question: string): ModelOutput {
+  const normalizedQuestion = normalizeText(question);
+  const answer = /\b(thanks|thank you|appreciate)\b/.test(normalizedQuestion)
+    ? "You’re welcome!"
+    : /\b(move|switch|go|turn)\b.*\bto\b/.test(normalizedQuestion)
+      ? "Sure—what would you like to know about that?"
+      : "Hi! Absolutely—ask away. What would you like to start with?";
+  return {
+    ...normalizeModelOutput({
+      answer,
+      summary: answer,
+      sections: [],
+      selected_source_ids: [],
+      needs_route: false,
+      route_reason: "",
+      confidence_label: "High",
+      confidence_score: 100,
     }),
     display: { plainSummaryOnly: true },
   };
