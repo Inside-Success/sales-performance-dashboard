@@ -194,11 +194,11 @@ describe("runAskSalesFaq integration safety", () => {
       "Does a hospital-employed doctor qualify if she does not own a private practice?",
     );
 
-    expect(result.outcome).toBe("answer_from_approved_article");
+    expect(result.outcome).toBe("answer_from_evidence");
     expect(result.answer).toContain("can qualify");
     expect(result.answer).not.toMatch(/guidance conflicts|must own|does not qualify/i);
-    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
-      "americas-best-doctors-employed-doctor",
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([
+      "owner-hospital-employed-doctor-qualification",
     ]);
   });
 
@@ -216,8 +216,8 @@ describe("runAskSalesFaq integration safety", () => {
     const result = await runAskSalesFaq("Can a registered nurse qualify as a doctor for America's Best Doctors?");
 
     expect(result.answer).toContain("do not qualify");
-    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
-      "americas-best-doctors-nurse-boundary",
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([
+      "owner-hospital-employed-doctor-qualification",
     ]);
   });
 
@@ -379,6 +379,28 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
   });
 
+  it("lets the requested recording action beat a broader same-program article", async () => {
+    const claimId = "owner-twenty-percent-recording-and-disclosure";
+    const answer =
+      "Yes. Record every 20 percent outbound call through the approved Zoom process, and tell the prospect the call is being recorded.";
+    installProviderStub({
+      "answer generation": [
+        outputStep(modelOutput(answer, { selectedSourceIds: [`approved-claim:${claimId}`] })),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq(
+      "For a 20% outbound call, do I have to record it and tell the prospect that it is being recorded?",
+    );
+
+    expect(result.answer).toBe(answer);
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.needsRoute).toBe(false);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("strong-owner-approved-claim");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+  });
+
   it("does not let a nearby Zoom Phone issue trigger the payment-link owner claim", async () => {
     const answer = "Post the missing Zoom Phone number issue in #sales-tech-requests so the current tech owner can fix it.";
     installProviderStub({
@@ -408,7 +430,7 @@ describe("runAskSalesFaq integration safety", () => {
         outputStep(
           modelOutput(answer, {
             needsRoute: true,
-            routeReason: `Claim ${claimId} states that fulfillment owns this route.`,
+            routeReason: `The approved policy routes this under Claim ${claimId}.`,
             selectedSourceIds: [`approved-claim:${claimId}`],
           }),
         ),
