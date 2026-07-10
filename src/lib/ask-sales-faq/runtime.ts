@@ -1375,6 +1375,7 @@ export async function runAskSalesFaq(
         // that same article independently has a strong action/phrase match.
         policyDecision =
           evidenceBacksDeterministicDecision(deterministicPolicyDecision, semanticClaimMatches) ||
+          policyPlanBacksDeterministicDecision(deterministicPolicyDecision, questionFrame) ||
           buildSemanticUnsupportedDecision();
       } else {
         // Provider failure is the only case where the narrow deterministic
@@ -1747,6 +1748,20 @@ function evidenceBacksDeterministicDecision(
       (match.matchedActions.length > 0 || match.matchedDomains.length > 0 || match.matchedBigrams.length > 0),
   );
   return supportingClaim ? deterministicDecision : null;
+}
+
+function policyPlanBacksDeterministicDecision(
+  deterministicDecision: PolicyGuardDecision,
+  questionFrame: QuestionFrame,
+): PolicyGuardDecision | null {
+  if (!deterministicDecision.safeToGenerate || !deterministicDecision.articleId) return null;
+  const plan = buildAnswerPlan({
+    questionFrame,
+    approvedArticleId: deterministicDecision.articleId,
+    policyUnits: APPROVED_POLICY_UNITS,
+  });
+  if (plan.clarificationRequired || plan.selectedPolicyUnits.length === 0) return null;
+  return deterministicDecision;
 }
 
 function policyRuleCompatibleWithFrame(rule: AskSalesFaqRule, questionFrame?: QuestionFrame) {

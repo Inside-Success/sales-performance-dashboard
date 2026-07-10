@@ -791,6 +791,45 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.errorClass).toBeNull();
   });
 
+  it("uses an exact scoped policy plan when the semantic planner abstains", async () => {
+    const mainIstvAnswer =
+      "For main ISTV, do not promise a payment hold or later payment date. Confirm the nonstandard payment request with Rich or the current owner before replying.";
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 0,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "The planner did not select an atomic claim.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(
+          modelOutput(mainIstvAnswer, {
+            needsRoute: true,
+            routeReason: "Confirm the main ISTV payment exception with Rich or the current owner.",
+          }),
+        ),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      "For main ISTV only—not Daymond John or Next Level CEO—can we hold the Call 2 payment until later?",
+    );
+
+    expect(result.answer).toContain("For main ISTV");
+    expect(result.answer).toContain("do not promise");
+    expect(result.answer).not.toMatch(/DJ\/NLCEO has no cohort rule|\$2,500\s*x\s*4/i);
+    expect(result.runtimeMetadata?.policyPlan?.selectedPolicyUnitIds).toEqual([
+      "main-istv-payment-timing-exception",
+    ]);
+    expect(result.errorClass).toBeNull();
+  });
+
   it("renders a simple route as one natural answer instead of a repeated policy card", async () => {
     const answer =
       "For main ISTV, do not promise a payment hold or later payment date; confirm the exception with Rich or the current owner first.";
