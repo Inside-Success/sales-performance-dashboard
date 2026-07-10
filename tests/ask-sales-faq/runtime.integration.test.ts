@@ -3,6 +3,7 @@ import { runAskSalesFaq } from "@/lib/ask-sales-faq/runtime";
 import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 
 type ProviderPurpose =
+  | "semantic query expansion"
   | "conversation planning"
   | "answer generation"
   | "rep-facing wording repair"
@@ -328,6 +329,79 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.source?.approved).toBe(true);
     expect(result.runtimeMetadata?.routing?.source).toBe("claim_router");
     expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+  });
+
+  it("uses semantic query expansion only for recall, then requires the approved claim selector to ground the answer", async () => {
+    const claimId = "claim_aa93466af64a3cdd";
+    const answer =
+      "An early-stage business is not automatically disqualified. Run Call 1 and assess its active presence, story, fit, and ability to invest.";
+    const provider = installProviderStub({
+      "semantic query expansion": [
+        outputStep({
+          search_terms: [
+            "early stage startup applicant qualification",
+            "business not launched yet call 1 fit",
+            "new company automatic disqualification",
+          ],
+        }),
+      ],
+      "conversation planning": [
+        outputStep({
+          mode: "approved_claim",
+          claim_ids: [claimId],
+          article_id: null,
+          confidence_score: 95,
+          confidence_label: "High",
+          needs_route: false,
+          route_reason: "",
+          reason: "The early-stage applicant claim directly answers whether the rep should continue Call 1.",
+        }),
+      ],
+      "answer generation": [
+        outputStep(modelOutput(answer, { selectedSourceIds: [`approved-claim:${claimId}`] })),
+      ],
+      "approved article answer validation": [outputStep({ verdict: "pass", reason: "Directly supported." })],
+    });
+
+    const result = await runAskSalesFaq(
+      "The company and website have not launched yet. Should I still conduct Call 1, or stop now?",
+    );
+    const expansionCall = provider.calls.find((call) => call.purpose === "semantic query expansion");
+    const selectionCall = provider.calls.find((call) => call.purpose === "conversation planning");
+
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toContain("not automatically disqualified");
+    expect(result.runtimeMetadata?.routing?.selectedClaimIds).toEqual([claimId]);
+    expect(providerPrompt(expansionCall!)).toContain("Do not answer the question");
+    expect(providerPrompt(selectionCall!)).toContain("Early-stage/startup applicant fit");
+  });
+
+  it("does not revive a broad pricing article when the semantic selector finds no direct promotional-assets answer", async () => {
+    installProviderStub({
+      "semantic query expansion": [
+        outputStep({ search_terms: ["next level ceo social promotional assets", "package deliverables promise boundary"] }),
+      ],
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 0,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "No candidate directly answers the requested promotional deliverables.",
+        }),
+      ],
+    });
+
+    const result = await runAskSalesFaq(
+      "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+    );
+
+    expect(result.outcome).toBe("abstain_unapproved");
+    expect(result.answer).not.toMatch(/listed package prices|payment options|same-day discount/i);
+    expect(result.runtimeMetadata?.routing?.matchedRuleId).toBe("semantic-unsupported");
   });
 
   it("answers the requested payment-link delivery channel instead of returning generic tech routing", async () => {
@@ -1070,7 +1144,7 @@ describe("runAskSalesFaq integration safety", () => {
     expect(result.source).toBeNull();
   });
 
-  it("allows a high-specificity atomic claim to back an approved article when the planner is overly conservative", async () => {
+  it("allows an exact scoped policy plan when the planner is overly conservative", async () => {
     installProviderStub({
       "conversation planning": [
         outputStep({
@@ -1224,6 +1298,7 @@ function installProviderStub(script: ProviderScript) {
 function detectProviderPurpose(messages: Array<{ role?: string; content?: string }>): ProviderPurpose {
   const prompt = messages.map((message) => message.content || "").join("\n");
 
+  if (prompt.includes("You rewrite an internal sales question into compact semantic retrieval terms")) return "semantic query expansion";
   if (prompt.includes("Ask Sales FAQ conversation planner")) return "conversation planning";
   if (prompt.includes("You rewrite Ask Sales FAQ answers")) return "rep-facing wording repair";
   if (prompt.includes("You repair Ask Sales FAQ answers")) return "critical answer repair";

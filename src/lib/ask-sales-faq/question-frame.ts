@@ -57,8 +57,14 @@ const SOCIAL_PATTERN =
 const GREETING_PATTERN = /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)(?:\s+(?:there|team|everyone))?[!,. ]*$/;
 const GREETING_INTRO_PATTERN =
   /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)\b.*\b(?:i\s+am|i'm|i\s+will|i'll|we\s+will|we'll|ready|going\s+to|about\s+to|starting)\b/;
+const GREETING_HELP_PATTERN =
+  /^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening)\b.*\b(?:can|could|would|will)\s+you\s+(?:help|assist)\s+(?:me\s+)?(?:with|by\s+answering)\b.*\bquestions?\b[?!. ]*$/;
 const TOPIC_TRANSITION_PATTERN =
-  /^(?:ok(?:ay)?|alright|great|thanks|thank you)?[,! ]*(?:let(?:'s| us)|we can|i(?:'d| would) like to)\s+(?:move|switch|go|turn)\s+(?:on\s+)?to\b[^?]*[.! ]*$/;
+  /^(?:ok(?:ay)?|alright|great|thanks|thank you)?[,.! ]*(?:(?:let(?:'s| us)|we can|i(?:'d| would) like to)\s+(?:move|switch|go|turn)|i(?:'m|\s+am)\s+(?:moving|switching|turning))\s+(?:on\s+)?to\b[^?]*[.! ]*$/;
+const TOPIC_PREFACE_PATTERN =
+  /^(?:(?:thanks|thank\s+you|appreciate\s+it)[.! ]+)?(?:next\s+|last\s+section[^a-z0-9]+)?(?:i(?:'m|\s+am)\s+(?:switching|moving)\s+to|i\s+have|i(?:'ve|\s+have)\s+got)\b[^?]*\bquestions?\b[^?]*[.! ]*$/;
+const RESPONSE_STYLE_PREFACE_PATTERN =
+  /^(?:i\s+have|i(?:'ve|\s+have)\s+got)\b.*\bquestions?\b.*\b(?:keep|make)\b.*\b(?:answers?|replies|responses?)\b.*\b(?:short|brief|concise|practical|simple)\b[?!. ]*$/;
 
 const REWRITE_ACTION_PATTERN =
   /\b(?:make|keep|put|rewrite|rephrase|shorten|summarize|condense|simplify|format|formatting|reformat|organize|arrange)\b/;
@@ -196,7 +202,15 @@ function isSubstantiveUserQuestion(question: string) {
 }
 
 function isSocialTurn(normalizedQuestion: string) {
-  if (SOCIAL_PATTERN.test(normalizedQuestion) || GREETING_PATTERN.test(normalizedQuestion) || TOPIC_TRANSITION_PATTERN.test(normalizedQuestion)) return true;
+  if (
+    SOCIAL_PATTERN.test(normalizedQuestion) ||
+    GREETING_PATTERN.test(normalizedQuestion) ||
+    GREETING_HELP_PATTERN.test(normalizedQuestion) ||
+    TOPIC_TRANSITION_PATTERN.test(normalizedQuestion) ||
+    TOPIC_PREFACE_PATTERN.test(normalizedQuestion) ||
+    RESPONSE_STYLE_PREFACE_PATTERN.test(normalizedQuestion)
+  )
+    return true;
   if (!GREETING_INTRO_PATTERN.test(normalizedQuestion) || normalizedQuestion.includes("?")) return false;
   return !/\b(?:can\s+i|can\s+we|should\s+i|should\s+we|am\s+i\s+allowed|are\s+we\s+allowed|what\s+should|how\s+do|where\s+do|when\s+do|why\s+do)\b/.test(
     normalizedQuestion,

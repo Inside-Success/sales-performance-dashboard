@@ -76,6 +76,8 @@ describe("approved claim registry", () => {
 
   it.each([
     ["Can a nonprofit organization qualify for Operation CEO?", "Operation CEO nonprofit eligibility"],
+    ["Is a franchise owner eligible for Next Level CEO?", "Franchise owners"],
+    ["The company is still in the very early stages. Should I conduct Call 1?", "Early-stage/startup applicant fit"],
     ["Do I need another PayMe post for the next recurring installment?", "Recurring payments do not need a second PayMe post"],
     ["Where do I verify the current Next Level CEO contract?", "Next Level CEO contract verification route"],
     ["What should I do if a prospect photographs our confidential sales slides?", "Photographing confidential slides during a call"],
