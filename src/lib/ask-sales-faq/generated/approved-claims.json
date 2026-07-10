@@ -293,7 +293,8 @@
       "id": "blocked_67afbfba9c7cd399",
       "policy_key": "dj-and-istv-two-show-package-crossover-discount",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "Can a DJ prospect interested in America's Best Doctors get a two-show package?",
@@ -521,7 +522,7 @@
       "id": "blocked_6d6852cffbebeb4e",
       "policy_key": "prior-speaking-promotion-with-company",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Is previous involvement with a company speaking promotion a conflict for ISTV casting?",
@@ -911,7 +912,7 @@
       "id": "blocked_73a18f753dbb6fe0",
       "policy_key": "veteran-discount-discount-stacking",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Is there a veteran discount, and can it be combined with the same-day discount?",
@@ -10921,7 +10922,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "2-year-vs-5-year-placement-guarantee",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Is guaranteed network placement 2 years or 5 years?",
@@ -11772,7 +11773,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "20-reporting-keap-notes-and-stats-channels",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "After calling 20 outbound leads, should reps report anywhere besides the spreadsheet, and how do they update CRM?",
@@ -11936,7 +11938,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "50-off-second-episode-eligibility",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Does a Lite license cast member get 50% off for another episode focused on her non-profit?",
@@ -12816,7 +12818,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "amazon-prime-viewing-fee-and-documentary-cost-case-study-objections",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Prospect challenged the $640K documentary-cost study and asked whether Prime viewers need extra subscriptions or only regular Amazon Prime.",
@@ -12914,7 +12916,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "american-authors-show-info",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Is American Authors live and how many episodes are projected?",
@@ -13009,6 +13011,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "applicant-also-auditioning-for-daymond-john",
       "product_scopes": [
+        "main_istv",
         "dj_nlceo"
       ],
       "question_families": [
@@ -13570,7 +13573,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "background-check-cyber-stalking-charge",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "Would a DJ prospect with a cyber-stalking charge from 11 years ago pass background check?",
@@ -15476,7 +15480,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "checking-whether-first-dj-sale-payment-went-through",
       "product_scopes": [
-        "product_agnostic"
+        "dj_nlceo"
       ],
       "question_families": [
         "Where can a DJ closer check whether a sale/payment went through if a different email was used?",
@@ -15919,7 +15923,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "cohort-system-start-date-and-dj-exclusion",
       "product_scopes": [
-        "product_agnostic"
+        "dj_nlceo"
       ],
       "question_families": [
         "When did the cohort system start, and does it apply to Daymond/DJ leads?",
@@ -17451,7 +17455,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "daily-stats-channel-naming-for-all-istv-shows",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "If the daily stats channel name says Legacy Makers but the applicant is for another ISTV show, is that the right place to submit?",
@@ -18494,7 +18498,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "dj-applicant-with-prison-history",
       "product_scopes": [
-        "product_agnostic"
+        "dj_nlceo"
       ],
       "question_families": [
         "Is a DJ applicant with nonviolent prison history ending in 2022 a fit?",
@@ -18544,7 +18548,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "dj-istv-double-booking-separation",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "How should DJ and ISTV calls be handled when they overlap on double auditions?",
@@ -18597,7 +18602,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "dj-lead-better-fit-for-istv-mompreneurs",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "If a DJ lead is not a CEO but may fit Mompreneurs/ISTV, can the rep offer other shows?",
@@ -18645,7 +18651,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "dj-lite-to-istv-vip-50-discount",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "If someone gets DJ Lite, can they get ISTV VIP 50% off?",
@@ -18701,7 +18708,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "dj-vip-partial-payment-special-payment-link",
       "product_scopes": [
-        "product_agnostic"
+        "dj_nlceo"
       ],
       "question_families": [
         "Can a DJ VIP client put down $2,500 now and pay the remaining $17,500 tomorrow without signing two contracts?",
@@ -21537,6 +21544,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "istv-versus-daymond-john-nlceo",
       "product_scopes": [
+        "main_istv",
         "dj_nlceo"
       ],
       "question_families": [
@@ -24238,7 +24246,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "newer-shows-with-no-live-episodes-yet",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Where can reps find examples for newer shows like Blue Collar America?",
@@ -24437,6 +24445,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "next-level-ceo-dial-out-scope",
       "product_scopes": [
+        "main_istv",
         "dj_nlceo"
       ],
       "question_families": [
@@ -24526,6 +24535,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "nlceo-lead-in-istv-call",
       "product_scopes": [
+        "main_istv",
         "dj_nlceo"
       ],
       "question_families": [
@@ -27282,7 +27292,7 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "power-couples-second-episode-discount",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv"
       ],
       "question_families": [
         "Can a couple with different businesses be handled as Power Couples, and does a second-episode discount apply?",
@@ -28675,7 +28685,8 @@
       "last_reviewed": "2026-07-10",
       "policy_key": "refund-grace-period-dj-vs-istv",
       "product_scopes": [
-        "product_agnostic"
+        "main_istv",
+        "dj_nlceo"
       ],
       "question_families": [
         "DJ contracts reference federally mandated 3-day cooling-off period, but reps were told no refunds/no 3-day grace period.",

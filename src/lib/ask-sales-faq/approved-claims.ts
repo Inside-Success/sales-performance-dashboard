@@ -138,7 +138,7 @@ const ACTION_PATTERNS: Record<string, string[]> = {
   record: ["record", "recording", "fathom", "transcript"],
   contact: ["contact", "call", "text", "email", "outreach", "follow up"],
   opt_out: ["opt out", "unsubscribe", "do not contact", "dnc", "stop messaging"],
-  invite_or_attend: ["guest", "bring", "invite", "attend", "tour"],
+  invite_or_attend: ["guest", "bring", "invite", "attend", "accompan", "tour"],
   produce: ["produce", "film", "episode", "translate", "spanish", "english"],
   use_or_promote: ["use", "reuse", "promote", "marketing", "social media", "asset", "license"],
   reapply: ["reapply", "apply again", "try again"],
@@ -253,7 +253,9 @@ function scoreClaim(
   const matchedBigrams = questionBigrams.filter((bigram) => primaryText.includes(bigram.replace("::", " ")));
   const matchedDomains = queryDomains.filter((domain) => claim.domains.includes(domain));
   const matchedActions = queryActions.filter((action) => claim.actions.includes(action));
-  if (matchedTokens.length < 2) {
+  const hasStructuredSemanticBridge =
+    matchedTokens.length === 1 && matchedDomains.length > 0 && matchedActions.length > 0;
+  if (matchedTokens.length < 2 && !hasStructuredSemanticBridge) {
     return { claim, score: 0, matchedTokens, matchedBigrams, matchedDomains, matchedActions };
   }
 

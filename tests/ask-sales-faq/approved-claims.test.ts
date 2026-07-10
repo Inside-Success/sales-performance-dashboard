@@ -63,6 +63,17 @@ describe("approved claim registry", () => {
     expect(matches.every((match) => !match.claim.product_scopes.includes("dj_nlceo"))).toBe(true);
   });
 
+  it("does not offer main-ISTV-only claims to an explicitly DJ-only question", () => {
+    const matches = retrieveApprovedClaims("For Next Level CEO, not main ISTV, what happens after the first DJ payment?", {
+      scope: "dj_nlceo",
+      excludedScopes: ["main_istv"],
+      limit: 20,
+    });
+
+    expect(matches.every((match) => !match.claim.product_scopes.includes("main_istv"))).toBe(true);
+    expect(matches.map((match) => match.claim.title)).toContain("Checking whether first DJ sale/payment went through");
+  });
+
   it.each([
     ["Can a nonprofit organization qualify for Operation CEO?", "Operation CEO nonprofit eligibility"],
     ["Do I need another PayMe post for the next recurring installment?", "Recurring payments do not need a second PayMe post"],
@@ -73,6 +84,14 @@ describe("approved claim registry", () => {
   ])("places the directly applicable current claim in the top three for %s", (question, expectedTitle) => {
     const titles = retrieveApprovedClaims(question, { limit: 3 }).map((match) => match.claim.title);
     expect(titles).toContain(expectedTitle);
+  });
+
+  it("keeps a semantically bridged attendance claim in the planner candidate pool", () => {
+    const titles = retrieveApprovedClaims("The client wants four people accompanying them to filming. Is that allowed?", {
+      limit: 20,
+    }).map((match) => match.claim.title);
+
+    expect(titles).toContain("Studio tours and guest limit for filming");
   });
 
   it("surfaces a current unresolved offer conflict instead of a neighboring pricing claim", () => {
