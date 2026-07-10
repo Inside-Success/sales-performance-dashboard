@@ -556,6 +556,30 @@ describe("runAskSalesFaq integration safety", () => {
     expect(topicSwitch.structuredAnswer?.sections).toEqual([]);
   });
 
+  it("keeps a greeting conversational even when the model planner is overly conservative", async () => {
+    installProviderStub({
+      "conversation planning": [
+        outputStep({
+          mode: "unsupported",
+          article_id: null,
+          claim_ids: [],
+          confidence_score: 0,
+          confidence_label: "Low",
+          needs_route: false,
+          route_reason: "",
+          reason: "No policy question was asked.",
+        }),
+      ],
+    });
+
+    const result = await runAskSalesFaq("Hi! I’m checking a few sales questions today.");
+
+    expect(result.outcome).toBe("conversation_reply");
+    expect(result.answer).toMatch(/^Hi!/);
+    expect(result.needsRoute).toBe(false);
+    expect(result.structuredAnswer?.sections).toEqual([]);
+  });
+
   it("does not promise an unconfirmed accessibility accommodation", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
