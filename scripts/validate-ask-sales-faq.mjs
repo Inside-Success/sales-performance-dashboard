@@ -825,6 +825,8 @@ if (missingFiles.length === 0) {
       runtime.includes("governance log") &&
       runtime.includes("internal guidance") &&
       runtime.includes("candidate answer") &&
+      runtime.includes("approved claims") &&
+      runtime.includes("strong-owner-approved-claim") &&
       runtime.includes("pending approval") &&
       runtime.includes("route[- ]only") &&
       runtime.includes("knowledge base") &&

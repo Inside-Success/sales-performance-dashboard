@@ -283,6 +283,8 @@ const REP_FACING_INTERNAL_TERMS = [
   "knowledge base",
   "approved article",
   "approved faq article",
+  "approved claim",
+  "approved claims",
   "route-only",
   "route only",
   "manifest",
@@ -310,6 +312,7 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /\bunapproved\b/i,
   /\bpending approval\b/i,
   /\bapproved (faq )?article\b/i,
+  /\bapproved claims?\b/i,
   /\bknowledge base\b/i,
   /\broute[- ]only\b/i,
   /\bRAG\b/,
@@ -342,6 +345,7 @@ const REP_FACING_INTERNAL_PATTERNS = [
   /knowledge-base\/\S+/i,
   /\bapproved:[a-z0-9_-]+/i,
   /\bchunk:[a-z0-9_-]+/i,
+  /\bclaim\s+(?:(?:claim_|owner-)[a-z0-9_.-]+|[a-f0-9]{4,}(?:\.{3})?)(?=\s|[.,;:!?)]|$)/i,
 ];
 
 const UNAPPROVED_HANDOFF_PATTERNS = [
@@ -1244,7 +1248,12 @@ export async function runAskSalesFaq(
   let policyDecision = matchPolicyGuard(routingQuestion, questionFrame);
   let conversationPlannerAttempted = false;
 
-  const claimRefinements = findApprovedClaimRefinements(questionFrame, policyDecision);
+  const strongOwnerClaimDecision = findStrongOwnerApprovedClaimDecision(questionFrame, policyDecision);
+  if (strongOwnerClaimDecision && !questionFrame.isScopeCorrection) {
+    policyDecision = strongOwnerClaimDecision;
+  }
+
+  const claimRefinements = strongOwnerClaimDecision ? [] : findApprovedClaimRefinements(questionFrame, policyDecision);
   if (claimRefinements.length && !questionFrame.isScopeCorrection) {
     conversationPlannerAttempted = true;
     const plannerResult = await tryPlanConversationTurn({
@@ -1683,6 +1692,53 @@ function matchPolicyGuard(question: string, questionFrame?: QuestionFrame): Poli
 
 function shouldAttemptApprovedArticleRouter(policyDecision: PolicyGuardDecision) {
   return policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
+}
+
+function findStrongOwnerApprovedClaimDecision(
+  questionFrame: QuestionFrame,
+  policyDecision: PolicyGuardDecision,
+): PolicyGuardDecision | null {
+  const mayRefineBroadRoute =
+    policyDecision.routingSource === "direct_rule" && policyDecision.decision === "route_from_approved_article";
+  const mayResolveDefaultAbstain =
+    policyDecision.matchedRuleId === "default-abstain" && policyDecision.decision === "abstain_unapproved";
+  if (!mayRefineBroadRoute && !mayResolveDefaultAbstain) return null;
+
+  const strongOwnerMatches = retrieveApprovedClaims(questionFrame.effectiveQuestion, {
+    scope: questionFrame.scope,
+    excludedScopes: questionFrame.excludedScopes,
+    limit: 8,
+    minimumScore: 60,
+  }).filter(
+    (match) =>
+      match.claim.source_kind === "owner_approved_override" &&
+      match.claim.authority >= 110 &&
+      match.score >= 88 &&
+      match.matchedTokens.length >= 4 &&
+      match.matchedBigrams.length >= 1,
+  );
+
+  // This fast path is intentionally narrow. A single, strongly matched current
+  // owner decision may supersede a broad legacy route; ambiguity still goes
+  // through the semantic planner instead of guessing from token overlap.
+  if (strongOwnerMatches.length !== 1) return null;
+
+  const claim = strongOwnerMatches[0].claim;
+  return {
+    decision: claim.route_required ? "route_from_approved_claim" : "answer_from_approved_claim",
+    safeToGenerate: true,
+    articleId: null,
+    blockedTopic: null,
+    matchedRuleId: "strong-owner-approved-claim",
+    reason: claim.route_required
+      ? claim.route_reason || "Use the current approved route for this request."
+      : "A current owner-approved claim directly answers this question.",
+    primaryArticle: null,
+    routingSource: "claim_router",
+    routingConfidence: Math.round(strongOwnerMatches[0].score),
+    usedConversationContext: false,
+    selectedClaimIds: [claim.id],
+  };
 }
 
 function findApprovedClaimRefinements(
