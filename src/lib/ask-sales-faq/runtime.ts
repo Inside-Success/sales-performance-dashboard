@@ -3318,10 +3318,52 @@ function shapeModelOutputForDisplay(question: string, output: ModelOutput, polic
     };
   }
 
+  const normalizedSections = mergeDuplicateDisplaySections(shaped.sections?.flatMap(normalizeStructuredAnswerSections) || []);
+  const nonDuplicateSections = removeSectionsDuplicatingAnswer(answer, normalizedSections);
+  if (answer && normalizedSections.length > 0 && nonDuplicateSections.length === 0) {
+    return {
+      ...shaped,
+      answer,
+      summary: answer,
+      sections: [],
+      display: {
+        ...shaped.display,
+        plainSummaryOnly: true,
+      },
+    };
+  }
+
   return {
     ...shaped,
-    sections: mergeDuplicateDisplaySections(shaped.sections?.flatMap(normalizeStructuredAnswerSections) || []),
+    sections: nonDuplicateSections,
   };
+}
+
+const DISPLAY_REDUNDANCY_WEAK_TOKENS = new Set(["answer", "based", "policy", "what", "can", "could", "would"]);
+
+function removeSectionsDuplicatingAnswer(
+  answer: string,
+  sections: NonNullable<ModelOutput["sections"]>,
+): NonNullable<ModelOutput["sections"]> {
+  const answerTokens = new Set(
+    tokenize(normalizeAnswerForCoverage(answer), { expand: false }).filter(
+      (token) => token.length > 2 && !DISPLAY_REDUNDANCY_WEAK_TOKENS.has(token),
+    ),
+  );
+  if (answerTokens.size < 4) return sections;
+
+  return sections.filter((section) => {
+    if ((section.items?.length || 0) >= 3) return true;
+    const sectionText = [section.body || "", ...(section.items || [])].join(" ");
+    const sectionTokens = new Set(
+      tokenize(normalizeAnswerForCoverage(sectionText), { expand: false }).filter(
+        (token) => token.length > 2 && !DISPLAY_REDUNDANCY_WEAK_TOKENS.has(token),
+      ),
+    );
+    if (sectionTokens.size < 3) return true;
+    const overlap = Array.from(sectionTokens).filter((token) => answerTokens.has(token)).length;
+    return overlap / Math.min(answerTokens.size, sectionTokens.size) < 0.68;
+  });
 }
 
 function shouldUsePlainRouteAnswer(
