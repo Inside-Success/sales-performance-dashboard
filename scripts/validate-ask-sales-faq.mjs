@@ -278,6 +278,13 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "per-user faq rate limit is doubled",
+    db.includes("process.env.FAQ_RATE_LIMIT_USER_MAX, 100, 10, 200") &&
+      envExample.includes('FAQ_RATE_LIMIT_USER_MAX="100"'),
+    "default and documented per-user limit are 100 requests per window",
+  );
+
+  addCheck(
     "chat api uses request guards before model calls",
     chatRoute.includes("clientRequestId: z.string().trim().max(120).optional().nullable()") &&
       chatRoute.includes("normalizeClientRequestId") &&
