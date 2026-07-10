@@ -88,7 +88,7 @@ describe("approved claim registry", () => {
 
   it("keeps a semantically bridged attendance claim in the planner candidate pool", () => {
     const titles = retrieveApprovedClaims("The client wants four people accompanying them to filming. Is that allowed?", {
-      limit: 20,
+      limit: 5,
     }).map((match) => match.claim.title);
 
     expect(titles).toContain("Studio tours and guest limit for filming");

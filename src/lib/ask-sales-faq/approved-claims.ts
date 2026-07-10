@@ -165,6 +165,7 @@ const SUPPORT_TOKEN_SETS = new Map(
   APPROVED_CLAIMS.map((claim) => [claim.id, new Set(tokenizeClaimText(SUPPORT_SEARCH_TEXT.get(claim.id) || ""))]),
 );
 const DOCUMENT_FREQUENCY = buildDocumentFrequency();
+const ACTION_DOCUMENT_FREQUENCY = buildTagDocumentFrequency((claim) => claim.actions);
 
 export function retrieveApprovedClaims(question: string, options: ApprovedClaimSearchOptions = {}): ApprovedClaimMatch[] {
   const normalizedQuestion = normalizeClaimText(question);
@@ -279,6 +280,9 @@ function scoreClaim(
   const authorityBonus = Math.max(0, claim.authority - 75) * 0.12;
   const broadArticlePenalty = claim.source_kind === "approved_article" && matchedTokens.length < 3 ? 14 : 0;
   const actionMismatchPenalty = queryActions.length && !matchedActions.length && matchedTokens.length < 3 ? 10 : 0;
+  const structuredBridgeBonus = hasStructuredSemanticBridge
+    ? Math.min(34, Math.max(...matchedActions.map((action) => inverseTagDocumentFrequency(action, ACTION_DOCUMENT_FREQUENCY))) * 8)
+    : 0;
   const score =
     idfScore * 4.7 +
     coverage * 30 +
@@ -291,7 +295,8 @@ function scoreClaim(
     sourceBonus +
     authorityBonus -
     broadArticlePenalty -
-    actionMismatchPenalty;
+    actionMismatchPenalty +
+    structuredBridgeBonus;
 
   return { claim, score: roundScore(score), matchedTokens, matchedBigrams, matchedDomains, matchedActions };
 }
@@ -317,9 +322,21 @@ function buildDocumentFrequency() {
   return counts;
 }
 
+function buildTagDocumentFrequency(select: (claim: ApprovedClaim) => string[]) {
+  const counts = new Map<string, number>();
+  for (const claim of APPROVED_CLAIMS) {
+    for (const tag of new Set(select(claim))) counts.set(tag, (counts.get(tag) || 0) + 1);
+  }
+  return counts;
+}
+
 function inverseDocumentFrequency(token: string) {
   const count = DOCUMENT_FREQUENCY.get(token) || 0;
   return Math.log((APPROVED_CLAIMS.length + 1) / (count + 1)) + 1;
+}
+
+function inverseTagDocumentFrequency(tag: string, counts: Map<string, number>) {
+  return Math.log((APPROVED_CLAIMS.length + 1) / ((counts.get(tag) || 0) + 1)) + 1;
 }
 
 function buildBigrams(tokens: string[]) {
