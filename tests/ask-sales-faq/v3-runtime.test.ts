@@ -138,10 +138,8 @@ describe("Ask Sales FAQ V3 runtime", () => {
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as Record<string, unknown>;
       if (purpose === "v3_semantic_recall") {
-        const catalog = payload.catalog as Array<{ ref: string; title: string }>;
-        const target = catalog.find((card) => card.title === "Existing client buying another show");
-        expect(target).toBeDefined();
-        return { candidate_refs: [target?.ref] };
+        expect(payload).not.toHaveProperty("catalog");
+        return { queries: ["Can an existing client buy another show and who owns the relationship?"] };
       }
       if (purpose === "v3_grounding_validation") {
         const draft = payload.draft as Record<string, unknown>;

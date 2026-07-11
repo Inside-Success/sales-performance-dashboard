@@ -21,19 +21,6 @@ import type {
 const registry = getV3Registry();
 const ALLOWED_ROUTE_KEYS = new Set(Object.keys(registry.route_catalog));
 const ALLOWED_CHANNELS = new Set(Object.values(registry.route_catalog).map((route) => route.channel));
-const SEMANTIC_RECALL_CATALOG = registry.policies
-  .filter((policy) => policy.quality_tier !== "discovery_only" && policy.answerability === "answer_evidence")
-  .map((policy, index) => ({
-    ref: `R${index + 1}`,
-    policy,
-    card: {
-      ref: `R${index + 1}`,
-      title: policy.title,
-      question_families: policy.question_families.slice(0, 2),
-      scopes: policy.product_scopes,
-    },
-  }));
-const SEMANTIC_POLICY_BY_REF = new Map(SEMANTIC_RECALL_CATALOG.map((entry) => [entry.ref, entry.policy]));
 
 export type AskSalesFaqV3RuntimeResult = AskSalesFaqResponse & {
   sanitizedQuestion: string;
@@ -195,16 +182,13 @@ function policyCards(retrieval: V3RetrievalResult) {
   }));
 }
 
-function policyFitsTurnScope(policy: V3Policy, turn: V3TurnResolution) {
-  if (turn.excludedScopes.some((scope) => policy.product_scopes.includes(scope))) return false;
-  if (turn.productScope === "main_istv") return !policy.product_scopes.includes("dj_nlceo") || policy.product_scopes.includes("main_istv");
-  if (turn.productScope === "dj_nlceo") return !policy.product_scopes.includes("main_istv") || policy.product_scopes.includes("dj_nlceo");
-  return true;
-}
-
 function parseSemanticRecall(content: string) {
   const raw = parseV3Json<Record<string, unknown>>(content);
-  return { candidate_refs: stringArray(raw.candidate_refs, 10) };
+  const queries = stringArray(raw.queries, 4)
+    .map((query) => clean(query, 500))
+    .filter(Boolean);
+  if (!queries.length) throw new Error("Semantic recall did not return usable retrieval queries.");
+  return { queries };
 }
 
 async function addSemanticRecall(input: {
@@ -218,43 +202,42 @@ async function addSemanticRecall(input: {
   if (strongImmediateContext || (bestFamilyScore >= 6.2 && input.retrieval.candidates.length >= 10)) return input.retrieval;
   const startedAt = Date.now();
   try {
-    const result = await input.provider<{ candidate_refs: string[] }>({
+    const result = await input.provider<{ queries: string[] }>({
       purpose: "v3_semantic_recall",
-      maxTokens: 650,
+      maxTokens: 450,
       system: [
-        "You are a high-recall retrieval selector, not an answer writer.",
-        "Select up to 10 catalog records that may directly answer all or part of the current sales question.",
-        "Match the requested action, product, entity, timing, and exception—not merely shared words or a neighboring topic.",
-        "Honor explicit product exclusions. It is acceptable to select no record when none is applicable.",
-        "Do not answer the question. Return JSON only: {\"candidate_refs\":[\"R1\"]}.",
+        "You write compact retrieval queries for an internal sales-policy search engine. You never answer the question.",
+        "Return 2 to 4 short standalone paraphrases that preserve the exact requested action, entity, product, timing, exception, and negation.",
+        "Use likely policy-catalog wording, but do not broaden to neighboring products or topics and do not invent a policy.",
+        "Keep explicitly excluded products excluded. Every query must mean the same thing as the current question or one explicit part of it.",
+        "Return JSON only: {\"queries\":[\"search phrase\"]}.",
       ].join("\n"),
       user: JSON.stringify({
         current_question: input.turn.currentQuestion,
         resolved_question: input.turn.standaloneQuestion,
         product_scope: input.turn.productScope,
         excluded_scopes: input.turn.excludedScopes,
-        current_lexical_candidates: input.retrieval.candidates.map((match) => ({ title: match.policy.title, question_families: match.policy.question_families.slice(0, 1) })),
-        catalog: SEMANTIC_RECALL_CATALOG
-          .filter((entry) => policyFitsTurnScope(entry.policy, input.turn))
-          .map((entry) => entry.card),
+        current_candidate_topics: input.retrieval.candidates.slice(0, 6).map((match) => ({
+          title: match.policy.title,
+          question_families: match.policy.question_families.slice(0, 1),
+        })),
       }),
       parse: parseSemanticRecall,
     });
     input.attempts.push(...result.attempts);
-    const semanticMatches = result.output.candidate_refs.flatMap((ref, index) => {
-      const policy = SEMANTIC_POLICY_BY_REF.get(ref);
-      if (!policy || !policyFitsTurnScope(policy, input.turn)) return [];
-      return [{
-        policy,
-        score: 100 - index,
-        lexicalScore: 0,
-        phraseScore: 0,
-        trigramScore: 0,
-        familyScore: 0,
-        contextScore: 0,
-        scopeScore: 0,
-        matchedTerms: ["semantic_recall"],
-      }];
+    const semanticMatches = result.output.queries.flatMap((query) => {
+      const expandedTurn: V3TurnResolution = {
+        ...input.turn,
+        kind: "new",
+        currentQuestion: query,
+        standaloneQuestion: query,
+        immediatePreviousUserQuestion: null,
+        immediatePreviousAssistantAnswer: null,
+        usedImmediateContext: false,
+        explicitCorrection: false,
+        contextMessages: [],
+      };
+      return retrieveV3Policies(expandedTurn, 8).candidates.slice(0, 4);
     });
     const combined = [
       ...input.retrieval.candidates.slice(0, 4),
