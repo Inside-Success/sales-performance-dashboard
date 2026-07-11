@@ -268,13 +268,26 @@ describe("Ask Sales FAQ V3 runtime", () => {
   });
 
   it("passes every bounded retrieval candidate to the composer", async () => {
+    let validationCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
         draft?: Record<string, unknown>;
         evidence_cards?: Array<{ ref: string; policy_key: string }>;
       };
-      if (purpose === "v3_grounding_validation") {
+      if (purpose === "v3_grounding_validation" || purpose === "v3_grounding_validation_retry") {
+        validationCalls += 1;
         const draftEvidence = payload.draft?.sentence_evidence as Array<{ sentence: string }> | undefined;
+        if (purpose === "v3_grounding_validation") {
+          return {
+            verdict: "reject",
+            answer: "",
+            summary: "",
+            sections: [],
+            sentence_evidence: [],
+            removed_claims: [],
+            reason: "The first audit was too strict.",
+          };
+        }
         return {
           verdict: "pass",
           answer: payload.draft?.answer,
@@ -307,6 +320,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_c068cf9ac8f5d089");
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
+    expect(validationCalls).toBe(2);
   });
 
   it("treats hyphenated and pluralized time units as the same grounded number", async () => {
@@ -370,7 +384,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         const target = candidates.candidates.find((card) => /contract/i.test(card.title)) || candidates.candidates[0];
         return { selected_refs: target ? [target.ref] : [], reason: "Only the contract card is potentially applicable." };
       }
-      if (purpose === "v3_grounding_validation") {
+      if (purpose === "v3_grounding_validation" || purpose === "v3_grounding_validation_retry") {
         validationCalls += 1;
         return {
           verdict: "reject",
@@ -400,7 +414,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     });
     const result = await runAskSalesFaqV3("How do I verify that a Next Level CEO contract has been signed?", [], { provider });
     expect(selectionCalls).toBe(1);
-    expect(validationCalls).toBe(1);
+    expect(validationCalls).toBe(2);
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).not.toContain("signing-status channel");
   });

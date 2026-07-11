@@ -175,6 +175,7 @@ function policyCards(retrieval: V3RetrievalResult) {
     quality_tier: match.policy.quality_tier,
     route_key: match.policy.route_key,
     route_channel: match.policy.route_channel,
+    route_reason: match.policy.route_reason,
     authority: match.policy.authority,
     effective_at: match.policy.effective_at,
     approved_by: match.policy.source.approved_by,
@@ -303,6 +304,12 @@ async function selectApplicableEvidence(input: {
     product_scopes: match.policy.product_scopes,
     effective_at: match.policy.effective_at,
     authority: match.policy.authority,
+    quality_tier: match.policy.quality_tier,
+    answerability: match.policy.answerability,
+    risk_level: match.policy.risk_level,
+    route_key: match.policy.route_key,
+    route_channel: match.policy.route_channel,
+    route_reason: match.policy.route_reason,
   }));
   try {
     const request = {
@@ -319,6 +326,8 @@ async function selectApplicableEvidence(input: {
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
+        "Cards marked route_or_support may be selected when their explicit boundary or approved route directly applies to an unresolved request. They do not prove the missing fact, but they can support a useful boundary or next step.",
+        "Do not discard a directly applicable answer_evidence card merely because it answers in policy language rather than repeating the user's exact wording.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
         "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
         "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
@@ -335,12 +344,12 @@ async function selectApplicableEvidence(input: {
     };
     let result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
     input.attempts.push(...result.attempts);
-    if (!result.output.selected_refs.length && isMultiPartQuestion(input.turn.currentQuestion)) {
+    if (!result.output.selected_refs.length && input.retrieval.candidates.length) {
       try {
         const retry = await input.provider<{ selected_refs: string[]; reason: string }>({
           ...request,
           purpose: "v3_evidence_selection_retry",
-          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate each question part independently. Select a card only if it safely answers at least one separable part; it is still correct to return zero when no part is supported.`,
+          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate ${isMultiPartQuestion(input.turn.currentQuestion) ? "each question part independently" : "the requested decision"}. Preserve a directly applicable answer card, policy boundary, or approved route even when another detail remains unresolved. It is still correct to return zero when nothing useful is supported.`,
         });
         input.attempts.push(...retry.attempts);
         if (retry.output.selected_refs.length) result = retry;
@@ -693,7 +702,26 @@ async function validateAndRepair(input: {
   try {
     const result = await input.provider<V3ValidationResult>(request);
     input.attempts.push(...result.attempts);
-    return applyValidation(result.output);
+    const primary = applyValidation(result.output);
+    if (primary.validation.verdict === "reject" && deterministic.pass && policies.length) {
+      try {
+        const retry = await input.provider<V3ValidationResult>({
+          ...request,
+          purpose: "v3_grounding_validation_retry",
+          system: `${request.system}\nThe first audit rejected the draft. Reconsider whether at least one directly relevant sentence, policy boundary, or approved route is supported. Repair to the smallest useful grounded answer or partial instead of rejecting the whole response. Still reject if no useful part is supported.`,
+          user: JSON.stringify({
+            ...JSON.parse(request.user),
+            first_validation: result.output,
+          }),
+        });
+        input.attempts.push(...retry.attempts);
+        return applyValidation(retry.output);
+      } catch {
+        // Keep the first fail-closed audit when the bounded DeepSeek
+        // reconsideration is unavailable.
+      }
+    }
+    return primary;
   } catch (error) {
     if (deterministic.pass) {
       return {
