@@ -156,6 +156,13 @@ function parseConversationOutput(content: string): V3AnswerOutput {
   };
 }
 
+function policyDecisionParts(decision: string) {
+  const match = decision.match(/^\s*Policy context:\s*([\s\S]*?)\s*Decision evidence:\s*([\s\S]+?)\s*$/i);
+  return match
+    ? { example_context: clean(match[1], 1000), decision_evidence: clean(match[2], 1400) }
+    : { example_context: "", decision_evidence: clean(decision, 1400) };
+}
+
 function policyCards(retrieval: V3RetrievalResult) {
   // Retrieval already applies the bounded candidate limit. Keep that single
   // limit authoritative so a relevant lower-ranked card cannot appear in
@@ -165,7 +172,7 @@ function policyCards(retrieval: V3RetrievalResult) {
     ref: `E${index + 1}`,
     policy_key: match.policy.policy_key,
     title: match.policy.title,
-    decision_evidence: match.policy.decision.slice(0, 1400),
+    ...policyDecisionParts(match.policy.decision),
     question_families: match.policy.question_families.slice(0, 3),
     scope: match.policy.product_scopes,
     domains: match.policy.domains,
@@ -299,7 +306,7 @@ async function selectApplicableEvidence(input: {
     ref: `P${index + 1}`,
     id: match.policy.id,
     title: match.policy.title,
-    decision_evidence: match.policy.decision.slice(0, 1000),
+    ...policyDecisionParts(match.policy.decision),
     question_families: match.policy.question_families.slice(0, 2),
     product_scopes: match.policy.product_scopes,
     effective_at: match.policy.effective_at,
@@ -654,6 +661,7 @@ async function validateAndRepair(input: {
       "Use only the exact approved route_key and its channel when routing. Remove invented team, owner, channel, or escalation instructions.",
       "Choose route_key from the unresolved coverage items only. Do not let an answered payment, contract, or product detail route a different unresolved timing, production, or resource question to the wrong channel.",
       "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
+      "Preserve exact policy qualifiers and operational nouns. Do not replace 'matching contract' with 'standard contract', or otherwise strengthen, generalize, or rename the approved instruction.",
       "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
       "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",
       "Use only the short validation refs (V1, V2, etc.) supplied with selected evidence in sentence_evidence and coverage policy_ids. Never copy, alter, or invent a long policy ID.",
@@ -665,7 +673,7 @@ async function validateAndRepair(input: {
       immediate_previous_question: input.turn.usedImmediateContext ? input.turn.immediatePreviousUserQuestion : null,
       product_scope: input.turn.productScope,
       excluded_scopes: input.turn.excludedScopes,
-      selected_evidence: policies.map((policy, index) => ({ ref: `V${index + 1}`, scope: policy.product_scopes, decision: policy.decision })),
+      selected_evidence: policies.map((policy, index) => ({ ref: `V${index + 1}`, scope: policy.product_scopes, ...policyDecisionParts(policy.decision) })),
       deterministic_errors: deterministic.errors,
       draft: input.output,
     }),

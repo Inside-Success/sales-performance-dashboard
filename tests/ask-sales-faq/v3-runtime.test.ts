@@ -144,9 +144,12 @@ describe("Ask Sales FAQ V3 runtime", () => {
       }
       if (purpose === "v3_evidence_selection") {
         selectionCalls += 1;
-        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const candidates = payload.candidates as Array<{ ref: string; title: string; example_context: string; decision_evidence: string }>;
         const target = candidates.find((card) => card.title === "Existing client buying another show");
         expect(target).toBeDefined();
+        expect(target?.example_context).toContain("Legacy Makers");
+        expect(target?.decision_evidence).toMatch(/^Yes\./);
+        expect(target?.decision_evidence).not.toContain("Policy context:");
         return { selected_refs: [target?.ref], reason: "This card directly answers the cross-show purchase and ownership question." };
       }
       if (purpose === "v3_grounding_validation") {
@@ -161,13 +164,15 @@ describe("Ask Sales FAQ V3 runtime", () => {
           reason: "Grounded.",
         };
       }
-      const cards = payload.evidence_cards as Array<{ ref: string; title: string }>;
+      const cards = payload.evidence_cards as Array<{ ref: string; title: string; example_context: string; decision_evidence: string }>;
       expect(payload.strict_selection).toMatchObject({
         applied: true,
         rationale: "This card directly answers the cross-show purchase and ownership question.",
       });
       const target = cards.find((card) => card.title === "Existing client buying another show");
       expect(target).toBeDefined();
+      expect(target?.example_context).toContain("Legacy Makers");
+      expect(target?.decision_evidence).toMatch(/^Yes\./);
       return {
         mode: "answer",
         answer: "Yes—an existing client can buy a different show (E1); check the original assignment before taking ownership.",
