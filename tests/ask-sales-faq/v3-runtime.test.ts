@@ -160,6 +160,10 @@ describe("Ask Sales FAQ V3 runtime", () => {
         };
       }
       const cards = payload.evidence_cards as Array<{ ref: string; title: string }>;
+      expect(payload.strict_selection).toMatchObject({
+        applied: true,
+        rationale: "This card directly answers the cross-show purchase and ownership question.",
+      });
       const target = cards.find((card) => card.title === "Existing client buying another show");
       expect(target).toBeDefined();
       return {

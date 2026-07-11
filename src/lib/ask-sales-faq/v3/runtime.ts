@@ -360,6 +360,7 @@ function composerSystemPrompt() {
     "Combine multiple applicable cards when the question has multiple parts. Mark every part answered, partial, or unresolved in coverage.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
     "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
+    "When a strict selection rationale is supplied, use it only as a map of which question parts may be supported. Verify every statement against the evidence cards themselves, but do not silently discard a supported part the selector identified.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
     "When the user requests a list, checklist, or formatting change, put list entries in sections[].items instead of flattening markdown dashes into the answer string.",
     "Do not say 'I could not find that in my knowledge base.' Explain the uncertainty naturally and give the exact approved route when one is available.",
@@ -388,6 +389,9 @@ function composerUserPrompt(turn: V3TurnResolution, retrieval: V3RetrievalResult
       reason: match.topic.resolution,
       score: match.score,
     })),
+    strict_selection: retrieval.evidenceSelectionReason
+      ? { applied: true, rationale: retrieval.evidenceSelectionReason }
+      : { applied: false },
     evidence_cards: policyCards(retrieval),
   });
 }
@@ -559,7 +563,7 @@ async function validateAndRepair(input: {
         "The answer may use only the selected evidence below and the user's question. Remove irrelevant facts and unsupported claims.",
         "Require the smallest sufficient evidence set. Supported adjacent facts are still irrelevant when they do not answer a requested part, and must be removed.",
         "The user's question is context, not evidence. A proposed yes/no conclusion is unsupported unless the selected evidence actually states or clearly entails that conclusion.",
-        "A product-agnostic decision may apply to a named product when it directly answers the requested action. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
+        "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
         "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
         "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
         "Reject stitched answers where one card matches the show/entity while a different card supplies the action or decision. One applicable card, or a coherent set of cards, must support the full conclusion.",
