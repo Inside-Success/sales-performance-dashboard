@@ -34,6 +34,15 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(turn.immediatePreviousAssistantAnswer).toContain("decline scenario");
   });
 
+  it("treats a natural concise explanation request as a rewrite, not a policy follow-up", () => {
+    const turn = resolveV3Turn("Can you explain that more naturally and keep only what I need to do?", [
+      { role: "user", content: "Can I change the confirmation wording myself?" },
+      { role: "assistant", content: "Leave the wording unchanged and ask the current owner to update it." },
+    ]);
+    expect(turn.kind).toBe("rewrite");
+    expect(turn.immediatePreviousAssistantAnswer).toContain("Leave the wording unchanged");
+  });
+
   it("answers previous-question memory from the immediate user turn", () => {
     const turn = resolveV3Turn("What was my previous question?", [
       { role: "user", content: "Can I send a payment link by text?" },

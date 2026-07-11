@@ -358,6 +358,7 @@ async function selectApplicableEvidence(input: {
       system: [
         "You are the claim-entailment stage for an internal sales assistant. You do not answer the user.",
         "First decompose the resolved question into one to six atomic needs. Each need must contain exactly one requested decision, fact, method, timing, permission, boundary, or next action.",
+        "When a question asks which contract, process, or next step to use for a proposed exception, create separate needs for whether the proposal is allowed and for the approved next action. A policy that prohibits the proposed option directly answers the first need; a policy that supplies the replacement action supports the second.",
         "Then evaluate each need independently against the evidence cards. Never require one card to answer the whole question.",
         "For every supported need, return one support record with relation direct, partial, or route and the smallest sufficient card refs.",
         "direct means the decision evidence answers the need. partial means it safely answers only a separable portion or supplies an applicable boundary while a requested detail remains unknown. route means the card supplies only an approved route or support boundary, not the missing fact.",
@@ -369,8 +370,10 @@ async function selectApplicableEvidence(input: {
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
+        "A timeline for one workflow stage is not even partial evidence for another stage's timing. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing are distinct stages unless a card explicitly links them.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
+        "For questions asking what is currently available, evidence conditioned with 'if still current', 'may', 'appears', or another unresolved-currentness qualifier is partial at most. Keep current availability unresolved unless another card confirms it.",
         "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
         "Do not discard a directly applicable answer_evidence card merely because it answers in policy language rather than repeating the user's exact wording.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
@@ -471,6 +474,7 @@ function composerSystemPrompt() {
     "When routing is necessary, use only the exact channel from approved_routes for the selected route_key. Do not invent a team, owner, channel, or escalation path.",
     "Choose the route from the unresolved question part only. Words from a part you already answered must not redirect a different unresolved need to the wrong channel.",
     "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
+    "A route support record is an approved next step, not proof of the missing fact. Phrase it as where the rep should verify or ask; never turn it into a confirmed yes/no answer or a method the card does not state.",
     "When a strict selection rationale is supplied, use it only as a map of which question parts may be supported. Verify every statement against the evidence cards themselves, but do not silently discard a supported part the selector identified.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
     "When the user requests a list, checklist, or formatting change, put list entries in sections[].items instead of flattening markdown dashes into the answer string.",
@@ -736,7 +740,7 @@ async function validateAndRepair(input: {
     };
   }
   const policies = deterministic.policies;
-  if (!policies.length && input.output.mode === "route") {
+  if (!policies.length && input.output.mode === "route" && deterministic.pass) {
     return {
       validation: {
         verdict: "pass" as const,
@@ -760,7 +764,7 @@ async function validateAndRepair(input: {
       deterministic,
     };
   }
-  if (!policies.length && input.output.mode !== "route") {
+  if (!policies.length) {
     return {
       validation: { verdict: "reject" as const, answer: "", summary: "", sections: [], sentence_evidence: [], removed_claims: [], reason: deterministic.errors.join("; ") || "No selected evidence." },
       deterministic,
@@ -798,6 +802,8 @@ async function validateAndRepair(input: {
       "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
       "Do not reject a product-agnostic answer merely because the user's named product does not appear in the decision text. First compare the requested action to the decision; if that action matches, the named product is within scope unless the decision explicitly excludes it.",
       "When a broadly worded operational instruction applies across situations, preserve that instruction without importing details from its original example trigger.",
+      "A timeline for one workflow stage is irrelevant to another stage's timing unless the evidence explicitly links them. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing must stay distinct.",
+      "Conditional-currentness evidence such as 'if still current', 'may', or 'appears' cannot fully answer a question asking what is currently available. Preserve the supported conditional fact and keep currentness partial or unresolved.",
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
       "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
@@ -1092,6 +1098,10 @@ function baseOutput(answer: string, mode: V3AnswerOutput["mode"]): V3AnswerOutpu
   };
 }
 
+function isSafeNoEvidenceRouteAnswer(answer: string) {
+  return /\b(?:can(?:not|'t) confirm|do not have a confirmed|don't have a confirmed|not confirmed|not resolved|need to (?:verify|confirm|check)|please (?:verify|confirm|check)|should be (?:verified|confirmed|checked))\b/i.test(answer);
+}
+
 export async function runAskSalesFaqV3(
   question: string,
   conversationMessages: AskSalesFaqChatMessage[] = [],
@@ -1131,6 +1141,24 @@ export async function runAskSalesFaqV3(
       const result = await provider<V3AnswerOutput>({ purpose: isConversation ? "v3_conversation" : "v3_evidence_answer", system: prompt.system, user: prompt.user, maxTokens: turn.kind === "social" ? 500 : 2200, parse: isConversation ? parseConversationOutput : parseAnswerOutput });
       stageTimings.answerGenerationMs = Date.now() - generationStarted;
       output = isConversation ? result.output : resolveEvidenceRefs(result.output, retrieval);
+      if (!isConversation && !retrieval.candidates.length && isSafeNoEvidenceRouteAnswer(output.answer)) {
+        output = {
+          ...output,
+          mode: "route",
+          selected_policy_ids: [],
+          rejected_policy_ids: [],
+          coverage: retrieval.evidenceContract?.needs.map((need) => ({
+            need: need.text,
+            status: "unresolved" as const,
+            policy_ids: [],
+            reason: "No applicable approved evidence was selected.",
+          })) || [],
+          sentence_evidence: [],
+          needs_route: true,
+          route_key: routeKeyForQuestion(turn.currentQuestion, []),
+          route_reason: output.route_reason || "The requested decision is not resolved by the selected evidence.",
+        };
+      }
       if (wantsRepeatedRouteOmitted(turn)) output = omitRepeatedRouteNote(output);
       attempts.push(...result.attempts);
       providerName = result.provider;
@@ -1205,7 +1233,7 @@ export async function runAskSalesFaqV3(
   }
 
 
-  if (turn.explicitCorrection && output.needs_route) {
+  if (turn.explicitCorrection && output.needs_route && (validation.verdict === "reject" || output.mode === "route")) {
     const routed = safeRouteAnswer(turn, output, retrieval, output.route_reason || validation.reason);
     output = {
       ...baseOutput(routed.answer, "route"),

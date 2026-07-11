@@ -578,6 +578,42 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.coverage.map((item) => item.status)).toEqual(["answered", "unresolved"]);
   });
 
+  it("preserves a natural AI-written route when no applicable evidence is selected", async () => {
+    const provider = jsonProvider(({ purpose }) => {
+      if (purpose === "v3_semantic_recall") return { queries: ["current confirmation text editing permission"] };
+      if (purpose === "v3_evidence_selection" || purpose === "v3_evidence_selection_retry") {
+        return {
+          needs: [{ text: "Whether the rep may edit the current confirmation wording" }],
+          support: [],
+          unresolved_need_ids: ["N1"],
+          reason: "No approved evidence covers editing permission.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("A no-evidence route should not require policy validation.");
+      return {
+        mode: "route",
+        answer: "I can’t confirm whether you should edit that wording from the guidance available, so please verify it before making a change.",
+        summary: "Verify the wording before making a change.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "Editing permission is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("Can I change the confirmation wording myself?", [], { provider });
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.errorClass).toBeNull();
+    expect(result.answer).toContain("can’t confirm");
+    expect(result.answer).toContain("#sales-questions-requests");
+    expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
+  });
+
   it("honors a presentation-only request to omit a repeated route note", async () => {
     const provider = jsonProvider(({ purpose }) => {
       expect(purpose).toBe("v3_conversation");
