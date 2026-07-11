@@ -181,6 +181,13 @@ function crossesRightsActorBoundary(need: string, decision: string) {
   return asksCompanyRights && onlyDescribesParticipantRights;
 }
 
+function crossesPublicContentPrivacyBoundary(need: string, decision: string) {
+  const asksForPublishedContent = /\b(?:send|share|show|find|link)\b[^?.]{0,120}\b(?:live|published|public|network|episode|show|video|example)\b|\b(?:live|published|public|network)\b[^?.]{0,120}\b(?:episode|show|video|link)\b/i.test(need);
+  const onlyRestrictsPersonalInformation = /\b(?:(?:do not|don't|cannot|can't|must not)\b[^.]{0,160}\b(?:share|send|give)|does not offer out|doesn't offer out)\b[^.]{0,160}\b(?:cast member|client|prospect|applicant)\b[^.]{0,80}\b(?:info|information|contact|email|phone|details)\b/i.test(decision) &&
+    !/\b(?:public|published|network|episode|show|video|link)\b/i.test(decision);
+  return asksForPublishedContent && onlyRestrictsPersonalInformation;
+}
+
 function missesRequestedTimingStage(need: string, decision: string) {
   if (!/\b(?:when|how long|timing|timeline|turnaround|receive|get|arrive|delivered|sent|clear)\b/i.test(need)) return false;
   const targets: Array<[RegExp, RegExp]> = [
@@ -455,6 +462,8 @@ async function selectApplicableEvidence(input: {
         "A timeline for one workflow stage is not even partial evidence for another stage's timing. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing are distinct stages unless a card explicitly links them.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
         "Keep rights holders and actors distinct. Evidence about a cast member, client, or prospect's reuse rights never proves the company's production, publication, ownership, or reuse rights, and company rights never prove participant rights.",
+        "Keep public content and private personal information distinct. A rule against sharing a cast member's contact or personal information does not prohibit sharing an already-public episode, show, video, or network link.",
+        "Resolve amount scope before judging a payment plan. In ordinary wording, 'split the $20K total into four payments' means four installments totaling $20K, not four payments of $20K, unless the user explicitly says '$20K each' or equivalent.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
         "For questions asking what is currently available, evidence conditioned with 'if still current', 'may', 'appears', or another unresolved-currentness qualifier is partial at most. Keep current availability unresolved unless another card confirms it.",
         "A condition in the need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the card never mentions. Do not invent the condition's consequence.",
@@ -506,18 +515,19 @@ async function selectApplicableEvidence(input: {
           const match = byRef.get(ref);
           if (!match) return [];
           const decision = policyDecisionParts(match.policy.decision).decision_evidence;
-          return crossesRightsActorBoundary(need, decision) || missesRequestedTimingStage(need, decision) || missesRequestedArtifact(need, decision) ? [] : [match];
+          return crossesRightsActorBoundary(need, decision) || crossesPublicContentPrivacyBoundary(need, decision) || missesRequestedTimingStage(need, decision) || missesRequestedArtifact(need, decision) ? [] : [match];
         });
         if (!applicableMatches.length) return [];
         const conditionalCurrentness = applicableMatches.every((match) => hasConditionalCurrentnessGap(need, policyDecisionParts(match.policy.decision).decision_evidence));
         const conditionGap = applicableMatches.every((match) => hasUnmatchedExplicitCondition(need, policyDecisionParts(match.policy.decision).decision_evidence));
         const exclusivityGap = applicableMatches.every((match) => hasUnprovenExclusivity(need, policyDecisionParts(match.policy.decision).decision_evidence));
         const requiresPartial = conditionalCurrentness || conditionGap || exclusivityGap;
+        const minimizeClaim = requiresPartial || item.relation === "partial";
         return [{
           ...item,
           relation: requiresPartial && item.relation === "direct" ? "partial" as const : item.relation,
           policy_ids: applicableMatches.map((match) => match.policy.id),
-          supported_claim: requiresPartial
+          supported_claim: minimizeClaim
             ? applicableMatches.map((match) => minimalDecisionEvidence(need, policyDecisionParts(match.policy.decision).decision_evidence)).join(" ")
             : item.supported_claim,
         }];
@@ -921,6 +931,8 @@ async function validateAndRepair(input: {
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
       "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
       "Keep rights holders and actors distinct. Evidence about a cast member, client, or prospect's reuse rights never proves the company's production, publication, ownership, or reuse rights, and company rights never prove participant rights.",
+      "Keep public content and private personal information distinct. A rule against sharing a cast member's contact or personal information does not prohibit sharing an already-public episode, show, video, or network link.",
+      "Resolve amount scope before auditing a payment answer. In ordinary wording, 'split the $20K total into four payments' means four installments totaling $20K, not four payments of $20K, unless the user explicitly says '$20K each' or equivalent.",
       "Reject stitched answers where one card matches the show/entity while a different card supplies the action or decision. One applicable card, or a coherent set of cards, must support the full conclusion.",
       "Do not infer permission from absence of a prohibition. Do not turn examples, neighboring products, couple/partner rules, package discounts, or generic Call 1 flow into a policy for a different case.",
       "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Remove unsupported claims such as 'we do not have one' unless selected evidence explicitly states that fact.",
@@ -950,7 +962,17 @@ async function validateAndRepair(input: {
       deterministic_errors: deterministic.errors,
       draft: input.output,
     }),
-    parse: parseValidationOutput,
+    parse: (content: string) => {
+      const parsed = parseValidationOutput(content);
+      const sentenceRefs = new Set(parsed.sentence_checks?.map((item) => item.sentence_ref));
+      const needRefs = new Set(parsed.need_checks?.map((item) => item.need_ref));
+      const missingSentenceRefs = sentenceClaims.map((item) => item.ref).filter((ref) => !sentenceRefs.has(ref));
+      const missingNeedRefs = contractNeeds.map((item) => item.id).filter((ref) => !needRefs.has(ref));
+      if (missingSentenceRefs.length || missingNeedRefs.length) {
+        throw new Error(`V3 validation response omitted required checks: ${[...missingSentenceRefs, ...missingNeedRefs].join(", ")}`);
+      }
+      return parsed;
+    },
   };
   const resolveValidationRef = (value: string) => exactValidationIds.has(value) ? value : validationRefs.get(value.trim().toLowerCase()) || value;
   const applyValidation = (rawRepaired: V3ValidationResult) => {
@@ -992,11 +1014,16 @@ async function validateAndRepair(input: {
       if (entry.status === "unresolved") return [];
       const applicable = (input.retrieval.evidenceContract?.support || []).filter((support) => support.need_id === entry.need_ref);
       const allowedIds = new Set(applicable.flatMap((support) => support.policy_ids));
+      const allContractIds = new Set((input.retrieval.evidenceContract?.support || []).flatMap((support) => support.policy_ids));
       const relationSupportsStatus = entry.status === "answered"
         ? applicable.some((support) => support.relation === "direct")
         : applicable.some((support) => support.relation === "direct" || support.relation === "partial");
       const usesOnlyApplicableEvidence = entry.policy_ids.length > 0 && entry.policy_ids.every((id) => allowedIds.has(id));
-      return relationSupportsStatus && usesOnlyApplicableEvidence ? [] : [`${entry.need_ref}:${entry.status}`];
+      const recoverableCrossNeedPartial = entry.status === "partial" &&
+        !applicable.length &&
+        entry.policy_ids.length > 0 &&
+        entry.policy_ids.every((id) => allContractIds.has(id));
+      return (relationSupportsStatus && usesOnlyApplicableEvidence) || recoverableCrossNeedPartial ? [] : [`${entry.need_ref}:${entry.status}`];
     });
     const supportedSentenceRefs = new Set(
       sentenceChecks

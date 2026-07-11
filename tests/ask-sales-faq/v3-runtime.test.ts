@@ -661,6 +661,69 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
   });
 
+  it("does not use a private-contact rule to prohibit sharing public content", async () => {
+    let composerSawPrivacyCard = false;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["public nonprofit episode example on the network"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; id: string }>;
+        const privacy = candidates.find((card) => card.id === "claim_2f86b6ec9fa9f0a9");
+        expect(privacy).toBeDefined();
+        return {
+          needs: [{ text: "Can I send a public live network episode featuring a nonprofit owner to a potential cast member?" }],
+          support: privacy ? [{ need_id: "N1", relation: "direct", refs: [privacy.ref], supported_claim: "The episode cannot be sent because cast member information is private.", reason: "The episode features a cast member." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally crosses public content and private contact information.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("The privacy card must be filtered before validation.");
+      const cards = payload.evidence_cards as Array<{ policy_key: string }>;
+      composerSawPrivacyCard = cards.some((card) => card.policy_key === "prospect-asks-to-speak-with-prior-cast-member");
+      return {
+        mode: "route",
+        answer: "I can’t confirm which public nonprofit episode link is current, so please verify the current example before sending one.",
+        summary: "Verify the current public nonprofit episode example.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The current public example is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "Do we have a live episode on the network featuring a nonprofit owner that I can send to a potential cast member?",
+      [],
+      { provider },
+    );
+    expect(composerSawPrivacyCard).toBe(false);
+    expect(result.answer).not.toMatch(/cannot send|can't send|must not send/i);
+  });
+
+  it("tells both entailment stages to distinguish a total from each installment", async () => {
+    const seen = new Set<string>();
+    const base = groundedProvider();
+    const provider = (async (input: Parameters<V3Provider>[0]) => {
+      if (input.purpose === "v3_evidence_selection" || input.purpose === "v3_grounding_validation") {
+        expect(input.system).toContain("four installments totaling $20K, not four payments of $20K");
+        seen.add(input.purpose);
+      }
+      return base(input);
+    }) as V3Provider;
+
+    await runAskSalesFaqV3(
+      "If someone splits the $20K total into four payments, will the remaining ACH installments draft automatically?",
+      [],
+      { provider },
+    );
+    expect(seen).toEqual(new Set(["v3_evidence_selection", "v3_grounding_validation"]));
+  });
+
   it("does not let an editing timeline answer script-delivery timing", async () => {
     let composerSawEvidence = true;
     const provider = jsonProvider(({ purpose, user }) => {

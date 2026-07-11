@@ -97,6 +97,15 @@ async function main() {
   if (!deployment) throw new Error("Pass --deployment=<Vercel deployment id or URL>.");
   const datasetPath = path.resolve(argument("dataset") || "tests/ask-sales-faq/v3-regression-78.json");
   const payload = JSON.parse(await readFile(datasetPath, "utf8"));
+  const conversationStart = Math.max(0, Number.parseInt(argument("conversation-start") || "0", 10));
+  const conversationCount = Math.max(0, Number.parseInt(argument("conversation-count") || "0", 10));
+  if (conversationStart || conversationCount) {
+    payload.conversations = payload.conversations.slice(
+      conversationStart,
+      conversationCount ? conversationStart + conversationCount : undefined,
+    );
+    payload.name = `${payload.name || "Ask Sales FAQ V3 benchmark"} (conversations ${conversationStart + 1}-${conversationStart + payload.conversations.length})`;
+  }
   const limit = Number.parseInt(argument("limit") || "0", 10);
   if (limit > 0) payload.limit = limit;
   const startedAt = new Date().toISOString();
