@@ -203,8 +203,8 @@ function composerUserPrompt(turn: V3TurnResolution, retrieval: V3RetrievalResult
     resolved_turn: {
       kind: turn.kind,
       standalone_question: turn.standaloneQuestion,
-      immediate_previous_user_question: turn.immediatePreviousUserQuestion,
-      immediate_previous_assistant_answer: turn.immediatePreviousAssistantAnswer,
+      immediate_previous_user_question: turn.usedImmediateContext ? turn.immediatePreviousUserQuestion : null,
+      immediate_previous_assistant_answer: turn.usedImmediateContext ? turn.immediatePreviousAssistantAnswer : null,
       product_scope: turn.productScope,
       excluded_scopes: turn.excludedScopes,
       style_preferences: turn.stylePreferences,
@@ -221,10 +221,14 @@ function composerUserPrompt(turn: V3TurnResolution, retrieval: V3RetrievalResult
 
 function conversationPrompt(turn: V3TurnResolution) {
   if (turn.kind === "rewrite") {
+    const omitRepeatedRoute = /\bwithout repeating (?:the )?route(?: note)?\b|\bdo not repeat (?:the )?route(?: note)?\b/i.test(turn.currentQuestion);
     return {
       system: [
         "Rewrite the immediate previous assistant answer exactly as the user requests.",
-        "Preserve its meaning, policy boundaries, numbers, channels, and uncertainty. Add no facts.",
+        "Preserve its meaning, policy boundaries, numbers, and uncertainty. Add no facts.",
+        omitRepeatedRoute
+          ? "The user already saw the route note and explicitly asked not to repeat it. Omit that repeated route sentence while preserving any uncertainty in the answer."
+          : "Preserve any channel or route instruction from the prior answer.",
         "For a list or checklist, return a concise summary plus one section whose items array contains one clean entry per item. Do not place an inline dash-separated list in the answer field.",
         "Be natural and helpful. Return the same JSON answer schema; use mode conversation and no policy IDs.",
       ].join("\n"),
@@ -395,7 +399,7 @@ async function validateAndRepair(input: {
       user: JSON.stringify({
         question: input.turn.standaloneQuestion,
         current_message: input.turn.currentQuestion,
-        immediate_previous_question: input.turn.immediatePreviousUserQuestion,
+        immediate_previous_question: input.turn.usedImmediateContext ? input.turn.immediatePreviousUserQuestion : null,
         product_scope: input.turn.productScope,
         excluded_scopes: input.turn.excludedScopes,
         selected_evidence: policies.map((policy) => ({ id: policy.id, scope: policy.product_scopes, decision: policy.decision })),
@@ -666,7 +670,9 @@ export async function runAskSalesFaqV3(
   }
 
   const selected = selectedPolicies(output, retrieval);
-  const route = routeFor(turn.currentQuestion, selected);
+  const route = output.route_key && registry.route_catalog[output.route_key]
+    ? registry.route_catalog[output.route_key]
+    : routeFor(turn.currentQuestion, selected);
   if (output.needs_route && !output.answer.includes(route.channel)) {
     output.answer = `${output.answer.replace(/[.!]?$/, ".")} Use ${route.channel} for the unresolved part.`;
   }

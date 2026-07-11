@@ -7,14 +7,28 @@ const SOCIAL_PREFACE = /^(?:hi|hello|hey|good (?:morning|afternoon|evening)|than
 const META_CONVERSATION = /\b(?:can you help me with (?:a few|some|several) .+ questions|i have (?:a few|some|several) (?:unrelated )?.+ questions|i(?:['’]m| am) switching to .+ now|next i have questions about|now i have (?:some )?questions about|appreciate it.{0,20}(?:next|now) i have|last section|thank you for sticking with me|thanks,? that(?:['’]s| is) everything|that(?:['’]s| is) all for now|hope you(?:['’]re| are) doing well|how(?:['’]s| is) your day going)\b/i;
 const MEMORY_QUESTION = /\b(?:what|which)\s+(?:was|is)\s+(?:my|the)\s+(?:previous|last)\s+question\b|\bwhat did i (?:just )?ask\b/i;
 const REWRITE = /\b(?:rewrite|rephrase|format|make (?:that|it)|turn (?:that|it|the previous answer|your previous answer)|put (?:that|it)|summari[sz]e|shorten|shorter|simpler language|plain english|bullet(?:s| points)?|checklist|table|answer without repeating|without repeating the route)\b/i;
-const FOLLOW_UP = /^(?:and |also |so |but |what about|how about|why|when|where|who|which|does that|do they|can they|can i|can we|is that|is it|are they|explain that|tell me more|what if)\b/i;
-const CONTEXT_PRONOUN = /\b(?:that|those|this|these|it|they|them|the previous (?:answer|question)|same (?:client|prospect|case|show|plan|package))\b/i;
+const ELLIPTICAL_FOLLOW_UP = /^(?:(?:and|also|so|but)\s+)?(?:what about|how about|does that|did that|would that|could that|is that|was that|are those|do they|can they|what if|why is that|why not|then what|anything else|tell me more|(?:can you )?(?:explain|clarify|expand on|simplify) (?:that|this|it))\b/i;
+const EXPLICIT_REFERENT = /\b(?:(?:the )?(?:previous|last) (?:answer|question)|(?:same|that|this) (?:answer|rule|case|client|prospect|show|plan|package|situation|one|thing|location)|(?:does|did|is|was|would|could|can|will) (?:that|this|it))\b/i;
 const CORRECTION = /\b(?:actually|you misunderstood|i(?:['’]m| am) asking|not what i asked|my previous question|i meant)\b/i;
 const STYLE_PREFERENCE = /\b(?:keep (?:your )?answers? .{0,30}(?:short|concise|practical)|answer .{0,20}(?:briefly|concisely)|use bullets|do not repeat route notes?)\b/i;
 const CLARIFICATION_REQUEST = /\b(?:what information do you need from me|what (?:else )?do you need (?:from me|to know)|which show this applies to|what details should i provide)\b/i;
 
 function clean(value: string) {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function contentAnchorCount(value: string) {
+  const ignored = new Set([
+    "a", "an", "and", "are", "as", "at", "be", "but", "by", "can", "could", "did", "do", "does", "for", "from",
+    "had", "has", "have", "how", "i", "if", "in", "is", "it", "me", "my", "of", "on", "or", "should", "so", "that",
+    "the", "their", "them", "then", "there", "these", "they", "this", "those", "to", "was", "we", "were", "what", "when",
+    "where", "which", "who", "why", "will", "with", "would", "you", "your",
+  ]);
+  return clean(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .split(" ")
+    .filter((token) => token.length > 2 && !ignored.has(token)).length;
 }
 
 function recentMessages(messages: AskSalesFaqChatMessage[], currentQuestion: string) {
@@ -74,14 +88,17 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   const rewrite = !memory && REWRITE.test(strippedSocialPreface) && Boolean(immediatePreviousAssistantAnswer);
   const clarification = !social && !memory && !rewrite && CLARIFICATION_REQUEST.test(strippedSocialPreface) && Boolean(immediatePreviousUserQuestion);
   const explicitCorrection = CORRECTION.test(strippedSocialPreface);
-  const shortQuestion = strippedSocialPreface.split(/\s+/).length <= 18;
+  const shortQuestion = strippedSocialPreface.split(/\s+/).length <= 16;
+  const explicitReferent = EXPLICIT_REFERENT.test(strippedSocialPreface);
+  const ellipticalFollowUp = ELLIPTICAL_FOLLOW_UP.test(strippedSocialPreface);
+  const lacksStandaloneSubject = contentAnchorCount(strippedSocialPreface) < 4;
   const followUp =
     !social &&
     !memory &&
     !rewrite &&
     !clarification &&
     Boolean(immediatePreviousUserQuestion) &&
-    (FOLLOW_UP.test(strippedSocialPreface) || explicitCorrection || (shortQuestion && CONTEXT_PRONOUN.test(strippedSocialPreface)));
+    (explicitCorrection || ellipticalFollowUp || (shortQuestion && explicitReferent && lacksStandaloneSubject));
   const kind = social ? "social" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
   const scope = resolveScope(strippedSocialPreface, immediatePreviousUserQuestion);
   const stylePreferences = contextMessages
@@ -92,9 +109,8 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   let standaloneQuestion = strippedSocialPreface || currentQuestion;
   if ((followUp || clarification) && immediatePreviousUserQuestion) {
     standaloneQuestion = [
-      `Immediate previous question: ${immediatePreviousUserQuestion}`,
-      immediatePreviousAssistantAnswer ? `Immediate previous answer: ${immediatePreviousAssistantAnswer.slice(0, 900)}` : "",
-      `Follow-up: ${strippedSocialPreface}`,
+      `Immediate prior subject: ${immediatePreviousUserQuestion}`,
+      `Current request about that subject: ${strippedSocialPreface}`,
     ].filter(Boolean).join("\n");
   }
 

@@ -49,7 +49,7 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     const rewrite = resolveV3Turn("Can you give me that answer without repeating the route note?", messages);
     expect(correction.kind).toBe("follow_up");
     expect(correction.explicitCorrection).toBe(true);
-    expect(correction.standaloneQuestion).toContain("Immediate previous question");
+    expect(correction.standaloneQuestion).toContain("Immediate prior subject");
     expect(rewrite.kind).toBe("rewrite");
   });
 
@@ -118,5 +118,49 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(turn.productScope).toBe("main_istv");
     expect(retrieval.candidates.some(({ policy }) => policy.domains.includes("contracts"))).toBe(true);
     expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("dj_nlceo") && !policy.product_scopes.includes("main_istv"))).toBe(false);
+  });
+
+  it("treats complete interrogative questions as new turns even when a chat has prior context", () => {
+    const messages = [
+      { role: "user" as const, content: "Does a real-estate agent need brokerage approval?" },
+      { role: "assistant" as const, content: "Confirm the brokerage requirement." },
+    ];
+    const questions = [
+      "Why is there a commercial reuse license?",
+      "When Call 1 happens on a Friday, should Call 2 happen before Sunday?",
+      "Where can I find a client’s show name if it is missing from Keap?",
+      "How do I verify that a Next Level CEO contract has been signed?",
+      "Should freelancers move to Call 2, or do they need an established business?",
+      "Can I cancel an audition for a recently disqualified applicant?",
+    ];
+    for (const question of questions) {
+      const turn = resolveV3Turn(question, messages);
+      expect(turn.kind, question).toBe("new");
+      expect(turn.usedImmediateContext, question).toBe(false);
+    }
+  });
+
+  it("uses prior policy context for a genuinely elliptical follow-up without injecting the prior answer into retrieval", () => {
+    const messages = [
+      { role: "user" as const, content: "Should freelancers move to Call 2, or do they need an established business?" },
+      { role: "assistant" as const, content: "A long unrelated answer that must not enter the retrieval query." },
+    ];
+    const turn = resolveV3Turn("Can you explain that more simply?", messages);
+    const retrieval = retrieveV3Policies(turn);
+    expect(turn.kind).toBe("follow_up");
+    expect(turn.standaloneQuestion).toContain("Should freelancers move to Call 2");
+    expect(turn.standaloneQuestion).not.toContain("long unrelated answer");
+    expect(retrieval.query).not.toContain("long unrelated answer");
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_59be9c344b9359a4")).toBe(true);
+  });
+
+  it("retrieves the approved freelancer policy for a standalone question after unrelated context", () => {
+    const turn = resolveV3Turn("Should freelancers move to Call 2, or do they need an established business to qualify?", [
+      { role: "user", content: "Does an agent need brokerage approval?" },
+      { role: "assistant", content: "Confirm it with compliance." },
+    ]);
+    const retrieval = retrieveV3Policies(turn);
+    expect(turn.kind).toBe("new");
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_59be9c344b9359a4")).toBe(true);
   });
 });

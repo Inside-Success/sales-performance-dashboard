@@ -76,6 +76,8 @@ export type V3PolicyMatch = {
   lexicalScore: number;
   phraseScore: number;
   trigramScore: number;
+  familyScore: number;
+  contextScore: number;
   scopeScore: number;
   matchedTerms: string[];
 };

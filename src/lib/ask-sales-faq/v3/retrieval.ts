@@ -13,7 +13,7 @@ const STOPWORDS = new Set([
   "a", "an", "and", "are", "as", "at", "be", "been", "but", "by", "can", "could", "do", "does", "for", "from",
   "had", "has", "have", "how", "i", "if", "in", "is", "it", "me", "my", "of", "on", "or", "our", "should", "that",
   "the", "their", "them", "then", "this", "to", "was", "we", "were", "what", "when", "where", "which", "who", "will",
-  "with", "would", "you", "your",
+  "with", "would", "you", "your", "they", "need",
 ]);
 const QUALITY_WEIGHT: Record<V3Policy["quality_tier"], number> = {
   canonical: 1.18,
@@ -38,6 +38,23 @@ function stem(token: string) {
 
 function tokens(value: string) {
   return normalize(value).split(" ").filter((token) => token.length > 1 && !STOPWORDS.has(token)).map(stem);
+}
+
+function sameWordFamily(left: string, right: string) {
+  if (left === right) return true;
+  if (left.length < 6 || right.length < 6 || Math.abs(left.length - right.length) > 3) return false;
+  const shorter = Math.min(left.length, right.length);
+  let prefix = 0;
+  while (prefix < shorter && left[prefix] === right[prefix]) prefix += 1;
+  return prefix >= shorter - 1;
+}
+
+function matchingIndexedToken(queryToken: string, indexed: IndexedPolicy) {
+  if (indexed.tokenCounts.has(queryToken)) return queryToken;
+  for (const candidate of indexed.tokenCounts.keys()) {
+    if (sameWordFamily(queryToken, candidate)) return candidate;
+  }
+  return null;
 }
 
 function trigrams(value: string) {
@@ -104,8 +121,28 @@ function phraseScore(query: string, indexed: IndexedPolicy) {
     const familyTokens = new Set(tokens(family));
     const queryTokens = new Set(tokens(normalizedQuery));
     let overlap = 0;
-    for (const token of queryTokens) if (familyTokens.has(token)) overlap += 1;
+    for (const token of queryTokens) {
+      if (Array.from(familyTokens).some((candidate) => sameWordFamily(token, candidate))) overlap += 1;
+    }
     best = Math.max(best, (overlap / Math.max(1, Math.min(queryTokens.size, familyTokens.size))) * 8);
+  }
+  return best;
+}
+
+function familyScore(query: string, indexed: IndexedPolicy) {
+  const queryTokens = new Set(tokens(query));
+  if (queryTokens.size < 2) return 0;
+  let best = 0;
+  for (const family of indexed.normalizedFamilies) {
+    const familyTokens = new Set(tokens(family));
+    if (familyTokens.size < 2) continue;
+    let overlap = 0;
+    for (const token of queryTokens) if (familyTokens.has(token)) overlap += 1;
+    if (overlap < 2) continue;
+    const precision = overlap / queryTokens.size;
+    const recall = overlap / familyTokens.size;
+    const weighted = precision * 0.58 + recall * 0.42;
+    best = Math.max(best, weighted * 10);
   }
   return best;
 }
@@ -125,11 +162,14 @@ function scopeScore(policy: V3Policy, turn: V3TurnResolution) {
   return scopes.includes("product_agnostic") ? 1 : 0;
 }
 
-function queryForRetrieval(turn: V3TurnResolution) {
-  if (turn.kind !== "follow_up") return turn.standaloneQuestion;
-  // The current follow-up is repeated so it remains the dominant signal while
-  // the immediate antecedent supplies the missing referent.
-  return `${turn.currentQuestion}\n${turn.currentQuestion}\n${turn.standaloneQuestion}`;
+function retrievalQueries(turn: V3TurnResolution) {
+  const current = turn.currentQuestion;
+  const context = turn.kind === "follow_up" ? turn.immediatePreviousUserQuestion || "" : "";
+  return {
+    current,
+    context,
+    diagnostic: context ? `${current}\nImmediate prior subject: ${context}` : current,
+  };
 }
 
 function mentionedEntities(question: string, turn?: V3TurnResolution) {
@@ -167,8 +207,10 @@ function retrieveBlocked(query: string, queryTokens: string[], turn: V3TurnResol
 
 export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3RetrievalResult {
   const startedAt = Date.now();
-  const query = queryForRetrieval(turn);
-  const queryTokens = tokens(query);
+  const queries = retrievalQueries(turn);
+  const query = queries.diagnostic;
+  const queryTokens = tokens(queries.current);
+  const contextTokens = tokens(queries.context);
   const queryTrigrams = trigrams(turn.currentQuestion);
   const requiredEntities = mentionedEntities(turn.currentQuestion, turn);
   const matches: V3PolicyMatch[] = [];
@@ -180,15 +222,35 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3Retrie
     const scoped = scopeScore(indexed.policy, turn);
     if (scoped <= -100) continue;
     const lexical = bm25(queryTokens, indexed);
+    const contextLexical = contextTokens.length ? bm25(contextTokens, indexed) : 0;
     const phrase = phraseScore(turn.currentQuestion, indexed);
+    const family = familyScore(turn.currentQuestion, indexed);
+    const contextFamily = queries.context ? familyScore(queries.context, indexed) : 0;
+    const effectiveFamily = Math.max(family, contextFamily * 0.9);
     const trigram = trigramSimilarity(queryTrigrams, indexed.trigrams) * 7;
-    const matchedTerms = Array.from(new Set(queryTokens)).filter((token) => indexed.tokenCounts.has(token));
-    const rareMatches = matchedTerms.filter((token) => token.length >= 5 && (documentFrequency.get(token) || 0) <= 12);
-    if (matchedTerms.length < 2 && rareMatches.length === 0 && phrase < 5 && trigram < 2.6) continue;
+    const currentMatchedTerms = Array.from(new Set(queryTokens)).filter((token) => matchingIndexedToken(token, indexed));
+    const contextMatchedTerms = Array.from(new Set(contextTokens)).filter((token) => matchingIndexedToken(token, indexed));
+    const matchedTerms = Array.from(new Set([...currentMatchedTerms, ...contextMatchedTerms]));
+    const rareMatches = currentMatchedTerms.filter((token) => {
+      const indexedToken = matchingIndexedToken(token, indexed);
+      return token.length >= 5 && indexedToken && (documentFrequency.get(indexedToken) || 0) <= 12;
+    });
+    const contextRareMatches = contextMatchedTerms.filter((token) => {
+      const indexedToken = matchingIndexedToken(token, indexed);
+      return token.length >= 5 && indexedToken && (documentFrequency.get(indexedToken) || 0) <= 12;
+    });
+    if (currentMatchedTerms.length < 2 && rareMatches.length === 0 && phrase < 5 && effectiveFamily < 4.8 && trigram < 2.6 && contextMatchedTerms.length < 2) continue;
     const authority = Math.min(6, indexed.policy.authority / 20);
     const answerabilityBonus = indexed.policy.answerability === "answer_evidence" ? 2 : 0;
-    const rareIntentBonus = rareMatches.length * 18;
-    const raw = lexical * 3.2 + phrase + trigram + scoped + authority + answerabilityBonus + rareIntentBonus;
+    const rareIntentBonus = Math.min(36, rareMatches.length * 14);
+    const contextRareBonus = Math.min(24, contextRareMatches.length * 12);
+    const currentSignal = lexical * 3.2 + phrase + family * 1.6 + trigram + rareIntentBonus;
+    const contextWeight = queryTokens.length <= 4 ? 2.8 : 1.35;
+    const contextSignal = contextLexical * contextWeight + contextFamily * 1.2 + contextRareBonus;
+    const contextRankScore = contextMatchedTerms.length >= 2 || contextFamily >= 4.8 || contextRareMatches.length
+      ? contextLexical * 3.2 + contextFamily * 1.6 + contextRareBonus + scoped + authority + answerabilityBonus
+      : 0;
+    const raw = currentSignal + contextSignal + scoped + authority + answerabilityBonus;
     const score = raw * QUALITY_WEIGHT[indexed.policy.quality_tier];
     matches.push({
       policy: indexed.policy,
@@ -196,15 +258,27 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3Retrie
       lexicalScore: Math.round(lexical * 100) / 100,
       phraseScore: Math.round(phrase * 100) / 100,
       trigramScore: Math.round(trigram * 100) / 100,
+      familyScore: Math.round(effectiveFamily * 100) / 100,
+      contextScore: Math.round(contextRankScore * 100) / 100,
       scopeScore: scoped,
       matchedTerms: matchedTerms.slice(0, 16),
     });
   }
 
-  matches.sort((a, b) => b.score - a.score || b.policy.authority - a.policy.authority || a.policy.id.localeCompare(b.policy.id));
+  matches.sort((a, b) => b.score - a.score || b.familyScore - a.familyScore || b.policy.authority - a.policy.authority || a.policy.id.localeCompare(b.policy.id));
   const deduped: V3PolicyMatch[] = [];
   const policyKeys = new Set<string>();
-  for (const match of matches) {
+  const familyLane = matches
+    .filter((match) => match.familyScore >= 5.4 && match.matchedTerms.length >= 2)
+    .sort((a, b) => b.familyScore - a.familyScore || b.score - a.score)
+    .slice(0, Math.min(4, Math.ceil(limit / 3)));
+  const contextLane = queries.context
+    ? [...matches]
+        .filter((match) => match.contextScore > 0)
+        .sort((a, b) => b.contextScore - a.contextScore || b.score - a.score)
+        .slice(0, Math.min(6, Math.ceil(limit / 2)))
+    : [];
+  for (const match of [...familyLane, ...contextLane, ...matches]) {
     const key = `${match.policy.policy_key}:${match.policy.product_scopes.join(",")}`;
     if (policyKeys.has(key)) continue;
     policyKeys.add(key);
@@ -215,7 +289,7 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3Retrie
   return {
     query,
     candidates: deduped,
-    blocked: retrieveBlocked(query, queryTokens, turn),
+    blocked: retrieveBlocked(queries.current, queryTokens, turn),
     queryTokens,
     stageTimings: { retrievalMs: Date.now() - startedAt },
   };

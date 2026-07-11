@@ -107,6 +107,33 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
   });
 
+  it("does not expose an unrelated prior answer to the composer for a complete new question", async () => {
+    let inspected = false;
+    const base = groundedProvider();
+    const provider = (async (input: Parameters<V3Provider>[0]) => {
+      if (input.purpose === "v3_evidence_answer") {
+        const payload = JSON.parse(input.user) as {
+          resolved_turn: { kind: string; immediate_previous_user_question: string | null; immediate_previous_assistant_answer: string | null };
+        };
+        expect(payload.resolved_turn.kind).toBe("new");
+        expect(payload.resolved_turn.immediate_previous_user_question).toBeNull();
+        expect(payload.resolved_turn.immediate_previous_assistant_answer).toBeNull();
+        inspected = true;
+      }
+      return base(input);
+    }) as V3Provider;
+
+    await runAskSalesFaqV3(
+      "Should freelancers move to Call 2, or do they need an established business to qualify?",
+      [
+        { role: "user", content: "Does an agent need brokerage approval?" },
+        { role: "assistant", content: "An unrelated brokerage answer." },
+      ],
+      { provider },
+    );
+    expect(inspected).toBe(true);
+  });
+
   it("passes every bounded retrieval candidate to the composer", async () => {
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
