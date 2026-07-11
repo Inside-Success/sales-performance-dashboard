@@ -671,7 +671,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         const privacy = candidates.find((card) => card.id === "claim_2f86b6ec9fa9f0a9");
         expect(privacy).toBeDefined();
         return {
-          needs: [{ text: "Can I send a public live network episode featuring a nonprofit owner to a potential cast member?" }],
+          needs: [{ text: "Determine whether such a public network episode can be sent to a potential cast member." }],
           support: privacy ? [{ need_id: "N1", relation: "direct", refs: [privacy.ref], supported_claim: "The episode cannot be sent because cast member information is private.", reason: "The episode features a cast member." }] : [],
           unresolved_need_ids: [],
           reason: "Intentionally crosses public content and private contact information.",

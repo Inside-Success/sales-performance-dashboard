@@ -182,7 +182,7 @@ function crossesRightsActorBoundary(need: string, decision: string) {
 }
 
 function crossesPublicContentPrivacyBoundary(need: string, decision: string) {
-  const asksForPublishedContent = /\b(?:send|share|show|find|link)\b[^?.]{0,120}\b(?:live|published|public|network|episode|show|video|example)\b|\b(?:live|published|public|network)\b[^?.]{0,120}\b(?:episode|show|video|link)\b/i.test(need);
+  const asksForPublishedContent = /\b(?:send|sent|share|shared|show|find|link)\b[^?.]{0,120}\b(?:live|published|public|network|episode|show|video|example)\b|\b(?:live|published|public|network|episode|show|video|example)\b[^?.]{0,120}\b(?:send|sent|share|shared|show|find|link)\b/i.test(need);
   const onlyRestrictsPersonalInformation = /\b(?:(?:do not|don't|cannot|can't|must not)\b[^.]{0,160}\b(?:share|send|give)|does not offer out|doesn't offer out)\b[^.]{0,160}\b(?:cast member|client|prospect|applicant)\b[^.]{0,80}\b(?:info|information|contact|email|phone|details)\b/i.test(decision) &&
     !/\b(?:public|published|network|episode|show|video|link)\b/i.test(decision);
   return asksForPublishedContent && onlyRestrictsPersonalInformation;
