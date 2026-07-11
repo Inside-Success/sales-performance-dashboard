@@ -191,6 +191,14 @@ function parseSemanticRecall(content: string) {
   return { queries };
 }
 
+function parseEvidenceSelection(content: string) {
+  const raw = parseV3Json<Record<string, unknown>>(content);
+  return {
+    selected_refs: stringArray(raw.selected_refs, 6),
+    reason: clean(raw.reason, 800),
+  };
+}
+
 async function addSemanticRecall(input: {
   provider: V3Provider;
   turn: V3TurnResolution;
@@ -235,12 +243,14 @@ async function addSemanticRecall(input: {
         explicitCorrection: false,
         contextMessages: [],
       };
-      return retrieveV3Policies(expandedTurn, 8).candidates.slice(0, 4);
+      return retrieveV3Policies(expandedTurn, 16).candidates.slice(0, 12);
     });
     const combined = [
-      ...input.retrieval.candidates.slice(0, 4),
+      // Preserve every bounded direct-retrieval result before adding recall
+      // expansions. Expanded candidates may add evidence, but must never
+      // displace a direct match that was already inside the trusted bound.
+      ...input.retrieval.candidates,
       ...semanticMatches,
-      ...input.retrieval.candidates.slice(4),
     ];
     const candidates: V3RetrievalResult["candidates"] = [];
     const seen = new Set<string>();
@@ -249,7 +259,7 @@ async function addSemanticRecall(input: {
       if (seen.has(key)) continue;
       seen.add(key);
       candidates.push(match);
-      if (candidates.length >= 16) break;
+      if (candidates.length >= 32) break;
     }
     return {
       ...input.retrieval,
@@ -261,6 +271,76 @@ async function addSemanticRecall(input: {
     return {
       ...input.retrieval,
       stageTimings: { ...input.retrieval.stageTimings, semanticRecallMs: Date.now() - startedAt },
+    };
+  }
+}
+
+async function selectApplicableEvidence(input: {
+  provider: V3Provider;
+  turn: V3TurnResolution;
+  retrieval: V3RetrievalResult;
+  attempts: V3ProviderAttempt[];
+}) {
+  if (!input.retrieval.semanticQueries?.length) return input.retrieval;
+  const startedAt = Date.now();
+  const cards = input.retrieval.candidates.map((match, index) => ({
+    ref: `P${index + 1}`,
+    id: match.policy.id,
+    title: match.policy.title,
+    decision_evidence: match.policy.decision.slice(0, 1000),
+    question_families: match.policy.question_families.slice(0, 2),
+    product_scopes: match.policy.product_scopes,
+    effective_at: match.policy.effective_at,
+    authority: match.policy.authority,
+  }));
+  try {
+    const result = await input.provider<{ selected_refs: string[]; reason: string }>({
+      purpose: "v3_evidence_selection",
+      maxTokens: 650,
+      system: [
+        "You are the strict evidence-selection stage for an internal sales assistant. You do not answer the question.",
+        "Select zero to six cards that directly support the exact requested action, conditions, product, timing, or a clearly separable part of the question.",
+        "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
+        "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
+        "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
+        "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
+      ].join("\n"),
+      user: JSON.stringify({
+        current_question: input.turn.currentQuestion,
+        resolved_question: input.turn.standaloneQuestion,
+        product_scope: input.turn.productScope,
+        excluded_scopes: input.turn.excludedScopes,
+        immediate_context_used: input.turn.usedImmediateContext,
+        candidates: cards,
+      }),
+      parse: parseEvidenceSelection,
+    });
+    input.attempts.push(...result.attempts);
+    const byRef = new Map(cards.map((card, index) => [card.ref, input.retrieval.candidates[index]]));
+    const candidates = result.output.selected_refs.flatMap((ref) => {
+      const match = byRef.get(ref);
+      return match ? [match] : [];
+    });
+    return {
+      ...input.retrieval,
+      preselectionCandidateCount: input.retrieval.candidates.length,
+      evidenceSelectionReason: result.output.reason,
+      candidates,
+      stageTimings: {
+        ...input.retrieval.stageTimings,
+        evidenceSelectionMs: Date.now() - startedAt,
+      },
+    };
+  } catch {
+    return {
+      ...input.retrieval,
+      preselectionCandidateCount: input.retrieval.candidates.length,
+      evidenceSelectionReason: "Evidence selection failed; retained the strongest bounded candidates.",
+      candidates: input.retrieval.candidates.slice(0, 12),
+      stageTimings: {
+        ...input.retrieval.stageTimings,
+        evidenceSelectionMs: Date.now() - startedAt,
+      },
     };
   }
 }
@@ -599,6 +679,8 @@ function metadata(input: {
       retrieval: {
         query: input.retrieval.query.slice(0, 4000),
         semanticQueries: input.retrieval.semanticQueries?.map((query) => query.slice(0, 500)),
+        preselectionCandidateCount: input.retrieval.preselectionCandidateCount,
+        evidenceSelectionReason: input.retrieval.evidenceSelectionReason,
         candidateCount: input.retrieval.candidates.length,
         candidates: input.retrieval.candidates.map((match) => ({
           id: match.policy.id,
@@ -659,9 +741,12 @@ export async function runAskSalesFaqV3(
   stageTimings.turnResolutionMs = Date.now() - turnStarted;
   const attempts: V3ProviderAttempt[] = [];
   const lexicalRetrieval = turn.kind === "new" || turn.kind === "follow_up" ? retrieveV3Policies(turn) : { query: turn.standaloneQuestion, candidates: [], blocked: [], queryTokens: [], stageTimings: { retrievalMs: 0 } };
-  const retrieval = turn.kind === "new" || turn.kind === "follow_up"
+  const recalledRetrieval = turn.kind === "new" || turn.kind === "follow_up"
     ? await addSemanticRecall({ provider, turn, retrieval: lexicalRetrieval, attempts })
     : lexicalRetrieval;
+  const retrieval = turn.kind === "new" || turn.kind === "follow_up"
+    ? await selectApplicableEvidence({ provider, turn, retrieval: recalledRetrieval, attempts })
+    : recalledRetrieval;
   Object.assign(stageTimings, retrieval.stageTimings);
 
   let output: V3AnswerOutput;

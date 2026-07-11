@@ -137,7 +137,9 @@ function familyScore(query: string, indexed: IndexedPolicy) {
     const familyTokens = new Set(tokens(family));
     if (familyTokens.size < 2) continue;
     let overlap = 0;
-    for (const token of queryTokens) if (familyTokens.has(token)) overlap += 1;
+    for (const token of queryTokens) {
+      if (Array.from(familyTokens).some((candidate) => sameWordFamily(token, candidate))) overlap += 1;
+    }
     if (overlap < 2) continue;
     const precision = overlap / queryTokens.size;
     const recall = overlap / familyTokens.size;

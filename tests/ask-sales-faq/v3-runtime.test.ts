@@ -141,6 +141,12 @@ describe("Ask Sales FAQ V3 runtime", () => {
         expect(payload).not.toHaveProperty("catalog");
         return { queries: ["Can an existing client buy another show and who owns the relationship?"] };
       }
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => card.title === "Existing client buying another show");
+        expect(target).toBeDefined();
+        return { selected_refs: [target?.ref], reason: "This card directly answers the cross-show purchase and ownership question." };
+      }
       if (purpose === "v3_grounding_validation") {
         const draft = payload.draft as Record<string, unknown>;
         return {
@@ -183,6 +189,9 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.retrieval.semanticQueries).toEqual([
       "Can an existing client buy another show and who owns the relationship?",
     ]);
+    expect(result.runtimeMetadata.v3?.retrieval.preselectionCandidateCount).toBeGreaterThan(
+      result.runtimeMetadata.v3?.retrieval.candidateCount || 0,
+    );
   });
 
   it("passes every bounded retrieval candidate to the composer", async () => {
