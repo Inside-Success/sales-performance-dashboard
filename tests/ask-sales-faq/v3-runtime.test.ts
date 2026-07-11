@@ -233,7 +233,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
           sentence_evidence: draft.sentence_evidence,
           coverage: draft.coverage,
           needs_route: true,
-          route_key: "sales_policy",
+          route_key: "greenlight",
           route_reason: "The decline scenario is unresolved.",
           removed_claims: [],
           reason: "The supported separable part is grounded.",
@@ -255,7 +255,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         ],
         sentence_evidence: [{ sentence: "The license covers reuse of company-produced content, plus the time, energy, and promised deliverables.", policy_ids: [target?.ref] }],
         needs_route: true,
-        route_key: "sales_policy",
+        route_key: "greenlight",
         route_reason: "The decline scenario is unresolved.",
         confidence_score: 80,
       };
@@ -270,6 +270,8 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(retrySelectionCalls).toBe(1);
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).toContain("covers reuse");
+    expect(result.answer).toContain("#sales-questions-requests");
+    expect(result.answer).not.toContain("#greenlight-requests");
   });
 
   it("passes every bounded retrieval candidate to the composer", async () => {

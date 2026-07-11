@@ -989,6 +989,16 @@ export async function runAskSalesFaqV3(
   }
 
   const selected = selectedPolicies(output, retrieval);
+  const evidenceRouteKeys = Array.from(new Set(selected.map((policy) => policy.route_key).filter(Boolean)));
+  if (output.needs_route && evidenceRouteKeys.length !== 1) {
+    // The model may use only route keys from the registry, but an allowed key
+    // can still be the wrong owner (for example, treating the word
+    // "greenlit" as a greenlight-letter request). When evidence does not
+    // explicitly own the route, apply the same narrow request-type router used
+    // by fail-closed answers instead of trusting a keyword association from
+    // the composer.
+    output.route_key = routeKeyForQuestion(turn.currentQuestion, selected);
+  }
   const route = output.route_key && registry.route_catalog[output.route_key]
     ? registry.route_catalog[output.route_key]
     : routeFor(turn.currentQuestion, selected);
