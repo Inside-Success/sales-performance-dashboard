@@ -632,11 +632,14 @@ async function validateAndRepair(input: {
   };
   const needsMethodSafetyFallback = /\b(?:how|where|which\s+(?:tool|channel|system|page|document|link))\b/i.test(input.turn.currentQuestion) &&
     /\b(?:verify|confirm|find|see|locate|access|check|send|sign|appear|show|display)\b/i.test(input.turn.currentQuestion);
+  const selectionAdmitsCoverageGap = /\b(?:no (?:candidate|card|policy) directly|does not directly|closest (?:available |applicable )?evidence)\b/i.test(
+    input.retrieval.evidenceSelectionReason || "",
+  );
   try {
     const result = await input.provider<V3ValidationResult>(request);
     input.attempts.push(...result.attempts);
     const primary = applyValidation(result.output);
-    const needsFallback = result.output.verdict !== "pass" || primary.validation.verdict !== "pass" || needsMethodSafetyFallback;
+    const needsFallback = result.output.verdict !== "pass" || primary.validation.verdict !== "pass" || needsMethodSafetyFallback || selectionAdmitsCoverageGap;
     if (needsFallback && input.fallbackProvider) {
       try {
         const fallback = await input.fallbackProvider<V3ValidationResult>(request);
