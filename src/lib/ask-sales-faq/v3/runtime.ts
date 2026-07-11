@@ -760,6 +760,9 @@ function deterministicValidation(output: V3AnswerOutput, retrieval: V3RetrievalR
 
 function parseValidationOutput(content: string): V3ValidationResult {
   const raw = parseV3Json<Record<string, unknown>>(content);
+  if (!Array.isArray(raw.sentence_checks) || !Array.isArray(raw.need_checks)) {
+    throw new Error("V3 validation response omitted required structured checks");
+  }
   const verdict = ["pass", "repair", "reject"].includes(String(raw.verdict))
     ? (raw.verdict as V3ValidationResult["verdict"])
     : "reject";
