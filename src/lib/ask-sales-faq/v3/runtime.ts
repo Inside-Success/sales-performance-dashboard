@@ -21,6 +21,21 @@ import type {
 const registry = getV3Registry();
 const ALLOWED_ROUTE_KEYS = new Set(Object.keys(registry.route_catalog));
 const ALLOWED_CHANNELS = new Set(Object.values(registry.route_catalog).map((route) => route.channel));
+const SEMANTIC_RECALL_CATALOG = registry.policies
+  .filter((policy) => policy.quality_tier !== "discovery_only" && policy.answerability !== "discovery_only")
+  .map((policy, index) => ({
+    ref: `R${index + 1}`,
+    policy,
+    card: {
+      ref: `R${index + 1}`,
+      title: policy.title,
+      question_families: policy.question_families.slice(0, 2),
+      scopes: policy.product_scopes,
+      domains: policy.domains,
+      actions: policy.actions,
+    },
+  }));
+const SEMANTIC_POLICY_BY_REF = new Map(SEMANTIC_RECALL_CATALOG.map((entry) => [entry.ref, entry.policy]));
 
 export type AskSalesFaqV3RuntimeResult = AskSalesFaqResponse & {
   sanitizedQuestion: string;
@@ -173,6 +188,93 @@ function policyCards(retrieval: V3RetrievalResult) {
     approved_by: match.policy.source.approved_by,
     retrieval_score: match.score,
   }));
+}
+
+function policyFitsTurnScope(policy: V3Policy, turn: V3TurnResolution) {
+  if (turn.excludedScopes.some((scope) => policy.product_scopes.includes(scope))) return false;
+  if (turn.productScope === "main_istv") return !policy.product_scopes.includes("dj_nlceo") || policy.product_scopes.includes("main_istv");
+  if (turn.productScope === "dj_nlceo") return !policy.product_scopes.includes("main_istv") || policy.product_scopes.includes("dj_nlceo");
+  return true;
+}
+
+function parseSemanticRecall(content: string) {
+  const raw = parseV3Json<Record<string, unknown>>(content);
+  return { candidate_refs: stringArray(raw.candidate_refs, 10) };
+}
+
+async function addSemanticRecall(input: {
+  provider: V3Provider;
+  turn: V3TurnResolution;
+  retrieval: V3RetrievalResult;
+  attempts: V3ProviderAttempt[];
+}) {
+  const bestFamilyScore = Math.max(0, ...input.retrieval.candidates.map((match) => match.familyScore));
+  if (bestFamilyScore >= 6.2 && input.retrieval.candidates.length >= 10) return input.retrieval;
+  const startedAt = Date.now();
+  try {
+    const result = await input.provider<{ candidate_refs: string[] }>({
+      purpose: "v3_semantic_recall",
+      maxTokens: 650,
+      system: [
+        "You are a high-recall retrieval selector, not an answer writer.",
+        "Select up to 10 catalog records that may directly answer all or part of the current sales question.",
+        "Match the requested action, product, entity, timing, and exception—not merely shared words or a neighboring topic.",
+        "Honor explicit product exclusions. It is acceptable to select no record when none is applicable.",
+        "Do not answer the question. Return JSON only: {\"candidate_refs\":[\"R1\"]}.",
+      ].join("\n"),
+      user: JSON.stringify({
+        current_question: input.turn.currentQuestion,
+        resolved_question: input.turn.standaloneQuestion,
+        product_scope: input.turn.productScope,
+        excluded_scopes: input.turn.excludedScopes,
+        current_lexical_candidates: input.retrieval.candidates.map((match) => ({ title: match.policy.title, question_families: match.policy.question_families.slice(0, 1) })),
+        catalog: SEMANTIC_RECALL_CATALOG
+          .filter((entry) => policyFitsTurnScope(entry.policy, input.turn))
+          .map((entry) => entry.card),
+      }),
+      parse: parseSemanticRecall,
+    });
+    input.attempts.push(...result.attempts);
+    const semanticMatches = result.output.candidate_refs.flatMap((ref, index) => {
+      const policy = SEMANTIC_POLICY_BY_REF.get(ref);
+      if (!policy || !policyFitsTurnScope(policy, input.turn)) return [];
+      return [{
+        policy,
+        score: 100 - index,
+        lexicalScore: 0,
+        phraseScore: 0,
+        trigramScore: 0,
+        familyScore: 0,
+        contextScore: 0,
+        scopeScore: 0,
+        matchedTerms: ["semantic_recall"],
+      }];
+    });
+    const combined = [
+      ...input.retrieval.candidates.slice(0, 4),
+      ...semanticMatches,
+      ...input.retrieval.candidates.slice(4),
+    ];
+    const candidates: V3RetrievalResult["candidates"] = [];
+    const seen = new Set<string>();
+    for (const match of combined) {
+      const key = `${match.policy.policy_key}:${match.policy.product_scopes.join(",")}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      candidates.push(match);
+      if (candidates.length >= 16) break;
+    }
+    return {
+      ...input.retrieval,
+      candidates,
+      stageTimings: { ...input.retrieval.stageTimings, semanticRecallMs: Date.now() - startedAt },
+    };
+  } catch {
+    return {
+      ...input.retrieval,
+      stageTimings: { ...input.retrieval.stageTimings, semanticRecallMs: Date.now() - startedAt },
+    };
+  }
 }
 
 function composerSystemPrompt() {
@@ -565,9 +667,12 @@ export async function runAskSalesFaqV3(
   const turnStarted = Date.now();
   const turn = resolveV3Turn(redacted.text, sanitizedMessages);
   stageTimings.turnResolutionMs = Date.now() - turnStarted;
-  const retrieval = turn.kind === "new" || turn.kind === "follow_up" ? retrieveV3Policies(turn) : { query: turn.standaloneQuestion, candidates: [], blocked: [], queryTokens: [], stageTimings: { retrievalMs: 0 } };
-  Object.assign(stageTimings, retrieval.stageTimings);
   const attempts: V3ProviderAttempt[] = [];
+  const lexicalRetrieval = turn.kind === "new" || turn.kind === "follow_up" ? retrieveV3Policies(turn) : { query: turn.standaloneQuestion, candidates: [], blocked: [], queryTokens: [], stageTimings: { retrievalMs: 0 } };
+  const retrieval = turn.kind === "new" || turn.kind === "follow_up"
+    ? await addSemanticRecall({ provider, turn, retrieval: lexicalRetrieval, attempts })
+    : lexicalRetrieval;
+  Object.assign(stageTimings, retrieval.stageTimings);
 
   let output: V3AnswerOutput;
   let providerName: "deepseek" | "anthropic" | null = null;

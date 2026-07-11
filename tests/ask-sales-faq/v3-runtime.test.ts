@@ -134,6 +134,55 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(inspected).toBe(true);
   });
 
+  it("adds a semantically selected policy that lexical wording alone can miss", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") {
+        const catalog = payload.catalog as Array<{ ref: string; title: string }>;
+        const target = catalog.find((card) => card.title === "Existing client buying another show");
+        expect(target).toBeDefined();
+        return { candidate_refs: [target?.ref] };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return {
+          verdict: "pass",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          removed_claims: [],
+          reason: "Grounded.",
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string; title: string }>;
+      const target = cards.find((card) => card.title === "Existing client buying another show");
+      expect(target).toBeDefined();
+      return {
+        mode: "answer",
+        answer: "Yes—an existing client can buy a different show; check the original assignment before taking ownership.",
+        summary: "An existing client can buy another show.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Cross-show purchase", status: "answered", policy_ids: [target?.ref], reason: "Direct evidence." }],
+        sentence_evidence: [{ sentence: "Yes—an existing client can buy a different show; check the original assignment before taking ownership.", policy_ids: [target?.ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 88,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?",
+      [],
+      { provider },
+    );
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_606e9d59e3cd964f");
+  });
+
   it("passes every bounded retrieval candidate to the composer", async () => {
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
