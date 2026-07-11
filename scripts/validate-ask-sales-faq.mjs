@@ -69,6 +69,7 @@ if (missingFiles.length === 0) {
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
   const runtimeSelector = read("src/lib/ask-sales-faq/runtime-selector.ts");
   const v3Runtime = read("src/lib/ask-sales-faq/v3/runtime.ts");
+  const v3Provider = read("src/lib/ask-sales-faq/v3/provider.ts");
   const v3Retrieval = read("src/lib/ask-sales-faq/v3/retrieval.ts");
   const v3TurnResolver = read("src/lib/ask-sales-faq/v3/turn-resolver.ts");
   const questionFrame = read("src/lib/ask-sales-faq/question-frame.ts");
@@ -97,6 +98,15 @@ if (missingFiles.length === 0) {
       !v3Runtime.includes("APPROVED_FAQ_ARTICLES") &&
       !v3Runtime.includes("approved-claims.json"),
     "V3 and V2 are selected once; V3 does not import V2 runtime data or fall through to V2",
+  );
+
+  addCheck(
+    "V3 keeps DeepSeek primary and Claude fallback-only",
+    !v3Provider.includes("preferAnthropic") &&
+      v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
+      v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
+      v3Runtime.includes("validateAndRepair({ provider: validatorProvider"),
+    "DeepSeek runs query expansion, evidence selection, composition, and validation first; Claude requires the explicit fallback gate",
   );
 
   addCheck(

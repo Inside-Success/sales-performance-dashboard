@@ -173,15 +173,6 @@ export const generateV3Json: V3Provider = async <T>(input: V3ProviderInput<T>): 
 export const generateV3ValidationJson: V3Provider = async <T>(input: V3ProviderInput<T>): Promise<V3ProviderResult<T>> => {
   const attempts: V3ProviderAttempt[] = [];
   const errors: string[] = [];
-  const preferAnthropic = process.env.FAQ_V3_VALIDATOR_PROVIDER !== "deepseek";
-
-  if (preferAnthropic && process.env.ANTHROPIC_API_KEY) {
-    try {
-      return await anthropicCall<T>(input, process.env.ANTHROPIC_API_KEY, attempts);
-    } catch (error) {
-      errors.push(`anthropic: ${sanitizeError(error)}`);
-    }
-  }
   if (process.env.DEEPSEEK_API_KEY) {
     try {
       return await deepSeekCall<T>(input, process.env.DEEPSEEK_API_KEY, attempts);
@@ -189,7 +180,7 @@ export const generateV3ValidationJson: V3Provider = async <T>(input: V3ProviderI
       errors.push(`deepseek: ${sanitizeError(error)}`);
     }
   }
-  if (!preferAnthropic && process.env.ANTHROPIC_API_KEY && process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true") {
+  if (process.env.ANTHROPIC_API_KEY && process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true") {
     try {
       return await anthropicCall<T>(input, process.env.ANTHROPIC_API_KEY, attempts);
     } catch (error) {
