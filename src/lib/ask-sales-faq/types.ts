@@ -110,6 +110,17 @@ export type AskSalesFaqRuntimeMetadata = {
       semanticQueries?: string[];
       preselectionCandidateCount?: number;
       evidenceSelectionReason?: string;
+      evidenceContract?: {
+        needs: Array<{ id: string; text: string }>;
+        support: Array<{
+          needId: string;
+          relation: "direct" | "partial" | "route";
+          policyIds: string[];
+          supportedClaim: string;
+          reason: string;
+        }>;
+        unresolvedNeedIds: string[];
+      };
       candidateCount: number;
       candidates: Array<{
         id: string;
@@ -136,6 +147,18 @@ export type AskSalesFaqRuntimeMetadata = {
       verdict: "pass" | "repair" | "reject" | "not_required";
       reason: string;
       removedClaims: string[];
+      sentenceChecks?: Array<{
+        sentenceRef: string;
+        status: "supported" | "unsupported" | "irrelevant";
+        policyIds: string[];
+        reason: string;
+      }>;
+      needChecks?: Array<{
+        needRef: string;
+        status: "answered" | "partial" | "unresolved";
+        policyIds: string[];
+        reason: string;
+      }>;
     };
     stageTimings: Record<string, number>;
   };

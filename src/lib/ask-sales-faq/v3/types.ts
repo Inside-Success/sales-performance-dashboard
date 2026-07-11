@@ -93,10 +93,30 @@ export type V3RetrievalResult = {
   semanticQueries?: string[];
   preselectionCandidateCount?: number;
   evidenceSelectionReason?: string;
+  evidenceContract?: V3EvidenceContract;
   candidates: V3PolicyMatch[];
   blocked: V3BlockedMatch[];
   queryTokens: string[];
   stageTimings: Record<string, number>;
+};
+
+export type V3EvidenceNeed = {
+  id: string;
+  text: string;
+};
+
+export type V3EvidenceSupport = {
+  need_id: string;
+  relation: "direct" | "partial" | "route";
+  policy_ids: string[];
+  supported_claim: string;
+  reason: string;
+};
+
+export type V3EvidenceContract = {
+  needs: V3EvidenceNeed[];
+  support: V3EvidenceSupport[];
+  unresolved_need_ids: string[];
 };
 
 export type V3CoverageItem = {
@@ -139,6 +159,18 @@ export type V3ValidationResult = {
   route_reason?: string;
   removed_claims: string[];
   reason: string;
+  sentence_checks?: Array<{
+    sentence_ref: string;
+    status: "supported" | "unsupported" | "irrelevant";
+    policy_ids: string[];
+    reason: string;
+  }>;
+  need_checks?: Array<{
+    need_ref: string;
+    status: "answered" | "partial" | "unresolved";
+    policy_ids: string[];
+    reason: string;
+  }>;
 };
 
 export type V3ProviderAttempt = {

@@ -3,16 +3,57 @@ import { runAskSalesFaqV3 } from "@/lib/ask-sales-faq/v3/runtime";
 import type { V3Provider } from "@/lib/ask-sales-faq/v3/types";
 
 function jsonProvider(handler: (input: { purpose: string; user: string }) => Record<string, unknown>): V3Provider {
-  return async <T>(input: Parameters<V3Provider>[0]) => ({
-    output: input.parse(JSON.stringify(handler({ purpose: input.purpose, user: input.user }))),
-    provider: "deepseek",
-    model: "test-model",
-    attempts: [{ provider: "deepseek", model: "test-model", purpose: input.purpose, status: "success", latencyMs: 1 }],
-  }) as Awaited<ReturnType<V3Provider>> & { output: T };
+  return async <T>(input: Parameters<V3Provider>[0]) => {
+    const payload = JSON.parse(input.user) as Record<string, unknown>;
+    let handled = handler({ purpose: input.purpose, user: input.user });
+    if (input.purpose.startsWith("v3_evidence_selection") && !Array.isArray(handled.needs)) {
+      const selectedRefs = Array.isArray(handled.selected_refs) ? handled.selected_refs.map(String) : [];
+      handled = {
+        ...handled,
+        needs: [{ text: String(payload.resolved_question || payload.current_question || "The requested decision") }],
+        support: selectedRefs.length
+          ? [{ need_id: "N1", relation: "direct", refs: selectedRefs, supported_claim: "The selected evidence directly supports the requested decision.", reason: String(handled.reason || "Direct evidence.") }]
+          : [],
+        unresolved_need_ids: selectedRefs.length ? [] : ["N1"],
+      };
+    }
+    if (input.purpose === "v3_grounding_validation" && !Array.isArray(handled.sentence_checks)) {
+      const sentenceClaims = Array.isArray(payload.sentence_claims) ? payload.sentence_claims as Array<Record<string, unknown>> : [];
+      const contract = payload.evidence_contract as { needs?: Array<Record<string, unknown>> } | undefined;
+      const selectedEvidence = Array.isArray(payload.selected_evidence) ? payload.selected_evidence as Array<Record<string, unknown>> : [];
+      const firstRef = String(selectedEvidence[0]?.ref || "V1");
+      const rejected = handled.verdict === "reject";
+      handled = {
+        ...handled,
+        sentence_checks: sentenceClaims.map((claim) => ({
+          sentence_ref: claim.ref,
+          status: rejected ? "unsupported" : "supported",
+          evidence_refs: rejected ? [] : (claim.claimed_evidence_refs as string[] | undefined) || [firstRef],
+          reason: rejected ? "Not supported in this test case." : "Supported in this test case.",
+        })),
+        need_checks: (contract?.needs || []).map((need) => ({
+          need_ref: need.id,
+          status: rejected ? "unresolved" : handled.needs_route ? "partial" : "answered",
+          evidence_refs: rejected ? [] : [firstRef],
+          reason: rejected ? "Unresolved in this test case." : "Covered in this test case.",
+        })),
+      };
+    }
+    return {
+      output: input.parse(JSON.stringify(handled)),
+      provider: "deepseek",
+      model: "test-model",
+      attempts: [{ provider: "deepseek", model: "test-model", purpose: input.purpose, status: "success", latencyMs: 1 }],
+    } as Awaited<ReturnType<V3Provider>> & { output: T };
+  };
 }
 
 function groundedProvider(): V3Provider {
   return jsonProvider(({ purpose, user }) => {
+    if (purpose === "v3_evidence_selection") {
+      const payload = JSON.parse(user) as { candidates: Array<{ ref: string }> };
+      return { selected_refs: payload.candidates.slice(0, 1).map((card) => card.ref), reason: "The strongest bounded card directly applies." };
+    }
     if (purpose === "v3_grounding_validation") {
       const payload = JSON.parse(user) as { draft: Record<string, unknown> };
       return {
@@ -278,23 +319,17 @@ describe("Ask Sales FAQ V3 runtime", () => {
     let validationCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
+        candidates?: Array<{ ref: string; id: string }>;
         draft?: Record<string, unknown>;
         evidence_cards?: Array<{ ref: string; policy_key: string }>;
       };
-      if (purpose === "v3_grounding_validation" || purpose === "v3_grounding_validation_retry") {
+      if (purpose === "v3_evidence_selection") {
+        const target = payload.candidates?.find((card) => card.id === "claim_c068cf9ac8f5d089");
+        return { selected_refs: target ? [target.ref] : [], reason: "The franchise eligibility card directly applies." };
+      }
+      if (purpose === "v3_grounding_validation") {
         validationCalls += 1;
         const draftEvidence = payload.draft?.sentence_evidence as Array<{ sentence: string }> | undefined;
-        if (purpose === "v3_grounding_validation") {
-          return {
-            verdict: "reject",
-            answer: "",
-            summary: "",
-            sections: [],
-            sentence_evidence: [],
-            removed_claims: [],
-            reason: "The first audit was too strict.",
-          };
-        }
         return {
           verdict: "pass",
           answer: payload.draft?.answer,
@@ -327,7 +362,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_c068cf9ac8f5d089");
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
-    expect(validationCalls).toBe(2);
+    expect(validationCalls).toBe(1);
   });
 
   it("treats hyphenated and pluralized time units as the same grounded number", async () => {
@@ -441,7 +476,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         const target = candidates.candidates.find((card) => /contract/i.test(card.title)) || candidates.candidates[0];
         return { selected_refs: target ? [target.ref] : [], reason: "Only the contract card is potentially applicable." };
       }
-      if (purpose === "v3_grounding_validation" || purpose === "v3_grounding_validation_retry") {
+      if (purpose === "v3_grounding_validation") {
         validationCalls += 1;
         return {
           verdict: "reject",
@@ -471,9 +506,76 @@ describe("Ask Sales FAQ V3 runtime", () => {
     });
     const result = await runAskSalesFaqV3("How do I verify that a Next Level CEO contract has been signed?", [], { provider });
     expect(selectionCalls).toBe(1);
-    expect(validationCalls).toBe(2);
+    expect(validationCalls).toBe(1);
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).not.toContain("signing-status channel");
+  });
+
+  it("derives a useful partial from structured checks instead of trusting a contradictory verdict", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as {
+        candidates?: Array<{ ref: string; id: string }>;
+        evidence_cards?: Array<{ ref: string; policy_key: string }>;
+        draft?: Record<string, unknown>;
+      };
+      if (purpose === "v3_semantic_recall") return { queries: ["VIP ISTV second episode discount and media outlet list"] };
+      if (purpose === "v3_evidence_selection") {
+        const target = payload.candidates?.find((card) => card.id === "claim_c02aa623dd33f7bd");
+        return {
+          needs: [{ text: "Discount for a second VIP ISTV episode" }, { text: "Where to find the included media outlet list" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "A VIP ISTV client can get another VIP ISTV episode at half off.", reason: "Direct discount evidence." }] : [],
+          unresolved_need_ids: ["N2"],
+          reason: "The discount is supported; the resource location is unresolved.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        return {
+          verdict: "reject",
+          mode: "route",
+          answer: payload.draft?.answer,
+          summary: payload.draft?.summary,
+          sections: [],
+          sentence_evidence: payload.draft?.sentence_evidence,
+          sentence_checks: [{ sentence_ref: "S1", status: "supported", evidence_refs: ["V1"], reason: "V1 directly states half off." }],
+          need_checks: [
+            { need_ref: "N1", status: "answered", evidence_refs: ["V1"], reason: "The discount is fully answered." },
+            { need_ref: "N2", status: "unresolved", evidence_refs: [], reason: "No selected evidence gives the list location." },
+          ],
+          needs_route: true,
+          route_key: "sales_policy",
+          route_reason: "The media outlet list location is unresolved.",
+          removed_claims: [],
+          reason: "Raw verdict intentionally contradicts the structured checks.",
+        };
+      }
+      const target = payload.evidence_cards?.find((card) => card.policy_key === "power-couples-second-episode-discount");
+      expect(target).toBeDefined();
+      return {
+        mode: "partial",
+        answer: "A VIP ISTV client can get a second VIP ISTV episode at half off.",
+        summary: "The second VIP ISTV episode is half off.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [{ sentence: "A VIP ISTV client can get a second VIP ISTV episode at half off.", policy_ids: [target?.ref] }],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The media outlet list location is unresolved.",
+        confidence_score: 85,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "What discount is available to a VIP client who buys a second VIP ISTV episode, and where is the included media outlet list?",
+      [],
+      { provider },
+    );
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.errorClass).toBeNull();
+    expect(result.answer).toContain("half off");
+    expect(result.runtimeMetadata.v3?.validation.verdict).toBe("repair");
+    expect(result.runtimeMetadata.v3?.selection.coverage.map((item) => item.status)).toEqual(["answered", "unresolved"]);
   });
 
   it("honors a presentation-only request to omit a repeated route note", async () => {

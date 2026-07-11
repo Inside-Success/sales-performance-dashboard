@@ -144,6 +144,18 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "V3 derives answerability from constrained entailment contracts",
+    v3Runtime.includes("Evidence selection did not return atomic needs") &&
+      v3Runtime.includes("evidence_contract") &&
+      v3Runtime.includes("sentence_checks") &&
+      v3Runtime.includes("need_checks") &&
+      v3Runtime.includes("need checks exceed the evidence contract") &&
+      v3Runtime.includes("no unverified candidates were exposed to composition") &&
+      !v3Runtime.includes('purpose: "v3_grounding_validation_retry"'),
+    "every question part and factual sentence is judged separately; runtime aggregation replaces free-form validator verdict retries",
+  );
+
+  addCheck(
     "V3 never returns raw evidence after grounding rejection",
     v3Runtime.includes("validateAndRepair") &&
       v3Runtime.includes("deterministicValidation") &&

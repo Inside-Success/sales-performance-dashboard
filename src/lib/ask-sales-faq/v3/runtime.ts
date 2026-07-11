@@ -10,6 +10,7 @@ import { getV3Registry, retrieveV3Policies } from "@/lib/ask-sales-faq/v3/retrie
 import { resolveV3Turn } from "@/lib/ask-sales-faq/v3/turn-resolver";
 import type {
   V3AnswerOutput,
+  V3EvidenceContract,
   V3Policy,
   V3Provider,
   V3ProviderAttempt,
@@ -201,19 +202,54 @@ function parseSemanticRecall(content: string) {
 
 function parseEvidenceSelection(content: string) {
   const raw = parseV3Json<Record<string, unknown>>(content);
+  const needs = Array.isArray(raw.needs)
+    ? raw.needs.slice(0, 6).flatMap((item, index) => {
+        if (!item || typeof item !== "object") return [];
+        const value = item as Record<string, unknown>;
+        const text = clean(value.text || value.need, 320);
+        if (!text) return [];
+        return [{ id: `N${index + 1}`, text }];
+      })
+    : [];
+  const needIds = new Set(needs.map((need) => need.id));
+  const support = Array.isArray(raw.support)
+    ? raw.support.slice(0, 12).flatMap((item) => {
+        if (!item || typeof item !== "object") return [];
+        const value = item as Record<string, unknown>;
+        const needId = clean(value.need_id, 20).toUpperCase();
+        const relation = ["direct", "partial", "route"].includes(String(value.relation))
+          ? (value.relation as "direct" | "partial" | "route")
+          : null;
+        const refs = stringArray(value.refs || value.policy_ids, 6).map((ref) => ref.toUpperCase());
+        if (!needIds.has(needId) || !relation || !refs.length) return [];
+        return [{
+          need_id: needId,
+          relation,
+          policy_ids: refs,
+          supported_claim: clean(value.supported_claim, 500),
+          reason: clean(value.reason, 500),
+        }];
+      })
+    : [];
+  const unresolvedNeedIds = new Set(
+    stringArray(raw.unresolved_need_ids, 6)
+      .map((value) => value.toUpperCase())
+      .filter((value) => needIds.has(value)),
+  );
+  for (const need of needs) {
+    if (!support.some((item) => item.need_id === need.id)) unresolvedNeedIds.add(need.id);
+  }
+  const selectedRefs = Array.from(new Set(support.flatMap((item) => item.policy_ids))).slice(0, 6);
+  if (!needs.length) throw new Error("Evidence selection did not return atomic needs.");
   return {
-    selected_refs: stringArray(raw.selected_refs, 6),
-    reason: clean(raw.reason, 800),
+    selected_refs: selectedRefs,
+    reason: clean(raw.reason, 800) || support.map((item) => `${item.need_id}:${item.relation}`).join(", "),
+    contract: {
+      needs,
+      support,
+      unresolved_need_ids: Array.from(unresolvedNeedIds),
+    } satisfies V3EvidenceContract,
   };
-}
-
-function isMethodQuestion(question: string) {
-  return /\b(?:how|where|which\s+(?:tool|channel|system|page|document|link))\b/i.test(question) &&
-    /\b(?:verify|confirm|find|see|locate|access|check|send|sign|appear|show|display)\b/i.test(question);
-}
-
-function isMultiPartQuestion(question: string) {
-  return (question.match(/\?/g) || []).length >= 2;
 }
 
 async function addSemanticRecall(input: {
@@ -298,9 +334,6 @@ async function selectApplicableEvidence(input: {
   retrieval: V3RetrievalResult;
   attempts: V3ProviderAttempt[];
 }) {
-  if (!input.retrieval.semanticQueries?.length && input.turn.kind !== "follow_up" && !isMethodQuestion(input.turn.standaloneQuestion)) {
-    return input.retrieval;
-  }
   const startedAt = Date.now();
   const cards = input.retrieval.candidates.map((match, index) => ({
     ref: `P${index + 1}`,
@@ -321,11 +354,14 @@ async function selectApplicableEvidence(input: {
   try {
     const request = {
       purpose: "v3_evidence_selection",
-      maxTokens: 650,
+      maxTokens: 1100,
       system: [
-        "You are the strict evidence-selection stage for an internal sales assistant. You do not answer the question.",
-        "Select zero to six cards that directly or semantically equivalently support the requested action, conditions, product, timing, or a clearly separable part of the question.",
-        "For a multi-part question, evaluate every part independently. Keep a card that safely answers one separable part even when every other part remains unresolved; do not require one card to answer the whole question.",
+        "You are the claim-entailment stage for an internal sales assistant. You do not answer the user.",
+        "First decompose the resolved question into one to six atomic needs. Each need must contain exactly one requested decision, fact, method, timing, permission, boundary, or next action.",
+        "Then evaluate each need independently against the evidence cards. Never require one card to answer the whole question.",
+        "For every supported need, return one support record with relation direct, partial, or route and the smallest sufficient card refs.",
+        "direct means the decision evidence answers the need. partial means it safely answers only a separable portion or supplies an applicable boundary while a requested detail remains unknown. route means the card supplies only an approved route or support boundary, not the missing fact.",
+        "List every need without direct or partial support in unresolved_need_ids. A need may be unresolved even when a different need is answered.",
         "A card's broadly stated decision may answer a separable part even when its original example differs. Use only that applicable decision and never import the example's unrelated conclusion or conditions.",
         "Treat product_scopes as authoritative. A product_agnostic decision applies to a named show or offer when its decision directly answers the requested action; a product name in the question is not a reason to discard it. Example show names inside that card do not narrow the scope.",
         "Apply an operational instruction outside its example trigger only when the decision itself is broadly worded. Keep the broad instruction, but do not import a trigger-specific fact or conclusion.",
@@ -335,11 +371,11 @@ async function selectApplicableEvidence(input: {
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
-        "Cards marked route_or_support may be selected when their explicit boundary or approved route directly applies to an unresolved request. They do not prove the missing fact, but they can support a useful boundary or next step.",
+        "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
         "Do not discard a directly applicable answer_evidence card merely because it answers in policy language rather than repeating the user's exact wording.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
-        "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
-        "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
+        "Prefer the smallest sufficient set. It is correct for every need to remain unresolved when nothing applies.",
+        "Return JSON only with this exact shape: {\"needs\":[{\"text\":\"one atomic need\"}],\"support\":[{\"need_id\":\"N1\",\"relation\":\"direct\",\"refs\":[\"P1\"],\"supported_claim\":\"what the cards actually support\",\"reason\":\"why the action and scope match\"}],\"unresolved_need_ids\":[\"N2\"],\"reason\":\"brief overall rationale\"}.",
       ].join("\n"),
       user: JSON.stringify({
         current_question: input.turn.currentQuestion,
@@ -351,15 +387,15 @@ async function selectApplicableEvidence(input: {
       }),
       parse: parseEvidenceSelection,
     };
-    let result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
+    let result = await input.provider<ReturnType<typeof parseEvidenceSelection>>(request);
     input.attempts.push(...result.attempts);
     if (!result.output.selected_refs.length && input.retrieval.candidates.length) {
       try {
-        const retry = await input.provider<{ selected_refs: string[]; reason: string }>({
+        const retry = await input.provider<ReturnType<typeof parseEvidenceSelection>>({
           ...request,
           purpose: "v3_evidence_selection_retry",
-          maxTokens: 650,
-          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate ${isMultiPartQuestion(input.turn.currentQuestion) ? "each question part independently" : "the requested decision"}. Check product_agnostic cards against the requested action, not against example product names. Preserve a directly applicable answer card, policy boundary, or approved route even when another detail remains unresolved. It is still correct to return zero when nothing useful is supported.`,
+          maxTokens: 1100,
+          system: `${request.system}\nYour first pass found no support. Re-evaluate every atomic need independently. Check product_agnostic cards against the requested action, not example product names. Preserve a direct answer, separable partial, policy boundary, or approved route for one need even when every other need remains unresolved. It is still correct to leave all needs unresolved when nothing useful is supported.`,
         });
         input.attempts.push(...retry.attempts);
         if (retry.output.selected_refs.length) result = retry;
@@ -373,10 +409,27 @@ async function selectApplicableEvidence(input: {
       const match = byRef.get(ref);
       return match ? [match] : [];
     });
+    const contract: V3EvidenceContract = {
+      needs: result.output.contract.needs,
+      support: result.output.contract.support.flatMap((item) => {
+        const policyIds = item.policy_ids.flatMap((ref) => {
+          const match = byRef.get(ref);
+          return match ? [match.policy.id] : [];
+        });
+        return policyIds.length ? [{ ...item, policy_ids: policyIds }] : [];
+      }),
+      unresolved_need_ids: result.output.contract.unresolved_need_ids,
+    };
+    for (const need of contract.needs) {
+      if (!contract.support.some((item) => item.need_id === need.id) && !contract.unresolved_need_ids.includes(need.id)) {
+        contract.unresolved_need_ids.push(need.id);
+      }
+    }
     return {
       ...input.retrieval,
       preselectionCandidateCount: input.retrieval.candidates.length,
       evidenceSelectionReason: result.output.reason,
+      evidenceContract: contract,
       candidates,
       stageTimings: {
         ...input.retrieval.stageTimings,
@@ -387,8 +440,13 @@ async function selectApplicableEvidence(input: {
     return {
       ...input.retrieval,
       preselectionCandidateCount: input.retrieval.candidates.length,
-      evidenceSelectionReason: "Evidence selection failed; retained the strongest bounded candidates.",
-      candidates: input.retrieval.candidates.slice(0, 12),
+      evidenceSelectionReason: "Evidence selection failed; no unverified candidates were exposed to composition.",
+      evidenceContract: {
+        needs: [{ id: "N1", text: input.turn.standaloneQuestion }],
+        support: [],
+        unresolved_need_ids: ["N1"],
+      },
+      candidates: [],
       stageTimings: {
         ...input.retrieval.stageTimings,
         evidenceSelectionMs: Date.now() - startedAt,
@@ -401,13 +459,13 @@ function composerSystemPrompt() {
   return [
     "You are Ask Sales FAQ V3, a natural and precise assistant for sales reps on live calls.",
     "Your job is to answer the exact current question using only applicable evidence cards supplied in this request.",
-    "Evidence cards are candidates, not automatically applicable answers. Reject cards about a different product, action, person, timing, exception, or topic.",
-    "Select the smallest coherent set of cards that answers the question. A product-agnostic card can apply to a named product when its decision directly covers the requested action; do not reject it only because the show name is absent.",
+    "The evidence contract has already decomposed the question and selected the applicable cards. Do not re-run retrieval or silently discard a supported need.",
+    "Use only cards cited by the evidence contract, and use every direct or partial support record that answers a requested need. A product-agnostic card applies to a named product when its decision directly covers the requested action.",
     "Shared words or a shared domain are not enough. A generic close flow, routing note, or neighboring process does not answer a question about verification, eligibility, timing, or whether a corrected product changes the answer.",
     "Honor explicit scope and negation. If the user says main ISTV and not DJ/NLCEO, never use DJ/NLCEO-only policy, and vice versa.",
     "For a follow-up, the IMMEDIATE previous user question and assistant answer are the antecedent. Never jump back two turns. If the user corrects the product or entity, re-answer the immediate previous action for the corrected scope.",
     "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, or irrelevant caveats.",
-    "Combine multiple applicable cards when the question has multiple parts. Mark every part answered, partial, or unresolved in coverage.",
+    "Coverage must contain every evidence-contract need exactly once. Map direct to answered, partial to partial, and a need with only route support or no support to unresolved.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
     "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Say only that its exact status or location is not confirmed by the supplied evidence unless a card explicitly states nonexistence.",
     "When routing is necessary, use only the exact channel from approved_routes for the selected route_key. Do not invent a team, owner, channel, or escalation path.",
@@ -425,6 +483,21 @@ function composerSystemPrompt() {
 }
 
 function composerUserPrompt(turn: V3TurnResolution, retrieval: V3RetrievalResult) {
+  const evidenceCards = policyCards(retrieval);
+  const evidenceRefByPolicyId = new Map(retrieval.candidates.map((match, index) => [match.policy.id, `E${index + 1}`]));
+  const evidenceContract = retrieval.evidenceContract
+    ? {
+        needs: retrieval.evidenceContract.needs,
+        support: retrieval.evidenceContract.support.map((item) => ({
+          ...item,
+          policy_ids: item.policy_ids.flatMap((policyId) => {
+            const ref = evidenceRefByPolicyId.get(policyId);
+            return ref ? [ref] : [];
+          }),
+        })),
+        unresolved_need_ids: retrieval.evidenceContract.unresolved_need_ids,
+      }
+    : null;
   return JSON.stringify({
     current_question: turn.currentQuestion,
     resolved_turn: {
@@ -443,9 +516,9 @@ function composerUserPrompt(turn: V3TurnResolution, retrieval: V3RetrievalResult
       score: match.score,
     })),
     strict_selection: retrieval.evidenceSelectionReason
-      ? { applied: true, rationale: retrieval.evidenceSelectionReason }
+      ? { applied: true, rationale: retrieval.evidenceSelectionReason, contract: evidenceContract }
       : { applied: false },
-    evidence_cards: policyCards(retrieval),
+    evidence_cards: evidenceCards,
   });
 }
 
@@ -621,6 +694,30 @@ function parseValidationOutput(content: string): V3ValidationResult {
     route_reason: typeof raw.route_reason === "string" ? clean(raw.route_reason, 600) : undefined,
     removed_claims: stringArray(raw.removed_claims),
     reason: clean(raw.reason, 500),
+    sentence_checks: Array.isArray(raw.sentence_checks)
+      ? raw.sentence_checks.slice(0, 20).flatMap((item) => {
+          if (!item || typeof item !== "object") return [];
+          const value = item as Record<string, unknown>;
+          const sentenceRef = clean(value.sentence_ref, 20).toUpperCase();
+          const status = ["supported", "unsupported", "irrelevant"].includes(String(value.status))
+            ? (value.status as "supported" | "unsupported" | "irrelevant")
+            : null;
+          if (!/^S\d+$/.test(sentenceRef) || !status) return [];
+          return [{ sentence_ref: sentenceRef, status, policy_ids: stringArray(value.evidence_refs || value.policy_ids, 8), reason: clean(value.reason, 500) }];
+        })
+      : [],
+    need_checks: Array.isArray(raw.need_checks)
+      ? raw.need_checks.slice(0, 8).flatMap((item) => {
+          if (!item || typeof item !== "object") return [];
+          const value = item as Record<string, unknown>;
+          const needRef = clean(value.need_ref, 20).toUpperCase();
+          const status = ["answered", "partial", "unresolved"].includes(String(value.status))
+            ? (value.status as "answered" | "partial" | "unresolved")
+            : null;
+          if (!/^N\d+$/.test(needRef) || !status) return [];
+          return [{ need_ref: needRef, status, policy_ids: stringArray(value.evidence_refs || value.policy_ids, 8), reason: clean(value.reason, 500) }];
+        })
+      : [],
   };
 }
 
@@ -639,17 +736,62 @@ async function validateAndRepair(input: {
     };
   }
   const policies = deterministic.policies;
+  if (!policies.length && input.output.mode === "route") {
+    return {
+      validation: {
+        verdict: "pass" as const,
+        mode: "route",
+        answer: input.output.answer,
+        summary: input.output.summary,
+        sections: input.output.sections,
+        sentence_evidence: [],
+        coverage: input.retrieval.evidenceContract?.needs.map((need) => ({
+          need: need.text,
+          status: "unresolved" as const,
+          policy_ids: [],
+          reason: "No applicable approved evidence was selected.",
+        })) || input.output.coverage,
+        needs_route: true,
+        route_key: input.output.route_key,
+        route_reason: input.output.route_reason,
+        removed_claims: [],
+        reason: "No applicable approved evidence was selected; preserved the fail-closed route.",
+      },
+      deterministic,
+    };
+  }
   if (!policies.length && input.output.mode !== "route") {
     return {
       validation: { verdict: "reject" as const, answer: "", summary: "", sections: [], sentence_evidence: [], removed_claims: [], reason: deterministic.errors.join("; ") || "No selected evidence." },
       deterministic,
     };
   }
+  const validationRefs = new Map(policies.map((policy, index) => [`V${index + 1}`.toLowerCase(), policy.id]));
+  const validationRefByPolicyId = new Map(policies.map((policy, index) => [policy.id, `V${index + 1}`]));
+  const exactValidationIds = new Set(policies.map((policy) => policy.id));
+  const sentenceClaims = input.output.sentence_evidence.map((entry, index) => ({
+    ref: `S${index + 1}`,
+    sentence: entry.sentence,
+    claimed_evidence_refs: entry.policy_ids.flatMap((policyId) => {
+      const ref = validationRefByPolicyId.get(policyId);
+      return ref ? [ref] : [];
+    }),
+  }));
+  const contractNeeds = input.retrieval.evidenceContract?.needs || input.output.coverage.map((item, index) => ({ id: `N${index + 1}`, text: item.need }));
+  const contractSupport = (input.retrieval.evidenceContract?.support || []).map((item) => ({
+    need_id: item.need_id,
+    relation: item.relation,
+    evidence_refs: item.policy_ids.flatMap((policyId) => {
+      const ref = validationRefByPolicyId.get(policyId);
+      return ref ? [ref] : [];
+    }),
+    supported_claim: item.supported_claim,
+  }));
   const request = {
     purpose: "v3_grounding_validation",
     maxTokens: 1400,
     system: [
-      "Audit and, when needed, repair this Ask Sales FAQ answer sentence by sentence.",
+      "Audit and, when needed, repair this Ask Sales FAQ answer using a constrained sentence-and-need entailment contract.",
       "The answer may use only the selected evidence below and the user's question. Remove irrelevant facts and unsupported claims.",
       "Require the smallest sufficient evidence set. Supported adjacent facts are still irrelevant when they do not answer a requested part, and must be removed.",
       "The user's question is context, not evidence. A proposed yes/no conclusion is unsupported unless the selected evidence actually states or clearly entails that conclusion.",
@@ -666,10 +808,14 @@ async function validateAndRepair(input: {
       "Choose route_key from the unresolved coverage items only. Do not let an answered payment, contract, or product detail route a different unresolved timing, production, or resource question to the wrong channel.",
       "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
       "Preserve exact policy qualifiers and operational nouns. Do not replace 'matching contract' with 'standard contract', or otherwise strengthen, generalize, or rename the approved instruction.",
-      "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
-      "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",
+      "Evaluate every S# sentence claim. Mark it supported only when one or more selected V# cards directly entail its meaning. Mark it irrelevant when true but not requested. Mark it unsupported otherwise.",
+      "Evaluate every N# need against the final repaired answer. Mark answered only when the answer fully resolves it from selected evidence, partial when a useful supported portion or boundary remains, and unresolved when no useful answer remains.",
+      "The supplied evidence contract is a prior applicability judgment, not permission to invent. It prevents silently discarding a supported need, but each final sentence still requires direct evidence.",
+      "If a useful grounded answer remains, preserve it. In a partial answer, remove only unsupported or irrelevant claims and keep every supported requested fact. Return a route only when no supported requested sentence remains.",
+      "Re-evaluate coverage and routing after repair. Any partial or unresolved N# requires needs_route true; all needs answered requires needs_route false.",
       "Use only the short validation refs (V1, V2, etc.) supplied with selected evidence in sentence_evidence and coverage policy_ids. Never copy, alter, or invent a long policy ID.",
-      "Return JSON: verdict, mode, answer, summary, sections, sentence_evidence, coverage, needs_route, route_key, route_reason, removed_claims, reason.",
+      "Return JSON only with: verdict, mode, answer, summary, sections, sentence_evidence, sentence_checks, need_checks, needs_route, route_key, route_reason, removed_claims, reason.",
+      "sentence_checks must contain exactly one record per supplied S# with sentence_ref, status, evidence_refs, and reason. need_checks must contain exactly one record per supplied N# with need_ref, status, evidence_refs, and reason.",
     ].join("\n"),
     user: JSON.stringify({
       question: input.turn.standaloneQuestion,
@@ -678,77 +824,133 @@ async function validateAndRepair(input: {
       product_scope: input.turn.productScope,
       excluded_scopes: input.turn.excludedScopes,
       selected_evidence: policies.map((policy, index) => ({ ref: `V${index + 1}`, scope: policy.product_scopes, ...policyDecisionParts(policy.decision) })),
+      evidence_contract: { needs: contractNeeds, support: contractSupport },
+      sentence_claims: sentenceClaims,
       deterministic_errors: deterministic.errors,
       draft: input.output,
     }),
     parse: parseValidationOutput,
   };
-  const validationRefs = new Map(policies.map((policy, index) => [`V${index + 1}`.toLowerCase(), policy.id]));
-  const exactValidationIds = new Set(policies.map((policy) => policy.id));
   const resolveValidationRef = (value: string) => exactValidationIds.has(value) ? value : validationRefs.get(value.trim().toLowerCase()) || value;
   const applyValidation = (rawRepaired: V3ValidationResult) => {
+    const sentenceChecks = (rawRepaired.sentence_checks || []).map((entry) => ({
+      ...entry,
+      policy_ids: entry.policy_ids.map(resolveValidationRef),
+    }));
+    const needChecks = (rawRepaired.need_checks || []).map((entry) => ({
+      ...entry,
+      policy_ids: entry.policy_ids.map(resolveValidationRef),
+    }));
     const repaired: V3ValidationResult = {
       ...rawRepaired,
+      sentence_checks: sentenceChecks,
+      need_checks: needChecks,
       sentence_evidence: rawRepaired.sentence_evidence.map((entry) => ({
         ...entry,
         policy_ids: entry.policy_ids.map(resolveValidationRef),
       })),
-      coverage: rawRepaired.coverage?.map((entry) => ({
-        ...entry,
-        policy_ids: entry.policy_ids.map(resolveValidationRef),
-      })),
     };
+    const sentenceCheckByRef = new Map(sentenceChecks.map((entry) => [entry.sentence_ref, entry]));
+    const needCheckByRef = new Map(needChecks.map((entry) => [entry.need_ref, entry]));
+    const missingSentenceChecks = sentenceClaims.filter((claim) => !sentenceCheckByRef.has(claim.ref)).map((claim) => claim.ref);
+    const missingNeedChecks = contractNeeds.filter((need) => !needCheckByRef.has(need.id)).map((need) => need.id);
+    const invalidCheckIds = [...sentenceChecks, ...needChecks]
+      .flatMap((entry) => entry.policy_ids)
+      .filter((id) => !exactValidationIds.has(id));
+    const invalidNeedJudgments = needChecks.flatMap((entry) => {
+      if (entry.status === "unresolved") return [];
+      const applicable = (input.retrieval.evidenceContract?.support || []).filter((support) => support.need_id === entry.need_ref);
+      const allowedIds = new Set(applicable.flatMap((support) => support.policy_ids));
+      const relationSupportsStatus = entry.status === "answered"
+        ? applicable.some((support) => support.relation === "direct")
+        : applicable.some((support) => support.relation === "direct" || support.relation === "partial");
+      const usesOnlyApplicableEvidence = entry.policy_ids.length > 0 && entry.policy_ids.every((id) => allowedIds.has(id));
+      return relationSupportsStatus && usesOnlyApplicableEvidence ? [] : [`${entry.need_ref}:${entry.status}`];
+    });
+    const supportedSentenceRefs = new Set(
+      sentenceChecks
+        .filter((entry) => entry.status === "supported" && entry.policy_ids.length)
+        .map((entry) => entry.sentence_ref),
+    );
+    const unsupportedOrIrrelevant = sentenceChecks.filter((entry) => entry.status !== "supported");
+    const groundedSentenceEvidence = input.output.sentence_evidence.filter((_entry, index) => supportedSentenceRefs.has(`S${index + 1}`));
+    const coverage: V3AnswerOutput["coverage"] = contractNeeds.map((need) => {
+      const check = needCheckByRef.get(need.id);
+      return {
+        need: need.text,
+        status: check?.status || "unresolved",
+        policy_ids: check?.policy_ids.filter((id) => exactValidationIds.has(id)) || [],
+        reason: check?.reason || "The validator did not resolve this requested need.",
+      };
+    });
+    const hasSupportedRequestedSentence = groundedSentenceEvidence.length > 0;
+    const needsRoute = coverage.some((entry) => entry.status !== "answered");
+    const derivedMode: V3AnswerOutput["mode"] = hasSupportedRequestedSentence
+      ? needsRoute ? "partial" : "answer"
+      : "route";
+    const repairedAnswer = repaired.answer || (unsupportedOrIrrelevant.length ? "" : input.output.answer);
     const repairedOutput: V3AnswerOutput = {
       ...input.output,
-      answer: repaired.answer || input.output.answer,
+      answer: repairedAnswer,
       summary: repaired.summary || input.output.summary,
       sections: repaired.sections.length ? repaired.sections : input.output.sections,
-      sentence_evidence: repaired.sentence_evidence.length ? repaired.sentence_evidence : input.output.sentence_evidence,
-      mode: repaired.mode || input.output.mode,
-      coverage: repaired.coverage || input.output.coverage,
-      needs_route: repaired.needs_route ?? input.output.needs_route,
+      sentence_evidence: groundedSentenceEvidence,
+      mode: derivedMode,
+      coverage,
+      needs_route: needsRoute,
       route_key: repaired.route_key === undefined ? input.output.route_key : repaired.route_key,
       route_reason: repaired.route_reason === undefined ? input.output.route_reason : repaired.route_reason,
     };
     const repairedCheck = deterministicValidation(repairedOutput, input.retrieval, input.turn.standaloneQuestion);
-    if (repaired.verdict === "reject" || !repairedCheck.pass) {
-      return { validation: { ...repaired, verdict: "reject" as const, reason: [repaired.reason, ...repairedCheck.errors].filter(Boolean).join("; ") }, deterministic: repairedCheck };
+    const contractErrors = [
+      missingSentenceChecks.length ? `missing sentence checks: ${missingSentenceChecks.join(", ")}` : "",
+      missingNeedChecks.length ? `missing need checks: ${missingNeedChecks.join(", ")}` : "",
+      invalidCheckIds.length ? `invalid check evidence IDs: ${Array.from(new Set(invalidCheckIds)).join(", ")}` : "",
+      invalidNeedJudgments.length ? `need checks exceed the evidence contract: ${invalidNeedJudgments.join(", ")}` : "",
+      input.output.mode !== "route" && !sentenceClaims.length ? "draft has no sentence-level evidence claims" : "",
+      input.output.mode !== "route" && !hasSupportedRequestedSentence ? "no requested sentence was independently supported" : "",
+      unsupportedOrIrrelevant.length && !repairedAnswer ? "unsupported sentences were identified but no repaired answer was returned" : "",
+    ].filter(Boolean);
+    if (contractErrors.length || !repairedCheck.pass) {
+      return {
+        validation: {
+          ...repaired,
+          verdict: "reject" as const,
+          answer: repairedAnswer,
+          mode: derivedMode,
+          coverage,
+          needs_route: needsRoute,
+          sentence_evidence: groundedSentenceEvidence,
+          reason: [repaired.reason, ...contractErrors, ...repairedCheck.errors].filter(Boolean).join("; "),
+        },
+        deterministic: repairedCheck,
+      };
     }
-    return { validation: repaired, deterministic: repairedCheck };
+    const derivedVerdict: V3ValidationResult["verdict"] =
+      unsupportedOrIrrelevant.length || rawRepaired.verdict !== "pass" || repairedAnswer !== input.output.answer || derivedMode !== input.output.mode
+        ? "repair"
+        : "pass";
+    return {
+      validation: {
+        ...repaired,
+        verdict: derivedVerdict,
+        answer: repairedAnswer,
+        mode: derivedMode,
+        coverage,
+        needs_route: needsRoute,
+        sentence_evidence: groundedSentenceEvidence,
+        reason: repaired.reason || "Structured sentence and need checks passed.",
+      },
+      deterministic: repairedCheck,
+    };
   };
   try {
     const result = await input.provider<V3ValidationResult>(request);
     input.attempts.push(...result.attempts);
-    const primary = applyValidation(result.output);
-    if (primary.validation.verdict === "reject" && deterministic.pass && policies.length) {
-      try {
-        const retry = await input.provider<V3ValidationResult>({
-          ...request,
-          purpose: "v3_grounding_validation_retry",
-          maxTokens: 1400,
-          system: `${request.system}\nThe first audit rejected the draft. Reconsider it with this checklist: (1) compare the requested action with each decision, (2) honor product_agnostic scope even when product names differ, (3) preserve every separable supported part, and (4) remove only unsupported conclusions or example-specific details. Repair to the smallest useful grounded answer or partial instead of rejecting the whole response. Still reject if no useful part is supported.`,
-          user: JSON.stringify({
-            ...JSON.parse(request.user),
-            first_validation: result.output,
-          }),
-        });
-        input.attempts.push(...retry.attempts);
-        return applyValidation(retry.output);
-      } catch {
-        // Keep the first fail-closed audit when the bounded DeepSeek
-        // reconsideration is unavailable.
-      }
-    }
-    return primary;
+    return applyValidation(result.output);
   } catch (error) {
-    if (deterministic.pass) {
-      return {
-        validation: { verdict: "pass" as const, answer: input.output.answer, summary: input.output.summary, sections: input.output.sections, sentence_evidence: input.output.sentence_evidence, removed_claims: [], reason: "Deterministic grounding checks passed; model verifier was unavailable." },
-        deterministic,
-      };
-    }
     return {
-      validation: { verdict: "reject" as const, answer: "", summary: "", sections: [], sentence_evidence: [], removed_claims: [], reason: deterministic.errors.join("; ") || clean(error, 400) },
+      validation: { verdict: "reject" as const, answer: "", summary: "", sections: [], sentence_evidence: [], removed_claims: [], reason: [clean(error, 400), ...deterministic.errors].filter(Boolean).join("; ") || "Structured grounding validation was unavailable." },
       deterministic,
     };
   }
@@ -823,6 +1025,17 @@ function metadata(input: {
         semanticQueries: input.retrieval.semanticQueries?.map((query) => query.slice(0, 500)),
         preselectionCandidateCount: input.retrieval.preselectionCandidateCount,
         evidenceSelectionReason: input.retrieval.evidenceSelectionReason,
+        evidenceContract: input.retrieval.evidenceContract ? {
+          needs: input.retrieval.evidenceContract.needs,
+          support: input.retrieval.evidenceContract.support.map((item) => ({
+            needId: item.need_id,
+            relation: item.relation,
+            policyIds: item.policy_ids,
+            supportedClaim: item.supported_claim,
+            reason: item.reason,
+          })),
+          unresolvedNeedIds: input.retrieval.evidenceContract.unresolved_need_ids,
+        } : undefined,
         candidateCount: input.retrieval.candidates.length,
         candidates: input.retrieval.candidates.map((match) => ({
           id: match.policy.id,
@@ -844,6 +1057,18 @@ function metadata(input: {
         verdict: input.validation.verdict,
         reason: input.validation.reason,
         removedClaims: input.validation.removed_claims,
+        sentenceChecks: input.validation.sentence_checks?.map((item) => ({
+          sentenceRef: item.sentence_ref,
+          status: item.status,
+          policyIds: item.policy_ids,
+          reason: item.reason,
+        })),
+        needChecks: input.validation.need_checks?.map((item) => ({
+          needRef: item.need_ref,
+          status: item.status,
+          policyIds: item.policy_ids,
+          reason: item.reason,
+        })),
       },
       stageTimings: input.stageTimings,
     },
