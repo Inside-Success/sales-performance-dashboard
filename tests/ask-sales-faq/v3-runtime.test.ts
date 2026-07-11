@@ -784,10 +784,10 @@ describe("Ask Sales FAQ V3 runtime", () => {
         return { verdict: "pass", answer: draft.answer, summary: draft.summary, sections: draft.sections, sentence_evidence: draft.sentence_evidence, removed_claims: [], reason: "Grounded partial." };
       }
       const strictSelection = payload.strict_selection as { contract: { support: Array<{ relation: string; supported_claim: string }> } };
+      inspectedContract = true;
       expect(strictSelection.contract.support[0].relation).toBe("partial");
       expect(strictSelection.contract.support[0].supported_claim).toContain("100,000 pre-promo views");
       expect(strictSelection.contract.support[0].supported_claim).not.toContain("not Facebook-only");
-      inspectedContract = true;
       const cards = payload.evidence_cards as Array<{ ref: string }>;
       return {
         mode: "partial",

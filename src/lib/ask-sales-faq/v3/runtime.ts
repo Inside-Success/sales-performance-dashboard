@@ -227,6 +227,25 @@ function missesRequestedArtifact(need: string, decision: string) {
   return !qualifiers.some((token) => normalizedDecision.includes(normalizeText(token)));
 }
 
+function minimalDecisionEvidence(need: string, decision: string) {
+  const needTokens = new Set(
+    normalizeText(need)
+      .split(" ")
+      .filter((token) => token.length > 2 && !/^(?:the|and|for|with|that|this|what|which|where|when|does|will|would|could|should|have|from|into|their|they|them|client|prospect|current|currently|available)$/.test(token)),
+  );
+  const clauses = clean(decision, 1400)
+    .split(/(?:[.;]|\s+\|\s+|\n|\s+-\s+)/)
+    .map((clause) => clean(clause, 600))
+    .filter((clause) => clause.length > 8);
+  if (!clauses.length) return clean(decision, 600);
+  const ranked = clauses.map((clause, index) => ({
+    clause,
+    index,
+    score: normalizeText(clause).split(" ").reduce((score, token) => score + (needTokens.has(token) ? 1 : 0), 0),
+  })).sort((left, right) => right.score - left.score || left.index - right.index);
+  return ranked[0]?.score ? ranked[0].clause : clean(decision, 600);
+}
+
 function policyCards(retrieval: V3RetrievalResult) {
   // Retrieval already applies the bounded candidate limit. Keep that single
   // limit authoritative so a relevant lower-ranked card cannot appear in
@@ -499,7 +518,7 @@ async function selectApplicableEvidence(input: {
           relation: requiresPartial && item.relation === "direct" ? "partial" as const : item.relation,
           policy_ids: applicableMatches.map((match) => match.policy.id),
           supported_claim: requiresPartial
-            ? applicableMatches.map((match) => policyDecisionParts(match.policy.decision).decision_evidence).join(" ")
+            ? applicableMatches.map((match) => minimalDecisionEvidence(need, policyDecisionParts(match.policy.decision).decision_evidence)).join(" ")
             : item.supported_claim,
         }];
       }),
@@ -561,6 +580,7 @@ function composerSystemPrompt() {
     "When routing is necessary, use only the exact channel from approved_routes for the selected route_key. Do not invent a team, owner, channel, or escalation path.",
     "Choose the route from the unresolved question part only. Words from a part you already answered must not redirect a different unresolved need to the wrong channel.",
     "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
+    "For a partial support record, supported_claim is the maximum claim allowed for that need. Do not copy adjacent clauses from the same card unless another support record explicitly selects them for a requested need.",
     "A route support record is an approved next step, not proof of the missing fact. Phrase it as where the rep should verify or ask; never turn it into a confirmed yes/no answer or a method the card does not state.",
     "When a strict selection rationale is supplied, use it only as a map of which question parts may be supported. Verify every statement against the evidence cards themselves, but do not silently discard a supported part the selector identified.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
@@ -911,6 +931,7 @@ async function validateAndRepair(input: {
       "Evaluate every S# sentence claim. Mark it supported only when one or more selected V# cards directly entail its meaning. Mark it irrelevant when true but not requested. Mark it unsupported otherwise.",
       "Evaluate every N# need against the final repaired answer. Mark answered only when the answer fully resolves it from selected evidence, partial when a useful supported portion or boundary remains, and unresolved when no useful answer remains.",
       "The supplied evidence contract is a prior applicability judgment, not permission to invent. It prevents silently discarding a supported need, but each final sentence still requires direct evidence.",
+      "For a partial support record, supported_claim is the maximum claim allowed for that need. Remove adjacent facts from the same card unless another support record explicitly selects them for a requested need.",
       "If a useful grounded answer remains, preserve it. In a partial answer, remove only unsupported or irrelevant claims and keep every supported requested fact. Return a route only when no supported requested sentence remains.",
       "Re-evaluate coverage and routing after repair. Any partial or unresolved N# requires needs_route true; all needs answered requires needs_route false.",
       "Use only the short validation refs (V1, V2, etc.) supplied with selected evidence in sentence_evidence and coverage policy_ids. Never copy, alter, or invent a long policy ID.",
