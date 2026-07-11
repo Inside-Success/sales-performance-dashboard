@@ -230,12 +230,13 @@ describe("Ask Sales FAQ V3 runtime", () => {
         evidence_cards?: Array<{ ref: string; policy_key: string }>;
       };
       if (purpose === "v3_grounding_validation") {
+        const draftEvidence = payload.draft?.sentence_evidence as Array<{ sentence: string }> | undefined;
         return {
           verdict: "pass",
           answer: payload.draft?.answer,
           summary: payload.draft?.summary,
           sections: payload.draft?.sections,
-          sentence_evidence: payload.draft?.sentence_evidence,
+          sentence_evidence: [{ sentence: draftEvidence?.[0]?.sentence || "", policy_ids: ["V1"] }],
           removed_claims: [],
           reason: "Grounded.",
         };
@@ -261,6 +262,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     const result = await runAskSalesFaqV3("Is a franchise owner eligible for Next Level CEO?", [], { provider });
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_c068cf9ac8f5d089");
+    expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
   });
 
   it("treats hyphenated and pluralized time units as the same grounded number", async () => {

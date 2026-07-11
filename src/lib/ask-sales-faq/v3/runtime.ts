@@ -597,6 +597,7 @@ async function validateAndRepair(input: {
       "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
       "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
       "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",
+      "Use only the short validation refs (V1, V2, etc.) supplied with selected evidence in sentence_evidence and coverage policy_ids. Never copy, alter, or invent a long policy ID.",
       "Return JSON: verdict, mode, answer, summary, sections, sentence_evidence, coverage, needs_route, route_key, route_reason, removed_claims, reason.",
     ].join("\n"),
     user: JSON.stringify({
@@ -605,13 +606,27 @@ async function validateAndRepair(input: {
       immediate_previous_question: input.turn.usedImmediateContext ? input.turn.immediatePreviousUserQuestion : null,
       product_scope: input.turn.productScope,
       excluded_scopes: input.turn.excludedScopes,
-      selected_evidence: policies.map((policy) => ({ id: policy.id, scope: policy.product_scopes, decision: policy.decision })),
+      selected_evidence: policies.map((policy, index) => ({ ref: `V${index + 1}`, scope: policy.product_scopes, decision: policy.decision })),
       deterministic_errors: deterministic.errors,
       draft: input.output,
     }),
     parse: parseValidationOutput,
   };
-  const applyValidation = (repaired: V3ValidationResult) => {
+  const validationRefs = new Map(policies.map((policy, index) => [`V${index + 1}`.toLowerCase(), policy.id]));
+  const exactValidationIds = new Set(policies.map((policy) => policy.id));
+  const resolveValidationRef = (value: string) => exactValidationIds.has(value) ? value : validationRefs.get(value.trim().toLowerCase()) || value;
+  const applyValidation = (rawRepaired: V3ValidationResult) => {
+    const repaired: V3ValidationResult = {
+      ...rawRepaired,
+      sentence_evidence: rawRepaired.sentence_evidence.map((entry) => ({
+        ...entry,
+        policy_ids: entry.policy_ids.map(resolveValidationRef),
+      })),
+      coverage: rawRepaired.coverage?.map((entry) => ({
+        ...entry,
+        policy_ids: entry.policy_ids.map(resolveValidationRef),
+      })),
+    };
     const repairedOutput: V3AnswerOutput = {
       ...input.output,
       answer: repaired.answer || input.output.answer,
