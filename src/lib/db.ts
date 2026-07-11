@@ -2660,23 +2660,34 @@ export async function getAskSalesFaqConversations(
     const messages = (await sql.query(
       `
         select
-          id,
-          role,
-          content_redacted,
-          outcome,
-          source_label,
-          source_last_reviewed,
-          answer_payload,
-          needs_route,
-          route_reason,
-          provider,
-          model,
-          created_at::text as created_at
-        from ask_sales_faq_messages
-        where conversation_id = $1
-        order by created_at asc
+          m.id,
+          m.role,
+          m.content_redacted,
+          m.outcome,
+          m.source_label,
+          m.source_last_reviewed,
+          m.answer_payload,
+          m.needs_route,
+          m.route_reason,
+          m.provider,
+          m.model,
+          m.created_at::text as created_at,
+          feedback.rating as feedback_rating,
+          feedback.comment as feedback_comment,
+          feedback.created_at::text as feedback_created_at
+        from ask_sales_faq_messages m
+        left join lateral (
+          select f.rating, f.comment, f.created_at
+          from ask_sales_faq_feedback f
+          where f.message_id = m.id
+            and f.viewer_email = $2
+          order by f.created_at desc
+          limit 1
+        ) feedback on true
+        where m.conversation_id = $1
+        order by m.created_at asc
       `,
-      [conversation.id],
+      [conversation.id, viewerEmail],
     )) as Array<{
       id: string;
       role: "user" | "assistant" | "system_safe";
@@ -2690,6 +2701,9 @@ export async function getAskSalesFaqConversations(
       provider: string | null;
       model: string | null;
       created_at: string;
+      feedback_rating: "up" | "down" | null;
+      feedback_comment: string | null;
+      feedback_created_at: string | null;
     }>;
 
     result.push({
@@ -2708,6 +2722,14 @@ export async function getAskSalesFaqConversations(
         routeReason: message.route_reason,
         provider: message.provider,
         model: message.model,
+        feedback:
+          message.feedback_rating && message.feedback_created_at
+            ? {
+                rating: message.feedback_rating,
+                comment: message.feedback_comment,
+                createdAt: message.feedback_created_at,
+              }
+            : null,
         createdAt: message.created_at,
       })),
     });

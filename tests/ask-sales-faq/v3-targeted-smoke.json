@@ -1,0 +1,34 @@
+{
+  "name": "Ask Sales FAQ V3 targeted smoke",
+  "promptCount": 10,
+  "conversations": [
+    {
+      "id": "retrieval-and-owner-decisions",
+      "title": "V3 retrieval and owner decisions",
+      "prompts": [
+        "Is a franchise owner eligible for Next Level CEO?",
+        "If a prospect is early-stage and budget-sensitive, may I start by recommending Lite, or must I present the higher package first and then move down?",
+        "A lead originally applied for Legacy Makers but canceled Call 2 because they could not make the investment. They are now asking about America’s Authors. Since it is a different show, must they wait three to six months, or can they apply now?"
+      ]
+    },
+    {
+      "id": "immediate-context",
+      "title": "V3 immediate follow-up context",
+      "prompts": [
+        "Thanks. I’m switching to payments and contracts now.",
+        "How do I verify that a Next Level CEO contract has been signed?",
+        "Actually, my previous question was about main ISTV, not Next Level CEO. Does that change your answer?",
+        "What was my previous question about?"
+      ]
+    },
+    {
+      "id": "conversation-and-presentation",
+      "title": "V3 conversation and presentation",
+      "prompts": [
+        "Hi! How’s your day going?",
+        "What is the current approved list of shows?",
+        "Please format that as a clean bullet list."
+      ]
+    }
+  ]
+}

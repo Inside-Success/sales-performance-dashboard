@@ -3,7 +3,7 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { getAskSalesFaqAccess } from "@/lib/ask-sales-faq/access";
-import { runAskSalesFaq } from "@/lib/ask-sales-faq/runtime";
+import { runSelectedAskSalesFaq } from "@/lib/ask-sales-faq/runtime-selector";
 import type { AskSalesFaqLogPayload, AskSalesFaqResponse } from "@/lib/ask-sales-faq/types";
 import {
   checkAskSalesFaqRateLimit,
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
       return limited;
     }
 
-    const result = await runAskSalesFaq(lastMessage.content, messages);
+    const result = await runSelectedAskSalesFaq(lastMessage.content, messages);
     const response: AskSalesFaqResponse = {
       ok: true,
       conversationId,

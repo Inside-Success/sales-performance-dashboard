@@ -10,6 +10,7 @@ const requiredFiles = [
   "src/app/api/ask-sales-faq/conversations/route.ts",
   "src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts",
   "src/app/api/ask-sales-faq/feedback/route.ts",
+  "src/app/api/ask-sales-faq/v3-benchmark/route.ts",
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
@@ -18,11 +19,20 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/answer-plan.ts",
   "src/lib/ask-sales-faq/approved-claims.ts",
   "src/lib/ask-sales-faq/runtime.ts",
+  "src/lib/ask-sales-faq/runtime-selector.ts",
+  "src/lib/ask-sales-faq/v3/provider.ts",
+  "src/lib/ask-sales-faq/v3/retrieval.ts",
+  "src/lib/ask-sales-faq/v3/runtime.ts",
+  "src/lib/ask-sales-faq/v3/turn-resolver.ts",
+  "src/lib/ask-sales-faq/v3/types.ts",
   "src/lib/ask-sales-faq/types.ts",
   "src/lib/ask-sales-faq/generated/approved-faq-bundle.ts",
   "src/lib/ask-sales-faq/generated/approved-policy-units.json",
   "src/lib/ask-sales-faq/generated/approved-claims.json",
   "src/lib/ask-sales-faq/generated/policy-aware-rag-index.json",
+  "src/lib/ask-sales-faq/generated/v3-policy-registry.json",
+  "tests/ask-sales-faq/v3-regression-78.json",
+  "scripts/benchmark-ask-sales-faq-v3.ts",
 ];
 
 const secretPatterns = [/sk-proj-[A-Za-z0-9_-]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za-z0-9_-]{32,}/];
@@ -51,11 +61,16 @@ if (missingFiles.length === 0) {
   const historyRoute = read("src/app/api/ask-sales-faq/conversations/route.ts");
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
+  const v3BenchmarkRoute = read("src/app/api/ask-sales-faq/v3-benchmark/route.ts");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
   const conversationHistory = read("src/lib/ask-sales-faq/conversation-history.ts");
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
   const nav = read("src/components/dashboard/main-nav.tsx");
   const runtime = read("src/lib/ask-sales-faq/runtime.ts");
+  const runtimeSelector = read("src/lib/ask-sales-faq/runtime-selector.ts");
+  const v3Runtime = read("src/lib/ask-sales-faq/v3/runtime.ts");
+  const v3Retrieval = read("src/lib/ask-sales-faq/v3/retrieval.ts");
+  const v3TurnResolver = read("src/lib/ask-sales-faq/v3/turn-resolver.ts");
   const questionFrame = read("src/lib/ask-sales-faq/question-frame.ts");
   const answerPlan = read("src/lib/ask-sales-faq/answer-plan.ts");
   const approvedClaimRuntime = read("src/lib/ask-sales-faq/approved-claims.ts");
@@ -65,10 +80,87 @@ if (missingFiles.length === 0) {
   const ragIndex = JSON.parse(read("src/lib/ask-sales-faq/generated/policy-aware-rag-index.json"));
   const policyUnits = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-policy-units.json"));
   const approvedClaims = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-claims.json"));
+  const v3Registry = JSON.parse(read("src/lib/ask-sales-faq/generated/v3-policy-registry.json"));
+  const v3Regression = JSON.parse(read("tests/ask-sales-faq/v3-regression-78.json"));
   const db = read("src/lib/db.ts");
   const envExample = read(".env.example");
 
   addCheck("hidden page route is not in main nav", !nav.includes("/ask-sales-faq"), "main nav does not expose route");
+
+  addCheck(
+    "V3 is isolated behind an explicit rollback selector",
+    chatRoute.includes("runSelectedAskSalesFaq") &&
+      runtimeSelector.includes('ASK_SALES_FAQ_RUNTIME_VERSION === "v3"') &&
+      runtimeSelector.includes("runAskSalesFaqV3") &&
+      runtimeSelector.includes("runAskSalesFaq") &&
+      !v3Runtime.includes('from "@/lib/ask-sales-faq/runtime"') &&
+      !v3Runtime.includes("APPROVED_FAQ_ARTICLES") &&
+      !v3Runtime.includes("approved-claims.json"),
+    "V3 and V2 are selected once; V3 does not import V2 runtime data or fall through to V2",
+  );
+
+  addCheck(
+    "V3 policy registry separates evidence quality from answer authority",
+    v3Registry.schema_version === 3 &&
+      typeof v3Registry.knowledge_version === "string" &&
+      v3Registry.knowledge_version.length >= 12 &&
+      Array.isArray(v3Registry.policies) &&
+      v3Registry.policies.length >= 500 &&
+      v3Registry.policies.every(
+        (policy) =>
+          policy.id && policy.policy_key && policy.decision && policy.quality_tier && policy.answerability &&
+          policy.source && Array.isArray(policy.source.ids),
+      ) &&
+      v3Registry.policies.some((policy) => policy.quality_tier === "contextual_evidence") &&
+      v3Registry.policies.some((policy) => policy.quality_tier === "discovery_only"),
+    `V3 registry contains ${v3Registry.policies.length} lineage-preserving, quality-tiered policy cards`,
+  );
+
+  addCheck(
+    "V3 resolves immediate context and product negation before hybrid retrieval",
+    v3TurnResolver.includes("immediatePreviousUserQuestion") &&
+      v3TurnResolver.includes("immediatePreviousAssistantAnswer") &&
+      v3TurnResolver.includes("excludedScopes") &&
+      v3Retrieval.includes("bm25") &&
+      v3Retrieval.includes("trigramSimilarity") &&
+      v3Retrieval.includes("scopeScore") &&
+      v3Retrieval.includes("QUALITY_WEIGHT"),
+    "V3 combines immediate-turn resolution, scope exclusion, BM25, phrase, and character-ngram retrieval",
+  );
+
+  addCheck(
+    "V3 never returns raw evidence after grounding rejection",
+    v3Runtime.includes("validateAndRepair") &&
+      v3Runtime.includes("deterministicValidation") &&
+      v3Runtime.includes("safeRouteAnswer") &&
+      v3Runtime.includes('validation.verdict === "pass" || validation.verdict === "repair"') &&
+      !v3Runtime.includes("criticalFallbackUsed") &&
+      !v3Runtime.includes("buildPolicyPlanFallback"),
+    "V3 composes, validates/repairs, and routes on rejection without a raw-claim fallback",
+  );
+
+  addCheck(
+    "retained 78-prompt set is evaluation-only and runnable without the web server",
+    v3Regression.promptCount === 78 &&
+      v3Regression.conversationCount === 8 &&
+      v3Regression.conversations.reduce((count, conversation) => count + conversation.prompts.length, 0) === 78 &&
+      read("scripts/benchmark-ask-sales-faq-v3.ts").includes("runAskSalesFaqV3") &&
+      read("scripts/benchmark-ask-sales-faq-v3.ts").includes("writeFile") &&
+      !read("scripts/benchmark-ask-sales-faq-v3.ts").includes("/api/ask-sales-faq"),
+    "the benchmark calls V3 in-process, bypassing auth/rate guards without weakening production safeguards",
+  );
+
+  addCheck(
+    "remote V3 benchmark bypass is isolated, deployment-protected, and write-free",
+    v3BenchmarkRoute.includes("ASK_SALES_FAQ_BENCHMARK_ENABLED") &&
+      v3BenchmarkRoute.includes('ASK_SALES_FAQ_RUNTIME_VERSION !== "v3"') &&
+      v3BenchmarkRoute.includes('request.headers.get("x-ask-sales-benchmark") !== "v3-isolated"') &&
+      v3BenchmarkRoute.includes("runAskSalesFaqV3") &&
+      !v3BenchmarkRoute.includes("saveAskSalesFaqExchange") &&
+      !v3BenchmarkRoute.includes("checkAskSalesFaqRateLimit") &&
+      !v3BenchmarkRoute.includes("from \"@/lib/db\""),
+    "normal production returns 404; only an isolated protected deployment with an explicit flag can run write-free V3 evaluation",
+  );
 
   addCheck(
     "admin route stays hidden from main nav",
@@ -571,7 +663,7 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "follow-up questions use filtered recent chat context",
-    chatRoute.includes("runAskSalesFaq(lastMessage.content, messages)") &&
+    chatRoute.includes("runSelectedAskSalesFaq(lastMessage.content, messages)") &&
       runtime.includes("buildConversationContext") &&
       runtime.includes('questionFrame.relation === "context_follow_up"') &&
       runtime.includes("deterministicPolicyDecision.matchedRuleId !== \"default-abstain\"") &&

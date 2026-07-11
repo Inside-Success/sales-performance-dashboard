@@ -47,6 +47,8 @@ export type AskSalesFaqStructuredAnswer = {
 };
 
 export type AskSalesFaqRuntimeMetadata = {
+  pipelineVersion?: "v2" | "v3";
+  knowledgeVersion?: string;
   providerAttempts?: Array<{
     provider: "deepseek" | "anthropic";
     model: string;
@@ -94,6 +96,46 @@ export type AskSalesFaqRuntimeMetadata = {
     clarificationRequired: boolean;
     fallbackMode: "approved_answer" | "clarify" | "scope_safe_route";
   };
+  v3?: {
+    turn: {
+      kind: "social" | "memory" | "rewrite" | "clarification" | "follow_up" | "new";
+      productScope: "main_istv" | "dj_nlceo" | "comparison" | "unknown";
+      excludedScopes: Array<"main_istv" | "dj_nlceo">;
+      usedImmediateContext: boolean;
+      previousUserQuestionUsed: boolean;
+      previousAssistantAnswerUsed: boolean;
+    };
+    retrieval: {
+      query: string;
+      candidateCount: number;
+      candidates: Array<{
+        id: string;
+        policyKey: string;
+        score: number;
+        qualityTier: string;
+        answerability: string;
+        productScopes: string[];
+        sourceKind: string;
+      }>;
+      blockedCandidates: Array<{ id: string; score: number }>;
+    };
+    selection: {
+      selectedPolicyIds: string[];
+      rejectedPolicyIds: string[];
+      coverage: Array<{
+        need: string;
+        status: "answered" | "partial" | "unresolved";
+        policyIds: string[];
+        reason: string;
+      }>;
+    };
+    validation: {
+      verdict: "pass" | "repair" | "reject" | "not_required";
+      reason: string;
+      removedClaims: string[];
+    };
+    stageTimings: Record<string, number>;
+  };
 };
 
 export type AskSalesFaqResponse = {
@@ -128,6 +170,11 @@ export type AskSalesFaqConversationSummary = {
     routeReason: string | null;
     provider: string | null;
     model: string | null;
+    feedback?: {
+      rating: "up" | "down";
+      comment: string | null;
+      createdAt: string;
+    } | null;
     createdAt: string;
   }>;
 };

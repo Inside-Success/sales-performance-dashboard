@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/artifacts/ask-sales-faq-v3/
 
 # next.js
 /.next/

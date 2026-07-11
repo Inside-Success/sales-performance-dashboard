@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "name": "Retained 78-prompt regression set",
+  "capturedAt": "2026-07-10",
+  "purpose": "Regression evaluation only. Never use these prompts as hardcoded routing or answer rules.",
+  "promptCount": 78,
+  "conversationCount": 8,
+  "conversations": [
+    {
+      "id": "qa-1",
+      "title": "QA Retest 1 - Qualification",
+      "prompts": [
+        "Hey there! Hope you’re doing well—can you help me with a few qualification questions?",
+        "Are we equating social media presence or follower count with success when evaluating applicants? How much weight should we give social media versus the overall business, story, and fit?",
+        "I have a Call 1 for Operation CEO, and the applicant has two different businesses. Should they choose one business to focus on, or can they mention both during the episode?",
+        "An author has a successful book, a corresponding podcast, and a screenplay gaining traction, but no official business. Is that a fit for America’s Authors if they have a website for the book?",
+        "Is a franchise owner eligible for Next Level CEO?",
+        "Should a non-veteran be auditioning for Operation CEO if their business partner is a veteran and they have five employees?",
+        "A lead says their website, social media, and company have not launched yet and they are in the very early stages. Should I still conduct Call 1 or tell them now that they are not a fit?",
+        "Do we have a live episode on the network featuring someone who owns or runs a charity or nonprofit that I can send to a potential cast member?",
+        "Are we still running Kingdom Creators?"
+      ]
+    },
+    {
+      "id": "qa-2",
+      "title": "QA Retest 2 - Payments Rights",
+      "prompts": [
+        "Thanks. I’m switching to payments, contracts, and content rights now.",
+        "Why is there a commercial reuse license? If a cast member declines the reuse license, does being greenlit mean we can use their segment but they cannot reuse the content?",
+        "Clients understand that they own their episode with the license, but some ask, “How come I don’t make money from the residuals?”",
+        "Are the promotional views included in the $20K package for Facebook only?",
+        "With the 100K guaranteed trailer views, does that mean 100K clicks or 100K views of the trailer all the way to the end? How long is the trailer?",
+        "If someone splits $20K into four payments and makes the first payment by ACH, will the remaining payments draft automatically by ACH? Do they need to approve each payment, or do we need a credit card for future payments?",
+        "A client paid through the link by ACH, but the contract did not appear; it only said “ACH in progress.” I sent the agreement separately, and the client says they signed it. Where can I see the signed agreement?",
+        "I have the signed contract, but the client paid by ACH. Do I need to wait for the payment to clear before signing them up for onboarding?",
+        "My lead wants the $20K license but wants to make a $3K first payment now and pay the remaining $17K in three weeks. Which contract should they sign?"
+      ]
+    },
+    {
+      "id": "qa-3",
+      "title": "QA Retest 3 - Calls Leads",
+      "prompts": [
+        "Appreciate it. Next I have questions about calls, greenlights, recordings, and lead handling.",
+        "Are we allowed to send the payment link through a Zoom Phone message if the lead had to leave Call 2 and wants to complete payment afterward?",
+        "A client is trying to pay on their phone, but the payment page will not let them tap the button to agree to the terms. I sent backup links, and the same thing happens. What should I do?",
+        "When Call 1 happens on a Friday, are we supposed to schedule Call 2 for Monday, or should it happen before the Sunday cohort closes?",
+        "If a prospect says they already read the greenlight letter, do we still need to walk them through it on the call?",
+        "Am I allowed to use Fathom and Zoom recording at the same time, using Zoom as the backup and Fathom for transcripts, summaries, coaching feedback, action items, and call review?",
+        "When dialing out on Zoom for the 20% list, do we have to record the calls? If so, do we have to tell prospects they are being recorded?",
+        "For self-sourced clients, what is the proper process for getting them through the application and onto my own calendar? How do I make sure the application is attributed to me instead of routed to the general pool?",
+        "A lead originally applied for Legacy Makers but canceled Call 2 because they could not make the investment. They are now asking about America’s Authors. Since it is a different show, must they wait three to six months, or can they apply now?"
+      ]
+    },
+    {
+      "id": "qa-4",
+      "title": "QA Retest 4 - Production Events",
+      "prompts": [
+        "Last section—proof, production, support, platforms, and events. Thank you for sticking with me.",
+        "For Next Level CEO, our morning confirmation text says we cannot rebook because the cohort closes Sunday, but DJ has no cohort. Can I change that wording myself, or should I leave it unchanged until the team updates it?",
+        "Where can I find a client’s show name if it is missing from their Keap profile and is no longer on my calendar?",
+        "A potential cast member asked whether I can send the 2025 Inside Success statistics slide, including the social reach and combined following. Can I send a screenshot, or should I only reference the information in a message?",
+        "Are the podcast questions designed for lead generation? What is the podcast episode structure, and how is it intelligently designed?",
+        "Do we have any additional material that explains the six-month training program really well?",
+        "On the fulfillment side, are cast members still paired with a scriptwriter? If a cast member is filming in August, when will they receive the script?",
+        "Can a cast member choose which Tier 1 streaming platform their show will be submitted to?",
+        "Is the Mastermind only once a year? Are there other in-person training and networking programs throughout the year, or just the one event?",
+        "Thanks—can you make that last answer shorter?",
+        "Perfect, thank you!"
+      ]
+    },
+    {
+      "id": "qa-5",
+      "title": "QA Retest 5 - Qualification Natural",
+      "prompts": [
+        "Hi! How’s your day going?",
+        "I have several unrelated sales questions. Can you keep your answers short and practical?",
+        "For Operation CEO, must the applicant own an LLC, or can the owner of a nonprofit qualify?",
+        "Can you explain that in simpler language?",
+        "If a prospect is early-stage and budget-sensitive, may I start by recommending Lite, or must I present the higher package first and then move down?",
+        "Can a Next Level CEO applicant be greenlit if the business officially launches in three months but they already have a website, a strong story, and the ability to invest?",
+        "For America’s Top Agents, does a real-estate agent need written brokerage legal or compliance approval before moving forward?",
+        "Should freelancers move to Call 2, or do they need an established business to qualify?",
+        "Is the $5,000 CEO Day upgrade currently available for Next Level CEO? If it is available, what payment and turnaround terms apply?",
+        "That’s helpful. Can you give me the answer without repeating the route note?",
+        "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?"
+      ]
+    },
+    {
+      "id": "qa-6",
+      "title": "QA Retest 6 - Payments Context",
+      "prompts": [
+        "Thanks. I’m switching to payments and contracts now.",
+        "If a business partner who is not in Keap pays on behalf of the cast member, how should I confirm the payment and get the contract signed if it does not populate automatically?",
+        "I’m not sure which show this applies to. What information do you need from me?",
+        "Do I need to submit another PayMe entry when a recurring payment appears in the payment feed?",
+        "How do I verify that a Next Level CEO contract has been signed?",
+        "Actually, my previous question was about main ISTV, not Next Level CEO. Does that change your answer?",
+        "Do reps send invoices for recurring client payments, or is that automated? Should those payments appear in the sales ledger?",
+        "What was my previous question about?",
+        "How does the first Next Level CEO payment appear on the receipt for tax write-off purposes?",
+        "What discount is currently available to a VIP client who purchases a second VIP ISTV episode, and where can I find the list of included media outlets?"
+      ]
+    },
+    {
+      "id": "qa-7",
+      "title": "QA Retest 7 - Calls Compliance",
+      "prompts": [
+        "Appreciate it. Now I have some questions about calls, ownership, and compliance.",
+        "If my public calendar only allows bookings within two days but an outbound lead is available next week, what is the correct booking process?",
+        "What should I do if a prospect starts taking photos of the Call 1 presentation slides during the call?",
+        "You misunderstood me—I’m asking what the rep should do, not what the prospect should do.",
+        "Can I cancel an audition for someone I recently disqualified who keeps applying again, and how should I stop repeat bookings?",
+        "If a client opts out and I can no longer text them in Zoom Phone or email them through Keap, how do I complete the opt-out process?",
+        "What email and text wording should I use the night before and the morning of a call booked from the 20% list?",
+        "If a client books calls with two different reps, which rep owns the client?",
+        "If a dial-out lead no-showed Call 1 with another rep, may I rebook the lead on my calendar, or should I contact the original rep?"
+      ]
+    },
+    {
+      "id": "qa-8",
+      "title": "QA Retest 8 - Production Resources",
+      "prompts": [
+        "Last section—I have questions about production, resources, platforms, and events.",
+        "Does the estimated nine-month timeline for appearing on Amazon Prime begin when the client signs the license or when they film at the studio? When should the episode appear on our own platform?",
+        "What is the current studio address, and is the Mastermind held at that location?",
+        "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+        "Can a prospect’s friends tour the studio before the shoot, and how many guests may attend filming?",
+        "Where can I find the document that explains the complete production process, including pre-production, filming, post-production, and expected scheduling timelines?",
+        "Please turn your previous answer into a short checklist.",
+        "Is there approved training for transferring or managing leads between Keap and HubSpot, or should reps avoid doing that themselves?",
+        "Should details about event access be explained during Call 2 or during onboarding after the sale?",
+        "Thanks, that’s everything for now."
+      ]
+    }
+  ]
+}
