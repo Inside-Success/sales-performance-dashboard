@@ -59,7 +59,7 @@ async function parseResponseJson(response: Response) {
 
 async function deepSeekCall<T>(input: V3ProviderInput<T>, key: string, attempts: V3ProviderAttempt[]): Promise<V3ProviderResult<T>> {
   const model = process.env.FAQ_V3_DEEPSEEK_MODEL || process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
-  const thinkingEnabled = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false" || /_retry$/.test(input.purpose);
+  const thinkingEnabled = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false";
   const startedAt = Date.now();
   const response = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",

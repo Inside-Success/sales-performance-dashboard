@@ -320,6 +320,8 @@ async function selectApplicableEvidence(input: {
         "Select zero to six cards that directly or semantically equivalently support the requested action, conditions, product, timing, or a clearly separable part of the question.",
         "For a multi-part question, evaluate every part independently. Keep a card that safely answers one separable part even when every other part remains unresolved; do not require one card to answer the whole question.",
         "A card's broadly stated decision may answer a separable part even when its original example differs. Use only that applicable decision and never import the example's unrelated conclusion or conditions.",
+        "Treat product_scopes as authoritative. A product_agnostic decision applies to a named show or offer when its decision directly answers the requested action; a product name in the question is not a reason to discard it. Example show names inside that card do not narrow the scope.",
+        "Apply an operational instruction outside its example trigger only when the decision itself is broadly worded. Keep the broad instruction, but do not import a trigger-specific fact or conclusion.",
         "For a 'why does this exist?' question, a card that explicitly states what the item, policy, or license covers is useful evidence for that separable purpose question even if another requested consequence remains unresolved.",
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
@@ -349,8 +351,8 @@ async function selectApplicableEvidence(input: {
         const retry = await input.provider<{ selected_refs: string[]; reason: string }>({
           ...request,
           purpose: "v3_evidence_selection_retry",
-          maxTokens: 1200,
-          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate ${isMultiPartQuestion(input.turn.currentQuestion) ? "each question part independently" : "the requested decision"}. Preserve a directly applicable answer card, policy boundary, or approved route even when another detail remains unresolved. It is still correct to return zero when nothing useful is supported.`,
+          maxTokens: 650,
+          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate ${isMultiPartQuestion(input.turn.currentQuestion) ? "each question part independently" : "the requested decision"}. Check product_agnostic cards against the requested action, not against example product names. Preserve a directly applicable answer card, policy boundary, or approved route even when another detail remains unresolved. It is still correct to return zero when nothing useful is supported.`,
         });
         input.attempts.push(...retry.attempts);
         if (retry.output.selected_refs.length) result = retry;
@@ -641,6 +643,8 @@ async function validateAndRepair(input: {
       "Require the smallest sufficient evidence set. Supported adjacent facts are still irrelevant when they do not answer a requested part, and must be removed.",
       "The user's question is context, not evidence. A proposed yes/no conclusion is unsupported unless the selected evidence actually states or clearly entails that conclusion.",
       "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
+      "Do not reject a product-agnostic answer merely because the user's named product does not appear in the decision text. First compare the requested action to the decision; if that action matches, the named product is within scope unless the decision explicitly excludes it.",
+      "When a broadly worded operational instruction applies across situations, preserve that instruction without importing details from its original example trigger.",
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
       "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
@@ -709,8 +713,8 @@ async function validateAndRepair(input: {
         const retry = await input.provider<V3ValidationResult>({
           ...request,
           purpose: "v3_grounding_validation_retry",
-          maxTokens: 2200,
-          system: `${request.system}\nThe first audit rejected the draft. Reconsider whether at least one directly relevant sentence, policy boundary, or approved route is supported. Repair to the smallest useful grounded answer or partial instead of rejecting the whole response. Still reject if no useful part is supported.`,
+          maxTokens: 1400,
+          system: `${request.system}\nThe first audit rejected the draft. Reconsider it with this checklist: (1) compare the requested action with each decision, (2) honor product_agnostic scope even when product names differ, (3) preserve every separable supported part, and (4) remove only unsupported conclusions or example-specific details. Repair to the smallest useful grounded answer or partial instead of rejecting the whole response. Still reject if no useful part is supported.`,
           user: JSON.stringify({
             ...JSON.parse(request.user),
             first_validation: result.output,

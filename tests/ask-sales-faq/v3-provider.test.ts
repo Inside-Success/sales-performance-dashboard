@@ -81,7 +81,7 @@ describe("Ask Sales FAQ V3 provider order", () => {
     ]);
   });
 
-  it("enables DeepSeek thinking only for bounded reconsideration calls", async () => {
+  it("keeps DeepSeek thinking disabled for bounded reconsideration calls by default", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({ choices: [{ message: { content: '{"answer":"reasoned retry"}' } }] }),
     );
@@ -97,8 +97,8 @@ describe("Ask Sales FAQ V3 provider order", () => {
 
     const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
     const body = JSON.parse(String(request.body)) as Record<string, unknown>;
-    expect(body.thinking).toEqual({ type: "enabled" });
-    expect(body.reasoning_effort).toBe("high");
-    expect(result.attempts[0]?.reasoningMode).toBe("enabled");
+    expect(body.thinking).toEqual({ type: "disabled" });
+    expect(body.reasoning_effort).toBeUndefined();
+    expect(result.attempts[0]?.reasoningMode).toBe("disabled");
   });
 });
