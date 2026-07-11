@@ -164,6 +164,15 @@ function policyDecisionParts(decision: string) {
     : { example_context: "", decision_evidence: clean(decision, 1400) };
 }
 
+function normalizeText(value: string) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function crossesRightsActorBoundary(need: string, decision: string) {
   const asksCompanyRights = /\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need) ||
     /\b(?:can|may|does|do)\b[^?.]{0,80}\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need);
@@ -186,6 +195,36 @@ function missesRequestedTimingStage(need: string, decision: string) {
 function hasConditionalCurrentnessGap(need: string, decision: string) {
   return /\b(?:current|currently|still available|right now|now available|latest)\b/i.test(need) &&
     /\b(?:if (?:that |the )?(?:rule|offer|option|plan)?\s*is still current|if still current|appears to be|may still|might still|unclear whether .*current)\b/i.test(decision);
+}
+
+function hasUnmatchedExplicitCondition(need: string, decision: string) {
+  const conditionFamilies = [
+    /\b(?:declin(?:e|es|ed|ing)|refus(?:e|es|ed|ing)|opt(?:s|ed|ing)? out|does not buy|doesn't buy|without (?:buying|purchasing|paying))\b/i,
+    /\b(?:greenlit|greenlight|approved|rejected|denied)\b/i,
+    /\b(?:cancel(?:s|ed|ing|lation)?|no[ -]?show|miss(?:es|ed|ing) (?:the )?(?:call|meeting|appointment))\b/i,
+    /\b(?:pending|fail(?:s|ed|ing|ure)?|did not clear|didn't clear|declined payment)\b/i,
+  ];
+  return conditionFamilies.some((pattern) => pattern.test(need) && !pattern.test(decision));
+}
+
+function hasUnprovenExclusivity(need: string, decision: string) {
+  if (!/\b(?:only|exclusively|limited to|restricted to)\b/i.test(need)) return false;
+  const namedTarget = need.match(/\b([a-z][a-z0-9-]{2,})\s+(?:only|exclusively)\b/i)?.[1] ||
+    need.match(/\b(?:limited|restricted) to\s+([a-z][a-z0-9-]{2,})\b/i)?.[1];
+  if (namedTarget && !normalizeText(decision).includes(normalizeText(namedTarget))) return true;
+  return !/\b(?:only|exclusively|limited to|restricted to)\b/i.test(decision);
+}
+
+function missesRequestedArtifact(need: string, decision: string) {
+  const artifact = need.match(/\b((?:[a-z][a-z0-9-]*\s+){1,4})(list|document|link|template|spreadsheet|pdf)\b/i);
+  if (!artifact) return false;
+  const qualifiers = artifact[1]
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((token) => token && !/^(?:a|an|the|this|that|which|what|current|latest|approved|included|relevant|correct|exact|where|find)$/.test(token));
+  if (!qualifiers.length) return false;
+  const normalizedDecision = normalizeText(decision);
+  return !qualifiers.some((token) => normalizedDecision.includes(normalizeText(token)));
 }
 
 function policyCards(retrieval: V3RetrievalResult) {
@@ -399,6 +438,9 @@ async function selectApplicableEvidence(input: {
         "Keep rights holders and actors distinct. Evidence about a cast member, client, or prospect's reuse rights never proves the company's production, publication, ownership, or reuse rights, and company rights never prove participant rights.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
         "For questions asking what is currently available, evidence conditioned with 'if still current', 'may', 'appears', or another unresolved-currentness qualifier is partial at most. Keep current availability unresolved unless another card confirms it.",
+        "A condition in the need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the card never mentions. Do not invent the condition's consequence.",
+        "Do not answer an exclusivity question from silence. Evidence that names a benefit but no platform or restriction can confirm the benefit, but cannot prove it is or is not limited to a named platform.",
+        "Keep requested artifacts distinct. A show list is not a media-outlet list; a contract is not its signature-status record; and a script, template, link, calendar, spreadsheet, or document cannot substitute for a different requested artifact merely because both are lists or resources.",
         "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
         "Do not discard a directly applicable answer_evidence card merely because it answers in policy language rather than repeating the user's exact wording.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
@@ -445,14 +487,20 @@ async function selectApplicableEvidence(input: {
           const match = byRef.get(ref);
           if (!match) return [];
           const decision = policyDecisionParts(match.policy.decision).decision_evidence;
-          return crossesRightsActorBoundary(need, decision) || missesRequestedTimingStage(need, decision) ? [] : [match];
+          return crossesRightsActorBoundary(need, decision) || missesRequestedTimingStage(need, decision) || missesRequestedArtifact(need, decision) ? [] : [match];
         });
         if (!applicableMatches.length) return [];
         const conditionalCurrentness = applicableMatches.every((match) => hasConditionalCurrentnessGap(need, policyDecisionParts(match.policy.decision).decision_evidence));
+        const conditionGap = applicableMatches.every((match) => hasUnmatchedExplicitCondition(need, policyDecisionParts(match.policy.decision).decision_evidence));
+        const exclusivityGap = applicableMatches.every((match) => hasUnprovenExclusivity(need, policyDecisionParts(match.policy.decision).decision_evidence));
+        const requiresPartial = conditionalCurrentness || conditionGap || exclusivityGap;
         return [{
           ...item,
-          relation: conditionalCurrentness && item.relation === "direct" ? "partial" as const : item.relation,
+          relation: requiresPartial && item.relation === "direct" ? "partial" as const : item.relation,
           policy_ids: applicableMatches.map((match) => match.policy.id),
+          supported_claim: requiresPartial
+            ? applicableMatches.map((match) => policyDecisionParts(match.policy.decision).decision_evidence).join(" ")
+            : item.supported_claim,
         }];
       }),
       unresolved_need_ids: result.output.contract.unresolved_need_ids,
@@ -843,6 +891,9 @@ async function validateAndRepair(input: {
       "When a broadly worded operational instruction applies across situations, preserve that instruction without importing details from its original example trigger.",
       "A timeline for one workflow stage is irrelevant to another stage's timing unless the evidence explicitly links them. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing must stay distinct.",
       "Conditional-currentness evidence such as 'if still current', 'may', or 'appears' cannot fully answer a question asking what is currently available. Preserve the supported conditional fact and keep currentness partial or unresolved.",
+      "A condition in the user's need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the evidence never mentions. Remove any invented consequence while preserving the general supported boundary.",
+      "Do not infer exclusivity or non-exclusivity from silence. If evidence confirms a benefit but does not name the platform or restriction the user asks about, preserve the benefit and keep the platform boundary unresolved.",
+      "Keep requested artifacts distinct. A show list is not a media-outlet list; a contract is not its signature-status record; and a script, template, link, calendar, spreadsheet, or document cannot substitute for a different requested artifact merely because both are lists or resources.",
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
       "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
@@ -1149,7 +1200,7 @@ function baseOutput(answer: string, mode: V3AnswerOutput["mode"]): V3AnswerOutpu
 }
 
 function isSafeNoEvidenceRouteAnswer(answer: string) {
-  return /\b(?:can(?:not|'t) confirm|do not have (?:a confirmed|enough information)|don't have (?:a confirmed|enough information)|not confirmed|not resolved|not covered|guidance (?:does not|doesn't) address|unable to confirm|need to (?:verify|confirm|check)|please (?:verify|confirm|check)|should be (?:verified|confirmed|checked))\b/i.test(answer);
+  return /\b(?:can(?:not|'t) confirm|do not have (?:a confirmed|enough (?:information|guidance)|enough confirmed guidance)|don't have (?:a confirmed|enough (?:information|guidance)|enough confirmed guidance)|not confirmed|not resolved|not covered|guidance (?:available )?(?:does not|doesn't) address|unable to confirm|need to (?:verify|confirm|check)|please (?:verify|confirm|check)|should be (?:verified|confirmed|checked))\b/i.test(answer);
 }
 
 export async function runAskSalesFaqV3(

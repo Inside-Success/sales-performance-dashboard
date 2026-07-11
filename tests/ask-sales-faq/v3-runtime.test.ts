@@ -703,6 +703,153 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
   });
 
+  it("downgrades a general rule when the question's explicit condition is absent", async () => {
+    let inspectedContract = false;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["company license reuse after a cast member declines"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => card.title === "Prospect already owns a TV production license");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "If a cast member declines the reuse license, does being greenlit mean the company can use their segment?" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "Being greenlit means the company can use the segment.", reason: "The card describes the company license." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally overstates an unmentioned condition.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return {
+          verdict: "pass",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          removed_claims: [],
+          reason: "The answer preserves only the general boundary.",
+        };
+      }
+      const strictSelection = payload.strict_selection as { contract: { support: Array<{ relation: string; supported_claim: string }> } };
+      expect(strictSelection.contract.support[0].relation).toBe("partial");
+      expect(strictSelection.contract.support[0].supported_claim).toContain("covers reuse of content produced by the company");
+      expect(strictSelection.contract.support[0].supported_claim).not.toContain("greenlit means");
+      inspectedContract = true;
+      const cards = payload.evidence_cards as Array<{ ref: string }>;
+      return {
+        mode: "partial",
+        answer: "The company license covers reuse of content the company produces, but the supplied guidance does not confirm what a cast member declining the reuse license changes in that exact greenlight scenario.",
+        summary: "The general company-license boundary is known; the decline scenario is not.",
+        sections: [],
+        selected_policy_ids: [cards[0].ref],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [{ sentence: "The company license covers reuse of content the company produces.", policy_ids: [cards[0].ref] }],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The decline scenario is unresolved.",
+        confidence_score: 70,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "If a cast member declines the reuse license, does being greenlit mean we can use their segment?",
+      [],
+      { provider },
+    );
+    expect(inspectedContract).toBe(true);
+    expect(result.answer).not.toMatch(/greenlit (?:still )?(?:means|allows)/i);
+    expect(result.runtimeMetadata.v3?.retrieval.evidenceContract?.support[0]?.relation).toBe("partial");
+  });
+
+  it("does not infer a named platform boundary from package silence", async () => {
+    let inspectedContract = false;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["standard package promotional views platform"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; id: string }>;
+        const target = candidates.find((card) => card.id === "claim_c9e50172a4cd057b");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "Are the promotional views in the $20K package for Facebook only?" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "The views are not Facebook-only.", reason: "The package lists views." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally infers non-exclusivity from silence.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return { verdict: "pass", answer: draft.answer, summary: draft.summary, sections: draft.sections, sentence_evidence: draft.sentence_evidence, removed_claims: [], reason: "Grounded partial." };
+      }
+      const strictSelection = payload.strict_selection as { contract: { support: Array<{ relation: string; supported_claim: string }> } };
+      expect(strictSelection.contract.support[0].relation).toBe("partial");
+      expect(strictSelection.contract.support[0].supported_claim).toContain("100,000 pre-promo views");
+      expect(strictSelection.contract.support[0].supported_claim).not.toContain("not Facebook-only");
+      inspectedContract = true;
+      const cards = payload.evidence_cards as Array<{ ref: string }>;
+      return {
+        mode: "partial",
+        answer: "The $20K Standard package includes 100,000 pre-promo views. The supplied guidance does not specify whether those views are Facebook-only.",
+        summary: "The view count is confirmed; the platform is not.",
+        sections: [],
+        selected_policy_ids: [cards[0].ref],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [{ sentence: "The $20K Standard package includes 100,000 pre-promo views.", policy_ids: [cards[0].ref] }],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The platform boundary is unresolved.",
+        confidence_score: 75,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("Are the promotional views included in the $20K package for Facebook only?", [], { provider });
+    expect(inspectedContract).toBe(true);
+    expect(result.answer).not.toMatch(/not (?:limited to|restricted to) Facebook|not Facebook-only/i);
+    expect(result.runtimeMetadata.v3?.retrieval.evidenceContract?.support[0]?.relation).toBe("partial");
+  });
+
+  it("does not substitute one kind of list for another requested artifact", async () => {
+    let composerSawEvidence = true;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["included media outlet list location"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => /approved show list/i.test(card.title));
+        return {
+          needs: [{ text: "Where can I find the list of included media outlets?" }],
+          support: target ? [{ need_id: "N1", relation: "route", refs: [target.ref], supported_claim: "Use the approved show list.", reason: "Both are lists." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally substitutes a show list for a media-outlet list.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("A mismatched artifact must not reach validation.");
+      composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
+      return {
+        mode: "route",
+        answer: "I can’t confirm where the included media-outlet list is stored, so please verify the current source before replying.",
+        summary: "Verify the current media-outlet list source.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The requested media-outlet list location is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("Where can I find the list of included media outlets?", [], { provider });
+    expect(composerSawEvidence).toBe(false);
+    expect(result.answer).not.toContain("show list");
+    expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
+  });
+
   it("honors a presentation-only request to omit a repeated route note", async () => {
     const provider = jsonProvider(({ purpose }) => {
       expect(purpose).toBe("v3_conversation");
