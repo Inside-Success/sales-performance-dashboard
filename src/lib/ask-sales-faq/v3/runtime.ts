@@ -635,18 +635,19 @@ async function validateAndRepair(input: {
   const selectionAdmitsCoverageGap = /\b(?:no (?:candidate|card|policy) directly|does not directly|closest (?:available |applicable )?evidence)\b/i.test(
     input.retrieval.evidenceSelectionReason || "",
   );
+  const needsHighRiskSafetyFallback = policies.some((policy) => policy.risk_level === "high");
   try {
     const result = await input.provider<V3ValidationResult>(request);
     input.attempts.push(...result.attempts);
     const primary = applyValidation(result.output);
-    const needsFallback = result.output.verdict !== "pass" || primary.validation.verdict !== "pass" || needsMethodSafetyFallback || selectionAdmitsCoverageGap;
+    const needsFallback = result.output.verdict !== "pass" || primary.validation.verdict !== "pass" || needsMethodSafetyFallback || selectionAdmitsCoverageGap || needsHighRiskSafetyFallback;
     if (needsFallback && input.fallbackProvider) {
       try {
         const fallback = await input.fallbackProvider<V3ValidationResult>(request);
         input.attempts.push(...fallback.attempts);
         return applyValidation(fallback.output);
       } catch {
-        if (needsMethodSafetyFallback || selectionAdmitsCoverageGap) {
+        if (needsMethodSafetyFallback || selectionAdmitsCoverageGap || needsHighRiskSafetyFallback) {
           return {
             validation: {
               verdict: "reject" as const,

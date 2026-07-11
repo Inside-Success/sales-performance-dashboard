@@ -185,6 +185,18 @@ describe("Ask Sales FAQ V3 runtime", () => {
       };
     });
     const fallbackProvider = jsonProvider(({ purpose, user }) => {
+      if (purpose === "v3_grounding_validation") {
+        const payload = JSON.parse(user) as { draft: Record<string, unknown> };
+        return {
+          verdict: "pass",
+          answer: payload.draft.answer,
+          summary: payload.draft.summary,
+          sections: payload.draft.sections,
+          sentence_evidence: payload.draft.sentence_evidence,
+          removed_claims: [],
+          reason: "Fallback safety audit passed.",
+        };
+      }
       expect(purpose).toBe("v3_evidence_selection");
       fallbackSelectionCalls += 1;
       const payload = JSON.parse(user) as { candidates: Array<{ ref: string; title: string }> };
