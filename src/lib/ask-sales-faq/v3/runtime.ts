@@ -299,8 +299,10 @@ async function selectApplicableEvidence(input: {
       maxTokens: 650,
       system: [
         "You are the strict evidence-selection stage for an internal sales assistant. You do not answer the question.",
-        "Select zero to six cards that directly support the exact requested action, conditions, product, timing, or a clearly separable part of the question.",
+        "Select zero to six cards that directly or semantically equivalently support the requested action, conditions, product, timing, or a clearly separable part of the question.",
+        "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
+        "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
         "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
         "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
