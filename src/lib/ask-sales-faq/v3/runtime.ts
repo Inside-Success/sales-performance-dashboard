@@ -204,6 +204,10 @@ function isMethodQuestion(question: string) {
     /\b(?:verify|confirm|find|see|locate|access|check|send|sign|appear|show|display)\b/i.test(question);
 }
 
+function isMultiPartQuestion(question: string) {
+  return (question.match(/\?/g) || []).length >= 2;
+}
+
 async function addSemanticRecall(input: {
   provider: V3Provider;
   turn: V3TurnResolution;
@@ -329,8 +333,22 @@ async function selectApplicableEvidence(input: {
       }),
       parse: parseEvidenceSelection,
     };
-    const result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
+    let result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
     input.attempts.push(...result.attempts);
+    if (!result.output.selected_refs.length && isMultiPartQuestion(input.turn.currentQuestion)) {
+      try {
+        const retry = await input.provider<{ selected_refs: string[]; reason: string }>({
+          ...request,
+          purpose: "v3_evidence_selection_retry",
+          system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate each question part independently. Select a card only if it safely answers at least one separable part; it is still correct to return zero when no part is supported.`,
+        });
+        input.attempts.push(...retry.attempts);
+        if (retry.output.selected_refs.length) result = retry;
+      } catch {
+        // Keep the first DeepSeek selection result. This bounded reconsideration
+        // never falls through to raw candidates or a routine Claude audit.
+      }
+    }
     const byRef = new Map(cards.map((card, index) => [card.ref, input.retrieval.candidates[index]]));
     const candidates = result.output.selected_refs.flatMap((ref) => {
       const match = byRef.get(ref);

@@ -200,6 +200,73 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(selectionCalls).toBe(1);
   });
 
+  it("reconsiders an empty selection once for a separable multi-part answer", async () => {
+    let firstSelectionCalls = 0;
+    let retrySelectionCalls = 0;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["what the commercial reuse license covers"] };
+      if (purpose === "v3_evidence_selection") {
+        firstSelectionCalls += 1;
+        return { selected_refs: [], reason: "No single card answers the whole question." };
+      }
+      if (purpose === "v3_evidence_selection_retry") {
+        retrySelectionCalls += 1;
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => card.title === "Prospect already owns a TV production license");
+        expect(target).toBeDefined();
+        return { selected_refs: [target?.ref], reason: "This card answers why the license exists, while the decline scenario remains unresolved." };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return {
+          verdict: "pass",
+          mode: "partial",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          coverage: draft.coverage,
+          needs_route: true,
+          route_key: "sales_policy",
+          route_reason: "The decline scenario is unresolved.",
+          removed_claims: [],
+          reason: "The supported separable part is grounded.",
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string; title: string }>;
+      const target = cards.find((card) => card.title === "Prospect already owns a TV production license");
+      expect(target).toBeDefined();
+      return {
+        mode: "partial",
+        answer: "The license covers reuse of company-produced content, plus the time, energy, and promised deliverables. The decline scenario is not confirmed.",
+        summary: "The license covers company-produced content and promised deliverables.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [
+          { need: "Why the license exists", status: "answered", policy_ids: [target?.ref], reason: "Direct evidence." },
+          { need: "Decline scenario", status: "unresolved", policy_ids: [], reason: "No evidence." },
+        ],
+        sentence_evidence: [{ sentence: "The license covers reuse of company-produced content, plus the time, energy, and promised deliverables.", policy_ids: [target?.ref] }],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The decline scenario is unresolved.",
+        confidence_score: 80,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "Why is there a commercial reuse license? If someone declines it, what does that mean for both sides?",
+      [],
+      { provider },
+    );
+    expect(firstSelectionCalls).toBe(1);
+    expect(retrySelectionCalls).toBe(1);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toContain("covers reuse");
+  });
+
   it("passes every bounded retrieval candidate to the composer", async () => {
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
