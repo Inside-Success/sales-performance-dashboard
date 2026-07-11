@@ -150,12 +150,26 @@ async function anthropicCall<T>(input: V3ProviderInput<T>, key: string, attempts
   }
 }
 
+function shouldRetryDeepSeek(error: unknown) {
+  const message = sanitizeError(error).toLowerCase();
+  return !/(?:authentication|unauthorized|invalid api key|http 400|http 401|http 403)/.test(message);
+}
+
+async function deepSeekCallWithRetry<T>(input: V3ProviderInput<T>, key: string, attempts: V3ProviderAttempt[]) {
+  try {
+    return await deepSeekCall<T>(input, key, attempts);
+  } catch (error) {
+    if (!shouldRetryDeepSeek(error)) throw error;
+    return deepSeekCall<T>(input, key, attempts);
+  }
+}
+
 export const generateV3Json: V3Provider = async <T>(input: V3ProviderInput<T>): Promise<V3ProviderResult<T>> => {
   const attempts: V3ProviderAttempt[] = [];
   const errors: string[] = [];
   if (process.env.DEEPSEEK_API_KEY) {
     try {
-      return await deepSeekCall<T>(input, process.env.DEEPSEEK_API_KEY, attempts);
+      return await deepSeekCallWithRetry<T>(input, process.env.DEEPSEEK_API_KEY, attempts);
     } catch (error) {
       errors.push(`deepseek: ${sanitizeError(error)}`);
     }
@@ -175,7 +189,7 @@ export const generateV3ValidationJson: V3Provider = async <T>(input: V3ProviderI
   const errors: string[] = [];
   if (process.env.DEEPSEEK_API_KEY) {
     try {
-      return await deepSeekCall<T>(input, process.env.DEEPSEEK_API_KEY, attempts);
+      return await deepSeekCallWithRetry<T>(input, process.env.DEEPSEEK_API_KEY, attempts);
     } catch (error) {
       errors.push(`deepseek: ${sanitizeError(error)}`);
     }
@@ -188,14 +202,6 @@ export const generateV3ValidationJson: V3Provider = async <T>(input: V3ProviderI
     }
   }
   throw new Error(`No V3 validation provider succeeded (${errors.join(" | ") || "no provider configured"})`);
-};
-
-export const generateV3ClaudeFallbackJson: V3Provider = async <T>(input: V3ProviderInput<T>): Promise<V3ProviderResult<T>> => {
-  const attempts: V3ProviderAttempt[] = [];
-  if (!process.env.ANTHROPIC_API_KEY || process.env.FAQ_ALLOW_CLAUDE_FALLBACK !== "true") {
-    throw new Error("Claude fallback is not enabled for V3.");
-  }
-  return anthropicCall<T>(input, process.env.ANTHROPIC_API_KEY, attempts);
 };
 
 export function parseV3Json<T>(content: string): T {

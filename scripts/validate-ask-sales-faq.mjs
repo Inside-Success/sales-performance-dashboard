@@ -104,11 +104,12 @@ if (missingFiles.length === 0) {
     "V3 keeps DeepSeek primary and Claude fallback-only",
     !v3Provider.includes("preferAnthropic") &&
       v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
-      v3Runtime.includes("selectApplicableEvidence({ provider, fallbackProvider, turn") &&
-      v3Runtime.includes("validateAndRepair({ provider: validatorProvider, fallbackProvider") &&
-      v3Runtime.includes("needsHighRiskSafetyFallback") &&
-      v3Provider.includes("generateV3ClaudeFallbackJson"),
-    "DeepSeek runs query expansion, evidence selection, composition, and validation first; Claude requires the explicit fallback gate",
+      v3Provider.includes("deepSeekCallWithRetry") &&
+      v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
+      v3Runtime.includes("validateAndRepair({ provider: validatorProvider, turn") &&
+      !v3Runtime.includes("generateV3ClaudeFallbackJson") &&
+      !v3Runtime.includes("needsHighRiskSafetyFallback"),
+    "DeepSeek runs query expansion, evidence selection, composition, and validation; it retries once on technical failure before the opt-in Claude emergency fallback",
   );
 
   addCheck(

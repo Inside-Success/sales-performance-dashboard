@@ -5,7 +5,7 @@ import type {
   AskSalesFaqRuntimeMetadata,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
-import { generateV3ClaudeFallbackJson, generateV3Json, generateV3ValidationJson, parseV3Json } from "@/lib/ask-sales-faq/v3/provider";
+import { generateV3Json, generateV3ValidationJson, parseV3Json } from "@/lib/ask-sales-faq/v3/provider";
 import { getV3Registry, retrieveV3Policies } from "@/lib/ask-sales-faq/v3/retrieval";
 import { resolveV3Turn } from "@/lib/ask-sales-faq/v3/turn-resolver";
 import type {
@@ -33,7 +33,6 @@ export type AskSalesFaqV3RuntimeResult = AskSalesFaqResponse & {
 type V3RuntimeOptions = {
   provider?: V3Provider;
   validatorProvider?: V3Provider;
-  fallbackProvider?: V3Provider;
 };
 
 function clean(value: unknown, limit = 4000) {
@@ -278,7 +277,6 @@ async function addSemanticRecall(input: {
 
 async function selectApplicableEvidence(input: {
   provider: V3Provider;
-  fallbackProvider?: V3Provider | null;
   turn: V3TurnResolution;
   retrieval: V3RetrievalResult;
   attempts: V3ProviderAttempt[];
@@ -305,6 +303,7 @@ async function selectApplicableEvidence(input: {
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
+        "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
         "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
         "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
@@ -319,18 +318,8 @@ async function selectApplicableEvidence(input: {
       }),
       parse: parseEvidenceSelection,
     };
-    let result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
+    const result = await input.provider<{ selected_refs: string[]; reason: string }>(request);
     input.attempts.push(...result.attempts);
-    if (input.fallbackProvider && result.output.selected_refs.length <= 1 && input.retrieval.candidates.length >= 16) {
-      try {
-        const fallback = await input.fallbackProvider<{ selected_refs: string[]; reason: string }>(request);
-        input.attempts.push(...fallback.attempts);
-        result = fallback;
-      } catch {
-        // DeepSeek remains authoritative when the optional Claude safety
-        // fallback is unavailable. Final grounding can still fail closed.
-      }
-    }
     const byRef = new Map(cards.map((card, index) => [card.ref, input.retrieval.candidates[index]]));
     const candidates = result.output.selected_refs.flatMap((ref) => {
       const match = byRef.get(ref);
@@ -372,6 +361,8 @@ function composerSystemPrompt() {
     "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, or irrelevant caveats.",
     "Combine multiple applicable cards when the question has multiple parts. Mark every part answered, partial, or unresolved in coverage.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
+    "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Say only that its exact status or location is not confirmed by the supplied evidence unless a card explicitly states nonexistence.",
+    "When routing is necessary, use only the exact channel from approved_routes for the selected route_key. Do not invent a team, owner, channel, or escalation path.",
     "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
     "When a strict selection rationale is supplied, use it only as a map of which question parts may be supported. Verify every statement against the evidence cards themselves, but do not silently discard a supported part the selector identified.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
@@ -451,6 +442,27 @@ function conversationPrompt(turn: V3TurnResolution) {
 
 function wantsStructuredRewrite(turn: V3TurnResolution) {
   return turn.kind === "rewrite" && /\b(?:bullet|checklist|list|table|format)\b/i.test(turn.currentQuestion);
+}
+
+function wantsRepeatedRouteOmitted(turn: V3TurnResolution) {
+  return turn.kind === "rewrite" && /\bwithout repeating (?:the )?route(?: note)?\b|\bdo not repeat (?:the )?route(?: note)?\b/i.test(turn.currentQuestion);
+}
+
+function omitRepeatedRouteNote(output: V3AnswerOutput) {
+  const strip = (value: string) => cleanDisplayText(
+    value.replace(/(?:^|\s)(?:use|check|please check)\s+#[a-z0-9_-]+[^.!?]*(?:[.!?]|$)/gi, " "),
+    5000,
+  );
+  return {
+    ...output,
+    answer: strip(output.answer),
+    summary: strip(output.summary),
+    sections: output.sections.map((section) => ({
+      ...section,
+      body: section.body ? strip(section.body) : section.body,
+      items: section.items?.filter((item) => !/#(?:sales|ft)-[a-z0-9_-]+/i.test(item)).map(strip),
+    })),
+  };
 }
 
 function hasStructuredItems(output: V3AnswerOutput) {
@@ -561,7 +573,6 @@ function parseValidationOutput(content: string): V3ValidationResult {
 
 async function validateAndRepair(input: {
   provider: V3Provider;
-  fallbackProvider?: V3Provider | null;
   turn: V3TurnResolution;
   retrieval: V3RetrievalResult;
   output: V3AnswerOutput;
@@ -592,8 +603,11 @@ async function validateAndRepair(input: {
       "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
+      "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
       "Reject stitched answers where one card matches the show/entity while a different card supplies the action or decision. One applicable card, or a coherent set of cards, must support the full conclusion.",
       "Do not infer permission from absence of a prohibition. Do not turn examples, neighboring products, couple/partner rules, package discounts, or generic Call 1 flow into a policy for a different case.",
+      "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Remove unsupported claims such as 'we do not have one' unless selected evidence explicitly states that fact.",
+      "Use only the exact approved route_key and its channel when routing. Remove invented team, owner, channel, or escalation instructions.",
       "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
       "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
       "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",
@@ -645,52 +659,11 @@ async function validateAndRepair(input: {
     }
     return { validation: repaired, deterministic: repairedCheck };
   };
-  const needsMethodSafetyFallback = /\b(?:how|where|which\s+(?:tool|channel|system|page|document|link))\b/i.test(input.turn.currentQuestion) &&
-    /\b(?:verify|confirm|find|see|locate|access|check|send|sign|appear|show|display)\b/i.test(input.turn.currentQuestion);
-  const selectionAdmitsCoverageGap = /\b(?:no (?:candidate|card|policy) directly|does not directly|closest (?:available |applicable )?evidence)\b/i.test(
-    input.retrieval.evidenceSelectionReason || "",
-  );
-  const needsHighRiskSafetyFallback = policies.some((policy) => policy.risk_level === "high");
   try {
     const result = await input.provider<V3ValidationResult>(request);
     input.attempts.push(...result.attempts);
-    const primary = applyValidation(result.output);
-    const needsFallback = result.output.verdict !== "pass" || primary.validation.verdict !== "pass" || needsMethodSafetyFallback || selectionAdmitsCoverageGap || needsHighRiskSafetyFallback;
-    if (needsFallback && input.fallbackProvider) {
-      try {
-        const fallback = await input.fallbackProvider<V3ValidationResult>(request);
-        input.attempts.push(...fallback.attempts);
-        return applyValidation(fallback.output);
-      } catch {
-        if (needsMethodSafetyFallback || selectionAdmitsCoverageGap || needsHighRiskSafetyFallback) {
-          return {
-            validation: {
-              verdict: "reject" as const,
-              answer: "",
-              summary: "",
-              sections: [],
-              sentence_evidence: [],
-              removed_claims: [],
-              reason: "The DeepSeek draft required an additional safety audit, and the Claude fallback was unavailable.",
-            },
-            deterministic: primary.deterministic,
-          };
-        }
-        // DeepSeek remains the primary result for ordinary low-risk cases
-        // when the optional safety fallback is unavailable.
-      }
-    }
-    return primary;
+    return applyValidation(result.output);
   } catch (error) {
-    if (input.fallbackProvider) {
-      try {
-        const fallback = await input.fallbackProvider<V3ValidationResult>(request);
-        input.attempts.push(...fallback.attempts);
-        return applyValidation(fallback.output);
-      } catch {
-        // Continue into deterministic fail-closed handling.
-      }
-    }
     if (deterministic.pass) {
       return {
         validation: { verdict: "pass" as const, answer: input.output.answer, summary: input.output.summary, sections: input.output.sections, sentence_evidence: input.output.sentence_evidence, removed_claims: [], reason: "Deterministic grounding checks passed; model verifier was unavailable." },
@@ -826,7 +799,6 @@ export async function runAskSalesFaqV3(
   const stageTimings: Record<string, number> = {};
   const provider = options.provider || generateV3Json;
   const validatorProvider = options.validatorProvider || options.provider || generateV3ValidationJson;
-  const fallbackProvider = options.fallbackProvider || (options.provider ? null : generateV3ClaudeFallbackJson);
   const redacted = redactSensitiveText(question);
   const sanitizedMessages = conversationMessages.map((message) => ({ role: message.role, content: redactSensitiveText(message.content).text }));
   const turnStarted = Date.now();
@@ -838,7 +810,7 @@ export async function runAskSalesFaqV3(
     ? await addSemanticRecall({ provider, turn, retrieval: lexicalRetrieval, attempts })
     : lexicalRetrieval;
   const retrieval = turn.kind === "new" || turn.kind === "follow_up"
-    ? await selectApplicableEvidence({ provider, fallbackProvider, turn, retrieval: recalledRetrieval, attempts })
+    ? await selectApplicableEvidence({ provider, turn, retrieval: recalledRetrieval, attempts })
     : recalledRetrieval;
   Object.assign(stageTimings, retrieval.stageTimings);
 
@@ -857,6 +829,7 @@ export async function runAskSalesFaqV3(
       const result = await provider<V3AnswerOutput>({ purpose: isConversation ? "v3_conversation" : "v3_evidence_answer", system: prompt.system, user: prompt.user, maxTokens: turn.kind === "social" ? 500 : 2200, parse: isConversation ? parseConversationOutput : parseAnswerOutput });
       stageTimings.answerGenerationMs = Date.now() - generationStarted;
       output = isConversation ? result.output : resolveEvidenceRefs(result.output, retrieval);
+      if (wantsRepeatedRouteOmitted(turn)) output = omitRepeatedRouteNote(output);
       attempts.push(...result.attempts);
       providerName = result.provider;
       model = result.model;
@@ -900,7 +873,7 @@ export async function runAskSalesFaqV3(
   }
 
   const validationStarted = Date.now();
-  const validationResult = await validateAndRepair({ provider: validatorProvider, fallbackProvider, turn, retrieval, output, attempts });
+  const validationResult = await validateAndRepair({ provider: validatorProvider, turn, retrieval, output, attempts });
   stageTimings.validationMs = Date.now() - validationStarted;
   const validation = validationResult.validation;
   if (validation.verdict === "pass" || validation.verdict === "repair") {
