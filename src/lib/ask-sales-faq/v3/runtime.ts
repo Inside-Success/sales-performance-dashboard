@@ -22,7 +22,7 @@ const registry = getV3Registry();
 const ALLOWED_ROUTE_KEYS = new Set(Object.keys(registry.route_catalog));
 const ALLOWED_CHANNELS = new Set(Object.values(registry.route_catalog).map((route) => route.channel));
 const SEMANTIC_RECALL_CATALOG = registry.policies
-  .filter((policy) => policy.quality_tier !== "discovery_only" && policy.answerability !== "discovery_only")
+  .filter((policy) => policy.quality_tier !== "discovery_only" && policy.answerability === "answer_evidence")
   .map((policy, index) => ({
     ref: `R${index + 1}`,
     policy,
@@ -31,8 +31,6 @@ const SEMANTIC_RECALL_CATALOG = registry.policies
       title: policy.title,
       question_families: policy.question_families.slice(0, 2),
       scopes: policy.product_scopes,
-      domains: policy.domains,
-      actions: policy.actions,
     },
   }));
 const SEMANTIC_POLICY_BY_REF = new Map(SEMANTIC_RECALL_CATALOG.map((entry) => [entry.ref, entry.policy]));
@@ -52,6 +50,13 @@ type V3RuntimeOptions = {
 
 function clean(value: unknown, limit = 4000) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, limit);
+}
+
+function cleanDisplayText(value: unknown, limit = 4000) {
+  return clean(value, limit)
+    .replace(/\s*(?:\(|\[)(?:E\d{1,2}(?:\s*[,;]\s*E\d{1,2})*)(?:\)|\])/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function redactSensitiveText(value: string) {
@@ -88,8 +93,8 @@ function parseSections(value: unknown): V3AnswerOutput["sections"] {
       : undefined;
     return [{
       title,
-      body: clean(section.body, 1200) || undefined,
-      items: Array.isArray(section.items) ? section.items.map((item) => clean(item, 500)).filter(Boolean).slice(0, 50) : undefined,
+      body: cleanDisplayText(section.body, 1200) || undefined,
+      items: Array.isArray(section.items) ? section.items.map((item) => cleanDisplayText(item, 500)).filter(Boolean).slice(0, 50) : undefined,
       tone,
     }];
   });
@@ -130,8 +135,8 @@ function parseAnswerOutput(content: string): V3AnswerOutput {
     : [];
   return {
     mode,
-    answer: clean(raw.answer, 5000),
-    summary: clean(raw.summary, 1200),
+    answer: cleanDisplayText(raw.answer, 5000),
+    summary: cleanDisplayText(raw.summary, 1200),
     sections: parseSections(raw.sections),
     selected_policy_ids: stringArray(raw.selected_policy_ids),
     rejected_policy_ids: stringArray(raw.rejected_policy_ids),
@@ -146,12 +151,12 @@ function parseAnswerOutput(content: string): V3AnswerOutput {
 
 function parseConversationOutput(content: string): V3AnswerOutput {
   const raw = parseV3Json<Record<string, unknown>>(content);
-  const answer = clean(raw.answer || raw.message || raw.response || raw.greeting, 2500);
+  const answer = cleanDisplayText(raw.answer || raw.message || raw.response || raw.greeting, 2500);
   if (!answer) throw new Error("Conversation response did not contain an answer.");
   return {
     mode: "conversation",
     answer,
-    summary: clean(raw.summary, 1200) || answer,
+    summary: cleanDisplayText(raw.summary, 1200) || answer,
     sections: parseSections(raw.sections),
     selected_policy_ids: [],
     rejected_policy_ids: [],
@@ -209,7 +214,8 @@ async function addSemanticRecall(input: {
   attempts: V3ProviderAttempt[];
 }) {
   const bestFamilyScore = Math.max(0, ...input.retrieval.candidates.map((match) => match.familyScore));
-  if (bestFamilyScore >= 6.2 && input.retrieval.candidates.length >= 10) return input.retrieval;
+  const strongImmediateContext = input.turn.kind === "follow_up" && input.retrieval.candidates.some((match) => match.contextScore >= 30);
+  if (strongImmediateContext || (bestFamilyScore >= 6.2 && input.retrieval.candidates.length >= 10)) return input.retrieval;
   const startedAt = Date.now();
   try {
     const result = await input.provider<{ candidate_refs: string[] }>({
@@ -289,6 +295,7 @@ function composerSystemPrompt() {
     "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, or irrelevant caveats.",
     "Combine multiple applicable cards when the question has multiple parts. Mark every part answered, partial, or unresolved in coverage.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
+    "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
     "When the user requests a list, checklist, or formatting change, put list entries in sections[].items instead of flattening markdown dashes into the answer string.",
     "Do not say 'I could not find that in my knowledge base.' Explain the uncertainty naturally and give the exact approved route when one is available.",
@@ -438,8 +445,8 @@ function parseValidationOutput(content: string): V3ValidationResult {
     mode: ["answer", "partial", "route", "conversation"].includes(String(raw.mode))
       ? (raw.mode as V3AnswerOutput["mode"])
       : undefined,
-    answer: clean(raw.answer, 5000),
-    summary: clean(raw.summary, 1200),
+    answer: cleanDisplayText(raw.answer, 5000),
+    summary: cleanDisplayText(raw.summary, 1200),
     sections: parseSections(raw.sections),
     sentence_evidence: Array.isArray(raw.sentence_evidence)
       ? raw.sentence_evidence.slice(0, 20).flatMap((item) => {
@@ -494,7 +501,7 @@ async function validateAndRepair(input: {
         "Reject stitched answers where one card matches the show/entity while a different card supplies the action or decision. One applicable card, or a coherent set of cards, must support the full conclusion.",
         "Do not infer permission from absence of a prohibition. Do not turn examples, neighboring products, couple/partner rules, package discounts, or generic Call 1 flow into a policy for a different case.",
         "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
-        "If a useful grounded answer remains, return pass or repair. Return reject only if the selected evidence cannot answer the question safely.",
+        "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
         "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",
         "Return JSON: verdict, mode, answer, summary, sections, sentence_evidence, coverage, needs_route, route_key, route_reason, removed_claims, reason.",
       ].join("\n"),
@@ -781,7 +788,7 @@ export async function runAskSalesFaqV3(
   if (output.needs_route && !output.answer.includes(route.channel)) {
     output.answer = `${output.answer.replace(/[.!]?$/, ".")} Use ${route.channel} for the unresolved part.`;
   }
-  const answer = clean(output.answer, 5000);
+  const answer = cleanDisplayText(output.answer, 5000);
   const outcome: AskSalesFaqOutcome =
     output.mode === "conversation"
       ? "conversation_reply"

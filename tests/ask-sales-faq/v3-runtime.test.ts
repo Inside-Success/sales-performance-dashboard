@@ -160,7 +160,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       expect(target).toBeDefined();
       return {
         mode: "answer",
-        answer: "Yes—an existing client can buy a different show; check the original assignment before taking ownership.",
+        answer: "Yes—an existing client can buy a different show (E1); check the original assignment before taking ownership.",
         summary: "An existing client can buy another show.",
         sections: [],
         selected_policy_ids: [target?.ref],
@@ -180,6 +180,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       { provider },
     );
     expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).not.toMatch(/\bE\d+\b/);
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_606e9d59e3cd964f");
   });
 
