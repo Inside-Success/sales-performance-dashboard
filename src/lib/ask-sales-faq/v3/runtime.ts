@@ -646,8 +646,22 @@ async function validateAndRepair(input: {
         input.attempts.push(...fallback.attempts);
         return applyValidation(fallback.output);
       } catch {
-        // DeepSeek remains the primary result when the optional safety
-        // fallback is unavailable.
+        if (needsMethodSafetyFallback || selectionAdmitsCoverageGap) {
+          return {
+            validation: {
+              verdict: "reject" as const,
+              answer: "",
+              summary: "",
+              sections: [],
+              sentence_evidence: [],
+              removed_claims: [],
+              reason: "The DeepSeek draft required an additional safety audit, and the Claude fallback was unavailable.",
+            },
+            deterministic: primary.deterministic,
+          };
+        }
+        // DeepSeek remains the primary result for ordinary low-risk cases
+        // when the optional safety fallback is unavailable.
       }
     }
     return primary;
