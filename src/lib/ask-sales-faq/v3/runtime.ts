@@ -199,6 +199,11 @@ function parseEvidenceSelection(content: string) {
   };
 }
 
+function isMethodQuestion(question: string) {
+  return /\b(?:how|where|which\s+(?:tool|channel|system|page|document|link))\b/i.test(question) &&
+    /\b(?:verify|confirm|find|see|locate|access|check|send|sign|appear|show|display)\b/i.test(question);
+}
+
 async function addSemanticRecall(input: {
   provider: V3Provider;
   turn: V3TurnResolution;
@@ -281,7 +286,9 @@ async function selectApplicableEvidence(input: {
   retrieval: V3RetrievalResult;
   attempts: V3ProviderAttempt[];
 }) {
-  if (!input.retrieval.semanticQueries?.length) return input.retrieval;
+  if (!input.retrieval.semanticQueries?.length && input.turn.kind !== "follow_up" && !isMethodQuestion(input.turn.standaloneQuestion)) {
+    return input.retrieval;
+  }
   const startedAt = Date.now();
   const cards = input.retrieval.candidates.map((match, index) => ({
     ref: `P${index + 1}`,
@@ -302,10 +309,12 @@ async function selectApplicableEvidence(input: {
         "Select zero to six cards that directly or semantically equivalently support the requested action, conditions, product, timing, or a clearly separable part of the question.",
         "For a multi-part question, evaluate every part independently. Keep a card that safely answers one separable part even when every other part remains unresolved; do not require one card to answer the whole question.",
         "A card's broadly stated decision may answer a separable part even when its original example differs. Use only that applicable decision and never import the example's unrelated conclusion or conditions.",
+        "For a 'why does this exist?' question, a card that explicitly states what the item, policy, or license covers is useful evidence for that separable purpose question even if another requested consequence remains unresolved.",
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
+        "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
         "Prefer the smallest sufficient set. It is correct to select no cards when none directly applies.",
         "Return JSON only: {\"selected_refs\":[\"P1\"],\"reason\":\"brief selection rationale\"}.",
@@ -365,6 +374,7 @@ function composerSystemPrompt() {
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
     "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Say only that its exact status or location is not confirmed by the supplied evidence unless a card explicitly states nonexistence.",
     "When routing is necessary, use only the exact channel from approved_routes for the selected route_key. Do not invent a team, owner, channel, or escalation path.",
+    "Choose the route from the unresolved question part only. Words from a part you already answered must not redirect a different unresolved need to the wrong channel.",
     "For a partial answer, preserve any directly relevant supported premise or rule, then name only the exact missing method, timing, or exception. Do not let a narrower conditional card erase a broader card that directly answers part of the question.",
     "When a strict selection rationale is supplied, use it only as a map of which question parts may be supported. Verify every statement against the evidence cards themselves, but do not silently discard a supported part the selector identified.",
     "Use a warm, concise, ChatGPT-like tone. Lead with the answer. Prefer 1-3 short paragraphs; use bullets only when they genuinely improve readability.",
@@ -610,6 +620,7 @@ async function validateAndRepair(input: {
       "Do not infer permission from absence of a prohibition. Do not turn examples, neighboring products, couple/partner rules, package discounts, or generic Call 1 flow into a policy for a different case.",
       "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Remove unsupported claims such as 'we do not have one' unless selected evidence explicitly states that fact.",
       "Use only the exact approved route_key and its channel when routing. Remove invented team, owner, channel, or escalation instructions.",
+      "Choose route_key from the unresolved coverage items only. Do not let an answered payment, contract, or product detail route a different unresolved timing, production, or resource question to the wrong channel.",
       "Preserve a natural concise tone. Do not add any fact, number, channel, exception, or policy.",
       "If a useful grounded answer remains, return pass or repair. In a partial answer, preserve directly relevant supported facts and remove only the unsupported conclusion or procedure. Return reject only if the selected evidence cannot answer any useful part safely.",
       "Re-evaluate coverage and routing after repair. Do not preserve a route when the repaired answer fully resolves the question; do not remove a route when any part remains unresolved.",

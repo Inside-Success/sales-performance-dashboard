@@ -291,11 +291,18 @@ describe("Ask Sales FAQ V3 runtime", () => {
 
   it("uses the DeepSeek validation stage to reject an unsupported verification method", async () => {
     let validationCalls = 0;
+    let selectionCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
         evidence_cards?: Array<{ ref: string; title: string }>;
         draft?: Record<string, unknown>;
       };
+      if (purpose === "v3_evidence_selection") {
+        selectionCalls += 1;
+        const candidates = JSON.parse(user) as { candidates: Array<{ ref: string; title: string }> };
+        const target = candidates.candidates.find((card) => /contract/i.test(card.title)) || candidates.candidates[0];
+        return { selected_refs: target ? [target.ref] : [], reason: "Only the contract card is potentially applicable." };
+      }
       if (purpose === "v3_grounding_validation") {
         validationCalls += 1;
         return {
@@ -325,6 +332,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       };
     });
     const result = await runAskSalesFaqV3("How do I verify that a Next Level CEO contract has been signed?", [], { provider });
+    expect(selectionCalls).toBe(1);
     expect(validationCalls).toBe(1);
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).not.toContain("signing-status channel");
@@ -377,7 +385,14 @@ describe("Ask Sales FAQ V3 runtime", () => {
   });
 
   it("does not retain adjacent process facts when a corrected scope remains unresolved", async () => {
+    let selectionCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
+      if (purpose === "v3_evidence_selection") {
+        selectionCalls += 1;
+        const selectionPayload = JSON.parse(user) as { candidates: Array<{ ref: string; title: string }> };
+        const target = selectionPayload.candidates.find((card) => /contract|post-sale/i.test(card.title)) || selectionPayload.candidates[0];
+        return { selected_refs: target ? [target.ref] : [], reason: "Keep only the closest contract evidence for validation." };
+      }
       if (purpose === "v3_grounding_validation") {
         const validationPayload = JSON.parse(user) as { question: string; immediate_previous_question: string };
         expect(validationPayload.question).toContain("How do I verify");
@@ -425,5 +440,6 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.answer).not.toContain("generic close flow");
     expect(result.answer).toMatch(/check|confirm|verify/i);
     expect(result.needsRoute).toBe(true);
+    expect(selectionCalls).toBe(1);
   });
 });
