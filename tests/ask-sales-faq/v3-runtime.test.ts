@@ -238,6 +238,53 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_c068cf9ac8f5d089");
   });
 
+  it("treats hyphenated and pluralized time units as the same grounded number", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as {
+        candidates?: Array<{ ref: string; title: string }>;
+        evidence_cards?: Array<{ ref: string; policy_key: string }>;
+        draft?: Record<string, unknown>;
+      };
+      if (purpose === "v3_semantic_recall") return { queries: ["first booking wins lead ownership window"] };
+      if (purpose === "v3_evidence_selection") {
+        const selected = payload.candidates?.filter((card) => /first-contact ownership|20 percent dial-out/i.test(card.title));
+        return { selected_refs: selected?.map((card) => card.ref) || [], reason: "These cards directly define lead ownership." };
+      }
+      if (purpose === "v3_grounding_validation") {
+        return {
+          verdict: "pass",
+          answer: payload.draft?.answer,
+          summary: payload.draft?.summary,
+          sections: payload.draft?.sections,
+          sentence_evidence: payload.draft?.sentence_evidence,
+          removed_claims: [],
+          reason: "Grounded.",
+        };
+      }
+      const target = payload.evidence_cards?.find((card) => card.policy_key === "twenty-percent-dial-out-sop-answer-3");
+      expect(target).toBeDefined();
+      return {
+        mode: "answer",
+        answer: "The first booking wins, and the original rep keeps a 30 days ownership window from their last logged communication.",
+        summary: "The first booking wins during the 30 days ownership window.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Lead ownership", status: "answered", policy_ids: [target?.ref], reason: "Direct evidence." }],
+        sentence_evidence: [{ sentence: "The first booking wins, and the original rep keeps a 30 days ownership window from their last logged communication.", policy_ids: [target?.ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 90,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("If a client books calls with two different reps, which rep owns the client?", [], { provider });
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toContain("30 days");
+    expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
+  });
+
   it("retries structured presentation rewrites when the first response drops the list", async () => {
     let conversationCalls = 0;
     const provider = jsonProvider(({ purpose }) => {

@@ -478,11 +478,24 @@ function evidenceText(policies: V3Policy[], question: string) {
   return `${question}\n${policies.map((policy) => `${policy.id}: ${policy.decision}`).join("\n")}`.toLowerCase();
 }
 
+const NUMERIC_FACT_PATTERN = /(?:\$\s*)?\b\d[\d,.]*(?:%|\s*[-–—]?\s*(?:days?|weeks?|months?|years?))?/gi;
+
+function canonicalNumericFact(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace(/[-–—]/g, " ")
+    .replace(/\b(days|weeks|months|years)\b/g, (unit) => unit.slice(0, -1))
+    .replace(/\$\s+/g, "$")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[.]+$/, "");
+}
+
 function unsupportedTokens(answer: string, source: string) {
-  const numbers = answer.match(/(?:\$\s*)?\b\d[\d,.]*(?:%|\s*(?:days?|weeks?|months?|years?))?/gi) || [];
-  return Array.from(new Set(numbers.map((value) => value.replace(/\s+/g, " ").trim().replace(/[,.]+$/, "")))).filter(
-    (value) => !source.includes(value.toLowerCase()),
-  );
+  const answerFacts = Array.from(new Set((answer.match(NUMERIC_FACT_PATTERN) || []).map(canonicalNumericFact)));
+  const sourceFacts = new Set((source.match(NUMERIC_FACT_PATTERN) || []).map(canonicalNumericFact));
+  return answerFacts.filter((value) => !sourceFacts.has(value));
 }
 
 function deterministicValidation(output: V3AnswerOutput, retrieval: V3RetrievalResult, question: string) {
