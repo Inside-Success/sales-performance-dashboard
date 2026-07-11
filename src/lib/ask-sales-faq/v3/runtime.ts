@@ -164,6 +164,30 @@ function policyDecisionParts(decision: string) {
     : { example_context: "", decision_evidence: clean(decision, 1400) };
 }
 
+function crossesRightsActorBoundary(need: string, decision: string) {
+  const asksCompanyRights = /\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need) ||
+    /\b(?:can|may|does|do)\b[^?.]{0,80}\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need);
+  const onlyDescribesParticipantRights = /\b(?:cast members?|clients?|prospects?|they|their)\b[^.]{0,160}\b(?:reuse|republish|publish|sell|clips?|episode|content)\b/i.test(decision) &&
+    !/\b(?:the company|we|production|inside success(?: tv)?)\b[^.]{0,160}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(decision);
+  return asksCompanyRights && onlyDescribesParticipantRights;
+}
+
+function missesRequestedTimingStage(need: string, decision: string) {
+  if (!/\b(?:when|how long|timing|timeline|turnaround|receive|get|arrive|delivered|sent|clear)\b/i.test(need)) return false;
+  const targets: Array<[RegExp, RegExp]> = [
+    [/\b(?:receive|get|deliver(?:ed|y)?|sent)\b[^?.]{0,80}\bscript\b|\bscript\b[^?.]{0,80}\b(?:receive|get|deliver(?:ed|y)?|sent)\b/i, /\bscript\b/i],
+    [/\b(?:payment|ach|wire)\b[^?.]{0,80}\b(?:clear|confirm|settle)\b|\b(?:clear|confirm|settle)\b[^?.]{0,80}\b(?:payment|ach|wire)\b/i, /\b(?:payment|ach|wire)\b[^.]{0,100}\b(?:clear|confirm|settle)\b|\b(?:clear|confirm|settle)\b[^.]{0,100}\b(?:payment|ach|wire)\b/i],
+    [/\bcontract\b[^?.]{0,80}\b(?:sign|signed|signature|sent|receive)\b|\b(?:sign|signed|signature|sent|receive)\b[^?.]{0,80}\bcontract\b/i, /\bcontract\b[^.]{0,100}\b(?:sign|signed|signature|sent|receive)\b|\b(?:sign|signed|signature|sent|receive)\b[^.]{0,100}\bcontract\b/i],
+    [/\b(?:episode|show)\b[^?.]{0,80}\b(?:air|appear|publish|release|live)\b|\b(?:air|appear|publish|release|live)\b[^?.]{0,80}\b(?:episode|show)\b/i, /\b(?:episode|show)\b[^.]{0,100}\b(?:air|appear|publish|release|live)\b|\b(?:air|appear|publish|release|live)\b[^.]{0,100}\b(?:episode|show)\b/i],
+  ];
+  return targets.some(([needPattern, evidencePattern]) => needPattern.test(need) && !evidencePattern.test(decision));
+}
+
+function hasConditionalCurrentnessGap(need: string, decision: string) {
+  return /\b(?:current|currently|still available|right now|now available|latest)\b/i.test(need) &&
+    /\b(?:if (?:that |the )?(?:rule|offer|option|plan)?\s*is still current|if still current|appears to be|may still|might still|unclear whether .*current)\b/i.test(decision);
+}
+
 function policyCards(retrieval: V3RetrievalResult) {
   // Retrieval already applies the bounded candidate limit. Keep that single
   // limit authoritative so a relevant lower-ranked card cannot appear in
@@ -372,6 +396,7 @@ async function selectApplicableEvidence(input: {
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "A timeline for one workflow stage is not even partial evidence for another stage's timing. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing are distinct stages unless a card explicitly links them.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
+        "Keep rights holders and actors distinct. Evidence about a cast member, client, or prospect's reuse rights never proves the company's production, publication, ownership, or reuse rights, and company rights never prove participant rights.",
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
         "For questions asking what is currently available, evidence conditioned with 'if still current', 'may', 'appears', or another unresolved-currentness qualifier is partial at most. Keep current availability unresolved unless another card confirms it.",
         "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
@@ -408,26 +433,40 @@ async function selectApplicableEvidence(input: {
       }
     }
     const byRef = new Map(cards.map((card, index) => [card.ref, input.retrieval.candidates[index]]));
-    const candidates = result.output.selected_refs.flatMap((ref) => {
+    const initiallySelectedCandidates = result.output.selected_refs.flatMap((ref) => {
       const match = byRef.get(ref);
       return match ? [match] : [];
     });
     const contract: V3EvidenceContract = {
       needs: result.output.contract.needs,
       support: result.output.contract.support.flatMap((item) => {
-        const policyIds = item.policy_ids.flatMap((ref) => {
+        const need = result.output.contract.needs.find((entry) => entry.id === item.need_id)?.text || "";
+        const applicableMatches = item.policy_ids.flatMap((ref) => {
           const match = byRef.get(ref);
-          return match ? [match.policy.id] : [];
+          if (!match) return [];
+          const decision = policyDecisionParts(match.policy.decision).decision_evidence;
+          return crossesRightsActorBoundary(need, decision) || missesRequestedTimingStage(need, decision) ? [] : [match];
         });
-        return policyIds.length ? [{ ...item, policy_ids: policyIds }] : [];
+        if (!applicableMatches.length) return [];
+        const conditionalCurrentness = applicableMatches.every((match) => hasConditionalCurrentnessGap(need, policyDecisionParts(match.policy.decision).decision_evidence));
+        return [{
+          ...item,
+          relation: conditionalCurrentness && item.relation === "direct" ? "partial" as const : item.relation,
+          policy_ids: applicableMatches.map((match) => match.policy.id),
+        }];
       }),
       unresolved_need_ids: result.output.contract.unresolved_need_ids,
     };
     for (const need of contract.needs) {
+      if (contract.support.some((item) => item.need_id === need.id && item.relation === "partial") && !contract.unresolved_need_ids.includes(need.id)) {
+        contract.unresolved_need_ids.push(need.id);
+      }
       if (!contract.support.some((item) => item.need_id === need.id) && !contract.unresolved_need_ids.includes(need.id)) {
         contract.unresolved_need_ids.push(need.id);
       }
     }
+    const contractPolicyIds = new Set(contract.support.flatMap((item) => item.policy_ids));
+    const candidates = initiallySelectedCandidates.filter((match) => contractPolicyIds.has(match.policy.id));
     return {
       ...input.retrieval,
       preselectionCandidateCount: input.retrieval.candidates.length,
@@ -807,6 +846,7 @@ async function validateAndRepair(input: {
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",
       "A statement that a status is required (for example, that a contract must be signed) does not answer how or where to verify that status. Method questions require evidence that states the method, tool, location, or responsible route.",
       "Keep entities, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the evidence explicitly covers that relationship.",
+      "Keep rights holders and actors distinct. Evidence about a cast member, client, or prospect's reuse rights never proves the company's production, publication, ownership, or reuse rights, and company rights never prove participant rights.",
       "Reject stitched answers where one card matches the show/entity while a different card supplies the action or decision. One applicable card, or a coherent set of cards, must support the full conclusion.",
       "Do not infer permission from absence of a prohibition. Do not turn examples, neighboring products, couple/partner rules, package discounts, or generic Call 1 flow into a policy for a different case.",
       "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Remove unsupported claims such as 'we do not have one' unless selected evidence explicitly states that fact.",
@@ -843,10 +883,20 @@ async function validateAndRepair(input: {
       ...entry,
       policy_ids: entry.policy_ids.map(resolveValidationRef),
     }));
-    const needChecks = (rawRepaired.need_checks || []).map((entry) => ({
-      ...entry,
-      policy_ids: entry.policy_ids.map(resolveValidationRef),
-    }));
+    const needChecks = (rawRepaired.need_checks || []).map((entry) => {
+      const policyIds = entry.policy_ids.map(resolveValidationRef);
+      const applicable = (input.retrieval.evidenceContract?.support || []).filter((support) => support.need_id === entry.need_ref);
+      const hasFactSupport = applicable.some((support) => support.relation === "direct" || support.relation === "partial");
+      if (entry.status !== "unresolved" && applicable.length && !hasFactSupport) {
+        return {
+          ...entry,
+          status: "unresolved" as const,
+          policy_ids: policyIds,
+          reason: `${entry.reason} The evidence contract supplies an approved route only, not the missing fact.`.trim(),
+        };
+      }
+      return { ...entry, policy_ids: policyIds };
+    });
     const repaired: V3ValidationResult = {
       ...rawRepaired,
       sentence_checks: sentenceChecks,
@@ -1099,7 +1149,7 @@ function baseOutput(answer: string, mode: V3AnswerOutput["mode"]): V3AnswerOutpu
 }
 
 function isSafeNoEvidenceRouteAnswer(answer: string) {
-  return /\b(?:can(?:not|'t) confirm|do not have a confirmed|don't have a confirmed|not confirmed|not resolved|need to (?:verify|confirm|check)|please (?:verify|confirm|check)|should be (?:verified|confirmed|checked))\b/i.test(answer);
+  return /\b(?:can(?:not|'t) confirm|do not have (?:a confirmed|enough information)|don't have (?:a confirmed|enough information)|not confirmed|not resolved|not covered|guidance (?:does not|doesn't) address|unable to confirm|need to (?:verify|confirm|check)|please (?:verify|confirm|check)|should be (?:verified|confirmed|checked))\b/i.test(answer);
 }
 
 export async function runAskSalesFaqV3(

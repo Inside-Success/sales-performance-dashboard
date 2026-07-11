@@ -614,6 +614,95 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
   });
 
+  it("does not let participant reuse rights prove company reuse rights", async () => {
+    let composerSawEvidence = true;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["cast member reuse rights and company segment rights"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => card.title === "Reuse license and independent publishing");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "Whether the company may still use the cast member's segment after the cast member declines the reuse license" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "The company may still use the segment.", reason: "The card discusses reuse rights." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally attempts to cross the rights-holder boundary.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("Filtered evidence must not reach validation.");
+      const evidenceCards = payload.evidence_cards as unknown[];
+      composerSawEvidence = evidenceCards.length > 0;
+      return {
+        mode: "route",
+        answer: "I don’t have enough information to confirm the company’s reuse rights in that situation, so please verify before promising anything.",
+        summary: "Verify the company’s reuse rights before promising anything.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The company-rights question is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "If the cast member declines the commercial reuse license, can we still use their segment?",
+      [],
+      { provider },
+    );
+    expect(composerSawEvidence).toBe(false);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).not.toMatch(/we (?:can|may) still use/i);
+    expect(result.runtimeMetadata.v3?.retrieval.preselectionCandidateCount).toBeGreaterThan(0);
+    expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
+  });
+
+  it("does not let an editing timeline answer script-delivery timing", async () => {
+    let composerSawEvidence = true;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["when does the client receive the script"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => card.title === "Episode delivery timing");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "When the client receives the script" }],
+          support: target ? [{ need_id: "N1", relation: "partial", refs: [target.ref], supported_claim: "Editing is four to six months after filming.", reason: "Both concern production timing." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally attempts to cross workflow stages.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("Filtered evidence must not reach validation.");
+      const evidenceCards = payload.evidence_cards as unknown[];
+      composerSawEvidence = evidenceCards.length > 0;
+      return {
+        mode: "route",
+        answer: "The guidance available does not address when the script is delivered, so please confirm that timing with the approved production route.",
+        summary: "Confirm the script-delivery timing.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "fulfillment",
+        route_reason: "Script-delivery timing is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("When will the client receive the script?", [], { provider });
+    expect(composerSawEvidence).toBe(false);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).not.toMatch(/4.?6 months/i);
+    expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
+  });
+
   it("honors a presentation-only request to omit a repeated route note", async () => {
     const provider = jsonProvider(({ purpose }) => {
       expect(purpose).toBe("v3_conversation");
