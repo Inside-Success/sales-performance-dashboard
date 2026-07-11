@@ -207,7 +207,9 @@ async function addSemanticRecall(input: {
       maxTokens: 450,
       system: [
         "You write compact retrieval queries for an internal sales-policy search engine. You never answer the question.",
-        "Return 2 to 4 short standalone paraphrases that preserve the exact requested action, entity, product, timing, exception, and negation.",
+        "Return 2 to 4 short standalone retrieval queries that preserve the exact requested action, entity, product, timing, exception, and negation.",
+        "Cover each distinct decision the user needs, such as eligibility, permission, ownership, timing, next action, or exception, with a separate query when needed.",
+        "Include at least one policy-title-like abstraction of the business decision instead of merely repeating the user's sentence.",
         "Use likely policy-catalog wording, but do not broaden to neighboring products or topics and do not invent a policy.",
         "Keep explicitly excluded products excluded. Every query must mean the same thing as the current question or one explicit part of it.",
         "Return JSON only: {\"queries\":[\"search phrase\"]}.",
@@ -217,10 +219,6 @@ async function addSemanticRecall(input: {
         resolved_question: input.turn.standaloneQuestion,
         product_scope: input.turn.productScope,
         excluded_scopes: input.turn.excludedScopes,
-        current_candidate_topics: input.retrieval.candidates.slice(0, 6).map((match) => ({
-          title: match.policy.title,
-          question_families: match.policy.question_families.slice(0, 1),
-        })),
       }),
       parse: parseSemanticRecall,
     });
@@ -255,6 +253,7 @@ async function addSemanticRecall(input: {
     }
     return {
       ...input.retrieval,
+      semanticQueries: result.output.queries,
       candidates,
       stageTimings: { ...input.retrieval.stageTimings, semanticRecallMs: Date.now() - startedAt },
     };
@@ -599,6 +598,7 @@ function metadata(input: {
       },
       retrieval: {
         query: input.retrieval.query.slice(0, 4000),
+        semanticQueries: input.retrieval.semanticQueries?.map((query) => query.slice(0, 500)),
         candidateCount: input.retrieval.candidates.length,
         candidates: input.retrieval.candidates.map((match) => ({
           id: match.policy.id,

@@ -180,6 +180,9 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.answer).not.toMatch(/\bE\d+\b/);
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_606e9d59e3cd964f");
+    expect(result.runtimeMetadata.v3?.retrieval.semanticQueries).toEqual([
+      "Can an existing client buy another show and who owns the relationship?",
+    ]);
   });
 
   it("passes every bounded retrieval candidate to the composer", async () => {

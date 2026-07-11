@@ -90,6 +90,7 @@ export type V3BlockedMatch = {
 
 export type V3RetrievalResult = {
   query: string;
+  semanticQueries?: string[];
   candidates: V3PolicyMatch[];
   blocked: V3BlockedMatch[];
   queryTokens: string[];

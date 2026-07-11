@@ -107,6 +107,7 @@ export type AskSalesFaqRuntimeMetadata = {
     };
     retrieval: {
       query: string;
+      semanticQueries?: string[];
       candidateCount: number;
       candidates: Array<{
         id: string;
