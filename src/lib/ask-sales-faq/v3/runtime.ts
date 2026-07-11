@@ -747,7 +747,7 @@ export async function runAskSalesFaqV3(
     ? await addSemanticRecall({ provider, turn, retrieval: lexicalRetrieval, attempts })
     : lexicalRetrieval;
   const retrieval = turn.kind === "new" || turn.kind === "follow_up"
-    ? await selectApplicableEvidence({ provider, turn, retrieval: recalledRetrieval, attempts })
+    ? await selectApplicableEvidence({ provider: validatorProvider, turn, retrieval: recalledRetrieval, attempts })
     : recalledRetrieval;
   Object.assign(stageTimings, retrieval.stageTimings);
 
