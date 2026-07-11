@@ -99,6 +99,8 @@ describe("Ask Sales FAQ V3 provider order", () => {
     const body = JSON.parse(String(request.body)) as Record<string, unknown>;
     expect(body.thinking).toEqual({ type: "disabled" });
     expect(body.reasoning_effort).toBeUndefined();
+    expect(body.temperature).toBe(0);
     expect(result.attempts[0]?.reasoningMode).toBe("disabled");
+    expect(result.attempts[0]?.temperature).toBe(0);
   });
 });

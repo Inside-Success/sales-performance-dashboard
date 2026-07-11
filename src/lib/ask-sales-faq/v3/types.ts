@@ -152,6 +152,7 @@ export type V3ProviderAttempt = {
   completionTokens?: number;
   totalTokens?: number;
   reasoningMode?: "enabled" | "disabled";
+  temperature?: number;
 };
 
 export type V3ProviderResult<T> = {
