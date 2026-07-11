@@ -349,6 +349,7 @@ async function selectApplicableEvidence(input: {
         const retry = await input.provider<{ selected_refs: string[]; reason: string }>({
           ...request,
           purpose: "v3_evidence_selection_retry",
+          maxTokens: 1200,
           system: `${request.system}\nYour first strict pass selected no cards. Re-evaluate ${isMultiPartQuestion(input.turn.currentQuestion) ? "each question part independently" : "the requested decision"}. Preserve a directly applicable answer card, policy boundary, or approved route even when another detail remains unresolved. It is still correct to return zero when nothing useful is supported.`,
         });
         input.attempts.push(...retry.attempts);
@@ -708,6 +709,7 @@ async function validateAndRepair(input: {
         const retry = await input.provider<V3ValidationResult>({
           ...request,
           purpose: "v3_grounding_validation_retry",
+          maxTokens: 2200,
           system: `${request.system}\nThe first audit rejected the draft. Reconsider whether at least one directly relevant sentence, policy boundary, or approved route is supported. Repair to the smallest useful grounded answer or partial instead of rejecting the whole response. Still reject if no useful part is supported.`,
           user: JSON.stringify({
             ...JSON.parse(request.user),

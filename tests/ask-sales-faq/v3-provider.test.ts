@@ -80,4 +80,25 @@ describe("Ask Sales FAQ V3 provider order", () => {
       "anthropic:success",
     ]);
   });
+
+  it("enables DeepSeek thinking only for bounded reconsideration calls", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({ choices: [{ message: { content: '{"answer":"reasoned retry"}' } }] }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await generateV3Json({
+      purpose: "v3_grounding_validation_retry",
+      system: "Return JSON.",
+      user: "Test",
+      maxTokens: 50,
+      parse: (content) => JSON.parse(content) as { answer: string },
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body)) as Record<string, unknown>;
+    expect(body.thinking).toEqual({ type: "enabled" });
+    expect(body.reasoning_effort).toBe("high");
+    expect(result.attempts[0]?.reasoningMode).toBe("enabled");
+  });
 });

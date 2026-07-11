@@ -59,6 +59,7 @@ async function parseResponseJson(response: Response) {
 
 async function deepSeekCall<T>(input: V3ProviderInput<T>, key: string, attempts: V3ProviderAttempt[]): Promise<V3ProviderResult<T>> {
   const model = process.env.FAQ_V3_DEEPSEEK_MODEL || process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
+  const thinkingEnabled = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false" || /_retry$/.test(input.purpose);
   const startedAt = Date.now();
   const response = await fetchWithTimeout("https://api.deepseek.com/chat/completions", {
     method: "POST",
@@ -67,7 +68,8 @@ async function deepSeekCall<T>(input: V3ProviderInput<T>, key: string, attempts:
       model,
       max_tokens: input.maxTokens,
       response_format: { type: "json_object" },
-      ...(process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false" ? {} : { thinking: { type: "disabled" } }),
+      thinking: { type: thinkingEnabled ? "enabled" : "disabled" },
+      ...(thinkingEnabled ? { reasoning_effort: "high" } : {}),
       messages: [
         { role: "system", content: input.system },
         { role: "user", content: input.user },
@@ -82,7 +84,7 @@ async function deepSeekCall<T>(input: V3ProviderInput<T>, key: string, attempts:
   const latencyMs = Date.now() - startedAt;
   if (!response.ok) {
     const error = data?.error?.message || `DeepSeek request failed with HTTP ${response.status}`;
-    attempts.push({ provider: "deepseek", model, purpose: input.purpose, status: "failed", latencyMs, error: sanitizeError(error) });
+    attempts.push({ provider: "deepseek", model, purpose: input.purpose, status: "failed", latencyMs, error: sanitizeError(error), reasoningMode: thinkingEnabled ? "enabled" : "disabled" });
     throw new Error(error);
   }
   try {
@@ -97,10 +99,11 @@ async function deepSeekCall<T>(input: V3ProviderInput<T>, key: string, attempts:
       promptChars: input.system.length + input.user.length,
       completionTokens: data?.usage?.completion_tokens,
       totalTokens: data?.usage?.total_tokens,
+      reasoningMode: thinkingEnabled ? "enabled" : "disabled",
     });
     return { output, provider: "deepseek" as const, model, attempts };
   } catch (error) {
-    attempts.push({ provider: "deepseek", model, purpose: input.purpose, status: "failed", latencyMs, error: sanitizeError(error) });
+    attempts.push({ provider: "deepseek", model, purpose: input.purpose, status: "failed", latencyMs, error: sanitizeError(error), reasoningMode: thinkingEnabled ? "enabled" : "disabled" });
     throw error;
   }
 }

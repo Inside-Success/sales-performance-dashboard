@@ -105,6 +105,8 @@ if (missingFiles.length === 0) {
     !v3Provider.includes("preferAnthropic") &&
       v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
       v3Provider.includes("deepSeekCallWithRetry") &&
+      v3Provider.includes('/_retry$/.test(input.purpose)') &&
+      v3Provider.includes('reasoning_effort: "high"') &&
       v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
       v3Runtime.includes("validateAndRepair({ provider: validatorProvider, turn") &&
       !v3Runtime.includes("generateV3ClaudeFallbackJson") &&

@@ -151,6 +151,7 @@ export type V3ProviderAttempt = {
   promptChars?: number;
   completionTokens?: number;
   totalTokens?: number;
+  reasoningMode?: "enabled" | "disabled";
 };
 
 export type V3ProviderResult<T> = {
