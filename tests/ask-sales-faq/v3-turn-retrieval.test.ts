@@ -24,6 +24,16 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(turn.standaloneQuestion).not.toContain("recurring payment");
   });
 
+  it("treats a confirmed-only short request as a rewrite of the immediate answer", () => {
+    const turn = resolveV3Turn("Please explain only what is confirmed and keep it short.", [
+      { role: "user", content: "Why is there a commercial reuse license, and what happens if someone declines it?" },
+      { role: "assistant", content: "The license covers approved reuse. The decline scenario is unresolved." },
+    ]);
+    expect(turn.kind).toBe("rewrite");
+    expect(turn.usedImmediateContext).toBe(true);
+    expect(turn.immediatePreviousAssistantAnswer).toContain("decline scenario");
+  });
+
   it("answers previous-question memory from the immediate user turn", () => {
     const turn = resolveV3Turn("What was my previous question?", [
       { role: "user", content: "Can I send a payment link by text?" },
