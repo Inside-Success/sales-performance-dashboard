@@ -377,6 +377,56 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
   });
 
+  it("treats K shorthand and expanded currency amounts as the same grounded numbers", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as {
+        candidates?: Array<{ ref: string; id: string }>;
+        evidence_cards?: Array<{ ref: string; policy_key: string }>;
+        draft?: Record<string, unknown>;
+      };
+      if (purpose === "v3_semantic_recall") return { queries: ["unlisted custom payment split matching contract"] };
+      if (purpose === "v3_evidence_selection") {
+        const selected = payload.candidates?.filter((card) => card.id === "owner-unlisted-payment-split-boundary") || [];
+        return { selected_refs: selected.map((card) => card.ref), reason: "The custom-split boundary directly applies." };
+      }
+      if (purpose === "v3_grounding_validation") {
+        return {
+          verdict: "pass",
+          answer: payload.draft?.answer,
+          summary: payload.draft?.summary,
+          sections: payload.draft?.sections,
+          sentence_evidence: payload.draft?.sentence_evidence,
+          removed_claims: [],
+          reason: "The amounts repeat the user's proposal and the selected policy supplies the decision.",
+        };
+      }
+      const target = payload.evidence_cards?.find((card) => card.policy_key === "payments-unlisted-split-and-amounts");
+      expect(target).toBeDefined();
+      return {
+        mode: "answer",
+        answer: "The proposed $3,000 now and $17,000 later is a custom split, so use a listed plan and its matching contract instead.",
+        summary: "Use a listed plan and its matching contract.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Custom split", status: "answered", policy_ids: [target?.ref], reason: "Direct boundary." }],
+        sentence_evidence: [{ sentence: "The proposed $3,000 now and $17,000 later is a custom split, so use a listed plan and its matching contract instead.", policy_ids: [target?.ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 90,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "Can the lead pay $3K now and $17K later, and which contract should they use?",
+      [],
+      { provider },
+    );
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
+  });
+
   it("uses the DeepSeek validation stage to reject an unsupported verification method", async () => {
     let validationCalls = 0;
     let selectionCalls = 0;

@@ -552,11 +552,15 @@ function evidenceText(policies: V3Policy[], question: string) {
   return `${question}\n${policies.map((policy) => `${policy.id}: ${policy.decision}`).join("\n")}`.toLowerCase();
 }
 
-const NUMERIC_FACT_PATTERN = /(?:\$\s*)?\b\d[\d,.]*(?:%|\s*[-–—]?\s*(?:days?|weeks?|months?|years?))?/gi;
+const NUMERIC_FACT_PATTERN = /(?:\$\s*)?\b\d[\d,.]*\s*[km]?(?:%|\s*[-–—]?\s*(?:days?|weeks?|months?|years?))?/gi;
 
 function canonicalNumericFact(value: string) {
   return value
     .toLowerCase()
+    .replace(/(\$?\s*)(\d+(?:\.\d+)?)\s*([km])\b/g, (_match, prefix: string, amount: string, scale: string) => {
+      const multiplier = scale === "m" ? 1_000_000 : 1_000;
+      return `${prefix}${Number.parseFloat(amount) * multiplier}`;
+    })
     .replace(/,/g, "")
     .replace(/[-–—]/g, " ")
     .replace(/\b(days|weeks|months|years)\b/g, (unit) => unit.slice(0, -1))
