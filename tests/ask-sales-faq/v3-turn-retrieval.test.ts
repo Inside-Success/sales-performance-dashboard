@@ -38,6 +38,9 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(resolveV3Turn("Thanks. I’m switching to payments and contracts now.", []).kind).toBe("social");
     expect(resolveV3Turn("Perfect, thank you!", []).kind).toBe("social");
     expect(resolveV3Turn("Appreciate it. Now I have some questions about calls and compliance.", []).kind).toBe("social");
+    expect(resolveV3Turn("Hi, can you help me with another sales question?", []).kind).toBe("social");
+    expect(resolveV3Turn("Could you help me with a sales question?", []).kind).toBe("social");
+    expect(resolveV3Turn("Can you help me with an ACH payment that is still pending?", []).kind).toBe("new");
   });
 
   it("treats explicit corrections and presentation requests as immediate-context turns", () => {

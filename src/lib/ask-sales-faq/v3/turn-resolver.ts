@@ -5,6 +5,7 @@ const SOCIAL_ONLY = /^(?:hi|hello|hey|good (?:morning|afternoon|evening)|how are
 const SOCIAL_ACK = /^(?:(?:perfect|great|awesome|okay|ok|thanks|thank you|appreciate it|that(?:['’]s| is) helpful)[,!?.\s-]*)+$/i;
 const SOCIAL_PREFACE = /^(?:hi|hello|hey|good (?:morning|afternoon|evening)|thanks|thank you)[,!]?\s+/i;
 const META_CONVERSATION = /\b(?:can you help me with (?:a few|some|several) .+ questions|i have (?:a few|some|several) (?:unrelated )?.+ questions|i(?:['’]m| am) switching to .+ now|next i have questions about|now i have (?:some )?questions about|appreciate it.{0,20}(?:next|now) i have|last section|thank you for sticking with me|thanks,? that(?:['’]s| is) everything|that(?:['’]s| is) all for now|hope you(?:['’]re| are) doing well|how(?:['’]s| is) your day going)\b/i;
+const GENERIC_HELP_REQUEST = /^(?:(?:hi|hello|hey|good (?:morning|afternoon|evening))[,!\s-]*)?(?:can|could|would) you (?:please )?help me(?: with)?(?: (?:another|a|a few|some|several))?(?: sales)? questions?[!.?]*$/i;
 const MEMORY_QUESTION = /\b(?:what|which)\s+(?:was|is)\s+(?:my|the)\s+(?:previous|last)\s+question\b|\bwhat did i (?:just )?ask\b/i;
 const REWRITE = /\b(?:rewrite|rephrase|format|make (?:that|it)|turn (?:that|it|the previous answer|your previous answer)|put (?:that|it)|summari[sz]e|shorten|shorter|simpler language|plain english|bullet(?:s| points)?|checklist|table|answer without repeating|without repeating the route)\b/i;
 const ELLIPTICAL_FOLLOW_UP = /^(?:(?:and|also|so|but)\s+)?(?:what about|how about|does that|did that|would that|could that|is that|was that|are those|do they|can they|what if|why is that|why not|then what|anything else|tell me more|(?:can you )?(?:explain|clarify|expand on|simplify) (?:that|this|it))\b/i;
@@ -83,7 +84,7 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   const immediatePreviousUserQuestion = previousOfRole(contextMessages, "user");
   const immediatePreviousAssistantAnswer = previousOfRole(contextMessages, "assistant");
   const strippedSocialPreface = clean(currentQuestion.replace(SOCIAL_PREFACE, ""));
-  const social = SOCIAL_ONLY.test(currentQuestion) || SOCIAL_ACK.test(currentQuestion) || META_CONVERSATION.test(currentQuestion);
+  const social = SOCIAL_ONLY.test(currentQuestion) || SOCIAL_ACK.test(currentQuestion) || META_CONVERSATION.test(currentQuestion) || GENERIC_HELP_REQUEST.test(currentQuestion);
   const memory = MEMORY_QUESTION.test(currentQuestion);
   const rewrite = !memory && REWRITE.test(strippedSocialPreface) && Boolean(immediatePreviousAssistantAnswer);
   const clarification = !social && !memory && !rewrite && CLARIFICATION_REQUEST.test(strippedSocialPreface) && Boolean(immediatePreviousUserQuestion);
