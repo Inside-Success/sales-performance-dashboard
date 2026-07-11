@@ -135,6 +135,8 @@ describe("Ask Sales FAQ V3 runtime", () => {
   });
 
   it("adds a semantically selected policy that lexical wording alone can miss", async () => {
+    let primarySelectionCalls = 0;
+    let fallbackSelectionCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as Record<string, unknown>;
       if (purpose === "v3_semantic_recall") {
@@ -142,10 +144,11 @@ describe("Ask Sales FAQ V3 runtime", () => {
         return { queries: ["Can an existing client buy another show and who owns the relationship?"] };
       }
       if (purpose === "v3_evidence_selection") {
+        primarySelectionCalls += 1;
         const candidates = payload.candidates as Array<{ ref: string; title: string }>;
         const target = candidates.find((card) => card.title === "Existing client buying another show");
         expect(target).toBeDefined();
-        return { selected_refs: [target?.ref], reason: "This card directly answers the cross-show purchase and ownership question." };
+        return { selected_refs: [], reason: "The primary selector could not confirm a direct match." };
       }
       if (purpose === "v3_grounding_validation") {
         const draft = payload.draft as Record<string, unknown>;
@@ -181,11 +184,19 @@ describe("Ask Sales FAQ V3 runtime", () => {
         confidence_score: 88,
       };
     });
+    const fallbackProvider = jsonProvider(({ purpose, user }) => {
+      expect(purpose).toBe("v3_evidence_selection");
+      fallbackSelectionCalls += 1;
+      const payload = JSON.parse(user) as { candidates: Array<{ ref: string; title: string }> };
+      const target = payload.candidates.find((card) => card.title === "Existing client buying another show");
+      expect(target).toBeDefined();
+      return { selected_refs: [target?.ref], reason: "This card directly answers the cross-show purchase and ownership question." };
+    });
 
     const result = await runAskSalesFaqV3(
       "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?",
       [],
-      { provider },
+      { provider, fallbackProvider },
     );
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.answer).not.toMatch(/\bE\d+\b/);
@@ -196,6 +207,8 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.retrieval.preselectionCandidateCount).toBeGreaterThan(
       result.runtimeMetadata.v3?.retrieval.candidateCount || 0,
     );
+    expect(primarySelectionCalls).toBe(1);
+    expect(fallbackSelectionCalls).toBe(1);
   });
 
   it("passes every bounded retrieval candidate to the composer", async () => {
@@ -283,6 +296,66 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.answer).toContain("30 days");
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
+  });
+
+  it("uses the fallback validator for a high-risk method question after DeepSeek passes it", async () => {
+    let primaryValidationCalls = 0;
+    let fallbackValidationCalls = 0;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as {
+        evidence_cards?: Array<{ ref: string; title: string }>;
+        draft?: Record<string, unknown>;
+      };
+      if (purpose === "v3_grounding_validation") {
+        primaryValidationCalls += 1;
+        return {
+          verdict: "pass",
+          answer: payload.draft?.answer,
+          summary: payload.draft?.summary,
+          sections: payload.draft?.sections,
+          sentence_evidence: payload.draft?.sentence_evidence,
+          removed_claims: [],
+          reason: "Primary validator passed the draft.",
+        };
+      }
+      const selected = payload.evidence_cards?.[0];
+      return {
+        mode: "answer",
+        answer: "Check the signing-status channel to verify the contract.",
+        summary: "Check the signing-status channel.",
+        sections: [],
+        selected_policy_ids: [selected?.ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Signature verification", status: "answered", policy_ids: [selected?.ref], reason: "Proposed method." }],
+        sentence_evidence: [{ sentence: "Check the signing-status channel to verify the contract.", policy_ids: [selected?.ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 90,
+      };
+    });
+    const fallbackProvider = jsonProvider(({ purpose }) => {
+      expect(purpose).toBe("v3_grounding_validation");
+      fallbackValidationCalls += 1;
+      return {
+        verdict: "reject",
+        answer: "",
+        summary: "",
+        sections: [],
+        sentence_evidence: [],
+        removed_claims: ["The evidence covers sending the correct contract, not verifying signature status."],
+        reason: "The proposed method is not supported by the selected evidence.",
+      };
+    });
+
+    const result = await runAskSalesFaqV3("How do I verify that a Next Level CEO contract has been signed?", [], {
+      provider,
+      fallbackProvider,
+    });
+    expect(primaryValidationCalls).toBe(1);
+    expect(fallbackValidationCalls).toBe(1);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).not.toContain("signing-status channel");
   });
 
   it("retries structured presentation rewrites when the first response drops the list", async () => {

@@ -104,8 +104,9 @@ if (missingFiles.length === 0) {
     "V3 keeps DeepSeek primary and Claude fallback-only",
     !v3Provider.includes("preferAnthropic") &&
       v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
-      v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
-      v3Runtime.includes("validateAndRepair({ provider: validatorProvider"),
+      v3Runtime.includes("selectApplicableEvidence({ provider, fallbackProvider, turn") &&
+      v3Runtime.includes("validateAndRepair({ provider: validatorProvider, fallbackProvider") &&
+      v3Provider.includes("generateV3ClaudeFallbackJson"),
     "DeepSeek runs query expansion, evidence selection, composition, and validation first; Claude requires the explicit fallback gate",
   );
 
