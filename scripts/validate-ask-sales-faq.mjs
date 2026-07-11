@@ -105,8 +105,8 @@ if (missingFiles.length === 0) {
     !v3Provider.includes("preferAnthropic") &&
       v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
       v3Provider.includes("deepSeekCallWithRetry") &&
-      v3Provider.includes('/_retry$/.test(input.purpose)') &&
-      v3Provider.includes('reasoning_effort: "high"') &&
+      v3Provider.includes('const thinkingEnabled = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false"') &&
+      v3Provider.includes('temperature = /(?:semantic_recall|evidence_selection|grounding_validation)/.test(input.purpose) ? 0 : 0.2') &&
       v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
       v3Runtime.includes("validateAndRepair({ provider: validatorProvider, turn") &&
       !v3Runtime.includes("generateV3ClaudeFallbackJson") &&
