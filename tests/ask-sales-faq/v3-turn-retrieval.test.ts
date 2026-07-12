@@ -230,6 +230,20 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(calendars.candidates.some(({ policy }) => policy.id === "claim_662ca1f66e1306e4")).toBe(false);
   });
 
+  it("does not apply a product-specific qualification decision when the product is unknown", () => {
+    const unknown = retrieveV3Policies(resolveV3Turn(
+      "Should we cast someone who was recently released from prison and now runs a business?",
+      [],
+    ), 20);
+    expect(unknown.candidates.some(({ policy }) => policy.id === "claim_bcef5f3f480f6531")).toBe(false);
+
+    const scoped = retrieveV3Policies(resolveV3Turn(
+      "Should Next Level CEO cast someone who was recently released from prison and now runs a business?",
+      [],
+    ), 20);
+    expect(scoped.candidates.some(({ policy }) => policy.id === "claim_bcef5f3f480f6531")).toBe(true);
+  });
+
   it("retrieves current operational decisions without exact source wording", () => {
     const cases = [
       ["What is the deadline for moving a Standard client to VIP?", "v3src_main_istv_upgrade_window"],

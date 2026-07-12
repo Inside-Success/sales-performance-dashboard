@@ -937,7 +937,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         };
       }
       if (purpose === "v3_grounding_validation") throw new Error("A mismatched artifact must not reach validation.");
-      composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
+      if (purpose === "v3_evidence_answer") composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
       return {
         mode: "route",
         answer: "I can’t confirm where the included media-outlet list is stored, so please verify the current source before replying.",
@@ -976,7 +976,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         };
       }
       if (purpose === "v3_grounding_validation") throw new Error("A mismatched relational scenario must not reach validation.");
-      composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
+      if (purpose === "v3_evidence_answer") composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
       return {
         mode: "route",
         answer: "I can’t confirm the approved workaround for that booking restriction. Please check #sales-tech-requests.",
@@ -1001,6 +1001,50 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(composerSawEvidence).toBe(false);
     expect(result.answer).not.toMatch(/other rep|ownership conflict|two-calendar/i);
     expect(result.answer).toContain("#sales-tech-requests");
+    expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
+  });
+
+  it("does not answer an explicit bankruptcy condition from general business-success evidence", async () => {
+    let composerSawEvidence = true;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["recent bankruptcy business qualification"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => /not enough business success|recent recovery story/i.test(card.title));
+        return {
+          needs: [{ text: "Does a recent bankruptcy automatically disqualify the applicant?" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "Business success is not an automatic disqualifier.", reason: "The applicant is rebuilding a business." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally substitutes general business viability for bankruptcy policy.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("Evidence that omits bankruptcy must not reach validation.");
+      if (purpose === "v3_evidence_answer") composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
+      return {
+        mode: "route",
+        answer: "I can’t confirm the qualification decision for that bankruptcy case. Please check #sales-questions-requests.",
+        summary: "Confirm the bankruptcy case with sales policy.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The bankruptcy condition is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "Would a recent bankruptcy automatically disqualify someone who is rebuilding their business?",
+      [],
+      { provider },
+    );
+    expect(composerSawEvidence).toBe(false);
+    expect(result.answer).not.toMatch(/lack of business success|too soon|proven success/i);
+    expect(result.answer).toContain("#sales-questions-requests");
     expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
   });
 

@@ -212,8 +212,16 @@ function hasUnmatchedExplicitCondition(need: string, decision: string) {
     /\b(?:greenlit|greenlight|approved|rejected|denied)\b/i,
     /\b(?:cancel(?:s|ed|ing|lation)?|no[ -]?show|miss(?:es|ed|ing) (?:the )?(?:call|meeting|appointment))\b/i,
     /\b(?:pending|fail(?:s|ed|ing|ure)?|did not clear|didn't clear|declined payment)\b/i,
+    /\b(?:bankrupt(?:cy)?|insolven(?:t|cy)|chapter\s+(?:7|11|13))\b/i,
   ];
   return conditionFamilies.some((pattern) => pattern.test(need) && !pattern.test(decision));
+}
+
+function hasUnmatchedControllingCondition(need: string, decision: string) {
+  const controllingConditions = [
+    /\b(?:bankrupt(?:cy)?|insolven(?:t|cy)|chapter\s+(?:7|11|13))\b/i,
+  ];
+  return controllingConditions.some((pattern) => pattern.test(need) && !pattern.test(decision));
 }
 
 function hasUnprovenExclusivity(need: string, decision: string) {
@@ -550,6 +558,7 @@ async function selectApplicableEvidence(input: {
         "For how/where/verification questions, do not treat a hedged statement such as 'appears to be', 'may be', or 'unclear' as a confirmed method. A requirement that something be signed or paid is not evidence of how to verify it.",
         "For questions asking what is currently available, evidence conditioned with 'if still current', 'may', 'appears', or another unresolved-currentness qualifier is partial at most. Keep current availability unresolved unless another card confirms it.",
         "A condition in the need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the card never mentions. Do not invent the condition's consequence.",
+        "Treat bankruptcy, insolvency, and other explicitly named legal or financial-status conditions as controlling conditions. General business-success, funding, recovery-story, or early-stage guidance cannot answer them unless the decision evidence explicitly addresses that condition.",
         "Do not answer an exclusivity question from silence. Evidence that names a benefit but no platform or restriction can confirm the benefit, but cannot prove it is or is not limited to a named platform.",
         "Keep requested artifacts distinct. A show list is not a media-outlet list; a contract is not its signature-status record; and a script, template, link, calendar, spreadsheet, or document cannot substitute for a different requested artifact merely because both are lists or resources.",
         "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
@@ -603,6 +612,7 @@ async function selectApplicableEvidence(input: {
             missesRequestedTimingStage(need, decision) ||
             missesRequestedArtifact(need, decision) ||
             hasUnmatchedRelationalScenario(need, match.policy) ||
+            hasUnmatchedControllingCondition(need, decision) ||
             misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
             ? []
             : [match];
@@ -1016,6 +1026,7 @@ async function validateAndRepair(input: {
       "A timeline for one workflow stage is irrelevant to another stage's timing unless the evidence explicitly links them. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing must stay distinct.",
       "Conditional-currentness evidence such as 'if still current', 'may', or 'appears' cannot fully answer a question asking what is currently available. Preserve the supported conditional fact and keep currentness partial or unresolved.",
       "A condition in the user's need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the evidence never mentions. Remove any invented consequence while preserving the general supported boundary.",
+      "Treat bankruptcy, insolvency, and other explicitly named legal or financial-status conditions as controlling conditions. General business-success, funding, recovery-story, or early-stage guidance cannot answer them unless the evidence explicitly addresses that condition.",
       "Do not infer exclusivity or non-exclusivity from silence. If evidence confirms a benefit but does not name the platform or restriction the user asks about, preserve the benefit and keep the platform boundary unresolved.",
       "Keep requested artifacts distinct. A show list is not a media-outlet list; a contract is not its signature-status record; and a script, template, link, calendar, spreadsheet, or document cannot substitute for a different requested artifact merely because both are lists or resources.",
       "For product/entity corrections, audit against the immediate prior action included in the resolved question. If the evidence cannot answer that corrected action, remove generic process facts and route instead.",

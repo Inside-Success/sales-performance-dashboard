@@ -161,6 +161,11 @@ function scopeScore(policy: V3Policy, turn: V3TurnResolution) {
     if (scopes.includes("main_istv") && !scopes.includes("dj_nlceo")) return -100;
     return scopes.includes("dj_nlceo") ? 6 : scopes.includes("product_agnostic") ? 1 : 0;
   }
+  if (
+    !scopes.includes("product_agnostic") &&
+    (scopes.includes("main_istv") || scopes.includes("dj_nlceo")) &&
+    policy.domains.some((domain) => /^(?:qualification|compliance)$/.test(domain))
+  ) return -100;
   return scopes.includes("product_agnostic") ? 1 : 0;
 }
 
