@@ -960,6 +960,50 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
   });
 
+  it("does not substitute a multi-party calendar conflict for a booking constraint", async () => {
+    let composerSawEvidence = true;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["calendar booking availability restriction"] };
+      if (purpose === "v3_evidence_selection") {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => /same prospect on two reps' calendars/i.test(card.title));
+        return {
+          needs: [{ text: "What should the rep do when a booking buffer prevents an immediate appointment?" }],
+          support: target ? [{ need_id: "N1", relation: "route", refs: [target.ref], supported_claim: "Contact the other rep to resolve the conflict.", reason: "Both situations involve a calendar." }] : [],
+          unresolved_need_ids: [],
+          reason: "Intentionally substitutes a multi-party conflict for a booking constraint.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") throw new Error("A mismatched relational scenario must not reach validation.");
+      composerSawEvidence = (payload.evidence_cards as unknown[]).length > 0;
+      return {
+        mode: "route",
+        answer: "I can’t confirm the approved workaround for that booking restriction. Please check #sales-tech-requests.",
+        summary: "Verify the booking restriction with sales tech.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_tech",
+        route_reason: "The booking restriction is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "The calendar will not let me book within the next hour because of its booking buffer. What should I do?",
+      [],
+      { provider },
+    );
+    expect(composerSawEvidence).toBe(false);
+    expect(result.answer).not.toMatch(/other rep|ownership conflict|two-calendar/i);
+    expect(result.answer).toContain("#sales-tech-requests");
+    expect(result.runtimeMetadata.v3?.retrieval.candidateCount).toBe(0);
+  });
+
   it("honors a presentation-only request to omit a repeated route note", async () => {
     const provider = jsonProvider(({ purpose }) => {
       expect(purpose).toBe("v3_conversation");

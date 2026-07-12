@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "name": "Fresh Slack spot check - 12 prompts - 2026-07-12",
+  "capturedAt": "2026-07-12",
+  "purpose": "Small fresh evaluation sampled from sales-questions-requests. Do not use these prompts as routing, answer, synonym, or policy rules.",
+  "promptCount": 12,
+  "conversationCount": 3,
+  "conversations": [
+    {
+      "id": "fresh-slack-1",
+      "title": "Fresh Slack 1 - Finance Scheduling And Reporting",
+      "prompts": [
+        "I received my first invoice, but I never got the Bill.com invitation and the sale is missing from my Keap commissions because the client's business partner made the payment. How should I get both issues corrected?",
+        "A client is ready to close within the next hour, but the calendar will only let me book Wednesday because of the two-hour booking buffer. What should I do?",
+        "If a Call 1 gets rescheduled, should it still be included in Total Scheduled Calls in Daily Stats?",
+        "A client closed today and wants onboarding on very short notice. What information should I send, and where should I send it?"
+      ]
+    },
+    {
+      "id": "fresh-slack-2",
+      "title": "Fresh Slack 2 - Resources Auditions And Privacy",
+      "prompts": [
+        "Where can I find an approved example of the webpage and social-media rebrand included with the $30,000 package?",
+        "An applicant wants to see the pre-audition video before doing the assignment. Am I allowed to send that video to them?",
+        "If I cannot send the video, what should I resend instead?",
+        "An applicant who did not qualify wants a copy of their audition recording and wants to know whether it will be deleted or kept. What can I tell them?"
+      ]
+    },
+    {
+      "id": "fresh-slack-3",
+      "title": "Fresh Slack 3 - Access Lists And Safety",
+      "prompts": [
+        "The Call 1 video says closers get access to the cast-member HQ dashboard and coaching. Is that still current?",
+        "A cast member cannot log in to Cast Member HQ. Where should I direct them for help?",
+        "Is the daily dial-out list released on Saturdays?",
+        "A lead used explicit and racist language, and they had already canceled and opted out. What should I do to make sure they cannot apply again?"
+      ]
+    }
+  ]
+}

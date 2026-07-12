@@ -224,6 +224,15 @@ function hasUnprovenExclusivity(need: string, decision: string) {
   return !/\b(?:only|exclusively|limited to|restricted to)\b/i.test(decision);
 }
 
+function hasUnmatchedRelationalScenario(need: string, policy: V3Policy) {
+  const descriptor = [policy.title, ...policy.question_families, policy.decision].join(" ");
+  const requiresMultiPartyConflict = /\b(?:same|duplicate)\s+(?:prospect|lead|contact)\b[^.]{0,180}\b(?:two|multiple|both|other|another)\s+(?:reps?|calendars?|owners?|bookings?)\b|\b(?:two|multiple|both|other|another)\s+(?:reps?|calendars?|owners?)\b[^.]{0,180}\b(?:same|duplicate)\s+(?:prospect|lead|contact)\b|\b(?:two[- ]calendar|ownership conflict|other rep|another rep)\b/i.test(descriptor);
+  if (!requiresMultiPartyConflict) return false;
+
+  const statesMultiPartyConflict = /\b(?:same|duplicate)\s+(?:prospect|lead|contact)\b|\b(?:two|multiple|both|other|another|second)\s+(?:reps?|calendars?|owners?|bookings?)\b|\b(?:ownership conflict|double[- ]booked|booked twice|already booked with)\b|\b(?:my|one)\s+calendar\b[^?.]{0,120}\b(?:their|his|her|another|other|second|\w+'s)\s+calendar\b/i.test(need);
+  return !statesMultiPartyConflict;
+}
+
 function misappliesCustomSplitBoundary(
   question: string,
   relation: V3EvidenceContract["support"][number]["relation"],
@@ -529,6 +538,7 @@ async function selectApplicableEvidence(input: {
         "For a 'why does this exist?' question, a card that explicitly states what the item, policy, or license covers is useful evidence for that separable purpose question even if another requested consequence remains unresolved.",
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
+        "Preserve scenario triggers and relationships. A technical limitation, availability window, booking buffer, or tool restriction is not a duplicate-record, ownership, or multi-party conflict. Evidence about another rep, two calendars, the same prospect appearing twice, or an ownership conflict applies only when the user's need states that relationship.",
         "A card with a higher specificity_priority is the controlling procedure for that decision key. Prefer it over a broader ownership, process, or topic card when both appear applicable.",
         "All superseded policies have already been removed before this stage. Never reconstruct an older rule from a broader neighboring card when a more specific current decision is present.",
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
@@ -592,6 +602,7 @@ async function selectApplicableEvidence(input: {
             crossesPublicContentPrivacyBoundary(need, decision) ||
             missesRequestedTimingStage(need, decision) ||
             missesRequestedArtifact(need, decision) ||
+            hasUnmatchedRelationalScenario(need, match.policy) ||
             misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
             ? []
             : [match];
@@ -1001,6 +1012,7 @@ async function validateAndRepair(input: {
       "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
       "Do not reject a product-agnostic answer merely because the user's named product does not appear in the decision text. First compare the requested action to the decision; if that action matches, the named product is within scope unless the decision explicitly excludes it.",
       "When a broadly worded operational instruction applies across situations, preserve that instruction without importing details from its original example trigger.",
+      "Preserve scenario triggers and relationships. A technical limitation, availability window, booking buffer, or tool restriction is not a duplicate-record, ownership, or multi-party conflict. Evidence about another rep, two calendars, the same prospect appearing twice, or an ownership conflict is inapplicable unless the user's need states that relationship. This applies to route instructions as well as direct answers.",
       "A timeline for one workflow stage is irrelevant to another stage's timing unless the evidence explicitly links them. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing must stay distinct.",
       "Conditional-currentness evidence such as 'if still current', 'may', or 'appears' cannot fully answer a question asking what is currently available. Preserve the supported conditional fact and keep currentness partial or unresolved.",
       "A condition in the user's need must be supported by the evidence. A general rule is partial at most when the question asks what happens after a decline, approval, rejection, cancellation, no-show, pending status, or failure that the evidence never mentions. Remove any invented consequence while preserving the general supported boundary.",
