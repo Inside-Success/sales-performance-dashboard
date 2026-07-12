@@ -607,12 +607,13 @@ async function selectApplicableEvidence(input: {
           const match = byRef.get(ref);
           if (!match) return [];
           const decision = policyDecisionParts(match.policy.decision).decision_evidence;
+          const authoritativeNeed = `${input.turn.standaloneQuestion}\n${need}`;
           return crossesRightsActorBoundary(need, decision) ||
             crossesPublicContentPrivacyBoundary(need, decision) ||
             missesRequestedTimingStage(need, decision) ||
             missesRequestedArtifact(need, decision) ||
-            hasUnmatchedRelationalScenario(need, match.policy) ||
-            hasUnmatchedControllingCondition(need, decision) ||
+            hasUnmatchedRelationalScenario(authoritativeNeed, match.policy) ||
+            hasUnmatchedControllingCondition(authoritativeNeed, decision) ||
             misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
             ? []
             : [match];

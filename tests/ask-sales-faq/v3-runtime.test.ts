@@ -1013,7 +1013,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
         const candidates = payload.candidates as Array<{ ref: string; title: string }>;
         const target = candidates.find((card) => /not enough business success|recent recovery story/i.test(card.title));
         return {
-          needs: [{ text: "Does a recent bankruptcy automatically disqualify the applicant?" }],
+          needs: [{ text: "Does lack of business success automatically disqualify the applicant?" }],
           support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "Business success is not an automatic disqualifier.", reason: "The applicant is rebuilding a business." }] : [],
           unresolved_need_ids: [],
           reason: "Intentionally substitutes general business viability for bankruptcy policy.",
