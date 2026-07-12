@@ -514,7 +514,8 @@ async function selectApplicableEvidence(input: {
       maxTokens: 1100,
       system: [
         "You are the claim-entailment stage for an internal sales assistant. You do not answer the user.",
-        "First decompose the resolved question into one to six atomic needs. Each need must contain exactly one requested decision, fact, method, timing, permission, boundary, or next action.",
+        "First decompose the resolved question into one to six atomic needs. Each need must contain exactly one decision, fact, method, timing, permission, boundary, or next action that the user explicitly requested.",
+        "Do not add a helpful-sounding need that the user did not ask for. In particular, a yes/no eligibility or permission question does not also request process steps, payment handling, exceptions, caveats, or a next action unless the wording asks for them.",
         "When a question asks which contract, process, or next step to use for a proposed exception, create separate needs for whether the proposal is allowed and for the approved next action. A policy that prohibits the proposed option directly answers the first need; a policy that supplies the replacement action supports the second.",
         "Then evaluate each need independently against the evidence cards. Never require one card to answer the whole question.",
         "For every supported need, return one support record with relation direct, partial, or route and the smallest sufficient card refs.",
@@ -659,7 +660,7 @@ function composerSystemPrompt() {
     "Shared words or a shared domain are not enough. A generic close flow, routing note, or neighboring process does not answer a question about verification, eligibility, timing, or whether a corrected product changes the answer.",
     "Honor explicit scope and negation. If the user says main ISTV and not DJ/NLCEO, never use DJ/NLCEO-only policy, and vice versa.",
     "For a follow-up, the IMMEDIATE previous user question and assistant answer are the antecedent. Never jump back two turns. If the user corrects the product or entity, re-answer the immediate previous action for the corrected scope.",
-    "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, or irrelevant caveats.",
+    "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, unrequested process steps, or irrelevant caveats.",
     "Coverage must contain every evidence-contract need exactly once. Map direct to answered, partial to partial, and a need with only route support or no support to unresolved.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
     "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Say only that its exact status or location is not confirmed by the supplied evidence unless a card explicitly states nonexistence.",

@@ -61,6 +61,8 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(resolveV3Turn("Could you help me with a sales question?", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Can you help me with an ACH payment that is still pending?", []).kind).toBe("new");
     expect(resolveV3Turn("Hi, can you help me check a few unusual qualification cases?", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Hi there. Can you help me check a few qualification situations?", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Could you help me review several payment scenarios?", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Hello again. I need help with payments and contracts now.", []).kind).toBe("topic_intro");
   });
 
