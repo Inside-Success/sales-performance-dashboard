@@ -11,7 +11,7 @@ const MEMORY_QUESTION = /\b(?:what|which)\s+(?:was|is)\s+(?:my|the)\s+(?:previou
 const REWRITE = /\b(?:rewrite|rephrase|format|make (?:that|it)|turn (?:that|it|the previous answer|your previous answer)|put (?:that|it)|summari[sz]e|shorten|shorter|simpler language|plain english|bullet(?:s| points)?|checklist|table|answer without repeating|without repeating the route|explain only what is confirmed|explain (?:that|this|it).{0,50}(?:naturally|clearly|briefly|concisely|only what)|keep (?:that|it|the answer) short|keep only what (?:i|we) need)\b/i;
 const ELLIPTICAL_FOLLOW_UP = /^(?:(?:and|also|so|but)\s+)?(?:what about|how about|does that|did that|would that|could that|is that|was that|are those|do they|can they|what if|why is that|why not|then what|anything else|tell me more|(?:can you )?(?:explain|clarify|expand on|simplify) (?:that|this|it))\b/i;
 const ANAPHORIC_CONTINUATION = /^(?:(?:and|also|so|but)\s+)?(?:(?:if|when)\s+(?:the|that|this|they|them|he|she|it|my|our)\b|should\s+(?:i|we)\b|do\s+(?:i|we)\b)/i;
-const EXPLICIT_REFERENT = /\b(?:(?:the )?(?:previous|last) (?:answer|question)|(?:same|that|this) (?:answer|rule|case|client|prospect|show|plan|package|situation|one|thing|location)|(?:does|did|is|was|would|could|can|will) (?:that|this|it))\b/i;
+const EXPLICIT_REFERENT = /\b(?:(?:the )?(?:previous|last) (?:answer|question)|(?:the )?(?:assigned|other|previous) rep|(?:same|that|this) (?:answer|rule|case|client|prospect|show|plan|package|situation|one|thing|location)|(?:does|did|is|was|would|could|can|will) (?:that|this|it))\b/i;
 const CORRECTION = /\b(?:actually|you misunderstood|i(?:['’]m| am) asking|not what i asked|my previous question|i meant)\b/i;
 const STYLE_PREFERENCE = /\b(?:keep (?:your )?answers? .{0,30}(?:short|concise|practical)|keep (?:that|it|the answer) short|answer .{0,20}(?:briefly|concisely)|use bullets|do not repeat route notes?)\b/i;
 const CLARIFICATION_REQUEST = /\b(?:what information do you need from me|what (?:else )?do you need (?:from me|to know)|which show this applies to|what details should i provide)\b/i;
@@ -105,9 +105,15 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
     !rewrite &&
     !clarification &&
     Boolean(immediatePreviousUserQuestion) &&
-    (explicitCorrection || ellipticalFollowUp || (anaphoricContinuation && (lacksStandaloneSubject || hasContinuationReferent)) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
+    (explicitCorrection || ellipticalFollowUp || (anaphoricContinuation && (lacksStandaloneSubject || hasContinuationReferent || explicitReferent)) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
   const kind = social ? "social" : topicIntro ? "topic_intro" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
   const scope = resolveScope(strippedSocialPreface, immediatePreviousUserQuestion);
+  if (explicitCorrection && scope.productScope === "main_istv" && !scope.excludedScopes.includes("dj_nlceo")) {
+    scope.excludedScopes.push("dj_nlceo");
+  }
+  if (explicitCorrection && scope.productScope === "dj_nlceo" && !scope.excludedScopes.includes("main_istv")) {
+    scope.excludedScopes.push("main_istv");
+  }
   const stylePreferences = contextMessages
     .filter((message) => message.role === "user" && STYLE_PREFERENCE.test(message.content))
     .map((message) => message.content)
@@ -153,8 +159,18 @@ export function shouldRefineV3TurnIntent(turn: V3TurnResolution) {
 
 export function applyV3TurnIntentRefinement(
   turn: V3TurnResolution,
-  refinement: { kind: "new" | "follow_up"; resolvedQuestion: string; reason: string },
+  refinement: { kind: "social" | "new" | "follow_up"; resolvedQuestion: string; reason: string },
 ): V3TurnResolution {
+  if (refinement.kind === "social") {
+    return {
+      ...turn,
+      kind: "social",
+      standaloneQuestion: turn.currentQuestion,
+      usedImmediateContext: false,
+      intentResolutionMode: "deepseek_refined",
+      intentResolutionReason: refinement.reason || "DeepSeek identified a conversational acknowledgment.",
+    };
+  }
   if (refinement.kind !== "follow_up" || !turn.immediatePreviousUserQuestion) {
     return {
       ...turn,

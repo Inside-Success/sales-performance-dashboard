@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getV3Registry, retrieveV3Policies } from "@/lib/ask-sales-faq/v3/retrieval";
-import { resolveV3Turn } from "@/lib/ask-sales-faq/v3/turn-resolver";
+import { applyV3TurnIntentRefinement, resolveV3Turn } from "@/lib/ask-sales-faq/v3/turn-resolver";
 
 describe("Ask Sales FAQ V3 turn resolution", () => {
   it("prefers an explicit approved channel over negated neighboring route words", () => {
@@ -64,6 +64,20 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(resolveV3Turn("Hi there. Can you help me check a few qualification situations?", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Could you help me review several payment scenarios?", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Hello again. I need help with payments and contracts now.", []).kind).toBe("topic_intro");
+  });
+
+  it("allows the intent refinement stage to recover a natural acknowledgment", () => {
+    const turn = resolveV3Turn("Got it, thanks for being careful.", [
+      { role: "user", content: "Can a recently bankrupt applicant qualify?" },
+      { role: "assistant", content: "Please confirm that case before replying." },
+    ]);
+    const refined = applyV3TurnIntentRefinement(turn, {
+      kind: "social",
+      resolvedQuestion: "",
+      reason: "This is a pure acknowledgment.",
+    });
+    expect(refined.kind).toBe("social");
+    expect(refined.usedImmediateContext).toBe(false);
   });
 
   it("uses immediate no-show and greenlight context for natural continuations", () => {
@@ -165,8 +179,18 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     const turn = resolveV3Turn("Actually, my previous question was about main ISTV, not Next Level CEO. Does that change your answer?", messages);
     const retrieval = retrieveV3Policies(turn);
     expect(turn.productScope).toBe("main_istv");
+    expect(turn.excludedScopes).toContain("dj_nlceo");
     expect(retrieval.candidates.some(({ policy }) => policy.domains.includes("contracts"))).toBe(true);
     expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("dj_nlceo") && !policy.product_scopes.includes("main_istv"))).toBe(false);
+  });
+
+  it("treats an assigned-rep reference as an immediate follow-up", () => {
+    const turn = resolveV3Turn("Should I contact the assigned rep first before taking the next step?", [
+      { role: "user", content: "A 20% lead is assigned to another rep, but I spoke with them before. What should I do?" },
+      { role: "assistant", content: "Do not dial until ownership is clear." },
+    ]);
+    expect(turn.kind).toBe("follow_up");
+    expect(turn.standaloneQuestion).toContain("20% lead");
   });
 
   it("treats complete interrogative questions as new turns even when a chat has prior context", () => {
