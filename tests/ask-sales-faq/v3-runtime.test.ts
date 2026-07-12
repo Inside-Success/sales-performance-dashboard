@@ -578,7 +578,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.coverage.map((item) => item.status)).toEqual(["answered", "unresolved"]);
   });
 
-  it("preserves a natural AI-written route when no applicable evidence is selected", async () => {
+  it("removes an unsupported factual preface when no applicable evidence is selected", async () => {
     const provider = jsonProvider(({ purpose }) => {
       if (purpose === "v3_semantic_recall") return { queries: ["current confirmation text editing permission"] };
       if (purpose === "v3_evidence_selection" || purpose === "v3_evidence_selection_retry") {
@@ -592,7 +592,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       if (purpose === "v3_grounding_validation") throw new Error("A no-evidence route should not require policy validation.");
       return {
         mode: "route",
-        answer: "I can’t confirm whether you should edit that wording from the guidance available, so please verify it before making a change.",
+        answer: "Yes, you can edit the wording yourself, but I can’t confirm that from the guidance available, so please verify it before making a change.",
         summary: "Verify the wording before making a change.",
         sections: [],
         selected_policy_ids: [],
@@ -610,6 +610,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.errorClass).toBeNull();
     expect(result.answer).toContain("can’t confirm");
+    expect(result.answer).not.toContain("you can edit");
     expect(result.answer).toContain("#sales-questions-requests");
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");
   });

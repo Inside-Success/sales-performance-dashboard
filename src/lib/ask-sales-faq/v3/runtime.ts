@@ -1400,9 +1400,14 @@ export async function runAskSalesFaqV3(
       stageTimings.answerGenerationMs = Date.now() - generationStarted;
       output = isConversation ? result.output : resolveEvidenceRefs(result.output, retrieval);
       if (!isConversation && !retrieval.candidates.length && isSafeNoEvidenceRouteAnswer(output.answer)) {
+        const safeRouteKey = routeKeyForQuestion(turn.currentQuestion, []);
+        const safe = safeRouteAnswer(turn, null, retrieval, output.route_reason || "No applicable approved evidence was selected.");
         output = {
           ...output,
           mode: "route",
+          answer: safe.answer,
+          summary: safe.answer,
+          sections: [],
           selected_policy_ids: [],
           rejected_policy_ids: [],
           coverage: retrieval.evidenceContract?.needs.map((need) => ({
@@ -1413,8 +1418,8 @@ export async function runAskSalesFaqV3(
           })) || [],
           sentence_evidence: [],
           needs_route: true,
-          route_key: routeKeyForQuestion(turn.currentQuestion, []),
-          route_reason: output.route_reason || "The requested decision is not resolved by the selected evidence.",
+          route_key: safeRouteKey,
+          route_reason: safe.routeReason,
         };
       }
       if (
