@@ -166,7 +166,11 @@ function familyScore(query: string, indexed: IndexedPolicy) {
 
 function scopeScore(policy: V3Policy, turn: V3TurnResolution) {
   const scopes = policy.product_scopes || ["product_agnostic"];
-  if (turn.excludedScopes.some((scope) => scopes.includes(scope))) return -100;
+  const includesExcludedScope = turn.excludedScopes.some((scope) => scopes.includes(scope));
+  const alsoIncludesRequestedScope =
+    (turn.productScope === "main_istv" && scopes.includes("main_istv")) ||
+    (turn.productScope === "dj_nlceo" && scopes.includes("dj_nlceo"));
+  if (includesExcludedScope && !alsoIncludesRequestedScope) return -100;
   if (turn.productScope === "comparison") return scopes.includes("main_istv") || scopes.includes("dj_nlceo") ? 4 : 1;
   if (turn.productScope === "main_istv") {
     if (scopes.includes("dj_nlceo") && !scopes.includes("main_istv")) return -100;

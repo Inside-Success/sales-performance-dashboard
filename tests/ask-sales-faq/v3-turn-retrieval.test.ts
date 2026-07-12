@@ -184,6 +184,18 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("dj_nlceo") && !policy.product_scopes.includes("main_istv"))).toBe(false);
   });
 
+  it("keeps main-ISTV evidence from a shared article while excluding DJ-only cards", () => {
+    const turn = resolveV3Turn("Actually, I meant main ISTV instead. What are the total package prices?", [
+      { role: "user", content: "For DJ/NLCEO, what are the approved PIF and split-payment options?" },
+      { role: "assistant", content: "Here are the DJ/NLCEO options." },
+    ]);
+    const retrieval = retrieveV3Policies(turn, 24);
+    expect(turn.productScope).toBe("main_istv");
+    expect(turn.excludedScopes).toContain("dj_nlceo");
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_c9e50172a4cd057b")).toBe(true);
+    expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("dj_nlceo") && !policy.product_scopes.includes("main_istv"))).toBe(false);
+  });
+
   it("treats an assigned-rep reference as an immediate follow-up", () => {
     const turn = resolveV3Turn("Should I contact the assigned rep first before taking the next step?", [
       { role: "user", content: "A 20% lead is assigned to another rep, but I spoke with them before. What should I do?" },
