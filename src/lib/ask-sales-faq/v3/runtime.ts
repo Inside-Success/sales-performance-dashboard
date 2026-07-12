@@ -222,8 +222,14 @@ function hasUnprovenExclusivity(need: string, decision: string) {
   return !/\b(?:only|exclusively|limited to|restricted to)\b/i.test(decision);
 }
 
-function misappliesCustomSplitBoundary(question: string, relation: V3EvidenceContract["support"][number]["relation"], decision: string) {
-  if (relation === "route" || !/\bcustom\s+(?:payment\s+)?(?:plan|split|amount|link)s?\b/i.test(decision)) return false;
+function misappliesCustomSplitBoundary(
+  question: string,
+  relation: V3EvidenceContract["support"][number]["relation"],
+  decision: string,
+  supportedClaim = "",
+  reason = "",
+) {
+  if (relation === "route") return false;
   const amountTokens = question.match(/\$\s*\d[\d,]*(?:\.\d+)?\s*[km]?\b/gi) || [];
   const normalizedAmounts = new Set(amountTokens.map((value) => value.toLowerCase().replace(/[\s,]/g, "")));
   const dividesOneTotal = normalizedAmounts.size === 1 && /\b(?:split|divide|divided|installments?|payments?)\b/i.test(question);
@@ -233,7 +239,11 @@ function misappliesCustomSplitBoundary(question: string, relation: V3EvidenceCon
   // A single total divided into installments is not, by itself, evidence that
   // the user proposed a custom amount or schedule. Product-specific listed-plan
   // evidence may still answer it; a generic custom-split prohibition may not.
-  return dividesOneTotal && !statesCustomDeviation;
+  if (!dividesOneTotal || statesCustomDeviation) return false;
+  const decisionIsGenericBoundary = /\bcustom\s+(?:payment\s+)?(?:plan|split|amount|link)s?\b/i.test(decision) ||
+    /\b(?:use|offer)\s+only\b[^.]{0,100}\blisted\s+(?:payment\s+)?plans?\b/i.test(decision);
+  const selectionInventsDeviation = /\b(?:not\s+(?:an?\s+)?allowed|prohibit(?:ed)?|custom\s+(?:payment\s+)?split|not\s+(?:among|in)\s+the\s+listed|unlisted)\b/i.test(`${supportedClaim} ${reason}`);
+  return decisionIsGenericBoundary && selectionInventsDeviation;
 }
 
 function missesRequestedArtifact(need: string, decision: string) {
@@ -533,7 +543,7 @@ async function selectApplicableEvidence(input: {
             crossesPublicContentPrivacyBoundary(need, decision) ||
             missesRequestedTimingStage(need, decision) ||
             missesRequestedArtifact(need, decision) ||
-            misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision)
+            misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
             ? []
             : [match];
         });
@@ -1335,7 +1345,7 @@ export async function runAskSalesFaqV3(
         !isConversation &&
         !retrieval.candidates.length &&
         /\bcustom\b/i.test(output.answer) &&
-        misappliesCustomSplitBoundary(turn.standaloneQuestion, "direct", "Custom split")
+        misappliesCustomSplitBoundary(turn.standaloneQuestion, "direct", "Custom split", output.answer, output.route_reason)
       ) {
         const route = routeFor(turn.currentQuestion, []);
         const answer = `I can’t confirm the installment mechanics until the product and listed payment plan are clear. Please check ${route.channel} before giving the client payment instructions.`;

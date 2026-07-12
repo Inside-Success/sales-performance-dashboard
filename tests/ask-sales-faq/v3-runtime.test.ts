@@ -731,8 +731,19 @@ describe("Ask Sales FAQ V3 runtime", () => {
       };
       if (purpose === "v3_semantic_recall") return { queries: ["ACH installments from one package total"] };
       if (purpose.startsWith("v3_evidence_selection")) {
-        const target = payload.candidates?.find((card) => card.id === "owner-unlisted-payment-split-boundary");
-        return { selected_refs: target ? [target.ref] : [], reason: "Intentionally attempts to treat the installment count as a custom split." };
+        const target = payload.candidates?.find((card) => card.id === "claim_49bd9449c5bfb1a7");
+        return {
+          needs: [{ text: "Determine whether four installments totaling $20K are allowed." }],
+          support: target ? [{
+            need_id: "N1",
+            relation: "direct",
+            refs: [target.ref],
+            supported_claim: "Splitting $20K into four payments is not an allowed payment plan.",
+            reason: "Intentionally infers that the proposal is unlisted from a card that does not enumerate plans.",
+          }] : [],
+          unresolved_need_ids: target ? [] : ["N1"],
+          reason: "Intentionally attempts to infer a prohibition from absence.",
+        };
       }
       return {
         mode: "route",
