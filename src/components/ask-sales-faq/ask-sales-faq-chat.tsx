@@ -1392,7 +1392,7 @@ function MessageRow({
             ) : (
               <AnswerText text={message.content} />
             )}
-            {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
+            {shouldShowRouteNote(message) ? <RouteNote reason={message.routeReason!} /> : null}
           </>
         ) : message.structuredAnswer ? (
           <>
@@ -1402,14 +1402,14 @@ function MessageRow({
               </div>
             ) : null}
             <StructuredAnswerCard answer={message.structuredAnswer} />
-            {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
+            {shouldShowRouteNote(message) ? <RouteNote reason={message.routeReason!} /> : null}
           </>
         ) : isRouteOrBlocked(message) && message.outcome !== "route_from_approved_article" ? (
           <SafeCallout message={message} />
         ) : (
           <>
             <AnswerText text={message.content} />
-            {message.needsRoute && message.routeReason ? <RouteNote reason={message.routeReason} /> : null}
+            {shouldShowRouteNote(message) ? <RouteNote reason={message.routeReason!} /> : null}
           </>
         )}
         <SourceDisclosure message={message} />
@@ -1432,6 +1432,15 @@ function hasStructuredConversationPresentation(message: ChatMessage) {
       (section) => (section.items?.length || 0) >= 2 || Boolean(section.body && section.title),
     ),
   );
+}
+
+function shouldShowRouteNote(message: ChatMessage) {
+  if (!message.needsRoute || !message.routeReason) return false;
+  const normalizedAnswer = normalizeAnswerDisplayText(message.content);
+  const normalizedReason = normalizeAnswerDisplayText(message.routeReason);
+  if (normalizedAnswer.includes(normalizedReason)) return false;
+  const routeChannel = message.routeReason.match(/#[a-z0-9_-]+/i)?.[0]?.toLowerCase();
+  return !routeChannel || !normalizedAnswer.includes(routeChannel);
 }
 
 function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer }) {

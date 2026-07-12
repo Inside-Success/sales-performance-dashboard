@@ -1153,4 +1153,149 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.needsRoute).toBe(true);
     expect(selectionCalls).toBe(1);
   });
+
+  it("uses the intent model to keep a longer acknowledgment conversational", async () => {
+    const provider = jsonProvider(({ purpose }) => {
+      if (purpose === "v3_turn_intent") {
+        return { kind: "social", resolved_question: "", reason: "Pure acknowledgment with no policy request." };
+      }
+      if (purpose === "v3_conversation") {
+        return { answer: "You’re welcome—send the next case whenever you’re ready.", summary: "You’re welcome—send the next case whenever you’re ready.", sections: [] };
+      }
+      throw new Error(`Unexpected policy stage: ${purpose}`);
+    });
+    const result = await runAskSalesFaqV3(
+      "Got it, thanks for being careful.",
+      [
+        { role: "user", content: "Can a recently bankrupt applicant qualify?" },
+        { role: "assistant", content: "Please confirm that case before replying." },
+      ],
+      { provider },
+    );
+    expect(result.outcome).toBe("conversation_reply");
+    expect(result.answer).toContain("You’re welcome");
+    expect(result.runtimeMetadata.v3?.turn.kind).toBe("social");
+  });
+
+  it("keeps an exact show-list policy when the artifact name is in its descriptor", async () => {
+    let selectedShowList = false;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["current approved show list"] };
+      if (purpose.startsWith("v3_evidence_selection")) {
+        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
+        const target = candidates.find((card) => /approved show list|current show source/i.test(card.title));
+        return {
+          needs: [{ text: "What is the current approved show list?" }],
+          support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "The current approved show list.", reason: "The card is the requested show-list artifact." }] : [],
+          unresolved_need_ids: target ? [] : ["N1"],
+          reason: "Use the exact show-list record.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return { verdict: "pass", answer: draft.answer, summary: draft.summary, sections: draft.sections, sentence_evidence: draft.sentence_evidence, removed_claims: [], reason: "The list is grounded." };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string }>;
+      selectedShowList = cards.length > 0;
+      return {
+        mode: "answer",
+        answer: "The current approved list is available in the selected show-list record.",
+        summary: "Current approved show list.",
+        sections: [],
+        selected_policy_ids: [cards[0].ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Current show list", status: "answered", policy_ids: [cards[0].ref], reason: "Exact artifact." }],
+        sentence_evidence: [{ sentence: "The current approved list is available in the selected show-list record.", policy_ids: [cards[0].ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 90,
+      };
+    });
+    const result = await runAskSalesFaqV3("What is the current approved show list?", [], { provider });
+    expect(selectedShowList).toBe(true);
+    expect(result.outcome).toBe("answer_from_evidence");
+  });
+
+  it("allows an independent validator to confirm selector-only partial evidence", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") return { queries: ["DJ NLCEO approved PIF split payment options"] };
+      if (purpose.startsWith("v3_evidence_selection")) {
+        const candidates = payload.candidates as Array<{ ref: string; product_scopes: string[]; decision_evidence: string }>;
+        const target = candidates.find((card) => card.product_scopes.includes("dj_nlceo") && /\$|pay in full|split/i.test(card.decision_evidence));
+        return {
+          needs: [{ text: "What are the approved DJ/NLCEO PIF and split options?" }],
+          support: target ? [{ need_id: "N1", relation: "partial", refs: [target.ref], supported_claim: target.decision_evidence, reason: "The same card contains the complete approved options." }] : [],
+          unresolved_need_ids: target ? [] : ["N1"],
+          reason: "The selected card contains the requested payment options.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        const claims = payload.sentence_claims as Array<{ ref: string; claimed_evidence_refs: string[] }>;
+        const contract = payload.evidence_contract as { needs: Array<{ id: string }> };
+        return {
+          verdict: "pass",
+          mode: "answer",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          sentence_checks: claims.map((claim) => ({ sentence_ref: claim.ref, status: "supported", evidence_refs: claim.claimed_evidence_refs, reason: "Directly stated by the selected card." })),
+          need_checks: contract.needs.map((need) => ({ need_ref: need.id, status: "answered", evidence_refs: ["V1"], reason: "The selected card fully answers the need." })),
+          needs_route: false,
+          route_key: null,
+          route_reason: "",
+          removed_claims: [],
+          reason: "Independently confirmed.",
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string }>;
+      return {
+        mode: "answer",
+        answer: "Use the approved PIF or listed split options for DJ/NLCEO.",
+        summary: "Use the approved DJ/NLCEO payment options.",
+        sections: [],
+        selected_policy_ids: [cards[0].ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "DJ/NLCEO options", status: "answered", policy_ids: [cards[0].ref], reason: "The card lists them." }],
+        sentence_evidence: [{ sentence: "Use the approved PIF or listed split options for DJ/NLCEO.", policy_ids: [cards[0].ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 90,
+      };
+    });
+    const result = await runAskSalesFaqV3("For DJ/NLCEO, what are the approved PIF and split options?", [], { provider });
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.needsRoute).toBe(false);
+    expect(result.runtimeMetadata.v3?.validation.verdict).not.toBe("reject");
+  });
+
+  it("routes a login failure to sales tech and never exposes validator internals", async () => {
+    const provider = jsonProvider(({ purpose }) => {
+      if (purpose === "v3_semantic_recall") return { queries: ["Cast Member HQ login failure support"] };
+      if (purpose.startsWith("v3_evidence_selection")) return { needs: [{ text: "Where should a Cast Member HQ login failure go?" }], support: [], unresolved_need_ids: ["N1"], reason: "No troubleshooting procedure is approved." };
+      return {
+        mode: "route",
+        answer: "I can’t confirm the exact troubleshooting steps.",
+        summary: "Use the approved support route.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "answer has no selected evidence; evidence card V1 was unavailable",
+        confidence_score: 0,
+      };
+    });
+    const result = await runAskSalesFaqV3("A cast member cannot log in to Cast Member HQ. Where should I send them?", [], { provider });
+    expect(result.answer).toContain("#sales-tech-requests");
+    expect(result.routeReason).toContain("#sales-tech-requests");
+    expect(result.routeReason).not.toMatch(/selected evidence|evidence card|V1/i);
+  });
 });

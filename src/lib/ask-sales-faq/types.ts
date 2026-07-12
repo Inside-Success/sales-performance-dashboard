@@ -120,6 +120,7 @@ export type AskSalesFaqRuntimeMetadata = {
           policyIds: string[];
           supportedClaim: string;
           reason: string;
+          hardBoundary?: boolean;
         }>;
         unresolvedNeedIds: string[];
       };

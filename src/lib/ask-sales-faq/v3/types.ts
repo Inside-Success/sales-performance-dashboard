@@ -124,6 +124,7 @@ export type V3EvidenceSupport = {
   policy_ids: string[];
   supported_claim: string;
   reason: string;
+  hard_boundary?: boolean;
 };
 
 export type V3EvidenceContract = {

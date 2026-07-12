@@ -209,7 +209,7 @@ function hasConditionalCurrentnessGap(need: string, decision: string) {
 function hasUnmatchedExplicitCondition(need: string, decision: string) {
   const conditionFamilies = [
     /\b(?:declin(?:e|es|ed|ing)|refus(?:e|es|ed|ing)|opt(?:s|ed|ing)? out|does not buy|doesn't buy|without (?:buying|purchasing|paying))\b/i,
-    /\b(?:greenlit|greenlight|approved|rejected|denied)\b/i,
+    /\b(?:if|when|once|after|before|was|is|gets?|got|been|being)\s+(?:greenlit|approved|rejected|denied)\b|\bgreenlight(?:ed)?\b/i,
     /\b(?:cancel(?:s|ed|ing|lation)?|no[ -]?show|miss(?:es|ed|ing) (?:the )?(?:call|meeting|appointment))\b/i,
     /\b(?:pending|fail(?:s|ed|ing|ure)?|did not clear|didn't clear|declined payment)\b/i,
     /\b(?:bankrupt(?:cy)?|insolven(?:t|cy)|chapter\s+(?:7|11|13))\b/i,
@@ -265,7 +265,7 @@ function misappliesCustomSplitBoundary(
   return decisionIsGenericBoundary && selectionInventsDeviation;
 }
 
-function missesRequestedArtifact(need: string, decision: string) {
+function missesRequestedArtifact(need: string, policy: V3Policy) {
   const artifact = need.match(/\b((?:[a-z][a-z0-9-]*\s+){1,4})(list|document|link|template|spreadsheet|pdf)\b/i);
   if (!artifact) return false;
   const qualifiers = artifact[1]
@@ -273,8 +273,9 @@ function missesRequestedArtifact(need: string, decision: string) {
     .split(/\s+/)
     .filter((token) => token && !/^(?:a|an|the|this|that|which|what|current|latest|approved|included|relevant|correct|exact|where|find)$/.test(token));
   if (!qualifiers.length) return false;
-  const normalizedDecision = normalizeText(decision);
-  return !qualifiers.some((token) => normalizedDecision.includes(normalizeText(token)));
+  const descriptor = [policy.title, ...policy.question_families, policy.decision].join(" ");
+  const normalizedDescriptor = normalizeText(descriptor);
+  return !qualifiers.some((token) => normalizedDescriptor.includes(normalizeText(token)));
 }
 
 function minimalDecisionEvidence(need: string, decision: string) {
@@ -336,7 +337,7 @@ function parseSemanticRecall(content: string) {
 
 function parseTurnIntentRefinement(content: string) {
   const raw = parseV3Json<Record<string, unknown>>(content);
-  const kind = raw.kind === "follow_up" ? "follow_up" : "new";
+  const kind = raw.kind === "social" ? "social" : raw.kind === "follow_up" ? "follow_up" : "new";
   return {
     kind,
     resolvedQuestion: clean(raw.resolved_question, 1000),
@@ -355,11 +356,12 @@ async function refineAmbiguousTurnIntent(input: {
       purpose: "v3_turn_intent",
       maxTokens: 350,
       system: [
-        "Classify whether the current message depends on the immediate previous user question or is a new standalone sales question.",
+        "Classify the current message as social, follow_up, or new.",
         "This stage has no policy authority and must not answer the question.",
+        "Use social for a pure acknowledgment, thanks, confirmation, or conversational reaction that asks no policy question. Do not force it through policy retrieval merely because it refers to the prior answer.",
         "Use follow_up only when resolving a pronoun, omitted subject, correction, continuation, or condition requires the immediate prior subject. A complete independent question is new even inside the same chat.",
         "If follow_up, produce one resolved_question that combines only the immediate prior subject with the current request. Never include facts from the previous assistant answer.",
-        "Return JSON only: {\"kind\":\"new|follow_up\",\"resolved_question\":\"...\",\"reason\":\"...\"}.",
+        "Return JSON only: {\"kind\":\"social|new|follow_up\",\"resolved_question\":\"...\",\"reason\":\"...\"}.",
       ].join("\n"),
       user: JSON.stringify({
         immediate_previous_user_question: input.turn.immediatePreviousUserQuestion,
@@ -611,7 +613,7 @@ async function selectApplicableEvidence(input: {
           return crossesRightsActorBoundary(need, decision) ||
             crossesPublicContentPrivacyBoundary(need, decision) ||
             missesRequestedTimingStage(need, decision) ||
-            missesRequestedArtifact(need, decision) ||
+            missesRequestedArtifact(need, match.policy) ||
             hasUnmatchedRelationalScenario(authoritativeNeed, match.policy) ||
             hasUnmatchedControllingCondition(authoritativeNeed, decision) ||
             misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
@@ -628,6 +630,7 @@ async function selectApplicableEvidence(input: {
           ...item,
           relation: requiresPartial && item.relation === "direct" ? "partial" as const : item.relation,
           policy_ids: applicableMatches.map((match) => match.policy.id),
+          hard_boundary: requiresPartial,
           supported_claim: minimizeClaim
             ? applicableMatches.map((match) => minimalDecisionEvidence(need, policyDecisionParts(match.policy.decision).decision_evidence)).join(" ")
             : item.supported_claim,
@@ -1011,6 +1014,7 @@ async function validateAndRepair(input: {
       return ref ? [ref] : [];
     }),
     supported_claim: item.supported_claim,
+    hard_boundary: Boolean(item.hard_boundary),
   }));
   const request = {
     purpose: "v3_grounding_validation",
@@ -1122,11 +1126,17 @@ async function validateAndRepair(input: {
         ? applicable.some((support) => support.relation === "direct")
         : applicable.some((support) => support.relation === "direct" || support.relation === "partial");
       const usesOnlyApplicableEvidence = entry.policy_ids.length > 0 && entry.policy_ids.every((id) => allowedIds.has(id));
+      const selectorPartialConfirmedByValidator = entry.status === "answered" &&
+        usesOnlyApplicableEvidence &&
+        applicable.some((support) => support.relation === "partial") &&
+        applicable.every((support) => !support.hard_boundary) &&
+        sentenceChecks.length > 0 &&
+        sentenceChecks.every((check) => check.status === "supported" && check.policy_ids.length > 0);
       const recoverableCrossNeedPartial = entry.status === "partial" &&
         !applicable.length &&
         entry.policy_ids.length > 0 &&
         entry.policy_ids.every((id) => allContractIds.has(id));
-      return (relationSupportsStatus && usesOnlyApplicableEvidence) || recoverableCrossNeedPartial ? [] : [`${entry.need_ref}:${entry.status}`];
+      return (relationSupportsStatus && usesOnlyApplicableEvidence) || selectorPartialConfirmedByValidator || recoverableCrossNeedPartial ? [] : [`${entry.need_ref}:${entry.status}`];
     });
     const supportedSentenceRefs = new Set(
       sentenceChecks
@@ -1218,9 +1228,10 @@ async function validateAndRepair(input: {
 }
 
 function routeKeyForQuestion(question: string, policies: V3Policy[]) {
+  const normalized = question.toLowerCase();
+  if (/\b(?:can(?:not|'t)|unable to|trouble|problem|issue|error|failed? to)\b[^?.]{0,80}\b(?:log ?in|sign ?in|access|open)\b|\b(?:log ?in|sign ?in|access denied|password reset)\b[^?.]{0,80}\b(?:problem|issue|error|failed?|working)\b/.test(normalized)) return "sales_tech";
   const selectedRouteKeys = Array.from(new Set(policies.map((policy) => policy.route_key).filter(Boolean)));
   if (selectedRouteKeys.length === 1) return selectedRouteKeys[0] as string;
-  const normalized = question.toLowerCase();
   if (/\b(?:payment page|checkout|broken link|button|keap|zoom phone|calendar|recording missing|hubspot|login|access|form|dropdown|tool)\b/.test(normalized)) return "sales_tech";
   if (/\b(?:greenlight letter|green light letter|approval letter|greenlight pdf|greenlight status|greenlight cap)\b/.test(normalized)) return "greenlight";
   if (/\b(?:payment|pay|ach|wire|invoice|receipt|refund|charge|installment|billing|bank|card)\b/.test(normalized)) return "finance";
@@ -1252,7 +1263,7 @@ function safeRouteAnswer(turn: V3TurnResolution, output: V3AnswerOutput | null, 
 function structuredAnswer(output: V3AnswerOutput, answer: string): AskSalesFaqStructuredAnswer {
   const confidenceScore = clampConfidence(output.confidence_score);
   return {
-    summary: output.summary || answer,
+    summary: output.sections.length ? output.summary || answer : answer,
     sections: output.sections,
     confidenceLabel: confidenceScore >= 80 ? "High" : confidenceScore >= 50 ? "Medium" : "Low",
     confidenceScore,
@@ -1296,6 +1307,7 @@ function metadata(input: {
             policyIds: item.policy_ids,
             supportedClaim: item.supported_claim,
             reason: item.reason,
+            hardBoundary: Boolean(item.hard_boundary),
           })),
           unresolvedNeedIds: input.retrieval.evidenceContract.unresolved_need_ids,
         } : undefined,
@@ -1546,6 +1558,9 @@ export async function runAskSalesFaqV3(
     : routeFor(turn.currentQuestion, selected);
   if (output.needs_route && !output.answer.includes(route.channel)) {
     output.answer = `${output.answer.replace(/[.!]?$/, ".")} Use ${route.channel} for the unresolved part.`;
+  }
+  if (output.needs_route || output.mode === "route" || output.mode === "partial") {
+    output.route_reason = `Please verify the unresolved part in ${route.channel} before replying.`;
   }
   const answer = cleanDisplayText(output.answer, 5000);
   const outcome: AskSalesFaqOutcome =
