@@ -81,6 +81,14 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(greenlight.standaloneQuestion).toContain("Passed social check");
   });
 
+  it("does not treat every complete should-I question as a follow-up", () => {
+    const messages = [
+      { role: "user" as const, content: "The contract is signed, the ACH failed, and the client now wants out. Which team needs to be notified?" },
+      { role: "assistant" as const, content: "Notify the fulfillment hotline." },
+    ];
+    expect(resolveV3Turn("Should I automatically disqualify every applicant who served time years ago?", messages).kind).toBe("new");
+  });
+
   it("treats explicit corrections and presentation requests as immediate-context turns", () => {
     const messages = [
       { role: "user" as const, content: "What should the prospect do if they photograph the slides?" },

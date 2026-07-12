@@ -96,6 +96,8 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   const explicitReferent = EXPLICIT_REFERENT.test(strippedSocialPreface);
   const ellipticalFollowUp = ELLIPTICAL_FOLLOW_UP.test(strippedSocialPreface);
   const lacksStandaloneSubject = contentAnchorCount(strippedSocialPreface) < 4;
+  const anaphoricContinuation = ANAPHORIC_CONTINUATION.test(strippedSocialPreface);
+  const hasContinuationReferent = /^(?:and|also|so|but|then)\b|\b(?:they|them|that|this|it)\b|\bafter i (?:have )?left\b/i.test(strippedSocialPreface);
   const followUp =
     !social &&
     !topicIntro &&
@@ -103,7 +105,7 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
     !rewrite &&
     !clarification &&
     Boolean(immediatePreviousUserQuestion) &&
-    (explicitCorrection || ellipticalFollowUp || ANAPHORIC_CONTINUATION.test(strippedSocialPreface) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
+    (explicitCorrection || ellipticalFollowUp || (anaphoricContinuation && (lacksStandaloneSubject || hasContinuationReferent)) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
   const kind = social ? "social" : topicIntro ? "topic_intro" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
   const scope = resolveScope(strippedSocialPreface, immediatePreviousUserQuestion);
   const stylePreferences = contextMessages
