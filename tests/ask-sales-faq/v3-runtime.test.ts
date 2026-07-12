@@ -1224,7 +1224,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       if (purpose === "v3_semantic_recall") return { queries: ["DJ NLCEO approved PIF split payment options"] };
       if (purpose.startsWith("v3_evidence_selection")) {
         const candidates = payload.candidates as Array<{ ref: string; product_scopes: string[]; decision_evidence: string }>;
-        const target = candidates.find((card) => card.product_scopes.includes("dj_nlceo") && /\$|pay in full|split/i.test(card.decision_evidence));
+        const target = candidates.find((card) => card.product_scopes.includes("dj_nlceo") && /\$\s*\d/.test(card.decision_evidence));
         return {
           needs: [{ text: "What are the approved DJ/NLCEO PIF and split options?" }],
           support: target ? [{ need_id: "N1", relation: "partial", refs: [target.ref], supported_claim: target.decision_evidence, reason: "The same card contains the complete approved options." }] : [],

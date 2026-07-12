@@ -64,6 +64,21 @@ function trigrams(value: string) {
   return result;
 }
 
+function asksForEnumeratedValues(value: string) {
+  return /\b(?:what|which)\b[^?.]{0,140}\b(?:options?|plans?|prices?|amounts?|splits?|packages?|shows?|list)\b|\b(?:list|show|give|provide|enumerate)\b[^?.]{0,100}\b(?:options?|plans?|prices?|amounts?|splits?|packages?|shows?)\b/i.test(value);
+}
+
+function hasDanglingReference(value: string) {
+  return /\b(?:above|below|the listed (?:options?|plans?|prices?|amounts?|splits?|packages?|shows?))\b/i.test(value);
+}
+
+function hasConcreteEnumeration(value: string) {
+  const numericItems = value.match(/\$\s*\d|\b\d[\d,.]*\s*(?:%|x\s*\d|payments?)\b/gi)?.length || 0;
+  const tableCells = value.match(/\|/g)?.length || 0;
+  const dashItems = value.match(/(?:^|\s)-\s+[A-Z]/g)?.length || 0;
+  return numericItems >= 2 || tableCells >= 6 || dashItems >= 3;
+}
+
 type IndexedPolicy = {
   policy: V3Policy;
   tokenCounts: Map<string, number>;
@@ -271,7 +286,14 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 20): V3Retrie
     const contextRankScore = contextMatchedTerms.length >= 2 || contextFamily >= 4.8 || contextRareMatches.length
       ? contextLexical * 3.2 + contextFamily * 1.6 + contextRareBonus + scoped + authority + answerabilityBonus
       : 0;
-    const raw = currentSignal + contextSignal + scoped + authority + answerabilityBonus;
+    const evidenceShapeScore = asksForEnumeratedValues(turn.currentQuestion)
+      ? hasConcreteEnumeration(indexed.policy.decision)
+        ? 24
+        : hasDanglingReference(indexed.policy.decision)
+          ? -40
+          : 0
+      : 0;
+    const raw = currentSignal + contextSignal + scoped + authority + answerabilityBonus + evidenceShapeScore;
     const score = raw * QUALITY_WEIGHT[indexed.policy.quality_tier];
     matches.push({
       policy: indexed.policy,

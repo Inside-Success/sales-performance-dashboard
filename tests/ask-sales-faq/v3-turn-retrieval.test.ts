@@ -254,6 +254,17 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(calendars.candidates.some(({ policy }) => policy.id === "claim_662ca1f66e1306e4")).toBe(false);
   });
 
+  it("ranks a self-contained option table above a dangling cross-reference", () => {
+    const retrieval = retrieveV3Policies(resolveV3Turn(
+      "For DJ/NLCEO, what are the approved PIF and split-payment options?",
+      [],
+    ), 20);
+    const tableIndex = retrieval.candidates.findIndex(({ policy }) => policy.id === "claim_26780013d013e10b");
+    const danglingIndex = retrieval.candidates.findIndex(({ policy }) => policy.id === "claim_028cf371215a8cc5__a2");
+    expect(tableIndex).toBeGreaterThanOrEqual(0);
+    expect(danglingIndex < 0 || tableIndex < danglingIndex).toBe(true);
+  });
+
   it("does not apply a product-specific qualification decision when the product is unknown", () => {
     const unknown = retrieveV3Policies(resolveV3Turn(
       "Should we cast someone who was recently released from prison and now runs a business?",
