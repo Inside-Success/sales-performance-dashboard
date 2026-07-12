@@ -1331,6 +1331,28 @@ export async function runAskSalesFaqV3(
           route_reason: output.route_reason || "The requested decision is not resolved by the selected evidence.",
         };
       }
+      if (
+        !isConversation &&
+        !retrieval.candidates.length &&
+        /\bcustom\b/i.test(output.answer) &&
+        misappliesCustomSplitBoundary(turn.standaloneQuestion, "direct", "Custom split")
+      ) {
+        const route = routeFor(turn.currentQuestion, []);
+        const answer = `I can’t confirm the installment mechanics until the product and listed payment plan are clear. Please check ${route.channel} before giving the client payment instructions.`;
+        output = {
+          ...output,
+          mode: "route",
+          answer,
+          summary: answer,
+          sections: [],
+          selected_policy_ids: [],
+          rejected_policy_ids: [],
+          sentence_evidence: [],
+          needs_route: true,
+          route_key: routeKeyForQuestion(turn.currentQuestion, []),
+          route_reason: "A single total divided into installments does not establish that the user proposed a custom split.",
+        };
+      }
       if (wantsRepeatedRouteOmitted(turn)) output = omitRepeatedRouteNote(output);
       attempts.push(...result.attempts);
       providerName = result.provider;
