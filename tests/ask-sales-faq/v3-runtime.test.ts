@@ -705,11 +705,11 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.answer).not.toMatch(/cannot send|can't send|must not send/i);
   });
 
-  it("tells both entailment stages to distinguish a total from each installment", async () => {
+  it("tells evidence selection to distinguish a total from each installment", async () => {
     const seen = new Set<string>();
     const base = groundedProvider();
     const provider = (async (input: Parameters<V3Provider>[0]) => {
-      if (input.purpose === "v3_evidence_selection" || input.purpose === "v3_grounding_validation") {
+      if (input.purpose === "v3_evidence_selection") {
         expect(input.system).toContain("four installments totaling $20K, not four payments of $20K");
         seen.add(input.purpose);
       }
@@ -721,7 +721,43 @@ describe("Ask Sales FAQ V3 runtime", () => {
       [],
       { provider },
     );
-    expect(seen).toEqual(new Set(["v3_evidence_selection", "v3_grounding_validation"]));
+    expect(seen).toEqual(new Set(["v3_evidence_selection"]));
+  });
+
+  it("does not let a generic custom-split policy prohibit one total divided into installments", async () => {
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as {
+        candidates?: Array<{ ref: string; id: string }>;
+      };
+      if (purpose === "v3_semantic_recall") return { queries: ["ACH installments from one package total"] };
+      if (purpose.startsWith("v3_evidence_selection")) {
+        const target = payload.candidates?.find((card) => card.id === "owner-unlisted-payment-split-boundary");
+        return { selected_refs: target ? [target.ref] : [], reason: "Intentionally attempts to treat the installment count as a custom split." };
+      }
+      return {
+        mode: "route",
+        answer: "I need the product and listed plan before I can confirm the ACH installment mechanics.",
+        summary: "Confirm the product and listed plan.",
+        sections: [],
+        selected_policy_ids: [],
+        rejected_policy_ids: [],
+        coverage: [],
+        sentence_evidence: [],
+        needs_route: true,
+        route_key: "finance",
+        route_reason: "The listed plan is unresolved.",
+        confidence_score: 0,
+      };
+    });
+
+    const result = await runAskSalesFaqV3(
+      "If someone splits the $20K total into four payments, will the remaining ACH installments draft automatically?",
+      [],
+      { provider },
+    );
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).not.toMatch(/not allowed|custom split/i);
+    expect(result.runtimeMetadata.v3?.retrieval.candidates.map((candidate) => candidate.id)).not.toContain("owner-unlisted-payment-split-boundary");
   });
 
   it("does not let an editing timeline answer script-delivery timing", async () => {

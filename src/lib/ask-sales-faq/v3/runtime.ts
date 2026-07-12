@@ -222,6 +222,20 @@ function hasUnprovenExclusivity(need: string, decision: string) {
   return !/\b(?:only|exclusively|limited to|restricted to)\b/i.test(decision);
 }
 
+function misappliesCustomSplitBoundary(question: string, relation: V3EvidenceContract["support"][number]["relation"], decision: string) {
+  if (relation === "route" || !/\bcustom\s+(?:payment\s+)?(?:plan|split|amount|link)s?\b/i.test(decision)) return false;
+  const amountTokens = question.match(/\$\s*\d[\d,]*(?:\.\d+)?\s*[km]?\b/gi) || [];
+  const normalizedAmounts = new Set(amountTokens.map((value) => value.toLowerCase().replace(/[\s,]/g, "")));
+  const dividesOneTotal = normalizedAmounts.size === 1 && /\b(?:split|divide|divided|installments?|payments?)\b/i.test(question);
+  const statesCustomDeviation = /\b(?:custom|exception|unlisted|unequal|different\s+amounts?)\b/i.test(question) ||
+    /\b(?:deposit|down\s+payment|first\s+payment)\s+(?:of|is|would\s+be)\s*\$/i.test(question) ||
+    /\b(?:pay|payment)\s+\$[^?.]{0,80}\b(?:later|next\s+(?:week|month)|in\s+\d+\s+(?:days?|weeks?|months?))\b/i.test(question);
+  // A single total divided into installments is not, by itself, evidence that
+  // the user proposed a custom amount or schedule. Product-specific listed-plan
+  // evidence may still answer it; a generic custom-split prohibition may not.
+  return dividesOneTotal && !statesCustomDeviation;
+}
+
 function missesRequestedArtifact(need: string, decision: string) {
   const artifact = need.match(/\b((?:[a-z][a-z0-9-]*\s+){1,4})(list|document|link|template|spreadsheet|pdf)\b/i);
   if (!artifact) return false;
@@ -515,7 +529,13 @@ async function selectApplicableEvidence(input: {
           const match = byRef.get(ref);
           if (!match) return [];
           const decision = policyDecisionParts(match.policy.decision).decision_evidence;
-          return crossesRightsActorBoundary(need, decision) || crossesPublicContentPrivacyBoundary(need, decision) || missesRequestedTimingStage(need, decision) || missesRequestedArtifact(need, decision) ? [] : [match];
+          return crossesRightsActorBoundary(need, decision) ||
+            crossesPublicContentPrivacyBoundary(need, decision) ||
+            missesRequestedTimingStage(need, decision) ||
+            missesRequestedArtifact(need, decision) ||
+            misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision)
+            ? []
+            : [match];
         });
         if (!applicableMatches.length) return [];
         const conditionalCurrentness = applicableMatches.every((match) => hasConditionalCurrentnessGap(need, policyDecisionParts(match.policy.decision).decision_evidence));
