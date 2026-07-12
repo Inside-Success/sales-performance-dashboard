@@ -1567,6 +1567,140 @@
       "status": "open"
     }
   ],
+  "dispositioned_policies": [
+    {
+      "actions": [
+        "qualify",
+        "pay",
+        "refund_or_cancel",
+        "explain",
+        "contact"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 90,
+      "blocked_for_decision_keys": [],
+      "decision": "If they have criminal charge, it is best to disqualify.",
+      "decision_key": "prior-prison-jail-history",
+      "disposition_reason": "Individual prior criminal-history cases cannot be generalized into a universal qualification rule. Sensitive current cases must remain owner-controlled unless a governed rule matches the same condition and product.",
+      "disposition_status": "case_specific",
+      "domains": [
+        "qualification",
+        "payments",
+        "communications"
+      ],
+      "effective_at": "2026-06-10T09:36:14.812529+00:00",
+      "entities": [
+        "jail",
+        "prior",
+        "prison",
+        "history",
+        "the",
+        "application",
+        "says",
+        "went",
+        "for",
+        "two",
+        "years",
+        "cancel",
+        "conduct"
+      ],
+      "id": "claim_458d1c3fbc171088",
+      "last_reviewed": "2026-07-10",
+      "policy_key": "prior-prison-jail-history",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [],
+      "quality_tier": "trusted_evidence",
+      "question_families": [
+        "If an application says the person went to jail for two years, should the rep cancel or conduct Call 1?",
+        "Prior prison/jail history"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "prior prison jail history if an application says the person went to jail for two years should the rep cancel or conduct call 1 prior prison jail history if they have criminal charge it is best to disqualify qualification payments communications qualify pay refund or cancel explain contact jail prior prison history the application says went for two years cancel conduct",
+      "source": {
+        "approved_by": [
+          "Madeline Cary"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1781084174.812529"
+        ],
+        "kind": "trusted_slack_summary"
+      },
+      "specificity_priority": 0,
+      "title": "Prior prison/jail history"
+    },
+    {
+      "actions": [
+        "pay",
+        "refund_or_cancel",
+        "use_or_promote"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 90,
+      "blocked_for_decision_keys": [],
+      "decision": "Policy context: Can a prospect with a DUI 8 years ago, jail time served, and later success move forward?. Decision evidence: They may be okay if not a criminal charge, then after clarification said the rep can try to move forward but must ensure the license is non-refundable.",
+      "decision_key": "dui-criminal-history",
+      "disposition_reason": "Individual prior criminal-history cases cannot be generalized into a universal qualification rule. Sensitive current cases must remain owner-controlled unless a governed rule matches the same condition and product.",
+      "disposition_status": "case_specific",
+      "domains": [
+        "payments",
+        "content_rights"
+      ],
+      "effective_at": "2026-06-12T23:01:29.256649+00:00",
+      "entities": [
+        "dui",
+        "criminal",
+        "history",
+        "can",
+        "years",
+        "ago",
+        "jail",
+        "time",
+        "served",
+        "and",
+        "later",
+        "success",
+        "move",
+        "forward"
+      ],
+      "id": "claim_34d5c51982ace2ca",
+      "last_reviewed": "2026-07-10",
+      "policy_key": "dui-criminal-history",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [
+        "context_dependent_opening"
+      ],
+      "quality_tier": "contextual_evidence",
+      "question_families": [
+        "Can a prospect with a DUI 8 years ago, jail time served, and later success move forward?",
+        "DUI / criminal history"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "dui criminal history can a prospect with a dui 8 years ago jail time served and later success move forward dui criminal history policy context can a prospect with a dui 8 years ago jail time served and later success move forward decision evidence they may be okay if not a criminal charge then after clarification said the rep can try to move forward but must ensure the license is non refundable payments content rights pay refund or cancel use or promote dui criminal history can years ago jail time served and later success move forward",
+      "source": {
+        "approved_by": [
+          "Madeline Cary"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1781305289.256649"
+        ],
+        "kind": "trusted_slack_summary"
+      },
+      "specificity_priority": 0,
+      "title": "DUI / criminal history"
+    }
+  ],
   "entity_catalog": [
     "next level ceo",
     "daymond john",
@@ -1610,7 +1744,7 @@
     "imports_v2_runtime": false,
     "runtime": "v3"
   },
-  "knowledge_version": "7c99d268e74f25bd",
+  "knowledge_version": "de04186790faaf2e",
   "policies": [
     {
       "actions": [
@@ -14709,6 +14843,63 @@
       },
       "specificity_priority": 0,
       "title": "ISTV, Next Level CEO Pricing, And Same-Day Discount: What Reps Must Not Say"
+    },
+    {
+      "actions": [
+        "send",
+        "explain",
+        "promise"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "Prefer reviewing Lite, Standard, and other license options on the call. Do not use the License Options or reuse-license document as the default comparison tool, but it may be sent if the prospect specifically needs it after the rep has explained the options. Do not add promises beyond the current document.",
+      "decision_key": "license-options-document-send-boundary",
+      "domains": [
+        "pricing",
+        "shows_offers",
+        "content_rights"
+      ],
+      "effective_at": "2026-07-12T00:00:00+05:00",
+      "entities": [
+        "license",
+        "options",
+        "document",
+        "lite",
+        "standard",
+        "compare"
+      ],
+      "id": "v3src_license_options_document_boundary",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "license-options-document-send-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "May a rep send the License Options document to compare packages?",
+        "What should a rep send when a prospect wants to compare Lite and Standard?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "license options document comparison boundary may a rep send the license options document to compare packages what should a rep send when a prospect wants to compare lite and standard prefer reviewing lite standard and other license options on the call do not use the license options or reuse license document as the default comparison tool but it may be sent if the prospect specifically needs it after the rep has explained the options do not add promises beyond the current document pricing shows offers content rights send explain promise license options document lite standard compare",
+      "source": {
+        "approved_by": [
+          "Rich Allen",
+          "Mike Wisner",
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "owner-protocol:2026-07-12:license-options-document-boundary"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "License Options document comparison boundary"
     },
     {
       "actions": [
@@ -40339,70 +40530,6 @@
     },
     {
       "actions": [
-        "pay",
-        "refund_or_cancel",
-        "use_or_promote"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "Policy context: Can a prospect with a DUI 8 years ago, jail time served, and later success move forward?. Decision evidence: They may be okay if not a criminal charge, then after clarification said the rep can try to move forward but must ensure the license is non-refundable.",
-      "decision_key": "dui-criminal-history",
-      "domains": [
-        "payments",
-        "content_rights"
-      ],
-      "effective_at": "2026-06-12T23:01:29.256649+00:00",
-      "entities": [
-        "dui",
-        "criminal",
-        "history",
-        "can",
-        "years",
-        "ago",
-        "jail",
-        "time",
-        "served",
-        "and",
-        "later",
-        "success",
-        "move",
-        "forward"
-      ],
-      "id": "claim_34d5c51982ace2ca",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "dui-criminal-history",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [
-        "context_dependent_opening"
-      ],
-      "quality_tier": "contextual_evidence",
-      "question_families": [
-        "Can a prospect with a DUI 8 years ago, jail time served, and later success move forward?",
-        "DUI / criminal history"
-      ],
-      "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "dui criminal history can a prospect with a dui 8 years ago jail time served and later success move forward dui criminal history policy context can a prospect with a dui 8 years ago jail time served and later success move forward decision evidence they may be okay if not a criminal charge then after clarification said the rep can try to move forward but must ensure the license is non refundable payments content rights pay refund or cancel use or promote dui criminal history can years ago jail time served and later success move forward",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1781305289.256649"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "DUI / criminal history"
-    },
-    {
-      "actions": [
         "send",
         "explain",
         "record",
@@ -50529,70 +50656,6 @@
     },
     {
       "actions": [
-        "qualify",
-        "pay",
-        "refund_or_cancel",
-        "explain",
-        "contact"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "If they have criminal charge, it is best to disqualify.",
-      "decision_key": "prior-prison-jail-history",
-      "domains": [
-        "qualification",
-        "payments",
-        "communications"
-      ],
-      "effective_at": "2026-06-10T09:36:14.812529+00:00",
-      "entities": [
-        "jail",
-        "prior",
-        "prison",
-        "history",
-        "the",
-        "application",
-        "says",
-        "went",
-        "for",
-        "two",
-        "years",
-        "cancel",
-        "conduct"
-      ],
-      "id": "claim_458d1c3fbc171088",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "prior-prison-jail-history",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [],
-      "quality_tier": "trusted_evidence",
-      "question_families": [
-        "If an application says the person went to jail for two years, should the rep cancel or conduct Call 1?",
-        "Prior prison/jail history"
-      ],
-      "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "prior prison jail history if an application says the person went to jail for two years should the rep cancel or conduct call 1 prior prison jail history if they have criminal charge it is best to disqualify qualification payments communications qualify pay refund or cancel explain contact jail prior prison history the application says went for two years cancel conduct",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1781084174.812529"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "Prior prison/jail history"
-    },
-    {
-      "actions": [
         "record",
         "contact",
         "invite_or_attend",
@@ -57985,6 +58048,279 @@
       },
       "specificity_priority": 0,
       "title": "Dummy call vs outbound script/templates"
+    },
+    {
+      "actions": [
+        "send",
+        "route",
+        "verify"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 75,
+      "blocked_for_decision_keys": [],
+      "decision": "Do not send the greenlight letter when the recorded social check is failed. Start with the recorded profile/check context and use #greenlight-requests for any unresolved internal reason or next step; do not invent or disclose a reason that is not approved for the applicant.",
+      "decision_key": "failed-social-check-greenlight-letter-boundary",
+      "domains": [
+        "greenlight",
+        "compliance",
+        "communications"
+      ],
+      "effective_at": "2026-07-09T12:08:43.940549+00:00",
+      "entities": [
+        "social",
+        "check",
+        "fail",
+        "greenlight",
+        "letter"
+      ],
+      "id": "v3src_failed_social_check_letter_boundary",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "failed-social-check-greenlight-letter-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Should the greenlight letter be sent after a failed social check?",
+        "What should a rep do when the social check says fail?"
+      ],
+      "risk_level": "high",
+      "route_channel": "#greenlight-requests",
+      "route_key": "greenlight",
+      "route_reason": "Use #greenlight-requests for unresolved failed-social-check details.",
+      "search_text": "failed social check and greenlight letter should the greenlight letter be sent after a failed social check what should a rep do when the social check says fail do not send the greenlight letter when the recorded social check is failed start with the recorded profile check context and use #greenlight requests for any unresolved internal reason or next step do not invent or disclose a reason that is not approved for the applicant greenlight compliance communications send route verify social check fail greenlight letter",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1783598923.940549"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "Failed social check and greenlight letter"
+    },
+    {
+      "actions": [
+        "promise",
+        "produce",
+        "explain"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 75,
+      "blocked_for_decision_keys": [],
+      "decision": "When a new applicant asks for a multi-episode series, start with one episode so the working relationship can be established before discussing a larger series. Do not promise the full series during the initial sale.",
+      "decision_key": "multi-episode-series-start-boundary",
+      "domains": [
+        "shows_offers",
+        "production"
+      ],
+      "effective_at": "2026-07-08T23:31:52.518279+00:00",
+      "entities": [
+        "series",
+        "episodes",
+        "one",
+        "working",
+        "relationship"
+      ],
+      "id": "v3src_multi_episode_series_start_boundary",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "multi-episode-series-start-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "What should a rep say when an applicant asks for a multi-episode series?",
+        "Can a new applicant begin with six episodes?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "start a requested series with one episode what should a rep say when an applicant asks for a multi episode series can a new applicant begin with six episodes when a new applicant asks for a multi episode series start with one episode so the working relationship can be established before discussing a larger series do not promise the full series during the initial sale shows offers production promise produce explain series episodes one working relationship",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1783551912.518279"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "Start a requested series with one episode"
+    },
+    {
+      "actions": [
+        "contact",
+        "verify",
+        "schedule"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 75,
+      "blocked_for_decision_keys": [],
+      "decision": "Contact the original rep first to learn what happened with a previously claimed 20 percent lead. Then decide whether to proceed based on that outcome; do not blindly duplicate outreach or automatically discard the lead only because no appointment is visible.",
+      "decision_key": "previously-claimed-twenty-percent-lead-procedure",
+      "domains": [
+        "lead_ownership",
+        "communications"
+      ],
+      "effective_at": "2026-07-07T16:20:49.388239+00:00",
+      "entities": [
+        "twenty",
+        "percent",
+        "claimed",
+        "lead",
+        "original",
+        "rep"
+      ],
+      "id": "v3src_previously_claimed_twenty_percent_lead",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "previously-claimed-twenty-percent-lead-procedure",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "What should a rep do when another rep previously claimed a 20 percent lead?",
+        "May a rep call a claimed lead that has no appointment?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "previously claimed 20 percent lead what should a rep do when another rep previously claimed a 20 percent lead may a rep call a claimed lead that has no appointment contact the original rep first to learn what happened with a previously claimed 20 percent lead then decide whether to proceed based on that outcome do not blindly duplicate outreach or automatically discard the lead only because no appointment is visible lead ownership communications contact verify schedule twenty percent claimed lead original rep",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1783439649.388239"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "Previously claimed 20 percent lead"
+    },
+    {
+      "actions": [
+        "report",
+        "route",
+        "verify"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 75,
+      "blocked_for_decision_keys": [],
+      "decision": "When a client has signed the contract, the ACH fails, and the client says they are backing out, notify the fulfillment/production hotline. Do not invent cancellation, refund, or release authority; finance may still verify payment status separately.",
+      "decision_key": "signed-contract-failed-ach-backing-out-handoff",
+      "domains": [
+        "payments",
+        "contracts",
+        "post_sale",
+        "production"
+      ],
+      "effective_at": "2026-07-08T17:24:36.862539+00:00",
+      "entities": [
+        "signed",
+        "contract",
+        "failed",
+        "ach",
+        "backing",
+        "out",
+        "fulfillment"
+      ],
+      "id": "v3src_signed_contract_failed_ach_handoff",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "signed-contract-failed-ach-backing-out-handoff",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Who should be notified when a signed client has a failed ACH and backs out?",
+        "Failed ACH after contract signing"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "Notify the fulfillment/production hotline for the signed-client handoff.",
+      "search_text": "signed contract failed ach and backing out who should be notified when a signed client has a failed ach and backs out failed ach after contract signing when a client has signed the contract the ach fails and the client says they are backing out notify the fulfillment production hotline do not invent cancellation refund or release authority finance may still verify payment status separately payments contracts post sale production report route verify signed contract failed ach backing out fulfillment",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1783529076.862539"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "Signed contract, failed ACH, and backing out"
+    },
+    {
+      "actions": [
+        "discount",
+        "pay",
+        "explain"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 75,
+      "blocked_for_decision_keys": [],
+      "decision": "Do not apply the VIP-to-VIP repeat-purchase discount when the client's existing ISTV license is Standard and the new purchase is VIP for another show. The prior purchase must meet the current repeat-discount eligibility rule.",
+      "decision_key": "standard-client-second-show-vip-discount-boundary",
+      "domains": [
+        "pricing",
+        "shows_offers"
+      ],
+      "effective_at": "2026-07-12T00:00:00+05:00",
+      "entities": [
+        "standard",
+        "vip",
+        "second",
+        "show",
+        "discount",
+        "existing",
+        "client"
+      ],
+      "id": "v3src_standard_to_vip_second_show_discount_boundary",
+      "last_reviewed": "2026-07-12",
+      "policy_key": "standard-client-second-show-vip-discount-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Does a current Standard client get the repeat VIP discount on a second show?",
+        "Existing-client discount when the first license was Standard"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "standard client buying a second vip show does a current standard client get the repeat vip discount on a second show existing client discount when the first license was standard do not apply the vip to vip repeat purchase discount when the client s existing istv license is standard and the new purchase is vip for another show the prior purchase must meet the current repeat discount eligibility rule pricing shows offers discount pay explain standard vip second show discount existing client",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "owner-protocol:2026-07-12:standard-to-vip-second-show-discount"
+        ],
+        "kind": "v3_trusted_source_decision"
+      },
+      "specificity_priority": 0,
+      "title": "Standard client buying a second VIP show"
     }
   ],
   "resolved_overrides": [
@@ -58629,6 +58965,266 @@
         "status": "active"
       },
       {
+        "claim": {
+          "actions": [
+            "promise",
+            "produce",
+            "explain"
+          ],
+          "approved_by": [
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "When a new applicant asks for a multi-episode series, start with one episode so the working relationship can be established before discussing a larger series. Do not promise the full series during the initial sale.",
+          "authority": 75,
+          "domains": [
+            "shows_offers",
+            "production"
+          ],
+          "effective_at": "2026-07-08T23:31:52.518279+00:00",
+          "entities": [
+            "series",
+            "episodes",
+            "one",
+            "working",
+            "relationship"
+          ],
+          "id": "v3src_multi_episode_series_start_boundary",
+          "policy_key": "multi-episode-series-start-boundary",
+          "product_scopes": [
+            "main_istv"
+          ],
+          "question_families": [
+            "What should a rep say when an applicant asks for a multi-episode series?",
+            "Can a new applicant begin with six episodes?"
+          ],
+          "risk_level": "high",
+          "route_required": false,
+          "title": "Start a requested series with one episode"
+        },
+        "reason": "Previously collected Slack decision accepted in the locked evaluation protocol but omitted from the answerable registry",
+        "source_id": "slack:#sales-questions-requests:1783551912.518279",
+        "status": "active"
+      },
+      {
+        "claim": {
+          "actions": [
+            "contact",
+            "verify",
+            "schedule"
+          ],
+          "approved_by": [
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "Contact the original rep first to learn what happened with a previously claimed 20 percent lead. Then decide whether to proceed based on that outcome; do not blindly duplicate outreach or automatically discard the lead only because no appointment is visible.",
+          "authority": 75,
+          "domains": [
+            "lead_ownership",
+            "communications"
+          ],
+          "effective_at": "2026-07-07T16:20:49.388239+00:00",
+          "entities": [
+            "twenty",
+            "percent",
+            "claimed",
+            "lead",
+            "original",
+            "rep"
+          ],
+          "id": "v3src_previously_claimed_twenty_percent_lead",
+          "policy_key": "previously-claimed-twenty-percent-lead-procedure",
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "What should a rep do when another rep previously claimed a 20 percent lead?",
+            "May a rep call a claimed lead that has no appointment?"
+          ],
+          "risk_level": "high",
+          "route_required": false,
+          "title": "Previously claimed 20 percent lead"
+        },
+        "reason": "Previously collected lead-ownership decision accepted in the locked evaluation protocol but omitted from the answerable registry",
+        "source_id": "slack:#sales-questions-requests:1783439649.388239",
+        "status": "active"
+      },
+      {
+        "claim": {
+          "actions": [
+            "send",
+            "route",
+            "verify"
+          ],
+          "approved_by": [
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "Do not send the greenlight letter when the recorded social check is failed. Start with the recorded profile/check context and use #greenlight-requests for any unresolved internal reason or next step; do not invent or disclose a reason that is not approved for the applicant.",
+          "authority": 75,
+          "domains": [
+            "greenlight",
+            "compliance",
+            "communications"
+          ],
+          "effective_at": "2026-07-09T12:08:43.940549+00:00",
+          "entities": [
+            "social",
+            "check",
+            "fail",
+            "greenlight",
+            "letter"
+          ],
+          "id": "v3src_failed_social_check_letter_boundary",
+          "policy_key": "failed-social-check-greenlight-letter-boundary",
+          "product_scopes": [
+            "main_istv"
+          ],
+          "question_families": [
+            "Should the greenlight letter be sent after a failed social check?",
+            "What should a rep do when the social check says fail?"
+          ],
+          "risk_level": "high",
+          "route_reason": "Use #greenlight-requests for unresolved failed-social-check details.",
+          "route_required": true,
+          "title": "Failed social check and greenlight letter"
+        },
+        "reason": "Previously collected failed-social-check decision accepted in the locked evaluation protocol but omitted from the answerable registry",
+        "source_id": "slack:#sales-questions-requests:1783598923.940549",
+        "status": "active"
+      },
+      {
+        "claim": {
+          "actions": [
+            "report",
+            "route",
+            "verify"
+          ],
+          "approved_by": [
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "When a client has signed the contract, the ACH fails, and the client says they are backing out, notify the fulfillment/production hotline. Do not invent cancellation, refund, or release authority; finance may still verify payment status separately.",
+          "authority": 75,
+          "domains": [
+            "payments",
+            "contracts",
+            "post_sale",
+            "production"
+          ],
+          "effective_at": "2026-07-08T17:24:36.862539+00:00",
+          "entities": [
+            "signed",
+            "contract",
+            "failed",
+            "ach",
+            "backing",
+            "out",
+            "fulfillment"
+          ],
+          "id": "v3src_signed_contract_failed_ach_handoff",
+          "policy_key": "signed-contract-failed-ach-backing-out-handoff",
+          "product_scopes": [
+            "main_istv"
+          ],
+          "question_families": [
+            "Who should be notified when a signed client has a failed ACH and backs out?",
+            "Failed ACH after contract signing"
+          ],
+          "risk_level": "high",
+          "route_reason": "Notify the fulfillment/production hotline for the signed-client handoff.",
+          "route_required": true,
+          "title": "Signed contract, failed ACH, and backing out"
+        },
+        "reason": "Previously collected failed-ACH handoff decision accepted in the locked evaluation protocol but omitted from the answerable registry",
+        "source_id": "slack:#sales-questions-requests:1783529076.862539",
+        "status": "active"
+      },
+      {
+        "claim": {
+          "actions": [
+            "discount",
+            "pay",
+            "explain"
+          ],
+          "approved_by": [
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "Do not apply the VIP-to-VIP repeat-purchase discount when the client's existing ISTV license is Standard and the new purchase is VIP for another show. The prior purchase must meet the current repeat-discount eligibility rule.",
+          "authority": 75,
+          "domains": [
+            "pricing",
+            "shows_offers"
+          ],
+          "effective_at": "2026-07-12T00:00:00+05:00",
+          "entities": [
+            "standard",
+            "vip",
+            "second",
+            "show",
+            "discount",
+            "existing",
+            "client"
+          ],
+          "id": "v3src_standard_to_vip_second_show_discount_boundary",
+          "policy_key": "standard-client-second-show-vip-discount-boundary",
+          "product_scopes": [
+            "main_istv"
+          ],
+          "question_families": [
+            "Does a current Standard client get the repeat VIP discount on a second show?",
+            "Existing-client discount when the first license was Standard"
+          ],
+          "risk_level": "high",
+          "route_required": false,
+          "title": "Standard client buying a second VIP show"
+        },
+        "reason": "Owner-controlled resolution recorded before the first frozen run; the unresolved source reply itself remains non-answerable",
+        "source_id": "owner-protocol:2026-07-12:standard-to-vip-second-show-discount",
+        "status": "active"
+      },
+      {
+        "claim": {
+          "actions": [
+            "send",
+            "explain",
+            "promise"
+          ],
+          "approved_by": [
+            "Rich Allen",
+            "Mike Wisner",
+            "Syed Moonis Haider"
+          ],
+          "approved_text": "Prefer reviewing Lite, Standard, and other license options on the call. Do not use the License Options or reuse-license document as the default comparison tool, but it may be sent if the prospect specifically needs it after the rep has explained the options. Do not add promises beyond the current document.",
+          "authority": 100,
+          "domains": [
+            "pricing",
+            "shows_offers",
+            "content_rights"
+          ],
+          "effective_at": "2026-07-12T00:00:00+05:00",
+          "entities": [
+            "license",
+            "options",
+            "document",
+            "lite",
+            "standard",
+            "compare"
+          ],
+          "id": "v3src_license_options_document_boundary",
+          "policy_key": "license-options-document-send-boundary",
+          "product_scopes": [
+            "main_istv"
+          ],
+          "question_families": [
+            "May a rep send the License Options document to compare packages?",
+            "What should a rep send when a prospect wants to compare Lite and Standard?"
+          ],
+          "risk_level": "high",
+          "route_required": false,
+          "title": "License Options document comparison boundary"
+        },
+        "reason": "Consolidates complementary approved article clauses into one self-contained decision so atomic retrieval cannot retain only the prohibition",
+        "source_id": "owner-protocol:2026-07-12:license-options-document-boundary",
+        "status": "active"
+      },
+      {
         "reason": "The trusted owner said they did not know the past cast member's experience",
         "source_id": "slack:#sales-questions-requests:1783718135.328739",
         "status": "unresolved"
@@ -58664,25 +59260,26 @@
         "status": "conflicting"
       }
     ],
-    "supplement_record_count": 21
+    "supplement_record_count": 27
   },
   "stats": {
     "answerability": {
-      "answer_evidence": 733,
+      "answer_evidence": 737,
       "discovery_only": 7,
       "route_or_support": 132
     },
     "blocked_topic_count": 39,
-    "policy_count": 872,
+    "dispositioned_policy_count": 2,
+    "policy_count": 876,
     "quality_tiers": {
-      "canonical": 371,
-      "contextual_evidence": 152,
+      "canonical": 377,
+      "contextual_evidence": 151,
       "discovery_only": 7,
       "supporting": 64,
-      "trusted_evidence": 278
+      "trusted_evidence": 277
     },
     "source_supplement_dispositions": {
-      "active": 14,
+      "active": 20,
       "case_specific": 1,
       "conflicting": 1,
       "context_only": 1,
@@ -58694,10 +59291,10 @@
       "approved_article": 404,
       "curated_slack_summary": 4,
       "owner_approved_override": 12,
-      "trusted_slack_summary": 433,
+      "trusted_slack_summary": 431,
       "trusted_transcript_summary": 3,
       "v3_owner_approved_override": 2,
-      "v3_trusted_source_decision": 14
+      "v3_trusted_source_decision": 20
     },
     "superseded_policy_count": 1
   },

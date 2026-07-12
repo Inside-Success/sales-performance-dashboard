@@ -43,6 +43,8 @@ function clean(value: unknown, limit = 4000) {
 function cleanDisplayText(value: unknown, limit = 4000) {
   return clean(value, limit)
     .replace(/\s*(?:\(|\[)(?:E\d{1,2}(?:\s*[,;]\s*E\d{1,2})*)(?:\)|\])/gi, "")
+    .replace(/\b(?:in|from) my knowledge base\b/gi, "in the current guidance")
+    .replace(/\b(?:in|from) (?:the )?(?:provided|supplied) evidence\b/gi, "in the current guidance")
     .replace(/\s+/g, " ")
     .trim();
 }
