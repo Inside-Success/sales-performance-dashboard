@@ -6,9 +6,11 @@ const SOCIAL_ACK = /^(?:(?:perfect|great|awesome|okay|ok|thanks|thank you|apprec
 const SOCIAL_PREFACE = /^(?:hi|hello|hey|good (?:morning|afternoon|evening)|thanks|thank you)[,!]?\s+/i;
 const META_CONVERSATION = /\b(?:can you help me with (?:a few|some|several) .+ questions|i have (?:a few|some|several) (?:unrelated )?.+ questions|i(?:['’]m| am) switching to .+ now|next i have questions about|now i have (?:some )?questions about|appreciate it.{0,20}(?:next|now) i have|last section|thank you for sticking with me|thanks,? that(?:['’]s| is) everything|that(?:['’]s| is) all for now|hope you(?:['’]re| are) doing well|how(?:['’]s| is) your day going)\b/i;
 const GENERIC_HELP_REQUEST = /^(?:(?:hi|hello|hey|good (?:morning|afternoon|evening))[,!\s-]*)?(?:can|could|would) you (?:please )?help me(?: with)?(?: (?:another|a|a few|some|several))?(?: sales)? questions?[!.?]*$/i;
+const TOPIC_INTRO = /^(?:(?:hi|hello|hey|hello again|hi again|good (?:morning|afternoon|evening))[,!.\s-]*)?(?:(?:can|could|would) you (?:please )?help me (?:check|review|go over|with)(?: (?:another|a|a few|some|several))? .{2,80}(?:questions?|cases?|topics?)|i (?:need|want) help with .{2,80}(?:now|next)?|i have (?:another|a few|some|several) .{2,80}(?:questions?|cases?)|let(?:['’]s| us) (?:move|switch) to .{2,80})[!.?]*$/i;
 const MEMORY_QUESTION = /\b(?:what|which)\s+(?:was|is)\s+(?:my|the)\s+(?:previous|last)\s+question\b|\bwhat did i (?:just )?ask\b/i;
 const REWRITE = /\b(?:rewrite|rephrase|format|make (?:that|it)|turn (?:that|it|the previous answer|your previous answer)|put (?:that|it)|summari[sz]e|shorten|shorter|simpler language|plain english|bullet(?:s| points)?|checklist|table|answer without repeating|without repeating the route|explain only what is confirmed|explain (?:that|this|it).{0,50}(?:naturally|clearly|briefly|concisely|only what)|keep (?:that|it|the answer) short|keep only what (?:i|we) need)\b/i;
 const ELLIPTICAL_FOLLOW_UP = /^(?:(?:and|also|so|but)\s+)?(?:what about|how about|does that|did that|would that|could that|is that|was that|are those|do they|can they|what if|why is that|why not|then what|anything else|tell me more|(?:can you )?(?:explain|clarify|expand on|simplify) (?:that|this|it))\b/i;
+const ANAPHORIC_CONTINUATION = /^(?:(?:and|also|so|but)\s+)?(?:(?:if|when)\s+(?:the|that|this|they|them|he|she|it|my|our)\b|should\s+(?:i|we)\b|do\s+(?:i|we)\b)/i;
 const EXPLICIT_REFERENT = /\b(?:(?:the )?(?:previous|last) (?:answer|question)|(?:same|that|this) (?:answer|rule|case|client|prospect|show|plan|package|situation|one|thing|location)|(?:does|did|is|was|would|could|can|will) (?:that|this|it))\b/i;
 const CORRECTION = /\b(?:actually|you misunderstood|i(?:['’]m| am) asking|not what i asked|my previous question|i meant)\b/i;
 const STYLE_PREFERENCE = /\b(?:keep (?:your )?answers? .{0,30}(?:short|concise|practical)|keep (?:that|it|the answer) short|answer .{0,20}(?:briefly|concisely)|use bullets|do not repeat route notes?)\b/i;
@@ -84,7 +86,8 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   const immediatePreviousUserQuestion = previousOfRole(contextMessages, "user");
   const immediatePreviousAssistantAnswer = previousOfRole(contextMessages, "assistant");
   const strippedSocialPreface = clean(currentQuestion.replace(SOCIAL_PREFACE, ""));
-  const social = SOCIAL_ONLY.test(currentQuestion) || SOCIAL_ACK.test(currentQuestion) || META_CONVERSATION.test(currentQuestion) || GENERIC_HELP_REQUEST.test(currentQuestion);
+  const topicIntro = TOPIC_INTRO.test(currentQuestion) || META_CONVERSATION.test(currentQuestion);
+  const social = !topicIntro && (SOCIAL_ONLY.test(currentQuestion) || SOCIAL_ACK.test(currentQuestion) || GENERIC_HELP_REQUEST.test(currentQuestion));
   const memory = MEMORY_QUESTION.test(currentQuestion);
   const rewrite = !memory && REWRITE.test(strippedSocialPreface) && Boolean(immediatePreviousAssistantAnswer);
   const clarification = !social && !memory && !rewrite && CLARIFICATION_REQUEST.test(strippedSocialPreface) && Boolean(immediatePreviousUserQuestion);
@@ -95,12 +98,13 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
   const lacksStandaloneSubject = contentAnchorCount(strippedSocialPreface) < 4;
   const followUp =
     !social &&
+    !topicIntro &&
     !memory &&
     !rewrite &&
     !clarification &&
     Boolean(immediatePreviousUserQuestion) &&
-    (explicitCorrection || ellipticalFollowUp || (shortQuestion && explicitReferent && lacksStandaloneSubject));
-  const kind = social ? "social" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
+    (explicitCorrection || ellipticalFollowUp || ANAPHORIC_CONTINUATION.test(strippedSocialPreface) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
+  const kind = social ? "social" : topicIntro ? "topic_intro" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
   const scope = resolveScope(strippedSocialPreface, immediatePreviousUserQuestion);
   const stylePreferences = contextMessages
     .filter((message) => message.role === "user" && STYLE_PREFERENCE.test(message.content))
@@ -133,5 +137,39 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
     explicitCorrection,
     stylePreferences,
     contextMessages,
+    intentResolutionMode: "deterministic",
+    intentResolutionReason: `Resolved as ${kind} from explicit conversation and referent signals.`,
+  };
+}
+
+export function shouldRefineV3TurnIntent(turn: V3TurnResolution) {
+  if (turn.kind !== "new" || !turn.immediatePreviousUserQuestion) return false;
+  const words = turn.currentQuestion.split(/\s+/).length;
+  if (words > 32) return false;
+  return /^(?:and|also|so|but|then|instead)\b|\b(?:that|this|it|they|them|the client|the prospect|the applicant|same one|same case)\b/i.test(turn.currentQuestion);
+}
+
+export function applyV3TurnIntentRefinement(
+  turn: V3TurnResolution,
+  refinement: { kind: "new" | "follow_up"; resolvedQuestion: string; reason: string },
+): V3TurnResolution {
+  if (refinement.kind !== "follow_up" || !turn.immediatePreviousUserQuestion) {
+    return {
+      ...turn,
+      intentResolutionMode: "deepseek_refined",
+      intentResolutionReason: refinement.reason || "DeepSeek confirmed this is a standalone question.",
+    };
+  }
+  const resolvedQuestion = refinement.resolvedQuestion.trim() || [
+    `Immediate prior subject: ${turn.immediatePreviousUserQuestion}`,
+    `Current request about that subject: ${turn.currentQuestion}`,
+  ].join("\n");
+  return {
+    ...turn,
+    kind: "follow_up",
+    standaloneQuestion: resolvedQuestion,
+    usedImmediateContext: true,
+    intentResolutionMode: "deepseek_refined",
+    intentResolutionReason: refinement.reason || "DeepSeek resolved an ambiguous immediate referent.",
   };
 }

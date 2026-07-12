@@ -98,12 +98,14 @@ export type AskSalesFaqRuntimeMetadata = {
   };
   v3?: {
     turn: {
-      kind: "social" | "memory" | "rewrite" | "clarification" | "follow_up" | "new";
+      kind: "social" | "topic_intro" | "memory" | "rewrite" | "clarification" | "follow_up" | "new";
       productScope: "main_istv" | "dj_nlceo" | "comparison" | "unknown";
       excludedScopes: Array<"main_istv" | "dj_nlceo">;
       usedImmediateContext: boolean;
       previousUserQuestionUsed: boolean;
       previousAssistantAnswerUsed: boolean;
+      intentResolutionMode?: "deterministic" | "deepseek_refined";
+      intentResolutionReason?: string;
     };
     retrieval: {
       query: string;

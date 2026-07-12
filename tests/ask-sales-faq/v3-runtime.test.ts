@@ -321,7 +321,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       const payload = JSON.parse(user) as {
         candidates?: Array<{ ref: string; id: string }>;
         draft?: Record<string, unknown>;
-        evidence_cards?: Array<{ ref: string; policy_key: string }>;
+        evidence_cards?: Array<{ ref: string; policy_key: string; decision_evidence: string }>;
       };
       if (purpose === "v3_evidence_selection") {
         const target = payload.candidates?.find((card) => card.id === "claim_c068cf9ac8f5d089");
@@ -369,12 +369,12 @@ describe("Ask Sales FAQ V3 runtime", () => {
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as {
         candidates?: Array<{ ref: string; title: string }>;
-        evidence_cards?: Array<{ ref: string; policy_key: string }>;
+        evidence_cards?: Array<{ ref: string; policy_key: string; decision_evidence: string }>;
         draft?: Record<string, unknown>;
       };
-      if (purpose === "v3_semantic_recall") return { queries: ["first booking wins lead ownership window"] };
+      if (purpose === "v3_semantic_recall") return { queries: ["lead ownership 30 day window from logged communication"] };
       if (purpose === "v3_evidence_selection") {
-        const selected = payload.candidates?.filter((card) => /first-contact ownership|20 percent dial-out/i.test(card.title));
+        const selected = payload.candidates?.filter((card) => /20 percent dial-out/i.test(card.title));
         return { selected_refs: selected?.map((card) => card.ref) || [], reason: "These cards directly define lead ownership." };
       }
       if (purpose === "v3_grounding_validation") {
@@ -388,17 +388,17 @@ describe("Ask Sales FAQ V3 runtime", () => {
           reason: "Grounded.",
         };
       }
-      const target = payload.evidence_cards?.find((card) => card.policy_key === "twenty-percent-dial-out-sop-answer-3");
+      const target = payload.evidence_cards?.find((card) => /ownership window is 30 days|30 days from/i.test(card.decision_evidence));
       expect(target).toBeDefined();
       return {
         mode: "answer",
-        answer: "The first booking wins, and the original rep keeps a 30 days ownership window from their last logged communication.",
-        summary: "The first booking wins during the 30 days ownership window.",
+        answer: "The lead ownership window is 30 days from the rep's last logged communication in Keap.",
+        summary: "The ownership window is 30 days from the last logged communication.",
         sections: [],
         selected_policy_ids: [target?.ref],
         rejected_policy_ids: [],
         coverage: [{ need: "Lead ownership", status: "answered", policy_ids: [target?.ref], reason: "Direct evidence." }],
-        sentence_evidence: [{ sentence: "The first booking wins, and the original rep keeps a 30 days ownership window from their last logged communication.", policy_ids: [target?.ref] }],
+        sentence_evidence: [{ sentence: "The lead ownership window is 30 days from the rep's last logged communication in Keap.", policy_ids: [target?.ref] }],
         needs_route: false,
         route_key: null,
         route_reason: "",
@@ -406,7 +406,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
       };
     });
 
-    const result = await runAskSalesFaqV3("If a client books calls with two different reps, which rep owns the client?", [], { provider });
+    const result = await runAskSalesFaqV3("How long is a lead ownership window after the rep logs communication in Keap?", [], { provider });
     expect(result.outcome).toBe("answer_from_evidence");
     expect(result.answer).toContain("30 days");
     expect(result.runtimeMetadata.v3?.validation.verdict).toBe("pass");

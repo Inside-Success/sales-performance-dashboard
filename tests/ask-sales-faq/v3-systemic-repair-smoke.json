@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "name": "V3 systemic repair smoke suite",
+  "capturedAt": "2026-07-12",
+  "purpose": "Small diagnostic suite for source currentness, policy specificity, natural transitions, and immediate follow-ups. It is not a launch holdout and must not be used for prompt-specific rules.",
+  "promptCount": 15,
+  "conversationCount": 4,
+  "conversations": [
+    {
+      "id": "systemic-qualification",
+      "title": "Qualification and natural conversation",
+      "prompts": [
+        "Hi there. Can you help me check a few qualification situations?",
+        "Can a doctor employed by a hospital qualify even if they do not own a private practice?",
+        "What about a nurse at the same hospital?",
+        "Can a minor be accepted for a show?"
+      ]
+    },
+    {
+      "id": "systemic-payments",
+      "title": "Payment policy specificity",
+      "prompts": [
+        "I need help with payments now.",
+        "Can filming happen before the client has paid the full balance?",
+        "If an ACH debit shows as confirmed, is that enough to treat the money as cleared?",
+        "If a client is paying monthly, can they upgrade from Standard to VIP before filming?"
+      ]
+    },
+    {
+      "id": "systemic-calls",
+      "title": "Calls and ownership follow-ups",
+      "prompts": [
+        "A prospect booked with two reps. Who should handle the client?",
+        "How do I find which rep was booked first?",
+        "If they no-show Call 1, what contact attempts should I make?",
+        "So should I reschedule if they join late?"
+      ]
+    },
+    {
+      "id": "systemic-proof",
+      "title": "Proof and offer boundaries",
+      "prompts": [
+        "Where is the approved testimonials page I can send to a prospect?",
+        "For DJ Lite, should I bring up trailer marketing if there are no guaranteed views?",
+        "Can I promise when an episode will be available on Amazon?"
+      ]
+    }
+  ]
+}

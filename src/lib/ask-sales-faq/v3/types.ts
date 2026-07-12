@@ -1,10 +1,11 @@
 import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 
 export type V3ProductScope = "main_istv" | "dj_nlceo" | "comparison" | "unknown";
-export type V3TurnKind = "social" | "memory" | "rewrite" | "clarification" | "follow_up" | "new";
+export type V3TurnKind = "social" | "topic_intro" | "memory" | "rewrite" | "clarification" | "follow_up" | "new";
 
 export type V3Policy = {
   id: string;
+  decision_key: string;
   policy_key: string;
   title: string;
   question_families: string[];
@@ -30,6 +31,8 @@ export type V3Policy = {
     approved_by: string[];
   };
   search_text: string;
+  specificity_priority: number;
+  blocked_for_decision_keys: string[];
 };
 
 export type V3BlockedTopic = {
@@ -53,6 +56,13 @@ export type V3PolicyRegistry = {
   resolved_overrides: Array<Record<string, unknown>>;
   route_catalog: Record<string, { channel: string; description: string }>;
   entity_catalog: string[];
+  supersession_resolutions?: Array<Record<string, unknown>>;
+  superseded_policies?: V3Policy[];
+  source_coverage?: {
+    supplement_record_count: number;
+    all_records_dispositioned: boolean;
+    records: Array<Record<string, unknown>>;
+  };
 };
 
 export type V3TurnResolution = {
@@ -68,6 +78,8 @@ export type V3TurnResolution = {
   explicitCorrection: boolean;
   stylePreferences: string[];
   contextMessages: AskSalesFaqChatMessage[];
+  intentResolutionMode?: "deterministic" | "deepseek_refined";
+  intentResolutionReason?: string;
 };
 
 export type V3PolicyMatch = {
@@ -79,6 +91,7 @@ export type V3PolicyMatch = {
   familyScore: number;
   contextScore: number;
   scopeScore: number;
+  decisionPriority: number;
   matchedTerms: string[];
 };
 

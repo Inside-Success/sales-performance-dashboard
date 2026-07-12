@@ -53,13 +53,30 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
   });
 
   it("treats meta greetings and topic transitions as conversation rather than policy retrieval", () => {
-    expect(resolveV3Turn("Hey there! Hope you’re doing well—can you help me with a few qualification questions?", []).kind).toBe("social");
-    expect(resolveV3Turn("Thanks. I’m switching to payments and contracts now.", []).kind).toBe("social");
+    expect(resolveV3Turn("Hey there! Hope you’re doing well—can you help me with a few qualification questions?", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Thanks. I’m switching to payments and contracts now.", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Perfect, thank you!", []).kind).toBe("social");
-    expect(resolveV3Turn("Appreciate it. Now I have some questions about calls and compliance.", []).kind).toBe("social");
-    expect(resolveV3Turn("Hi, can you help me with another sales question?", []).kind).toBe("social");
-    expect(resolveV3Turn("Could you help me with a sales question?", []).kind).toBe("social");
+    expect(resolveV3Turn("Appreciate it. Now I have some questions about calls and compliance.", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Hi, can you help me with another sales question?", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Could you help me with a sales question?", []).kind).toBe("topic_intro");
     expect(resolveV3Turn("Can you help me with an ACH payment that is still pending?", []).kind).toBe("new");
+    expect(resolveV3Turn("Hi, can you help me check a few unusual qualification cases?", []).kind).toBe("topic_intro");
+    expect(resolveV3Turn("Hello again. I need help with payments and contracts now.", []).kind).toBe("topic_intro");
+  });
+
+  it("uses immediate no-show and greenlight context for natural continuations", () => {
+    const noShow = resolveV3Turn("If the prospect suddenly says they can join after I have left, do I have to take the meeting immediately?", [
+      { role: "user", content: "For a no-show, is it correct to make two calls, send two texts, wait ten minutes, and then leave?" },
+      { role: "assistant", content: "Yes, then leave if there is no response." },
+    ]);
+    const greenlight = resolveV3Turn("So should I mark the greenlight letter as do not send?", [
+      { role: "user", content: "The candidate shows Passed social check: Fail. What should I do?" },
+      { role: "assistant", content: "Check with the Greenlight team." },
+    ]);
+    expect(noShow.kind).toBe("follow_up");
+    expect(noShow.standaloneQuestion).toContain("no-show");
+    expect(greenlight.kind).toBe("follow_up");
+    expect(greenlight.standaloneQuestion).toContain("Passed social check");
   });
 
   it("treats explicit corrections and presentation requests as immediate-context turns", () => {
@@ -184,5 +201,36 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     const retrieval = retrieveV3Policies(turn);
     expect(turn.kind).toBe("new");
     expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_59be9c344b9359a4")).toBe(true);
+  });
+
+  it("retrieves atomic canonical evidence that was previously buried in broad articles", () => {
+    const turn = resolveV3Turn("Two young business owners have their mother present and she consents. Can the minors be considered?", []);
+    const retrieval = retrieveV3Policies(turn);
+    const minor = retrieval.candidates.find(({ policy }) => /minors can be considered/i.test(policy.decision));
+    expect(minor?.policy.answerability).toBe("answer_evidence");
+  });
+
+  it("uses current specific decisions and excludes superseded or broader conflicting cards", () => {
+    const filming = retrieveV3Policies(resolveV3Turn("Can a client film before the payment plan is paid in full if payments are current?", []), 20);
+    expect(filming.candidates.some(({ policy }) => policy.id === "claim_2c2ff8fc9358ae9d")).toBe(true);
+    expect(filming.candidates.some(({ policy }) => policy.id === "claim_abbd4c9d00643b31")).toBe(false);
+
+    const calendars = retrieveV3Policies(resolveV3Turn("What should I do when the same prospect is booked on two reps' calendars?", []), 20);
+    expect(calendars.candidates.some(({ policy }) => policy.id === "v3src_two_calendar_engagement")).toBe(true);
+    expect(calendars.candidates.some(({ policy }) => policy.id === "claim_662ca1f66e1306e4")).toBe(false);
+  });
+
+  it("retrieves current operational decisions without exact source wording", () => {
+    const cases = [
+      ["What is the deadline for moving a Standard client to VIP?", "v3src_main_istv_upgrade_window"],
+      ["Where should I look in Keap to find the rep already attached to an appointment?", "v3src_find_booked_rep_keap"],
+      ["Should I mention trailer promotion when pitching the lowest Daymond John package?", "v3src_dj_lite_trailer_positioning"],
+      ["How long do I wait and how many times do I contact a no-show?", "v3src_no_show_attempts_and_late_join"],
+      ["Where is the approved page of cast reviews I can share?", "v3src_testimonials_landing_page"],
+    ] as const;
+    for (const [question, expectedId] of cases) {
+      const retrieval = retrieveV3Policies(resolveV3Turn(question, []), 20);
+      expect(retrieval.candidates.some(({ policy }) => policy.id === expectedId), question).toBe(true);
+    }
   });
 });

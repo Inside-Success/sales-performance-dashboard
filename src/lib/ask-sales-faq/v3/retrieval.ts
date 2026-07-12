@@ -207,7 +207,21 @@ function retrieveBlocked(query: string, queryTokens: string[], turn: V3TurnResol
     .slice(0, 3);
 }
 
-export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3RetrievalResult {
+function takeDiverseMatches(matches: V3PolicyMatch[], limit: number) {
+  const result: V3PolicyMatch[] = [];
+  const articleCounts = new Map<string, number>();
+  for (const match of matches) {
+    const article = match.policy.source.article_id || `claim:${match.policy.id}`;
+    const count = articleCounts.get(article) || 0;
+    if (count >= 3) continue;
+    articleCounts.set(article, count + 1);
+    result.push(match);
+    if (result.length >= limit) break;
+  }
+  return result;
+}
+
+export function retrieveV3Policies(turn: V3TurnResolution, limit = 20): V3RetrievalResult {
   const startedAt = Date.now();
   const queries = retrievalQueries(turn);
   const query = queries.diagnostic;
@@ -256,34 +270,52 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 12): V3Retrie
     const score = raw * QUALITY_WEIGHT[indexed.policy.quality_tier];
     matches.push({
       policy: indexed.policy,
-      score: Math.round(score * 100) / 100,
+      score: Math.round((score + indexed.policy.specificity_priority) * 100) / 100,
       lexicalScore: Math.round(lexical * 100) / 100,
       phraseScore: Math.round(phrase * 100) / 100,
       trigramScore: Math.round(trigram * 100) / 100,
       familyScore: Math.round(effectiveFamily * 100) / 100,
       contextScore: Math.round(contextRankScore * 100) / 100,
       scopeScore: scoped,
+      decisionPriority: indexed.policy.specificity_priority,
       matchedTerms: matchedTerms.slice(0, 16),
     });
   }
 
   matches.sort((a, b) => b.score - a.score || b.familyScore - a.familyScore || b.policy.authority - a.policy.authority || a.policy.id.localeCompare(b.policy.id));
+  const controllingDecisionKeys = new Set(
+    matches
+      .filter((match) => match.policy.specificity_priority > 0 && match.matchedTerms.length >= 2)
+      .map((match) => match.policy.decision_key),
+  );
+  const applicableMatches = matches.filter(
+    (match) => !match.policy.blocked_for_decision_keys.some((key) => controllingDecisionKeys.has(key)),
+  );
   const deduped: V3PolicyMatch[] = [];
   const policyKeys = new Set<string>();
-  const familyLane = matches
-    .filter((match) => match.familyScore >= 5.4 && match.matchedTerms.length >= 2)
-    .sort((a, b) => b.familyScore - a.familyScore || b.score - a.score)
-    .slice(0, Math.min(4, Math.ceil(limit / 3)));
+  const familyLane = takeDiverseMatches(
+    applicableMatches
+      .filter((match) => match.familyScore >= 5.4 && match.matchedTerms.length >= 2)
+      .sort((a, b) => b.familyScore - a.familyScore || b.score - a.score),
+    Math.min(6, Math.ceil(limit / 3)),
+  );
   const contextLane = queries.context
-    ? [...matches]
-        .filter((match) => match.contextScore > 0)
-        .sort((a, b) => b.contextScore - a.contextScore || b.score - a.score)
-        .slice(0, Math.min(6, Math.ceil(limit / 2)))
+    ? takeDiverseMatches(
+        [...applicableMatches]
+          .filter((match) => match.contextScore > 0)
+          .sort((a, b) => b.contextScore - a.contextScore || b.score - a.score),
+        Math.min(12, Math.ceil(limit * 0.65)),
+      )
     : [];
-  for (const match of [...familyLane, ...contextLane, ...matches]) {
+  const articleCounts = new Map<string, number>();
+  for (const match of [...familyLane, ...contextLane, ...applicableMatches]) {
     const key = `${match.policy.policy_key}:${match.policy.product_scopes.join(",")}`;
     if (policyKeys.has(key)) continue;
+    const article = match.policy.source.article_id || `claim:${match.policy.id}`;
+    const articleCount = articleCounts.get(article) || 0;
+    if (articleCount >= 4) continue;
     policyKeys.add(key);
+    articleCounts.set(article, articleCount + 1);
     deduped.push(match);
     if (deduped.length >= limit) break;
   }

@@ -106,7 +106,7 @@ if (missingFiles.length === 0) {
       v3Provider.includes('process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"') &&
       v3Provider.includes("deepSeekCallWithRetry") &&
       v3Provider.includes('const thinkingEnabled = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false"') &&
-      v3Provider.includes('temperature = /(?:semantic_recall|evidence_selection|grounding_validation)/.test(input.purpose) ? 0 : 0.2') &&
+      v3Provider.includes('temperature = /(?:turn_intent|semantic_recall|evidence_selection|grounding_validation)/.test(input.purpose) ? 0 : 0.2') &&
       v3Runtime.includes("selectApplicableEvidence({ provider, turn") &&
       v3Runtime.includes("validateAndRepair({ provider: validatorProvider, turn") &&
       !v3Runtime.includes("generateV3ClaudeFallbackJson") &&
@@ -132,15 +132,41 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "V3 compiler accounts for reviewed sources and removes superseded policy",
+    v3Registry.source_coverage?.base_all_records_dispositioned === true &&
+      v3Registry.source_coverage?.all_records_dispositioned === true &&
+      v3Registry.source_coverage?.base_slack_record_count >= 786 &&
+      v3Registry.source_coverage?.supplement_record_count >= 21 &&
+      Array.isArray(v3Registry.superseded_policies) &&
+      v3Registry.superseded_policies.some((policy) => policy.id === "claim_abbd4c9d00643b31") &&
+      !v3Registry.policies.some((policy) => policy.id === "claim_abbd4c9d00643b31") &&
+      v3Registry.policies.some((policy) => policy.id === "claim_2c2ff8fc9358ae9d"),
+    "all base and supplemental source records have dispositions; the older filming-before-payment contradiction is excluded",
+  );
+
+  addCheck(
+    "V3 exposes atomic answer evidence instead of burying it in broad article paragraphs",
+    v3Registry.policies.some(
+      (policy) => policy.answerability === "answer_evidence" && /Minors can be considered/i.test(policy.decision),
+    ) &&
+      v3Registry.policies.some((policy) => policy.id === "v3src_main_istv_upgrade_window") &&
+      v3Registry.policies.some((policy) => policy.id === "v3src_no_show_attempts_and_late_join"),
+    "canonical bullet decisions and current trusted source supplements are independently answerable",
+  );
+
+  addCheck(
     "V3 resolves immediate context and product negation before hybrid retrieval",
     v3TurnResolver.includes("immediatePreviousUserQuestion") &&
       v3TurnResolver.includes("immediatePreviousAssistantAnswer") &&
       v3TurnResolver.includes("excludedScopes") &&
+      v3TurnResolver.includes("TOPIC_INTRO") &&
+      v3TurnResolver.includes("ANAPHORIC_CONTINUATION") &&
+      v3Runtime.includes('purpose: "v3_turn_intent"') &&
       v3Retrieval.includes("bm25") &&
       v3Retrieval.includes("trigramSimilarity") &&
       v3Retrieval.includes("scopeScore") &&
       v3Retrieval.includes("QUALITY_WEIGHT"),
-    "V3 combines immediate-turn resolution, scope exclusion, BM25, phrase, and character-ngram retrieval",
+    "V3 combines topic/follow-up resolution, bounded DeepSeek referent refinement, scope exclusion, BM25, phrase, and character-ngram retrieval",
   );
 
   addCheck(

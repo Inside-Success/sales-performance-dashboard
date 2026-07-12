@@ -7,7 +7,7 @@ import type {
 } from "@/lib/ask-sales-faq/types";
 import { generateV3Json, generateV3ValidationJson, parseV3Json } from "@/lib/ask-sales-faq/v3/provider";
 import { getV3Registry, retrieveV3Policies } from "@/lib/ask-sales-faq/v3/retrieval";
-import { resolveV3Turn } from "@/lib/ask-sales-faq/v3/turn-resolver";
+import { applyV3TurnIntentRefinement, resolveV3Turn, shouldRefineV3TurnIntent } from "@/lib/ask-sales-faq/v3/turn-resolver";
 import type {
   V3AnswerOutput,
   V3EvidenceContract,
@@ -285,6 +285,7 @@ function policyCards(retrieval: V3RetrievalResult) {
     rank: index + 1,
     ref: `E${index + 1}`,
     policy_key: match.policy.policy_key,
+    decision_key: match.policy.decision_key,
     title: match.policy.title,
     ...policyDecisionParts(match.policy.decision),
     question_families: match.policy.question_families.slice(0, 3),
@@ -299,6 +300,7 @@ function policyCards(retrieval: V3RetrievalResult) {
     route_reason: match.policy.route_reason,
     authority: match.policy.authority,
     effective_at: match.policy.effective_at,
+    specificity_priority: match.policy.specificity_priority,
     approved_by: match.policy.source.approved_by,
     retrieval_score: match.score,
   }));
@@ -311,6 +313,46 @@ function parseSemanticRecall(content: string) {
     .filter(Boolean);
   if (!queries.length) throw new Error("Semantic recall did not return usable retrieval queries.");
   return { queries };
+}
+
+function parseTurnIntentRefinement(content: string) {
+  const raw = parseV3Json<Record<string, unknown>>(content);
+  const kind = raw.kind === "follow_up" ? "follow_up" : "new";
+  return {
+    kind,
+    resolvedQuestion: clean(raw.resolved_question, 1000),
+    reason: clean(raw.reason, 500),
+  } as const;
+}
+
+async function refineAmbiguousTurnIntent(input: {
+  provider: V3Provider;
+  turn: V3TurnResolution;
+  attempts: V3ProviderAttempt[];
+}) {
+  if (!shouldRefineV3TurnIntent(input.turn)) return input.turn;
+  try {
+    const result = await input.provider({
+      purpose: "v3_turn_intent",
+      maxTokens: 350,
+      system: [
+        "Classify whether the current message depends on the immediate previous user question or is a new standalone sales question.",
+        "This stage has no policy authority and must not answer the question.",
+        "Use follow_up only when resolving a pronoun, omitted subject, correction, continuation, or condition requires the immediate prior subject. A complete independent question is new even inside the same chat.",
+        "If follow_up, produce one resolved_question that combines only the immediate prior subject with the current request. Never include facts from the previous assistant answer.",
+        "Return JSON only: {\"kind\":\"new|follow_up\",\"resolved_question\":\"...\",\"reason\":\"...\"}.",
+      ].join("\n"),
+      user: JSON.stringify({
+        immediate_previous_user_question: input.turn.immediatePreviousUserQuestion,
+        current_message: input.turn.currentQuestion,
+      }),
+      parse: parseTurnIntentRefinement,
+    });
+    input.attempts.push(...result.attempts);
+    return applyV3TurnIntentRefinement(input.turn, result.output);
+  } catch {
+    return input.turn;
+  }
 }
 
 function parseEvidenceSelection(content: string) {
@@ -452,11 +494,13 @@ async function selectApplicableEvidence(input: {
     ref: `P${index + 1}`,
     id: match.policy.id,
     title: match.policy.title,
+    decision_key: match.policy.decision_key,
     ...policyDecisionParts(match.policy.decision),
     question_families: match.policy.question_families.slice(0, 2),
     product_scopes: match.policy.product_scopes,
     effective_at: match.policy.effective_at,
     authority: match.policy.authority,
+    specificity_priority: match.policy.specificity_priority,
     quality_tier: match.policy.quality_tier,
     answerability: match.policy.answerability,
     risk_level: match.policy.risk_level,
@@ -482,6 +526,8 @@ async function selectApplicableEvidence(input: {
         "For a 'why does this exist?' question, a card that explicitly states what the item, policy, or license covers is useful evidence for that separable purpose question even if another requested consequence remains unresolved.",
         "Meaning must match, but wording does not. Do not reject an applicable card only because the user used natural process wording or synonyms instead of the policy title.",
         "Shared words, the same broad topic, or the same product are not enough. Do not infer permission from silence or combine neighboring policies into a new rule.",
+        "A card with a higher specificity_priority is the controlling procedure for that decision key. Prefer it over a broader ownership, process, or topic card when both appear applicable.",
+        "All superseded policies have already been removed before this stage. Never reconstruct an older rule from a broader neighboring card when a more specific current decision is present.",
         "Keep genuinely different workflow stages separate, such as sent versus signed, scheduled versus completed, or rescheduled versus paid.",
         "A timeline for one workflow stage is not even partial evidence for another stage's timing. Editing, publication, filming, onboarding, script delivery, payment clearance, and contract signing are distinct stages unless a card explicitly links them.",
         "Keep people, roles, and attributes distinct. Veteran status is not language ability; partner, spouse, guest, owner, rep, and prospect are not interchangeable unless the card explicitly covers that relationship.",
@@ -1207,6 +1253,8 @@ function metadata(input: {
         usedImmediateContext: input.turn.usedImmediateContext,
         previousUserQuestionUsed: Boolean(input.turn.immediatePreviousUserQuestion && input.turn.usedImmediateContext),
         previousAssistantAnswerUsed: Boolean(input.turn.immediatePreviousAssistantAnswer && input.turn.usedImmediateContext),
+        intentResolutionMode: input.turn.intentResolutionMode,
+        intentResolutionReason: input.turn.intentResolutionReason,
       },
       retrieval: {
         query: input.retrieval.query.slice(0, 4000),
@@ -1295,10 +1343,11 @@ export async function runAskSalesFaqV3(
   const validatorProvider = options.validatorProvider || options.provider || generateV3ValidationJson;
   const redacted = redactSensitiveText(question);
   const sanitizedMessages = conversationMessages.map((message) => ({ role: message.role, content: redactSensitiveText(message.content).text }));
-  const turnStarted = Date.now();
-  const turn = resolveV3Turn(redacted.text, sanitizedMessages);
-  stageTimings.turnResolutionMs = Date.now() - turnStarted;
   const attempts: V3ProviderAttempt[] = [];
+  const turnStarted = Date.now();
+  let turn = resolveV3Turn(redacted.text, sanitizedMessages);
+  turn = await refineAmbiguousTurnIntent({ provider, turn, attempts });
+  stageTimings.turnResolutionMs = Date.now() - turnStarted;
   const lexicalRetrieval = turn.kind === "new" || turn.kind === "follow_up" ? retrieveV3Policies(turn) : { query: turn.standaloneQuestion, candidates: [], blocked: [], queryTokens: [], stageTimings: { retrievalMs: 0 } };
   const recalledRetrieval = turn.kind === "new" || turn.kind === "follow_up"
     ? await addSemanticRecall({ provider, turn, retrieval: lexicalRetrieval, attempts })
@@ -1317,10 +1366,10 @@ export async function runAskSalesFaqV3(
     output = baseOutput(turn.memoryAnswer, "conversation");
   } else {
     try {
-      const isConversation = turn.kind === "social" || turn.kind === "rewrite" || turn.kind === "clarification";
+      const isConversation = turn.kind === "social" || turn.kind === "topic_intro" || turn.kind === "rewrite" || turn.kind === "clarification";
       const prompt = isConversation ? conversationPrompt(turn) : { system: composerSystemPrompt(), user: composerUserPrompt(turn, retrieval) };
       const generationStarted = Date.now();
-      const result = await provider<V3AnswerOutput>({ purpose: isConversation ? "v3_conversation" : "v3_evidence_answer", system: prompt.system, user: prompt.user, maxTokens: turn.kind === "social" ? 500 : 2200, parse: isConversation ? parseConversationOutput : parseAnswerOutput });
+      const result = await provider<V3AnswerOutput>({ purpose: isConversation ? "v3_conversation" : "v3_evidence_answer", system: prompt.system, user: prompt.user, maxTokens: turn.kind === "social" || turn.kind === "topic_intro" ? 500 : 2200, parse: isConversation ? parseConversationOutput : parseAnswerOutput });
       stageTimings.answerGenerationMs = Date.now() - generationStarted;
       output = isConversation ? result.output : resolveEvidenceRefs(result.output, retrieval);
       if (!isConversation && !retrieval.candidates.length && isSafeNoEvidenceRouteAnswer(output.answer)) {
@@ -1395,7 +1444,7 @@ export async function runAskSalesFaqV3(
       }
     } catch (error) {
       errorClass = "v3_provider_failure";
-      if (turn.kind === "social" || turn.kind === "clarification") {
+      if (turn.kind === "social" || turn.kind === "topic_intro" || turn.kind === "clarification") {
         output = baseOutput("Hi! I’m ready whenever you are—ask me any sales-policy, offer, payment, or process question.", "conversation");
       } else if (turn.kind === "rewrite" && turn.immediatePreviousAssistantAnswer) {
         output = baseOutput(turn.immediatePreviousAssistantAnswer, "conversation");
