@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:ask-sales-faq": "vitest run tests/ask-sales-faq"
+    "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
+    "benchmark:ask-sales-faq:v3": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v3.ts",
+    "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

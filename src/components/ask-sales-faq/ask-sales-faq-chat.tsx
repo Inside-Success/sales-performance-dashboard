@@ -355,7 +355,15 @@ export function AskSalesFaqChat() {
           model: message.model,
         })),
     );
-    setFeedbackByMessageId({});
+    setFeedbackByMessageId(
+      Object.fromEntries(
+        conversation.messages.flatMap((message) =>
+          message.feedback
+            ? [[message.id, { rating: message.feedback.rating, comment: message.feedback.comment || "", status: "saved" as const }]]
+            : [],
+        ),
+      ),
+    );
     setError(null);
     syncQueuedQuestions([]);
     syncQueuePaused(false);

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "name": "Frozen unseen Slack holdout - 40 prompts - 2026-07-12",
+  "capturedAt": "2026-07-12",
+  "purpose": "One-time holdout evaluation. Do not use these prompts as routing, answer, synonym, or policy rules.",
+  "promptCount": 40,
+  "conversationCount": 8,
+  "conversations": [
+    {
+      "id": "frozen-1",
+      "title": "Frozen 1 - Qualification Boundaries",
+      "prompts": [
+        "Hi, can you help me check a few unusual qualification cases?",
+        "Can a doctor who works for a hospital qualify for America's Best Doctors if they do not own a private practice?",
+        "Can a legal dispensary be considered for one of our shows?",
+        "Could a legal hemp business that sells online across all 50 states be a fit?",
+        "Would a recent bankruptcy automatically disqualify someone from Next Level CEO if they are actively rebuilding the business?"
+      ]
+    },
+    {
+      "id": "frozen-2",
+      "title": "Frozen 2 - Qualification And Offer Shape",
+      "prompts": [
+        "Thanks. I have a few more qualification questions.",
+        "Two 11-year-old twins own a registered business and their mother is present on the call. Can they be considered?",
+        "Should we cast someone who was released from prison 30 days ago after serving seven years for organized fraud and now runs a bail-bond business?",
+        "A Call 1 applicant wants a six-part series instead of one episode. What should I tell them?",
+        "Could you put that last answer into one sentence I could say on the call?"
+      ]
+    },
+    {
+      "id": "frozen-3",
+      "title": "Frozen 3 - Scheduling And No Shows",
+      "prompts": [
+        "If another rep claimed a lead in the 20% channel but did not book an appointment, should I skip that lead or call them from my list?",
+        "Is there an exception to the cohort deadline when a genuine family emergency prevents Call 2?",
+        "For a call booked on Monday, should the confirmation email and text go out on Friday or Sunday?",
+        "For a no-show, is it correct to make two calls, send two texts, wait ten minutes, and then leave the meeting?",
+        "If the prospect suddenly says they can join after I have left, do I have to take the meeting immediately?"
+      ]
+    },
+    {
+      "id": "frozen-4",
+      "title": "Frozen 4 - Lead Ownership And Approval",
+      "prompts": [
+        "I am switching to lead ownership and approval questions now.",
+        "What should I do when the same prospect is booked on two reps' calendars at the same time?",
+        "Where in Keap can I see which rep an applicant is already booked with?",
+        "A candidate I greenlit shows 'Passed social check: Fail' in the spreadsheet. What should I do, and how can I understand why they failed?",
+        "So should I mark the greenlight letter as do not send?"
+      ]
+    },
+    {
+      "id": "frozen-5",
+      "title": "Frozen 5 - Payments And Contracts",
+      "prompts": [
+        "Hello again. I need help with payments and contracts now.",
+        "If a prospect asks to review the contract before paying, are we allowed to send it and schedule another call to close?",
+        "For main ISTV, a client paid by connecting a US bank account and only received a debit confirmation. Is that instant, where should it appear, and who should check it?",
+        "Can a cast member on a four-payment plan film before the license is paid in full?",
+        "A current Standard ISTV client wants to purchase a VIP license for another ISTV show. Do they qualify for the existing-client discount?"
+      ]
+    },
+    {
+      "id": "frozen-6",
+      "title": "Frozen 6 - Upgrades Documents And Cancellation",
+      "prompts": [
+        "How long does a Standard cast member have to upgrade to the VIP license?",
+        "A client signed the contract, their ACH failed, and now they say they are backing out. Who needs to be notified?",
+        "Are reps allowed to send the License Options document when a prospect wants to compare Lite and Standard?",
+        "Can you make that last answer shorter and just tell me what I can send?",
+        "Where can I find approved cast-member testimonials to share with a prospect?"
+      ]
+    },
+    {
+      "id": "frozen-7",
+      "title": "Frozen 7 - Language Content Rights And Training",
+      "prompts": [
+        "Can we produce a full episode in Spanish?",
+        "Can a cast member upload their full episode to YouTube?",
+        "What happens after the five-year period that the episode is guaranteed on our network?",
+        "For the DJ Lite license, should I promise or discuss trailer marketing when there are no guaranteed trailer views?",
+        "Is the weekly six-month cast-member training still included, and if not, how should reps explain the available guidance?"
+      ]
+    },
+    {
+      "id": "frozen-8",
+      "title": "Frozen 8 - Product Scope And Operations",
+      "prompts": [
+        "Do we have an official third-party media kit or current Nielsen statistics, and what is the refund or rescheduling policy if a pandemic or serious illness prevents filming?",
+        "A Next Level CEO prospect cannot make the first payment until next month. Do they lose the opportunity because of the main ISTV cohort deadline?",
+        "If I am a Daymond John closer and someone asks about Legacy Makers, can I sell that show to them?",
+        "Which channel should an ISTV rep use to submit end-of-day stats and greenlight approvals?",
+        "Actually, I am on the Daymond John side. Does that change where I should submit them?"
+      ]
+    }
+  ]
+}

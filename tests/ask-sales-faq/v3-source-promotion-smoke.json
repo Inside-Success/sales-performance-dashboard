@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "V3 governed source-promotion smoke suite",
+  "capturedAt": "2026-07-12",
+  "purpose": "Paraphrased diagnostics for governed decision families promoted from already-collected sources. These are not a launch holdout and must not be used for prompt-specific rules.",
+  "promptCount": 9,
+  "conversationCount": 3,
+  "conversations": [
+    {
+      "id": "promotion-offers",
+      "title": "Offer and document boundaries",
+      "prompts": [
+        "A new applicant is asking us to commit to a whole season. Should we begin with one episode or promise the series?",
+        "A prospect wants a document comparing Lite and Standard after I explain both. Am I allowed to send the License Options document?",
+        "The client's first ISTV purchase was Standard. Are they entitled to the VIP repeat-customer discount when buying VIP for another show?"
+      ]
+    },
+    {
+      "id": "promotion-leads",
+      "title": "Lead and approval procedures",
+      "prompts": [
+        "Another rep claimed a 20 percent lead, but I cannot see a booked call. What should I do before contacting the lead?",
+        "The applicant's social check is marked failed. Should I send the greenlight letter?",
+        "What should I do if the reason for the failed check is unclear?"
+      ]
+    },
+    {
+      "id": "promotion-sensitive",
+      "title": "Sensitive and post-sale boundaries",
+      "prompts": [
+        "The contract is signed, the ACH failed, and the client now wants out. Which team needs to be notified?",
+        "Should I automatically disqualify every applicant who served time years ago?",
+        "Where is the current studio located?"
+      ]
+    }
+  ]
+}
