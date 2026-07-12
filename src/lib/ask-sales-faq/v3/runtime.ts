@@ -278,6 +278,15 @@ function missesRequestedArtifact(need: string, policy: V3Policy) {
   return !qualifiers.some((token) => normalizedDescriptor.includes(normalizeText(token)));
 }
 
+function hasDanglingEnumerationReference(need: string, decision: string) {
+  const asksForValues = /\b(?:what|which)\b[^?.]{0,140}\b(?:options?|plans?|prices?|amounts?|splits?|packages?|shows?|list)\b|\b(?:list|show|give|provide|enumerate)\b[^?.]{0,100}\b(?:options?|plans?|prices?|amounts?|splits?|packages?|shows?)\b/i.test(need);
+  if (!asksForValues || !/\b(?:above|below|the listed (?:options?|plans?|prices?|amounts?|splits?|packages?|shows?))\b/i.test(decision)) return false;
+  const numericItems = decision.match(/\$\s*\d|\b\d[\d,.]*\s*(?:%|x\s*\d|payments?)\b/gi)?.length || 0;
+  const tableCells = decision.match(/\|/g)?.length || 0;
+  const dashItems = decision.match(/(?:^|\s)-\s+[A-Z]/g)?.length || 0;
+  return numericItems < 2 && tableCells < 6 && dashItems < 3;
+}
+
 function minimalDecisionEvidence(need: string, decision: string) {
   const needTokens = new Set(
     normalizeText(need)
@@ -563,6 +572,7 @@ async function selectApplicableEvidence(input: {
         "Treat bankruptcy, insolvency, and other explicitly named legal or financial-status conditions as controlling conditions. General business-success, funding, recovery-story, or early-stage guidance cannot answer them unless the decision evidence explicitly addresses that condition.",
         "Do not answer an exclusivity question from silence. Evidence that names a benefit but no platform or restriction can confirm the benefit, but cannot prove it is or is not limited to a named platform.",
         "Keep requested artifacts distinct. A show list is not a media-outlet list; a contract is not its signature-status record; and a script, template, link, calendar, spreadsheet, or document cannot substitute for a different requested artifact merely because both are lists or resources.",
+        "A sentence that only says to use options, prices, plans, shows, or a list 'above' or 'below' is not the requested enumeration. Select the self-contained table or list card that contains the actual values; never select a dangling cross-reference alone.",
         "Cards marked route_or_support may support relation route when their explicit boundary or approved route directly applies. They do not prove the missing fact.",
         "Do not discard a directly applicable answer_evidence card merely because it answers in policy language rather than repeating the user's exact wording.",
         "Do not select an exception, cancellation, no-show, reapplication, or failure-condition card unless the question states that condition.",
@@ -614,6 +624,7 @@ async function selectApplicableEvidence(input: {
             crossesPublicContentPrivacyBoundary(need, decision) ||
             missesRequestedTimingStage(need, decision) ||
             missesRequestedArtifact(need, match.policy) ||
+            hasDanglingEnumerationReference(need, decision) ||
             hasUnmatchedRelationalScenario(authoritativeNeed, match.policy) ||
             hasUnmatchedControllingCondition(authoritativeNeed, decision) ||
             misappliesCustomSplitBoundary(input.turn.standaloneQuestion, item.relation, decision, item.supported_claim, item.reason)
