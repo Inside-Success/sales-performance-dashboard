@@ -600,11 +600,19 @@ async function selectApplicableEvidence(input: {
     }).slice(0, 10);
     if ((!result.output.selected_refs.length || (!hasAnswerSupport && strongAnswerCards.length)) && input.retrieval.candidates.length) {
       try {
+        const retryGuidance = strongAnswerCards.length
+          ? [
+              "Your first pass found no direct or partial answer support even though retrieval surfaced high-overlap answer evidence.",
+              "The compact candidate set contains only cards explicitly governed as answer_evidence, so do not label any of them route. For each need, classify the smallest applicable decision as direct or partial, or leave the need unresolved when none applies.",
+              "Judge semantic entailment rather than identical phrasing. A current-state decision plus an explicit boundary can answer whether that state is limited to the named option; a required method plus a prohibited alternative can answer which method is allowed.",
+              "Do not force a match, infer from silence, or import adjacent facts.",
+            ].join(" ")
+          : "Your first pass found no support. Re-evaluate the compact candidate set against each atomic need, preserving a direct answer, separable partial, or approved route when one actually applies. It remains correct to leave every need unresolved.";
         const retry = await input.provider<ReturnType<typeof parseEvidenceSelection>>({
           ...request,
           purpose: "v3_evidence_selection_retry",
           maxTokens: 1100,
-          system: `${request.system}\nYour first pass found no direct or partial answer support even though retrieval surfaced high-family answer evidence. Re-evaluate the compact candidate set against the exact requested action. Prefer a directly applicable answer over a route card, but do not force a match or infer beyond the decision text. It remains correct to leave the need unresolved when none of these decisions actually answers it.`,
+          system: `${request.system}\n${retryGuidance}`,
           user: JSON.stringify({
             ...selectionUser,
             candidates: strongAnswerCards.length ? strongAnswerCards : cards.slice(0, 10),
