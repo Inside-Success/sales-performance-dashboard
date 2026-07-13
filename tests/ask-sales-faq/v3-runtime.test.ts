@@ -404,6 +404,66 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("owner-zoom-phone-payment-link-email-only");
   });
 
+  it("exposes only a bounded canonical partial when both selectors abstain on high-overlap evidence", async () => {
+    let retrySelectionCalls = 0;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") {
+        return { queries: ["current production language for full episodes"] };
+      }
+      if (purpose === "v3_evidence_selection" || purpose === "v3_evidence_selection_retry") {
+        if (purpose === "v3_evidence_selection_retry") retrySelectionCalls += 1;
+        return {
+          needs: [{ text: "Whether full episodes are currently produced only in English" }],
+          support: [],
+          unresolved_need_ids: ["N1"],
+          reason: "The selector abstained.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return {
+          verdict: "pass",
+          mode: "partial",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          coverage: draft.coverage,
+          needs_route: true,
+          route_key: "sales_policy",
+          route_reason: "The exclusivity wording remains unresolved.",
+          removed_claims: [],
+          reason: "The bounded current-language statement is grounded.",
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string; decision_evidence: string }>;
+      expect(cards).toHaveLength(1);
+      expect(cards[0].decision_evidence).toContain("current production process");
+      return {
+        mode: "partial",
+        answer: "Our current production process and episodes are in English. I can’t confirm a broader exclusivity claim from this evidence alone.",
+        summary: "Current production and episodes are in English.",
+        sections: [],
+        selected_policy_ids: [cards[0].ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Whether full episodes are currently produced only in English", status: "partial", policy_ids: [cards[0].ref], reason: "The current language is confirmed; the broader exclusivity wording remains unresolved." }],
+        sentence_evidence: [{ sentence: "Our current production process and episodes are in English.", policy_ids: [cards[0].ref] }],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "The exclusivity wording remains unresolved.",
+        confidence_score: 82,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("Are full episodes currently produced only in English?", [], { provider });
+    expect(retrySelectionCalls).toBe(1);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toContain("current production process and episodes are in English");
+    expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_4e534ea92178448f__a1");
+    expect(result.runtimeMetadata.v3?.retrieval.evidenceSelectionReason).toContain("canonical evidence floor");
+  });
+
   it("passes every bounded retrieval candidate to the composer", async () => {
     let validationCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
