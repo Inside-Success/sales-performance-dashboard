@@ -36,6 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { APPROVED_FAQ_ARTICLES, type ApprovedFaqArticle } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
+import { parseAnswerDisplayList, parseAnswerDisplaySegments } from "@/lib/ask-sales-faq/presentation";
 import type {
   AskSalesFaqConversationSummary,
   AskSalesFaqResponse,
@@ -1445,11 +1446,17 @@ function shouldShowRouteNote(message: ChatMessage) {
 
 function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer }) {
   const showSummary = !isDuplicatedSummary(answer);
+  const summaryList = showSummary && answer.sections.length === 0 ? parseAnswerDisplayList(answer.summary) : null;
 
   return (
     <div className="space-y-3">
-      {showSummary ? (
-        <p className="text-[15.5px] font-semibold leading-[1.65] text-slate-800">{answer.summary}</p>
+      {summaryList ? (
+        <div className="space-y-2.5 text-[15.5px] font-medium leading-[1.65] text-slate-700">
+          {summaryList.intro ? <p className="font-semibold text-slate-800"><InlineAnswerText text={summaryList.intro} /></p> : null}
+          <AnswerBulletList items={summaryList.items} />
+        </div>
+      ) : showSummary ? (
+        <p className="text-[15.5px] font-semibold leading-[1.65] text-slate-800"><InlineAnswerText text={answer.summary} /></p>
       ) : null}
       <div className="space-y-2.5">
         {answer.sections.map((section, index) => (
@@ -1527,13 +1534,13 @@ function AnswerSection({ section }: { section: AskSalesFaqStructuredAnswer["sect
   return (
     <div className={cn("rounded-2xl border px-4 py-3", toneClass)}>
       <h3 className="text-[13px] font-extrabold tracking-normal text-slate-900">{section.title}</h3>
-      {section.body ? <p className="mt-1.5 text-[14.5px] font-medium leading-6 text-slate-700">{section.body}</p> : null}
+      {section.body ? <p className="mt-1.5 text-[14.5px] font-medium leading-6 text-slate-700"><InlineAnswerText text={section.body} /></p> : null}
       {section.items?.length ? (
         <ul className="mt-2 space-y-1.5">
           {section.items.map((item, index) => (
             <li key={`${item}-${index}`} className="flex items-start gap-2.5 text-[14.5px] font-medium leading-6 text-slate-700">
               <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
-              <span>{item}</span>
+              <span><InlineAnswerText text={item} /></span>
             </li>
           ))}
         </ul>
@@ -1543,6 +1550,16 @@ function AnswerSection({ section }: { section: AskSalesFaqStructuredAnswer["sect
 }
 
 function AnswerText({ text }: { text: string }) {
+  const inlineList = parseAnswerDisplayList(text);
+  if (inlineList) {
+    return (
+      <div className="space-y-2.5 text-[15.5px] font-medium leading-[1.65] text-slate-700">
+        {inlineList.intro ? <p><InlineAnswerText text={inlineList.intro} /></p> : null}
+        <AnswerBulletList items={inlineList.items} />
+      </div>
+    );
+  }
+
   const blocks = text.split("\n").filter((line) => line.trim());
   return (
     <div className="space-y-2.5 text-[15.5px] font-medium leading-[1.65] text-slate-700">
@@ -1552,13 +1569,32 @@ function AnswerText({ text }: { text: string }) {
           return (
             <p key={`${trimmed}-${index}`} className="flex items-start gap-2.5">
               <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
-              <span>{trimmed.replace(/^[-•]\s?/, "")}</span>
+              <span><InlineAnswerText text={trimmed.replace(/^[-•]\s?/, "")} /></span>
             </p>
           );
         }
-        return <p key={`${trimmed}-${index}`}>{trimmed}</p>;
+        return <p key={`${trimmed}-${index}`}><InlineAnswerText text={trimmed} /></p>;
       })}
     </div>
+  );
+}
+
+function AnswerBulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="space-y-1.5">
+      {items.map((item, index) => (
+        <li key={`${item}-${index}`} className="flex items-start gap-2.5">
+          <span className="mt-[9px] size-1.5 shrink-0 rounded-full bg-[#DC2626]" />
+          <span><InlineAnswerText text={item} /></span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function InlineAnswerText({ text }: { text: string }) {
+  return parseAnswerDisplaySegments(text).map((segment, index) =>
+    segment.strong ? <strong key={`${segment.text}-${index}`} className="font-extrabold text-slate-900">{segment.text}</strong> : segment.text,
   );
 }
 
