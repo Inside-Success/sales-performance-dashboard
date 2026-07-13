@@ -540,6 +540,14 @@ async function selectApplicableEvidence(input: {
     route_reason: match.policy.route_reason,
   }));
   try {
+    const selectionUser = {
+      current_question: input.turn.currentQuestion,
+      resolved_question: input.turn.standaloneQuestion,
+      product_scope: input.turn.productScope,
+      excluded_scopes: input.turn.excludedScopes,
+      immediate_context_used: input.turn.usedImmediateContext,
+      candidates: cards,
+    };
     const request = {
       purpose: "v3_evidence_selection",
       maxTokens: 1100,
@@ -580,28 +588,31 @@ async function selectApplicableEvidence(input: {
         "Prefer the smallest sufficient set. It is correct for every need to remain unresolved when nothing applies.",
         "Return JSON only with this exact shape: {\"needs\":[{\"text\":\"one atomic need\"}],\"support\":[{\"need_id\":\"N1\",\"relation\":\"direct\",\"refs\":[\"P1\"],\"supported_claim\":\"what the cards actually support\",\"reason\":\"why the action and scope match\"}],\"unresolved_need_ids\":[\"N2\"],\"reason\":\"brief overall rationale\"}.",
       ].join("\n"),
-      user: JSON.stringify({
-        current_question: input.turn.currentQuestion,
-        resolved_question: input.turn.standaloneQuestion,
-        product_scope: input.turn.productScope,
-        excluded_scopes: input.turn.excludedScopes,
-        immediate_context_used: input.turn.usedImmediateContext,
-        candidates: cards,
-      }),
+      user: JSON.stringify(selectionUser),
       parse: parseEvidenceSelection,
     };
     let result = await input.provider<ReturnType<typeof parseEvidenceSelection>>(request);
     input.attempts.push(...result.attempts);
-    if (!result.output.selected_refs.length && input.retrieval.candidates.length) {
+    const hasAnswerSupport = result.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
+    const strongAnswerCards = cards.filter((card, index) => {
+      const match = input.retrieval.candidates[index];
+      return card.answerability === "answer_evidence" && match.familyScore >= 4.5 && match.matchedTerms.length >= 3;
+    }).slice(0, 10);
+    if ((!result.output.selected_refs.length || (!hasAnswerSupport && strongAnswerCards.length)) && input.retrieval.candidates.length) {
       try {
         const retry = await input.provider<ReturnType<typeof parseEvidenceSelection>>({
           ...request,
           purpose: "v3_evidence_selection_retry",
           maxTokens: 1100,
-          system: `${request.system}\nYour first pass found no support. Re-evaluate every atomic need independently. Check product_agnostic cards against the requested action, not example product names. Preserve a direct answer, separable partial, policy boundary, or approved route for one need even when every other need remains unresolved. It is still correct to leave all needs unresolved when nothing useful is supported.`,
+          system: `${request.system}\nYour first pass found no direct or partial answer support even though retrieval surfaced high-family answer evidence. Re-evaluate the compact candidate set against the exact requested action. Prefer a directly applicable answer over a route card, but do not force a match or infer beyond the decision text. It remains correct to leave the need unresolved when none of these decisions actually answers it.`,
+          user: JSON.stringify({
+            ...selectionUser,
+            candidates: strongAnswerCards.length ? strongAnswerCards : cards.slice(0, 10),
+          }),
         });
         input.attempts.push(...retry.attempts);
-        if (retry.output.selected_refs.length) result = retry;
+        const retryHasAnswerSupport = retry.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
+        if (retryHasAnswerSupport || !result.output.selected_refs.length && retry.output.selected_refs.length) result = retry;
       } catch {
         // Keep the first DeepSeek selection result. This bounded reconsideration
         // never falls through to raw candidates or a routine Claude audit.

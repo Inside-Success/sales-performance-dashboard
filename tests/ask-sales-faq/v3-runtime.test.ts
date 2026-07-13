@@ -315,6 +315,95 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.answer).not.toContain("#greenlight-requests");
   });
 
+  it("reconsiders a route-only selection when strong answer evidence was retrieved", async () => {
+    let firstSelectionCalls = 0;
+    let retrySelectionCalls = 0;
+    const provider = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") {
+        return { queries: ["whether payment links may be sent by SMS or Zoom Phone"] };
+      }
+      if (purpose === "v3_evidence_selection") {
+        firstSelectionCalls += 1;
+        const candidates = payload.candidates as Array<{ ref: string; id: string }>;
+        const target = candidates.find((card) => card.id === "owner-zoom-phone-payment-link-email-only");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "Whether a rep may send a payment link by text" }],
+          support: [{
+            need_id: "N1",
+            relation: "route",
+            refs: [target?.ref],
+            supported_claim: "The selected card was treated only as a route on the first pass.",
+            reason: "First-pass under-selection.",
+          }],
+          unresolved_need_ids: ["N1"],
+          reason: "The first pass failed to recognize the direct answer.",
+        };
+      }
+      if (purpose === "v3_evidence_selection_retry") {
+        retrySelectionCalls += 1;
+        const candidates = payload.candidates as Array<{ ref: string; id: string }>;
+        const target = candidates.find((card) => card.id === "owner-zoom-phone-payment-link-email-only");
+        expect(target).toBeDefined();
+        return {
+          needs: [{ text: "Whether a rep may send a payment link by text" }],
+          support: [{
+            need_id: "N1",
+            relation: "direct",
+            refs: [target?.ref],
+            supported_claim: "Send the approved payment link by email, not by Zoom Phone or SMS.",
+            reason: "The compact retry recognized the exact communication-channel rule.",
+          }],
+          unresolved_need_ids: [],
+          reason: "The exact answer card directly applies.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        return {
+          verdict: "pass",
+          mode: "answer",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: draft.sentence_evidence,
+          coverage: draft.coverage,
+          needs_route: false,
+          route_key: null,
+          route_reason: "",
+          removed_claims: [],
+          reason: "The answer is grounded in the selected delivery-channel rule.",
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string; title: string }>;
+      const target = cards.find((card) => card.title === "Sending a payment link after a call");
+      expect(target).toBeDefined();
+      return {
+        mode: "answer",
+        answer: "No. Send the approved payment link by email, not by Zoom Phone or SMS.",
+        summary: "Send payment links by email, not text.",
+        sections: [],
+        selected_policy_ids: [target?.ref],
+        rejected_policy_ids: [],
+        coverage: [{ need: "Whether a rep may send a payment link by text", status: "answered", policy_ids: [target?.ref], reason: "Direct evidence." }],
+        sentence_evidence: [{ sentence: "Send the approved payment link by email, not by Zoom Phone or SMS.", policy_ids: [target?.ref] }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 92,
+      };
+    });
+
+    const result = await runAskSalesFaqV3("May I text a payment link to a prospect?", [], { provider });
+    expect(firstSelectionCalls).toBe(1);
+    expect(retrySelectionCalls).toBe(1);
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toContain("by email");
+    expect(result.answer).not.toContain("#sales-questions-requests");
+    expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("owner-zoom-phone-payment-link-email-only");
+  });
+
   it("passes every bounded retrieval candidate to the composer", async () => {
     let validationCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
