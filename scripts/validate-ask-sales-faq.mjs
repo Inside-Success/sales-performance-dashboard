@@ -7,6 +7,7 @@ const requiredFiles = [
   "src/app/ask-sales-faq/page.tsx",
   "src/app/ask-sales-faq/admin/page.tsx",
   "src/app/ask-sales-faq/admin/usage/page.tsx",
+  "src/app/ask-sales-faq/admin/usage/[repKey]/page.tsx",
   "src/app/api/ask-sales-faq/route.ts",
   "src/app/api/ask-sales-faq/conversations/route.ts",
   "src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts",
@@ -14,6 +15,7 @@ const requiredFiles = [
   "src/app/api/ask-sales-faq/v3-benchmark/route.ts",
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/lib/ask-sales-faq/access.ts",
+  "src/lib/ask-sales-faq/admin-rep-review.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
   "src/lib/ask-sales-faq/conversation-history.ts",
   "src/lib/ask-sales-faq/question-frame.ts",
@@ -59,6 +61,7 @@ if (missingFiles.length === 0) {
   const page = read("src/app/ask-sales-faq/page.tsx");
   const adminPage = read("src/app/ask-sales-faq/admin/page.tsx");
   const usageAdminPage = read("src/app/ask-sales-faq/admin/usage/page.tsx");
+  const repHistoryAdminPage = read("src/app/ask-sales-faq/admin/usage/[repKey]/page.tsx");
   const chatRoute = read("src/app/api/ask-sales-faq/route.ts");
   const historyRoute = read("src/app/api/ask-sales-faq/conversations/route.ts");
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
@@ -78,6 +81,7 @@ if (missingFiles.length === 0) {
   const answerPlan = read("src/lib/ask-sales-faq/answer-plan.ts");
   const approvedClaimRuntime = read("src/lib/ask-sales-faq/approved-claims.ts");
   const access = read("src/lib/ask-sales-faq/access.ts");
+  const adminRepReview = read("src/lib/ask-sales-faq/admin-rep-review.ts");
   const types = read("src/lib/ask-sales-faq/types.ts");
   const bundle = read("src/lib/ask-sales-faq/generated/approved-faq-bundle.ts");
   const ragIndex = JSON.parse(read("src/lib/ask-sales-faq/generated/policy-aware-rag-index.json"));
@@ -231,12 +235,40 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "admin page uses admin email gate",
-    [adminPage, usageAdminPage].every((content) => content.includes("isAskSalesFaqAdmin") && content.includes("notFound()")) &&
+    [adminPage, usageAdminPage, repHistoryAdminPage].every((content) => content.includes("isAskSalesFaqAdmin") && content.includes("notFound()")) &&
       adminPage.includes("getAskSalesFaqAdminOverview") &&
       usageAdminPage.includes("getAskSalesFaqUsageOverview") &&
+      repHistoryAdminPage.includes("getAskSalesFaqRepHistory") &&
       !adminPage.includes("export async function POST") &&
-      !usageAdminPage.includes("export async function POST"),
-    "admin page requires an exact admin email, returns 404 to other users, and is read-only",
+      !usageAdminPage.includes("export async function POST") &&
+      !repHistoryAdminPage.includes("export async function POST"),
+    "every admin page requires an exact admin email, returns 404 to other users, and is read-only",
+  );
+
+  addCheck(
+    "per-rep Q&A drilldown uses opaque admin-only navigation",
+    usageAdminPage.includes("repReviewKey") &&
+      usageAdminPage.includes("View Q&amp;A") &&
+      !usageAdminPage.includes("viewerEmail}?days") &&
+      repHistoryAdminPage.includes("robots: { index: false, follow: false }") &&
+      repHistoryAdminPage.includes("isAskSalesFaqRepReviewKey") &&
+      repHistoryAdminPage.includes("getAskSalesFaqUsageOverview") &&
+      adminRepReview.includes('createHmac("sha256", secret)') &&
+      adminRepReview.includes("process.env.AUTH_SECRET"),
+    "rep email is not placed in the URL; HMAC keys, admin authorization, and noindex metadata protect the read-only drilldown",
+  );
+
+  addCheck(
+    "per-rep review retains Q&A audit and bounded pagination metadata",
+    db.includes("getAskSalesFaqRepHistory") &&
+      db.includes("encodeAskSalesFaqRepHistoryCursor") &&
+      db.includes("stage_timings") &&
+      db.includes("feedback_created_at") &&
+      repHistoryAdminPage.includes("Question and answer history") &&
+      repHistoryAdminPage.includes("V3 stage timings") &&
+      repHistoryAdminPage.includes("Older questions") &&
+      repHistoryAdminPage.includes("does not write to conversations"),
+    "the detail reads retained redacted Q&A, source/validation/provider/latency/feedback metadata, and paginates 25 rows at a time",
   );
 
   addCheck(
@@ -1151,7 +1183,7 @@ if (missingFiles.length === 0) {
     "access gate checks the emergency flag and the authenticated company-domain policy",
   );
 
-  const scanned = [page, adminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, conversationHistory, runtime, access, bundle, db, envExample];
+  const scanned = [page, adminPage, usageAdminPage, repHistoryAdminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, conversationHistory, runtime, access, adminRepReview, bundle, db, envExample];
   const secretHit = scanned.some((content) => secretPatterns.some((pattern) => pattern.test(content)));
   addCheck("no committed api-key-like secrets", !secretHit, secretHit ? "secret-like value found" : "no secret-like value found");
 }

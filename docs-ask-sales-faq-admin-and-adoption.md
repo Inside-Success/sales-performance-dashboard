@@ -6,18 +6,19 @@ Ask Sales has two admin-only measurement surfaces with intentionally separate re
 
 - `/ask-sales-faq/admin` — answer quality, routing, feedback, provider/runtime health, and investigation.
 - `/ask-sales-faq/admin/usage` — rep activation, repeat usage, question volume, and per-user adoption.
+- `/ask-sales-faq/admin/usage/[repKey]` — a rep-specific, read-only question-and-answer audit reached only from an activated row on the adoption page.
 
 The existing coaching `/manager/usage` page and its metrics are not changed or reused. Coaching engagement and Ask Sales adoption remain separate datasets and concepts.
 
 ## Access
 
-Both Ask Sales admin pages require:
+Every Ask Sales admin page requires:
 
 1. A valid dashboard Google session.
 2. Ask Sales feature access.
 3. Membership in `ASK_SALES_FAQ_ADMIN_EMAILS`.
 
-Normal Ask Sales users cannot access either admin page.
+Normal Ask Sales users cannot access any admin page. Rep drill-down URLs use an HMAC-based opaque key derived with the existing server-side `AUTH_SECRET`; the rep email is never placed in the URL. Invalid, stale, non-admin, and unresolvable keys return 404. All admin pages remain unlinked from rep navigation and retain `noindex, nofollow` metadata.
 
 ## Quality And Operations Definitions
 
@@ -51,12 +52,29 @@ Ask Sales admin accounts are excluded from adoption totals. This captures signed
 - **Question volume**: saved user-role Ask Sales messages.
 - **Grounded / routed / failed**: assistant outcomes in the selected reporting window.
 
+## Per-Rep Question And Answer Review
+
+Activated rows expose a **View Q&A** action. The drill-down defaults to all retained Ask Sales history and also supports 7-, 30-, and 90-day windows. Results are newest-first and paginated in bounded pages of 25.
+
+Each retained assistant exchange is paired with the latest preceding user question in the same conversation and shows:
+
+- the redacted question and answer already stored in Neon;
+- date, outcome, safe-route reason, and runtime error class;
+- source label/review date, source mode, confidence, and selected policy count;
+- provider/model, total latency, V3 validation verdict, pipeline/knowledge version, and stored V3 stage timings when available;
+- the latest submitted feedback and comment;
+- archived/deleted conversation state without removing the retained admin audit record.
+
+The implementation adds no table, migration, API mutation, or background job. It reuses the existing indexed Ask Sales messages, conversations, and feedback tables. It does not change the chat route, V3 runtime, governed knowledge bundle, authentication policy, Coaching `/manager/usage`, Slack, Google Sheets, or n8n.
+
 ## Verification
 
 - TypeScript: `npx tsc --noEmit`
-- Scoped ESLint: Ask Sales admin pages, analytics helpers, DB analytics, and tests
-- Ask Sales Vitest suite: 181 tests
+- Scoped ESLint: Ask Sales admin pages, rep-key/cursor helpers, DB analytics, validator, and tests
+- Ask Sales Vitest suite: 192 tests
+- Independent Ask Sales safety validator: 94/94 checks
+- TypeScript: passed
 - Production build: `npm run build`
-- Live data query smoke check: quality summary, daily series, recent answers, known users, adoption counts, and daily adoption series all returned successfully.
+- Live read-only data smoke check: 195 known non-admin users and seven activated users were available at the checked point in time; a selected retained exchange returned a paired question, answer, and V3 stage timings through the new query without exposing identity in command output.
 
 No local development server is required or permitted for this project.

@@ -44,10 +44,16 @@ import type {
   AskSalesFaqDiagnosticPayload,
   AskSalesFaqFeedbackPayload,
   AskSalesFaqLogPayload,
+  AskSalesFaqRepHistoryPage,
   AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
   AskSalesFaqUsageOverview,
 } from "@/lib/ask-sales-faq/types";
+import {
+  buildAskSalesFaqRepReviewKey,
+  encodeAskSalesFaqRepHistoryCursor,
+  type AskSalesFaqRepHistoryCursor,
+} from "@/lib/ask-sales-faq/admin-rep-review";
 import {
   classifyAskSalesFaqReview,
   percentOf,
@@ -3554,6 +3560,7 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
     return {
       viewerEmail: String(row.viewer_email),
       viewerName: row.viewer_name ? String(row.viewer_name) : null,
+      repReviewKey: buildAskSalesFaqRepReviewKey(String(row.viewer_email)),
       knownFromDashboard: Boolean(row.known_from_dashboard),
       knownFromRepRoster: Boolean(row.known_from_rep_roster),
       firstAskedAt: row.first_asked_at ? String(row.first_asked_at) : null,
@@ -3598,6 +3605,239 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
     })),
     users,
   };
+}
+
+export async function getAskSalesFaqRepHistory(
+  viewerEmail: string,
+  options: {
+    viewerName?: string | null;
+    windowDays?: 7 | 30 | 90 | null;
+    cursor?: AskSalesFaqRepHistoryCursor | null;
+    limit?: number;
+  } = {},
+): Promise<AskSalesFaqRepHistoryPage | null> {
+  const normalizedEmail = normalizeAuthEmail(viewerEmail);
+  if (!normalizedEmail) return null;
+
+  const windowDays = options.windowDays === 7 || options.windowDays === 30 || options.windowDays === 90
+    ? options.windowDays
+    : null;
+  const normalizedLimit = Math.max(10, Math.min(options.limit || 25, 50));
+  const empty: AskSalesFaqRepHistoryPage = {
+    generatedAt: new Date().toISOString(),
+    windowDays,
+    rep: {
+      viewerEmail: normalizedEmail,
+      viewerName: options.viewerName || null,
+    },
+    summary: {
+      questions: 0,
+      groundedAnswers: 0,
+      routes: 0,
+      failures: 0,
+      feedbackCount: 0,
+      thumbsDown: 0,
+    },
+    items: [],
+    nextCursor: null,
+  };
+
+  if (!hasDatabase()) return empty;
+
+  await ensureSchema();
+  const sql = getSql();
+  const cursorCreatedAt = options.cursor?.createdAt || null;
+  const cursorId = options.cursor?.id || null;
+
+  const [summaryRows, historyRows] = await Promise.all([
+    sql.query(
+      `
+        with assistant as (
+          select *
+          from ask_sales_faq_messages
+          where role = 'assistant'
+            and lower(viewer_email) = $1
+            and ($2::int is null or created_at >= now() - ($2::int * interval '1 day'))
+        )
+        select
+          count(*)::int as questions,
+          count(*) filter (where outcome in ('answer_from_approved_article', 'answer_from_evidence'))::int as grounded_answers,
+          count(*) filter (
+            where needs_route
+               or outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only')
+          )::int as routes,
+          count(*) filter (
+            where error_class is not null
+               or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+          )::int as failures,
+          (select count(*)::int from ask_sales_faq_feedback f where f.message_id in (select id from assistant)) as feedback_count,
+          (select count(*)::int from ask_sales_faq_feedback f where f.message_id in (select id from assistant) and f.rating = 'down') as thumbs_down
+        from assistant
+      `,
+      [normalizedEmail, windowDays],
+    ),
+    sql.query(
+      `
+        select
+          a.id,
+          a.conversation_id,
+          c.title as conversation_title,
+          c.status as conversation_status,
+          a.created_at::text as created_at,
+          a.content_redacted as answer,
+          a.outcome,
+          a.source_label,
+          a.source_last_reviewed,
+          a.needs_route,
+          a.route_reason,
+          a.provider,
+          a.model,
+          a.latency_ms,
+          a.error_class,
+          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case
+            when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
+            then (a.answer_payload->>'confidenceScore')::float
+            else null
+          end as confidence_score,
+          a.answer_payload->>'sourceMode' as source_mode,
+          a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
+          a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
+          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          a.answer_payload #> '{runtimeMetadata,v3,stageTimings}' as stage_timings,
+          question.content_redacted as question,
+          feedback.rating,
+          feedback.comment,
+          feedback.created_at::text as feedback_created_at
+        from ask_sales_faq_messages a
+        join ask_sales_faq_conversations c on c.id = a.conversation_id
+        left join lateral (
+          select u.content_redacted
+          from ask_sales_faq_messages u
+          where u.conversation_id = a.conversation_id
+            and lower(u.viewer_email) = $1
+            and u.role = 'user'
+            and u.created_at <= a.created_at
+          order by u.created_at desc, u.id desc
+          limit 1
+        ) question on true
+        left join lateral (
+          select f.rating, f.comment, f.created_at
+          from ask_sales_faq_feedback f
+          where f.message_id = a.id
+          order by f.created_at desc
+          limit 1
+        ) feedback on true
+        where a.role = 'assistant'
+          and lower(a.viewer_email) = $1
+          and ($2::int is null or a.created_at >= now() - ($2::int * interval '1 day'))
+          and (
+            $3::timestamptz is null
+            or (a.created_at, a.id) < ($3::timestamptz, $4::text)
+          )
+        order by a.created_at desc, a.id desc
+        limit $5
+      `,
+      [normalizedEmail, windowDays, cursorCreatedAt, cursorId, normalizedLimit + 1],
+    ),
+  ]);
+
+  type HistoryRow = {
+    id: string;
+    conversation_id: string;
+    conversation_title: string | null;
+    conversation_status: "active" | "archived" | "deleted";
+    created_at: string;
+    question: string | null;
+    answer: string;
+    outcome: string | null;
+    source_label: string | null;
+    source_last_reviewed: string | null;
+    source_mode: string | null;
+    confidence_label: string | null;
+    confidence_score: number | null;
+    needs_route: boolean | null;
+    route_reason: string | null;
+    provider: string | null;
+    model: string | null;
+    latency_ms: number | null;
+    error_class: string | null;
+    pipeline_version: string | null;
+    knowledge_version: string | null;
+    validation_verdict: string | null;
+    selected_policy_count: number | null;
+    stage_timings: unknown;
+    rating: "up" | "down" | null;
+    comment: string | null;
+    feedback_created_at: string | null;
+  };
+
+  const rows = historyRows as HistoryRow[];
+  const visibleRows = rows.slice(0, normalizedLimit);
+  const metricRow = (summaryRows as Array<Record<string, number>>)[0] || {};
+  const lastVisible = visibleRows.at(-1);
+
+  return {
+    generatedAt: new Date().toISOString(),
+    windowDays,
+    rep: empty.rep,
+    summary: {
+      questions: Number(metricRow.questions || 0),
+      groundedAnswers: Number(metricRow.grounded_answers || 0),
+      routes: Number(metricRow.routes || 0),
+      failures: Number(metricRow.failures || 0),
+      feedbackCount: Number(metricRow.feedback_count || 0),
+      thumbsDown: Number(metricRow.thumbs_down || 0),
+    },
+    items: visibleRows.map((row) => {
+      const confidenceScore = normalizeAskSalesFaqConfidenceScore(row.confidence_score);
+      const stageTimings = normalizeAskSalesFaqStageTimings(row.stage_timings);
+
+      return {
+        id: row.id,
+        conversationId: row.conversation_id,
+        conversationTitle: row.conversation_title,
+        conversationStatus: row.conversation_status,
+        createdAt: row.created_at,
+        question: row.question,
+        answer: row.answer,
+        outcome: row.outcome,
+        sourceLabel: row.source_label,
+        sourceLastReviewed: row.source_last_reviewed,
+        sourceMode: row.source_mode,
+        confidenceLabel: confidenceScore === null ? row.confidence_label : askSalesFaqConfidenceLabelFromScore(confidenceScore),
+        confidenceScore,
+        needsRoute: Boolean(row.needs_route),
+        routeReason: row.route_reason,
+        provider: row.provider,
+        model: row.model,
+        latencyMs: Number(row.latency_ms || 0),
+        errorClass: row.error_class,
+        pipelineVersion: row.pipeline_version,
+        knowledgeVersion: row.knowledge_version,
+        validationVerdict: row.validation_verdict,
+        selectedPolicyCount: Number(row.selected_policy_count || 0),
+        stageTimings,
+        feedback: row.rating && row.feedback_created_at
+          ? { rating: row.rating, comment: row.comment, createdAt: row.feedback_created_at }
+          : null,
+      };
+    }),
+    nextCursor: rows.length > normalizedLimit && lastVisible
+      ? encodeAskSalesFaqRepHistoryCursor({ createdAt: lastVisible.created_at, id: lastVisible.id })
+      : null,
+  };
+}
+
+function normalizeAskSalesFaqStageTimings(value: unknown): Record<string, number> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+
+  const entries = Object.entries(value)
+    .map(([key, timing]) => [key, Number(timing)] as const)
+    .filter(([key, timing]) => Boolean(key) && Number.isFinite(timing) && timing >= 0);
+
+  return entries.length ? Object.fromEntries(entries) : null;
 }
 
 function normalizeCall(call: PerformanceCall): PerformanceCall {
