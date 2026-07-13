@@ -46,7 +46,13 @@ import type {
   AskSalesFaqLogPayload,
   AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
+  AskSalesFaqUsageOverview,
 } from "@/lib/ask-sales-faq/types";
+import {
+  classifyAskSalesFaqReview,
+  percentOf,
+  shouldCreateAskSalesFaqMiss,
+} from "@/lib/ask-sales-faq/admin-analytics";
 import {
   encodeAskSalesFaqConversationCursor,
   type AskSalesFaqConversationCursor,
@@ -2439,9 +2445,11 @@ export async function failAskSalesFaqRequest(payload: {
 export async function saveAskSalesFaqExchange(payload: AskSalesFaqLogPayload) {
   await ensureSchema();
   const sql = getSql();
-  const shouldCreateMiss =
-    payload.outcome !== "conversation_reply" &&
-    (payload.outcome !== "answer_from_approved_article" || payload.needsRoute || Boolean(payload.errorClass));
+  const shouldCreateMiss = shouldCreateAskSalesFaqMiss({
+    outcome: payload.outcome,
+    needsRoute: payload.needsRoute,
+    errorClass: payload.errorClass,
+  });
   const answerPayload = payload.structuredAnswer
     ? {
         ...payload.structuredAnswer,
@@ -3023,15 +3031,29 @@ export async function getAskSalesFaqFeedbackContext(payload: {
   };
 }
 
-export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesFaqAdminOverview> {
+export async function getAskSalesFaqAdminOverview(
+  limit = 20,
+  windowDays = 7,
+): Promise<AskSalesFaqAdminOverview> {
   const empty: AskSalesFaqAdminOverview = {
     generatedAt: new Date().toISOString(),
-    metrics: [
-      { label: "Answers, 7d", value: 0, helper: "Assistant replies saved to Neon.", tone: "default" },
-      { label: "Needs review", value: 0, helper: "New misses or routed answers needing admin review.", tone: "warning" },
-      { label: "Thumbs down, 7d", value: 0, helper: "Negative feedback requiring a comment.", tone: "warning" },
-      { label: "Evidence answers, 7d", value: 0, helper: "Answers that used source evidence beyond deterministic approved rules.", tone: "default" },
-    ],
+    windowDays,
+    summary: {
+      questions: 0,
+      groundedAnswers: 0,
+      conversationReplies: 0,
+      routes: 0,
+      failures: 0,
+      reviewItems: 0,
+      feedbackCount: 0,
+      thumbsDown: 0,
+      medianLatencyMs: 0,
+      p95LatencyMs: 0,
+      deepseekAnswers: 0,
+      anthropicAnswers: 0,
+    },
+    daily: [],
+    outcomes: [],
     recentMisses: [],
     recentFeedback: [],
     recentAnswers: [],
@@ -3042,392 +3064,539 @@ export async function getAskSalesFaqAdminOverview(limit = 25): Promise<AskSalesF
   await ensureSchema();
   const sql = getSql();
   const normalizedLimit = Math.max(5, Math.min(limit, 50));
+  const normalizedDays = [7, 30, 90].includes(windowDays) ? windowDays : 7;
 
-  const [metricRow] = (await sql.query(`
-    select
-      (
-        select count(*)::int
+  const [metricRows, dailyRows, outcomeRows, recentReviewRows, recentFeedback, recentAnswers] = await Promise.all([
+    sql.query(
+      `
+        with assistant as (
+          select *
+          from ask_sales_faq_messages
+          where role = 'assistant'
+            and created_at >= now() - ($1::int * interval '1 day')
+        ), feedback as (
+          select *
+          from ask_sales_faq_feedback
+          where created_at >= now() - ($1::int * interval '1 day')
+        )
+        select
+          count(*)::int as questions,
+          count(*) filter (where outcome in ('answer_from_approved_article', 'answer_from_evidence'))::int as grounded_answers,
+          count(*) filter (where outcome = 'conversation_reply')::int as conversation_replies,
+          count(*) filter (
+            where needs_route
+               or outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only')
+          )::int as routes,
+          count(*) filter (
+            where error_class is not null
+               or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+          )::int as failures,
+          count(*) filter (
+            where error_class is not null
+               or needs_route
+               or outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only', 'safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+               or exists (select 1 from feedback f where f.message_id = assistant.id and f.rating = 'down')
+          )::int as review_items,
+          (select count(*)::int from feedback) as feedback_count,
+          (select count(*)::int from feedback where rating = 'down') as thumbs_down,
+          coalesce(percentile_cont(0.5) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as median_latency_ms,
+          coalesce(percentile_cont(0.95) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as p95_latency_ms,
+          count(*) filter (where provider = 'deepseek')::int as deepseek_answers,
+          count(*) filter (where provider = 'anthropic')::int as anthropic_answers
+        from assistant
+      `,
+      [normalizedDays],
+    ),
+    sql.query(
+      `
+        with days as (
+          select generate_series(
+            current_date - (($1::int - 1) * interval '1 day'),
+            current_date,
+            interval '1 day'
+          )::date as day
+        )
+        select
+          days.day::text as day,
+          count(messages.id)::int as questions,
+          count(messages.id) filter (where messages.outcome in ('answer_from_approved_article', 'answer_from_evidence'))::int as grounded_answers,
+          count(messages.id) filter (
+            where messages.needs_route
+               or messages.outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only')
+          )::int as routes,
+          count(messages.id) filter (
+            where messages.error_class is not null
+               or messages.outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+          )::int as failures
+        from days
+        left join ask_sales_faq_messages messages
+          on messages.role = 'assistant'
+         and messages.created_at >= days.day
+         and messages.created_at < days.day + interval '1 day'
+        group by days.day
+        order by days.day asc
+      `,
+      [normalizedDays],
+    ),
+    sql.query(
+      `
+        select coalesce(outcome, 'unknown') as outcome, count(*)::int as count
         from ask_sales_faq_messages
         where role = 'assistant'
-          and created_at >= now() - interval '7 days'
-      ) as answers_7d,
-      (
-        select count(*)::int
-        from ask_sales_faq_misses
-        where status = 'new'
-      ) as needs_review,
-      (
-        select count(*)::int
-        from ask_sales_faq_feedback
-        where rating = 'down'
-          and created_at >= now() - interval '7 days'
-      ) as thumbs_down_7d,
-      (
-        select count(*)::int
-        from ask_sales_faq_messages
-        where role = 'assistant'
-          and created_at >= now() - interval '7 days'
+          and created_at >= now() - ($1::int * interval '1 day')
+        group by coalesce(outcome, 'unknown')
+        order by count desc, outcome asc
+      `,
+      [normalizedDays],
+    ),
+    sql.query(
+      `
+        select
+          a.id,
+          a.conversation_id,
+          a.viewer_email,
+          a.content_redacted as answer,
+          a.outcome,
+          a.source_label,
+          a.needs_route,
+          a.route_reason,
+          a.provider,
+          a.model,
+          a.latency_ms,
+          a.error_class,
+          a.answer_payload->>'sourceMode' as source_mode,
+          a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
+          a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
+          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          a.created_at::text as created_at,
+          f.rating,
+          f.comment,
+          (
+            select u.content_redacted
+            from ask_sales_faq_messages u
+            where u.conversation_id = a.conversation_id
+              and u.role = 'user'
+              and u.created_at <= a.created_at
+            order by u.created_at desc
+            limit 1
+          ) as question
+        from ask_sales_faq_messages a
+        left join lateral (
+          select rating, comment
+          from ask_sales_faq_feedback
+          where message_id = a.id
+          order by created_at desc
+          limit 1
+        ) f on true
+        where a.role = 'assistant'
           and (
-            outcome in ('answer_from_evidence', 'route_from_evidence', 'low_confidence_route')
-            or answer_payload->>'sourceMode' in ('evidence', 'mixed')
+            a.error_class is not null
+            or a.needs_route
+            or a.outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only', 'safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+            or f.rating = 'down'
           )
-      ) as evidence_answers_7d
-  `)) as Array<{
-    answers_7d: number;
-    needs_review: number;
-    thumbs_down_7d: number;
-    evidence_answers_7d: number;
-  }>;
+        order by a.created_at desc
+        limit $1
+      `,
+      [normalizedLimit],
+    ),
+    sql.query(
+      `
+        with feedback as (
+          select *
+          from ask_sales_faq_feedback
+          order by created_at desc
+          limit $1
+        )
+        select
+          f.id,
+          f.message_id,
+          f.conversation_id,
+          f.viewer_email,
+          f.rating,
+          f.comment,
+          f.created_at::text as created_at,
+          a.content_redacted as answer,
+          a.outcome,
+          a.source_label,
+          a.needs_route,
+          a.route_reason,
+          a.provider,
+          a.model,
+          a.latency_ms,
+          a.error_class,
+          (
+            select u.content_redacted
+            from ask_sales_faq_messages u
+            where u.conversation_id = f.conversation_id
+              and u.role = 'user'
+              and u.created_at <= a.created_at
+            order by u.created_at desc
+            limit 1
+          ) as question
+        from feedback f
+        left join ask_sales_faq_messages a on a.id = f.message_id
+        order by f.created_at desc
+      `,
+      [normalizedLimit],
+    ),
+    sql.query(
+      `
+        with assistant as (
+          select *
+          from ask_sales_faq_messages
+          where role = 'assistant'
+          order by created_at desc
+          limit $1
+        )
+        select
+          a.id,
+          a.conversation_id,
+          a.viewer_email,
+          a.content_redacted as answer,
+          a.outcome,
+          a.source_label,
+          a.needs_route,
+          a.route_reason,
+          a.provider,
+          a.model,
+          a.latency_ms,
+          a.error_class,
+          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case
+            when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
+            then (a.answer_payload->>'confidenceScore')::float
+            else null
+          end as confidence_score,
+          a.answer_payload->>'sourceMode' as source_mode,
+          a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
+          a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
+          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          a.created_at::text as created_at,
+          (
+            select u.content_redacted
+            from ask_sales_faq_messages u
+            where u.conversation_id = a.conversation_id
+              and u.role = 'user'
+              and u.created_at <= a.created_at
+            order by u.created_at desc
+            limit 1
+          ) as question
+        from assistant a
+        order by a.created_at desc
+      `,
+      [normalizedLimit],
+    ),
+  ]);
 
-  const recentMisses = (await sql.query(
-    `
-      select
-        x.id,
-        coalesce(x.message_id, '') as message_id,
-        x.conversation_id,
-        x.viewer_email,
-        x.question_redacted,
-        x.decision,
-        x.route_reason,
-        x.status,
-        x.created_at::text as created_at,
-        a.content_redacted as answer,
-        a.outcome,
-        a.source_label,
-        a.needs_route,
-        a.provider,
-        a.model,
-        a.answer_payload->>'sourceMode' as source_mode
-      from ask_sales_faq_misses x
-      left join ask_sales_faq_messages a on a.id = x.message_id
-      order by x.created_at desc
-      limit $1
-    `,
-    [normalizedLimit],
-  )) as Array<{
+  type AdminRow = {
     id: string;
-    message_id: string;
     conversation_id: string;
     viewer_email: string;
-    question_redacted: string;
-    decision: string;
-    route_reason: string | null;
-    status: string;
     created_at: string;
+    question: string | null;
     answer: string | null;
     outcome: string | null;
     source_label: string | null;
     needs_route: boolean | null;
+    route_reason: string | null;
     provider: string | null;
     model: string | null;
+    latency_ms: number | null;
+    error_class: string | null;
     source_mode: string | null;
-  }>;
-
-  const recentFeedback = (await sql.query(
-    `
-      with feedback as (
-        select *
-        from ask_sales_faq_feedback
-        order by created_at desc
-        limit $1
-      )
-      select
-        f.id,
-        f.message_id,
-        f.conversation_id,
-        f.viewer_email,
-        f.rating,
-        f.comment,
-        f.created_at::text as created_at,
-        a.content_redacted as answer,
-        a.outcome,
-        a.source_label,
-        a.needs_route,
-        a.route_reason,
-        a.provider,
-        a.model,
-        (
-          select u.content_redacted
-          from ask_sales_faq_messages u
-          where u.conversation_id = f.conversation_id
-            and u.role = 'user'
-            and u.created_at <= a.created_at
-          order by u.created_at desc
-          limit 1
-        ) as question
-      from feedback f
-      left join ask_sales_faq_messages a on a.id = f.message_id
-      order by f.created_at desc
-    `,
-    [normalizedLimit],
-  )) as Array<{
-    id: string;
-    message_id: string;
-    conversation_id: string;
-    viewer_email: string;
     rating: "up" | "down";
     comment: string | null;
-    created_at: string;
-    question: string | null;
-    answer: string | null;
-    outcome: string | null;
-    source_label: string | null;
-    needs_route: boolean | null;
-    route_reason: string | null;
-    provider: string | null;
-    model: string | null;
-  }>;
-
-  const recentAnswers = (await sql.query(
-    `
-      with assistant as (
-        select *
-        from ask_sales_faq_messages
-        where role = 'assistant'
-        order by created_at desc
-        limit $1
-      )
-      select
-        a.id,
-        a.conversation_id,
-        a.viewer_email,
-        a.content_redacted as answer,
-        a.outcome,
-        a.source_label,
-        a.needs_route,
-        a.route_reason,
-        a.provider,
-        a.model,
-        a.answer_payload->>'confidenceLabel' as confidence_label,
-        case
-          when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
-          then (a.answer_payload->>'confidenceScore')::float
-          else null
-        end as confidence_score,
-        a.answer_payload->>'sourceMode' as source_mode,
-        a.created_at::text as created_at,
-        (
-          select u.content_redacted
-          from ask_sales_faq_messages u
-          where u.conversation_id = a.conversation_id
-            and u.role = 'user'
-            and u.created_at <= a.created_at
-          order by u.created_at desc
-          limit 1
-        ) as question
-      from assistant a
-      order by a.created_at desc
-    `,
-    [normalizedLimit],
-  )) as Array<{
-    id: string;
-    conversation_id: string;
-    viewer_email: string;
-    question: string | null;
-    answer: string | null;
-    outcome: string | null;
-    source_label: string | null;
-    needs_route: boolean | null;
-    route_reason: string | null;
-    provider: string | null;
-    model: string | null;
     confidence_label: string | null;
     confidence_score: number | null;
-    source_mode: string | null;
-    created_at: string;
-  }>;
+    pipeline_version: string | null;
+    knowledge_version: string | null;
+    validation_verdict: string | null;
+    selected_policy_count: number | null;
+  };
+
+  const metricRow = (metricRows as Array<Record<string, number>>)[0] || {};
+
+  const mapAdminRow = (item: AdminRow): AskSalesFaqAdminLogItem => {
+    const confidenceScore = normalizeAskSalesFaqConfidenceScore(item.confidence_score);
+    const classification = classifyAskSalesFaqReview({
+      rating: item.rating,
+      outcome: item.outcome,
+      needsRoute: Boolean(item.needs_route),
+      errorClass: item.error_class,
+    });
+
+    return {
+      id: item.id,
+      createdAt: item.created_at,
+      viewerEmail: item.viewer_email,
+      question: item.question,
+      answer: item.answer,
+      outcome: item.outcome,
+      sourceLabel: item.source_label,
+      sourceMode: item.source_mode,
+      needsRoute: Boolean(item.needs_route),
+      routeReason: item.route_reason,
+      provider: item.provider,
+      model: item.model,
+      rating: item.rating,
+      comment: item.comment,
+      confidenceLabel: confidenceScore === null ? item.confidence_label : askSalesFaqConfidenceLabelFromScore(confidenceScore),
+      confidenceScore,
+      reviewCategory: classification.category,
+      reviewAction: classification.action,
+      latencyMs: Number(item.latency_ms || 0),
+      errorClass: item.error_class,
+      pipelineVersion: item.pipeline_version,
+      knowledgeVersion: item.knowledge_version,
+      validationVerdict: item.validation_verdict,
+      selectedPolicyCount: Number(item.selected_policy_count || 0),
+    };
+  };
 
   return {
     generatedAt: new Date().toISOString(),
-    metrics: [
-      {
-        label: "Answers, 7d",
-        value: Number(metricRow?.answers_7d || 0),
-        helper: "Assistant replies saved to Neon.",
-        tone: "default",
-      },
-      {
-        label: "Needs review",
-        value: Number(metricRow?.needs_review || 0),
-        helper: "New misses or routed answers needing admin review.",
-        tone: Number(metricRow?.needs_review || 0) > 0 ? "warning" : "good",
-      },
-      {
-        label: "Thumbs down, 7d",
-        value: Number(metricRow?.thumbs_down_7d || 0),
-        helper: "Negative feedback requiring a comment.",
-        tone: Number(metricRow?.thumbs_down_7d || 0) > 0 ? "warning" : "good",
-      },
-      {
-        label: "Evidence answers, 7d",
-        value: Number(metricRow?.evidence_answers_7d || 0),
-        helper: "Answers that used source evidence beyond deterministic approved rules.",
-        tone: "default",
-      },
-    ],
-    recentMisses: recentMisses.map((item): AskSalesFaqAdminLogItem => {
-      const classification = classifyAskSalesFaqReviewItem({
-        question: item.question_redacted,
-        answer: item.answer,
-        decision: item.decision,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        sourceMode: item.source_mode,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        errorClass: null,
-      });
-      return {
-        id: item.id,
-        createdAt: item.created_at,
-        viewerEmail: item.viewer_email,
-        question: item.question_redacted,
-        answer: item.answer,
-        decision: item.decision,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        sourceMode: item.source_mode,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        provider: item.provider,
-        model: item.model,
-        status: item.status,
-        reviewCategory: classification.category,
-        reviewAction: classification.action,
-      };
-    }),
-    recentFeedback: recentFeedback.map((item): AskSalesFaqAdminLogItem => {
-      const classification = classifyAskSalesFaqReviewItem({
-        question: item.question,
-        answer: item.answer,
-        decision: null,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        sourceMode: null,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        errorClass: null,
-      });
-      return {
-        id: item.id,
-        createdAt: item.created_at,
-        viewerEmail: item.viewer_email,
-        question: item.question,
-        answer: item.answer,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        provider: item.provider,
-        model: item.model,
-        rating: item.rating,
-        comment: item.comment,
-        reviewCategory: classification.category,
-        reviewAction: classification.action,
-      };
-    }),
-    recentAnswers: recentAnswers.map((item): AskSalesFaqAdminLogItem => {
-      const confidenceScore = normalizeAskSalesFaqConfidenceScore(item.confidence_score);
-      const classification = classifyAskSalesFaqReviewItem({
-        question: item.question,
-        answer: item.answer,
-        decision: null,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        sourceMode: item.source_mode,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        errorClass: null,
-      });
-      return {
-        id: item.id,
-        createdAt: item.created_at,
-        viewerEmail: item.viewer_email,
-        question: item.question,
-        answer: item.answer,
-        outcome: item.outcome,
-        sourceLabel: item.source_label,
-        needsRoute: Boolean(item.needs_route),
-        routeReason: item.route_reason,
-        provider: item.provider,
-        model: item.model,
-        confidenceLabel: confidenceScore === null ? item.confidence_label : askSalesFaqConfidenceLabelFromScore(confidenceScore),
-        confidenceScore,
-        sourceMode: item.source_mode,
-        reviewCategory: classification.category,
-        reviewAction: classification.action,
-      };
-    }),
+    windowDays: normalizedDays,
+    summary: {
+      questions: Number(metricRow.questions || 0),
+      groundedAnswers: Number(metricRow.grounded_answers || 0),
+      conversationReplies: Number(metricRow.conversation_replies || 0),
+      routes: Number(metricRow.routes || 0),
+      failures: Number(metricRow.failures || 0),
+      reviewItems: Number(metricRow.review_items || 0),
+      feedbackCount: Number(metricRow.feedback_count || 0),
+      thumbsDown: Number(metricRow.thumbs_down || 0),
+      medianLatencyMs: Math.round(Number(metricRow.median_latency_ms || 0)),
+      p95LatencyMs: Math.round(Number(metricRow.p95_latency_ms || 0)),
+      deepseekAnswers: Number(metricRow.deepseek_answers || 0),
+      anthropicAnswers: Number(metricRow.anthropic_answers || 0),
+    },
+    daily: (dailyRows as Array<Record<string, string | number>>).map((row) => ({
+      day: String(row.day),
+      questions: Number(row.questions || 0),
+      groundedAnswers: Number(row.grounded_answers || 0),
+      routes: Number(row.routes || 0),
+      failures: Number(row.failures || 0),
+    })),
+    outcomes: (outcomeRows as Array<{ outcome: string; count: number }>).map((row) => ({
+      outcome: row.outcome,
+      count: Number(row.count || 0),
+    })),
+    recentMisses: (recentReviewRows as AdminRow[]).map(mapAdminRow),
+    recentFeedback: (recentFeedback as AdminRow[]).map(mapAdminRow),
+    recentAnswers: (recentAnswers as AdminRow[]).map(mapAdminRow),
   };
 }
 
-function classifyAskSalesFaqReviewItem(input: {
-  question: string | null;
-  answer: string | null;
-  decision: string | null;
-  outcome: string | null;
-  sourceLabel: string | null;
-  sourceMode: string | null;
-  needsRoute: boolean;
-  routeReason: string | null;
-  errorClass: string | null;
-}) {
-  const text = [input.question, input.answer, input.routeReason, input.sourceLabel, input.decision, input.outcome, input.sourceMode, input.errorClass]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
+export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskSalesFaqUsageOverview> {
+  const normalizedDays = [7, 30, 90].includes(windowDays) ? windowDays : 30;
+  const empty: AskSalesFaqUsageOverview = {
+    generatedAt: new Date().toISOString(),
+    windowDays: normalizedDays,
+    summary: {
+      knownUsers: 0,
+      activatedUsers: 0,
+      adoptionRate: 0,
+      active7d: 0,
+      active30d: 0,
+      returningUsers: 0,
+      neverUsed: 0,
+      questionsInWindow: 0,
+      averageQuestionsPerActiveUser: 0,
+    },
+    daily: [],
+    users: [],
+  };
 
-  const hasInternalLanguage =
-    /\b(slack[- ]?(level|sourced)?\s+(evidence|notes|guidance|discussion|source)|governance log|internal guidance|approved article|knowledge base|route[- ]only|rag|manifest|source coverage|candidate answer|decision candidates|candidate q and a|evidence\s+\d+|source\s+\d+|article[_ -]?id|source id)\b/i.test(
-      text,
-    );
+  if (!hasDatabase()) return empty;
 
-  if (hasInternalLanguage) {
+  await ensureSchema();
+  const sql = getSql();
+  const excludedEmails = (process.env.ASK_SALES_FAQ_ADMIN_EMAILS || "")
+    .split(",")
+    .map((email) => normalizeAuthEmail(email))
+    .filter((email): email is string => Boolean(email));
+
+  const [userRows, dailyRows] = await Promise.all([
+    sql.query(
+      `
+        with identity_sources as (
+          select lower(viewer_email) as email, max(viewer_name) as name, 'dashboard' as source
+          from dashboard_usage_events
+          where viewer_email is not null
+          group by lower(viewer_email)
+          union all
+          select lower(rep_email) as email, max(rep_name) as name, 'rep_roster' as source
+          from performance_calls
+          where rep_email is not null and trim(rep_email) <> ''
+          group by lower(rep_email)
+          union all
+          select lower(viewer_email) as email, max(viewer_name) as name, 'ask_sales' as source
+          from ask_sales_faq_conversations
+          group by lower(viewer_email)
+        ), known_users as (
+          select
+            email,
+            max(name) filter (where name is not null and trim(name) <> '') as name,
+            bool_or(source = 'dashboard') as known_from_dashboard,
+            bool_or(source = 'rep_roster') as known_from_rep_roster
+          from identity_sources
+          where not (email = any($2::text[]))
+          group by email
+        ), activity as (
+          select
+            lower(viewer_email) as email,
+            min(created_at) filter (where role = 'user')::text as first_asked_at,
+            max(created_at) filter (where role = 'user')::text as last_asked_at,
+            count(distinct created_at::date) filter (where role = 'user')::int as active_days,
+            count(distinct conversation_id) filter (where role = 'user')::int as conversations,
+            count(*) filter (where role = 'user')::int as questions_all_time,
+            count(*) filter (
+              where role = 'user'
+                and created_at >= now() - ($1::int * interval '1 day')
+            )::int as questions_in_window,
+            count(*) filter (
+              where role = 'assistant'
+                and created_at >= now() - ($1::int * interval '1 day')
+                and outcome in ('answer_from_approved_article', 'answer_from_evidence')
+            )::int as grounded_answers_in_window,
+            count(*) filter (
+              where role = 'assistant'
+                and created_at >= now() - ($1::int * interval '1 day')
+                and (
+                  needs_route
+                  or outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only')
+                )
+            )::int as routes_in_window,
+            count(*) filter (
+              where role = 'assistant'
+                and created_at >= now() - ($1::int * interval '1 day')
+                and (
+                  error_class is not null
+                  or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+                )
+            )::int as failures_in_window,
+            coalesce(avg(latency_ms) filter (
+              where role = 'assistant'
+                and created_at >= now() - ($1::int * interval '1 day')
+                and latency_ms is not null
+            ), 0)::float as average_latency_ms
+          from ask_sales_faq_messages
+          where not (lower(viewer_email) = any($2::text[]))
+          group by lower(viewer_email)
+        )
+        select
+          known.email as viewer_email,
+          known.name as viewer_name,
+          known.known_from_dashboard,
+          known.known_from_rep_roster,
+          activity.first_asked_at,
+          activity.last_asked_at,
+          coalesce(activity.active_days, 0)::int as active_days,
+          coalesce(activity.conversations, 0)::int as conversations,
+          coalesce(activity.questions_all_time, 0)::int as questions_all_time,
+          coalesce(activity.questions_in_window, 0)::int as questions_in_window,
+          coalesce(activity.grounded_answers_in_window, 0)::int as grounded_answers_in_window,
+          coalesce(activity.routes_in_window, 0)::int as routes_in_window,
+          coalesce(activity.failures_in_window, 0)::int as failures_in_window,
+          coalesce(activity.average_latency_ms, 0)::float as average_latency_ms
+        from known_users known
+        left join activity on activity.email = known.email
+        order by activity.last_asked_at desc nulls last, known.name asc nulls last, known.email asc
+      `,
+      [normalizedDays, excludedEmails],
+    ),
+    sql.query(
+      `
+        with days as (
+          select generate_series(
+            current_date - (($1::int - 1) * interval '1 day'),
+            current_date,
+            interval '1 day'
+          )::date as day
+        )
+        select
+          days.day::text as day,
+          count(messages.id)::int as questions,
+          count(distinct lower(messages.viewer_email))::int as active_users
+        from days
+        left join ask_sales_faq_messages messages
+          on messages.role = 'user'
+         and messages.created_at >= days.day
+         and messages.created_at < days.day + interval '1 day'
+         and not (lower(messages.viewer_email) = any($2::text[]))
+        group by days.day
+        order by days.day asc
+      `,
+      [normalizedDays, excludedEmails],
+    ),
+  ]);
+
+  const now = Date.now();
+  const users = (userRows as Array<Record<string, string | number | boolean | null>>).map((row) => {
+    const lastAskedAt = row.last_asked_at ? String(row.last_asked_at) : null;
+    const lastAskedMs = lastAskedAt ? new Date(lastAskedAt).getTime() : 0;
+    const questionsAllTime = Number(row.questions_all_time || 0);
+    const activeDays = Number(row.active_days || 0);
+    const daysSinceUse = lastAskedMs ? (now - lastAskedMs) / 86_400_000 : Number.POSITIVE_INFINITY;
+    const status = !questionsAllTime
+      ? "never_used"
+      : daysSinceUse > 30
+        ? "dormant"
+        : activeDays === 1
+          ? "new"
+          : daysSinceUse <= 7
+            ? "active"
+            : "returning";
+
     return {
-      category: "Wording cleanup",
-      action: "Answer was useful enough to review, but rep-facing language exposed internal source or approval mechanics.",
-    };
-  }
+      viewerEmail: String(row.viewer_email),
+      viewerName: row.viewer_name ? String(row.viewer_name) : null,
+      knownFromDashboard: Boolean(row.known_from_dashboard),
+      knownFromRepRoster: Boolean(row.known_from_rep_roster),
+      firstAskedAt: row.first_asked_at ? String(row.first_asked_at) : null,
+      lastAskedAt,
+      activeDays,
+      conversations: Number(row.conversations || 0),
+      questionsAllTime,
+      questionsInWindow: Number(row.questions_in_window || 0),
+      groundedAnswersInWindow: Number(row.grounded_answers_in_window || 0),
+      routesInWindow: Number(row.routes_in_window || 0),
+      failuresInWindow: Number(row.failures_in_window || 0),
+      averageLatencyMs: Math.round(Number(row.average_latency_ms || 0)),
+      status,
+    } as AskSalesFaqUsageOverview["users"][number];
+  });
 
-  if (input.outcome === "safe_fallback" || input.decision === "safe_fallback" || input.errorClass) {
-    return {
-      category: "Runtime reliability",
-      action: "Check provider/runtime diagnostics before treating this as a KB gap.",
-    };
-  }
-
-  if (
-    (input.outcome === "answer_from_evidence" || input.decision === "answer_from_evidence") &&
-    input.sourceMode !== "approved" &&
-    /pricing|same-day|same day|daymond|next level|content|license|recording|internal material|payment link|call 1/.test(text)
-  ) {
-    return {
-      category: "Approved-topic matching",
-      action: "Likely supported by an approved article; review source selection or matching before creating new KB work.",
-    };
-  }
-
-  if (
-    /stop|opt[- ]?out|dnc|criminal|background|jail|nurse|doctor|physician|patent|personal brand|motivational|adult|cannabis|psychedelic|firearm|politic|mlm|20%|20 percent|keap|reschedul|catastrophic|ach|wire|invoice|card update|contract|addenda|attorney|scam|bad review|proof|100\+|30k|50k|apple tv|missing from.*form|dropdown|legacy makers|top lawyers|video 2|mastermind|red[- ]?carpet|handoff|onboarding/.test(
-      text,
-    )
-  ) {
-    return {
-      category: "Rich/owner approval gap",
-      action: "Keep this in the approval packet or future KB queue until the accountable owner confirms final wording.",
-    };
-  }
-
-  if (input.needsRoute || input.outcome?.includes("route") || input.decision?.includes("route")) {
-    return {
-      category: "Good route review",
-      action: "Review for clarity, but this may not need a new article if the route wording is acceptable.",
-    };
-  }
+  const activatedUsers = users.filter((user) => user.questionsAllTime > 0).length;
+  const active7d = users.filter((user) => user.lastAskedAt && now - new Date(user.lastAskedAt).getTime() <= 7 * 86_400_000).length;
+  const active30d = users.filter((user) => user.lastAskedAt && now - new Date(user.lastAskedAt).getTime() <= 30 * 86_400_000).length;
+  const returningUsers = users.filter((user) => user.activeDays >= 2).length;
+  const questionsInWindow = users.reduce((total, user) => total + user.questionsInWindow, 0);
+  const activeInWindow = users.filter((user) => user.questionsInWindow > 0).length;
 
   return {
-    category: "Good answer review",
-    action: "Spot-check for accuracy and source fit; no immediate KB change is obvious.",
+    generatedAt: new Date().toISOString(),
+    windowDays: normalizedDays,
+    summary: {
+      knownUsers: users.length,
+      activatedUsers,
+      adoptionRate: percentOf(activatedUsers, users.length),
+      active7d,
+      active30d,
+      returningUsers,
+      neverUsed: users.length - activatedUsers,
+      questionsInWindow,
+      averageQuestionsPerActiveUser: activeInWindow ? Math.round((questionsInWindow / activeInWindow) * 10) / 10 : 0,
+    },
+    daily: (dailyRows as Array<Record<string, string | number>>).map((row) => ({
+      day: String(row.day),
+      questions: Number(row.questions || 0),
+      activeUsers: Number(row.active_users || 0),
+    })),
+    users,
   };
 }
 
