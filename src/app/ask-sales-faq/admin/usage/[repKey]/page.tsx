@@ -27,7 +27,6 @@ import { getAskSalesFaqRepHistory, getAskSalesFaqUsageOverview } from "@/lib/db"
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ask Sales Rep Q&A Review | Magic Mike Bot",
   robots: { index: false, follow: false },
 };
 

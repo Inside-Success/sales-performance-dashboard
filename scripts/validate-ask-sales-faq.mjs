@@ -251,11 +251,12 @@ if (missingFiles.length === 0) {
       usageAdminPage.includes("View Q&amp;A") &&
       !usageAdminPage.includes("viewerEmail}?days") &&
       repHistoryAdminPage.includes("robots: { index: false, follow: false }") &&
+      !repHistoryAdminPage.includes('title: "Ask Sales Rep Q&A Review') &&
       repHistoryAdminPage.includes("isAskSalesFaqRepReviewKey") &&
       repHistoryAdminPage.includes("getAskSalesFaqUsageOverview") &&
       adminRepReview.includes('createHmac("sha256", secret)') &&
       adminRepReview.includes("process.env.AUTH_SECRET"),
-    "rep email is not placed in the URL; HMAC keys, admin authorization, and noindex metadata protect the read-only drilldown",
+    "rep email is not placed in the URL; HMAC keys, admin authorization, non-disclosing 404 metadata, and noindex protect the read-only drilldown",
   );
 
   addCheck(
