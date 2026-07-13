@@ -110,7 +110,7 @@ export default async function ManagerUsagePage() {
                 <Clock3 className="size-4 text-[#DC2626]" />
                 Updated {formatMiamiDateTime(analytics.generatedAt)}
               </div>
-              <Link href="/" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
+              <Link href="/coaching" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
                 Open dashboard
               </Link>
             </div>

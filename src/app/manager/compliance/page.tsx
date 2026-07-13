@@ -85,7 +85,7 @@ export default async function ManagerCompliancePage({
                 Loaded {formatMiamiDateTime(data.generatedAt)}
               </div>
               <div className="flex flex-wrap gap-2 lg:justify-end">
-                <Link href="/" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
+                <Link href="/coaching" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
                   Open dashboard
                 </Link>
                 <Link

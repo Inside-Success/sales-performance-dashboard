@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   Activity,
   CalendarDays,
   MessageCircleQuestion,
   Repeat2,
-  ShieldAlert,
   UserCheck,
   UserMinus,
   Users,
@@ -34,10 +34,7 @@ export default async function AskSalesFaqUsagePage({
   const session = await auth();
   const access = getAskSalesFaqAccess(session);
 
-  if (!access.ok) return <AccessBlock message={access.message} />;
-  if (!isAskSalesFaqAdmin(access.viewerEmail)) {
-    return <AccessBlock message="This page is limited to Ask Sales administrators." />;
-  }
+  if (!access.ok || !isAskSalesFaqAdmin(access.viewerEmail)) notFound();
 
   const days = normalizeAskSalesFaqAnalyticsDays((await searchParams).days, 30);
   const overview = await getAskSalesFaqUsageOverview(days);
@@ -116,18 +113,6 @@ export default async function AskSalesFaqUsagePage({
           The denominator is the strongest available dashboard identity set, not a claim that every company employee is an eligible sales rep. If access later moves to a canonical roster, this page can switch sources without changing Ask Sales activity history.
         </p>
       </div>
-    </main>
-  );
-}
-
-function AccessBlock({ message }: { message: string }) {
-  return (
-    <main className="magic-page grid min-h-[calc(100dvh-72px)] place-items-center bg-[#f8fafc] px-4 py-6">
-      <section className="magic-card w-full max-w-xl p-6">
-        <span className="mb-4 grid size-10 place-items-center rounded-xl bg-red-50 text-red-600"><ShieldAlert className="size-5" /></span>
-        <h1 className="text-2xl font-extrabold text-slate-950">Ask Sales administration</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
-      </section>
     </main>
   );
 }

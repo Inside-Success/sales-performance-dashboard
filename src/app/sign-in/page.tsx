@@ -39,14 +39,13 @@ export default async function SignInPage({
               Welcome to Magic Mike <span className="text-[#DC2626]">Bot</span>
             </h1>
             <p className="mt-2.5 text-[15px] font-medium leading-relaxed text-slate-500">
-              Sign in to view your coaching reports.
+              Sign in to access Coaching and Ask Sales FAQ.
             </p>
           </div>
 
           {error ? (
             <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium leading-6 text-red-700">
-              This Google account is not approved for Magic Mike. Use an Inside Success TV, Inside
-              Success, or Mawer Capital email.
+              This Google account is not approved for Magic Mike. Use an approved company email.
             </div>
           ) : null}
 

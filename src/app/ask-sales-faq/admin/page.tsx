@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   Activity,
@@ -9,7 +10,6 @@ import {
   Gauge,
   MessageCircleWarning,
   Route,
-  ShieldAlert,
   ThumbsDown,
 } from "lucide-react";
 import { auth } from "@/auth";
@@ -35,10 +35,7 @@ export default async function AskSalesFaqAdminPage({
   const session = await auth();
   const access = getAskSalesFaqAccess(session);
 
-  if (!access.ok) return <AccessBlock message={access.message} />;
-  if (!isAskSalesFaqAdmin(access.viewerEmail)) {
-    return <AccessBlock message="This page is limited to Ask Sales administrators." />;
-  }
+  if (!access.ok || !isAskSalesFaqAdmin(access.viewerEmail)) notFound();
 
   const days = normalizeAskSalesFaqAnalyticsDays((await searchParams).days, 7);
   const overview = await getAskSalesFaqAdminOverview(18, days);
@@ -114,18 +111,6 @@ export default async function AskSalesFaqAdminPage({
           Grounded rate measures observed answer mode, not independently reviewed factual accuracy. Feedback coverage and the investigation queue remain the human quality signals.
         </p>
       </div>
-    </main>
-  );
-}
-
-function AccessBlock({ message }: { message: string }) {
-  return (
-    <main className="magic-page grid min-h-[calc(100dvh-72px)] place-items-center bg-[#f8fafc] px-4 py-6">
-      <section className="magic-card w-full max-w-xl p-6">
-        <span className="mb-4 grid size-10 place-items-center rounded-xl bg-red-50 text-red-600"><ShieldAlert className="size-5" /></span>
-        <h1 className="text-2xl font-extrabold text-slate-950">Ask Sales administration</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
-      </section>
     </main>
   );
 }

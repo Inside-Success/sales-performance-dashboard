@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import { normalizeAuthEmail } from "@/lib/auth-utils";
+import { isAllowedAuthEmail, normalizeAuthEmail } from "@/lib/auth-utils";
 
 export type AskSalesFaqAccess =
   | {
@@ -10,7 +10,7 @@ export type AskSalesFaqAccess =
   | {
       ok: false;
       status: 401 | 403;
-      code: "not_signed_in" | "feature_disabled" | "not_allowlisted";
+      code: "not_signed_in" | "feature_disabled" | "not_approved_domain";
       message: string;
     };
 
@@ -55,13 +55,12 @@ export function getAskSalesFaqAccess(session: Session | null): AskSalesFaqAccess
     };
   }
 
-  const allowedEmails = parseEmailAllowlist(process.env.ASK_SALES_FAQ_ALLOWED_EMAILS);
-  if (!allowedEmails.has(viewerEmail)) {
+  if (!isAllowedAuthEmail(viewerEmail)) {
     return {
       ok: false,
       status: 403,
-      code: "not_allowlisted",
-      message: "Ask Sales FAQ is not available for this account yet.",
+      code: "not_approved_domain",
+      message: "Ask Sales FAQ is available only to approved company Google accounts.",
     };
   }
 
