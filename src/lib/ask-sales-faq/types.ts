@@ -304,12 +304,80 @@ export type AskSalesFaqAdminLogItem = {
   status?: string | null;
   reviewCategory?: string | null;
   reviewAction?: string | null;
+  latencyMs?: number | null;
+  errorClass?: string | null;
+  pipelineVersion?: string | null;
+  knowledgeVersion?: string | null;
+  validationVerdict?: string | null;
+  selectedPolicyCount?: number | null;
 };
 
 export type AskSalesFaqAdminOverview = {
   generatedAt: string;
-  metrics: AskSalesFaqAdminMetric[];
+  windowDays: number;
+  summary: {
+    questions: number;
+    groundedAnswers: number;
+    conversationReplies: number;
+    routes: number;
+    failures: number;
+    reviewItems: number;
+    feedbackCount: number;
+    thumbsDown: number;
+    medianLatencyMs: number;
+    p95LatencyMs: number;
+    deepseekAnswers: number;
+    anthropicAnswers: number;
+  };
+  daily: Array<{
+    day: string;
+    questions: number;
+    groundedAnswers: number;
+    routes: number;
+    failures: number;
+  }>;
+  outcomes: Array<{ outcome: string; count: number }>;
   recentMisses: AskSalesFaqAdminLogItem[];
   recentFeedback: AskSalesFaqAdminLogItem[];
   recentAnswers: AskSalesFaqAdminLogItem[];
+};
+
+export type AskSalesFaqUsageUser = {
+  viewerEmail: string;
+  viewerName: string | null;
+  knownFromDashboard: boolean;
+  knownFromRepRoster: boolean;
+  firstAskedAt: string | null;
+  lastAskedAt: string | null;
+  activeDays: number;
+  conversations: number;
+  questionsAllTime: number;
+  questionsInWindow: number;
+  groundedAnswersInWindow: number;
+  routesInWindow: number;
+  failuresInWindow: number;
+  averageLatencyMs: number;
+  status: "never_used" | "new" | "active" | "returning" | "dormant";
+};
+
+export type AskSalesFaqUsageOverview = {
+  generatedAt: string;
+  windowDays: number;
+  summary: {
+    knownUsers: number;
+    activatedUsers: number;
+    adoptionRate: number;
+    active7d: number;
+    active30d: number;
+    returningUsers: number;
+    neverUsed: number;
+    questionsInWindow: number;
+    averageQuestionsPerActiveUser: number;
+  };
+  daily: Array<{
+    day: string;
+    questions: number;
+    activeUsers: number;
+  }>;
+  users: AskSalesFaqUsageUser[];
 };
