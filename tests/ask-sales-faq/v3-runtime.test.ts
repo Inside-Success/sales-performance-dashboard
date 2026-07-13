@@ -404,7 +404,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("owner-zoom-phone-payment-link-email-only");
   });
 
-  it("exposes only a bounded canonical partial when selectors over-decompose a single-clause question", async () => {
+  it("uses a bounded canonical direct match when selectors over-decompose a single-clause question", async () => {
     let retrySelectionCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as Record<string, unknown>;
@@ -427,42 +427,44 @@ describe("Ask Sales FAQ V3 runtime", () => {
         const draft = payload.draft as Record<string, unknown>;
         return {
           verdict: "pass",
-          mode: "partial",
+          mode: "answer",
           answer: draft.answer,
           summary: draft.summary,
           sections: draft.sections,
           sentence_evidence: draft.sentence_evidence,
           coverage: draft.coverage,
-          needs_route: true,
-          route_key: "sales_policy",
-          route_reason: "The exclusivity wording remains unresolved.",
+          needs_route: false,
+          route_key: null,
+          route_reason: "",
           removed_claims: [],
-          reason: "The bounded current-language statement is grounded.",
+          reason: "The exact canonical English-only statement is grounded.",
+          sentence_checks: [{ sentence_ref: "S1", status: "supported", evidence_refs: ["V1"], reason: "The canonical decision directly supports the sentence." }],
+          need_checks: [{ need_ref: "N1", status: "answered", evidence_refs: ["V1"], reason: "The canonical decision answers the single question." }],
         };
       }
       const cards = payload.evidence_cards as Array<{ ref: string; decision_evidence: string }>;
       expect(cards.length).toBeGreaterThanOrEqual(1);
-      expect(cards.some((card) => card.decision_evidence.includes("current production process"))).toBe(true);
+      expect(cards.some((card) => card.decision_evidence.includes("only in English"))).toBe(true);
       return {
-        mode: "partial",
-        answer: "Our current production process and episodes are in English. I can’t confirm a broader exclusivity claim from this evidence alone.",
-        summary: "Current production and episodes are in English.",
+        mode: "answer",
+        answer: "Yes. ISTV currently produces and films full episodes only in English.",
+        summary: "Full episodes are currently produced only in English.",
         sections: [],
         selected_policy_ids: cards.map((card) => card.ref),
         rejected_policy_ids: [],
-        coverage: [{ need: "Whether full episodes are currently produced only in English", status: "partial", policy_ids: cards.map((card) => card.ref), reason: "The current language is confirmed; the broader exclusivity wording remains unresolved." }],
-        sentence_evidence: [{ sentence: "Our current production process and episodes are in English.", policy_ids: cards.map((card) => card.ref) }],
-        needs_route: true,
-        route_key: "sales_policy",
-        route_reason: "The exclusivity wording remains unresolved.",
-        confidence_score: 82,
+        coverage: [{ need: "Whether full episodes are currently produced only in English", status: "answered", policy_ids: cards.map((card) => card.ref), reason: "The exact canonical decision answers the question." }],
+        sentence_evidence: [{ sentence: "ISTV currently produces and films full episodes only in English.", policy_ids: cards.map((card) => card.ref) }],
+        needs_route: false,
+        route_key: null,
+        route_reason: "",
+        confidence_score: 95,
       };
     });
 
     const result = await runAskSalesFaqV3("Are full episodes currently produced only in English?", [], { provider });
     expect(retrySelectionCalls).toBe(1);
-    expect(result.outcome).toBe("route_from_evidence");
-    expect(result.answer).toContain("current production process and episodes are in English");
+    expect(result.outcome).toBe("answer_from_evidence");
+    expect(result.answer).toContain("only in English");
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain(result.runtimeMetadata.v3?.retrieval.candidates[0]?.id);
     expect(result.runtimeMetadata.v3?.retrieval.evidenceSelectionReason).toContain("canonical evidence floor");
   });
