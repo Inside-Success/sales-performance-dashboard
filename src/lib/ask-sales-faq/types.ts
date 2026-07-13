@@ -345,6 +345,7 @@ export type AskSalesFaqAdminOverview = {
 export type AskSalesFaqUsageUser = {
   viewerEmail: string;
   viewerName: string | null;
+  repReviewKey: string | null;
   knownFromDashboard: boolean;
   knownFromRepRoster: boolean;
   firstAskedAt: string | null;
@@ -380,4 +381,55 @@ export type AskSalesFaqUsageOverview = {
     activeUsers: number;
   }>;
   users: AskSalesFaqUsageUser[];
+};
+
+export type AskSalesFaqRepHistoryItem = {
+  id: string;
+  conversationId: string;
+  conversationTitle: string | null;
+  conversationStatus: "active" | "archived" | "deleted";
+  createdAt: string;
+  question: string | null;
+  answer: string;
+  outcome: string | null;
+  sourceLabel: string | null;
+  sourceLastReviewed: string | null;
+  sourceMode: string | null;
+  confidenceLabel: string | null;
+  confidenceScore: number | null;
+  needsRoute: boolean;
+  routeReason: string | null;
+  provider: string | null;
+  model: string | null;
+  latencyMs: number;
+  errorClass: string | null;
+  pipelineVersion: string | null;
+  knowledgeVersion: string | null;
+  validationVerdict: string | null;
+  selectedPolicyCount: number;
+  stageTimings: Record<string, number> | null;
+  feedback: {
+    rating: "up" | "down";
+    comment: string | null;
+    createdAt: string;
+  } | null;
+};
+
+export type AskSalesFaqRepHistoryPage = {
+  generatedAt: string;
+  windowDays: 7 | 30 | 90 | null;
+  rep: {
+    viewerEmail: string;
+    viewerName: string | null;
+  };
+  summary: {
+    questions: number;
+    groundedAnswers: number;
+    routes: number;
+    failures: number;
+    feedbackCount: number;
+    thumbsDown: number;
+  };
+  items: AskSalesFaqRepHistoryItem[];
+  nextCursor: string | null;
 };

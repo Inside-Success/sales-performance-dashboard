@@ -9,6 +9,7 @@ import {
   UserCheck,
   UserMinus,
   Users,
+  View,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { AskSalesAdminHeader } from "@/components/ask-sales-faq/admin-navigation";
@@ -99,11 +100,12 @@ export default async function AskSalesFaqUsagePage({
                   <TableHead className="text-right">Grounded / routed</TableHead>
                   <TableHead className="text-right">Avg. latency</TableHead>
                   <TableHead>Last use</TableHead>
+                  <TableHead className="text-right">Review</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {overview.users.map((user) => <UsageRow key={user.viewerEmail} user={user} windowDays={days} />)}
-                {!overview.users.length ? <TableRow><TableCell colSpan={7} className="py-10 text-center text-sm text-slate-500">No signed-in identities are available yet.</TableCell></TableRow> : null}
+                {!overview.users.length ? <TableRow><TableCell colSpan={8} className="py-10 text-center text-sm text-slate-500">No signed-in identities are available yet.</TableCell></TableRow> : null}
               </TableBody>
             </Table>
           </div>
@@ -164,6 +166,17 @@ function UsageRow({ user, windowDays }: { user: AskSalesFaqUsageUser; windowDays
       <TableCell className="text-right"><span className="font-semibold text-emerald-600">{user.groundedAnswersInWindow}</span><span className="text-slate-300"> / </span><span className="font-semibold text-amber-600">{user.routesInWindow}</span>{user.failuresInWindow ? <div className="text-xs font-semibold text-red-600">{user.failuresInWindow} failure{user.failuresInWindow === 1 ? "" : "s"}</div> : null}</TableCell>
       <TableCell className="text-right">{formatSeconds(user.averageLatencyMs)}</TableCell>
       <TableCell className="min-w-36 text-sm text-slate-600">{user.lastAskedAt ? formatDate(user.lastAskedAt) : "Never"}</TableCell>
+      <TableCell className="text-right">
+        {user.questionsAllTime > 0 && user.repReviewKey ? (
+          <Link
+            href={`/ask-sales-faq/admin/usage/${user.repReviewKey}?days=all&returnDays=${windowDays}`}
+            className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 text-xs font-extrabold text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+          >
+            <View className="size-3.5" />
+            View Q&amp;A
+          </Link>
+        ) : <span className="text-xs text-slate-300">—</span>}
+      </TableCell>
     </TableRow>
   );
 }
