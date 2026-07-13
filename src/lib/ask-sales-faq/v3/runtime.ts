@@ -175,6 +175,37 @@ function normalizeText(value: string) {
     .trim();
 }
 
+const EVIDENCE_FLOOR_STOP_WORDS = new Set([
+  "a", "an", "and", "are", "be", "can", "could", "do", "does", "for", "from", "have", "how", "i", "in", "is", "it", "may", "of", "on", "or", "our", "should", "the", "their", "them", "they", "this", "through", "to", "we", "what", "when", "where", "which", "who", "with", "would", "you", "your",
+]);
+
+function evidenceFloorStem(token: string) {
+  if (token.length > 7 && token.endsWith("tion")) return token.slice(0, -4);
+  if (token.length > 6 && token.endsWith("ingly")) return token.slice(0, -5);
+  if (token.length > 5 && token.endsWith("ing")) return token.slice(0, -3);
+  if (token.length > 5 && token.endsWith("ied")) return `${token.slice(0, -3)}y`;
+  if (token.length > 4 && token.endsWith("ed")) return token.slice(0, -2);
+  if (token.length > 4 && token.endsWith("ly")) return token.slice(0, -2);
+  if (token.length > 5 && token.endsWith("ies")) return `${token.slice(0, -3)}y`;
+  if (token.length > 5 && /(?:sses|shes|ches|xes|zes)$/.test(token)) return token.slice(0, -2);
+  if (token.length > 3 && token.endsWith("s")) return token.slice(0, -1);
+  return token;
+}
+
+function evidenceFloorTokens(value: string) {
+  return Array.from(new Set(
+    normalizeText(value)
+      .split(" ")
+      .filter((token) => token.length >= 3 && !EVIDENCE_FLOOR_STOP_WORDS.has(token))
+      .map(evidenceFloorStem),
+  ));
+}
+
+function decisionOverlapCount(question: string, decision: string) {
+  const questionTokens = new Set(evidenceFloorTokens(question));
+  return evidenceFloorTokens(decision).filter((token) => questionTokens.has(token)).length;
+}
+
 function crossesRightsActorBoundary(need: string, decision: string) {
   const asksCompanyRights = /\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need) ||
     /\b(?:can|may|does|do)\b[^?.]{0,80}\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need);
@@ -636,6 +667,44 @@ async function selectApplicableEvidence(input: {
       } catch {
         // Keep the first DeepSeek selection result. This bounded reconsideration
         // never falls through to raw candidates or a routine Claude audit.
+      }
+    }
+    const selectedHasAnswerSupport = result.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
+    if (!selectedHasAnswerSupport && result.output.contract.needs.length === 1) {
+      const floorCandidate = input.retrieval.candidates
+        .map((match, index) => ({
+          match,
+          ref: cards[index].ref,
+          decision: policyDecisionParts(match.policy.decision).decision_evidence,
+          overlap: decisionOverlapCount(input.turn.standaloneQuestion, policyDecisionParts(match.policy.decision).decision_evidence),
+        }))
+        .filter(({ match, overlap }) =>
+          match.policy.answerability === "answer_evidence" &&
+          match.policy.quality_tier === "canonical" &&
+          match.policy.authority >= 90 &&
+          match.familyScore >= 4.7 &&
+          match.phraseScore >= 4 &&
+          match.matchedTerms.length >= 4 &&
+          overlap >= 4,
+        )
+        .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score)[0];
+      if (floorCandidate) {
+        const need = result.output.contract.needs[0].text;
+        result = {
+          ...result,
+          output: parseEvidenceSelection(JSON.stringify({
+            needs: [{ text: need }],
+            support: [{
+              need_id: "N1",
+              relation: "partial",
+              refs: [floorCandidate.ref],
+              supported_claim: floorCandidate.decision,
+              reason: "A canonical high-authority decision has strong direct wording overlap; expose only this bounded claim for independent composition and validation.",
+            }],
+            unresolved_need_ids: ["N1"],
+            reason: "Bounded canonical evidence floor applied after both model selection passes abstained.",
+          })),
+        };
       }
     }
     const byRef = new Map(cards.map((card, index) => [card.ref, input.retrieval.candidates[index]]));
