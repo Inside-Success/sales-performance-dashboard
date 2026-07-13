@@ -404,7 +404,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("owner-zoom-phone-payment-link-email-only");
   });
 
-  it("exposes only a bounded canonical partial when both selectors abstain on high-overlap evidence", async () => {
+  it("exposes only a bounded canonical partial when selectors over-decompose a single-clause question", async () => {
     let retrySelectionCalls = 0;
     const provider = jsonProvider(({ purpose, user }) => {
       const payload = JSON.parse(user) as Record<string, unknown>;
@@ -414,10 +414,13 @@ describe("Ask Sales FAQ V3 runtime", () => {
       if (purpose === "v3_evidence_selection" || purpose === "v3_evidence_selection_retry") {
         if (purpose === "v3_evidence_selection_retry") retrySelectionCalls += 1;
         return {
-          needs: [{ text: "Whether full episodes are currently produced only in English" }],
+          needs: [
+            { text: "Whether full episodes are currently produced in English" },
+            { text: "Whether English is the only current production language" },
+          ],
           support: [],
-          unresolved_need_ids: ["N1"],
-          reason: "The selector abstained.",
+          unresolved_need_ids: ["N1", "N2"],
+          reason: "The selector over-decomposed one yes/no question and abstained.",
         };
       }
       if (purpose === "v3_grounding_validation") {
