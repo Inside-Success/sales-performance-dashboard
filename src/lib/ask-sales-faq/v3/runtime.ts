@@ -671,7 +671,7 @@ async function selectApplicableEvidence(input: {
     }
     const selectedHasAnswerSupport = result.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
     if (!selectedHasAnswerSupport && result.output.contract.needs.length === 1) {
-      const floorCandidate = input.retrieval.candidates
+      const floorCandidates = input.retrieval.candidates
         .map((match, index) => ({
           match,
           ref: cards[index].ref,
@@ -687,9 +687,30 @@ async function selectApplicableEvidence(input: {
           match.matchedTerms.length >= 4 &&
           overlap >= 4,
         )
-        .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score)[0];
+        .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score);
+      const floorCandidate = floorCandidates[0];
       if (floorCandidate) {
         const need = result.output.contract.needs[0].text;
+        const coherentSibling = input.retrieval.candidates
+          .map((match, index) => ({
+            match,
+            ref: cards[index].ref,
+            decision: policyDecisionParts(match.policy.decision).decision_evidence,
+            overlap: decisionOverlapCount(input.turn.standaloneQuestion, policyDecisionParts(match.policy.decision).decision_evidence),
+          }))
+          .filter(({ match, ref, overlap }) =>
+            ref !== floorCandidate.ref &&
+            Boolean(floorCandidate.match.policy.source.article_id) &&
+            match.policy.source.article_id === floorCandidate.match.policy.source.article_id &&
+            match.policy.answerability === "answer_evidence" &&
+            match.policy.quality_tier === "canonical" &&
+            match.policy.authority >= 90 &&
+            match.familyScore >= 4.5 &&
+            match.matchedTerms.length >= 3 &&
+            overlap >= 2,
+          )
+          .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score)[0];
+        const floorSet = coherentSibling ? [floorCandidate, coherentSibling] : [floorCandidate];
         result = {
           ...result,
           output: parseEvidenceSelection(JSON.stringify({
@@ -697,9 +718,9 @@ async function selectApplicableEvidence(input: {
             support: [{
               need_id: "N1",
               relation: "partial",
-              refs: [floorCandidate.ref],
-              supported_claim: floorCandidate.decision,
-              reason: "A canonical high-authority decision has strong direct wording overlap; expose only this bounded claim for independent composition and validation.",
+              refs: floorSet.map((candidate) => candidate.ref),
+              supported_claim: floorSet.map((candidate) => candidate.decision).join(" "),
+              reason: "A canonical high-authority decision has strong direct wording overlap; one same-article sibling may supply a coherent boundary. Expose only these bounded claims for independent composition and validation.",
             }],
             unresolved_need_ids: ["N1"],
             reason: "Bounded canonical evidence floor applied after both model selection passes abstained.",

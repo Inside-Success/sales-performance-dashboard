@@ -438,17 +438,17 @@ describe("Ask Sales FAQ V3 runtime", () => {
         };
       }
       const cards = payload.evidence_cards as Array<{ ref: string; decision_evidence: string }>;
-      expect(cards).toHaveLength(1);
-      expect(cards[0].decision_evidence).toContain("current production process");
+      expect(cards.length).toBeGreaterThanOrEqual(1);
+      expect(cards.some((card) => card.decision_evidence.includes("current production process"))).toBe(true);
       return {
         mode: "partial",
         answer: "Our current production process and episodes are in English. I can’t confirm a broader exclusivity claim from this evidence alone.",
         summary: "Current production and episodes are in English.",
         sections: [],
-        selected_policy_ids: [cards[0].ref],
+        selected_policy_ids: cards.map((card) => card.ref),
         rejected_policy_ids: [],
-        coverage: [{ need: "Whether full episodes are currently produced only in English", status: "partial", policy_ids: [cards[0].ref], reason: "The current language is confirmed; the broader exclusivity wording remains unresolved." }],
-        sentence_evidence: [{ sentence: "Our current production process and episodes are in English.", policy_ids: [cards[0].ref] }],
+        coverage: [{ need: "Whether full episodes are currently produced only in English", status: "partial", policy_ids: cards.map((card) => card.ref), reason: "The current language is confirmed; the broader exclusivity wording remains unresolved." }],
+        sentence_evidence: [{ sentence: "Our current production process and episodes are in English.", policy_ids: cards.map((card) => card.ref) }],
         needs_route: true,
         route_key: "sales_policy",
         route_reason: "The exclusivity wording remains unresolved.",
