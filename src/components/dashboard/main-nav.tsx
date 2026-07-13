@@ -6,7 +6,7 @@ import { ClipboardList, Home, MessageSquareText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", label: "Home", mobileLabel: "Home", icon: Home },
+  { href: "/coaching", label: "Coaching home", mobileLabel: "Home", icon: Home },
   {
     href: "/manual-reports",
     label: "Self-submitted reports",
@@ -23,7 +23,7 @@ export function MainNav() {
     <nav className="flex min-w-0 items-center gap-1 rounded-full bg-slate-100/70 p-1 ring-1 ring-slate-200/60">
       {navItems.map((item) => {
         const Icon = item.icon;
-        const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const active = item.href === "/coaching" ? pathname === "/coaching" : pathname.startsWith(item.href);
 
         return (
           <Link

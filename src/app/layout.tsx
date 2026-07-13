@@ -20,7 +20,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "Magic Mike Bot (Formerly Lil Rudy)",
-  description: "Simple rep-based coaching feedback for Inside Success TV sales calls.",
+  description: "Inside Success TV sales coaching and approved live-call answers in one workspace.",
 };
 
 export default function RootLayout({

@@ -765,7 +765,7 @@ export function AskSalesFaqChat() {
               variant="outline"
               className="border-red-100 bg-[#FEF2F2] px-2 py-0.5 text-[11px] font-bold text-[#B91C1C]"
             >
-              Hidden beta
+              Beta
             </Badge>
           </div>
         </header>

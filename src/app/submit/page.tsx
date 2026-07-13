@@ -20,7 +20,7 @@ export default function SubmitPage() {
           <div className="relative">
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <Link
-                href="/"
+                href="/coaching"
                 className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}
               >
                 <ArrowLeft className="size-4" />

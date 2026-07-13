@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogOut, Mail, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
 
-export function ProfileMenu({ userName, userEmail }: { userName: string; userEmail: string }) {
+export function ProfileMenu({ userName, userEmail, compact = false }: { userName: string; userEmail: string; compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const initials = getInitials(userName, userEmail);
@@ -39,9 +39,9 @@ export function ProfileMenu({ userName, userEmail }: { userName: string; userEma
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="grid size-13 place-items-center rounded-full border border-red-100 bg-white text-[#DC2626] shadow-[0_10px_28px_rgba(15,23,42,.12),0_8px_22px_rgba(220,38,38,.14)] ring-4 ring-white transition hover:border-red-200 hover:bg-red-50 hover:shadow-[0_14px_32px_rgba(15,23,42,.14),0_10px_26px_rgba(220,38,38,.18)]"
+        className={compact ? "grid size-11 place-items-center rounded-full border border-red-100 bg-white text-[#DC2626] shadow-sm ring-2 ring-white transition hover:border-red-200 hover:bg-red-50" : "grid size-13 place-items-center rounded-full border border-red-100 bg-white text-[#DC2626] shadow-[0_10px_28px_rgba(15,23,42,.12),0_8px_22px_rgba(220,38,38,.14)] ring-4 ring-white transition hover:border-red-200 hover:bg-red-50 hover:shadow-[0_14px_32px_rgba(15,23,42,.14),0_10px_26px_rgba(220,38,38,.18)]"}
       >
-        <span className="grid size-10 place-items-center rounded-full bg-[#DC2626] text-[12px] font-extrabold uppercase tracking-normal text-white shadow-inner">
+        <span className={compact ? "grid size-9 place-items-center rounded-full bg-[#DC2626] text-[11px] font-extrabold uppercase tracking-normal text-white shadow-inner" : "grid size-10 place-items-center rounded-full bg-[#DC2626] text-[12px] font-extrabold uppercase tracking-normal text-white shadow-inner"}>
           {initials}
         </span>
       </button>

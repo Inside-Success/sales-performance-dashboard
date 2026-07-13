@@ -26,7 +26,7 @@ export default async function RepPage({
     <main className="magic-page">
       <div className="magic-container flex flex-col gap-6">
         <div className="magic-card magic-hero p-5 md:p-7">
-          <Link href="/" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-4 rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}>
+          <Link href="/coaching" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-4 rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}>
             <ArrowLeft className="size-4" />
             Home
           </Link>

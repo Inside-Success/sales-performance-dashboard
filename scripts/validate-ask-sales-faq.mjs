@@ -6,6 +6,7 @@ const root = process.cwd();
 const requiredFiles = [
   "src/app/ask-sales-faq/page.tsx",
   "src/app/ask-sales-faq/admin/page.tsx",
+  "src/app/ask-sales-faq/admin/usage/page.tsx",
   "src/app/api/ask-sales-faq/route.ts",
   "src/app/api/ask-sales-faq/conversations/route.ts",
   "src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts",
@@ -57,6 +58,7 @@ addCheck(
 if (missingFiles.length === 0) {
   const page = read("src/app/ask-sales-faq/page.tsx");
   const adminPage = read("src/app/ask-sales-faq/admin/page.tsx");
+  const usageAdminPage = read("src/app/ask-sales-faq/admin/usage/page.tsx");
   const chatRoute = read("src/app/api/ask-sales-faq/route.ts");
   const historyRoute = read("src/app/api/ask-sales-faq/conversations/route.ts");
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
@@ -224,16 +226,17 @@ if (missingFiles.length === 0) {
   addCheck(
     "page uses Ask Sales FAQ access gate",
     page.includes("getAskSalesFaqAccess"),
-    "page checks feature flag and allowlist",
+    "page checks the emergency flag and company-domain access policy",
   );
 
   addCheck(
     "admin page uses admin email gate",
-    adminPage.includes("isAskSalesFaqAdmin") &&
+    [adminPage, usageAdminPage].every((content) => content.includes("isAskSalesFaqAdmin") && content.includes("notFound()")) &&
       adminPage.includes("getAskSalesFaqAdminOverview") &&
-      adminPage.includes("Read-only Neon review") &&
-      adminPage.includes("backend records remain saved"),
-    "admin page requires admin email and is read-only",
+      usageAdminPage.includes("getAskSalesFaqUsageOverview") &&
+      !adminPage.includes("export async function POST") &&
+      !usageAdminPage.includes("export async function POST"),
+    "admin page requires an exact admin email, returns 404 to other users, and is read-only",
   );
 
   addCheck(
@@ -742,7 +745,7 @@ if (missingFiles.length === 0) {
       runtime.includes("routingSource: \"article_router\"") &&
       runtime.includes("routingSource: \"conversation_planner\"") &&
       types.includes("conversation_planner") &&
-      db.includes('\"conversation_reply\"'),
+      db.includes("outcome = 'conversation_reply'"),
     "default-abstain messages can become natural conversation replies, approved-article matches, or safe unsupported fallbacks without broad free answering",
   );
 
@@ -1016,13 +1019,13 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "admin review items are categorized without mutating Neon",
-    db.includes("classifyAskSalesFaqReviewItem") &&
-      db.includes("Wording cleanup") &&
-      db.includes("Rich/owner approval gap") &&
-      db.includes("Approved-topic matching") &&
+    db.includes("classifyAskSalesFaqReview") &&
+      db.includes("reviewCategory: classification.category") &&
+      db.includes("reviewAction: classification.action") &&
       adminPage.includes("reviewCategory") &&
-      adminPage.includes("Review action"),
-    "read-only admin review labels separate KB gaps from wording and matching cleanup",
+      adminPage.includes("Review next") &&
+      !adminPage.includes("export async function POST"),
+    "read-only admin review labels separate feedback, reliability, coverage, safe routes, and answer audits",
   );
 
   addCheck(
@@ -1118,7 +1121,7 @@ if (missingFiles.length === 0) {
     "feature flag env vars are documented",
     [
       "ASK_SALES_FAQ_ENABLED",
-      "ASK_SALES_FAQ_ALLOWED_EMAILS",
+      "AUTH_ALLOWED_DOMAINS",
       "ASK_SALES_FAQ_ADMIN_EMAILS",
       "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_URL",
       "ASK_SALES_FAQ_FEEDBACK_WEBHOOK_SECRET",
@@ -1141,11 +1144,11 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "allowlist fails closed",
+    "company-domain access fails closed",
     access.includes("ASK_SALES_FAQ_ENABLED") &&
-      access.includes("ASK_SALES_FAQ_ALLOWED_EMAILS") &&
-      access.includes("not_allowlisted"),
-    "access gate checks flag and allowlist",
+      access.includes("isAllowedAuthEmail") &&
+      access.includes("not_approved_domain"),
+    "access gate checks the emergency flag and the authenticated company-domain policy",
   );
 
   const scanned = [page, adminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, conversationHistory, runtime, access, bundle, db, envExample];

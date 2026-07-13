@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { ShieldAlert, Sparkles } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { auth } from "@/auth";
 import { AskSalesFaqChat } from "@/components/ask-sales-faq/ask-sales-faq-chat";
-import { Badge } from "@/components/ui/badge";
 import { getAskSalesFaqAccess } from "@/lib/ask-sales-faq/access";
 
 export const dynamic = "force-dynamic";
@@ -31,16 +30,11 @@ export default async function AskSalesFaqPage() {
                 <span className="grid size-9 place-items-center rounded-lg bg-[#FEF2F2] text-[#DC2626]">
                   <ShieldAlert className="size-5" />
                 </span>
-                <Badge variant="outline" className="border-slate-200 bg-white">
-                  Hidden testing route
-                </Badge>
+                <span className="rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700">Beta</span>
               </div>
               <h1 className="text-2xl font-extrabold tracking-normal text-slate-950">Ask Sales FAQ</h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">{access.message}</p>
-              <div className="mt-5 flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
-                <Sparkles className="size-4 text-[#DC2626]" />
-                Access is controlled by the testing allowlist.
-              </div>
+              <p className="mt-5 text-xs font-semibold text-slate-400">If this continues, contact the dashboard administrator.</p>
             </div>
           </section>
         )}

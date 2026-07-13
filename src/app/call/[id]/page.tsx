@@ -92,7 +92,7 @@ export default async function CallPage({
           <header className="magic-card magic-hero p-5 md:p-7">
             <div className="relative">
               <Link
-                href="/"
+                href="/coaching"
                 className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-4 rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}
               >
                 <ArrowLeft className="size-4" />
