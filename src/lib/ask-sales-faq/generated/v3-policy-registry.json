@@ -1744,7 +1744,7 @@
     "imports_v2_runtime": false,
     "runtime": "v3"
   },
-  "knowledge_version": "de04186790faaf2e",
+  "knowledge_version": "b0b2b4a1138b31f5",
   "policies": [
     {
       "actions": [
@@ -8601,7 +8601,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "The actual minimum is 3 months before they can reapply.",
-      "decision_key": "greenlight-pdf-and-cohort-deadlines-answer-3-a2",
+      "decision_key": "main_istv.reapply.minimum_after_missed_cohort",
       "domains": [
         "qualification",
         "payments",
@@ -8656,7 +8656,7 @@
         ],
         "kind": "approved_article"
       },
-      "specificity_priority": 0,
+      "specificity_priority": 12,
       "title": "Greenlight PDFs And Cohort Deadlines: Answer"
     },
     {
@@ -9292,7 +9292,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"For main ISTV, if they no-show, miss the Sunday 11:59 PM ET payment/signature deadline, or are rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.\"",
-      "decision_key": "greenlight-pdf-and-cohort-deadlines-what-reps-can-say-1-a3",
+      "decision_key": "main_istv.reapply.minimum_after_missed_cohort",
       "domains": [
         "qualification",
         "payments",
@@ -9347,7 +9347,7 @@
         ],
         "kind": "approved_article"
       },
-      "specificity_priority": 0,
+      "specificity_priority": 12,
       "title": "Greenlight PDFs And Cohort Deadlines: What Reps Can Say"
     },
     {
@@ -15408,7 +15408,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "The actual minimum is 3 months before they can reapply.",
-      "decision_key": "main-istv-call-2-cohort-reschedule-rules-answer-3-a2",
+      "decision_key": "main_istv.reapply.minimum_after_missed_cohort",
       "domains": [
         "qualification",
         "payments",
@@ -15464,7 +15464,7 @@
         ],
         "kind": "approved_article"
       },
-      "specificity_priority": 0,
+      "specificity_priority": 12,
       "title": "Main ISTV Call 2 Cohort Reschedule Rules: Answer"
     },
     {
@@ -16187,7 +16187,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"If a main ISTV prospect no-shows, misses the Sunday 11:59 PM ET deadline, or is rejected/not-fit, tell them they can reapply in the future. The minimum is 3 months.\"",
-      "decision_key": "main-istv-call-2-cohort-reschedule-rules-what-reps-can-say-1-a4",
+      "decision_key": "main_istv.reapply.minimum_after_missed_cohort",
       "domains": [
         "qualification",
         "pricing",
@@ -16242,7 +16242,7 @@
         ],
         "kind": "approved_article"
       },
-      "specificity_priority": 0,
+      "specificity_priority": 12,
       "title": "Main ISTV Call 2 Cohort Reschedule Rules: What Reps Can Say"
     },
     {
@@ -35081,69 +35081,6 @@
       },
       "specificity_priority": 0,
       "title": "Call 1 reschedule after leaving early"
-    },
-    {
-      "actions": [
-        "schedule",
-        "reschedule",
-        "explain",
-        "contact",
-        "reapply"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "To reschedule as soon as possible, whenever works best for the applicant, and Call 2 must be within the same week to stay FTC compliant. Reps should say the reschedule has to be by Sunday. If asked, they can say the applicant must reapply six months later, but should not read the blacklisting language word for word on the call.",
-      "decision_key": "call-1-reschedule-and-6-month-reapply-wording",
-      "domains": [
-        "qualification",
-        "scheduling",
-        "production",
-        "communications"
-      ],
-      "effective_at": "2026-06-12T18:11:14.524089+00:00",
-      "entities": [
-        "and",
-        "month",
-        "reschedule",
-        "reapply",
-        "wording",
-        "can",
-        "rescheduled",
-        "reps",
-        "say",
-        "reapplication",
-        "blacklisting"
-      ],
-      "id": "claim_c882b32438d4b2aa",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "call-1-reschedule-and-6-month-reapply-wording",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [],
-      "quality_tier": "trusted_evidence",
-      "question_families": [
-        "When can Call 1 be rescheduled, and what should reps say about 6-month reapplication or blacklisting?",
-        "Call 1 reschedule and 6-month reapply wording"
-      ],
-      "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "call 1 reschedule and 6 month reapply wording when can call 1 be rescheduled and what should reps say about 6 month reapplication or blacklisting call 1 reschedule and 6 month reapply wording to reschedule as soon as possible whenever works best for the applicant and call 2 must be within the same week to stay ftc compliant reps should say the reschedule has to be by sunday if asked they can say the applicant must reapply six months later but should not read the blacklisting language word for word on the call qualification scheduling production communications schedule reschedule explain contact reapply and month reschedule reapply wording can rescheduled reps say reapplication blacklisting",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1781287874.524089"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "Call 1 reschedule and 6-month reapply wording"
     },
     {
       "actions": [
@@ -57233,67 +57170,6 @@
     },
     {
       "actions": [
-        "verify",
-        "contact",
-        "reapply"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "Reps have to close over the weekend if necessary; Call 2 cannot move to the following week for FTC compliance except catastrophic events with proof. Casting cohort ends every Sunday at 11:59 PM EST. If applicants do not decide and close by then, the team moves on, a rejection letter is sent, and they can apply again in the future but not until 6 months later.",
-      "decision_key": "weekend-call-2-cohort-close-timing",
-      "domains": [
-        "qualification",
-        "communications"
-      ],
-      "effective_at": "2026-06-18T20:26:40.571839+00:00",
-      "entities": [
-        "weekend",
-        "cohort",
-        "close",
-        "timing",
-        "the",
-        "closes",
-        "sunday",
-        "and",
-        "has",
-        "busy",
-        "can",
-        "moved",
-        "monday"
-      ],
-      "id": "claim_feaea3eb5b203ab2",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "weekend-call-2-cohort-close-timing",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [],
-      "quality_tier": "trusted_evidence",
-      "question_families": [
-        "If the cohort closes Sunday and the rep has a busy weekend, can Call 2 be moved to Monday?",
-        "Weekend Call 2 / cohort close timing"
-      ],
-      "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "weekend call 2 cohort close timing if the cohort closes sunday and the rep has a busy weekend can call 2 be moved to monday weekend call 2 cohort close timing reps have to close over the weekend if necessary call 2 cannot move to the following week for ftc compliance except catastrophic events with proof casting cohort ends every sunday at 11 59 pm est if applicants do not decide and close by then the team moves on a rejection letter is sent and they can apply again in the future but not until 6 months later qualification communications verify contact reapply weekend cohort close timing the closes sunday and has busy can moved monday",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1781814400.571839"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "Weekend Call 2 / cohort close timing"
-    },
-    {
-      "actions": [
         "schedule"
       ],
       "answerability": "answer_evidence",
@@ -59264,19 +59140,19 @@
   },
   "stats": {
     "answerability": {
-      "answer_evidence": 737,
+      "answer_evidence": 735,
       "discovery_only": 7,
       "route_or_support": 132
     },
     "blocked_topic_count": 39,
     "dispositioned_policy_count": 2,
-    "policy_count": 876,
+    "policy_count": 874,
     "quality_tiers": {
       "canonical": 377,
       "contextual_evidence": 151,
       "discovery_only": 7,
       "supporting": 64,
-      "trusted_evidence": 277
+      "trusted_evidence": 275
     },
     "source_supplement_dispositions": {
       "active": 20,
@@ -59291,14 +59167,77 @@
       "approved_article": 404,
       "curated_slack_summary": 4,
       "owner_approved_override": 12,
-      "trusted_slack_summary": 431,
+      "trusted_slack_summary": 429,
       "trusted_transcript_summary": 3,
       "v3_owner_approved_override": 2,
       "v3_trusted_source_decision": 20
     },
-    "superseded_policy_count": 1
+    "superseded_policy_count": 3
   },
   "superseded_policies": [
+    {
+      "actions": [
+        "schedule",
+        "reschedule",
+        "explain",
+        "contact",
+        "reapply"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 90,
+      "blocked_for_decision_keys": [],
+      "decision": "To reschedule as soon as possible, whenever works best for the applicant, and Call 2 must be within the same week to stay FTC compliant. Reps should say the reschedule has to be by Sunday. If asked, they can say the applicant must reapply six months later, but should not read the blacklisting language word for word on the call.",
+      "decision_key": "call-1-reschedule-and-6-month-reapply-wording",
+      "domains": [
+        "qualification",
+        "scheduling",
+        "production",
+        "communications"
+      ],
+      "effective_at": "2026-06-12T18:11:14.524089+00:00",
+      "entities": [
+        "and",
+        "month",
+        "reschedule",
+        "reapply",
+        "wording",
+        "can",
+        "rescheduled",
+        "reps",
+        "say",
+        "reapplication",
+        "blacklisting"
+      ],
+      "id": "claim_c882b32438d4b2aa",
+      "last_reviewed": "2026-07-10",
+      "policy_key": "call-1-reschedule-and-6-month-reapply-wording",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [],
+      "quality_tier": "trusted_evidence",
+      "question_families": [
+        "When can Call 1 be rescheduled, and what should reps say about 6-month reapplication or blacklisting?",
+        "Call 1 reschedule and 6-month reapply wording"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "call 1 reschedule and 6 month reapply wording when can call 1 be rescheduled and what should reps say about 6 month reapplication or blacklisting call 1 reschedule and 6 month reapply wording to reschedule as soon as possible whenever works best for the applicant and call 2 must be within the same week to stay ftc compliant reps should say the reschedule has to be by sunday if asked they can say the applicant must reapply six months later but should not read the blacklisting language word for word on the call qualification scheduling production communications schedule reschedule explain contact reapply and month reschedule reapply wording can rescheduled reps say reapplication blacklisting",
+      "source": {
+        "approved_by": [
+          "Madeline Cary"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1781287874.524089"
+        ],
+        "kind": "trusted_slack_summary"
+      },
+      "specificity_priority": 0,
+      "title": "Call 1 reschedule and 6-month reapply wording"
+    },
     {
       "actions": [
         "pay",
@@ -59360,6 +59299,67 @@
       },
       "specificity_priority": 0,
       "title": "Payment plan before filming"
+    },
+    {
+      "actions": [
+        "verify",
+        "contact",
+        "reapply"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 90,
+      "blocked_for_decision_keys": [],
+      "decision": "Reps have to close over the weekend if necessary; Call 2 cannot move to the following week for FTC compliance except catastrophic events with proof. Casting cohort ends every Sunday at 11:59 PM EST. If applicants do not decide and close by then, the team moves on, a rejection letter is sent, and they can apply again in the future but not until 6 months later.",
+      "decision_key": "weekend-call-2-cohort-close-timing",
+      "domains": [
+        "qualification",
+        "communications"
+      ],
+      "effective_at": "2026-06-18T20:26:40.571839+00:00",
+      "entities": [
+        "weekend",
+        "cohort",
+        "close",
+        "timing",
+        "the",
+        "closes",
+        "sunday",
+        "and",
+        "has",
+        "busy",
+        "can",
+        "moved",
+        "monday"
+      ],
+      "id": "claim_feaea3eb5b203ab2",
+      "last_reviewed": "2026-07-10",
+      "policy_key": "weekend-call-2-cohort-close-timing",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [],
+      "quality_tier": "trusted_evidence",
+      "question_families": [
+        "If the cohort closes Sunday and the rep has a busy weekend, can Call 2 be moved to Monday?",
+        "Weekend Call 2 / cohort close timing"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "weekend call 2 cohort close timing if the cohort closes sunday and the rep has a busy weekend can call 2 be moved to monday weekend call 2 cohort close timing reps have to close over the weekend if necessary call 2 cannot move to the following week for ftc compliance except catastrophic events with proof casting cohort ends every sunday at 11 59 pm est if applicants do not decide and close by then the team moves on a rejection letter is sent and they can apply again in the future but not until 6 months later qualification communications verify contact reapply weekend cohort close timing the closes sunday and has busy can moved monday",
+      "source": {
+        "approved_by": [
+          "Madeline Cary"
+        ],
+        "article_id": null,
+        "ids": [
+          "slack:#sales-questions-requests:1781814400.571839"
+        ],
+        "kind": "trusted_slack_summary"
+      },
+      "specificity_priority": 0,
+      "title": "Weekend Call 2 / cohort close timing"
     }
   ],
   "supersession_resolutions": [
@@ -59386,6 +59386,21 @@
         "claim_c376ae6963df3bfe"
       ],
       "superseded_policy_ids": []
+    },
+    {
+      "active_policy_ids": [
+        "claim_91adcd3b411340ef__a2",
+        "claim_20ba7b6e4fc904b7__a3",
+        "claim_396379cd8a7da9ba__a2",
+        "claim_0de0110a15158df9__a4"
+      ],
+      "decision_key": "main_istv.reapply.minimum_after_missed_cohort",
+      "effective_at": "2026-07-09T00:00:00+00:00",
+      "reason": "The current governed rule sets the minimum reapplication wait after a missed cohort at three months. It supersedes older broad six-month cohort wording while leaving separately governed cancellation and payment-exception timelines intact.",
+      "superseded_policy_ids": [
+        "claim_c882b32438d4b2aa",
+        "claim_feaea3eb5b203ab2"
+      ]
     }
   ]
 }

@@ -76,6 +76,7 @@ export type V3TurnResolution = {
   memoryAnswer: string | null;
   usedImmediateContext: boolean;
   explicitCorrection: boolean;
+  explicitScopeSwitch: boolean;
   stylePreferences: string[];
   contextMessages: AskSalesFaqChatMessage[];
   intentResolutionMode?: "deterministic" | "deepseek_refined";

@@ -51,14 +51,23 @@ function previousOfRole(messages: AskSalesFaqChatMessage[], role: "user" | "assi
   return null;
 }
 
+function mentionsMainIstv(value: string) {
+  return /\b(?:main istv|main show|inside success tv)\b/i.test(value);
+}
+
+function mentionsDjNlceo(value: string) {
+  return /\b(?:daymond john|next level ceo|nlceo|dj show|dj\/nlceo)\b/i.test(value) ||
+    /\bdj\b(?=\s*(?:\/\s*nlceo|show|prices?|pricing|payments?|plans?|packages?|offers?|contracts?|clients?|leads?|episodes?|filming|calls?|calendars?|cohorts?|production)\b)/i.test(value);
+}
+
 function resolveScope(question: string, previousQuestion: string | null): {
   productScope: V3ProductScope;
   excludedScopes: Array<"main_istv" | "dj_nlceo">;
 } {
   const current = question.toLowerCase();
   const previous = (previousQuestion || "").toLowerCase();
-  const saysMain = /\b(?:main istv|main show|inside success tv)\b/.test(current);
-  const saysDj = /\b(?:daymond john|next level ceo|nlceo|dj show|dj\/nlceo)\b/.test(current);
+  const saysMain = mentionsMainIstv(current);
+  const saysDj = mentionsDjNlceo(current);
   const excludesMain = /\b(?:not|isn't|is not|isnt|excluding|except)\s+(?:for\s+)?(?:main istv|main show|inside success tv)\b/.test(current);
   const excludesDj = /\b(?:not|isn't|is not|isnt|excluding|except)\s+(?:for\s+)?(?:any\s+|a\s+)?(?:dj(?:\s+show)?(?:\s+(?:or|\/)\s+nlceo(?:\s+show)?)?|daymond john|next level ceo|nlceo|dj\/nlceo)\b/.test(current);
   const excludedScopes: Array<"main_istv" | "dj_nlceo"> = [];
@@ -72,8 +81,8 @@ function resolveScope(question: string, previousQuestion: string | null): {
   if (excludesMain) return { productScope: "dj_nlceo", excludedScopes };
 
   if (/\b(?:same|that|it|this|they|them)\b/.test(current)) {
-    const priorMain = /\b(?:main istv|main show|inside success tv)\b/.test(previous);
-    const priorDj = /\b(?:daymond john|next level ceo|nlceo|dj show|dj\/nlceo)\b/.test(previous);
+    const priorMain = mentionsMainIstv(previous);
+    const priorDj = mentionsDjNlceo(previous);
     if (priorMain && !priorDj) return { productScope: "main_istv", excludedScopes };
     if (priorDj && !priorMain) return { productScope: "dj_nlceo", excludedScopes };
   }
@@ -108,10 +117,21 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
     (explicitCorrection || ellipticalFollowUp || (anaphoricContinuation && (lacksStandaloneSubject || hasContinuationReferent || explicitReferent)) || (shortQuestion && explicitReferent && lacksStandaloneSubject));
   const kind = social ? "social" : topicIntro ? "topic_intro" : memory ? "memory" : rewrite ? "rewrite" : clarification ? "clarification" : followUp ? "follow_up" : "new";
   const scope = resolveScope(strippedSocialPreface, immediatePreviousUserQuestion);
+  const previousScope = immediatePreviousUserQuestion ? resolveScope(immediatePreviousUserQuestion, null).productScope : "unknown";
+  const explicitScopeSwitch = followUp && (
+    (scope.productScope === "main_istv" && previousScope === "dj_nlceo") ||
+    (scope.productScope === "dj_nlceo" && previousScope === "main_istv")
+  );
   if (explicitCorrection && scope.productScope === "main_istv" && !scope.excludedScopes.includes("dj_nlceo")) {
     scope.excludedScopes.push("dj_nlceo");
   }
   if (explicitCorrection && scope.productScope === "dj_nlceo" && !scope.excludedScopes.includes("main_istv")) {
+    scope.excludedScopes.push("main_istv");
+  }
+  if (explicitScopeSwitch && scope.productScope === "main_istv" && !scope.excludedScopes.includes("dj_nlceo")) {
+    scope.excludedScopes.push("dj_nlceo");
+  }
+  if (explicitScopeSwitch && scope.productScope === "dj_nlceo" && !scope.excludedScopes.includes("main_istv")) {
     scope.excludedScopes.push("main_istv");
   }
   const stylePreferences = contextMessages
@@ -121,10 +141,16 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
 
   let standaloneQuestion = strippedSocialPreface || currentQuestion;
   if ((followUp || clarification) && immediatePreviousUserQuestion) {
-    standaloneQuestion = [
-      `Immediate prior subject: ${immediatePreviousUserQuestion}`,
-      `Current request about that subject: ${strippedSocialPreface}`,
-    ].filter(Boolean).join("\n");
+    standaloneQuestion = explicitScopeSwitch
+      ? [
+          `Immediate prior request whose action should be preserved: ${immediatePreviousUserQuestion}`,
+          `Current product scope replaces the prior product scope: ${scope.productScope === "dj_nlceo" ? "DJ/NLCEO" : "main ISTV"}`,
+          `Current request: ${strippedSocialPreface}`,
+        ].join("\n")
+      : [
+          `Immediate prior subject: ${immediatePreviousUserQuestion}`,
+          `Current request about that subject: ${strippedSocialPreface}`,
+        ].filter(Boolean).join("\n");
   }
 
   return {
@@ -143,6 +169,7 @@ export function resolveV3Turn(question: string, messages: AskSalesFaqChatMessage
           : null,
     usedImmediateContext: followUp || clarification || rewrite || memory,
     explicitCorrection,
+    explicitScopeSwitch,
     stylePreferences,
     contextMessages,
     intentResolutionMode: "deterministic",
@@ -167,6 +194,7 @@ export function applyV3TurnIntentRefinement(
       kind: "social",
       standaloneQuestion: turn.currentQuestion,
       usedImmediateContext: false,
+      explicitScopeSwitch: false,
       intentResolutionMode: "deepseek_refined",
       intentResolutionReason: refinement.reason || "DeepSeek identified a conversational acknowledgment.",
     };
