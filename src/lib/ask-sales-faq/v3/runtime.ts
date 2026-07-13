@@ -600,23 +600,35 @@ async function selectApplicableEvidence(input: {
     }).slice(0, 10);
     if ((!result.output.selected_refs.length || (!hasAnswerSupport && strongAnswerCards.length)) && input.retrieval.candidates.length) {
       try {
-        const retryGuidance = strongAnswerCards.length
+        const retrySystem = strongAnswerCards.length
           ? [
-              "Your first pass found no direct or partial answer support even though retrieval surfaced high-overlap answer evidence.",
-              "The compact candidate set contains only cards explicitly governed as answer_evidence, so do not label any of them route. For each need, classify the smallest applicable decision as direct or partial, or leave the need unresolved when none applies.",
-              "Judge semantic entailment rather than identical phrasing. A current-state decision plus an explicit boundary can answer whether that state is limited to the named option; a required method plus a prohibited alternative can answer which method is allowed.",
-              "Do not force a match, infer from silence, or import adjacent facts.",
+              "You are a concise second-pass evidence entailment classifier. Do not answer the user.",
+              "The atomic needs are already provided. Judge each need only against the compact governed answer_evidence cards.",
+              "For the smallest applicable card set, use relation direct when the decision answers the need and partial when it safely answers only a separable portion. These candidates are answer evidence, so relation route is not allowed.",
+              "Meaning may match without identical wording. A current-state decision plus an explicit boundary can answer whether that state is limited to the named option; a required method plus a prohibited alternative can answer which method is allowed.",
+              "Leave a need unresolved when no decision applies. Do not infer from silence, combine unrelated cards, or import adjacent facts.",
+              "Return JSON only: {\"needs\":[{\"text\":\"one atomic need\"}],\"support\":[{\"need_id\":\"N1\",\"relation\":\"direct|partial\",\"refs\":[\"P1\"],\"supported_claim\":\"maximum supported claim\",\"reason\":\"brief entailment reason\"}],\"unresolved_need_ids\":[\"N2\"],\"reason\":\"brief overall rationale\"}.",
             ].join(" ")
-          : "Your first pass found no support. Re-evaluate the compact candidate set against each atomic need, preserving a direct answer, separable partial, or approved route when one actually applies. It remains correct to leave every need unresolved.";
+          : [
+              "You are a concise second-pass evidence entailment classifier. Do not answer the user.",
+              "The atomic needs are already provided. Re-evaluate only the compact candidates against each need.",
+              "Use direct for an answered need, partial for a safely separable supported portion, and route only when a route_or_support card explicitly supplies the applicable route or boundary.",
+              "Leave a need unresolved when nothing applies. Do not infer from silence or combine unrelated cards.",
+              "Return JSON only: {\"needs\":[{\"text\":\"one atomic need\"}],\"support\":[{\"need_id\":\"N1\",\"relation\":\"direct|partial|route\",\"refs\":[\"P1\"],\"supported_claim\":\"maximum supported claim\",\"reason\":\"brief entailment reason\"}],\"unresolved_need_ids\":[\"N2\"],\"reason\":\"brief overall rationale\"}.",
+            ].join(" ");
         const retry = await input.provider<ReturnType<typeof parseEvidenceSelection>>({
-          ...request,
           purpose: "v3_evidence_selection_retry",
-          maxTokens: 1100,
-          system: `${request.system}\n${retryGuidance}`,
+          maxTokens: 750,
+          system: retrySystem,
           user: JSON.stringify({
-            ...selectionUser,
+            current_question: selectionUser.current_question,
+            resolved_question: selectionUser.resolved_question,
+            product_scope: selectionUser.product_scope,
+            excluded_scopes: selectionUser.excluded_scopes,
+            atomic_needs: result.output.contract.needs,
             candidates: strongAnswerCards.length ? strongAnswerCards : cards.slice(0, 10),
           }),
+          parse: parseEvidenceSelection,
         });
         input.attempts.push(...retry.attempts);
         const retryHasAnswerSupport = retry.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
