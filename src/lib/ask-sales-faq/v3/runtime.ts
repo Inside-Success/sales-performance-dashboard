@@ -206,6 +206,12 @@ function decisionOverlapCount(question: string, decision: string) {
   return evidenceFloorTokens(decision).filter((token) => questionTokens.has(token)).length;
 }
 
+function isStructurallySingleNeedQuestion(question: string) {
+  const normalized = question.trim();
+  if (!normalized || normalized.split("?").filter(Boolean).length > 1 || /[;\n]/.test(normalized)) return false;
+  return !/\b(?:and|also|plus|then)\s+(?:what|when|where|who|why|how|can|could|should|would|do|does|did|is|are|will)\b/i.test(normalized);
+}
+
 function crossesRightsActorBoundary(need: string, decision: string) {
   const asksCompanyRights = /\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need) ||
     /\b(?:can|may|does|do)\b[^?.]{0,80}\b(?:we|the company|production|inside success(?: tv)?)\b[^?.]{0,120}\b(?:use|reuse|republish|publish|sell|own|rights?|segment|content)\b/i.test(need);
@@ -670,7 +676,12 @@ async function selectApplicableEvidence(input: {
       }
     }
     const selectedHasAnswerSupport = result.output.contract.support.some((item) => item.relation === "direct" || item.relation === "partial");
-    if (!selectedHasAnswerSupport && result.output.contract.needs.length === 1) {
+    const floorNeed = result.output.contract.needs.length === 1
+      ? result.output.contract.needs[0].text
+      : isStructurallySingleNeedQuestion(input.turn.standaloneQuestion)
+        ? input.turn.standaloneQuestion
+        : null;
+    if (!selectedHasAnswerSupport && floorNeed) {
       const floorCandidates = input.retrieval.candidates
         .map((match, index) => ({
           match,
@@ -690,7 +701,7 @@ async function selectApplicableEvidence(input: {
         .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score);
       const floorCandidate = floorCandidates[0];
       if (floorCandidate) {
-        const need = result.output.contract.needs[0].text;
+        const need = floorNeed;
         const coherentSibling = input.retrieval.candidates
           .map((match, index) => ({
             match,
