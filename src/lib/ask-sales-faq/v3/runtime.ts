@@ -206,6 +206,20 @@ function decisionOverlapCount(question: string, decision: string) {
   return evidenceFloorTokens(decision).filter((token) => questionTokens.has(token)).length;
 }
 
+function decisionCoversQuestionTokens(question: string, decision: string) {
+  const questionTokens = evidenceFloorTokens(question);
+  const decisionTokens = evidenceFloorTokens(decision);
+  const sameFamily = (left: string, right: string) => {
+    if (left === right) return true;
+    if (Math.min(left.length, right.length) < 5 || Math.abs(left.length - right.length) > 2) return false;
+    const shorter = Math.min(left.length, right.length);
+    let prefix = 0;
+    while (prefix < shorter && left[prefix] === right[prefix]) prefix += 1;
+    return prefix >= shorter - 1;
+  };
+  return questionTokens.length >= 4 && questionTokens.every((token) => decisionTokens.some((candidate) => sameFamily(token, candidate)));
+}
+
 function isStructurallySingleNeedQuestion(question: string) {
   const normalized = question.trim();
   if (!normalized || normalized.split("?").filter(Boolean).length > 1 || /[;\n]/.test(normalized)) return false;
@@ -263,9 +277,13 @@ function hasUnmatchedControllingCondition(need: string, decision: string) {
 
 function hasUnprovenExclusivity(need: string, decision: string) {
   if (!/\b(?:only|exclusively|limited to|restricted to)\b/i.test(need)) return false;
-  const namedTarget = need.match(/\b([a-z][a-z0-9-]{2,})\s+(?:only|exclusively)\b/i)?.[1] ||
+  const trailingTarget = need.match(/\b(?:only|exclusively)\s+(?:in|to|for|on|with|through|via|as)\s+([a-z][a-z0-9-]{2,})\b/i)?.[1] ||
+    need.match(/\b(?:only|exclusively)\s+([a-z][a-z0-9-]{2,})\b/i)?.[1];
+  const precedingTarget = need.match(/\b([a-z][a-z0-9-]{2,})\s+(?:only|exclusively)\b/i)?.[1];
+  const namedTarget = trailingTarget ||
+    (precedingTarget && !/(?:ed|ing|able)$/i.test(precedingTarget) ? precedingTarget : null) ||
     need.match(/\b(?:limited|restricted) to\s+([a-z][a-z0-9-]{2,})\b/i)?.[1];
-  if (namedTarget && !normalizeText(decision).includes(normalizeText(namedTarget))) return true;
+  if (namedTarget && !decisionCoversQuestionTokens(namedTarget, decision) && !normalizeText(decision).includes(normalizeText(namedTarget))) return true;
   return !/\b(?:only|exclusively|limited to|restricted to)\b/i.test(decision);
 }
 
@@ -702,6 +720,7 @@ async function selectApplicableEvidence(input: {
       const floorCandidate = floorCandidates[0];
       if (floorCandidate) {
         const need = floorNeed;
+        const directlyEntailed = decisionCoversQuestionTokens(input.turn.standaloneQuestion, floorCandidate.decision);
         const coherentSibling = input.retrieval.candidates
           .map((match, index) => ({
             match,
@@ -721,19 +740,21 @@ async function selectApplicableEvidence(input: {
             overlap >= 2,
           )
           .sort((left, right) => right.overlap - left.overlap || right.match.familyScore - left.match.familyScore || right.match.score - left.match.score)[0];
-        const floorSet = coherentSibling ? [floorCandidate, coherentSibling] : [floorCandidate];
+        const floorSet = directlyEntailed ? [floorCandidate] : coherentSibling ? [floorCandidate, coherentSibling] : [floorCandidate];
         result = {
           ...result,
           output: parseEvidenceSelection(JSON.stringify({
             needs: [{ text: need }],
             support: [{
               need_id: "N1",
-              relation: "partial",
+              relation: directlyEntailed ? "direct" : "partial",
               refs: floorSet.map((candidate) => candidate.ref),
               supported_claim: floorSet.map((candidate) => candidate.decision).join(" "),
-              reason: "A canonical high-authority decision has strong direct wording overlap; one same-article sibling may supply a coherent boundary. Expose only these bounded claims for independent composition and validation.",
+              reason: directlyEntailed
+                ? "A canonical high-authority decision covers every meaningful question token. Expose only that decision for independent composition and validation."
+                : "A canonical high-authority decision has strong direct wording overlap; one same-article sibling may supply a coherent boundary. Expose only these bounded claims for independent composition and validation.",
             }],
-            unresolved_need_ids: ["N1"],
+            unresolved_need_ids: directlyEntailed ? [] : ["N1"],
             reason: "Bounded canonical evidence floor applied after both model selection passes abstained.",
           })),
         };
