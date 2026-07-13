@@ -104,6 +104,7 @@ export type AskSalesFaqRuntimeMetadata = {
       usedImmediateContext: boolean;
       previousUserQuestionUsed: boolean;
       previousAssistantAnswerUsed: boolean;
+      explicitScopeSwitch?: boolean;
       intentResolutionMode?: "deterministic" | "deepseek_refined";
       intentResolutionReason?: string;
     };

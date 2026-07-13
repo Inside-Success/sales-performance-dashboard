@@ -479,6 +479,7 @@ async function addSemanticRecall(input: {
         immediatePreviousAssistantAnswer: null,
         usedImmediateContext: false,
         explicitCorrection: false,
+        explicitScopeSwitch: false,
         contextMessages: [],
       };
       return retrieveV3Policies(expandedTurn, 16).candidates.slice(0, 12);
@@ -1305,6 +1306,7 @@ function metadata(input: {
         usedImmediateContext: input.turn.usedImmediateContext,
         previousUserQuestionUsed: Boolean(input.turn.immediatePreviousUserQuestion && input.turn.usedImmediateContext),
         previousAssistantAnswerUsed: Boolean(input.turn.immediatePreviousAssistantAnswer && input.turn.usedImmediateContext),
+        explicitScopeSwitch: input.turn.explicitScopeSwitch,
         intentResolutionMode: input.turn.intentResolutionMode,
         intentResolutionReason: input.turn.intentResolutionReason,
       },

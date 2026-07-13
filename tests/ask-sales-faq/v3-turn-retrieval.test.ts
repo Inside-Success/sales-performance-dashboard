@@ -95,6 +95,34 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     expect(greenlight.standaloneQuestion).toContain("Passed social check");
   });
 
+  it("preserves the requested action while switching from main ISTV to DJ/NLCEO", () => {
+    const turn = resolveV3Turn("What about DJ prices?", [
+      { role: "user", content: "What are the current main ISTV prices and payment plans?" },
+      { role: "assistant", content: "Here are the main ISTV prices and payment plans." },
+    ]);
+    const retrieval = retrieveV3Policies(turn, 20);
+
+    expect(turn.kind).toBe("follow_up");
+    expect(turn.explicitScopeSwitch).toBe(true);
+    expect(turn.productScope).toBe("dj_nlceo");
+    expect(turn.excludedScopes).toContain("main_istv");
+    expect(turn.standaloneQuestion).toContain("action should be preserved");
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_26780013d013e10b")).toBe(true);
+    expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("main_istv") && !policy.product_scopes.includes("dj_nlceo"))).toBe(false);
+  });
+
+  it("preserves the requested action while switching from DJ/NLCEO to main ISTV", () => {
+    const turn = resolveV3Turn("How about main ISTV?", [
+      { role: "user", content: "Tell me the DJ pricing and its payment plans." },
+      { role: "assistant", content: "Here are the DJ/NLCEO prices and payment plans." },
+    ]);
+
+    expect(turn.kind).toBe("follow_up");
+    expect(turn.explicitScopeSwitch).toBe(true);
+    expect(turn.productScope).toBe("main_istv");
+    expect(turn.excludedScopes).toContain("dj_nlceo");
+  });
+
   it("does not treat every complete should-I question as a follow-up", () => {
     const messages = [
       { role: "user" as const, content: "The contract is signed, the ACH failed, and the client now wants out. Which team needs to be notified?" },
@@ -264,6 +292,14 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
     const calendars = retrieveV3Policies(resolveV3Turn("What should I do when the same prospect is booked on two reps' calendars?", []), 20);
     expect(calendars.candidates.some(({ policy }) => policy.id === "v3src_two_calendar_engagement")).toBe(true);
     expect(calendars.candidates.some(({ policy }) => policy.id === "claim_662ca1f66e1306e4")).toBe(false);
+
+    const reapply = retrieveV3Policies(resolveV3Turn(
+      "For main ISTV, a prospect passed Call 1 on Friday but cannot attend Call 2 by Sunday. When can they reapply?",
+      [],
+    ), 20);
+    expect(reapply.candidates.some(({ policy }) => policy.id === "claim_91adcd3b411340ef__a2")).toBe(true);
+    expect(reapply.candidates.some(({ policy }) => policy.id === "claim_c882b32438d4b2aa")).toBe(false);
+    expect(reapply.candidates.some(({ policy }) => policy.id === "claim_feaea3eb5b203ab2")).toBe(false);
   });
 
   it("ranks a self-contained option table above a dangling cross-reference", () => {

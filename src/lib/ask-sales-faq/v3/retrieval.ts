@@ -189,8 +189,17 @@ function scopeScore(policy: V3Policy, turn: V3TurnResolution) {
 }
 
 function retrievalQueries(turn: V3TurnResolution) {
-  const current = turn.currentQuestion;
-  const context = turn.kind === "follow_up" ? turn.immediatePreviousUserQuestion || "" : "";
+  const current = turn.productScope === "dj_nlceo" && /\bdj\b/i.test(turn.currentQuestion) && !/\b(?:daymond john|next level ceo|nlceo)\b/i.test(turn.currentQuestion)
+    ? `${turn.currentQuestion} Daymond John Next Level CEO`
+    : turn.currentQuestion;
+  let context = turn.kind === "follow_up" ? turn.immediatePreviousUserQuestion || "" : "";
+  if (turn.explicitScopeSwitch) {
+    context = context
+      .replace(/\b(?:main istv|main show|inside success tv)\b/gi, " ")
+      .replace(/\b(?:daymond john|next level ceo|nlceo|dj show|dj\/nlceo)\b/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
   return {
     current,
     context,
@@ -252,7 +261,7 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 20): V3Retrie
   const queryTokens = tokens(queries.current);
   const contextTokens = tokens(queries.context);
   const queryTrigrams = trigrams(turn.currentQuestion);
-  const requiredEntities = mentionedEntities(turn.currentQuestion, turn);
+  const requiredEntities = mentionedEntities(queries.current, turn);
   const matches: V3PolicyMatch[] = [];
 
   for (const indexed of indexedPolicies) {
@@ -330,6 +339,17 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 20): V3Retrie
       .sort((a, b) => b.familyScore - a.familyScore || b.score - a.score),
     Math.min(6, Math.ceil(limit / 3)),
   );
+  const enumerationLane = asksForEnumeratedValues(turn.currentQuestion)
+    ? takeDiverseMatches(
+        applicableMatches
+          .filter((match) => hasConcreteEnumeration(match.policy.decision))
+          .sort((a, b) =>
+            a.policy.product_scopes.length - b.policy.product_scopes.length ||
+            b.score - a.score,
+          ),
+        Math.min(4, Math.ceil(limit / 4)),
+      )
+    : [];
   const contextLane = queries.context
     ? takeDiverseMatches(
         [...applicableMatches]
@@ -339,7 +359,7 @@ export function retrieveV3Policies(turn: V3TurnResolution, limit = 20): V3Retrie
       )
     : [];
   const articleCounts = new Map<string, number>();
-  for (const match of [...familyLane, ...contextLane, ...applicableMatches]) {
+  for (const match of [...enumerationLane, ...familyLane, ...contextLane, ...applicableMatches]) {
     const key = `${match.policy.policy_key}:${match.policy.product_scopes.join(",")}`;
     if (policyKeys.has(key)) continue;
     const article = match.policy.source.article_id || `claim:${match.policy.id}`;
