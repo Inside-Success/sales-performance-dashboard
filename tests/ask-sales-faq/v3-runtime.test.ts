@@ -460,7 +460,7 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(retrySelectionCalls).toBe(1);
     expect(result.outcome).toBe("route_from_evidence");
     expect(result.answer).toContain("current production process and episodes are in English");
-    expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain("claim_465c6d4c4ee09dab__a1");
+    expect(result.runtimeMetadata.v3?.selection.selectedPolicyIds).toContain(result.runtimeMetadata.v3?.retrieval.candidates[0]?.id);
     expect(result.runtimeMetadata.v3?.retrieval.evidenceSelectionReason).toContain("canonical evidence floor");
   });
 

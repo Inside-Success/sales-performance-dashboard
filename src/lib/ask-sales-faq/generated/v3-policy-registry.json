@@ -1744,7 +1744,7 @@
     "imports_v2_runtime": false,
     "runtime": "v3"
   },
-  "knowledge_version": "45d3d42794bfba56",
+  "knowledge_version": "abdbc621f4b32ae9",
   "policies": [
     {
       "actions": [
@@ -25161,7 +25161,7 @@
       "answerability": "answer_evidence",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "\"ISTV currently produces and films full episodes in English.\"",
+      "decision": "\"ISTV currently produces and films full episodes only in English.\"",
       "decision_key": "production-language-and-translation-boundary-what-reps-can-say-1-a1",
       "domains": [
         "qualification",
@@ -25185,7 +25185,7 @@
         "films",
         "full"
       ],
-      "id": "claim_465c6d4c4ee09dab__a1",
+      "id": "claim_c4d5b6e53d0ee393__a1",
       "last_reviewed": "2026-07-10",
       "policy_key": "production-language-and-translation-boundary-what-reps-can-say-1-a1",
       "product_scopes": [
@@ -25196,14 +25196,14 @@
       "question_families": [
         "Production Language And Translation Boundary: What Reps Can Say",
         "Production Language And Translation Boundary",
-        "\"ISTV currently produces and films full episodes in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If an En",
-        "\"ISTV currently produces and films full episodes in English.\""
+        "\"ISTV currently produces and films full episodes only in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If",
+        "\"ISTV currently produces and films full episodes only in English.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if an en istv currently produces and films full episodes in english istv currently produces and films full episodes in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
+      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes only in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if istv currently produces and films full episodes only in english istv currently produces and films full episodes only in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
       "source": {
         "approved_by": [
           "Madeline Cary",
@@ -25254,7 +25254,7 @@
         "films",
         "full"
       ],
-      "id": "claim_465c6d4c4ee09dab__a2",
+      "id": "claim_c4d5b6e53d0ee393__a2",
       "last_reviewed": "2026-07-10",
       "policy_key": "production-language-and-translation-boundary-what-reps-can-say-1-a2",
       "product_scopes": [
@@ -25265,14 +25265,14 @@
       "question_families": [
         "Production Language And Translation Boundary: What Reps Can Say",
         "Production Language And Translation Boundary",
-        "\"ISTV currently produces and films full episodes in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If an En",
+        "\"ISTV currently produces and films full episodes only in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If",
         "\"Our current production process and episodes are in English.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if an en our current production process and episodes are in english our current production process and episodes are in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
+      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes only in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if our current production process and episodes are in english our current production process and episodes are in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
       "source": {
         "approved_by": [
           "Madeline Cary",
@@ -25323,7 +25323,7 @@
         "films",
         "full"
       ],
-      "id": "claim_465c6d4c4ee09dab__a3",
+      "id": "claim_c4d5b6e53d0ee393__a3",
       "last_reviewed": "2026-07-10",
       "policy_key": "production-language-and-translation-boundary-what-reps-can-say-1-a3",
       "product_scopes": [
@@ -25334,14 +25334,14 @@
       "question_families": [
         "Production Language And Translation Boundary: What Reps Can Say",
         "Production Language And Translation Boundary",
-        "\"ISTV currently produces and films full episodes in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If an En",
+        "\"ISTV currently produces and films full episodes only in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If",
         "\"We cannot promise a Spanish-language episode or translation support right now.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if an en we cannot promise a spanish language episode or translation support right now we cannot promise a spanish language episode or translation support right now qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
+      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes only in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if we cannot promise a spanish language episode or translation support right now we cannot promise a spanish language episode or translation support right now qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
       "source": {
         "approved_by": [
           "Madeline Cary",
@@ -25392,7 +25392,7 @@
         "films",
         "full"
       ],
-      "id": "claim_465c6d4c4ee09dab__a4",
+      "id": "claim_c4d5b6e53d0ee393__a4",
       "last_reviewed": "2026-07-10",
       "policy_key": "production-language-and-translation-boundary-what-reps-can-say-1-a4",
       "product_scopes": [
@@ -25403,14 +25403,14 @@
       "question_families": [
         "Production Language And Translation Boundary: What Reps Can Say",
         "Production Language And Translation Boundary",
-        "\"ISTV currently produces and films full episodes in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If an En",
+        "\"ISTV currently produces and films full episodes only in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If",
         "\"If an English-speaking owner or genuine business partner is available, that person can be considered for the audition under the normal qualification rules.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if an en if an english speaking owner or genuine business partner is available that person can be considered for the audition under the normal qualification rules if an english speaking owner or genuine business partner is available that person can be considered for the audition under the normal qualification rules qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
+      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes only in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if if an english speaking owner or genuine business partner is available that person can be considered for the audition under the normal qualification rules if an english speaking owner or genuine business partner is available that person can be considered for the audition under the normal qualification rules qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
       "source": {
         "approved_by": [
           "Madeline Cary",
@@ -25461,7 +25461,7 @@
         "films",
         "full"
       ],
-      "id": "claim_465c6d4c4ee09dab__a5",
+      "id": "claim_c4d5b6e53d0ee393__a5",
       "last_reviewed": "2026-07-10",
       "policy_key": "production-language-and-translation-boundary-what-reps-can-say-1-a5",
       "product_scopes": [
@@ -25472,14 +25472,14 @@
       "question_families": [
         "Production Language And Translation Boundary: What Reps Can Say",
         "Production Language And Translation Boundary",
-        "\"ISTV currently produces and films full episodes in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If an En",
+        "\"ISTV currently produces and films full episodes only in English.\" - \"Our current production process and episodes are in English.\" - \"We cannot promise a Spanish-language episode or translation support right now.\" - \"If",
         "\"Being bilingual is helpful for communication, but the episode and connected production assets still need to be completed in English.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if an en being bilingual is helpful for communication but the episode and connected production assets still need to be completed in english being bilingual is helpful for communication but the episode and connected production assets still need to be completed in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
+      "search_text": "production language and translation boundary what reps can say production language and translation boundary what reps can say production language and translation boundary istv currently produces and films full episodes only in english our current production process and episodes are in english we cannot promise a spanish language episode or translation support right now if being bilingual is helpful for communication but the episode and connected production assets still need to be completed in english being bilingual is helpful for communication but the episode and connected production assets still need to be completed in english qualification production content rights qualify explain promise produce use or promote and production language translation reps can say episodes english istv currently produces films full",
       "source": {
         "approved_by": [
           "Madeline Cary",
