@@ -187,10 +187,14 @@ async function buildKnowledgeRefreshSchema() {
       redactions jsonb not null default '[]'::jsonb,
       metadata jsonb not null default '{}'::jsonb,
       run_id text,
+      analysis_completed_at timestamptz,
+      analysis_model text,
       created_at timestamptz not null default now(),
       unique (source_id, content_hash)
     )
   `;
+  await sql`alter table ask_sales_faq_refresh_snapshots add column if not exists analysis_completed_at timestamptz`;
+  await sql`alter table ask_sales_faq_refresh_snapshots add column if not exists analysis_model text`;
   await sql`create index if not exists ask_sales_faq_refresh_snapshots_source_created_idx on ask_sales_faq_refresh_snapshots (source_id, created_at desc)`;
 
   await sql`
@@ -359,7 +363,7 @@ export async function recordKnowledgeRefreshSnapshot(input: {
        source_revision = coalesce(excluded.source_revision, ask_sales_faq_refresh_snapshots.source_revision),
        source_updated_at = coalesce(excluded.source_updated_at, ask_sales_faq_refresh_snapshots.source_updated_at),
        metadata = ask_sales_faq_refresh_snapshots.metadata || excluded.metadata
-     returning id`,
+     returning id, analysis_completed_at`,
     [
       snapshotId,
       input.sourceId,
@@ -371,8 +375,9 @@ export async function recordKnowledgeRefreshSnapshot(input: {
       JSON.stringify(sanitizeMetadata(input.metadata || {})),
       sanitizeOperationalText(input.runId || "", 100) || null,
     ],
-  )) as Array<{ id: string }>;
+  )) as Array<{ id: string; analysis_completed_at: string | null }>;
   const storedSnapshotId = snapshotRows[0]?.id || snapshotId;
+  const analysisRequired = !unchanged || !snapshotRows[0]?.analysis_completed_at;
 
   await sql.query(
     `update ask_sales_faq_refresh_sources
@@ -406,16 +411,17 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     contentHash,
     runId: input.runId || null,
     redactions: redacted.redactions,
+    analysisRequired,
   });
 
   return {
     unchanged,
-    analysisRequired: !unchanged,
+    analysisRequired,
     snapshotId: storedSnapshotId,
     snapshotHash: contentHash,
     knowledgeVersion: getKnowledgeRefreshRegistryVersion(),
-    governanceContext: unchanged ? null : buildKnowledgeRefreshAnalysisContext(redacted.text),
-    content: unchanged ? null : redacted.text,
+    governanceContext: analysisRequired ? buildKnowledgeRefreshAnalysisContext(redacted.text) : null,
+    content: analysisRequired ? redacted.text : null,
     redactions: redacted.redactions,
   };
 }
@@ -496,6 +502,13 @@ export async function recordKnowledgeRefreshCandidates(input: {
     )) as Array<{ id: string }>;
     if (rows[0]?.id) insertedIds.push(rows[0].id);
   }
+
+  await sql.query(
+    `update ask_sales_faq_refresh_snapshots
+     set analysis_completed_at = now(), analysis_model = $2
+     where id = $1`,
+    [input.snapshotId, sanitizeOperationalText(input.model, 120)],
+  );
 
   await writeAudit("snapshot", input.snapshotId, "analysis_completed", "n8n:ask-sales-knowledge-refresh", null, null, {
     sourceId: input.sourceId,
