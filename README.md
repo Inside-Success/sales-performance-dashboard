@@ -122,4 +122,4 @@ Do not wire the active n8n workflow until the Vercel deployment URL and `INGEST_
 
 Enhanced report feedback is a separate active n8n workflow and does not modify the Magic Mike generation workflows. See `docs-n8n-dashboard-ingest.md` for workflow ID, feedback Sheet URL, and verification notes.
 
-Ask Sales knowledge refresh is a separate read-only source-monitoring system. It never writes to Slack or Google and never changes the runtime registry directly. See `docs-ask-sales-knowledge-refresh.md` for its source allowlist, workflow IDs, human-review states, and release boundary.
+Ask Sales knowledge refresh is a separate read-only source-monitoring system. It never writes to Slack or Google and never changes the runtime registry directly. The Google path and admin review queue are live; the Slack collector is safely retrying until a dedicated private-channel user-token credential is connected. See `docs-ask-sales-knowledge-refresh.md` for the source allowlist, workflow IDs, verified run state, human-review rules, and release boundary.
