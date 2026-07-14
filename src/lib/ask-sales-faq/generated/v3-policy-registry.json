@@ -1736,7 +1736,7 @@
     "impact makers tv",
     "masters of innovation"
   ],
-  "generated_at": "2026-07-12",
+  "generated_at": "2026-07-14",
   "generated_by": "scripts/build_v3_policy_registry.py",
   "isolation": {
     "allows_raw_source_as_final_answer": false,
@@ -1744,8 +1744,206 @@
     "imports_v2_runtime": false,
     "runtime": "v3"
   },
-  "knowledge_version": "abdbc621f4b32ae9",
+  "knowledge_version": "76d352e70fefd0f2",
   "policies": [
+    {
+      "actions": [
+        "verify",
+        "access",
+        "promise",
+        "produce"
+      ],
+      "answerability": "route_or_support",
+      "authority": 110,
+      "blocked_for_decision_keys": [],
+      "decision": "Presence on the latest approved sales/casting show list confirms only that it is an approved show offering. It does not by itself confirm that an episode has aired, that the show is currently on air, or that a prospect can watch an episode now.",
+      "decision_key": "current-show-list-watchability-boundary",
+      "domains": [
+        "shows_offers",
+        "production"
+      ],
+      "effective_at": "2026-07-14T00:00:00+05:00",
+      "entities": [
+        "list",
+        "air",
+        "mompreneurs",
+        "can",
+        "watch",
+        "not",
+        "prove",
+        "watchable",
+        "status",
+        "currently",
+        "now",
+        "appearing",
+        "the",
+        "mean"
+      ],
+      "id": "owner-current-show-list-watchability-boundary",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-list-watchability-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [
+        "non_answer_section"
+      ],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Is Mompreneurs currently on air?",
+        "Can a prospect watch Mompreneurs now?",
+        "Does appearing on the current show list mean a show has aired?",
+        "Where can a prospect watch an episode of a listed show?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "approved show list does not prove on air or watchable status is mompreneurs currently on air can a prospect watch mompreneurs now does appearing on the current show list mean a show has aired where can a prospect watch an episode of a listed show presence on the latest approved sales casting show list confirms only that it is an approved show offering it does not by itself confirm that an episode has aired that the show is currently on air or that a prospect can watch an episode now shows offers production verify access promise produce list air mompreneurs can watch not prove watchable status currently now appearing the mean",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md",
+          "owner-review:2026-07-14:show-list-watchability-boundary"
+        ],
+        "kind": "owner_approved_override"
+      },
+      "specificity_priority": 0,
+      "title": "Approved show list does not prove on-air or watchable status"
+    },
+    {
+      "actions": [
+        "verify",
+        "produce",
+        "use_or_promote"
+      ],
+      "answerability": "route_or_support",
+      "authority": 110,
+      "blocked_for_decision_keys": [],
+      "decision": "Unless separate governed guidance confirms the exact show's current episode availability, use #sales-questions-requests to verify whether the show is currently on air or has a watchable episode.",
+      "decision_key": "current-show-watchability-route",
+      "domains": [
+        "production"
+      ],
+      "effective_at": "2026-07-14T00:00:00+05:00",
+      "entities": [
+        "episode",
+        "verify",
+        "air",
+        "availability",
+        "whether",
+        "confirm",
+        "and",
+        "mompreneurs",
+        "who",
+        "can",
+        "listed",
+        "has",
+        "watchable",
+        "how"
+      ],
+      "id": "owner-current-show-watchability-route",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-watchability-route",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Where should I verify whether Mompreneurs is on air?",
+        "Who can confirm whether a listed show has a watchable episode?",
+        "How do I confirm current episode availability for a show?"
+      ],
+      "risk_level": "high",
+      "route_channel": "#sales-questions-requests",
+      "route_key": "sales_policy",
+      "route_reason": "Use #sales-questions-requests to verify the exact show's current on-air or episode availability.",
+      "search_text": "verify current show on air and episode availability where should i verify whether mompreneurs is on air who can confirm whether a listed show has a watchable episode how do i confirm current episode availability for a show unless separate governed guidance confirms the exact show s current episode availability use #sales questions requests to verify whether the show is currently on air or has a watchable episode production verify produce use or promote episode verify air availability whether confirm and mompreneurs who can listed has watchable how",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md",
+          "owner-review:2026-07-14:show-list-watchability-route"
+        ],
+        "kind": "owner_approved_override"
+      },
+      "specificity_priority": 0,
+      "title": "Verify current show on-air and episode availability"
+    },
+    {
+      "actions": [
+        "price",
+        "pay",
+        "promise",
+        "report"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 110,
+      "blocked_for_decision_keys": [],
+      "decision": "The current Daymond John / Next Level CEO offers are: Lite at $10,000 paid in full, with listed options of $2,500 x 4, $3,600 x 3, or $5,000 x 2; Standard at $15,000 paid in full, with listed options of $4,000 x 4, $5,000 x 3, or $7,500 x 2; Premium VIP at $20,000 paid in full, with listed options of $5,000 x 4, $7,000 x 3, or $10,000 x 2; and the CEO Day upgrade at $5,000 paid in full only. The main ISTV same-day discount and cohort rules do not apply to DJ/NLCEO.",
+      "decision_key": "dj-nlceo-current-offer-overview",
+      "domains": [
+        "pricing",
+        "payments",
+        "shows_offers"
+      ],
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "entities": [
+        "and",
+        "the",
+        "daymond",
+        "john",
+        "next",
+        "level",
+        "ceo",
+        "offer",
+        "overview",
+        "are",
+        "offers",
+        "packages",
+        "give",
+        "price"
+      ],
+      "id": "owner-dj-nlceo-current-offer-overview",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "dj-nlceo-current-offer-overview",
+      "product_scopes": [
+        "dj_nlceo"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "What are the DJ offers?",
+        "What packages does Daymond John have?",
+        "Give me the current Next Level CEO offer and price overview",
+        "What are the DJ package prices and payment options?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "current daymond john and next level ceo offer overview what are the dj offers what packages does daymond john have give me the current next level ceo offer and price overview what are the dj package prices and payment options the current daymond john next level ceo offers are lite at $10 000 paid in full with listed options of $2 500 x 4 $3 600 x 3 or $5 000 x 2 standard at $15 000 paid in full with listed options of $4 000 x 4 $5 000 x 3 or $7 500 x 2 premium vip at $20 000 paid in full with listed options of $5 000 x 4 $7 000 x 3 or $10 000 x 2 and the ceo day upgrade at $5 000 paid in full only the main istv same day discount and cohort rules do not apply to dj nlceo pricing payments shows offers price pay promise report and the daymond john next level ceo offer overview are offers packages give price",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "kb:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md",
+          "owner-review:2026-07-14:dj-nlceo-current-offer-overview"
+        ],
+        "kind": "owner_approved_override"
+      },
+      "specificity_priority": 0,
+      "title": "Current Daymond John and Next Level CEO offer overview"
+    },
     {
       "actions": [
         "pay",
@@ -1811,6 +2009,69 @@
       },
       "specificity_priority": 0,
       "title": "Residuals and money earned from a client's episode"
+    },
+    {
+      "actions": [
+        "access",
+        "promise"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 110,
+      "blocked_for_decision_keys": [],
+      "decision": "You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.",
+      "decision_key": "istv-app-download-devices",
+      "domains": [
+        "general_sales"
+      ],
+      "effective_at": "2026-07-14T00:19:00+05:00",
+      "entities": [
+        "the",
+        "app",
+        "download",
+        "istv",
+        "can",
+        "devices",
+        "supported",
+        "inside",
+        "success",
+        "network",
+        "get",
+        "roku",
+        "fire",
+        "stick"
+      ],
+      "id": "owner-istv-app-download-devices",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "istv-app-download-devices",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Where can I download the ISTV app?",
+        "Which devices can download the Inside Success Network app?",
+        "Can a prospect get the ISTV app on Roku, Fire Stick, or Apple TV?"
+      ],
+      "risk_level": "low",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "download the istv app on supported devices where can i download the istv app which devices can download the inside success network app can a prospect get the istv app on roku fire stick or apple tv you can download the istv app on roku fire stick or apple tv devices general sales access promise the app download istv can devices supported inside success network get roku fire stick",
+      "source": {
+        "approved_by": [
+          "Rich Allen",
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "kb:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+          "owner-feedback:2026-07-14:rich-istv-download-devices"
+        ],
+        "kind": "owner_approved_override"
+      },
+      "specificity_priority": 0,
+      "title": "Download the ISTV app on supported devices"
     },
     {
       "actions": [
@@ -2634,6 +2895,68 @@
       },
       "specificity_priority": 0,
       "title": "Recording and disclosure for 20 percent outbound calls"
+    },
+    {
+      "actions": [
+        "pay"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 110,
+      "blocked_for_decision_keys": [],
+      "decision": "Main ISTV VIP/Premium includes submission to one Tier-1 streaming platform: Amazon Prime Video, the Apple TV streaming app, or Tubi. The platform decides placement, so placement is not guaranteed. A client cannot pay extra to force or guarantee Apple TV submission or placement.",
+      "decision_key": "vip-license-platform-coverage",
+      "domains": [
+        "pricing",
+        "payments"
+      ],
+      "effective_at": "2026-06-30T00:00:00+05:00",
+      "entities": [
+        "vip",
+        "platform",
+        "tier",
+        "apple",
+        "submission",
+        "include",
+        "extra",
+        "coverage",
+        "and",
+        "paid",
+        "one",
+        "all",
+        "three",
+        "can"
+      ],
+      "id": "owner-vip-tier-one-platform-boundary",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "vip-license-platform-coverage",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "quality_flags": [],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Does VIP include one Tier-1 platform or all three?",
+        "Can a client pay extra for Apple TV submission or placement?",
+        "Which extra streaming platform does VIP include?"
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "vip tier 1 platform coverage and apple tv paid submission boundary does vip include one tier 1 platform or all three can a client pay extra for apple tv submission or placement which extra streaming platform does vip include main istv vip premium includes submission to one tier 1 streaming platform amazon prime video the apple tv streaming app or tubi the platform decides placement so placement is not guaranteed a client cannot pay extra to force or guarantee apple tv submission or placement pricing payments pay vip platform tier apple submission include extra coverage and paid one all three can",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": null,
+        "ids": [
+          "kb:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+          "owner-review:2026-07-14:vip-tier-one-platform-boundary"
+        ],
+        "kind": "owner_approved_override"
+      },
+      "specificity_priority": 0,
+      "title": "VIP Tier-1 platform coverage and Apple TV paid-submission boundary"
     },
     {
       "actions": [
@@ -6076,7 +6399,7 @@
       "domains": [
         "shows_offers"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "use",
@@ -6089,7 +6412,7 @@
         "currently"
       ],
       "id": "claim_51566d6abc27f11d",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-answer-1",
       "product_scopes": [
         "product_agnostic"
@@ -6123,6 +6446,65 @@
     },
     {
       "actions": [
+        "verify",
+        "route",
+        "produce"
+      ],
+      "answerability": "route_or_support",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "Presence on this list confirms only that the show is in the latest approved sales/casting list. It does not by itself confirm that an episode has aired, that the show is currently on air, or that a prospect can watch an episode now. Unless a separate governed source explicitly confirms the exact show's current episode availability, route on-air, live, aired-episode, and watchability questions to the current sales/ops owner instead of inferring the answer from list membership.",
+      "decision_key": "current-show-source-answer-2",
+      "domains": [
+        "production"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "source",
+        "list",
+        "the",
+        "presence",
+        "confirms",
+        "only",
+        "that",
+        "latest",
+        "casting"
+      ],
+      "id": "claim_cde7c6d742c82e04",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-2",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [
+        "non_answer_section"
+      ],
+      "quality_tier": "supporting",
+      "question_families": [
+        "Current Show Source: Answer",
+        "Current Show Source",
+        "Presence on this list confirms only that the show is in the latest approved sales/casting list."
+      ],
+      "risk_level": "high",
+      "route_channel": "#sales-questions-requests",
+      "route_key": "sales_policy",
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "current show source answer current show source answer current show source presence on this list confirms only that the show is in the latest approved sales casting list presence on this list confirms only that the show is in the latest approved sales casting list it does not by itself confirm that an episode has aired that the show is currently on air or that a prospect can watch an episode now unless a separate governed source explicitly confirms the exact show s current episode availability route on air live aired episode and watchability questions to the current sales ops owner instead of inferring the answer from list membership production verify route produce source list the presence confirms only that latest casting",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": "current-show-source",
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md"
+        ],
+        "kind": "approved_article"
+      },
+      "specificity_priority": 0,
+      "title": "Current Show Source: Answer"
+    },
+    {
+      "actions": [
         "hold_or_pause",
         "route",
         "access",
@@ -6133,11 +6515,11 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "The internal maintenance source for show changes is project operations, where new shows are added. Normal reps may not have access to that channel, so the bot should answer from this approved list and route only brand-new, paused, disputed, or missing-show status questions to the current sales/ops owner.",
-      "decision_key": "current-show-source-answer-2",
+      "decision_key": "current-show-source-answer-3",
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "the",
@@ -6152,9 +6534,9 @@
         "are",
         "added"
       ],
-      "id": "claim_01463b511cc49b2f",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-2",
+      "id": "claim_32c0109ffc45fc1f",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-3",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -6196,11 +6578,11 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "If a current show is missing from a dropdown or form, route to tech / the current sales-ops owner. Do not tell the rep to choose a placeholder or wrong show and fix it later.",
-      "decision_key": "current-show-source-answer-3",
+      "decision_key": "current-show-source-answer-4",
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "missing",
@@ -6212,9 +6594,9 @@
         "ops",
         "owner"
       ],
-      "id": "claim_4469a0a102605be6",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-3",
+      "id": "claim_68f2ae9296ace724",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-4",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -6257,13 +6639,13 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "America's Authors is on the approved show list, but if a prospect asks for an America's Authors episode and none have aired yet, be transparent: it is a newer show being cast and no episodes have aired yet. If the rep accidentally told the prospect to Google it or offered an episode link, follow up quickly and correct that. For future episode-watching requests, send prospects to the approved site/app/TV viewing paths rather than telling them to Google it.",
-      "decision_key": "current-show-source-answer-4",
+      "decision_key": "current-show-source-answer-5",
       "domains": [
         "shows_offers",
         "production",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "america",
@@ -6280,9 +6662,9 @@
         "none",
         "transparent"
       ],
-      "id": "claim_9be5b0de988e2949",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-4",
+      "id": "claim_782b92d4aa0a5fae",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-5",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -6322,12 +6704,12 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "For Legacy Makers info/docs, use the current Sales Ops-approved Legacy Makers materials. If the rep is on the Daymond John side, they should only sell Daymond John. If a DJ-side applicant wants an ISTV show such as Legacy Makers, the applicant needs to be passed to an ISTV-assigned rep.",
-      "decision_key": "current-show-source-answer-5",
+      "decision_key": "current-show-source-answer-6",
       "domains": [
         "qualification",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "legacy",
@@ -6340,9 +6722,9 @@
         "ops",
         "materials"
       ],
-      "id": "claim_85bf21afa79b640f",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-5",
+      "id": "claim_42f54c07cd6348e3",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-6",
       "product_scopes": [
         "dj_nlceo"
       ],
@@ -6386,7 +6768,7 @@
         "contracts",
         "shows_offers"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "america",
         "source",
@@ -6403,8 +6785,8 @@
         "best",
         "doctors"
       ],
-      "id": "claim_4c89d395e7096d4d",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_8ec8d1d2bc04bb30",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-latest-approved-show-list-1",
       "product_scopes": [
         "product_agnostic"
@@ -6446,12 +6828,12 @@
       "answerability": "route_or_support",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing.",
+      "decision": "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, a show missing from a dropdown/form, or whether a listed show is currently on air or watchable, route to the current sales/ops owner or tech instead of guessing.",
       "decision_key": "current-show-source-route-if-unclear-1",
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "route",
@@ -6468,8 +6850,8 @@
         "dropdown",
         "form"
       ],
-      "id": "claim_9348aa463284239e",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_3ab5e64555a0f9e7",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-route-if-unclear-1",
       "product_scopes": [
         "product_agnostic"
@@ -6481,13 +6863,13 @@
       "question_families": [
         "Current Show Source: Route If Unclear",
         "Current Show Source",
-        "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing"
+        "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, a show missing from a dropdown/form, or whether a listed show is currently on air or watchable, route to"
       ],
       "risk_level": "high",
       "route_channel": "#sales-questions-requests",
       "route_key": "sales_policy",
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "current show source route if unclear current show source route if unclear current show source if a rep asks about a show that is not on this list a show that may have just launched a show that may be paused or a show missing from a dropdown form route to the current sales ops owner or tech instead of guessing if a rep asks about a show that is not on this list a show that may have just launched a show that may be paused or a show missing from a dropdown form route to the current sales ops owner or tech instead of guessing sales tech hold or pause route troubleshoot use or promote source route that unclear may asks not list just launched paused missing dropdown form",
+      "search_text": "current show source route if unclear current show source route if unclear current show source if a rep asks about a show that is not on this list a show that may have just launched a show that may be paused a show missing from a dropdown form or whether a listed show is currently on air or watchable route to if a rep asks about a show that is not on this list a show that may have just launched a show that may be paused a show missing from a dropdown form or whether a listed show is currently on air or watchable route to the current sales ops owner or tech instead of guessing sales tech hold or pause route troubleshoot use or promote source route that unclear may asks not list just launched paused missing dropdown form",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -6506,9 +6888,9 @@
         "hold_or_pause",
         "verify",
         "sign",
-        "route",
         "troubleshoot",
         "explain",
+        "produce",
         "use_or_promote"
       ],
       "answerability": "route_or_support",
@@ -6519,9 +6901,9 @@
       "domains": [
         "contracts",
         "shows_offers",
-        "sales_tech"
+        "production"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "america",
         "source",
@@ -6538,8 +6920,8 @@
         "power",
         "operation"
       ],
-      "id": "claim_e5ffe5f9dd11fe45__a1",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_45061abe2a61e6a0__a1",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-1-a1",
       "product_scopes": [
         "product_agnostic"
@@ -6558,7 +6940,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples of america builders of america legal titans life changers project beauty mindset masters love experts live longer americas top contractors blue collar america america s authors america s top physicians doctors of america rise of her made it in america wealth makers beyond success american founders leading with purpose impact makers tv and masters of innovation the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples of america builders of america legal titans life changers project beauty mindset masters love experts live longer americas top contractors blue collar america america s authors america s top physicians doctors of america rise of her made it in america wealth makers beyond success american founders leading with purpose impact makers tv and masters of innovation contracts shows offers sales tech hold or pause verify sign route troubleshoot explain use or promote america source top reps can say the latest list legacy makers women power operation",
+      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples of america builders of america legal titans life changers project beauty mindset masters love experts live longer americas top contractors blue collar america america s authors america s top physicians doctors of america rise of her made it in america wealth makers beyond success american founders leading with purpose impact makers tv and masters of innovation the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples of america builders of america legal titans life changers project beauty mindset masters love experts live longer americas top contractors blue collar america america s authors america s top physicians doctors of america rise of her made it in america wealth makers beyond success american founders leading with purpose impact makers tv and masters of innovation contracts shows offers production hold or pause verify sign troubleshoot explain produce use or promote america source top reps can say the latest list legacy makers women power operation",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -6577,22 +6959,22 @@
         "hold_or_pause",
         "verify",
         "sign",
-        "route",
         "troubleshoot",
         "explain",
+        "produce",
         "use_or_promote"
       ],
       "answerability": "route_or_support",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "\"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"",
+      "decision": "\"Being on the approved show list does not by itself confirm that an episode has aired or is currently watchable. Confirm the exact show's current episode availability with sales/ops unless separate approved guidance already answers it.\"",
       "decision_key": "current-show-source-what-reps-can-say-1-a2",
       "domains": [
         "contracts",
         "shows_offers",
-        "sales_tech"
+        "production"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "america",
         "source",
@@ -6609,9 +6991,80 @@
         "power",
         "operation"
       ],
-      "id": "claim_e5ffe5f9dd11fe45__a2",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_45061abe2a61e6a0__a2",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-1-a2",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [
+        "non_answer_section"
+      ],
+      "quality_tier": "supporting",
+      "question_families": [
+        "Current Show Source: What Reps Can Say",
+        "Current Show Source",
+        "\"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples",
+        "\"Being on the approved show list does not by itself confirm that an episode has aired or is currently watchable. Confirm the exact show's current episode availability with sales/ops unless separate approved guidance already answers it.\""
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples being on the approved show list does not by itself confirm that an episode has aired or is currently watchable confirm the exact show s current episode availability with sales ops unless separate approved guidance already answers it being on the approved show list does not by itself confirm that an episode has aired or is currently watchable confirm the exact show s current episode availability with sales ops unless separate approved guidance already answers it contracts shows offers production hold or pause verify sign troubleshoot explain produce use or promote america source top reps can say the latest list legacy makers women power operation",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": "current-show-source",
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md"
+        ],
+        "kind": "approved_article"
+      },
+      "specificity_priority": 0,
+      "title": "Current Show Source: What Reps Can Say"
+    },
+    {
+      "actions": [
+        "hold_or_pause",
+        "verify",
+        "sign",
+        "troubleshoot",
+        "explain",
+        "produce",
+        "use_or_promote"
+      ],
+      "answerability": "route_or_support",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "\"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"",
+      "decision_key": "current-show-source-what-reps-can-say-1-a3",
+      "domains": [
+        "contracts",
+        "shows_offers",
+        "production"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "america",
+        "source",
+        "top",
+        "reps",
+        "can",
+        "say",
+        "the",
+        "latest",
+        "list",
+        "legacy",
+        "makers",
+        "women",
+        "power",
+        "operation"
+      ],
+      "id": "claim_45061abe2a61e6a0__a3",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-what-reps-can-say-1-a3",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -6629,7 +7082,7 @@
       "route_channel": "#sales-questions-requests",
       "route_key": "sales_policy",
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples if a show was just added paused missing from a form or disputed i need to confirm with the current sales ops owner before giving a final answer if a show was just added paused missing from a form or disputed i need to confirm with the current sales ops owner before giving a final answer contracts shows offers sales tech hold or pause verify sign route troubleshoot explain use or promote america source top reps can say the latest list legacy makers women power operation",
+      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples if a show was just added paused missing from a form or disputed i need to confirm with the current sales ops owner before giving a final answer if a show was just added paused missing from a form or disputed i need to confirm with the current sales ops owner before giving a final answer contracts shows offers production hold or pause verify sign troubleshoot explain produce use or promote america source top reps can say the latest list legacy makers women power operation",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -6646,106 +7099,40 @@
     {
       "actions": [
         "hold_or_pause",
-        "verify",
-        "sign",
-        "route",
-        "troubleshoot",
-        "explain",
-        "use_or_promote"
-      ],
-      "answerability": "route_or_support",
-      "authority": 100,
-      "blocked_for_decision_keys": [],
-      "decision": "\"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"",
-      "decision_key": "current-show-source-what-reps-can-say-1-a3",
-      "domains": [
-        "contracts",
-        "shows_offers",
-        "sales_tech"
-      ],
-      "effective_at": "2026-07-09",
-      "entities": [
-        "america",
-        "source",
-        "top",
-        "reps",
-        "can",
-        "say",
-        "the",
-        "latest",
-        "list",
-        "legacy",
-        "makers",
-        "women",
-        "power",
-        "operation"
-      ],
-      "id": "claim_e5ffe5f9dd11fe45__a3",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-what-reps-can-say-1-a3",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [
-        "non_answer_section"
-      ],
-      "quality_tier": "supporting",
-      "question_families": [
-        "Current Show Source: What Reps Can Say",
-        "Current Show Source",
-        "\"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples",
-        "\"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\""
-      ],
-      "risk_level": "high",
-      "route_channel": "#sales-questions-requests",
-      "route_key": "sales_policy",
-      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "current show source what reps can say current show source what reps can say current show source the latest approved show list i have is legacy makers women in power operation ceo america s top lawyers america s best doctors america s top trainers america s top agents kingdom creators mompreneurs couples if the show is missing from the dropdown or form route it to tech sales ops do not choose a placeholder show if the show is missing from the dropdown or form route it to tech sales ops do not choose a placeholder show contracts shows offers sales tech hold or pause verify sign route troubleshoot explain use or promote america source top reps can say the latest list legacy makers women power operation",
-      "source": {
-        "approved_by": [
-          "Syed Moonis Haider"
-        ],
-        "article_id": "current-show-source",
-        "ids": [
-          "kb:knowledge-base/offers-packages/current-show-source.md"
-        ],
-        "kind": "approved_article"
-      },
-      "specificity_priority": 0,
-      "title": "Current Show Source: What Reps Can Say"
-    },
-    {
-      "actions": [
         "sign",
         "send",
+        "route",
+        "troubleshoot",
         "explain",
         "produce"
       ],
       "answerability": "route_or_support",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "\"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\"",
+      "decision": "\"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"",
       "decision_key": "current-show-source-what-reps-can-say-2-a1",
       "domains": [
         "qualification",
         "production",
+        "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "reps",
         "can",
         "say",
-        "america",
-        "authors",
-        "newer",
-        "are",
-        "casting",
-        "for"
+        "the",
+        "missing",
+        "dropdown",
+        "form",
+        "route",
+        "tech",
+        "ops"
       ],
-      "id": "claim_10839df611900cbd__a1",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_b81818e4ae8e0fec__a1",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-2-a1",
       "product_scopes": [
         "dj_nlceo"
@@ -6757,14 +7144,14 @@
       "question_families": [
         "Current Show Source: What Reps Can Say",
         "Current Show Source",
-        "\"America's Authors is a newer show we are casting for.",
-        "\"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\""
+        "\"If the show is missing from the dropdown or form, route it to tech / sales ops.",
+        "\"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\""
       ],
       "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "current show source what reps can say current show source what reps can say current show source america s authors is a newer show we are casting for america s authors is a newer show we are casting for if no episodes have aired yet do not pretend there is an episode link correct the prospect and point them to approved viewing paths for shows with available episodes america s authors is a newer show we are casting for if no episodes have aired yet do not pretend there is an episode link correct the prospect and point them to approved viewing paths for shows with available episodes qualification production lead ownership sign send explain produce source reps can say america authors newer are casting for",
+      "route_channel": "#sales-questions-requests",
+      "route_key": "sales_policy",
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "current show source what reps can say current show source what reps can say current show source if the show is missing from the dropdown or form route it to tech sales ops if the show is missing from the dropdown or form route it to tech sales ops do not choose a placeholder show if the show is missing from the dropdown or form route it to tech sales ops do not choose a placeholder show qualification production sales tech lead ownership hold or pause sign send route troubleshoot explain produce source reps can say the missing dropdown form route tech ops",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -6780,36 +7167,41 @@
     },
     {
       "actions": [
+        "hold_or_pause",
         "sign",
         "send",
+        "route",
+        "troubleshoot",
         "explain",
         "produce"
       ],
       "answerability": "route_or_support",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "\"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\"",
+      "decision": "\"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\"",
       "decision_key": "current-show-source-what-reps-can-say-2-a2",
       "domains": [
         "qualification",
         "production",
+        "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "reps",
         "can",
         "say",
-        "america",
-        "authors",
-        "newer",
-        "are",
-        "casting",
-        "for"
+        "the",
+        "missing",
+        "dropdown",
+        "form",
+        "route",
+        "tech",
+        "ops"
       ],
-      "id": "claim_10839df611900cbd__a2",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_b81818e4ae8e0fec__a2",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-2-a2",
       "product_scopes": [
         "dj_nlceo"
@@ -6821,14 +7213,83 @@
       "question_families": [
         "Current Show Source: What Reps Can Say",
         "Current Show Source",
-        "\"America's Authors is a newer show we are casting for.",
+        "\"If the show is missing from the dropdown or form, route it to tech / sales ops.",
+        "\"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\""
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "current show source what reps can say current show source what reps can say current show source if the show is missing from the dropdown or form route it to tech sales ops america s authors is a newer show we are casting for if no episodes have aired yet do not pretend there is an episode link correct the prospect and point them to approved viewing paths for shows with available episodes america s authors is a newer show we are casting for if no episodes have aired yet do not pretend there is an episode link correct the prospect and point them to approved viewing paths for shows with available episodes qualification production sales tech lead ownership hold or pause sign send route troubleshoot explain produce source reps can say the missing dropdown form route tech ops",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": "current-show-source",
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md"
+        ],
+        "kind": "approved_article"
+      },
+      "specificity_priority": 0,
+      "title": "Current Show Source: What Reps Can Say"
+    },
+    {
+      "actions": [
+        "hold_or_pause",
+        "sign",
+        "send",
+        "route",
+        "troubleshoot",
+        "explain",
+        "produce"
+      ],
+      "answerability": "route_or_support",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "\"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\"",
+      "decision_key": "current-show-source-what-reps-can-say-2-a3",
+      "domains": [
+        "qualification",
+        "production",
+        "sales_tech",
+        "lead_ownership"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "source",
+        "reps",
+        "can",
+        "say",
+        "the",
+        "missing",
+        "dropdown",
+        "form",
+        "route",
+        "tech",
+        "ops"
+      ],
+      "id": "claim_b81818e4ae8e0fec__a3",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-what-reps-can-say-2-a3",
+      "product_scopes": [
+        "dj_nlceo"
+      ],
+      "quality_flags": [
+        "non_answer_section"
+      ],
+      "quality_tier": "supporting",
+      "question_families": [
+        "Current Show Source: What Reps Can Say",
+        "Current Show Source",
+        "\"If the show is missing from the dropdown or form, route it to tech / sales ops.",
         "\"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
-      "route_reason": "",
-      "search_text": "current show source what reps can say current show source what reps can say current show source america s authors is a newer show we are casting for if you are on the dj side only sell daymond john if the applicant wants an istv show pass them to an istv assigned rep if you are on the dj side only sell daymond john if the applicant wants an istv show pass them to an istv assigned rep qualification production lead ownership sign send explain produce source reps can say america authors newer are casting for",
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "current show source what reps can say current show source what reps can say current show source if the show is missing from the dropdown or form route it to tech sales ops if you are on the dj side only sell daymond john if the applicant wants an istv show pass them to an istv assigned rep if you are on the dj side only sell daymond john if the applicant wants an istv show pass them to an istv assigned rep qualification production sales tech lead ownership hold or pause sign send route troubleshoot explain produce source reps can say the missing dropdown form route tech ops",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -6865,7 +7326,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -6882,8 +7343,8 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a1",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2__a1",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1-a1",
       "product_scopes": [
         "product_agnostic"
@@ -6940,7 +7401,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -6957,8 +7418,8 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a2",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2__a2",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1-a2",
       "product_scopes": [
         "product_agnostic"
@@ -7015,7 +7476,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -7032,8 +7493,8 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a3",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2__a3",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1-a3",
       "product_scopes": [
         "product_agnostic"
@@ -7090,7 +7551,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -7107,8 +7568,8 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a4",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2__a4",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1-a4",
       "product_scopes": [
         "product_agnostic"
@@ -7157,7 +7618,7 @@
       "answerability": "route_or_support",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.",
+      "decision": "Do not infer that a show is on air, has an aired episode, or is currently watchable only because its name appears on this list.",
       "decision_key": "current-show-source-what-reps-must-not-say-1-a5",
       "domains": [
         "shows_offers",
@@ -7165,7 +7626,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -7182,9 +7643,84 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a5",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2__a5",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1-a5",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [
+        "overbroad_action_tags",
+        "non_answer_section"
+      ],
+      "quality_tier": "supporting",
+      "question_families": [
+        "Current Show Source: What Reps Must Not Say",
+        "Current Show Source",
+        "Do not rely on old show lists, old dropdowns, old examples, or public pages as the final source.",
+        "Do not infer that a show is on air, has an aired episode, or is currently watchable only because its name appears on this list."
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "",
+      "search_text": "current show source what reps must not say current show source what reps must not say current show source do not rely on old show lists old dropdowns old examples or public pages as the final source do not infer that a show is on air has an aired episode or is currently watchable only because its name appears on this list do not infer that a show is on air has an aired episode or is currently watchable only because its name appears on this list shows offers production sales tech lead ownership hold or pause verify sign access troubleshoot explain promise produce use or promote source not old reps must say rely lists dropdowns examples public pages the final",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": "current-show-source",
+        "ids": [
+          "kb:knowledge-base/offers-packages/current-show-source.md"
+        ],
+        "kind": "approved_article"
+      },
+      "specificity_priority": 0,
+      "title": "Current Show Source: What Reps Must Not Say"
+    },
+    {
+      "actions": [
+        "hold_or_pause",
+        "verify",
+        "sign",
+        "access",
+        "troubleshoot",
+        "explain",
+        "promise",
+        "produce",
+        "use_or_promote"
+      ],
+      "answerability": "route_or_support",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.",
+      "decision_key": "current-show-source-what-reps-must-not-say-1-a6",
+      "domains": [
+        "shows_offers",
+        "production",
+        "sales_tech",
+        "lead_ownership"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "source",
+        "not",
+        "old",
+        "reps",
+        "must",
+        "say",
+        "rely",
+        "lists",
+        "dropdowns",
+        "examples",
+        "public",
+        "pages",
+        "the",
+        "final"
+      ],
+      "id": "claim_17acf6e3dadd0ff2__a6",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-what-reps-must-not-say-1-a6",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -7233,14 +7769,14 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "Do not tell a prospect to Google for an episode when the show is still being cast and no episodes have aired.",
-      "decision_key": "current-show-source-what-reps-must-not-say-1-a6",
+      "decision_key": "current-show-source-what-reps-must-not-say-1-a7",
       "domains": [
         "shows_offers",
         "production",
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -7257,9 +7793,9 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a6",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-what-reps-must-not-say-1-a6",
+      "id": "claim_17acf6e3dadd0ff2__a7",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-what-reps-must-not-say-1-a7",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -7308,14 +7844,14 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "Do not let DJ-side reps sell ISTV shows directly; pass ISTV-show interest to an ISTV-assigned rep.",
-      "decision_key": "current-show-source-what-reps-must-not-say-1-a7",
+      "decision_key": "current-show-source-what-reps-must-not-say-1-a8",
       "domains": [
         "shows_offers",
         "production",
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -7332,9 +7868,9 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef__a7",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-what-reps-must-not-say-1-a7",
+      "id": "claim_17acf6e3dadd0ff2__a8",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-what-reps-must-not-say-1-a8",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -21125,8 +21661,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21135,10 +21670,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a1",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21155,8 +21689,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a1",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a1",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a1",
       "product_scopes": [
         "product_agnostic"
@@ -21173,7 +21707,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app all tiers air on the inside success network app all tiers air on the inside success network app pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app all tiers air on the inside success network app all tiers air on the inside success network app pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21191,20 +21725,18 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
       "blocked_for_decision_keys": [],
-      "decision": "The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.",
+      "decision": "You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.",
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a2",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21221,8 +21753,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a2",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a2",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a2",
       "product_scopes": [
         "product_agnostic"
@@ -21233,13 +21765,13 @@
         "Platform, Proof, And Claims Boundaries: Answer",
         "Platform, Proof, And Claims Boundaries",
         "Approved platform wording: - All tiers air on the Inside Success Network app.",
-        "The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices."
+        "You can download the ISTV app on Roku, Fire Stick, or Apple TV devices."
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app the inside success network app is accessible on roku fire stick and apple tv physical devices the inside success network app is accessible on roku fire stick and apple tv physical devices pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices you can download the istv app on roku fire stick or apple tv devices pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21257,8 +21789,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21267,10 +21798,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a3",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21287,8 +21817,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a3",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a3",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a3",
       "product_scopes": [
         "product_agnostic"
@@ -21307,7 +21837,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app this is not the apple tv streaming app channel and not the amazon streaming app policy context platform proof and claims boundaries answer decision evidence this is not the apple tv streaming app channel and not the amazon streaming app pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app this is not the apple tv streaming app channel and not the amazon streaming app policy context platform proof and claims boundaries answer decision evidence this is not the apple tv streaming app channel and not the amazon streaming app pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21325,8 +21855,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21335,10 +21864,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a4",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21355,8 +21883,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a4",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a4",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a4",
       "product_scopes": [
         "product_agnostic"
@@ -21373,7 +21901,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app vip premium is submitted to one tier 1 streaming platform amazon prime video apple tv streaming app or tubi vip premium is submitted to one tier 1 streaming platform amazon prime video apple tv streaming app or tubi pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app vip premium is submitted to one tier 1 streaming platform amazon prime video apple tv streaming app or tubi vip premium is submitted to one tier 1 streaming platform amazon prime video apple tv streaming app or tubi pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21391,8 +21919,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21401,10 +21928,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a5",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21421,8 +21947,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a5",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a5",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a5",
       "product_scopes": [
         "product_agnostic"
@@ -21439,7 +21965,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app tier 1 placement is a platform decision and is not guaranteed tier 1 placement is a platform decision and is not guaranteed pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app tier 1 placement is a platform decision and is not guaranteed tier 1 placement is a platform decision and is not guaranteed pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21457,8 +21983,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21467,10 +21992,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a6",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21487,8 +22011,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a6",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a6",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a6",
       "product_scopes": [
         "product_agnostic"
@@ -21505,7 +22029,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app istv does not work directly with amazon or apple a third party helps with those submissions istv does not work directly with amazon or apple a third party helps with those submissions pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app istv does not work directly with amazon or apple a third party helps with those submissions istv does not work directly with amazon or apple a third party helps with those submissions pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21523,8 +22047,7 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "answer_evidence",
       "authority": 100,
@@ -21533,10 +22056,9 @@
       "decision_key": "platform-proof-and-claims-boundaries-answer-1-a7",
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21553,8 +22075,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7__a7",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9__a7",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1-a7",
       "product_scopes": [
         "product_agnostic"
@@ -21571,7 +22093,7 @@
       "route_channel": null,
       "route_key": null,
       "route_reason": "",
-      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app clients cannot pay extra to force or guarantee apple tv streaming app submission or placement clients cannot pay extra to force or guarantee apple tv streaming app submission or placement pricing payments sales tech pay verify route access platform proof and claims boundaries wording all tiers air the inside success network app",
+      "search_text": "platform proof and claims boundaries answer platform proof and claims boundaries answer platform proof and claims boundaries approved platform wording all tiers air on the inside success network app clients cannot pay extra to force or guarantee apple tv streaming app submission or placement clients cannot pay extra to force or guarantee apple tv streaming app submission or placement pricing payments pay verify route platform proof and claims boundaries wording all tiers air the inside success network app",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -21600,7 +22122,7 @@
       "domains": [
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21615,7 +22137,7 @@
         "short"
       ],
       "id": "claim_1a9f0b652349f6de__a1",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-2-a1",
       "product_scopes": [
         "product_agnostic"
@@ -21661,7 +22183,7 @@
       "domains": [
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21676,7 +22198,7 @@
         "short"
       ],
       "id": "claim_1a9f0b652349f6de__a2",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-2-a2",
       "product_scopes": [
         "product_agnostic"
@@ -21722,7 +22244,7 @@
       "domains": [
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21737,7 +22259,7 @@
         "short"
       ],
       "id": "claim_1a9f0b652349f6de__a3",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-2-a3",
       "product_scopes": [
         "product_agnostic"
@@ -21783,7 +22305,7 @@
       "domains": [
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -21798,7 +22320,7 @@
         "short"
       ],
       "id": "claim_1a9f0b652349f6de__a4",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-2-a4",
       "product_scopes": [
         "product_agnostic"
@@ -21843,7 +22365,7 @@
       "domains": [
         "pricing"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "and",
         "platform",
@@ -21861,7 +22383,7 @@
         "because"
       ],
       "id": "claim_7ecaff14c5cf8776__a1",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-3-a1",
       "product_scopes": [
         "product_agnostic"
@@ -21906,7 +22428,7 @@
       "domains": [
         "pricing"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "and",
         "platform",
@@ -21924,7 +22446,7 @@
         "because"
       ],
       "id": "claim_7ecaff14c5cf8776__a2",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-3-a2",
       "product_scopes": [
         "product_agnostic"
@@ -21969,7 +22491,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "platform",
@@ -21987,7 +22509,7 @@
         "are"
       ],
       "id": "claim_93c33d9477c40ca6",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-4",
       "product_scopes": [
         "product_agnostic"
@@ -22031,7 +22553,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "and",
@@ -22049,7 +22571,7 @@
         "demographics"
       ],
       "id": "claim_069f1536e23fe088",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-5",
       "product_scopes": [
         "product_agnostic"
@@ -22092,7 +22614,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "platform",
@@ -22110,7 +22632,7 @@
         "source"
       ],
       "id": "claim_5b774768b7947af0",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-6",
       "product_scopes": [
         "product_agnostic"
@@ -22156,7 +22678,7 @@
         "production",
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "claims",
@@ -22174,7 +22696,7 @@
         "review"
       ],
       "id": "claim_d42e16d44c52f3b0",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-route-if-asked-for-proof-links-or-claims-1",
       "product_scopes": [
         "product_agnostic"
@@ -22227,25 +22749,25 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a1",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_9a12d8eaefcf143a__a1",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a1",
       "product_scopes": [
         "product_agnostic"
@@ -22257,14 +22779,88 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"All tiers air on the Inside Success Network app.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar all tiers air on the inside success network app all tiers air on the inside success network app qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be all tiers air on the inside success network app all tiers air on the inside success network app qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
+      "source": {
+        "approved_by": [
+          "Syed Moonis Haider"
+        ],
+        "article_id": "platform-proof-and-claims-boundaries",
+        "ids": [
+          "kb:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md"
+        ],
+        "kind": "approved_article"
+      },
+      "specificity_priority": 0,
+      "title": "Platform, Proof, And Claims Boundaries: What Reps Can Say"
+    },
+    {
+      "actions": [
+        "qualify",
+        "price",
+        "verify",
+        "send",
+        "route",
+        "explain",
+        "contact",
+        "use_or_promote"
+      ],
+      "answerability": "answer_evidence",
+      "authority": 100,
+      "blocked_for_decision_keys": [],
+      "decision": "\"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\"",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+      "domains": [
+        "qualification",
+        "pricing",
+        "production",
+        "content_rights",
+        "communications"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "platform",
+        "proof",
+        "and",
+        "claims",
+        "boundaries",
+        "can",
+        "reps",
+        "say",
+        "the",
+        "app",
+        "all",
+        "tiers",
+        "air",
+        "inside"
+      ],
+      "id": "claim_9a12d8eaefcf143a__a2",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "quality_flags": [
+        "overbroad_action_tags"
+      ],
+      "quality_tier": "canonical",
+      "question_families": [
+        "Platform, Proof, And Claims Boundaries: What Reps Can Say",
+        "Platform, Proof, And Claims Boundaries",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
+        "\"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\""
+      ],
+      "risk_level": "high",
+      "route_channel": null,
+      "route_key": null,
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be you can download the istv app on roku fire stick or apple tv devices you can download the istv app on roku fire stick or apple tv devices qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22293,7 +22889,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
       "domains": [
         "qualification",
         "pricing",
@@ -22301,26 +22897,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a2",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+      "id": "claim_9a12d8eaefcf143a__a3",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22331,14 +22927,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22367,7 +22963,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a4",
       "domains": [
         "qualification",
         "pricing",
@@ -22375,26 +22971,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a3",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
+      "id": "claim_9a12d8eaefcf143a__a4",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a4",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22405,14 +23001,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar if they are seeing bad reviews briefly clarify whether they are looking at the separate uk company or istv search insidesuccesstv for the correct brand context if they are seeing bad reviews briefly clarify whether they are looking at the separate uk company or istv search insidesuccesstv for the correct brand context qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be if they are seeing bad reviews briefly clarify whether they are looking at the separate uk company or istv search insidesuccesstv for the correct brand context if they are seeing bad reviews briefly clarify whether they are looking at the separate uk company or istv search insidesuccesstv for the correct brand context qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22441,7 +23037,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"If they still feel this is a scam, this may not be the right fit for them.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a4",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
       "domains": [
         "qualification",
         "pricing",
@@ -22449,26 +23045,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a4",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a4",
+      "id": "claim_9a12d8eaefcf143a__a5",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22479,14 +23075,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"If they still feel this is a scam, this may not be the right fit for them.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar if they still feel this is a scam this may not be the right fit for them if they still feel this is a scam this may not be the right fit for them qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be if they still feel this is a scam this may not be the right fit for them if they still feel this is a scam this may not be the right fit for them qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22515,7 +23111,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
       "domains": [
         "qualification",
         "pricing",
@@ -22523,26 +23119,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a5",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
+      "id": "claim_9a12d8eaefcf143a__a6",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22553,14 +23149,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar do not get into a vendor cost or roi comparison keep it to the approved platform and fit language do not get into a vendor cost or roi comparison keep it to the approved platform and fit language qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be do not get into a vendor cost or roi comparison keep it to the approved platform and fit language do not get into a vendor cost or roi comparison keep it to the approved platform and fit language qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22589,7 +23185,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
       "domains": [
         "qualification",
         "pricing",
@@ -22597,26 +23193,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a6",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
+      "id": "claim_9a12d8eaefcf143a__a7",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22627,14 +23223,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\""
       ],
       "risk_level": "high",
       "route_channel": null,
       "route_key": null,
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar for $30k webpage social rebrand examples sales ops has a vip conversion page example use the current approved example link do not imply we have a full approved list unless sales ops confirms it for $30k webpage social rebrand examples sales ops has a vip conversion page example use the current approved example link do not imply we have a full approved list unless sales ops confirms it qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be for $30k webpage social rebrand examples sales ops has a vip conversion page example use the current approved example link do not imply we have a full approved list unless sales ops confirms it for $30k webpage social rebrand examples sales ops has a vip conversion page example use the current approved example link do not imply we have a full approved list unless sales ops confirms it qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22663,7 +23259,7 @@
       "authority": 100,
       "blocked_for_decision_keys": [],
       "decision": "\"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\"",
-      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
+      "decision_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a8",
       "domains": [
         "qualification",
         "pricing",
@@ -22671,26 +23267,26 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33__a7",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
+      "id": "claim_9a12d8eaefcf143a__a8",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a8",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -22701,14 +23297,14 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar",
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be",
         "\"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\""
       ],
       "risk_level": "high",
       "route_channel": "#sales-questions-requests",
       "route_key": "sales_policy",
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
-      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app vip premium includes submission to one tier 1 platform but placement is not guaranteed because the platform decides if they are seeing bad reviews briefly clar for official media kits nielsen statistics audience statistics demographics rankings or proof decks route to the approved proof source owner for the current approved material for official media kits nielsen statistics audience statistics demographics rankings or proof decks route to the approved proof source owner for the current approved material qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries reps can say the all tiers air inside success",
+      "search_text": "platform proof and claims boundaries what reps can say platform proof and claims boundaries what reps can say platform proof and claims boundaries all tiers air on the inside success network app you can download the istv app on roku fire stick or apple tv devices vip premium includes submission to one tier 1 platform but placement is not guaranteed be for official media kits nielsen statistics audience statistics demographics rankings or proof decks route to the approved proof source owner for the current approved material for official media kits nielsen statistics audience statistics demographics rankings or proof decks route to the approved proof source owner for the current approved material qualification pricing production content rights communications qualify price verify send route explain contact use or promote platform proof and claims boundaries can reps say the app all tiers air inside",
       "source": {
         "approved_by": [
           "Syed Moonis Haider"
@@ -22742,7 +23338,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -22760,7 +23356,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a1",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a1",
       "product_scopes": [
         "product_agnostic"
@@ -22811,7 +23407,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -22829,7 +23425,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a10",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a10",
       "product_scopes": [
         "product_agnostic"
@@ -22880,7 +23476,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -22898,7 +23494,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a2",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a2",
       "product_scopes": [
         "product_agnostic"
@@ -22949,7 +23545,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -22967,7 +23563,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a3",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a3",
       "product_scopes": [
         "product_agnostic"
@@ -23018,7 +23614,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23036,7 +23632,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a4",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a4",
       "product_scopes": [
         "product_agnostic"
@@ -23087,7 +23683,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23105,7 +23701,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a5",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a5",
       "product_scopes": [
         "product_agnostic"
@@ -23156,7 +23752,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23174,7 +23770,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a6",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a6",
       "product_scopes": [
         "product_agnostic"
@@ -23225,7 +23821,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23243,7 +23839,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a7",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a7",
       "product_scopes": [
         "product_agnostic"
@@ -23294,7 +23890,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23312,7 +23908,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a8",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a8",
       "product_scopes": [
         "product_agnostic"
@@ -23363,7 +23959,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -23381,7 +23977,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3__a9",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1-a9",
       "product_scopes": [
         "product_agnostic"
@@ -53678,57 +54274,6 @@
     },
     {
       "actions": [
-        "schedule"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "Policy context: Scam objection / bad reviews. Decision evidence: The rep's response was right, suggested encouraging the prospect to download the app on Roku, Apple, or Fire TV, and to research the company on Instagram, Facebook, YouTube, or clients featured. A suggested line was: celebrities would not allow their content to be streamed if it were a scam.",
-      "decision_key": "scam-objection-bad-reviews",
-      "domains": [
-        "scheduling"
-      ],
-      "effective_at": "2026-06-22T18:05:04.241619+00:00",
-      "entities": [
-        "scam",
-        "objection",
-        "bad",
-        "reviews"
-      ],
-      "id": "claim_80b5cdc67d0ad0e6",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "scam-objection-bad-reviews",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [
-        "context_dependent_opening"
-      ],
-      "quality_tier": "contextual_evidence",
-      "question_families": [
-        "Scam objection / bad reviews",
-        "Scam objection / bad reviews"
-      ],
-      "risk_level": "low",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "scam objection bad reviews scam objection bad reviews scam objection bad reviews policy context scam objection bad reviews decision evidence the rep s response was right suggested encouraging the prospect to download the app on roku apple or fire tv and to research the company on instagram facebook youtube or clients featured a suggested line was celebrities would not allow their content to be streamed if it were a scam scheduling schedule scam objection bad reviews",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1782151504.241619"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "Scam objection / bad reviews"
-    },
-    {
-      "actions": [
         "schedule",
         "route",
         "troubleshoot",
@@ -56878,65 +57423,6 @@
     },
     {
       "actions": [
-        "pay",
-        "use_or_promote"
-      ],
-      "answerability": "answer_evidence",
-      "authority": 90,
-      "blocked_for_decision_keys": [],
-      "decision": "One really, Amazon Prime, and it is not guaranteed. They can pay extra for Apple TV submission.",
-      "decision_key": "vip-license-platform-coverage",
-      "domains": [
-        "payments",
-        "content_rights"
-      ],
-      "effective_at": "2026-06-23T05:03:33.038519+00:00",
-      "entities": [
-        "vip",
-        "license",
-        "platform",
-        "coverage",
-        "the",
-        "get",
-        "clients",
-        "just",
-        "one",
-        "extra",
-        "multiple",
-        "ones"
-      ],
-      "id": "claim_508134574a4a4ea5",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "vip-license-platform-coverage",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "quality_flags": [],
-      "quality_tier": "trusted_evidence",
-      "question_families": [
-        "Does the VIP License get clients on just one extra platform or multiple ones?",
-        "VIP license platform coverage"
-      ],
-      "risk_level": "high",
-      "route_channel": null,
-      "route_key": null,
-      "route_reason": "",
-      "search_text": "vip license platform coverage does the vip license get clients on just one extra platform or multiple ones vip license platform coverage one really amazon prime and it is not guaranteed they can pay extra for apple tv submission payments content rights pay use or promote vip license platform coverage the get clients just one extra multiple ones",
-      "source": {
-        "approved_by": [
-          "Madeline Cary"
-        ],
-        "article_id": null,
-        "ids": [
-          "slack:#sales-questions-requests:1782191013.038519"
-        ],
-        "kind": "trusted_slack_summary"
-      },
-      "specificity_priority": 0,
-      "title": "VIP license platform coverage"
-    },
-    {
-      "actions": [
         "contact",
         "use_or_promote"
       ],
@@ -58314,18 +58800,18 @@
   "source_coverage": {
     "all_records_dispositioned": true,
     "base": {
-      "approved_article_claims": 152,
+      "approved_article_claims": 153,
       "approved_curated_slack_claims": 4,
-      "approved_trusted_slack_claims": 434,
+      "approved_trusted_slack_claims": 432,
       "curated_slack_entries": 786,
-      "live_approved_claims": 605,
-      "owner_approved_overrides": 12,
+      "live_approved_claims": 609,
+      "owner_approved_overrides": 17,
       "slack_dispositions": {
-        "approved": 438,
+        "approved": 436,
         "candidate": 246,
         "conflicting": 36,
         "needs_owner": 60,
-        "superseded": 6
+        "superseded": 8
       },
       "trusted_author_entries": 566,
       "trusted_transcript_claims": 3
@@ -59209,19 +59695,19 @@
   },
   "stats": {
     "answerability": {
-      "answer_evidence": 736,
+      "answer_evidence": 738,
       "discovery_only": 7,
-      "route_or_support": 132
+      "route_or_support": 137
     },
     "blocked_topic_count": 39,
     "dispositioned_policy_count": 2,
-    "policy_count": 875,
+    "policy_count": 882,
     "quality_tiers": {
-      "canonical": 378,
-      "contextual_evidence": 151,
+      "canonical": 384,
+      "contextual_evidence": 150,
       "discovery_only": 7,
-      "supporting": 64,
-      "trusted_evidence": 275
+      "supporting": 67,
+      "trusted_evidence": 274
     },
     "source_supplement_dispositions": {
       "active": 20,
@@ -59233,10 +59719,10 @@
       "unresolved": 2
     },
     "sources": {
-      "approved_article": 405,
+      "approved_article": 409,
       "curated_slack_summary": 4,
-      "owner_approved_override": 12,
-      "trusted_slack_summary": 429,
+      "owner_approved_override": 17,
+      "trusted_slack_summary": 427,
       "trusted_transcript_summary": 3,
       "v3_owner_approved_override": 2,
       "v3_trusted_source_decision": 20

@@ -161,6 +161,22 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "post-launch owner corrections supersede stale claims and preserve factual draft repair",
+    v3Registry.policies.some((policy) => policy.id === "owner-istv-app-download-devices" && /Roku, Fire Stick, or Apple TV devices/.test(policy.decision)) &&
+      v3Registry.policies.some((policy) => policy.id === "owner-vip-tier-one-platform-boundary") &&
+      v3Registry.policies.some((policy) => policy.id === "owner-current-show-list-watchability-boundary") &&
+      v3Registry.policies.some((policy) => policy.id === "owner-current-show-watchability-route") &&
+      v3Registry.policies.some((policy) => policy.id === "owner-dj-nlceo-current-offer-overview") &&
+      !v3Registry.policies.some((policy) => policy.id === "claim_80b5cdc67d0ad0e6") &&
+      !v3Registry.policies.some((policy) => policy.id === "claim_508134574a4a4ea5") &&
+      v3Runtime.includes("pastes a proposed customer email") &&
+      v3Runtime.includes("generic 'email-writing advice'") &&
+      v3Runtime.includes("corrected rep-ready version") &&
+      v3Runtime.includes("also context, not evidence"),
+    "Rich's exact device wording, platform/show/DJ boundaries, stale-claim retirement, and factual email decomposition are enforced",
+  );
+
+  addCheck(
     "V3 resolves immediate context and product negation before hybrid retrieval",
     v3TurnResolver.includes("immediatePreviousUserQuestion") &&
       v3TurnResolver.includes("immediatePreviousAssistantAnswer") &&

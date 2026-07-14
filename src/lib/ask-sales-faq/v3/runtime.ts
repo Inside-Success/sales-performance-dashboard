@@ -321,12 +321,14 @@ function misappliesCustomSplitBoundary(
 }
 
 function missesRequestedArtifact(need: string, policy: V3Policy) {
-  const artifact = need.match(/\b((?:[a-z][a-z0-9-]*\s+){1,4})(list|document|link|template|spreadsheet|pdf)\b/i);
-  if (!artifact) return false;
-  const qualifiers = artifact[1]
+  const artifactBefore = need.match(/\b((?:[a-z][a-z0-9-]*\s+){1,4})(list|document|link|template|spreadsheet|pdf)\b/i);
+  const artifactAfter = need.match(/\b(list|document|link|template|spreadsheet|pdf)\s+(?:of|for|to)\s+((?:[a-z][a-z0-9-]*\s*){1,5})/i);
+  if (!artifactBefore && !artifactAfter) return false;
+  const qualifierText = artifactAfter?.[2] || artifactBefore?.[1] || "";
+  const qualifiers = qualifierText
     .toLowerCase()
     .split(/\s+/)
-    .filter((token) => token && !/^(?:a|an|the|this|that|which|what|current|latest|approved|included|relevant|correct|exact|where|find)$/.test(token));
+    .filter((token) => token && !/^(?:a|an|the|this|that|which|what|current|latest|approved|included|relevant|correct|exact|where|find|stored|available)$/.test(token));
   if (!qualifiers.length) return false;
   const descriptor = [policy.title, ...policy.question_families, policy.decision].join(" ");
   const normalizedDescriptor = normalizeText(descriptor);
@@ -510,6 +512,7 @@ async function addSemanticRecall(input: {
         "You write compact retrieval queries for an internal sales-policy search engine. You never answer the question.",
         "Return 2 to 4 short standalone retrieval queries that preserve the exact requested action, entity, product, timing, exception, and negation.",
         "Cover each distinct decision the user needs, such as eligibility, permission, ownership, timing, next action, or exception, with a separate query when needed.",
+        "When the user pastes a proposed customer email, sales message, or reply and asks for help, extract the factual business claims that need verification or correction and write separate retrieval queries for those claims. Do not collapse the request into generic email-writing or tone advice.",
         "Include at least one policy-title-like abstraction of the business decision instead of merely repeating the user's sentence.",
         "Use likely policy-catalog wording, but do not broaden to neighboring products or topics and do not invent a policy.",
         "Keep explicitly excluded products excluded. Every query must mean the same thing as the current question or one explicit part of it.",
@@ -609,6 +612,7 @@ async function selectApplicableEvidence(input: {
       system: [
         "You are the claim-entailment stage for an internal sales assistant. You do not answer the user.",
         "First decompose the resolved question into one to six atomic needs. Each need must contain exactly one decision, fact, method, timing, permission, boundary, or next action that the user explicitly requested.",
+        "A pasted customer email, sales message, or proposed reply plus a request for help is an explicit request to verify and correct its factual business claims. Decompose those claims into factual needs; do not use a generic 'email-writing advice' need. Tone and formatting are presentation requests, not policy needs.",
         "Do not add a helpful-sounding need that the user did not ask for. In particular, a yes/no eligibility or permission question does not also request process steps, payment handling, exceptions, caveats, or a next action unless the wording asks for them.",
         "When a question asks which contract, process, or next step to use for a proposed exception, create separate needs for whether the proposal is allowed and for the approved next action. A policy that prohibits the proposed option directly answers the first need; a policy that supplies the replacement action supports the second.",
         "Then evaluate each need independently against the evidence cards. Never require one card to answer the whole question.",
@@ -853,6 +857,7 @@ function composerSystemPrompt() {
     "Honor explicit scope and negation. If the user says main ISTV and not DJ/NLCEO, never use DJ/NLCEO-only policy, and vice versa.",
     "For a follow-up, the IMMEDIATE previous user question and assistant answer are the antecedent. Never jump back two turns. If the user corrects the product or entity, re-answer the immediate previous action for the corrected scope.",
     "Answer the question asked. Do not dump adjacent knowledge-base facts, internal process notes, unrequested process steps, or irrelevant caveats.",
+    "When the user supplies a proposed customer email, sales message, or reply, return a corrected rep-ready version from the supported factual needs. Preserve supported facts, remove or soften unsupported claims, and route only the unresolved factual parts; never replace the task with generic writing advice.",
     "Coverage must contain every evidence-contract need exactly once. Map direct to answered, partial to partial, and a need with only route support or no support to unresolved.",
     "When evidence is incomplete, answer the supported part and route only the unresolved part. Never invent a fact, number, link, exception, owner, or channel.",
     "Missing evidence does not prove that a document, resource, option, policy, or process does not exist. Say only that its exact status or location is not confirmed by the supplied evidence unless a card explicitly states nonexistence.",
@@ -1191,6 +1196,7 @@ async function validateAndRepair(input: {
       "The answer may use only the selected evidence below and the user's question. Remove irrelevant facts and unsupported claims.",
       "Require the smallest sufficient evidence set. Supported adjacent facts are still irrelevant when they do not answer a requested part, and must be removed.",
       "The user's question is context, not evidence. A proposed yes/no conclusion is unsupported unless the selected evidence actually states or clearly entails that conclusion.",
+      "Text pasted as a proposed customer email, sales message, or reply is also context, not evidence. Audit each factual business claim in that draft, preserve supported corrections, remove unsupported claims, and keep only genuinely unresolved facts routed.",
       "A product-agnostic decision may apply to a named product when it directly answers the requested action. Treat product_scopes as authoritative: example show names inside a product-agnostic card illustrate the decision but do not narrow its scope unless the decision explicitly says they do. Conversely, a generic process does not answer a question asking how to verify something or whether a corrected product changes the prior answer.",
       "Do not reject a product-agnostic answer merely because the user's named product does not appear in the decision text. First compare the requested action to the decision; if that action matches, the named product is within scope unless the decision explicitly excludes it.",
       "When a broadly worded operational instruction applies across situations, preserve that instruction without importing details from its original example trigger.",
