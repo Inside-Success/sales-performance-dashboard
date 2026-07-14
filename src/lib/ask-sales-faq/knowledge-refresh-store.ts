@@ -266,6 +266,19 @@ async function buildKnowledgeRefreshSchema() {
     )
   `;
   await sql`create index if not exists ask_sales_faq_refresh_audit_entity_idx on ask_sales_faq_refresh_audit (entity_type, entity_id, created_at desc)`;
+  await sql`
+    update ask_sales_faq_refresh_snapshots snapshot
+    set analysis_completed_at = completed.created_at,
+        analysis_model = coalesce(snapshot.analysis_model, completed.model)
+    from (
+      select distinct on (entity_id)
+             entity_id, created_at, details ->> 'model' as model
+      from ask_sales_faq_refresh_audit
+      where entity_type = 'snapshot' and event_type = 'analysis_completed'
+      order by entity_id, created_at desc
+    ) completed
+    where snapshot.id = completed.entity_id and snapshot.analysis_completed_at is null
+  `;
 
   await seedKnowledgeRefreshSources();
 }
