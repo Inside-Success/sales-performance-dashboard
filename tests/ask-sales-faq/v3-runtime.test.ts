@@ -1452,4 +1452,140 @@ describe("Ask Sales FAQ V3 runtime", () => {
     expect(result.routeReason).toContain("#sales-tech-requests");
     expect(result.routeReason).not.toMatch(/selected evidence|evidence card|V1/i);
   });
+
+  it("treats a pasted customer email as factual verification and preserves supported corrections", async () => {
+    let semanticPromptSeen = false;
+    let selectionPromptSeen = false;
+    let composerPromptSeen = false;
+    let validationPromptSeen = false;
+    const base = jsonProvider(({ purpose, user }) => {
+      const payload = JSON.parse(user) as Record<string, unknown>;
+      if (purpose === "v3_semantic_recall") {
+        return {
+          queries: [
+            "main ISTV VIP Tier-1 Amazon placement guarantee",
+            "ISTV app download supported Roku Fire Stick Apple TV devices",
+            "current Amazon episode search and listing visibility",
+          ],
+        };
+      }
+      if (purpose.startsWith("v3_evidence_selection")) {
+        const candidates = payload.candidates as Array<{ ref: string; id: string; decision_evidence: string }>;
+        const vip = candidates.find((card) => card.id === "owner-vip-tier-one-platform-boundary");
+        const app = candidates.find((card) => card.id === "owner-istv-app-download-devices");
+        expect(vip).toBeDefined();
+        expect(app).toBeDefined();
+        return {
+          needs: [
+            { text: "Whether the VIP package guarantees Amazon placement" },
+            { text: "Which devices can download the ISTV app" },
+            { text: "Whether the episode will be easy to find on Amazon" },
+          ],
+          support: [
+            { need_id: "N1", relation: "direct", refs: [vip?.ref], supported_claim: vip?.decision_evidence, reason: "The current platform boundary directly applies." },
+            { need_id: "N2", relation: "direct", refs: [app?.ref], supported_claim: app?.decision_evidence, reason: "The current device decision directly applies." },
+          ],
+          unresolved_need_ids: ["N3"],
+          reason: "Two claims are governed; current Amazon listing visibility remains unresolved.",
+        };
+      }
+      if (purpose === "v3_grounding_validation") {
+        const draft = payload.draft as Record<string, unknown>;
+        const sentenceClaims = payload.sentence_claims as Array<{ ref: string; sentence: string; claimed_evidence_refs: string[] }>;
+        const evidenceContract = payload.evidence_contract as {
+          needs: Array<{ id: string }>;
+          support: Array<{ need_id: string; evidence_refs: string[] }>;
+        };
+        return {
+          verdict: "pass",
+          mode: "partial",
+          answer: draft.answer,
+          summary: draft.summary,
+          sections: draft.sections,
+          sentence_evidence: sentenceClaims.map((claim) => ({ sentence: claim.sentence, policy_ids: claim.claimed_evidence_refs })),
+          coverage: draft.coverage,
+          needs_route: true,
+          route_key: "sales_policy",
+          route_reason: "Current Amazon search and listing visibility is unresolved.",
+          removed_claims: [],
+          reason: "The supported corrections are grounded and the remaining current claim is routed.",
+          sentence_checks: sentenceClaims.map((claim) => ({
+            sentence_ref: claim.ref,
+            status: "supported",
+            evidence_refs: claim.claimed_evidence_refs,
+            reason: "Directly entailed by the selected evidence.",
+          })),
+          need_checks: evidenceContract.needs.map((need) => {
+            const support = evidenceContract.support.find((entry) => entry.need_id === need.id);
+            return support
+              ? { need_ref: need.id, status: "answered", evidence_refs: support.evidence_refs, reason: "Directly answered by the selected evidence." }
+              : { need_ref: need.id, status: "unresolved", evidence_refs: [], reason: "No current governed evidence confirms this claim." };
+          }),
+        };
+      }
+      const cards = payload.evidence_cards as Array<{ ref: string; policy_key: string }>;
+      const vip = cards.find((card) => card.policy_key === "vip-license-platform-coverage");
+      const app = cards.find((card) => card.policy_key === "istv-app-download-devices");
+      expect(vip).toBeDefined();
+      expect(app).toBeDefined();
+      return {
+        mode: "partial",
+        answer: "Your VIP package includes submission to one Tier-1 platform, but placement is not guaranteed. You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.",
+        summary: "VIP placement is not guaranteed; the ISTV app is available on the approved devices; current Amazon listing details need verification.",
+        sections: [],
+        selected_policy_ids: [vip?.ref, app?.ref],
+        rejected_policy_ids: [],
+        coverage: [
+          { need: "VIP Amazon guarantee", status: "answered", policy_ids: [vip?.ref], reason: "Direct evidence." },
+          { need: "ISTV app devices", status: "answered", policy_ids: [app?.ref], reason: "Direct evidence." },
+          { need: "Current Amazon listing visibility", status: "unresolved", policy_ids: [], reason: "No current evidence." },
+        ],
+        sentence_evidence: [
+          { sentence: "Your VIP package includes submission to one Tier-1 platform, but placement is not guaranteed.", policy_ids: [vip?.ref] },
+          { sentence: "You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.", policy_ids: [app?.ref] },
+        ],
+        needs_route: true,
+        route_key: "sales_policy",
+        route_reason: "Current Amazon search and listing visibility is unresolved.",
+        confidence_score: 88,
+      };
+    });
+    const provider = (async (input: Parameters<V3Provider>[0]) => {
+      if (input.purpose === "v3_semantic_recall") {
+        expect(input.system).toContain("pastes a proposed customer email");
+        expect(input.system).toContain("factual business claims");
+        semanticPromptSeen = true;
+      }
+      if (input.purpose === "v3_evidence_selection") {
+        expect(input.system).toContain("pasted customer email");
+        expect(input.system).toContain("generic 'email-writing advice'");
+        selectionPromptSeen = true;
+      }
+      if (input.purpose === "v3_evidence_answer") {
+        expect(input.system).toContain("corrected rep-ready version");
+        composerPromptSeen = true;
+      }
+      if (input.purpose === "v3_grounding_validation") {
+        expect(input.system).toContain("also context, not evidence");
+        validationPromptSeen = true;
+      }
+      return base(input);
+    }) as V3Provider;
+
+    const result = await runAskSalesFaqV3(
+      "Can you help rewrite this customer email? I want it to sound polished and reassuring while keeping the facts right. Hi Jane, thanks for your time today. Your main ISTV VIP package guarantees placement on Amazon, our app can be downloaded on smart TVs, and your episode will be easy to find through Amazon search as soon as it is released. Please make this ready to send without losing the useful confirmed details.",
+      [],
+      { provider },
+    );
+
+    expect(semanticPromptSeen).toBe(true);
+    expect(selectionPromptSeen).toBe(true);
+    expect(composerPromptSeen).toBe(true);
+    expect(validationPromptSeen).toBe(true);
+    expect(result.outcome).toBe("route_from_evidence");
+    expect(result.answer).toContain("placement is not guaranteed");
+    expect(result.answer).toContain("Roku, Fire Stick, or Apple TV devices");
+    expect(result.answer).toContain("#sales-questions-requests");
+    expect(result.answer).not.toMatch(/email-writing advice/i);
+  });
 });

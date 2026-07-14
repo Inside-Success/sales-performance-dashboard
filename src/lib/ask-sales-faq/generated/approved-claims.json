@@ -12,7 +12,7 @@
       "Rudy Mawer"
     ]
   },
-  "approved_claim_count": 605,
+  "approved_claim_count": 609,
   "blocked_claim_count": 36,
   "blocked_claims": [
     {
@@ -1430,6 +1430,178 @@
   "claims": [
     {
       "actions": [
+        "verify",
+        "access",
+        "promise",
+        "produce"
+      ],
+      "answerability": "direct",
+      "approved_by": [
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "Presence on the latest approved sales/casting show list confirms only that it is an approved show offering. It does not by itself confirm that an episode has aired, that the show is currently on air, or that a prospect can watch an episode now.",
+      "authority": 110,
+      "domains": [
+        "shows_offers",
+        "production"
+      ],
+      "effective_at": "2026-07-14T00:00:00+05:00",
+      "entities": [
+        "list",
+        "air",
+        "mompreneurs",
+        "can",
+        "watch",
+        "not",
+        "prove",
+        "watchable",
+        "status",
+        "currently",
+        "now",
+        "appearing",
+        "the",
+        "mean"
+      ],
+      "id": "owner-current-show-list-watchability-boundary",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-list-watchability-boundary",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "question_families": [
+        "Is Mompreneurs currently on air?",
+        "Can a prospect watch Mompreneurs now?",
+        "Does appearing on the current show list mean a show has aired?",
+        "Where can a prospect watch an episode of a listed show?"
+      ],
+      "risk_level": "high",
+      "route_reason": "",
+      "route_required": false,
+      "source_article_id": null,
+      "source_ids": [
+        "kb:knowledge-base/offers-packages/current-show-source.md",
+        "owner-review:2026-07-14:show-list-watchability-boundary"
+      ],
+      "source_kind": "owner_approved_override",
+      "title": "Approved show list does not prove on-air or watchable status",
+      "topic_key": "current-show-list-watchability-boundary"
+    },
+    {
+      "actions": [
+        "verify",
+        "produce",
+        "use_or_promote"
+      ],
+      "answerability": "route",
+      "approved_by": [
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "Unless separate governed guidance confirms the exact show's current episode availability, use #sales-questions-requests to verify whether the show is currently on air or has a watchable episode.",
+      "authority": 110,
+      "domains": [
+        "production"
+      ],
+      "effective_at": "2026-07-14T00:00:00+05:00",
+      "entities": [
+        "episode",
+        "verify",
+        "air",
+        "availability",
+        "whether",
+        "confirm",
+        "and",
+        "mompreneurs",
+        "who",
+        "can",
+        "listed",
+        "has",
+        "watchable",
+        "how"
+      ],
+      "id": "owner-current-show-watchability-route",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-watchability-route",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "question_families": [
+        "Where should I verify whether Mompreneurs is on air?",
+        "Who can confirm whether a listed show has a watchable episode?",
+        "How do I confirm current episode availability for a show?"
+      ],
+      "risk_level": "high",
+      "route_reason": "Use #sales-questions-requests to verify the exact show's current on-air or episode availability.",
+      "route_required": true,
+      "source_article_id": null,
+      "source_ids": [
+        "kb:knowledge-base/offers-packages/current-show-source.md",
+        "owner-review:2026-07-14:show-list-watchability-route"
+      ],
+      "source_kind": "owner_approved_override",
+      "title": "Verify current show on-air and episode availability",
+      "topic_key": "current-show-watchability-route"
+    },
+    {
+      "actions": [
+        "price",
+        "pay",
+        "promise",
+        "report"
+      ],
+      "answerability": "direct",
+      "approved_by": [
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "The current Daymond John / Next Level CEO offers are: Lite at $10,000 paid in full, with listed options of $2,500 x 4, $3,600 x 3, or $5,000 x 2; Standard at $15,000 paid in full, with listed options of $4,000 x 4, $5,000 x 3, or $7,500 x 2; Premium VIP at $20,000 paid in full, with listed options of $5,000 x 4, $7,000 x 3, or $10,000 x 2; and the CEO Day upgrade at $5,000 paid in full only. The main ISTV same-day discount and cohort rules do not apply to DJ/NLCEO.",
+      "authority": 110,
+      "domains": [
+        "pricing",
+        "payments",
+        "shows_offers"
+      ],
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "entities": [
+        "and",
+        "the",
+        "daymond",
+        "john",
+        "next",
+        "level",
+        "ceo",
+        "offer",
+        "overview",
+        "are",
+        "offers",
+        "packages",
+        "give",
+        "price"
+      ],
+      "id": "owner-dj-nlceo-current-offer-overview",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "dj-nlceo-current-offer-overview",
+      "product_scopes": [
+        "dj_nlceo"
+      ],
+      "question_families": [
+        "What are the DJ offers?",
+        "What packages does Daymond John have?",
+        "Give me the current Next Level CEO offer and price overview",
+        "What are the DJ package prices and payment options?"
+      ],
+      "risk_level": "high",
+      "route_reason": "",
+      "route_required": false,
+      "source_article_id": null,
+      "source_ids": [
+        "kb:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md",
+        "owner-review:2026-07-14:dj-nlceo-current-offer-overview"
+      ],
+      "source_kind": "owner_approved_override",
+      "title": "Current Daymond John and Next Level CEO offer overview",
+      "topic_key": "dj-nlceo-current-offer-overview"
+    },
+    {
+      "actions": [
         "pay",
         "explain",
         "promise",
@@ -1485,6 +1657,64 @@
       "source_kind": "owner_approved_override",
       "title": "Residuals and money earned from a client's episode",
       "topic_key": "episode-residuals-and-client-revenue"
+    },
+    {
+      "actions": [
+        "access",
+        "promise"
+      ],
+      "answerability": "direct",
+      "approved_by": [
+        "Rich Allen",
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.",
+      "authority": 110,
+      "domains": [
+        "general_sales"
+      ],
+      "effective_at": "2026-07-14T00:19:00+05:00",
+      "entities": [
+        "the",
+        "app",
+        "download",
+        "istv",
+        "can",
+        "devices",
+        "supported",
+        "inside",
+        "success",
+        "network",
+        "get",
+        "roku",
+        "fire",
+        "stick"
+      ],
+      "id": "owner-istv-app-download-devices",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "istv-app-download-devices",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "question_families": [
+        "Where can I download the ISTV app?",
+        "Which devices can download the Inside Success Network app?",
+        "Can a prospect get the ISTV app on Roku, Fire Stick, or Apple TV?"
+      ],
+      "risk_level": "low",
+      "route_reason": "",
+      "route_required": false,
+      "source_article_id": null,
+      "source_ids": [
+        "kb:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+        "owner-feedback:2026-07-14:rich-istv-download-devices"
+      ],
+      "source_kind": "owner_approved_override",
+      "supersedes_topic_keys": [
+        "scam-objection-bad-reviews"
+      ],
+      "title": "Download the ISTV app on supported devices",
+      "topic_key": "istv-app-download-devices"
     },
     {
       "actions": [
@@ -2121,6 +2351,60 @@
       "source_kind": "owner_approved_override",
       "title": "Recording and disclosure for 20 percent outbound calls",
       "topic_key": "twenty-percent-call-recording-disclosure"
+    },
+    {
+      "actions": [
+        "pay"
+      ],
+      "answerability": "direct",
+      "approved_by": [
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "Main ISTV VIP/Premium includes submission to one Tier-1 streaming platform: Amazon Prime Video, the Apple TV streaming app, or Tubi. The platform decides placement, so placement is not guaranteed. A client cannot pay extra to force or guarantee Apple TV submission or placement.",
+      "authority": 110,
+      "domains": [
+        "pricing",
+        "payments"
+      ],
+      "effective_at": "2026-06-30T00:00:00+05:00",
+      "entities": [
+        "vip",
+        "platform",
+        "tier",
+        "apple",
+        "submission",
+        "include",
+        "extra",
+        "coverage",
+        "and",
+        "paid",
+        "one",
+        "all",
+        "three",
+        "can"
+      ],
+      "id": "owner-vip-tier-one-platform-boundary",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "vip-license-platform-coverage",
+      "product_scopes": [
+        "main_istv"
+      ],
+      "question_families": [
+        "Does VIP include one Tier-1 platform or all three?",
+        "Can a client pay extra for Apple TV submission or placement?",
+        "Which extra streaming platform does VIP include?"
+      ],
+      "risk_level": "high",
+      "route_reason": "",
+      "route_required": false,
+      "source_article_id": null,
+      "source_ids": [
+        "kb:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+        "owner-review:2026-07-14:vip-tier-one-platform-boundary"
+      ],
+      "source_kind": "owner_approved_override",
+      "title": "VIP Tier-1 platform coverage and Apple TV paid-submission boundary",
+      "topic_key": "vip-license-platform-coverage"
     },
     {
       "actions": [
@@ -3378,7 +3662,7 @@
       "domains": [
         "shows_offers"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "use",
@@ -3391,7 +3675,7 @@
         "currently"
       ],
       "id": "claim_51566d6abc27f11d",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-answer-1",
       "product_scopes": [
         "product_agnostic"
@@ -3414,6 +3698,55 @@
     },
     {
       "actions": [
+        "verify",
+        "route",
+        "produce"
+      ],
+      "answerability": "route",
+      "approved_by": [
+        "Syed Moonis Haider"
+      ],
+      "approved_text": "Presence on this list confirms only that the show is in the latest approved sales/casting list. It does not by itself confirm that an episode has aired, that the show is currently on air, or that a prospect can watch an episode now. Unless a separate governed source explicitly confirms the exact show's current episode availability, route on-air, live, aired-episode, and watchability questions to the current sales/ops owner instead of inferring the answer from list membership.",
+      "authority": 100,
+      "domains": [
+        "production"
+      ],
+      "effective_at": "2026-07-14",
+      "entities": [
+        "source",
+        "list",
+        "the",
+        "presence",
+        "confirms",
+        "only",
+        "that",
+        "latest",
+        "casting"
+      ],
+      "id": "claim_cde7c6d742c82e04",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-2",
+      "product_scopes": [
+        "product_agnostic"
+      ],
+      "question_families": [
+        "Current Show Source: Answer",
+        "Current Show Source",
+        "Presence on this list confirms only that the show is in the latest approved sales/casting list."
+      ],
+      "risk_level": "high",
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "route_required": true,
+      "source_article_id": "current-show-source",
+      "source_ids": [
+        "kb:knowledge-base/offers-packages/current-show-source.md"
+      ],
+      "source_kind": "approved_article",
+      "title": "Current Show Source: Answer",
+      "topic_key": "current-show-source-answer-2-presence-on-this-list-confirms-only-that-the-show-is-in-the-latest-approved-sales-casting-l"
+    },
+    {
+      "actions": [
         "hold_or_pause",
         "route",
         "access",
@@ -3429,7 +3762,7 @@
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "the",
@@ -3444,9 +3777,9 @@
         "are",
         "added"
       ],
-      "id": "claim_01463b511cc49b2f",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-2",
+      "id": "claim_32c0109ffc45fc1f",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-3",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -3464,7 +3797,7 @@
       ],
       "source_kind": "approved_article",
       "title": "Current Show Source: Answer",
-      "topic_key": "current-show-source-answer-2-the-internal-maintenance-source-for-show-changes-is-project-operations-where-new-shows-are-"
+      "topic_key": "current-show-source-answer-3-the-internal-maintenance-source-for-show-changes-is-project-operations-where-new-shows-are-"
     },
     {
       "actions": [
@@ -3482,7 +3815,7 @@
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "missing",
@@ -3494,9 +3827,9 @@
         "ops",
         "owner"
       ],
-      "id": "claim_4469a0a102605be6",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-3",
+      "id": "claim_68f2ae9296ace724",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-4",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -3514,7 +3847,7 @@
       ],
       "source_kind": "approved_article",
       "title": "Current Show Source: Answer",
-      "topic_key": "current-show-source-answer-3-if-a-current-show-is-missing-from-a-dropdown-or-form-route-to-tech-the-current-sales-ops-ow"
+      "topic_key": "current-show-source-answer-4-if-a-current-show-is-missing-from-a-dropdown-or-form-route-to-tech-the-current-sales-ops-ow"
     },
     {
       "actions": [
@@ -3535,7 +3868,7 @@
         "production",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "america",
@@ -3552,9 +3885,9 @@
         "none",
         "transparent"
       ],
-      "id": "claim_9be5b0de988e2949",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-4",
+      "id": "claim_782b92d4aa0a5fae",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-5",
       "product_scopes": [
         "product_agnostic"
       ],
@@ -3572,7 +3905,7 @@
       ],
       "source_kind": "approved_article",
       "title": "Current Show Source: Answer",
-      "topic_key": "current-show-source-answer-4-america-s-authors-is-on-the-approved-show-list-but-if-a-prospect-asks-for-an-america-s-auth"
+      "topic_key": "current-show-source-answer-5-america-s-authors-is-on-the-approved-show-list-but-if-a-prospect-asks-for-an-america-s-auth"
     },
     {
       "actions": [
@@ -3589,7 +3922,7 @@
         "qualification",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "legacy",
@@ -3602,9 +3935,9 @@
         "ops",
         "materials"
       ],
-      "id": "claim_85bf21afa79b640f",
-      "last_reviewed": "2026-07-09",
-      "policy_key": "current-show-source-answer-5",
+      "id": "claim_42f54c07cd6348e3",
+      "last_reviewed": "2026-07-14",
+      "policy_key": "current-show-source-answer-6",
       "product_scopes": [
         "dj_nlceo"
       ],
@@ -3622,7 +3955,7 @@
       ],
       "source_kind": "approved_article",
       "title": "Current Show Source: Answer",
-      "topic_key": "current-show-source-answer-5-for-legacy-makers-info-docs-use-the-current-sales-ops-approved-legacy-makers-materials"
+      "topic_key": "current-show-source-answer-6-for-legacy-makers-info-docs-use-the-current-sales-ops-approved-legacy-makers-materials"
     },
     {
       "actions": [
@@ -3638,7 +3971,7 @@
         "contracts",
         "shows_offers"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "america",
         "source",
@@ -3655,8 +3988,8 @@
         "best",
         "doctors"
       ],
-      "id": "claim_4c89d395e7096d4d",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_8ec8d1d2bc04bb30",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-latest-approved-show-list-1",
       "product_scopes": [
         "product_agnostic"
@@ -3688,12 +4021,12 @@
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing.",
+      "approved_text": "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, a show missing from a dropdown/form, or whether a listed show is currently on air or watchable, route to the current sales/ops owner or tech instead of guessing.",
       "authority": 100,
       "domains": [
         "sales_tech"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "route",
@@ -3710,8 +4043,8 @@
         "dropdown",
         "form"
       ],
-      "id": "claim_9348aa463284239e",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_3ab5e64555a0f9e7",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-route-if-unclear-1",
       "product_scopes": [
         "product_agnostic"
@@ -3719,7 +4052,7 @@
       "question_families": [
         "Current Show Source: Route If Unclear",
         "Current Show Source",
-        "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, or a show missing from a dropdown/form, route to the current sales/ops owner or tech instead of guessing"
+        "If a rep asks about a show that is not on this list, a show that may have just launched, a show that may be paused, a show missing from a dropdown/form, or whether a listed show is currently on air or watchable, route to"
       ],
       "risk_level": "high",
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
@@ -3737,23 +4070,23 @@
         "hold_or_pause",
         "verify",
         "sign",
-        "route",
         "troubleshoot",
         "explain",
+        "produce",
         "use_or_promote"
       ],
       "answerability": "route",
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "- \"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.\"\n- \"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"\n- \"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"",
+      "approved_text": "- \"The latest approved show list I have is: Legacy Makers, Women in Power, Operation CEO, America's Top Lawyers, America's Best Doctors, America's Top Trainers, America's Top Agents, Kingdom Creators, Mompreneurs, Couples of America, Builders of America, Legal Titans, Life Changers, Project Beauty, Mindset Masters, Love Experts, Live Longer, Americas Top Contractors, Blue Collar America, America's Authors, America's Top Physicians, Doctors of America, Rise of Her, Made It In America, Wealth Makers, Beyond Success, American Founders, Leading with Purpose, Impact Makers TV, and Masters of Innovation.\"\n- \"Being on the approved show list does not by itself confirm that an episode has aired or is currently watchable. Confirm the exact show's current episode availability with sales/ops unless separate approved guidance already answers it.\"\n- \"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"",
       "authority": 100,
       "domains": [
         "contracts",
         "shows_offers",
-        "sales_tech"
+        "production"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "america",
         "source",
@@ -3770,8 +4103,8 @@
         "power",
         "operation"
       ],
-      "id": "claim_e5ffe5f9dd11fe45",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_45061abe2a61e6a0",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-1",
       "product_scopes": [
         "product_agnostic"
@@ -3794,37 +4127,42 @@
     },
     {
       "actions": [
+        "hold_or_pause",
         "sign",
         "send",
+        "route",
+        "troubleshoot",
         "explain",
         "produce"
       ],
-      "answerability": "direct",
+      "answerability": "route",
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "- \"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\"\n- \"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\"",
+      "approved_text": "- \"If the show is missing from the dropdown or form, route it to tech / sales ops. Do not choose a placeholder show.\"\n- \"America's Authors is a newer show we are casting for. If no episodes have aired yet, do not pretend there is an episode link; correct the prospect and point them to approved viewing paths for shows with available episodes.\"\n- \"If you are on the DJ side, only sell Daymond John. If the applicant wants an ISTV show, pass them to an ISTV-assigned rep.\"",
       "authority": 100,
       "domains": [
         "qualification",
         "production",
+        "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "reps",
         "can",
         "say",
-        "america",
-        "authors",
-        "newer",
-        "are",
-        "casting",
-        "for"
+        "the",
+        "missing",
+        "dropdown",
+        "form",
+        "route",
+        "tech",
+        "ops"
       ],
-      "id": "claim_10839df611900cbd",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_b81818e4ae8e0fec",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-can-say-2",
       "product_scopes": [
         "dj_nlceo"
@@ -3832,18 +4170,18 @@
       "question_families": [
         "Current Show Source: What Reps Can Say",
         "Current Show Source",
-        "\"America's Authors is a newer show we are casting for."
+        "\"If the show is missing from the dropdown or form, route it to tech / sales ops."
       ],
       "risk_level": "high",
-      "route_reason": "",
-      "route_required": false,
+      "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
+      "route_required": true,
       "source_article_id": "current-show-source",
       "source_ids": [
         "kb:knowledge-base/offers-packages/current-show-source.md"
       ],
       "source_kind": "approved_article",
       "title": "Current Show Source: What Reps Can Say",
-      "topic_key": "current-show-source-what-reps-can-say-2-america-s-authors-is-a-newer-show-we-are-casting-for"
+      "topic_key": "current-show-source-what-reps-can-say-2-if-the-show-is-missing-from-the-dropdown-or-form-route-it-to-tech-sales-ops"
     },
     {
       "actions": [
@@ -3861,7 +4199,7 @@
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "- Do not rely on old show lists, old dropdowns, old examples, or public pages as the final source.\n- Do not tell reps to check project operations directly if they do not have access.\n- Do not promise that a newly mentioned, paused, missing, or disputed show is active unless it is confirmed by the current sales/ops owner.\n- Do not treat this list as permanently current after a new approved update supersedes it.\n- Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.\n- Do not tell a prospect to Google for an episode when the show is still being cast and no episodes have aired.\n- Do not let DJ-side reps sell ISTV shows directly; pass ISTV-show interest to an ISTV-assigned rep.",
+      "approved_text": "- Do not rely on old show lists, old dropdowns, old examples, or public pages as the final source.\n- Do not tell reps to check project operations directly if they do not have access.\n- Do not promise that a newly mentioned, paused, missing, or disputed show is active unless it is confirmed by the current sales/ops owner.\n- Do not treat this list as permanently current after a new approved update supersedes it.\n- Do not infer that a show is on air, has an aired episode, or is currently watchable only because its name appears on this list.\n- Do not tell reps to choose the wrong show, a placeholder show, or a nearby-looking form value and fix it later.\n- Do not tell a prospect to Google for an episode when the show is still being cast and no episodes have aired.\n- Do not let DJ-side reps sell ISTV shows directly; pass ISTV-show interest to an ISTV-assigned rep.",
       "authority": 100,
       "domains": [
         "shows_offers",
@@ -3869,7 +4207,7 @@
         "sales_tech",
         "lead_ownership"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "source",
         "not",
@@ -3886,8 +4224,8 @@
         "the",
         "final"
       ],
-      "id": "claim_9d40b177f119f1ef",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_17acf6e3dadd0ff2",
+      "last_reviewed": "2026-07-14",
       "policy_key": "current-show-source-what-reps-must-not-say-1",
       "product_scopes": [
         "product_agnostic"
@@ -8071,21 +8409,19 @@
       "actions": [
         "pay",
         "verify",
-        "route",
-        "access"
+        "route"
       ],
       "answerability": "direct",
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "Approved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- The Inside Success Network app is accessible on Roku, Fire Stick, and Apple TV physical devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.",
+      "approved_text": "Approved platform wording:\n\n- All tiers air on the Inside Success Network app.\n- You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\n- This is not the Apple TV streaming app/channel and not the Amazon streaming app.\n- VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.\n- Tier-1 placement is a platform decision and is not guaranteed.\n- ISTV does not work directly with Amazon or Apple. A third party helps with those submissions.\n- Clients cannot pay extra to force or guarantee Apple TV streaming-app submission or placement.",
       "authority": 100,
       "domains": [
         "pricing",
-        "payments",
-        "sales_tech"
+        "payments"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -8102,8 +8438,8 @@
         "network",
         "app"
       ],
-      "id": "claim_e45d71d65356e6d7",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_a67cbc990c0e81d9",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-1",
       "product_scopes": [
         "product_agnostic"
@@ -8140,7 +8476,7 @@
       "domains": [
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -8155,7 +8491,7 @@
         "short"
       ],
       "id": "claim_1a9f0b652349f6de",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-2",
       "product_scopes": [
         "product_agnostic"
@@ -8191,7 +8527,7 @@
       "domains": [
         "pricing"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "and",
         "platform",
@@ -8209,7 +8545,7 @@
         "because"
       ],
       "id": "claim_7ecaff14c5cf8776",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-3",
       "product_scopes": [
         "product_agnostic"
@@ -8245,7 +8581,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "platform",
@@ -8263,7 +8599,7 @@
         "are"
       ],
       "id": "claim_93c33d9477c40ca6",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-4",
       "product_scopes": [
         "product_agnostic"
@@ -8299,7 +8635,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "and",
@@ -8317,7 +8653,7 @@
         "demographics"
       ],
       "id": "claim_069f1536e23fe088",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-5",
       "product_scopes": [
         "product_agnostic"
@@ -8352,7 +8688,7 @@
       "domains": [
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "platform",
@@ -8370,7 +8706,7 @@
         "source"
       ],
       "id": "claim_5b774768b7947af0",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-answer-6",
       "product_scopes": [
         "product_agnostic"
@@ -8408,7 +8744,7 @@
         "production",
         "content_rights"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "proof",
         "claims",
@@ -8426,7 +8762,7 @@
         "review"
       ],
       "id": "claim_d42e16d44c52f3b0",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-route-if-asked-for-proof-links-or-claims-1",
       "product_scopes": [
         "product_agnostic"
@@ -8462,7 +8798,7 @@
       "approved_by": [
         "Syed Moonis Haider"
       ],
-      "approved_text": "- \"All tiers air on the Inside Success Network app.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n- \"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\"",
+      "approved_text": "- \"All tiers air on the Inside Success Network app.\"\n- \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\"\n- \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\"\n- \"If they are seeing bad reviews, briefly clarify whether they are looking at the separate UK company or ISTV. Search `InsideSuccessTV` for the correct brand context.\"\n- \"If they still feel this is a scam, this may not be the right fit for them.\"\n- \"Do not get into a vendor-cost or ROI comparison. Keep it to the approved platform and fit language.\"\n- \"For $30K webpage/social rebrand examples, Sales Ops has a VIP conversion page example. Use the current approved example/link; do not imply we have a full approved list unless Sales Ops confirms it.\"\n- \"For official media kits, Nielsen statistics, audience statistics, demographics, rankings, or proof decks, route to the approved proof/source owner for the current approved material.\"",
       "authority": 100,
       "domains": [
         "qualification",
@@ -8471,25 +8807,25 @@
         "content_rights",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
         "and",
         "claims",
         "boundaries",
-        "reps",
         "can",
+        "reps",
         "say",
         "the",
+        "app",
         "all",
         "tiers",
         "air",
-        "inside",
-        "success"
+        "inside"
       ],
-      "id": "claim_0ad184e554ad7a33",
-      "last_reviewed": "2026-07-09",
+      "id": "claim_9a12d8eaefcf143a",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1",
       "product_scopes": [
         "product_agnostic"
@@ -8497,7 +8833,7 @@
       "question_families": [
         "Platform, Proof, And Claims Boundaries: What Reps Can Say",
         "Platform, Proof, And Claims Boundaries",
-        "\"All tiers air on the Inside Success Network app.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed because the platform decides.\" - \"If they are seeing bad reviews, briefly clar"
+        "\"All tiers air on the Inside Success Network app.\" - \"You can download the ISTV app on Roku, Fire Stick, or Apple TV devices.\" - \"VIP/Premium includes submission to one Tier-1 platform, but placement is not guaranteed be"
       ],
       "risk_level": "high",
       "route_reason": "Confirm unusual or time-sensitive cases with the current owner before promising anything.",
@@ -8508,7 +8844,7 @@
       ],
       "source_kind": "approved_article",
       "title": "Platform, Proof, And Claims Boundaries: What Reps Can Say",
-      "topic_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-all-tiers-air-on-the-inside-success-network-app-vip-premium-inc"
+      "topic_key": "platform-proof-and-claims-boundaries-what-reps-can-say-1-all-tiers-air-on-the-inside-success-network-app-you-can-downloa"
     },
     {
       "actions": [
@@ -8531,7 +8867,7 @@
         "payments",
         "communications"
       ],
-      "effective_at": "2026-07-09",
+      "effective_at": "2026-07-14",
       "entities": [
         "platform",
         "proof",
@@ -8549,7 +8885,7 @@
         "app"
       ],
       "id": "claim_a0511589517176d3",
-      "last_reviewed": "2026-07-09",
+      "last_reviewed": "2026-07-14",
       "policy_key": "platform-proof-and-claims-boundaries-what-reps-must-not-say-1",
       "product_scopes": [
         "product_agnostic"
@@ -29957,47 +30293,6 @@
     },
     {
       "actions": [
-        "schedule"
-      ],
-      "answerability": "direct",
-      "approved_by": [
-        "Madeline Cary"
-      ],
-      "approved_text": "The rep's response was right, suggested encouraging the prospect to download the app on Roku, Apple, or Fire TV, and to research the company on Instagram, Facebook, YouTube, or clients featured. A suggested line was: celebrities would not allow their content to be streamed if it were a scam.",
-      "authority": 90,
-      "domains": [
-        "scheduling"
-      ],
-      "effective_at": "2026-06-22T18:05:04.241619+00:00",
-      "entities": [
-        "scam",
-        "objection",
-        "bad",
-        "reviews"
-      ],
-      "id": "claim_80b5cdc67d0ad0e6",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "scam-objection-bad-reviews",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "question_families": [
-        "Scam objection / bad reviews",
-        "Scam objection / bad reviews"
-      ],
-      "risk_level": "low",
-      "route_reason": "",
-      "route_required": false,
-      "source_article_id": null,
-      "source_ids": [
-        "slack:#sales-questions-requests:1782151504.241619"
-      ],
-      "source_kind": "trusted_slack_summary",
-      "title": "Scam objection / bad reviews",
-      "topic_key": "scam-objection-bad-reviews"
-    },
-    {
-      "actions": [
         "schedule",
         "route",
         "troubleshoot",
@@ -32675,57 +32970,6 @@
     },
     {
       "actions": [
-        "pay",
-        "use_or_promote"
-      ],
-      "answerability": "direct",
-      "approved_by": [
-        "Madeline Cary"
-      ],
-      "approved_text": "One really, Amazon Prime, and it is not guaranteed. They can pay extra for Apple TV submission.",
-      "authority": 90,
-      "domains": [
-        "payments",
-        "content_rights"
-      ],
-      "effective_at": "2026-06-23T05:03:33.038519+00:00",
-      "entities": [
-        "vip",
-        "license",
-        "platform",
-        "coverage",
-        "the",
-        "get",
-        "clients",
-        "just",
-        "one",
-        "extra",
-        "multiple",
-        "ones"
-      ],
-      "id": "claim_508134574a4a4ea5",
-      "last_reviewed": "2026-07-10",
-      "policy_key": "vip-license-platform-coverage",
-      "product_scopes": [
-        "product_agnostic"
-      ],
-      "question_families": [
-        "Does the VIP License get clients on just one extra platform or multiple ones?",
-        "VIP license platform coverage"
-      ],
-      "risk_level": "high",
-      "route_reason": "",
-      "route_required": false,
-      "source_article_id": null,
-      "source_ids": [
-        "slack:#sales-questions-requests:1782191013.038519"
-      ],
-      "source_kind": "trusted_slack_summary",
-      "title": "VIP license platform coverage",
-      "topic_key": "vip-license-platform-coverage"
-    },
-    {
-      "actions": [
         "contact",
         "use_or_promote"
       ],
@@ -33595,14 +33839,14 @@
       "topic_key": "dummy-call-vs-outbound-script-templates"
     }
   ],
-  "generated_at": "2026-07-10",
+  "generated_at": "2026-07-14",
   "generated_by": "scripts/build_approved_claim_registry.py",
   "schema_version": 2,
   "source_counts": {
-    "approved_article": 152,
+    "approved_article": 153,
     "curated_slack_summary": 4,
-    "owner_approved_override": 12,
-    "trusted_slack_summary": 434,
+    "owner_approved_override": 17,
+    "trusted_slack_summary": 432,
     "trusted_transcript_summary": 3
   }
 }

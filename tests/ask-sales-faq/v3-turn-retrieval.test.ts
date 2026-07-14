@@ -340,4 +340,48 @@ describe("Ask Sales FAQ V3 turn resolution", () => {
       expect(retrieval.candidates.some(({ policy }) => policy.id === expectedId), question).toBe(true);
     }
   });
+
+  it("uses Rich's exact app-download decision and retires the older Fire TV summary", () => {
+    const questions = [
+      "Where can I download the ISTV app?",
+      "Which devices let a prospect get the Inside Success Network app?",
+      "Can they download ISTV on Roku, a Fire Stick, or Apple TV?",
+    ];
+    for (const question of questions) {
+      const retrieval = retrieveV3Policies(resolveV3Turn(question, []), 20);
+      expect(retrieval.candidates.some(({ policy }) => policy.id === "owner-istv-app-download-devices"), question).toBe(true);
+      expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_80b5cdc67d0ad0e6"), question).toBe(false);
+    }
+  });
+
+  it("keeps the current VIP platform boundary and removes the contradictory paid-Apple claim", () => {
+    const retrieval = retrieveV3Policies(resolveV3Turn(
+      "Does main ISTV VIP include all three Tier-1 platforms, and can the client pay extra for Apple TV?",
+      [],
+    ), 20);
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "owner-vip-tier-one-platform-boundary")).toBe(true);
+    expect(retrieval.candidates.some(({ policy }) => policy.id === "claim_508134574a4a4ea5")).toBe(false);
+  });
+
+  it("does not treat current-show-list membership as proof of airing or watchability", () => {
+    const first = retrieveV3Policies(resolveV3Turn("Is Mompreneurs currently on air?", []), 20);
+    expect(first.candidates.some(({ policy }) => policy.id === "owner-current-show-list-watchability-boundary")).toBe(true);
+    expect(first.candidates.some(({ policy }) => policy.id === "owner-current-show-watchability-route")).toBe(true);
+
+    const followUpTurn = resolveV3Turn("So can the prospect watch Mompreneurs now?", [
+      { role: "user", content: "Is Mompreneurs currently on air?" },
+      { role: "assistant", content: "Its name appears on the approved sales/casting list." },
+    ]);
+    const followUp = retrieveV3Policies(followUpTurn, 20);
+    expect(followUp.candidates.some(({ policy }) => policy.id === "owner-current-show-list-watchability-boundary")).toBe(true);
+    expect(followUp.candidates.some(({ policy }) => policy.id === "owner-current-show-watchability-route")).toBe(true);
+  });
+
+  it("maps broad DJ offer wording to the governed package overview", () => {
+    for (const question of ["What are the DJ offers?", "What packages does Daymond John have?"]) {
+      const retrieval = retrieveV3Policies(resolveV3Turn(question, []), 20);
+      expect(retrieval.candidates.some(({ policy }) => policy.id === "owner-dj-nlceo-current-offer-overview"), question).toBe(true);
+      expect(retrieval.candidates.some(({ policy }) => policy.product_scopes.includes("main_istv") && !policy.product_scopes.includes("dj_nlceo")), question).toBe(false);
+    }
+  });
 });
