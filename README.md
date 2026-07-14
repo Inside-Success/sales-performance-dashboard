@@ -76,6 +76,7 @@ The endpoint upserts dashboard rows and returns:
 - `/api/report-chat` gated DeepSeek report Q&A
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
+- `/ask-sales-faq/admin/knowledge-refresh` admin-only daily source review, conflict resolution, and governed release preparation
 
 ## Current Behavior Notes
 
@@ -104,6 +105,7 @@ REPORT_CHAT_BETA_REPORT_IDS="comma,separated,ids"
 SALES_PERFORMANCE_CSV_URL="https://docs.google.com/spreadsheets/d/.../export?format=csv&gid=0"
 REPORT_FEEDBACK_WEBHOOK_URL="https://insidesuccess.app.n8n.cloud/webhook/magic-mike-report-feedback"
 REPORT_FEEDBACK_WEBHOOK_SECRET="..."
+ASK_SALES_KNOWLEDGE_REFRESH_TOKEN="long-random-server-only-secret"
 ```
 
 `SALES_PERFORMANCE_CSV_URL` is optional because a default read-only Google Sheet CSV URL exists in the app. Sales-impact snapshot protection uses the dashboard `DATABASE_URL` and the `sales_performance_snapshots` table; it never writes to Google Sheets.
@@ -119,3 +121,5 @@ The prepared n8n node config is in `docs-n8n-dashboard-ingest.md`.
 Do not wire the active n8n workflow until the Vercel deployment URL and `INGEST_SECRET` are final. The dashboard branch must stay additive and use error output handling so Slack, Google Drive, Airtable, and loop continuation remain unchanged.
 
 Enhanced report feedback is a separate active n8n workflow and does not modify the Magic Mike generation workflows. See `docs-n8n-dashboard-ingest.md` for workflow ID, feedback Sheet URL, and verification notes.
+
+Ask Sales knowledge refresh is a separate read-only source-monitoring system. It never writes to Slack or Google and never changes the runtime registry directly. See `docs-ask-sales-knowledge-refresh.md` for its source allowlist, workflow IDs, human-review states, and release boundary.
