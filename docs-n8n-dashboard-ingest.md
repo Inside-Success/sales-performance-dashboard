@@ -7,6 +7,7 @@ Current note - 2026-05-31:
 - Do not reapply this as a new node without checking the live workflow first.
 - Dashboard-side additions since this file was first written include hidden usage analytics, hidden sales-impact analytics, and DeepSeek chat APIs; those do not require changes to this ingest node.
 - Dashboard-side additions on 2026-06-18 include the public red Magic Mike redesign, `Legacy`/`Enhanced` report tagging, and an Enhanced-only report feedback API.
+- The 2026-07-14 Ask Sales daily knowledge refresh uses five new isolated workflows and dedicated credentials. It does not modify this coaching/report ingest workflow. See `docs-ask-sales-knowledge-refresh.md`.
 
 This file is the prepared n8n change. Do not apply it to the active workflow until the dashboard is deployed and these values exist:
 
