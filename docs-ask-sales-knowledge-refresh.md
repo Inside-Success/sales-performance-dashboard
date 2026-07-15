@@ -2,6 +2,8 @@
 
 Date: 2026-07-14
 
+Last updated: 2026-07-15
+
 ## Purpose
 
 The refresh system checks the approved Ask Sales discovery sources every day, extracts possible policy changes, compares them with the governed V3 registry, and places proposals in an exact-email admin review queue. Discovery content never becomes answer authority automatically.
@@ -11,7 +13,7 @@ The live chatbot, Coaching workflows, Magic Mike report generation, and existing
 ## Schedule and sources
 
 - Schedule: daily at 9:00 PM in `America/New_York` (Miami), including daylight-saving changes.
-- Slack: read-only access to `C0AUQKNR8CF` and `C09AF0NQJE7` only. Both are private channels. Full channel history and thread replies will be normalized into deterministic snapshots after the dedicated Slack read credential described under **Current production state** is connected.
+- Slack: read-only access to `C0AUQKNR8CF` and `C09AF0NQJE7` only. Both are private channels. The dedicated bot credential has only `groups:history`; the collector uses a 48-hour activity overlap and reads replies only for unique changed roots that report replies.
 - Google: read-only access to the 37 Docs and four Sheets already present in the governed FAQ source corpus. Every visible Sheet tab is read through the Google Sheets API.
 - The high-volume Green Light tracking Sheet is fingerprinted across every visible cell, but row-level operational records are deliberately excluded from AI review. The AI sees tab names, headers, row/cell counts, and full-tab fingerprints. Other large Sheets use bounded head/tail samples plus full-tab fingerprints, so middle-row changes are still detected without oversized requests.
 - The Ask Sales Feedback output Sheet is deliberately excluded.
@@ -34,10 +36,12 @@ Dedicated credentials:
 
 - `Ask Sales Knowledge Refresh - Dashboard Service`
 - `Ask Sales Knowledge Refresh - DeepSeek`
-- Moonis-owned Slack credential `Moonis - n8n integration bot`
+- Dedicated Slack credential `Ask Sales Knowledge Refresh - Slack Read Only`
 - Moonis-owned Drive credential `Syed Moonis Haider cred`
 
 No Deo-, Mike-, Rudy-, Tyler-, Bolaji-, or Coaching-owned credential is referenced.
+
+The shared `Moonis - n8n integration bot` Slack credential is not referenced by this refresh system and was not changed.
 
 ## Dashboard architecture
 
@@ -73,6 +77,19 @@ It uses the existing exact-email Ask Sales admin check on every page and API req
 6. Direct or blocked conflicts cannot be approved without an explicit `supersede` or `scoped_coexistence` decision.
 7. If a source changes after review, the previous proposal and approval become stale automatically.
 8. Optimistic versions prevent two admins from silently overwriting each other's decision.
+9. Bulk review is limited to non-approval dispositions such as defer, needs-owner, duplicate, engineering, or reject. Bulk approval does not exist.
+
+## Backlog and future-noise controls
+
+The initial Google Doc extraction was a baseline scan of source material already accounted for during the V3 build. On 2026-07-15 every preserved baseline proposal was reviewed, then moved out of the actionable queue with an audit note. No proposal was deleted, approved, added to V3, or published. Explicit no-change confirmations are preserved as duplicates.
+
+Future runs use three conservative controls:
+
+1. After the first Google Doc/Sheet snapshot, the dashboard computes a deterministic change-only packet. DeepSeek sees additions, removals, and replacements, not the unchanged full source.
+2. The analyzer excludes no-change confirmations, duplicate restatements, daily metrics, coaching schedules, scripts/templates, CRM bookkeeping, internal admin steps, and one-off cases unless they establish a durable reusable compliance or sales-policy boundary.
+3. Exact cross-snapshot repeats and explicit no-change results are staged outside the active queue; candidates below 55% AI confidence go to `needs_owner`. Every original record and evidence quote remains auditable.
+
+The admin page now defaults to the actionable lane and provides server-side search, source/conflict filters, pagination, visible counts for screened/duplicate/stale records, safe batch dispositions, and individual approval only. Conflict labels can be recomputed against the current deployed V3 registry without changing candidate decisions or production knowledge.
 
 ## Publication boundary
 
@@ -86,20 +103,21 @@ The dashboard implementation was merged in PR [#47](https://github.com/Inside-Su
 
 The five n8n workflows are active and validate with zero runtime errors. The daily orchestrator has only its permanent `Daily 9 PM Miami` trigger; every temporary verification trigger has been removed.
 
-Controlled run `348148` completed successfully. It checked all 43 governed sources:
+The scheduled 9 PM Miami execution `351154` completed successfully on 2026-07-15. Both private Slack sources passed collection, analysis, and staging.
+
+Current source state:
 
 - 36 of 37 Google Docs and three of four Google Sheets are available.
 - One legacy Google Doc (`1GHvm...`) and the All SOPs Sheet (`1geZ...`) return `404` to the Moonis-owned Drive credential. They remain visible, unavailable, and retry automatically every day.
 - All 39 accessible Google sources completed collection. The final run recorded 36 unchanged sources and three intentionally changed Sheet snapshot representations.
-- All 41 stored source-version snapshots have completed AI analysis; zero snapshots are left in an incomplete-analysis state.
-- The current human queue contains 268 `needs_review` proposals and 20 safely `stale` proposals. Nothing in either group is production answer authority.
-- The final run's only four isolated errors were the two expected Google `404`s and the two Slack scope failures. There were no Sheet payload errors, unchanged-snapshot errors, DeepSeek truncations, or dashboard runtime errors.
-
-Slack is the only external-access blocker. The existing credential `Moonis - n8n integration bot` is also used by active sales-performance, stats-backup, and transcript workflows, so it was not modified. Both approved channels are private. A new dedicated Moonis-owned Slack **user-token** credential must be installed in n8n with `groups:history`, and that user must be a member of both channels. Slack's `conversations.replies` rules require a user token for public/private channel threads. Once that dedicated credential exists, replace only the Slack collector's credential reference and rerun the controlled Slack check; do not reconnect or broaden the shared production credential.
+- All accessible stored source versions complete analysis or are deterministically marked as having no material change.
+- The initial baseline remains preserved in non-production queue states. The default admin view contains only genuinely actionable current Slack/Sheet proposals.
+- The two known Google `404` sources remain visible and retry daily. Slack scope, cursor, late-reply, and rate-limit fan-out blockers are resolved.
+- Nothing in any queue state is production answer authority.
 
 ## Verification gates
 
 - n8n runtime validation: zero errors on all five workflows.
 - Dashboard Ask Sales tests, ESLint, TypeScript, and optimized Next.js build must pass before merge.
 - Production returns `401` for the ingest route without the service token. Anonymous admin requests redirect to sign-in; authenticated non-admin requests must remain hidden as `404`.
-- Controlled Google verification, unavailable-source handling, DeepSeek JSON extraction, retry-safe analysis, unchanged-snapshot idempotence, conflict classification, and admin staging are complete. The Slack portion remains blocked only by the dedicated private-channel user-token credential described above.
+- Controlled Google and Slack verification, unavailable-source handling, DeepSeek JSON extraction, retry-safe analysis, unchanged-snapshot idempotence, delta-only Google analysis, conservative noise screening, conflict classification, and admin staging are complete.
