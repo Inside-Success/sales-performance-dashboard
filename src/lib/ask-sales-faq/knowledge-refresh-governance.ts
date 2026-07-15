@@ -27,6 +27,11 @@ const STOPWORDS = new Set([
   "were", "what", "when", "where", "which", "while", "who", "will", "with", "would", "you", "your",
 ]);
 
+const GENERIC_BLOCKED_MATCH_TERMS = new Set([
+  "answer", "both", "call", "candidate", "current", "daily", "day", "days", "limit", "list", "notes", "per",
+  "policy", "process", "report", "rep", "reps", "required", "rule", "sales", "sheet", "standard", "timeline",
+]);
+
 export type KnowledgeRefreshConflictLevel = "none" | "possible" | "direct" | "blocked";
 
 export type KnowledgeRefreshPolicyContext = {
@@ -58,6 +63,7 @@ export type KnowledgeRefreshBlockedTopicContext = {
   id: string;
   found: boolean;
   reviewReady: boolean;
+  matchStrength: "strong" | "weak" | "not_evaluated";
   title: string;
   status: string;
   explanation: string;
@@ -98,6 +104,13 @@ function overlapScore(query: Set<string>, text: string) {
   let overlap = 0;
   for (const token of query) if (target.has(token)) overlap += 1;
   return overlap / Math.sqrt(query.size * target.size);
+}
+
+function blockedTopicMatchesCandidate(topic: V3BlockedTopic, value: string) {
+  const query = tokens(value.slice(0, 80_000));
+  const topicTerms = tokens((topic.question_families || []).join(" "));
+  const topicalOverlap = Array.from(query).filter((token) => topicTerms.has(token) && !GENERIC_BLOCKED_MATCH_TERMS.has(token));
+  return topicalOverlap.length > 0 && overlapScore(query, (topic.question_families || []).join(" ")) >= 0.22;
 }
 
 function policyContext(policy: V3Policy): KnowledgeRefreshPolicyContext {
@@ -171,7 +184,7 @@ function blockedTopicEvidence(topic: V3BlockedTopic) {
   return Array.from(deduped.values()).slice(0, 3);
 }
 
-export function getKnowledgeRefreshBlockedTopicContexts(ids: string[]): KnowledgeRefreshBlockedTopicContext[] {
+export function getKnowledgeRefreshBlockedTopicContexts(ids: string[], candidateText?: string): KnowledgeRefreshBlockedTopicContext[] {
   return Array.from(new Set(ids)).map((id) => {
     const topic = registry.blocked_topics.find((candidate) => candidate.id === id);
     if (!topic) {
@@ -179,6 +192,7 @@ export function getKnowledgeRefreshBlockedTopicContexts(ids: string[]): Knowledg
         id,
         found: false,
         reviewReady: false,
+        matchStrength: "not_evaluated",
         title: humanizeIdentifier(id),
         status: "unresolved",
         explanation: "This blocker could not be resolved in the deployed registry. Approval must remain unavailable; use Needs owner or Defer.",
@@ -199,16 +213,20 @@ export function getKnowledgeRefreshBlockedTopicContexts(ids: string[]): Knowledg
     const evidence = blockedTopicEvidence(topic);
     const title = topic.question_families?.at(-1) || humanizeIdentifier(topic.blocked_topic_ids?.[0] || topic.id);
     const hasApprovedPolicy = currentPolicies.length > 0;
-    const explanation = hasApprovedPolicy
-      ? "A current approved policy already covers this topic. Compare it with the new proposal before deciding whether to replace it or define a narrower scope."
-      : topic.resolution === "curated evidence explicitly records an unresolved conflict"
-        ? "Existing governed evidence contains different answers, and no current answer has been approved. Compare the evidence with the new proposal before deciding."
-        : topic.resolution || "This topic is blocked because the governed knowledge does not yet contain one approved current answer.";
+    const matchStrength = candidateText ? (blockedTopicMatchesCandidate(topic, candidateText) ? "strong" : "weak") : "not_evaluated";
+    const explanation = matchStrength === "weak"
+      ? "This stored blocker appears to share only broad wording with the proposal, not the same specific subject. It is not safe to treat it as a resolved conflict; use Needs owner or Defer until the match is corrected."
+      : hasApprovedPolicy
+        ? "A current approved policy already covers this topic. Compare it with the new proposal before deciding whether to replace it or define a narrower scope."
+        : topic.resolution === "curated evidence explicitly records an unresolved conflict"
+          ? "Existing governed evidence contains different answers, and no current answer has been approved. Compare the evidence with the new proposal before deciding."
+          : topic.resolution || "This topic is blocked because the governed knowledge does not yet contain one approved current answer.";
 
     return {
       id: topic.id,
       found: true,
-      reviewReady: hasApprovedPolicy || evidence.length > 0,
+      reviewReady: matchStrength !== "weak" && (hasApprovedPolicy || evidence.length > 0),
+      matchStrength,
       title,
       status: topic.status,
       explanation,
@@ -253,7 +271,7 @@ function candidateBlockedTopics(value: string, productScopes: string[], limit = 
   return registry.blocked_topics
     .map((topic) => ({ topic, score: overlapScore(query, blockedTopicText(topic)) }))
     .filter(({ topic, score }) => {
-      if (score < 0.24) return false;
+      if (score < 0.24 || !blockedTopicMatchesCandidate(topic, value)) return false;
       const topicScopes = (topic.product_scopes || []).map(normalize).filter(Boolean);
       return !topicScopes.length || normalizedScopes.has("all") || topicScopes.includes("all") || topicScopes.some((scope) => normalizedScopes.has(scope));
     })
@@ -297,7 +315,7 @@ export function compareKnowledgeRefreshCandidate(input: {
     ? registry.policies.filter((policy) => policy.decision_key === input.decisionKey).map(policyContext)
     : [];
   const blockedTopicIds = candidateBlockedTopics(text, input.productScopes);
-  const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(blockedTopicIds);
+  const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(blockedTopicIds, text);
   const conflictingPolicyIds = Array.from(new Set(exactDecisionKey.map((policy) => policy.id)));
 
   if (blockedTopicIds.length) {

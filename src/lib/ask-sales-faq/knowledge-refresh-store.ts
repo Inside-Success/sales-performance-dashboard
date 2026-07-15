@@ -671,7 +671,10 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
   ]);
   const candidates = candidateRows.map((candidate) => ({
     ...candidate,
-    blocked_topics: getKnowledgeRefreshBlockedTopicContexts(candidate.blocked_topic_ids || []),
+    blocked_topics: getKnowledgeRefreshBlockedTopicContexts(
+      candidate.blocked_topic_ids || [],
+      `${candidate.title} ${candidate.proposed_policy} ${candidate.decision_key || ""} ${candidate.product_scopes.join(" ")}`,
+    ),
   }));
   const filteredRows = (await sql.query(
     `select count(*)::int as total
@@ -743,7 +746,10 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     }
   }
   if (input.action === "approve_content" && candidate.conflict_level === "blocked") {
-    const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(candidate.blocked_topic_ids || []);
+    const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(
+      candidate.blocked_topic_ids || [],
+      `${candidate.title} ${candidate.proposed_policy} ${candidate.decision_key || ""} ${candidate.product_scopes.join(" ")}`,
+    );
     if (!blockedTopics.length || blockedTopics.some((topic) => !topic.reviewReady)) {
       throw new KnowledgeRefreshValidationError("This blocked conflict does not have enough readable governed evidence for approval. Use Needs owner or Defer.");
     }

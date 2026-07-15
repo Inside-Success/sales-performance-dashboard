@@ -54,16 +54,37 @@ describe("Ask Sales knowledge-refresh governance", () => {
   });
 
   it("turns the episode-delivery blocked ID into a readable evidence comparison", () => {
-    const [topic] = getKnowledgeRefreshBlockedTopicContexts(["blocked_3087001020998efa"]);
+    const [topic] = getKnowledgeRefreshBlockedTopicContexts(
+      ["blocked_3087001020998efa"],
+      "Episode delivery timeline is 4-6 months after filming",
+    );
     expect(topic).toMatchObject({
       found: true,
       reviewReady: true,
+      matchStrength: "strong",
       title: "Episode delivery timing after filming",
       currentPolicies: [],
     });
     expect(topic.explanation).toContain("no current answer has been approved");
     expect(topic.evidence[0]?.text).toContain("3-6 months");
     expect(topic.evidence[0]?.sourceUrl).toContain("C0AUQKNR8CF");
+  });
+
+  it("flags broad-wording blocker matches as weak instead of presenting them as proven conflicts", () => {
+    const [topic] = getKnowledgeRefreshBlockedTopicContexts(
+      ["blocked_cffdc83b9f9bf476"],
+      "Reps may take 20 contacts from the dial-out list and 20 contacts from the channel per day.",
+    );
+    expect(topic).toMatchObject({ found: true, reviewReady: false, matchStrength: "weak", title: "Greenlight cap" });
+    expect(topic.explanation).toContain("not the same specific subject");
+
+    const future = compareKnowledgeRefreshCandidate({
+      title: "Daily dial-out contact allowance",
+      proposedPolicy: "Reps may take 20 contacts from the dial-out list and 20 from the channel per day.",
+      decisionKey: null,
+      productScopes: ["product_agnostic"],
+    });
+    expect(future.blockedTopicIds).not.toContain("blocked_cffdc83b9f9bf476");
   });
 
   it("resolves every deployed blocked ID to a readable topic and keeps IDs out of reviewer summaries", () => {
