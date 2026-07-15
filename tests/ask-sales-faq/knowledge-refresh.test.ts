@@ -3,6 +3,7 @@ import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json"
 import {
   buildKnowledgeRefreshAnalysisContext,
   compareKnowledgeRefreshCandidate,
+  getKnowledgeRefreshBlockedTopicContexts,
   getKnowledgeRefreshRegistryVersion,
 } from "@/lib/ask-sales-faq/knowledge-refresh-governance";
 import { KNOWLEDGE_REFRESH_SOURCES, getKnowledgeRefreshSource } from "@/lib/ask-sales-faq/knowledge-refresh-sources";
@@ -50,6 +51,46 @@ describe("Ask Sales knowledge-refresh governance", () => {
     });
     expect(result.conflictLevel).toBe("none");
     expect(result.conflictSummary).toContain("Human review");
+  });
+
+  it("turns the episode-delivery blocked ID into a readable evidence comparison", () => {
+    const [topic] = getKnowledgeRefreshBlockedTopicContexts(["blocked_3087001020998efa"]);
+    expect(topic).toMatchObject({
+      found: true,
+      reviewReady: true,
+      title: "Episode delivery timing after filming",
+      currentPolicies: [],
+    });
+    expect(topic.explanation).toContain("no current answer has been approved");
+    expect(topic.evidence[0]?.text).toContain("3-6 months");
+    expect(topic.evidence[0]?.sourceUrl).toContain("C0AUQKNR8CF");
+  });
+
+  it("resolves every deployed blocked ID to a readable topic and keeps IDs out of reviewer summaries", () => {
+    const ids = registryJson.blocked_topics.map((topic) => topic.id);
+    const contexts = getKnowledgeRefreshBlockedTopicContexts(ids);
+    expect(contexts).toHaveLength(39);
+    expect(contexts.every((topic) => topic.found && topic.title && !topic.title.startsWith("blocked_"))).toBe(true);
+
+    const result = compareKnowledgeRefreshCandidate({
+      title: "Episode delivery timeline is 4-6 months for most shows",
+      proposedPolicy: "The standard timeline for episode delivery is approximately 4-6 months after filming.",
+      decisionKey: null,
+      productScopes: ["product_agnostic"],
+    });
+    expect(result.conflictLevel).toBe("blocked");
+    expect(result.conflictSummary).toContain("Episode delivery timing after filming");
+    expect(result.conflictSummary).not.toContain("blocked_");
+  });
+
+  it("fails closed when a blocked ID or its comparison evidence cannot be resolved", () => {
+    const [unknown] = getKnowledgeRefreshBlockedTopicContexts(["blocked_does_not_exist"]);
+    expect(unknown).toMatchObject({ found: false, reviewReady: false });
+    expect(unknown.explanation).toContain("Approval must remain unavailable");
+
+    const legacy = getKnowledgeRefreshBlockedTopicContexts(["bankruptcy-qualification", "dual-product-opportunity-ownership", "accessibility-accommodations"]);
+    expect(legacy).toHaveLength(3);
+    expect(legacy.every((topic) => topic.found && !topic.reviewReady && topic.evidence.length === 0)).toBe(true);
   });
 
   it("screens explicit no-change confirmations without approving them", () => {
