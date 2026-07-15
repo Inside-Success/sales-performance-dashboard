@@ -7,6 +7,7 @@ import {
   compareKnowledgeRefreshCandidate,
   getKnowledgeRefreshRegistryVersion,
   type KnowledgeRefreshConflictLevel,
+  type KnowledgeRefreshPolicyContext,
 } from "@/lib/ask-sales-faq/knowledge-refresh-governance";
 import {
   KNOWLEDGE_REFRESH_SOURCES,
@@ -820,7 +821,16 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
      where status in ('needs_review', 'needs_owner')
      order by id`,
   )) as Array<KnowledgeRefreshCandidateRow>;
-  let updatedCount = 0;
+  const changes: Array<{
+    id: string;
+    previousConflictLevel: KnowledgeRefreshConflictLevel;
+    conflictLevel: KnowledgeRefreshConflictLevel;
+    conflictSummary: string;
+    conflictingPolicyIds: string[];
+    relatedPolicies: KnowledgeRefreshPolicyContext[];
+    blockedTopicIds: string[];
+    previousBlockedTopicIds: string[];
+  }> = [];
   for (const candidate of rows) {
     const governance = compareKnowledgeRefreshCandidate({
       title: candidate.title,
@@ -834,28 +844,59 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
       JSON.stringify(candidate.conflicting_policy_ids) === JSON.stringify(governance.conflictingPolicyIds) &&
       JSON.stringify(candidate.blocked_topic_ids) === JSON.stringify(governance.blockedTopicIds)
     ) continue;
-    await getSql().query(
-      `update ask_sales_faq_refresh_candidates
-       set conflict_level = $2, conflict_summary = $3, conflicting_policy_ids = $4::jsonb,
-           related_policies = $5::jsonb, blocked_topic_ids = $6::jsonb,
-           version = version + 1, updated_at = now()
-       where id = $1`,
-      [
-        candidate.id,
-        governance.conflictLevel,
-        governance.conflictSummary,
-        JSON.stringify(governance.conflictingPolicyIds),
-        JSON.stringify(governance.relatedPolicies),
-        JSON.stringify(governance.blockedTopicIds),
-      ],
-    );
-    await writeAudit("candidate", candidate.id, "governance_recomputed", input.actor, candidate.conflict_level, governance.conflictLevel, {
-      previousBlockedTopicIds: candidate.blocked_topic_ids,
+    changes.push({
+      id: candidate.id,
+      previousConflictLevel: candidate.conflict_level,
+      conflictLevel: governance.conflictLevel,
+      conflictSummary: governance.conflictSummary,
+      conflictingPolicyIds: governance.conflictingPolicyIds,
+      relatedPolicies: governance.relatedPolicies,
       blockedTopicIds: governance.blockedTopicIds,
+      previousBlockedTopicIds: candidate.blocked_topic_ids,
     });
-    updatedCount += 1;
   }
-  return { reviewedCount: rows.length, updatedCount };
+  if (!changes.length) return { reviewedCount: rows.length, updatedCount: 0 };
+  const updateRows = (await getSql().query(
+    `with changes as (
+       select * from jsonb_to_recordset($1::jsonb) as item(
+         id text,
+         "previousConflictLevel" text,
+         "conflictLevel" text,
+         "conflictSummary" text,
+         "conflictingPolicyIds" jsonb,
+         "relatedPolicies" jsonb,
+         "blockedTopicIds" jsonb,
+         "previousBlockedTopicIds" jsonb
+       )
+     ), updated as (
+       update ask_sales_faq_refresh_candidates c
+       set conflict_level = changes."conflictLevel",
+           conflict_summary = changes."conflictSummary",
+           conflicting_policy_ids = changes."conflictingPolicyIds",
+           related_policies = changes."relatedPolicies",
+           blocked_topic_ids = changes."blockedTopicIds",
+           version = c.version + 1,
+           updated_at = now()
+       from changes
+       where c.id = changes.id and c.status in ('needs_review', 'needs_owner')
+       returning c.id
+     ), audited as (
+       insert into ask_sales_faq_refresh_audit (
+         entity_type, entity_id, event_type, actor, from_status, to_status, details
+       )
+       select 'candidate', changes.id, 'governance_recomputed', $2,
+              changes."previousConflictLevel", changes."conflictLevel",
+              jsonb_build_object(
+                'previousBlockedTopicIds', changes."previousBlockedTopicIds",
+                'blockedTopicIds', changes."blockedTopicIds"
+              )
+       from changes
+       join updated on updated.id = changes.id
+     )
+     select count(*)::int as updated_count from updated`,
+    [JSON.stringify(changes), input.actor],
+  )) as Array<{ updated_count: number }>;
+  return { reviewedCount: rows.length, updatedCount: updateRows[0]?.updated_count || 0 };
 }
 
 export async function prepareKnowledgeRefreshRelease(input: { candidateIds: string[]; actor: string }) {
