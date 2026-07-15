@@ -77,9 +77,10 @@ It uses the existing exact-email Ask Sales admin check on every page and API req
 6. Every blocked topic is resolved from its internal ID into a readable topic name, current approved policy (when one exists), governed evidence, and source reference. The internal ID is shown only inside collapsed technical audit details.
 7. Direct or blocked conflicts cannot be approved without an explicit `supersede` or `scoped_coexistence` decision and a reviewer note that records authority, scope, and exceptions.
 8. A blocked conflict cannot be approved when its registry entry or comparison evidence cannot be resolved. The reviewer must use `needs_owner` or `defer` instead.
-9. If a source changes after review, the previous proposal and approval become stale automatically.
-10. Optimistic versions prevent two admins from silently overwriting each other's decision.
-11. Bulk review is limited to non-approval dispositions such as defer, needs-owner, duplicate, engineering, or reject. Bulk approval does not exist.
+9. A blocker that shares only broad wording with the proposal is labeled as a weak automated match rather than a proven conflict, and approval remains unavailable until a policy owner corrects the classification. New analyses require topic-specific overlap before assigning a blocked conflict.
+10. If a source changes after review, the previous proposal and approval become stale automatically.
+11. Optimistic versions prevent two admins from silently overwriting each other's decision.
+12. Bulk review is limited to non-approval dispositions such as defer, needs-owner, duplicate, engineering, or reject. Bulk approval does not exist.
 
 ## Backlog and future-noise controls
 
