@@ -39,6 +39,10 @@ export type V3BlockedTopic = {
   id: string;
   status: "open" | string;
   resolution?: string | null;
+  authoritative_article_id?: string | null;
+  source_ids?: string[];
+  effective_at?: string | null;
+  last_reviewed?: string | null;
   blocked_topic_ids?: string[];
   question_families?: string[];
   product_scopes?: string[];

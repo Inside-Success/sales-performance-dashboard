@@ -5,7 +5,9 @@ import { neon } from "@neondatabase/serverless";
 import {
   buildKnowledgeRefreshAnalysisContext,
   compareKnowledgeRefreshCandidate,
+  getKnowledgeRefreshBlockedTopicContexts,
   getKnowledgeRefreshRegistryVersion,
+  type KnowledgeRefreshBlockedTopicContext,
   type KnowledgeRefreshConflictLevel,
   type KnowledgeRefreshPolicyContext,
 } from "@/lib/ask-sales-faq/knowledge-refresh-governance";
@@ -92,6 +94,7 @@ export type KnowledgeRefreshCandidateRow = {
   conflicting_policy_ids: string[];
   related_policies: Array<Record<string, unknown>>;
   blocked_topic_ids: string[];
+  blocked_topics: KnowledgeRefreshBlockedTopicContext[];
   conflict_resolution: KnowledgeRefreshConflictResolution | null;
   review_note: string | null;
   reviewed_by: string | null;
@@ -640,7 +643,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
   const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
   const countValues = [...values];
   values.push(pageSize, (page - 1) * pageSize);
-  const [sources, candidates, releases, counts] = await Promise.all([
+  const [sources, candidateRows, releases, counts] = await Promise.all([
     listKnowledgeRefreshSources(),
     sql.query(
       `select c.*, s.label as source_label, s.url as source_url
@@ -666,6 +669,10 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
        from ask_sales_faq_refresh_candidates`,
     ) as unknown as Promise<Array<{ needs_review: number; needs_owner: number; approved_content: number; deferred: number; duplicate: number; rejected: number; stale: number; total: number }>>,
   ]);
+  const candidates = candidateRows.map((candidate) => ({
+    ...candidate,
+    blocked_topics: getKnowledgeRefreshBlockedTopicContexts(candidate.blocked_topic_ids || []),
+  }));
   const filteredRows = (await sql.query(
     `select count(*)::int as total
      from ask_sales_faq_refresh_candidates c
@@ -730,6 +737,15 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   if (input.action === "approve_content" && ["direct", "blocked"].includes(candidate.conflict_level)) {
     if (!conflictResolution || !["supersede", "scoped_coexistence"].includes(conflictResolution)) {
       throw new KnowledgeRefreshValidationError("Direct or blocked conflicts require an explicit supersede or scoped-coexistence decision");
+    }
+    if (!sanitizeOperationalText(input.note || "", 2000)) {
+      throw new KnowledgeRefreshValidationError("Conflict approval requires a reviewer note describing the authority, scope, and any exceptions");
+    }
+  }
+  if (input.action === "approve_content" && candidate.conflict_level === "blocked") {
+    const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(candidate.blocked_topic_ids || []);
+    if (!blockedTopics.length || blockedTopics.some((topic) => !topic.reviewReady)) {
+      throw new KnowledgeRefreshValidationError("This blocked conflict does not have enough readable governed evidence for approval. Use Needs owner or Defer.");
     }
   }
 

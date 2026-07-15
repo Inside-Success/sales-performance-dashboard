@@ -74,10 +74,12 @@ It uses the existing exact-email Ask Sales admin check on every page and API req
 3. DeepSeek extracts candidate rules but cannot approve, reject, or publish them.
 4. The dashboard independently recomputes policy overlap and conflict level.
 5. Every candidate requires a human decision.
-6. Direct or blocked conflicts cannot be approved without an explicit `supersede` or `scoped_coexistence` decision.
-7. If a source changes after review, the previous proposal and approval become stale automatically.
-8. Optimistic versions prevent two admins from silently overwriting each other's decision.
-9. Bulk review is limited to non-approval dispositions such as defer, needs-owner, duplicate, engineering, or reject. Bulk approval does not exist.
+6. Every blocked topic is resolved from its internal ID into a readable topic name, current approved policy (when one exists), governed evidence, and source reference. The internal ID is shown only inside collapsed technical audit details.
+7. Direct or blocked conflicts cannot be approved without an explicit `supersede` or `scoped_coexistence` decision and a reviewer note that records authority, scope, and exceptions.
+8. A blocked conflict cannot be approved when its registry entry or comparison evidence cannot be resolved. The reviewer must use `needs_owner` or `defer` instead.
+9. If a source changes after review, the previous proposal and approval become stale automatically.
+10. Optimistic versions prevent two admins from silently overwriting each other's decision.
+11. Bulk review is limited to non-approval dispositions such as defer, needs-owner, duplicate, engineering, or reject. Bulk approval does not exist.
 
 ## Backlog and future-noise controls
 
@@ -89,7 +91,7 @@ Future runs use three conservative controls:
 2. The analyzer excludes no-change confirmations, duplicate restatements, daily metrics, coaching schedules, scripts/templates, CRM bookkeeping, internal admin steps, and one-off cases unless they establish a durable reusable compliance or sales-policy boundary.
 3. Exact cross-snapshot repeats and explicit no-change results are staged outside the active queue; candidates below 55% AI confidence go to `needs_owner`. Every original record and evidence quote remains auditable.
 
-The admin page now defaults to the actionable lane and provides server-side search, source/conflict filters, pagination, visible counts for screened/duplicate/stale records, safe batch dispositions, and individual approval only. Conflict labels can be recomputed against the current deployed V3 registry without changing candidate decisions or production knowledge.
+The admin page now defaults to the actionable lane and provides server-side search, source/conflict filters, pagination, visible counts for screened/duplicate/stale records, safe batch dispositions, and individual approval only. Blocked cards show the current-policy-versus-new-proposal comparison, the governed evidence behind the blocker, a plain-language decision prompt, and safe source links where available. Related policies are rendered as readable cards rather than raw JSON. Conflict labels can be recomputed against the current deployed V3 registry without changing candidate decisions or production knowledge.
 
 ## Publication boundary
 
