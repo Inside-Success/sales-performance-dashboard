@@ -89,6 +89,21 @@ function topBlockedTopics(value: string, limit = 6) {
     .map((item) => item.topic.id);
 }
 
+function candidateBlockedTopics(value: string, productScopes: string[], limit = 6) {
+  const query = tokens(value.slice(0, 80_000));
+  const normalizedScopes = new Set(productScopes.map(normalize));
+  return registry.blocked_topics
+    .map((topic) => ({ topic, score: overlapScore(query, blockedTopicText(topic)) }))
+    .filter(({ topic, score }) => {
+      if (score < 0.24) return false;
+      const topicScopes = (topic.product_scopes || []).map(normalize).filter(Boolean);
+      return !topicScopes.length || normalizedScopes.has("all") || topicScopes.includes("all") || topicScopes.some((scope) => normalizedScopes.has(scope));
+    })
+    .sort((left, right) => right.score - left.score)
+    .slice(0, limit)
+    .map((item) => item.topic.id);
+}
+
 function blockedTopicText(topic: V3BlockedTopic) {
   return [
     topic.id,
@@ -123,7 +138,7 @@ export function compareKnowledgeRefreshCandidate(input: {
   const exactDecisionKey = input.decisionKey
     ? registry.policies.filter((policy) => policy.decision_key === input.decisionKey).map(policyContext)
     : [];
-  const blockedTopicIds = topBlockedTopics(text);
+  const blockedTopicIds = candidateBlockedTopics(text, input.productScopes);
   const conflictingPolicyIds = Array.from(new Set(exactDecisionKey.map((policy) => policy.id)));
 
   if (blockedTopicIds.length) {

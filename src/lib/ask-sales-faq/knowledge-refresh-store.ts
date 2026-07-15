@@ -13,6 +13,10 @@ import {
   getKnowledgeRefreshSource,
   type KnowledgeRefreshSourceKind,
 } from "@/lib/ask-sales-faq/knowledge-refresh-sources";
+import {
+  buildKnowledgeRefreshAnalysisPayload,
+  classifyKnowledgeRefreshCandidateNoise,
+} from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 
 type SqlClient = ReturnType<typeof neon>;
 
@@ -360,6 +364,19 @@ export async function recordKnowledgeRefreshSnapshot(input: {
   if (!redacted.text.trim()) throw new Error("Source content is empty after normalization");
   const contentHash = sha256(redacted.text);
   const sql = getSql();
+  const previousSnapshots = (await sql.query(
+    `select content_redacted
+     from ask_sales_faq_refresh_snapshots
+     where source_id = $1
+     order by created_at desc
+     limit 1`,
+    [input.sourceId],
+  )) as Array<{ content_redacted: string }>;
+  let analysisPayload = buildKnowledgeRefreshAnalysisPayload({
+    kind: source.kind,
+    currentContent: redacted.text,
+    previousContent: previousSnapshots[0]?.content_redacted || null,
+  });
   const currentRows = (await sql.query(
     `select last_content_hash from ask_sales_faq_refresh_sources where id = $1 limit 1`,
     [input.sourceId],
@@ -390,7 +407,11 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     ],
   )) as Array<{ id: string; analysis_completed_at: string | null }>;
   const storedSnapshotId = snapshotRows[0]?.id || snapshotId;
-  const analysisRequired = !unchanged || !snapshotRows[0]?.analysis_completed_at;
+  const analysisWasIncomplete = !snapshotRows[0]?.analysis_completed_at;
+  if (unchanged && analysisWasIncomplete) {
+    analysisPayload = { mode: "full", content: redacted.text, materialChange: true };
+  }
+  const analysisRequired = (!unchanged || analysisWasIncomplete) && analysisPayload.materialChange;
 
   await sql.query(
     `update ask_sales_faq_refresh_sources
@@ -419,6 +440,20 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     );
   }
 
+  if (!analysisRequired && analysisWasIncomplete) {
+    await sql.query(
+      `update ask_sales_faq_refresh_snapshots
+       set analysis_completed_at = now(), analysis_model = 'deterministic-no-material-change'
+       where id = $1`,
+      [storedSnapshotId],
+    );
+    await writeAudit("snapshot", storedSnapshotId, "analysis_skipped_no_material_change", "dashboard:deterministic-screen", null, null, {
+      sourceId: input.sourceId,
+      contentHash,
+      analysisMode: analysisPayload.mode,
+    });
+  }
+
   await writeAudit("snapshot", storedSnapshotId, unchanged ? "source_unchanged" : "source_changed", "n8n:ask-sales-knowledge-refresh", null, null, {
     sourceId: input.sourceId,
     contentHash,
@@ -430,11 +465,12 @@ export async function recordKnowledgeRefreshSnapshot(input: {
   return {
     unchanged,
     analysisRequired,
+    analysisMode: analysisPayload.mode,
     snapshotId: storedSnapshotId,
     snapshotHash: contentHash,
     knowledgeVersion: getKnowledgeRefreshRegistryVersion(),
     governanceContext: analysisRequired ? buildKnowledgeRefreshAnalysisContext(redacted.text) : null,
-    content: analysisRequired ? redacted.text : null,
+    content: analysisRequired ? analysisPayload.content : null,
     redactions: redacted.redactions,
   };
 }
@@ -463,6 +499,7 @@ export async function recordKnowledgeRefreshCandidates(input: {
   }
 
   const insertedIds: string[] = [];
+  const insertedStatuses: KnowledgeRefreshCandidateStatus[] = [];
   for (const rawCandidate of input.candidates.slice(0, 20)) {
     const candidate = normalizeAiCandidate(rawCandidate);
     if (!candidate) continue;
@@ -478,16 +515,30 @@ export async function recordKnowledgeRefreshCandidates(input: {
       proposedPolicy: candidate.proposedPolicy,
       evidenceQuotes: candidate.evidenceQuotes,
     }));
+    const duplicateRows = (await sql.query(
+      `select id
+       from ask_sales_faq_refresh_candidates
+       where source_id = $1 and candidate_hash = $2
+       order by created_at desc
+       limit 1`,
+      [input.sourceId, candidateHash],
+    )) as Array<{ id: string }>;
+    const noise = classifyKnowledgeRefreshCandidateNoise({
+      title: candidate.title,
+      proposedPolicy: candidate.proposedPolicy,
+      confidence: candidate.confidence,
+      duplicateOfCandidateId: duplicateRows[0]?.id || null,
+    });
     const candidateId = `kc_${randomUUID()}`;
     const rows = (await sql.query(
       `insert into ask_sales_faq_refresh_candidates (
          id, source_id, snapshot_id, snapshot_hash, source_revision, candidate_hash, status,
          title, summary, proposed_policy, rationale, decision_key, product_scopes, effective_date,
          evidence_quotes, ai_model, ai_confidence, conflict_level, conflict_summary,
-         conflicting_policy_ids, related_policies, blocked_topic_ids
+         conflicting_policy_ids, related_policies, blocked_topic_ids, review_note
        ) values (
-         $1, $2, $3, $4, $5, $6, 'needs_review', $7, $8, $9, $10, $11, $12::jsonb, $13,
-         $14::jsonb, $15, $16, $17, $18, $19::jsonb, $20::jsonb, $21::jsonb
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb, $14,
+         $15::jsonb, $16, $17, $18, $19, $20::jsonb, $21::jsonb, $22::jsonb, $23
        ) on conflict (snapshot_id, candidate_hash) do nothing returning id`,
       [
         candidateId,
@@ -496,6 +547,7 @@ export async function recordKnowledgeRefreshCandidates(input: {
         input.snapshotHash,
         sanitizeOperationalText(input.sourceRevision || "", 200) || null,
         candidateHash,
+        noise.status,
         candidate.title,
         candidate.summary,
         candidate.proposedPolicy,
@@ -511,9 +563,20 @@ export async function recordKnowledgeRefreshCandidates(input: {
         JSON.stringify(governance.conflictingPolicyIds),
         JSON.stringify(governance.relatedPolicies),
         JSON.stringify(governance.blockedTopicIds),
+        noise.reason,
       ],
     )) as Array<{ id: string }>;
-    if (rows[0]?.id) insertedIds.push(rows[0].id);
+    if (rows[0]?.id) {
+      insertedIds.push(rows[0].id);
+      insertedStatuses.push(noise.status);
+      if (noise.status !== "needs_review") {
+        await writeAudit("candidate", candidateId, "candidate_screened", "dashboard:deterministic-screen", null, noise.status, {
+          reason: noise.reason,
+          sourceId: input.sourceId,
+          snapshotId: input.snapshotId,
+        });
+      }
+    }
   }
 
   await sql.query(
@@ -527,22 +590,66 @@ export async function recordKnowledgeRefreshCandidates(input: {
     sourceId: input.sourceId,
     model: sanitizeOperationalText(input.model, 120),
     candidateCount: insertedIds.length,
+    needsReviewCount: insertedStatuses.filter((status) => status === "needs_review").length,
+    screenedCount: insertedStatuses.filter((status) => status !== "needs_review").length,
   });
 
   return { insertedCandidateIds: insertedIds, insertedCount: insertedIds.length };
 }
 
-export async function getKnowledgeRefreshOverview() {
+export type KnowledgeRefreshQueueView = "actionable" | "approved" | "resolved" | "stale" | "all";
+
+export type KnowledgeRefreshOverviewFilters = {
+  view?: KnowledgeRefreshQueueView;
+  query?: string;
+  sourceKind?: KnowledgeRefreshSourceKind | "all";
+  conflictLevel?: KnowledgeRefreshConflictLevel | "all";
+  page?: number;
+  pageSize?: number;
+};
+
+export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOverviewFilters = {}) {
   await ensureKnowledgeRefreshStorage();
   const sql = getSql();
+  const view = input.view || "actionable";
+  const query = sanitizeOperationalText(input.query || "", 160);
+  const sourceKind = input.sourceKind || "all";
+  const conflictLevel = input.conflictLevel || "all";
+  const pageSize = Math.max(10, Math.min(50, Math.trunc(input.pageSize || 20)));
+  const page = Math.max(1, Math.trunc(input.page || 1));
+  const values: unknown[] = [];
+  const clauses: string[] = [];
+  const statuses = queueViewStatuses(view);
+  if (statuses.length) {
+    values.push(statuses);
+    clauses.push(`c.status = any($${values.length}::text[])`);
+  }
+  if (sourceKind !== "all") {
+    values.push(sourceKind);
+    clauses.push(`s.kind = $${values.length}`);
+  }
+  if (conflictLevel !== "all") {
+    values.push(conflictLevel);
+    clauses.push(`c.conflict_level = $${values.length}`);
+  }
+  if (query) {
+    values.push(`%${query}%`);
+    clauses.push(`(c.title ilike $${values.length} or c.summary ilike $${values.length} or c.proposed_policy ilike $${values.length} or s.label ilike $${values.length})`);
+  }
+  const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
+  const countValues = [...values];
+  values.push(pageSize, (page - 1) * pageSize);
   const [sources, candidates, releases, counts] = await Promise.all([
     listKnowledgeRefreshSources(),
     sql.query(
       `select c.*, s.label as source_label, s.url as source_url
        from ask_sales_faq_refresh_candidates c
        join ask_sales_faq_refresh_sources s on s.id = c.source_id
+       ${where}
        order by case c.status when 'needs_review' then 0 when 'needs_owner' then 1 when 'approved_content' then 2 else 3 end,
-                c.updated_at desc limit 150`,
+                c.updated_at desc
+       limit $${values.length - 1} offset $${values.length}`,
+      values,
     ) as unknown as Promise<KnowledgeRefreshCandidateRow[]>,
     sql.query(`select * from ask_sales_faq_refresh_releases order by created_at desc limit 30`) as unknown as Promise<KnowledgeRefreshReleaseRow[]>,
     sql.query(
@@ -550,10 +657,22 @@ export async function getKnowledgeRefreshOverview() {
          count(*) filter (where status = 'needs_review')::int as needs_review,
          count(*) filter (where status = 'needs_owner')::int as needs_owner,
          count(*) filter (where status = 'approved_content')::int as approved_content,
-         count(*) filter (where status = 'stale')::int as stale
+         count(*) filter (where status = 'deferred')::int as deferred,
+         count(*) filter (where status = 'duplicate')::int as duplicate,
+         count(*) filter (where status = 'rejected')::int as rejected,
+         count(*) filter (where status = 'stale')::int as stale,
+         count(*)::int as total
        from ask_sales_faq_refresh_candidates`,
-    ) as unknown as Promise<Array<{ needs_review: number; needs_owner: number; approved_content: number; stale: number }>>,
+    ) as unknown as Promise<Array<{ needs_review: number; needs_owner: number; approved_content: number; deferred: number; duplicate: number; rejected: number; stale: number; total: number }>>,
   ]);
+  const filteredRows = (await sql.query(
+    `select count(*)::int as total
+     from ask_sales_faq_refresh_candidates c
+     join ask_sales_faq_refresh_sources s on s.id = c.source_id
+     ${where}`,
+    countValues,
+  )) as Array<{ total: number }>;
+  const filteredTotal = filteredRows[0]?.total || 0;
   return {
     generatedAt: new Date().toISOString(),
     knowledgeVersion: getKnowledgeRefreshRegistryVersion(),
@@ -561,8 +680,23 @@ export async function getKnowledgeRefreshOverview() {
     sources,
     candidates,
     releases,
-    summary: counts[0] || { needs_review: 0, needs_owner: 0, approved_content: 0, stale: 0 },
+    summary: counts[0] || { needs_review: 0, needs_owner: 0, approved_content: 0, deferred: 0, duplicate: 0, rejected: 0, stale: 0, total: 0 },
+    filters: { view, query, sourceKind, conflictLevel },
+    pagination: {
+      page,
+      pageSize,
+      total: filteredTotal,
+      totalPages: Math.max(1, Math.ceil(filteredTotal / pageSize)),
+    },
   };
+}
+
+function queueViewStatuses(view: KnowledgeRefreshQueueView): KnowledgeRefreshCandidateStatus[] {
+  if (view === "actionable") return ["needs_review", "needs_owner"];
+  if (view === "approved") return ["approved_content", "preparing_release", "ready_to_publish", "publishing", "deployed", "production_verified"];
+  if (view === "resolved") return ["deferred", "duplicate", "rejected", "engineering_required", "validation_failed", "deployment_failed", "rolled_back"];
+  if (view === "stale") return ["stale"];
+  return [];
 }
 
 export async function transitionKnowledgeRefreshCandidate(input: {
@@ -624,6 +758,104 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     note: sanitizeOperationalText(input.note || "", 2000) || null,
   });
   return { id: input.candidateId, status: targetStatus, version: updateRows[0].version };
+}
+
+export async function transitionKnowledgeRefreshCandidatesBatch(input: {
+  candidates: Array<{ candidateId: string; expectedVersion: number }>;
+  action: "reject" | "defer" | "needs_owner" | "duplicate" | "engineering_required";
+  actor: string;
+  note?: string | null;
+}) {
+  await ensureKnowledgeRefreshStorage();
+  const candidates = Array.from(
+    new Map(input.candidates.slice(0, 100).map((candidate) => [candidate.candidateId, candidate])).values(),
+  );
+  if (!candidates.length) throw new KnowledgeRefreshValidationError("Select at least one proposal");
+  const targetStatus = actionTargetStatus(input.action);
+  const note = sanitizeOperationalText(input.note || "", 2000) || null;
+  const payload = JSON.stringify(candidates);
+  const rows = (await getSql().query(
+    `with requested as (
+       select "candidateId" as candidate_id, "expectedVersion" as expected_version
+       from jsonb_to_recordset($1::jsonb) as item("candidateId" text, "expectedVersion" integer)
+     ), eligible as (
+       select c.id, c.status as from_status, c.version
+       from ask_sales_faq_refresh_candidates c
+       join ask_sales_faq_refresh_sources s on s.id = c.source_id
+       join requested r on r.candidate_id = c.id and r.expected_version = c.version
+       where c.status in ('needs_review', 'needs_owner', 'deferred')
+         and c.snapshot_hash = s.last_content_hash
+     ), guard as (
+       select (select count(*) from requested) = (select count(*) from eligible) as all_eligible
+     ), updated as (
+       update ask_sales_faq_refresh_candidates c
+       set status = $2, version = c.version + 1, review_note = $3,
+           reviewed_by = $4, reviewed_at = now(), updated_at = now()
+       from eligible e, guard g
+       where g.all_eligible and c.id = e.id
+       returning c.id, c.status, c.version, e.from_status
+     ), audited as (
+       insert into ask_sales_faq_refresh_audit (
+         entity_type, entity_id, event_type, actor, from_status, to_status, details
+       )
+       select 'candidate', u.id, $5, $4, u.from_status, u.status,
+              jsonb_build_object('expectedVersion', u.version - 1, 'note', $3, 'batch', true)
+       from updated u
+     )
+     select id, status, version from updated order by id`,
+    [payload, targetStatus, note, input.actor, input.action],
+  )) as Array<{ id: string; status: KnowledgeRefreshCandidateStatus; version: number }>;
+  if (rows.length !== candidates.length) {
+    throw new KnowledgeRefreshConflictError("One or more proposals changed or became stale; refresh before applying a batch decision");
+  }
+  return { updatedCount: rows.length, candidates: rows };
+}
+
+export async function recomputeActionableKnowledgeRefreshGovernance(input: { actor: string }) {
+  await ensureKnowledgeRefreshStorage();
+  const rows = (await getSql().query(
+    `select id, title, proposed_policy, decision_key, product_scopes,
+            conflict_level, conflict_summary, conflicting_policy_ids, related_policies, blocked_topic_ids
+     from ask_sales_faq_refresh_candidates
+     where status in ('needs_review', 'needs_owner')
+     order by id`,
+  )) as Array<KnowledgeRefreshCandidateRow>;
+  let updatedCount = 0;
+  for (const candidate of rows) {
+    const governance = compareKnowledgeRefreshCandidate({
+      title: candidate.title,
+      proposedPolicy: candidate.proposed_policy,
+      decisionKey: candidate.decision_key,
+      productScopes: candidate.product_scopes,
+    });
+    if (
+      candidate.conflict_level === governance.conflictLevel &&
+      candidate.conflict_summary === governance.conflictSummary &&
+      JSON.stringify(candidate.conflicting_policy_ids) === JSON.stringify(governance.conflictingPolicyIds) &&
+      JSON.stringify(candidate.blocked_topic_ids) === JSON.stringify(governance.blockedTopicIds)
+    ) continue;
+    await getSql().query(
+      `update ask_sales_faq_refresh_candidates
+       set conflict_level = $2, conflict_summary = $3, conflicting_policy_ids = $4::jsonb,
+           related_policies = $5::jsonb, blocked_topic_ids = $6::jsonb,
+           version = version + 1, updated_at = now()
+       where id = $1`,
+      [
+        candidate.id,
+        governance.conflictLevel,
+        governance.conflictSummary,
+        JSON.stringify(governance.conflictingPolicyIds),
+        JSON.stringify(governance.relatedPolicies),
+        JSON.stringify(governance.blockedTopicIds),
+      ],
+    );
+    await writeAudit("candidate", candidate.id, "governance_recomputed", input.actor, candidate.conflict_level, governance.conflictLevel, {
+      previousBlockedTopicIds: candidate.blocked_topic_ids,
+      blockedTopicIds: governance.blockedTopicIds,
+    });
+    updatedCount += 1;
+  }
+  return { reviewedCount: rows.length, updatedCount };
 }
 
 export async function prepareKnowledgeRefreshRelease(input: { candidateIds: string[]; actor: string }) {

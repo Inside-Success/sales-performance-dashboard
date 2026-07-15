@@ -6,6 +6,10 @@ import {
   getKnowledgeRefreshRegistryVersion,
 } from "@/lib/ask-sales-faq/knowledge-refresh-governance";
 import { KNOWLEDGE_REFRESH_SOURCES, getKnowledgeRefreshSource } from "@/lib/ask-sales-faq/knowledge-refresh-sources";
+import {
+  buildKnowledgeRefreshAnalysisPayload,
+  classifyKnowledgeRefreshCandidateNoise,
+} from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 
 describe("Ask Sales knowledge-refresh governance", () => {
   it("monitors only the two approved Slack channels plus the governed Google corpus", () => {
@@ -46,5 +50,46 @@ describe("Ask Sales knowledge-refresh governance", () => {
     });
     expect(result.conflictLevel).toBe("none");
     expect(result.conflictSummary).toContain("Human review");
+  });
+
+  it("screens explicit no-change confirmations without approving them", () => {
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Show status confirmed",
+      proposedPolicy: "No change needed; show remains active.",
+      confidence: 0.99,
+    })).toEqual({
+      status: "duplicate",
+      reason: "Automatically screened because the source explicitly says the governed value did not change.",
+    });
+  });
+
+  it("routes low-confidence candidates to an accountable owner", () => {
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Uncertain exception",
+      proposedPolicy: "This may be allowed in some cases.",
+      confidence: 0.42,
+    }).status).toBe("needs_owner");
+  });
+
+  it("sends Google sources to AI as a change-only packet after the first snapshot", () => {
+    const result = buildKnowledgeRefreshAnalysisPayload({
+      kind: "google_doc",
+      previousContent: "Package price is $10,000.\n\nThe episode is 15 minutes.",
+      currentContent: "Package price is $12,000.\n\nThe episode is 15 minutes.",
+    });
+    expect(result.mode).toBe("delta");
+    expect(result.materialChange).toBe(true);
+    expect(result.content).toContain("Package price is $12,000");
+    expect(result.content).toContain("Package price is $10,000");
+    expect(result.content).not.toContain("The episode is 15 minutes");
+  });
+
+  it("does not send formatting-only Google changes to AI", () => {
+    const result = buildKnowledgeRefreshAnalysisPayload({
+      kind: "google_sheet",
+      previousContent: "Show A is active.\n\nShow B is off.",
+      currentContent: " Show A is active. \n\n Show B is off. ",
+    });
+    expect(result).toEqual({ mode: "delta", content: "", materialChange: false });
   });
 });
