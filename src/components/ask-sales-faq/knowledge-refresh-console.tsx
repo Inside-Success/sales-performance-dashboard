@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -47,6 +47,7 @@ type Overview = {
 
 type ReviewAction = "approve_content" | "reject" | "defer" | "needs_owner" | "duplicate" | "engineering_required";
 type BatchAction = Exclude<ReviewAction, "approve_content">;
+const subscribeToHydration = () => () => {};
 
 export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const router = useRouter();
@@ -55,6 +56,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const [batchAction, setBatchAction] = useState<BatchAction>("defer");
   const [batchNote, setBatchNote] = useState("");
   const [message, setMessage] = useState<{ tone: "good" | "bad"; text: string } | null>(null);
+  const cardsReady = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const [isPending, startTransition] = useTransition();
   const available = overview.sources.filter((source) => source.availability === "available" || source.availability === "replacement_active").length;
   const unavailable = overview.sources.filter((source) => source.availability === "unavailable").length;
@@ -190,7 +192,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         ) : null}
 
         <div className="divide-y divide-slate-100">
-          {overview.candidates.map((candidate) => (
+          {cardsReady ? overview.candidates.map((candidate) => (
             <CandidateReview
               key={candidate.id}
               candidate={candidate}
@@ -198,8 +200,8 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
               onSelected={(checked) => setReviewSelected((current) => checked ? [...new Set([...current, candidate.id])] : current.filter((id) => id !== candidate.id))}
               onDone={(text, tone) => { setMessage({ text, tone }); refresh(); }}
             />
-          ))}
-          {!overview.candidates.length ? <div className="p-8 text-center text-sm text-slate-500">No proposals match these filters.</div> : null}
+          )) : overview.candidates.length ? <div className="p-8 text-center text-sm text-slate-500">Loading proposal details…</div> : null}
+          {cardsReady && !overview.candidates.length ? <div className="p-8 text-center text-sm text-slate-500">No proposals match these filters.</div> : null}
         </div>
         <Pagination overview={overview} />
       </section>
