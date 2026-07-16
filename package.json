@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
+    "smoke:ask-sales-quality-review": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-quality-review.ts",
     "benchmark:ask-sales-faq:v3": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v3.ts",
     "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs"
   },
