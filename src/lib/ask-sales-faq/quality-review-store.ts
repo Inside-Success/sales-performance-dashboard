@@ -48,6 +48,15 @@ export type AskSalesQualityCaseStatus =
   | "fixed"
   | "ignored";
 
+export type AskSalesQualityReviewAction =
+  | "answer_correct"
+  | "knowledge_gap"
+  | "runtime_issue"
+  | "needs_owner"
+  | "defer"
+  | "mark_fixed"
+  | "ignore";
+
 export type AskSalesQualityAuditEvaluation = {
   messageId: string;
   verdict: AskSalesQualityVerdict;
@@ -613,10 +622,11 @@ export async function getAskSalesQualityReviewOverview(input?: {
 export async function transitionAskSalesQualityCase(input: {
   caseId: string;
   expectedVersion: number;
-  action: "answer_correct" | "knowledge_gap" | "runtime_issue" | "needs_owner" | "defer" | "mark_fixed" | "ignore";
+  action: AskSalesQualityReviewAction;
   actor: string;
   note?: string | null;
 }) {
+  validateAskSalesQualityReviewDecision(input.action, input.note);
   await ensureAskSalesQualityReviewStorage();
   const target = qualityActionTarget(input.action);
   const rows = (await getSql().query(
@@ -668,7 +678,10 @@ function normalizeEvaluation(value: AskSalesQualityAuditEvaluation) {
   } satisfies AskSalesQualityAuditEvaluation;
 }
 
-function enforceDeterministicSignals(evaluation: AskSalesQualityAuditEvaluation, message: Record<string, unknown>) {
+export function applyAskSalesQualityAuditGuardrails(
+  evaluation: AskSalesQualityAuditEvaluation,
+  message: Record<string, unknown>,
+) {
   if (message.feedback_rating === "down") {
     return {
       ...evaluation,
@@ -677,7 +690,7 @@ function enforceDeterministicSignals(evaluation: AskSalesQualityAuditEvaluation,
       severity: evaluation.severity === "low" ? "medium" as const : evaluation.severity,
     };
   }
-  if (message.error_class) {
+  if (isTechnicalRuntimeErrorClass(message.error_class)) {
     return {
       ...evaluation,
       verdict: "runtime_issue" as const,
@@ -685,7 +698,28 @@ function enforceDeterministicSignals(evaluation: AskSalesQualityAuditEvaluation,
       severity: "high" as const,
     };
   }
+  if (evaluation.issueType === "negative_feedback") {
+    return {
+      ...evaluation,
+      issueType: "wrong_or_incomplete_answer" as const,
+    };
+  }
   return evaluation;
+}
+
+function enforceDeterministicSignals(evaluation: AskSalesQualityAuditEvaluation, message: Record<string, unknown>) {
+  return applyAskSalesQualityAuditGuardrails(evaluation, message);
+}
+
+export function validateAskSalesQualityReviewDecision(action: AskSalesQualityReviewAction, note?: string | null) {
+  if (["knowledge_gap", "runtime_issue", "needs_owner"].includes(action) && !sanitize(note || "", 2000)) {
+    throw new Error("Add a reviewer note before confirming a knowledge gap, runtime issue, or policy-owner decision");
+  }
+}
+
+function isTechnicalRuntimeErrorClass(value: unknown) {
+  if (typeof value !== "string" || !value) return false;
+  return !["v3_grounding_rejected", "ai_grounding_rejected"].includes(value);
 }
 
 function qualityViewStatuses(value: AskSalesQualityCaseStatus | "active" | "resolved" | "all") {
@@ -695,7 +729,7 @@ function qualityViewStatuses(value: AskSalesQualityCaseStatus | "active" | "reso
   return [value];
 }
 
-function qualityActionTarget(action: Parameters<typeof transitionAskSalesQualityCase>[0]["action"]): AskSalesQualityCaseStatus {
+function qualityActionTarget(action: AskSalesQualityReviewAction): AskSalesQualityCaseStatus {
   if (action === "answer_correct") return "resolved_correct";
   if (action === "knowledge_gap") return "confirmed_knowledge_gap";
   if (action === "runtime_issue") return "confirmed_runtime_issue";
