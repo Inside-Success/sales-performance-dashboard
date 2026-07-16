@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatMiamiDateTime } from "@/lib/format";
 import type {
   KnowledgeRefreshCandidateRow,
   KnowledgeRefreshConflictResolution,
@@ -43,6 +44,16 @@ type Overview = {
   };
   filters: { view: KnowledgeRefreshQueueView; query: string; sourceKind: string; conflictLevel: string };
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
+  latestRun: {
+    run_id: string;
+    started_at: string;
+    completed_at: string;
+    changed_sources: number;
+    unchanged_sources: number;
+    unavailable_sources: number;
+    new_proposals: number;
+    prior_drafts_replaced: number;
+  } | null;
 };
 
 type ReviewAction = "approve_content" | "reject" | "defer" | "needs_owner" | "duplicate" | "engineering_required";
@@ -147,6 +158,38 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       </section>
 
       <section className="magic-card p-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="size-5 text-emerald-600" />
+              <h2 className="text-lg font-extrabold text-slate-950">Latest daily refresh</h2>
+            </div>
+            {overview.latestRun ? (
+              <>
+                <p className="mt-2 text-sm font-semibold text-slate-700">
+                  Completed successfully at {formatMiamiDateTime(overview.latestRun.completed_at)}.
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Older drafts were preserved in the archive. They were not deleted or silently merged.
+                </p>
+              </>
+            ) : (
+              <p className="mt-2 text-sm text-slate-500">No completed refresh run is available yet.</p>
+            )}
+          </div>
+          {overview.latestRun ? (
+            <div className="grid min-w-0 gap-2 sm:grid-cols-3 xl:w-[44rem] xl:grid-cols-5">
+              <RunStat label="Sources changed" value={overview.latestRun.changed_sources} />
+              <RunStat label="Unchanged" value={overview.latestRun.unchanged_sources} />
+              <RunStat label="Unavailable" value={overview.latestRun.unavailable_sources} tone={overview.latestRun.unavailable_sources ? "warning" : "default"} />
+              <RunStat label="New drafts" value={overview.latestRun.new_proposals} />
+              <RunStat label="Older drafts archived" value={overview.latestRun.prior_drafts_replaced} />
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="magic-card p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex items-center gap-2"><ShieldCheck className="size-5 text-emerald-600" /><h2 className="text-lg font-extrabold text-slate-950">Production safety boundary</h2></div>
@@ -171,8 +214,8 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         <div className="border-b border-slate-100 p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <h2 className="text-lg font-extrabold text-slate-950">Governed proposal queue</h2>
-              <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Every source record is retained; the default view shows only proposals that still need action.</p>
+              <h2 className="text-lg font-extrabold text-slate-950">Policy decisions to review</h2>
+              <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Each proposal should represent one decision. Replaced versions remain visible in the archive.</p>
             </div>
             <button type="button" onClick={recomputeGovernance} className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50"><ShieldAlert className="size-3.5" /> Recheck conflict labels</button>
           </div>
@@ -220,10 +263,10 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
 function QueueFilters({ overview }: { overview: Overview }) {
   const views: Array<[KnowledgeRefreshQueueView, string, number]> = [
-    ["actionable", "Actionable", overview.summary.needs_review + overview.summary.needs_owner],
+    ["actionable", "New or changed", overview.summary.needs_review + overview.summary.needs_owner],
     ["approved", "Approved", overview.summary.approved_content],
-    ["resolved", "Screened", overview.summary.deferred + overview.summary.duplicate + overview.summary.rejected],
-    ["stale", "Stale", overview.summary.stale],
+    ["resolved", "Reviewed", overview.summary.deferred + overview.summary.duplicate + overview.summary.rejected],
+    ["stale", "Replaced archive", overview.summary.stale],
     ["all", "All", overview.summary.total],
   ];
   return <div className="mt-5 space-y-3"><nav className="flex flex-wrap gap-2">{views.map(([view, label, count]) => <a key={view} href={queueHref(overview, { view, page: 1 })} className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${overview.filters.view === view ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{label} ({count})</a>)}</nav><form method="get" className="grid gap-2 md:grid-cols-[minmax(0,1fr)_180px_180px_auto]"><input type="hidden" name="view" value={overview.filters.view} /><label className="relative"><Search className="absolute left-3 top-2.5 size-4 text-slate-400" /><input name="q" defaultValue={overview.filters.query} placeholder="Search title, policy, source…" className="h-9 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm text-slate-700" /></label><select name="source" defaultValue={overview.filters.sourceKind} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All sources</option><option value="slack_channel">Slack</option><option value="google_doc">Google Docs</option><option value="google_sheet">Google Sheets</option></select><select name="conflict" defaultValue={overview.filters.conflictLevel} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All conflict levels</option><option value="none">No conflict</option><option value="possible">Possible</option><option value="direct">Direct</option><option value="blocked">Blocked topic</option></select><button className="h-9 rounded-lg border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Apply filters</button></form></div>;
@@ -235,9 +278,10 @@ function CandidateReview({ candidate, selected, onSelected, onDone }: { candidat
   const [busy, setBusy] = useState(false);
   const conflictNeedsDecision = candidate.conflict_level === "direct" || candidate.conflict_level === "blocked";
   const blockedReviewReady = candidate.conflict_level !== "blocked" || (candidate.blocked_topics.length > 0 && candidate.blocked_topics.every((topic) => topic.reviewReady));
+  const combinesMultipleDecisions = candidate.conflict_level === "blocked" && candidate.blocked_topics.length > 1;
   const resolutionReady = !conflictNeedsDecision || ["supersede", "scoped_coexistence"].includes(resolution);
   const noteReady = !conflictNeedsDecision || note.trim().length > 0;
-  const approvalReady = resolutionReady && noteReady && blockedReviewReady;
+  const approvalReady = resolutionReady && noteReady && blockedReviewReady && !combinesMultipleDecisions;
   const blockedHasCurrentPolicy = candidate.blocked_topics.some((topic) => topic.currentPolicies.length > 0);
   const canReview = ["needs_review", "needs_owner", "deferred"].includes(candidate.status);
 
@@ -263,19 +307,29 @@ function CandidateReview({ candidate, selected, onSelected, onDone }: { candidat
             <ConflictBadge level={candidate.conflict_level} />
             <Badge variant="outline">AI confidence {Math.round(candidate.ai_confidence * 100)}%</Badge>
             <Badge variant="outline" className="border-slate-200 bg-white">{candidate.source_label}</Badge>
+            <Badge variant="outline" className={candidate.change_kind === "updated" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}>
+              {candidate.change_kind === "updated" ? "Updated from an earlier draft" : "New policy draft"}
+            </Badge>
             <span className="text-xs text-slate-400">{formatDate(candidate.created_at)}</span>
           </div>
           <h3 className="mt-3 text-lg font-extrabold text-slate-950">{candidate.title}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">{candidate.summary}</p>
           {candidate.conflict_level === "blocked" ? (
-            <div className="mt-4 space-y-4">{candidate.blocked_topics.map((topic) => <BlockedConflictPanel key={topic.id} topic={topic} proposedPolicy={candidate.proposed_policy} />)}</div>
+            candidate.blocked_topics.length > 1
+              ? <BlockedConflictSummary topics={candidate.blocked_topics} proposedPolicy={candidate.proposed_policy} />
+              : <div className="mt-4 space-y-4">{candidate.blocked_topics.map((topic) => <BlockedConflictPanel key={topic.id} topic={topic} proposedPolicy={candidate.proposed_policy} />)}</div>
           ) : (
             <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Proposed governed policy</div><p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-6 text-slate-800">{candidate.proposed_policy}</p></div>
           )}
           {candidate.review_note ? <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800"><span className="font-extrabold">Audit note:</span> {candidate.review_note}</div> : null}
+          {candidate.previous_candidate_title ? (
+            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              <span className="font-extrabold text-slate-800">Previous version:</span> {candidate.previous_candidate_title}. The previous draft remains in the replaced archive.
+            </div>
+          ) : null}
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <Detail label="Why it may matter" value={candidate.rationale} />
-            <Detail label="Conflict check" value={candidate.conflict_level === "blocked" ? `${candidate.blocked_topics.map((topic) => topic.title).join("; ")}. Review the comparison shown above.` : candidate.conflict_summary} />
+            <Detail label="Conflict check" value={candidate.conflict_level === "blocked" ? `${candidate.blocked_topics.length} related governed conflict${candidate.blocked_topics.length === 1 ? "" : "s"}. Review the plain-language comparison shown above.` : candidate.conflict_summary} />
             <Detail label="Product scopes" value={candidate.product_scopes.join(", ")} />
             <Detail label="Decision key / effective date" value={`${candidate.decision_key || "New or unclassified"} · ${candidate.effective_date || "Not stated"}`} />
           </div>
@@ -294,13 +348,43 @@ function CandidateReview({ candidate, selected, onSelected, onDone }: { candidat
             <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={2000} rows={4} placeholder="Record who confirmed this rule, its scope, and any exceptions." className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-red-300" />
             {conflictNeedsDecision ? <><label className="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Required conflict decision</label><select value={resolution} onChange={(event) => setResolution(event.target.value as KnowledgeRefreshConflictResolution | "")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700"><option value="">Choose before approval</option><option value="supersede">{candidate.conflict_level === "blocked" && !blockedHasCurrentPolicy ? "Adopt proposal as the new official rule" : "Replace the current approved rule"}</option><option value="scoped_coexistence">Approve with explicit scope or conditions</option><option value="existing_remains">Existing rule remains</option><option value="owner_needed">Policy owner needed</option><option value="historical_case">Historical case only</option><option value="engineering_required">Engineering change required</option></select></> : null}
             <button type="button" onClick={() => act("approve_content")} disabled={busy || !approvalReady} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 text-sm font-extrabold text-white disabled:bg-slate-300"><CheckCircle2 className="size-4" /> Approve individually</button>
-            {!blockedReviewReady ? <p className="text-xs leading-5 text-red-700">Approval is unavailable because governed comparison evidence is missing. Use Needs owner or Defer.</p> : !resolutionReady ? <p className="text-xs leading-5 text-slate-500">Choose how the conflict should be resolved before approval.</p> : !noteReady ? <p className="text-xs leading-5 text-slate-500">Add a reviewer note describing authority and scope before approval.</p> : null}
+            {combinesMultipleDecisions ? <p className="text-xs leading-5 text-red-700">Approval is disabled because this draft combines {candidate.blocked_topics.length} separate policy decisions. Keep it with Needs owner or Defer until the automation separates it into one decision per proposal.</p> : !blockedReviewReady ? <p className="text-xs leading-5 text-red-700">Approval is unavailable because governed comparison evidence is missing. Use Needs owner or Defer.</p> : !resolutionReady ? <p className="text-xs leading-5 text-slate-500">Choose how the conflict should be resolved before approval.</p> : !noteReady ? <p className="text-xs leading-5 text-slate-500">Add a reviewer note describing authority and scope before approval.</p> : null}
             <div className="grid grid-cols-2 gap-2"><ActionButton disabled={busy} onClick={() => act("needs_owner")} label="Needs owner" /><ActionButton disabled={busy} onClick={() => act("defer")} label="Defer" /><ActionButton disabled={busy} onClick={() => act("duplicate")} label="Duplicate" /><ActionButton disabled={busy} onClick={() => act("engineering_required")} label="Engineering" /></div>
             <button type="button" onClick={() => act("reject")} disabled={busy} className="h-9 w-full rounded-lg border border-red-200 text-xs font-extrabold text-red-700 hover:bg-red-50 disabled:opacity-50">Reject proposal</button>
           </div>
         ) : <div className="w-full shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600 xl:w-80"><div className="font-extrabold text-slate-800">Preserved audit record</div><p className="mt-1">This item is outside the active queue. It remains searchable and was not added to production knowledge.</p></div>}
       </div>
     </article>
+  );
+}
+
+function BlockedConflictSummary({ topics, proposedPolicy }: { topics: KnowledgeRefreshCandidateRow["blocked_topics"]; proposedPolicy: string }) {
+  return (
+    <section className="mt-4 rounded-xl border border-red-200 bg-red-50/40 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="size-5 text-red-600" />
+          <h4 className="font-extrabold text-slate-950">{topics.length} separate policy conflicts were found</h4>
+        </div>
+        <Badge variant="outline" className="border-red-200 bg-white text-red-700">Approval disabled until separated</Badge>
+      </div>
+      <p className="mt-2 text-sm leading-6 text-slate-700">
+        This draft combines more than one decision. Review the proposed wording below, then open the conflict details only if you need the underlying evidence.
+      </p>
+      <div className="mt-4 rounded-lg border border-emerald-200 bg-white p-3">
+        <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">Combined proposal</div>
+        <p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-6 text-slate-800">{proposedPolicy}</p>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {topics.map((topic) => <Badge key={topic.id} variant="outline" className="border-slate-200 bg-white text-slate-700">{topic.title}</Badge>)}
+      </div>
+      <details className="mt-4 rounded-lg border border-slate-200 bg-white p-3">
+        <summary className="cursor-pointer text-sm font-extrabold text-slate-700">Compare the {topics.length} conflicts and source evidence</summary>
+        <div className="mt-4 space-y-4">
+          {topics.map((topic) => <BlockedConflictPanel key={topic.id} topic={topic} proposedPolicy={proposedPolicy} />)}
+        </div>
+      </details>
+    </section>
   );
 }
 
@@ -324,4 +408,7 @@ function Detail({ label, value }: { label: string; value: string }) { return <di
 function ActionButton({ disabled, onClick, label }: { disabled: boolean; onClick: () => void; label: string }) { return <button type="button" disabled={disabled} onClick={onClick} className="h-9 rounded-lg border border-slate-200 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{label}</button>; }
 function StatusBadge({ status }: { status: string }) { return <Badge variant="outline" className="w-fit border-slate-200 bg-slate-50 text-slate-700">{status.replaceAll("_", " ")}</Badge>; }
 function ConflictBadge({ level }: { level: KnowledgeRefreshCandidateRow["conflict_level"] }) { const color = level === "none" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : level === "possible" ? "border-amber-200 bg-amber-50 text-amber-700" : "border-red-200 bg-red-50 text-red-700"; const Icon = level === "none" ? ShieldCheck : level === "possible" ? ShieldAlert : AlertTriangle; return <Badge variant="outline" className={color}><Icon className="mr-1 size-3" />{level} conflict</Badge>; }
-function formatDate(value: string | null | undefined) { if (!value) return "Not yet"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : `${date.toISOString().slice(0, 16).replace("T", " ")} UTC`; }
+function RunStat({ label, value, tone = "default" }: { label: string; value: number; tone?: "default" | "warning" }) {
+  return <div className={`rounded-xl border p-3 ${tone === "warning" ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50"}`}><div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</div><div className={`mt-2 text-xl font-extrabold ${tone === "warning" ? "text-amber-700" : "text-slate-900"}`}>{value}</div></div>;
+}
+function formatDate(value: string | null | undefined) { return value ? formatMiamiDateTime(value) : "Not yet"; }

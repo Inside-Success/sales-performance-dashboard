@@ -65,8 +65,8 @@ export function AskSalesAdminHeader({
           active={active === "refresh"}
           href="/ask-sales-faq/admin/knowledge-refresh"
           icon={<RefreshCw className="size-4" />}
-          title="Knowledge refresh"
-          description="Review source changes, conflicts, and release preparation"
+          title="Source updates"
+          description="Slack and Google changes awaiting human review"
         />
       </nav>
     </>

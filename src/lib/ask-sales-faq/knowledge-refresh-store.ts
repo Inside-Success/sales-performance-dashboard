@@ -95,6 +95,9 @@ export type KnowledgeRefreshCandidateRow = {
   related_policies: Array<Record<string, unknown>>;
   blocked_topic_ids: string[];
   blocked_topics: KnowledgeRefreshBlockedTopicContext[];
+  change_kind?: "new" | "updated";
+  previous_candidate_id?: string | null;
+  previous_candidate_title?: string | null;
   conflict_resolution: KnowledgeRefreshConflictResolution | null;
   review_note: string | null;
   reviewed_by: string | null;
@@ -643,7 +646,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
   const where = clauses.length ? `where ${clauses.join(" and ")}` : "";
   const countValues = [...values];
   values.push(pageSize, (page - 1) * pageSize);
-  const [sources, candidateRows, releases, counts] = await Promise.all([
+  const [sources, candidateRows, releases, counts, latestRunRows] = await Promise.all([
     listKnowledgeRefreshSources(),
     sql.query(
       `select c.*, s.label as source_label, s.url as source_url
@@ -668,14 +671,77 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
          count(*)::int as total
        from ask_sales_faq_refresh_candidates`,
     ) as unknown as Promise<Array<{ needs_review: number; needs_owner: number; approved_content: number; deferred: number; duplicate: number; rejected: number; stale: number; total: number }>>,
+    sql.query(
+      `
+        with latest_run as (
+          select run_id, min(created_at) as started_at, max(created_at) as completed_at
+          from ask_sales_faq_refresh_snapshots
+          where run_id is not null and run_id <> ''
+          group by run_id
+          order by max(created_at) desc
+          limit 1
+        )
+        select
+          latest_run.run_id,
+          latest_run.started_at::text,
+          latest_run.completed_at::text,
+          count(distinct audit.entity_id) filter (where audit.event_type = 'source_changed')::int as changed_sources,
+          count(distinct audit.entity_id) filter (where audit.event_type = 'source_unchanged')::int as unchanged_sources,
+          count(distinct audit.entity_id) filter (where audit.event_type = 'source_unavailable')::int as unavailable_sources,
+          (
+            select count(*)::int
+            from ask_sales_faq_refresh_candidates candidate
+            join ask_sales_faq_refresh_snapshots snapshot on snapshot.id = candidate.snapshot_id
+            where snapshot.run_id = latest_run.run_id
+          ) as new_proposals,
+          (
+            select count(*)::int
+            from ask_sales_faq_refresh_candidates candidate
+            where candidate.status = 'stale'
+              and candidate.updated_at >= latest_run.started_at - interval '1 minute'
+              and candidate.updated_at <= latest_run.completed_at + interval '5 minutes'
+          ) as prior_drafts_replaced
+        from latest_run
+        left join ask_sales_faq_refresh_audit audit
+          on audit.details ->> 'runId' = latest_run.run_id
+        group by latest_run.run_id, latest_run.started_at, latest_run.completed_at
+      `,
+    ) as unknown as Promise<Array<{
+      run_id: string;
+      started_at: string;
+      completed_at: string;
+      changed_sources: number;
+      unchanged_sources: number;
+      unavailable_sources: number;
+      new_proposals: number;
+      prior_drafts_replaced: number;
+    }>>,
   ]);
-  const candidates = candidateRows.map((candidate) => ({
-    ...candidate,
-    blocked_topics: getKnowledgeRefreshBlockedTopicContexts(
-      candidate.blocked_topic_ids || [],
-      `${candidate.title} ${candidate.proposed_policy} ${candidate.decision_key || ""} ${candidate.product_scopes.join(" ")}`,
-    ),
-  }));
+  const sourceIds = Array.from(new Set(candidateRows.map((candidate) => candidate.source_id)));
+  const history = sourceIds.length
+    ? await sql.query(
+        `
+          select id, source_id, title, proposed_policy, created_at::text as created_at
+          from ask_sales_faq_refresh_candidates
+          where source_id = any($1::text[])
+          order by created_at asc
+        `,
+        [sourceIds],
+      ) as Array<{ id: string; source_id: string; title: string; proposed_policy: string; created_at: string }>
+    : [];
+  const candidates = candidateRows.map((candidate) => {
+    const previous = findPreviousCandidate(candidate, history);
+    return {
+      ...candidate,
+      blocked_topics: getKnowledgeRefreshBlockedTopicContexts(
+        candidate.blocked_topic_ids || [],
+        `${candidate.title} ${candidate.proposed_policy} ${candidate.decision_key || ""} ${candidate.product_scopes.join(" ")}`,
+      ),
+      change_kind: previous ? "updated" as const : "new" as const,
+      previous_candidate_id: previous?.id || null,
+      previous_candidate_title: previous?.title || null,
+    };
+  });
   const filteredRows = (await sql.query(
     `select count(*)::int as total
      from ask_sales_faq_refresh_candidates c
@@ -691,6 +757,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
     sources,
     candidates,
     releases,
+    latestRun: latestRunRows[0] || null,
     summary: counts[0] || { needs_review: 0, needs_owner: 0, approved_content: 0, deferred: 0, duplicate: 0, rejected: 0, stale: 0, total: 0 },
     filters: { view, query, sourceKind, conflictLevel },
     pagination: {
@@ -752,6 +819,9 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     );
     if (!blockedTopics.length || blockedTopics.some((topic) => !topic.reviewReady)) {
       throw new KnowledgeRefreshValidationError("This blocked conflict does not have enough readable governed evidence for approval. Use Needs owner or Defer.");
+    }
+    if (blockedTopics.length > 1) {
+      throw new KnowledgeRefreshValidationError("This proposal combines more than one governed policy decision. It must be separated into one decision per proposal before approval.");
     }
   }
 
@@ -1042,6 +1112,33 @@ function normalizeAiCandidate(value: KnowledgeRefreshAiCandidate) {
     evidenceQuotes,
     confidence: Math.max(0, Math.min(1, Number(value.confidence) || 0)),
   };
+}
+
+function findPreviousCandidate(
+  candidate: KnowledgeRefreshCandidateRow,
+  history: Array<{ id: string; source_id: string; title: string; proposed_policy: string; created_at: string }>,
+) {
+  const currentTime = new Date(candidate.created_at).getTime();
+  return history
+    .filter((item) => item.source_id === candidate.source_id && item.id !== candidate.id && new Date(item.created_at).getTime() < currentTime)
+    .map((item) => ({
+      ...item,
+      score: Math.max(
+        refreshTextSimilarity(candidate.title, item.title),
+        refreshTextSimilarity(`${candidate.title} ${candidate.proposed_policy}`, `${item.title} ${item.proposed_policy}`),
+      ),
+    }))
+    .filter((item) => item.score >= 0.42)
+    .sort((left, right) => right.score - left.score || new Date(right.created_at).getTime() - new Date(left.created_at).getTime())[0] || null;
+}
+
+function refreshTextSimilarity(left: string, right: string) {
+  const leftTokens = new Set(left.toLowerCase().replace(/[^a-z0-9%$]+/g, " ").split(" ").filter((token) => token.length > 2));
+  const rightTokens = new Set(right.toLowerCase().replace(/[^a-z0-9%$]+/g, " ").split(" ").filter((token) => token.length > 2));
+  if (!leftTokens.size || !rightTokens.size) return 0;
+  let overlap = 0;
+  for (const token of leftTokens) if (rightTokens.has(token)) overlap += 1;
+  return overlap / Math.sqrt(leftTokens.size * rightTokens.size);
 }
 
 function normalizeScope(value: string) {

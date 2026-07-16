@@ -8,12 +8,17 @@ const requiredFiles = [
   "src/app/ask-sales-faq/admin/page.tsx",
   "src/app/ask-sales-faq/admin/usage/page.tsx",
   "src/app/ask-sales-faq/admin/usage/[repKey]/page.tsx",
+  "src/app/ask-sales-faq/admin/knowledge-refresh/page.tsx",
   "src/app/api/ask-sales-faq/route.ts",
   "src/app/api/ask-sales-faq/conversations/route.ts",
   "src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts",
   "src/app/api/ask-sales-faq/feedback/route.ts",
   "src/app/api/ask-sales-faq/v3-benchmark/route.ts",
+  "src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts",
+  "src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts",
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
+  "src/components/ask-sales-faq/quality-review-console.tsx",
+  "src/components/ask-sales-faq/knowledge-refresh-console.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/admin-rep-review.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
@@ -23,6 +28,8 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/approved-claims.ts",
   "src/lib/ask-sales-faq/runtime.ts",
   "src/lib/ask-sales-faq/runtime-selector.ts",
+  "src/lib/ask-sales-faq/quality-review-store.ts",
+  "src/lib/ask-sales-faq/knowledge-refresh-store.ts",
   "src/lib/ask-sales-faq/v3/provider.ts",
   "src/lib/ask-sales-faq/v3/retrieval.ts",
   "src/lib/ask-sales-faq/v3/runtime.ts",
@@ -62,11 +69,18 @@ if (missingFiles.length === 0) {
   const adminPage = read("src/app/ask-sales-faq/admin/page.tsx");
   const usageAdminPage = read("src/app/ask-sales-faq/admin/usage/page.tsx");
   const repHistoryAdminPage = read("src/app/ask-sales-faq/admin/usage/[repKey]/page.tsx");
+  const refreshAdminPage = read("src/app/ask-sales-faq/admin/knowledge-refresh/page.tsx");
   const chatRoute = read("src/app/api/ask-sales-faq/route.ts");
   const historyRoute = read("src/app/api/ask-sales-faq/conversations/route.ts");
   const conversationActionRoute = read("src/app/api/ask-sales-faq/conversations/[conversationId]/route.ts");
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
   const v3BenchmarkRoute = read("src/app/api/ask-sales-faq/v3-benchmark/route.ts");
+  const qualityAuditRoute = read("src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts");
+  const qualityDecisionRoute = read("src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts");
+  const qualityReviewStore = read("src/lib/ask-sales-faq/quality-review-store.ts");
+  const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
+  const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
+  const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
   const conversationHistory = read("src/lib/ask-sales-faq/conversation-history.ts");
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
@@ -93,6 +107,38 @@ if (missingFiles.length === 0) {
   const envExample = read(".env.example");
 
   addCheck("hidden page route is not in main nav", !nav.includes("/ask-sales-faq"), "main nav does not expose route");
+
+  addCheck(
+    "daily quality audit excludes configured admins and cannot publish knowledge",
+    qualityReviewStore.includes("parseEmailAllowlist(process.env.ASK_SALES_FAQ_ADMIN_EMAILS)") &&
+      qualityReviewStore.includes("2026-07-13T13:00:00.000Z") &&
+      qualityAuditRoute.includes("isKnowledgeRefreshServiceToken") &&
+      qualityReviewConsole.includes("No automatic KB changes") &&
+      !qualityAuditRoute.includes("prepareKnowledgeRefreshRelease") &&
+      !qualityReviewStore.includes("update ask_sales_faq_refresh_candidates"),
+    "real rep Q&A starts at the approved launch cutoff, admin/test accounts are excluded, and audit results remain review-only",
+  );
+
+  addCheck(
+    "quality cases cluster repeated findings and preserve human decisions",
+    qualityReviewStore.includes("cluster_key text not null unique") &&
+      qualityReviewStore.includes("viewer_hashes jsonb") &&
+      qualityReviewStore.includes("occurrence_count") &&
+      qualityDecisionRoute.includes("isAskSalesFaqAdmin") &&
+      qualityDecisionRoute.includes("expectedVersion"),
+    "similar findings are grouped, rep counts are hashed, and every review action is admin-gated and version-checked",
+  );
+
+  addCheck(
+    "source review is Miami-timed, version-aware, and blocks combined policy approval",
+    refreshAdminPage.includes('title="Source updates"') &&
+      knowledgeRefreshConsole.includes("Updated from an earlier draft") &&
+      knowledgeRefreshConsole.includes("Older drafts archived") &&
+      knowledgeRefreshConsole.includes("Approval disabled until separated") &&
+      knowledgeRefreshStore.includes("combines more than one governed policy decision") &&
+      knowledgeRefreshConsole.includes("formatMiamiDateTime"),
+    "the queue explains refresh results and replacement lineage while one approval cannot cover several policy decisions",
+  );
 
   addCheck(
     "V3 is isolated behind an explicit rollback selector",
@@ -1200,7 +1246,7 @@ if (missingFiles.length === 0) {
     "access gate checks the emergency flag and the authenticated company-domain policy",
   );
 
-  const scanned = [page, adminPage, usageAdminPage, repHistoryAdminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, feedbackSync, conversationHistory, runtime, access, adminRepReview, bundle, db, envExample];
+  const scanned = [page, adminPage, usageAdminPage, repHistoryAdminPage, refreshAdminPage, chatRoute, historyRoute, conversationActionRoute, feedbackRoute, qualityAuditRoute, qualityDecisionRoute, feedbackSync, conversationHistory, qualityReviewStore, qualityReviewConsole, knowledgeRefreshStore, knowledgeRefreshConsole, runtime, access, adminRepReview, bundle, db, envExample];
   const secretHit = scanned.some((content) => secretPatterns.some((pattern) => pattern.test(content)));
   addCheck("no committed api-key-like secrets", !secretHit, secretHit ? "secret-like value found" : "no secret-like value found");
 }

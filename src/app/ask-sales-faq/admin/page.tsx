@@ -14,9 +14,14 @@ import {
 } from "lucide-react";
 import { auth } from "@/auth";
 import { AskSalesAdminHeader } from "@/components/ask-sales-faq/admin-navigation";
+import { QualityReviewConsole } from "@/components/ask-sales-faq/quality-review-console";
 import { Badge } from "@/components/ui/badge";
 import { normalizeAskSalesFaqAnalyticsDays, percentOf } from "@/lib/ask-sales-faq/admin-analytics";
 import { getAskSalesFaqAccess, isAskSalesFaqAdmin } from "@/lib/ask-sales-faq/access";
+import {
+  getAskSalesQualityReviewOverview,
+  type AskSalesQualityCaseStatus,
+} from "@/lib/ask-sales-faq/quality-review-store";
 import type { AskSalesFaqAdminLogItem } from "@/lib/ask-sales-faq/types";
 import { getAskSalesFaqAdminOverview } from "@/lib/db";
 
@@ -30,15 +35,35 @@ export const metadata: Metadata = {
 export default async function AskSalesFaqAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string | string[] }>;
+  searchParams: Promise<{
+    days?: string | string[];
+    qualityStatus?: string | string[];
+    qualityPage?: string | string[];
+  }>;
 }) {
   const session = await auth();
   const access = getAskSalesFaqAccess(session);
 
   if (!access.ok || !isAskSalesFaqAdmin(access.viewerEmail)) notFound();
 
-  const days = normalizeAskSalesFaqAnalyticsDays((await searchParams).days, 7);
-  const overview = await getAskSalesFaqAdminOverview(18, days);
+  const params = await searchParams;
+  const first = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
+  const days = normalizeAskSalesFaqAnalyticsDays(params.days, 7);
+  const qualityStatusValue = first(params.qualityStatus);
+  const qualityStatuses = [
+    "active", "resolved", "all", "needs_review", "confirmed_knowledge_gap", "confirmed_runtime_issue",
+    "needs_owner", "deferred", "resolved_correct", "fixed", "ignored",
+  ] as const;
+  const qualityStatus = qualityStatuses.includes(qualityStatusValue as (typeof qualityStatuses)[number])
+    ? qualityStatusValue as AskSalesQualityCaseStatus | "active" | "resolved" | "all"
+    : "active";
+  const [overview, qualityOverview] = await Promise.all([
+    getAskSalesFaqAdminOverview(18, days),
+    getAskSalesQualityReviewOverview({
+      status: qualityStatus,
+      page: Number(first(params.qualityPage)) || 1,
+    }),
+  ]);
   const { summary } = overview;
   const groundedRate = percentOf(summary.groundedAnswers, summary.questions);
   const routeRate = percentOf(summary.routes, summary.questions);
@@ -78,10 +103,12 @@ export default async function AskSalesFaqAdminPage({
           />
         </section>
 
+        <QualityReviewConsole overview={qualityOverview} />
+
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)]">
           <LogPanel
             title="Investigation queue"
-            description="Only negative feedback, safe routes, coverage boundaries, and runtime failures appear here. Successful V3 evidence answers are no longer treated as misses."
+            description="Raw technical signals remain available here for audit. Use the grouped quality review above for the normal decision workflow."
             icon={<MessageCircleWarning className="size-5" />}
             items={overview.recentMisses}
             emptyText="No recent exchanges require investigation."
@@ -97,15 +124,20 @@ export default async function AskSalesFaqAdminPage({
           />
         </section>
 
-        <LogPanel
-          title="Recent answer audit"
-          description="A compact trace of the latest decisions, including source mode, V3 validation, policies selected, latency, provider, and model. Confidence is shown on its correct 0–100 scale."
-          icon={<Gauge className="size-5" />}
-          items={overview.recentAnswers}
-          emptyText="No answers have been logged yet."
-          mode="answer"
-          compact
-        />
+        <details className="magic-card overflow-hidden">
+          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">Technical answer audit <span className="ml-2 text-sm font-semibold text-slate-500">latest raw decisions</span></summary>
+          <div className="border-t border-slate-100">
+            <LogPanel
+              title="Recent answer audit"
+              description="Source mode, V3 validation, selected policies, latency, provider, and model."
+              icon={<Gauge className="size-5" />}
+              items={overview.recentAnswers}
+              emptyText="No answers have been logged yet."
+              mode="answer"
+              compact
+            />
+          </div>
+        </details>
 
         <p className="pb-2 text-xs font-medium text-slate-400">
           Grounded rate measures observed answer mode, not independently reviewed factual accuracy. Feedback coverage and the investigation queue remain the human quality signals.

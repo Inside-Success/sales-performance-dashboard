@@ -52,8 +52,8 @@ export default async function AskSalesKnowledgeRefreshPage({
       <div className="mx-auto flex w-full max-w-[88rem] flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
         <AskSalesAdminHeader
           active="refresh"
-          title="Knowledge refresh"
-          description="Review daily Slack and Google source changes, resolve conflicts, and prepare governed releases. Nothing on this page changes the live chatbot by itself."
+          title="Source updates"
+          description="Review daily Slack and Google policy changes in clear, one-decision proposals. Nothing on this page changes the live chatbot by itself."
           generatedAt={overview.generatedAt}
         />
         <KnowledgeRefreshConsole overview={overview} />
