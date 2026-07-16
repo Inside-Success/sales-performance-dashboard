@@ -130,6 +130,14 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "quality review distinguishes safe grounding rejection from technical failure and enforces notes on the server",
+    qualityReviewStore.includes('"v3_grounding_rejected", "ai_grounding_rejected"') &&
+      qualityReviewStore.includes("validateAskSalesQualityReviewDecision(input.action, input.note)") &&
+      qualityReviewStore.includes("Add a reviewer note before confirming a knowledge gap"),
+    "safe routes are audited on their merits, genuine runtime failures stay high priority, and direct API calls cannot bypass required review notes",
+  );
+
+  addCheck(
     "source review is Miami-timed, version-aware, and blocks combined policy approval",
     refreshAdminPage.includes('title="Source updates"') &&
       knowledgeRefreshConsole.includes("Updated from an earlier draft") &&
