@@ -32,6 +32,17 @@ const aiCandidateSchema = z.object({
   effectiveDate: z.string().max(30).nullable().optional(),
   evidenceQuotes: z.array(z.string().min(1).max(800)).min(1).max(8),
   confidence: z.number().min(0).max(1),
+  candidateKind: z.enum(["new_rule", "rule_change", "conflict", "clarification", "knowledge_gap"]).optional(),
+  domains: z.array(z.string().min(1).max(80)).max(8).optional(),
+  actions: z.array(z.string().min(1).max(80)).max(8).optional(),
+  entities: z.array(z.string().min(1).max(120)).max(16).optional(),
+  policyObject: z.string().max(300).nullable().optional(),
+  conditions: z.string().max(800).nullable().optional(),
+  isDurable: z.boolean().optional(),
+  isReusable: z.boolean().optional(),
+  answerImpact: z.enum(["material", "possible", "none"]).optional(),
+  sourceAuthority: z.enum(["owner_confirmed", "manager_guidance", "rep_answer", "rep_question", "unknown"]).optional(),
+  atomicDecisionCount: z.number().int().min(1).max(20).optional(),
 });
 
 const candidatesSchema = z.object({

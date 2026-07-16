@@ -87,6 +87,22 @@ describe("Ask Sales knowledge-refresh governance", () => {
     expect(future.blockedTopicIds).not.toContain("blocked_cffdc83b9f9bf476");
   });
 
+  it("does not classify the 20% dial-out SOP as an onboarding-reporting conflict", () => {
+    const result = compareKnowledgeRefreshCandidate({
+      title: "20% dial-out list: reps must follow exact SOP",
+      proposedPolicy: "All reps must read and follow the exact SOP document linked in the daily dial-out list post.",
+      decisionKey: null,
+      productScopes: ["product_agnostic"],
+      domains: ["lead_ownership"],
+      actions: ["contact"],
+      entities: ["20_percent_dial_out", "sop"],
+      policyObject: "20% dial-out SOP",
+      conditions: null,
+    });
+    expect(result.blockedTopicIds).not.toContain("blocked_3ae983b020485f8d");
+    expect(result.blockedTopics).toEqual([]);
+  });
+
   it("resolves every deployed blocked ID to a readable topic and keeps IDs out of reviewer summaries", () => {
     const ids = registryJson.blocked_topics.map((topic) => topic.id);
     const contexts = getKnowledgeRefreshBlockedTopicContexts(ids);
@@ -98,10 +114,26 @@ describe("Ask Sales knowledge-refresh governance", () => {
       proposedPolicy: "The standard timeline for episode delivery is approximately 4-6 months after filming.",
       decisionKey: null,
       productScopes: ["product_agnostic"],
+      domains: ["production"],
+      actions: ["produce"],
+      entities: ["episode_delivery", "filming"],
+      policyObject: "episode delivery timing",
+      conditions: "after filming",
     });
     expect(result.conflictLevel).toBe("blocked");
     expect(result.conflictSummary).toContain("Episode delivery timing after filming");
     expect(result.conflictSummary).not.toContain("blocked_");
+  });
+
+  it("does not create hard conflicts from legacy unstructured wording alone", () => {
+    const result = compareKnowledgeRefreshCandidate({
+      title: "If client cannot pay full amount due to tech issues, discount can be honored with failed payment proof",
+      proposedPolicy: "A failed full payment caused by a technical issue may preserve a discount when proof is supplied.",
+      decisionKey: null,
+      productScopes: ["product_agnostic"],
+    });
+    expect(result.blockedTopicIds).toEqual([]);
+    expect(result.conflictLevel).toBe("none");
   });
 
   it("fails closed when a blocked ID or its comparison evidence cannot be resolved", () => {
@@ -130,6 +162,38 @@ describe("Ask Sales knowledge-refresh governance", () => {
       title: "Uncertain exception",
       proposedPolicy: "This may be allowed in some cases.",
       confidence: 0.42,
+    }).status).toBe("needs_owner");
+  });
+
+  it("screens operational noise and keeps unanswered policy gaps non-approvable", () => {
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Daily coaching reminder",
+      proposedPolicy: "Join today's coaching call.",
+      confidence: 0.99,
+      candidateKind: "clarification",
+      domains: ["onboarding"],
+      actions: ["invite_or_attend"],
+      entities: ["coaching_call"],
+      isDurable: false,
+      isReusable: false,
+      answerImpact: "none",
+      sourceAuthority: "manager_guidance",
+      atomicDecisionCount: 1,
+    }).status).toBe("duplicate");
+
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Repeated unanswered refund question",
+      proposedPolicy: "No governed answer is currently available.",
+      confidence: 0.9,
+      candidateKind: "knowledge_gap",
+      domains: ["payments"],
+      actions: ["refund_or_cancel"],
+      entities: ["refund_window"],
+      isDurable: true,
+      isReusable: true,
+      answerImpact: "material",
+      sourceAuthority: "rep_question",
+      atomicDecisionCount: 1,
     }).status).toBe("needs_owner");
   });
 

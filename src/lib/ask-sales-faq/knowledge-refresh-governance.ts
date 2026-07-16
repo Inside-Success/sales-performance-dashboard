@@ -1,5 +1,10 @@
 import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
 import ragIndexJson from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
+import {
+  classifyPolicyDecisionRelation,
+  policyDecisionProfile,
+  type PolicyDecisionProfile,
+} from "@/lib/ask-sales-faq/policy-relevance";
 import type { V3BlockedTopic, V3Policy, V3PolicyRegistry } from "@/lib/ask-sales-faq/v3/types";
 
 const registry = registryJson as V3PolicyRegistry;
@@ -20,18 +25,6 @@ type KnowledgeRefreshRagIndex = {
   chunks: KnowledgeRefreshRagChunk[];
 };
 
-const STOPWORDS = new Set([
-  "about", "after", "again", "also", "and", "are", "because", "been", "before", "being", "between", "but",
-  "can", "could", "does", "for", "from", "have", "into", "its", "just", "more", "not", "only", "our", "should",
-  "that", "the", "their", "then", "there", "these", "they", "this", "those", "through", "too", "under", "was",
-  "were", "what", "when", "where", "which", "while", "who", "will", "with", "would", "you", "your",
-]);
-
-const GENERIC_BLOCKED_MATCH_TERMS = new Set([
-  "answer", "both", "call", "candidate", "current", "daily", "day", "days", "limit", "list", "notes", "per",
-  "policy", "process", "report", "rep", "reps", "required", "rule", "sales", "sheet", "standard", "timeline",
-]);
-
 export type KnowledgeRefreshConflictLevel = "none" | "possible" | "direct" | "blocked";
 
 export type KnowledgeRefreshPolicyContext = {
@@ -41,6 +34,8 @@ export type KnowledgeRefreshPolicyContext = {
   decision: string;
   productScopes: string[];
   domains: string[];
+  actions: string[];
+  entities: string[];
   effectiveAt: string;
   authority: number;
   sourceKind: string;
@@ -90,27 +85,8 @@ function normalize(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9#$]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function tokens(value: string) {
-  return new Set(
-    normalize(value)
-      .split(" ")
-      .filter((token) => token.length > 2 && !STOPWORDS.has(token)),
-  );
-}
-
-function overlapScore(query: Set<string>, text: string) {
-  const target = tokens(text);
-  if (!query.size || !target.size) return 0;
-  let overlap = 0;
-  for (const token of query) if (target.has(token)) overlap += 1;
-  return overlap / Math.sqrt(query.size * target.size);
-}
-
-function blockedTopicMatchesCandidate(topic: V3BlockedTopic, value: string) {
-  const query = tokens(value.slice(0, 80_000));
-  const topicTerms = tokens((topic.question_families || []).join(" "));
-  const topicalOverlap = Array.from(query).filter((token) => topicTerms.has(token) && !GENERIC_BLOCKED_MATCH_TERMS.has(token));
-  return topicalOverlap.length > 0 && overlapScore(query, (topic.question_families || []).join(" ")) >= 0.22;
+function blockedTopicMatchesCandidate(topic: V3BlockedTopic, candidate: PolicyDecisionProfile) {
+  return classifyPolicyDecisionRelation(candidate, blockedTopicProfile(topic)).relation === "same_decision";
 }
 
 function policyContext(policy: V3Policy): KnowledgeRefreshPolicyContext {
@@ -121,6 +97,8 @@ function policyContext(policy: V3Policy): KnowledgeRefreshPolicyContext {
     decision: policy.decision,
     productScopes: policy.product_scopes,
     domains: policy.domains,
+    actions: policy.actions,
+    entities: policy.entities,
     effectiveAt: policy.effective_at,
     authority: policy.authority,
     sourceKind: policy.source.kind,
@@ -184,7 +162,12 @@ function blockedTopicEvidence(topic: V3BlockedTopic) {
   return Array.from(deduped.values()).slice(0, 3);
 }
 
-export function getKnowledgeRefreshBlockedTopicContexts(ids: string[], candidateText?: string): KnowledgeRefreshBlockedTopicContext[] {
+export function getKnowledgeRefreshBlockedTopicContexts(ids: string[], candidateInput?: string | PolicyDecisionProfile): KnowledgeRefreshBlockedTopicContext[] {
+  const candidate = candidateInput
+    ? typeof candidateInput === "string"
+      ? policyDecisionProfile({ text: candidateInput })
+      : policyDecisionProfile(candidateInput)
+    : null;
   return Array.from(new Set(ids)).map((id) => {
     const topic = registry.blocked_topics.find((candidate) => candidate.id === id);
     if (!topic) {
@@ -213,7 +196,7 @@ export function getKnowledgeRefreshBlockedTopicContexts(ids: string[], candidate
     const evidence = blockedTopicEvidence(topic);
     const title = topic.question_families?.at(-1) || humanizeIdentifier(topic.blocked_topic_ids?.[0] || topic.id);
     const hasApprovedPolicy = currentPolicies.length > 0;
-    const matchStrength = candidateText ? (blockedTopicMatchesCandidate(topic, candidateText) ? "strong" : "weak") : "not_evaluated";
+    const matchStrength = candidate ? (blockedTopicMatchesCandidate(topic, candidate) ? "strong" : "weak") : "not_evaluated";
     const explanation = matchStrength === "weak"
       ? "This stored blocker appears to share only broad wording with the proposal, not the same specific subject. It is not safe to treat it as a resolved conflict; use Needs owner or Defer until the match is corrected."
       : hasApprovedPolicy
@@ -242,62 +225,71 @@ export function getKnowledgeRefreshBlockedTopicContexts(ids: string[], candidate
   });
 }
 
-function topPolicies(value: string, limit = 12) {
-  const query = tokens(value.slice(0, 80_000));
+function topPolicies(candidate: PolicyDecisionProfile, limit = 12) {
   return registry.policies
     .map((policy) => ({
       policy,
-      score: overlapScore(query, `${policy.title} ${policy.question_families.join(" ")} ${policy.decision} ${policy.search_text}`),
+      match: classifyPolicyDecisionRelation(candidate, policyProfile(policy)),
     }))
-    .filter((item) => item.score > 0.025)
-    .sort((left, right) => right.score - left.score || right.policy.authority - left.policy.authority)
+    .filter((item) => item.match.relation === "same_decision")
+    .sort((left, right) => right.match.score - left.match.score || right.policy.authority - left.policy.authority)
     .slice(0, limit)
     .map((item) => policyContext(item.policy));
 }
 
-function topBlockedTopics(value: string, limit = 6) {
-  const query = tokens(value.slice(0, 80_000));
+function topBlockedTopics(candidate: PolicyDecisionProfile, limit = 6) {
   return registry.blocked_topics
-    .map((topic) => ({ topic, score: overlapScore(query, blockedTopicText(topic)) }))
-    .filter((item) => item.score > 0.08)
-    .sort((left, right) => right.score - left.score)
+    .map((topic) => ({ topic, match: classifyPolicyDecisionRelation(candidate, blockedTopicProfile(topic)) }))
+    .filter((item) => item.match.relation === "same_decision")
+    .sort((left, right) => right.match.score - left.match.score)
     .slice(0, limit)
     .map((item) => item.topic.id);
 }
 
-function candidateBlockedTopics(value: string, productScopes: string[], limit = 6) {
-  const query = tokens(value.slice(0, 80_000));
-  const normalizedScopes = new Set(productScopes.map(normalize));
+function candidateBlockedTopics(candidate: PolicyDecisionProfile, limit = 6) {
   return registry.blocked_topics
-    .map((topic) => ({ topic, score: overlapScore(query, blockedTopicText(topic)) }))
-    .filter(({ topic, score }) => {
-      if (score < 0.24 || !blockedTopicMatchesCandidate(topic, value)) return false;
-      const topicScopes = (topic.product_scopes || []).map(normalize).filter(Boolean);
-      return !topicScopes.length || normalizedScopes.has("all") || topicScopes.includes("all") || topicScopes.some((scope) => normalizedScopes.has(scope));
-    })
-    .sort((left, right) => right.score - left.score)
+    .map((topic) => ({ topic, match: classifyPolicyDecisionRelation(candidate, blockedTopicProfile(topic)) }))
+    .filter((item) => item.match.relation === "same_decision")
+    .sort((left, right) => right.match.score - left.match.score)
     .slice(0, limit)
     .map((item) => item.topic.id);
 }
 
-function blockedTopicText(topic: V3BlockedTopic) {
-  return [
-    topic.id,
-    topic.resolution || "",
-    ...(topic.question_families || []),
-    ...(topic.product_scopes || []),
-    ...(topic.domains || []),
-    ...(topic.actions || []),
-    ...(topic.entities || []),
-  ].join(" ");
+function policyProfile(policy: V3Policy): PolicyDecisionProfile {
+  return policyDecisionProfile({
+    text: [
+      policy.title,
+      ...policy.question_families,
+      policy.decision,
+    ].join(" "),
+    decisionKey: policy.decision_key,
+    productScopes: policy.product_scopes,
+    domains: policy.domains,
+    actions: policy.actions,
+    entities: policy.entities,
+  });
+}
+
+function blockedTopicProfile(topic: V3BlockedTopic): PolicyDecisionProfile {
+  return policyDecisionProfile({
+    text: [
+      topic.resolution || "",
+      ...(topic.question_families || []),
+    ].join(" "),
+    productScopes: topic.product_scopes,
+    domains: topic.domains,
+    actions: topic.actions,
+    entities: topic.entities,
+  });
 }
 
 export function buildKnowledgeRefreshAnalysisContext(content: string) {
+  const candidate = policyDecisionProfile({ text: content });
   return {
     knowledgeVersion: registry.knowledge_version,
     generatedAt: registry.generated_at,
-    relatedPolicies: topPolicies(content),
-    blockedTopicIds: topBlockedTopics(content),
+    relatedPolicies: topPolicies(candidate),
+    blockedTopicIds: topBlockedTopics(candidate),
     authorityRule:
       "Raw Slack and Google content is discovery evidence only. Recency is a signal, not automatic authority. Human approval and explicit supersession are required before runtime use.",
   };
@@ -308,14 +300,33 @@ export function compareKnowledgeRefreshCandidate(input: {
   proposedPolicy: string;
   decisionKey: string | null;
   productScopes: string[];
+  domains?: string[];
+  actions?: string[];
+  entities?: string[];
+  policyObject?: string | null;
+  conditions?: string | null;
 }) : KnowledgeRefreshGovernanceMatch {
-  const text = `${input.title} ${input.proposedPolicy} ${input.decisionKey || ""} ${input.productScopes.join(" ")}`;
-  const relatedPolicies = topPolicies(text, 8);
+  const candidate = policyDecisionProfile({
+    text: `${input.title} ${input.proposedPolicy}`,
+    decisionKey: input.decisionKey,
+    productScopes: input.productScopes,
+    domains: input.domains,
+    actions: input.actions,
+    entities: input.entities,
+    policyObject: input.policyObject,
+    conditions: input.conditions,
+  });
+  const preciselyClassified = Boolean(
+    input.domains?.length &&
+    input.actions?.length &&
+    input.entities?.length,
+  );
+  const relatedPolicies = preciselyClassified ? topPolicies(candidate, 8) : [];
   const exactDecisionKey = input.decisionKey
     ? registry.policies.filter((policy) => policy.decision_key === input.decisionKey).map(policyContext)
     : [];
-  const blockedTopicIds = candidateBlockedTopics(text, input.productScopes);
-  const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(blockedTopicIds, text);
+  const blockedTopicIds = preciselyClassified ? candidateBlockedTopics(candidate) : [];
+  const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(blockedTopicIds, candidate);
   const conflictingPolicyIds = Array.from(new Set(exactDecisionKey.map((policy) => policy.id)));
 
   if (blockedTopicIds.length) {
@@ -345,7 +356,7 @@ export function compareKnowledgeRefreshCandidate(input: {
   if (relatedPolicies.length) {
     return {
       conflictLevel: "possible",
-      conflictSummary: "The proposal is adjacent to current governed policy. Review scope, authority, effective date, and whether both rules can coexist before approval.",
+      conflictSummary: "The proposal appears to address the same specific governed decision. Review authority, scope, effective date, and whether it replaces or narrows the current rule.",
       conflictingPolicyIds: relatedPolicies.slice(0, 3).map((policy) => policy.id),
       relatedPolicies,
       blockedTopicIds,

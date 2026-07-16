@@ -52,6 +52,7 @@ export async function GET(request: Request) {
       generatedAt: new Date().toISOString(),
       instructions: [
         "Judge only against the supplied current governed policies and the exact user question.",
+        "A policy whose applicability is not same_decision is not authority for answering the question. If the runtime selected it, evaluate that as possible irrelevant policy selection.",
         "A safe route is correct when no supplied policy answers the question; do not invent missing policy.",
         "Flag a route as unnecessary only when supplied policy directly answers the requested decision.",
         "Negative feedback always requires review even if the answer appears supportable.",

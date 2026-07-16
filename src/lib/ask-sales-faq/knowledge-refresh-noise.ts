@@ -18,6 +18,15 @@ export function classifyKnowledgeRefreshCandidateNoise(input: {
   title: string;
   confidence: number;
   duplicateOfCandidateId?: string | null;
+  candidateKind?: "new_rule" | "rule_change" | "conflict" | "clarification" | "knowledge_gap";
+  domains?: string[];
+  actions?: string[];
+  entities?: string[];
+  isDurable?: boolean;
+  isReusable?: boolean;
+  answerImpact?: "material" | "possible" | "none";
+  sourceAuthority?: "owner_confirmed" | "manager_guidance" | "rep_answer" | "rep_question" | "unknown";
+  atomicDecisionCount?: number;
 }): KnowledgeRefreshNoiseDecision {
   if (input.duplicateOfCandidateId) {
     return {
@@ -30,6 +39,48 @@ export function classifyKnowledgeRefreshCandidateNoise(input: {
     return {
       status: "duplicate",
       reason: "Automatically screened because the source explicitly says the governed value did not change.",
+    };
+  }
+
+  if (input.atomicDecisionCount && input.atomicDecisionCount !== 1) {
+    return {
+      status: "needs_owner",
+      reason: "The extraction combines more than one independently approvable decision and must be separated before review.",
+    };
+  }
+
+  if (input.isDurable === false || input.isReusable === false || input.answerImpact === "none") {
+    return {
+      status: "duplicate",
+      reason: "Automatically screened because it is not a durable, reusable change to a rep-facing answer.",
+    };
+  }
+
+  if (input.candidateKind === "knowledge_gap") {
+    return {
+      status: "needs_owner",
+      reason: "This is a possible reusable knowledge gap, not an approvable policy statement. An accountable owner must supply the answer.",
+    };
+  }
+
+  if (!input.domains?.length || !input.actions?.length || !input.entities?.length) {
+    return {
+      status: "needs_owner",
+      reason: "The policy decision could not be classified precisely enough to compare or approve safely.",
+    };
+  }
+
+  if (input.sourceAuthority === "rep_question" || input.sourceAuthority === "unknown") {
+    return {
+      status: "needs_owner",
+      reason: "The source does not establish accountable policy authority; an owner must confirm the rule.",
+    };
+  }
+
+  if (input.answerImpact === "possible") {
+    return {
+      status: "needs_owner",
+      reason: "The source may affect a reusable answer, but the material policy impact is not explicit.",
     };
   }
 

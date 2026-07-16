@@ -29,6 +29,7 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/runtime.ts",
   "src/lib/ask-sales-faq/runtime-selector.ts",
   "src/lib/ask-sales-faq/quality-review-store.ts",
+  "src/lib/ask-sales-faq/policy-relevance.ts",
   "src/lib/ask-sales-faq/knowledge-refresh-store.ts",
   "src/lib/ask-sales-faq/v3/provider.ts",
   "src/lib/ask-sales-faq/v3/retrieval.ts",
@@ -78,6 +79,7 @@ if (missingFiles.length === 0) {
   const qualityAuditRoute = read("src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts");
   const qualityDecisionRoute = read("src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts");
   const qualityReviewStore = read("src/lib/ask-sales-faq/quality-review-store.ts");
+  const policyRelevance = read("src/lib/ask-sales-faq/policy-relevance.ts");
   const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
   const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
   const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
@@ -135,6 +137,17 @@ if (missingFiles.length === 0) {
       qualityReviewStore.includes("validateAskSalesQualityReviewDecision(input.action, input.note)") &&
       qualityReviewStore.includes("Add a reviewer note before confirming a knowledge gap"),
     "safe routes are audited on their merits, genuine runtime failures stay high priority, and direct API calls cannot bypass required review notes",
+  );
+
+  addCheck(
+    "source and quality review require same-decision policy relevance",
+    policyRelevance.includes('PolicyDecisionRelation = "same_decision" | "related" | "unrelated"') &&
+      policyRelevance.includes("sharedPolicyObjects") &&
+      knowledgeRefreshStore.includes("policy_domains") &&
+      knowledgeRefreshStore.includes("atomic_decision_count") &&
+      qualityReviewStore.includes('candidate.match.relation === "same_decision"') &&
+      qualityReviewStore.includes("candidate.policy_domains.length > 0"),
+    "broad token overlap cannot create a hard conflict or quality/source link without decision structure and policy-object support",
   );
 
   addCheck(
