@@ -4,6 +4,11 @@ import { createHash, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
 import { parseEmailAllowlist } from "@/lib/ask-sales-faq/access";
+import {
+  classifyPolicyDecisionRelation,
+  policyDecisionProfile,
+  type PolicyDecisionRelation,
+} from "@/lib/ask-sales-faq/policy-relevance";
 import type { V3Policy, V3PolicyRegistry } from "@/lib/ask-sales-faq/v3/types";
 
 type SqlClient = ReturnType<typeof neon>;
@@ -88,6 +93,9 @@ export type AskSalesQualityAuditPacket = {
     decision: string;
     productScopes: string[];
     effectiveAt: string;
+    applicability: PolicyDecisionRelation;
+    selectedByRuntime: boolean;
+    matchReason: string;
   }>;
   deterministicSignals: string[];
   createdAt: string;
@@ -283,13 +291,17 @@ function buildAuditPacket(row: Record<string, unknown>): AskSalesQualityAuditPac
   const selectedIds = stringArray(selection.selectedPolicyIds);
   const question = String(row.question || "");
   const currentPolicies = selectCurrentPolicies(question, selectedIds);
-  const topicKey = currentPolicies[0]?.decisionKey || `question-${sha256(normalizeTopic(question)).slice(0, 16)}`;
+  const applicablePolicies = currentPolicies.filter((policy) => policy.applicability === "same_decision");
+  const topicKey = applicablePolicies[0]?.decisionKey || `question-${sha256(normalizeTopic(question)).slice(0, 16)}`;
   const signals: string[] = [];
   if (row.feedback_rating === "down") signals.push("explicit_negative_feedback");
   if (row.error_class) signals.push(`runtime_error:${row.error_class}`);
   if (row.needs_route) signals.push("safe_route_returned");
   if (row.error_class === "v3_grounding_rejected") signals.push("grounding_validation_rejected");
-  if (!currentPolicies.length) signals.push("no_current_policy_supplied");
+  if (!applicablePolicies.length) signals.push("no_current_policy_supplied");
+  if (currentPolicies.some((policy) => policy.selectedByRuntime && policy.applicability !== "same_decision")) {
+    signals.push("runtime_selected_irrelevant_policy");
+  }
   if (looksLikeCorrection(question)) signals.push("possible_correction_or_repeat");
 
   return {
@@ -319,22 +331,36 @@ function selectCurrentPolicies(question: string, selectedIds: string[]) {
   const policies = Array.from(
     new Map([...selected, ...relevant].map((policy) => [policy.id, policy])).values(),
   );
-  return policies.slice(0, 10).map((policy) => ({
-    id: policy.id,
-    decisionKey: policy.decision_key,
-    title: policy.title,
-    decision: policy.decision,
-    productScopes: policy.product_scopes,
-    effectiveAt: policy.effective_at,
-  }));
+  const questionProfile = policyDecisionProfile({ text: question });
+  return policies
+    .map((policy) => {
+      const match = classifyPolicyDecisionRelation(questionProfile, policyProfile(policy));
+      return {
+        id: policy.id,
+        decisionKey: policy.decision_key,
+        title: policy.title,
+        decision: policy.decision,
+        productScopes: policy.product_scopes,
+        effectiveAt: policy.effective_at,
+        applicability: match.relation,
+        selectedByRuntime: selectedIds.includes(policy.id),
+        matchReason: match.reasons.join(" "),
+      };
+    })
+    .filter((policy) => policy.selectedByRuntime || policy.applicability === "same_decision")
+    .sort((left, right) =>
+      Number(right.applicability === "same_decision") - Number(left.applicability === "same_decision") ||
+      Number(right.selectedByRuntime) - Number(left.selectedByRuntime),
+    )
+    .slice(0, 10);
 }
 
 function topPolicies(value: string, limit: number) {
-  const query = tokens(value);
+  const query = policyDecisionProfile({ text: value });
   return registry.policies
-    .map((policy) => ({ policy, score: overlap(query, policyText(policy)) }))
-    .filter((item) => item.score >= 0.08)
-    .sort((left, right) => right.score - left.score || right.policy.authority - left.policy.authority)
+    .map((policy) => ({ policy, match: classifyPolicyDecisionRelation(query, policyProfile(policy)) }))
+    .filter((item) => item.match.relation === "same_decision" && item.match.sharedPolicyObjects.length > 0)
+    .sort((left, right) => right.match.score - left.match.score || right.policy.authority - left.policy.authority)
     .slice(0, limit)
     .map((item) => item.policy);
 }
@@ -744,19 +770,53 @@ async function getRelatedRefreshCandidates(cases: AskSalesQualityCaseRow[]) {
   if (!cases.length) return result;
   const candidates = (await getSql().query(
     `
-      select id, title, proposed_policy, status
-      from ask_sales_faq_refresh_candidates
+      select c.id, c.title, c.proposed_policy, c.status, c.decision_key, c.product_scopes,
+             coalesce(to_jsonb(c)->'policy_domains', '[]'::jsonb) as policy_domains,
+             coalesce(to_jsonb(c)->'policy_actions', '[]'::jsonb) as policy_actions,
+             coalesce(to_jsonb(c)->'policy_entities', '[]'::jsonb) as policy_entities,
+             to_jsonb(c)->>'policy_object' as policy_object,
+             to_jsonb(c)->>'policy_conditions' as policy_conditions
+      from ask_sales_faq_refresh_candidates c
       where status in ('needs_review','needs_owner','approved_content','preparing_release')
       order by updated_at desc
       limit 250
     `,
-  )) as Array<{ id: string; title: string; proposed_policy: string; status: string }>;
+  )) as Array<{
+    id: string;
+    title: string;
+    proposed_policy: string;
+    status: string;
+    decision_key: string | null;
+    product_scopes: string[];
+    policy_domains: string[];
+    policy_actions: string[];
+    policy_entities: string[];
+    policy_object: string | null;
+    policy_conditions: string | null;
+  }>;
   for (const item of cases) {
-    const query = tokens(`${item.title} ${item.question || ""}`);
+    const query = policyDecisionProfile({ text: `${item.title} ${item.question || ""}` });
     const matches = candidates
-      .map((candidate) => ({ candidate, score: overlap(query, `${candidate.title} ${candidate.proposed_policy}`) }))
-      .filter((match) => match.score >= 0.18)
-      .sort((left, right) => right.score - left.score)
+      .filter((candidate) =>
+        candidate.policy_domains.length > 0 &&
+        candidate.policy_actions.length > 0 &&
+        candidate.policy_entities.length > 0,
+      )
+      .map((candidate) => ({
+        candidate,
+        match: classifyPolicyDecisionRelation(query, policyDecisionProfile({
+          text: `${candidate.title} ${candidate.proposed_policy}`,
+          decisionKey: candidate.decision_key,
+          productScopes: candidate.product_scopes,
+          domains: candidate.policy_domains,
+          actions: candidate.policy_actions,
+          entities: candidate.policy_entities,
+          policyObject: candidate.policy_object,
+          conditions: candidate.policy_conditions,
+        })),
+      }))
+      .filter((candidate) => candidate.match.relation === "same_decision")
+      .sort((left, right) => right.match.score - left.match.score)
       .slice(0, 3)
       .map(({ candidate }) => ({ id: candidate.id, title: candidate.title, status: candidate.status }));
     result.set(item.id, matches);
@@ -780,8 +840,16 @@ function qualityCaseTitle(issueType: AskSalesQualityIssueType, question: string)
   return cleanQuestion ? `${prefix[issueType]}: ${cleanQuestion}` : prefix[issueType];
 }
 
-function policyText(policy: V3Policy) {
-  return `${policy.title} ${policy.question_families.join(" ")} ${policy.decision} ${policy.search_text}`;
+function policyProfile(policy: V3Policy) {
+  return policyDecisionProfile({
+    text: `${policy.title} ${policy.question_families.join(" ")} ${policy.decision}`,
+    decisionKey: policy.decision_key,
+    productScopes: policy.product_scopes,
+    domains: policy.domains,
+    actions: policy.actions,
+    entities: policy.entities,
+    policyObject: policy.title,
+  });
 }
 
 function normalizeTopic(value: string) {
@@ -793,14 +861,6 @@ function tokens(value: string) {
     value.toLowerCase().replace(/[^a-z0-9$]+/g, " ").split(" ")
       .filter((token) => token.length > 2 && !STOPWORDS.has(token)),
   );
-}
-
-function overlap(query: Set<string>, value: string) {
-  const target = tokens(value);
-  if (!query.size || !target.size) return 0;
-  let count = 0;
-  for (const token of query) if (target.has(token)) count += 1;
-  return count / Math.sqrt(query.size * target.size);
 }
 
 function looksLikeCorrection(value: string) {

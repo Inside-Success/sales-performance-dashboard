@@ -212,7 +212,7 @@ function QualityCaseCard({ item, onDone }: { item: AskSalesQualityCaseRow; onDon
 
           {item.related_candidates.length ? (
             <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-blue-700">Possibly related source updates</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-blue-700">Directly related source updates</p>
               <div className="mt-2 space-y-2">
                 {item.related_candidates.map((candidate) => (
                   <Link
@@ -224,7 +224,7 @@ function QualityCaseCard({ item, onDone }: { item: AskSalesQualityCaseRow; onDon
                   </Link>
                 ))}
               </div>
-              <p className="mt-2 text-xs leading-5 text-blue-700">This is a review aid only. A related source proposal still requires its own evidence and approval.</p>
+              <p className="mt-2 text-xs leading-5 text-blue-700">Only proposals classified as the same specific policy decision appear here. Each still requires its own evidence and approval.</p>
             </div>
           ) : null}
         </div>

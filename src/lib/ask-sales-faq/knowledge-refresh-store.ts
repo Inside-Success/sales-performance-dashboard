@@ -87,6 +87,17 @@ export type KnowledgeRefreshCandidateRow = {
   product_scopes: string[];
   effective_date: string | null;
   evidence_quotes: string[];
+  candidate_kind: KnowledgeRefreshCandidateKind;
+  policy_domains: string[];
+  policy_actions: string[];
+  policy_entities: string[];
+  policy_object: string | null;
+  policy_conditions: string | null;
+  is_durable: boolean;
+  is_reusable: boolean;
+  answer_impact: KnowledgeRefreshAnswerImpact;
+  source_authority: KnowledgeRefreshSourceAuthority;
+  atomic_decision_count: number;
   ai_model: string;
   ai_confidence: number;
   conflict_level: KnowledgeRefreshConflictLevel;
@@ -132,7 +143,22 @@ export type KnowledgeRefreshAiCandidate = {
   effectiveDate?: string | null;
   evidenceQuotes: string[];
   confidence: number;
+  candidateKind?: KnowledgeRefreshCandidateKind;
+  domains?: string[];
+  actions?: string[];
+  entities?: string[];
+  policyObject?: string | null;
+  conditions?: string | null;
+  isDurable?: boolean;
+  isReusable?: boolean;
+  answerImpact?: KnowledgeRefreshAnswerImpact;
+  sourceAuthority?: KnowledgeRefreshSourceAuthority;
+  atomicDecisionCount?: number;
 };
+
+export type KnowledgeRefreshCandidateKind = "new_rule" | "rule_change" | "conflict" | "clarification" | "knowledge_gap";
+export type KnowledgeRefreshAnswerImpact = "material" | "possible" | "none";
+export type KnowledgeRefreshSourceAuthority = "owner_confirmed" | "manager_guidance" | "rep_answer" | "rep_question" | "unknown";
 
 function getSql() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not configured");
@@ -226,6 +252,17 @@ async function buildKnowledgeRefreshSchema() {
       product_scopes jsonb not null default '[]'::jsonb,
       effective_date date,
       evidence_quotes jsonb not null default '[]'::jsonb,
+      candidate_kind text not null default 'new_rule',
+      policy_domains jsonb not null default '[]'::jsonb,
+      policy_actions jsonb not null default '[]'::jsonb,
+      policy_entities jsonb not null default '[]'::jsonb,
+      policy_object text,
+      policy_conditions text,
+      is_durable boolean not null default true,
+      is_reusable boolean not null default true,
+      answer_impact text not null default 'possible',
+      source_authority text not null default 'unknown',
+      atomic_decision_count integer not null default 1,
       ai_model text not null,
       ai_confidence numeric not null default 0,
       conflict_level text not null default 'none',
@@ -246,6 +283,17 @@ async function buildKnowledgeRefreshSchema() {
       unique (snapshot_id, candidate_hash)
     )
   `;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists candidate_kind text not null default 'new_rule'`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists policy_domains jsonb not null default '[]'::jsonb`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists policy_actions jsonb not null default '[]'::jsonb`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists policy_entities jsonb not null default '[]'::jsonb`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists policy_object text`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists policy_conditions text`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists is_durable boolean not null default true`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists is_reusable boolean not null default true`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists answer_impact text not null default 'possible'`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists source_authority text not null default 'unknown'`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists atomic_decision_count integer not null default 1`;
   await sql`create index if not exists ask_sales_faq_refresh_candidates_status_idx on ask_sales_faq_refresh_candidates (status, updated_at desc)`;
   await sql`create index if not exists ask_sales_faq_refresh_candidates_source_idx on ask_sales_faq_refresh_candidates (source_id, created_at desc)`;
 
@@ -515,37 +563,69 @@ export async function recordKnowledgeRefreshCandidates(input: {
       proposedPolicy: candidate.proposedPolicy,
       decisionKey: candidate.decisionKey || null,
       productScopes: candidate.productScopes,
+      domains: candidate.domains,
+      actions: candidate.actions,
+      entities: candidate.entities,
+      policyObject: candidate.policyObject,
+      conditions: candidate.conditions,
     });
     const candidateHash = sha256(JSON.stringify({
       decisionKey: candidate.decisionKey || null,
       productScopes: candidate.productScopes,
       proposedPolicy: candidate.proposedPolicy,
       evidenceQuotes: candidate.evidenceQuotes,
+      candidateKind: candidate.candidateKind,
+      domains: candidate.domains,
+      actions: candidate.actions,
+      entities: candidate.entities,
+      policyObject: candidate.policyObject,
+      conditions: candidate.conditions,
+      isDurable: candidate.isDurable,
+      isReusable: candidate.isReusable,
+      answerImpact: candidate.answerImpact,
+      sourceAuthority: candidate.sourceAuthority,
+      atomicDecisionCount: candidate.atomicDecisionCount,
     }));
     const duplicateRows = (await sql.query(
       `select id
        from ask_sales_faq_refresh_candidates
-       where source_id = $1 and candidate_hash = $2
+       where source_id = $1
+         and (
+           candidate_hash = $2
+           or (decision_key is not distinct from $3 and proposed_policy = $4)
+         )
        order by created_at desc
        limit 1`,
-      [input.sourceId, candidateHash],
+      [input.sourceId, candidateHash, candidate.decisionKey || null, candidate.proposedPolicy],
     )) as Array<{ id: string }>;
     const noise = classifyKnowledgeRefreshCandidateNoise({
       title: candidate.title,
       proposedPolicy: candidate.proposedPolicy,
       confidence: candidate.confidence,
       duplicateOfCandidateId: duplicateRows[0]?.id || null,
+      candidateKind: candidate.candidateKind,
+      domains: candidate.domains,
+      actions: candidate.actions,
+      entities: candidate.entities,
+      isDurable: candidate.isDurable,
+      isReusable: candidate.isReusable,
+      answerImpact: candidate.answerImpact,
+      sourceAuthority: candidate.sourceAuthority,
+      atomicDecisionCount: candidate.atomicDecisionCount,
     });
     const candidateId = `kc_${randomUUID()}`;
     const rows = (await sql.query(
       `insert into ask_sales_faq_refresh_candidates (
          id, source_id, snapshot_id, snapshot_hash, source_revision, candidate_hash, status,
          title, summary, proposed_policy, rationale, decision_key, product_scopes, effective_date,
-         evidence_quotes, ai_model, ai_confidence, conflict_level, conflict_summary,
+         evidence_quotes, candidate_kind, policy_domains, policy_actions, policy_entities,
+         policy_object, policy_conditions, is_durable, is_reusable, answer_impact, source_authority,
+         atomic_decision_count, ai_model, ai_confidence, conflict_level, conflict_summary,
          conflicting_policy_ids, related_policies, blocked_topic_ids, review_note
        ) values (
          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb, $14,
-         $15::jsonb, $16, $17, $18, $19, $20::jsonb, $21::jsonb, $22::jsonb, $23
+         $15::jsonb, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23,
+         $24, $25, $26, $27, $28, $29, $30, $31::jsonb, $32::jsonb, $33::jsonb, $34
        ) on conflict (snapshot_id, candidate_hash) do nothing returning id`,
       [
         candidateId,
@@ -563,6 +643,17 @@ export async function recordKnowledgeRefreshCandidates(input: {
         JSON.stringify(candidate.productScopes),
         normalizeDate(candidate.effectiveDate),
         JSON.stringify(candidate.evidenceQuotes),
+        candidate.candidateKind,
+        JSON.stringify(candidate.domains),
+        JSON.stringify(candidate.actions),
+        JSON.stringify(candidate.entities),
+        candidate.policyObject,
+        candidate.conditions,
+        candidate.isDurable,
+        candidate.isReusable,
+        candidate.answerImpact,
+        candidate.sourceAuthority,
+        candidate.atomicDecisionCount,
         sanitizeOperationalText(input.model, 120),
         candidate.confidence,
         governance.conflictLevel,
@@ -812,10 +903,22 @@ export async function transitionKnowledgeRefreshCandidate(input: {
       throw new KnowledgeRefreshValidationError("Conflict approval requires a reviewer note describing the authority, scope, and any exceptions");
     }
   }
+  if (input.action === "approve_content" && candidate.candidate_kind === "knowledge_gap") {
+    throw new KnowledgeRefreshValidationError("A knowledge-gap record cannot be approved as policy. An accountable owner must provide the missing rule first.");
+  }
   if (input.action === "approve_content" && candidate.conflict_level === "blocked") {
     const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(
       candidate.blocked_topic_ids || [],
-      `${candidate.title} ${candidate.proposed_policy} ${candidate.decision_key || ""} ${candidate.product_scopes.join(" ")}`,
+      {
+        text: `${candidate.title} ${candidate.proposed_policy}`,
+        decisionKey: candidate.decision_key,
+        productScopes: candidate.product_scopes,
+        domains: candidate.policy_domains,
+        actions: candidate.policy_actions,
+        entities: candidate.policy_entities,
+        policyObject: candidate.policy_object,
+        conditions: candidate.policy_conditions,
+      },
     );
     if (!blockedTopics.length || blockedTopics.some((topic) => !topic.reviewReady)) {
       throw new KnowledgeRefreshValidationError("This blocked conflict does not have enough readable governed evidence for approval. Use Needs owner or Defer.");
@@ -908,6 +1011,7 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
   await ensureKnowledgeRefreshStorage();
   const rows = (await getSql().query(
     `select id, title, proposed_policy, decision_key, product_scopes,
+            policy_domains, policy_actions, policy_entities, policy_object, policy_conditions,
             conflict_level, conflict_summary, conflicting_policy_ids, related_policies, blocked_topic_ids
      from ask_sales_faq_refresh_candidates
      where status in ('needs_review', 'needs_owner')
@@ -929,6 +1033,11 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
       proposedPolicy: candidate.proposed_policy,
       decisionKey: candidate.decision_key,
       productScopes: candidate.product_scopes,
+      domains: candidate.policy_domains,
+      actions: candidate.policy_actions,
+      entities: candidate.policy_entities,
+      policyObject: candidate.policy_object,
+      conditions: candidate.policy_conditions,
     });
     if (
       candidate.conflict_level === governance.conflictLevel &&
@@ -1028,6 +1137,12 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
       source: { id: candidate.source_id, label: candidate.source_label, url: candidate.source_url, revision: candidate.source_revision },
       decisionKey: candidate.decision_key,
       productScopes: candidate.product_scopes,
+      candidateKind: candidate.candidate_kind,
+      domains: candidate.policy_domains,
+      actions: candidate.policy_actions,
+      entities: candidate.policy_entities,
+      policyObject: candidate.policy_object,
+      conditions: candidate.policy_conditions,
       effectiveDate: candidate.effective_date,
       proposedPolicy: candidate.proposed_policy,
       evidenceQuotes: candidate.evidence_quotes,
@@ -1111,7 +1226,38 @@ function normalizeAiCandidate(value: KnowledgeRefreshAiCandidate) {
     effectiveDate: value.effectiveDate || null,
     evidenceQuotes,
     confidence: Math.max(0, Math.min(1, Number(value.confidence) || 0)),
+    candidateKind: normalizeCandidateKind(value.candidateKind),
+    domains: normalizeClassificationValues(value.domains, 8),
+    actions: normalizeClassificationValues(value.actions, 8),
+    entities: normalizeClassificationValues(value.entities, 16),
+    policyObject: sanitizeOperationalText(value.policyObject || "", 300) || null,
+    conditions: sanitizeOperationalText(value.conditions || "", 800) || null,
+    isDurable: value.isDurable !== false,
+    isReusable: value.isReusable !== false,
+    answerImpact: normalizeAnswerImpact(value.answerImpact),
+    sourceAuthority: normalizeSourceAuthority(value.sourceAuthority),
+    atomicDecisionCount: Math.max(1, Math.min(20, Math.trunc(Number(value.atomicDecisionCount) || 1))),
   };
+}
+
+function normalizeCandidateKind(value: KnowledgeRefreshCandidateKind | undefined): KnowledgeRefreshCandidateKind {
+  return ["new_rule", "rule_change", "conflict", "clarification", "knowledge_gap"].includes(value || "")
+    ? value as KnowledgeRefreshCandidateKind
+    : "new_rule";
+}
+
+function normalizeAnswerImpact(value: KnowledgeRefreshAnswerImpact | undefined): KnowledgeRefreshAnswerImpact {
+  return ["material", "possible", "none"].includes(value || "") ? value as KnowledgeRefreshAnswerImpact : "possible";
+}
+
+function normalizeSourceAuthority(value: KnowledgeRefreshSourceAuthority | undefined): KnowledgeRefreshSourceAuthority {
+  return ["owner_confirmed", "manager_guidance", "rep_answer", "rep_question", "unknown"].includes(value || "")
+    ? value as KnowledgeRefreshSourceAuthority
+    : "unknown";
+}
+
+function normalizeClassificationValues(values: string[] | undefined, limit: number) {
+  return Array.from(new Set((values || []).map(normalizeScope).filter(Boolean))).slice(0, limit);
 }
 
 function findPreviousCandidate(
