@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   isKnowledgeRefreshServiceToken,
   listKnowledgeRefreshSources,
+  recomputeActionableKnowledgeRefreshGovernance,
   recordKnowledgeRefreshCandidates,
   recordKnowledgeRefreshSnapshot,
   recordKnowledgeRefreshSourceFailure,
@@ -64,7 +65,16 @@ const sourceErrorSchema = z.object({
   runId: z.string().max(100).nullable().optional(),
 });
 
-const requestSchema = z.discriminatedUnion("phase", [snapshotSchema, candidatesSchema, sourceErrorSchema]);
+const recomputeGovernanceSchema = z.object({
+  phase: z.literal("recompute_governance"),
+});
+
+const requestSchema = z.discriminatedUnion("phase", [
+  snapshotSchema,
+  candidatesSchema,
+  sourceErrorSchema,
+  recomputeGovernanceSchema,
+]);
 
 function serviceToken(request: Request) {
   const authorization = request.headers.get("authorization");
@@ -113,6 +123,11 @@ export async function POST(request: Request) {
     if (parsed.data.phase === "source_error") {
       await recordKnowledgeRefreshSourceFailure(parsed.data);
       return Response.json({ recorded: true });
+    }
+    if (parsed.data.phase === "recompute_governance") {
+      return Response.json(await recomputeActionableKnowledgeRefreshGovernance({
+        actor: "n8n:ask-sales-knowledge-refresh-maintenance",
+      }));
     }
     return Response.json(await recordKnowledgeRefreshCandidates(parsed.data));
   } catch (error) {
