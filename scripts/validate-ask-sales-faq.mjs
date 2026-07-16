@@ -77,6 +77,7 @@ if (missingFiles.length === 0) {
   const feedbackRoute = read("src/app/api/ask-sales-faq/feedback/route.ts");
   const v3BenchmarkRoute = read("src/app/api/ask-sales-faq/v3-benchmark/route.ts");
   const qualityAuditRoute = read("src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts");
+  const knowledgeRefreshIngestRoute = read("src/app/api/ask-sales-faq/admin/knowledge-refresh/ingest/route.ts");
   const qualityDecisionRoute = read("src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts");
   const qualityReviewStore = read("src/lib/ask-sales-faq/quality-review-store.ts");
   const policyRelevance = read("src/lib/ask-sales-faq/policy-relevance.ts");
@@ -148,6 +149,15 @@ if (missingFiles.length === 0) {
       qualityReviewStore.includes('candidate.match.relation === "same_decision"') &&
       qualityReviewStore.includes("candidate.policy_domains.length > 0"),
     "broad token overlap cannot create a hard conflict or quality/source link without decision structure and policy-object support",
+  );
+
+  addCheck(
+    "service-token maintenance can recompute review metadata but cannot approve or publish",
+    knowledgeRefreshIngestRoute.includes('z.literal("recompute_governance")') &&
+      knowledgeRefreshIngestRoute.includes("recomputeActionableKnowledgeRefreshGovernance") &&
+      !knowledgeRefreshIngestRoute.includes("prepareKnowledgeRefreshRelease") &&
+      !knowledgeRefreshIngestRoute.includes("approve_content"),
+    "the protected n8n credential can refresh conflict metadata without gaining approval or publication authority",
   );
 
   addCheck(
