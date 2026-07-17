@@ -108,4 +108,66 @@ describe("Ask Sales precision-first policy relevance", () => {
     );
     expect(result.relation).toBe("same_decision");
   });
+
+  it("does not match ACH payment instructions to filming or payment-timing policy", () => {
+    const result = classifyPolicyDecisionRelation(
+      policyDecisionProfile({
+        text: "Use this ACH address when a client pays by bank transfer.",
+        productScopes: ["product_agnostic"],
+        domains: ["payments"],
+        actions: ["pay"],
+        entities: ["ach", "bank transfer", "payment address"],
+        policyObject: "ACH payment address",
+      }),
+      policyDecisionProfile({
+        text: "Filming may begin only after the required installment has cleared.",
+        productScopes: ["product_agnostic"],
+        domains: ["payments", "production"],
+        actions: ["produce"],
+        entities: ["filming", "installment timing"],
+        policyObject: "filming payment timing",
+      }),
+    );
+    expect(result.relation).not.toBe("same_decision");
+  });
+
+  it("does not match Mastermind attendance to an unrelated 60 Day Hustle rule", () => {
+    const result = classifyPolicyDecisionRelation(
+      policyDecisionProfile({
+        text: "Who may attend the Mastermind event?",
+        domains: ["shows_offers"],
+        actions: ["invite_or_attend"],
+        entities: ["mastermind", "attendance"],
+        policyObject: "Mastermind attendance",
+      }),
+      policyDecisionProfile({
+        text: "The 60 Day Hustle program has a separate participation process.",
+        domains: ["shows_offers"],
+        actions: ["invite_or_attend"],
+        entities: ["60 day hustle", "participation"],
+        policyObject: "60 Day Hustle participation",
+      }),
+    );
+    expect(result.relation).not.toBe("same_decision");
+  });
+
+  it("does not match a non-business rejection reason to criminal-history qualification", () => {
+    const result = classifyPolicyDecisionRelation(
+      policyDecisionProfile({
+        text: "A prospect was rejected because the story was not business focused.",
+        domains: ["qualification"],
+        actions: ["qualify"],
+        entities: ["business focus", "story fit"],
+        policyObject: "business-story fit",
+      }),
+      policyDecisionProfile({
+        text: "Criminal history requires a separate qualification review.",
+        domains: ["qualification"],
+        actions: ["qualify"],
+        entities: ["criminal history", "background"],
+        policyObject: "criminal-history qualification",
+      }),
+    );
+    expect(result.relation).not.toBe("same_decision");
+  });
 });

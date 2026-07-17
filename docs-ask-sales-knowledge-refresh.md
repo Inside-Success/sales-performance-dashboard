@@ -2,7 +2,21 @@
 
 Date: 2026-07-14
 
-Last updated: 2026-07-15
+Last updated: 2026-07-17
+
+## 2026-07-17 Daily Knowledge Inbox replacement
+
+The former conflict-card workflow has been replaced at the review boundary by a simpler Daily Knowledge Inbox. Collection remains read-only, but a Slack candidate must now come from one explicitly delimited root message/thread and a Google candidate from one document section. The analyzer cannot combine unrelated Slack roots into one policy draft.
+
+- Only durable new rules, policy changes, authoritative clarifications, or repeated chatbot knowledge gaps enter the actionable inbox. Routine questions, answers, metrics, coaching, scheduling, and one-off operational conversation are screened outside the actionable lane.
+- Rudy, Rich, Mike, Raul, and Madeline are recognized as potential authority signals, never automatic truth. The draft preserves the named speaker and authority basis; unclear, manager-level, contradictory, or scope-ambiguous guidance requires owner confirmation.
+- Same-policy comparisons require the same scope, decision/action, and specific subject or policy object. Broad vocabulary overlap cannot create a hard conflict or link a quality case to an unrelated source proposal.
+- The admin sees one proposed chatbot answer, the current official answer only when there is a strong same-decision match, compact evidence, and plain actions: accept, edit and accept, keep current, needs confirmation, or ignore. Internal blocked IDs and the legacy multi-conflict interface are not reviewer-facing.
+- Acceptance remains a draft decision. `Build test preview` revalidates the approval snapshot, atomicity, evidence, scope, duplicate decision keys, and explicit conflict resolution, then records a current-versus-proposed manifest. It does not publish or change chatbot authority.
+- The separate 9:20 PM quality review distinguishes wrong/incomplete answers, wrong policy retrieval, missing repeated knowledge, correct safe routes, non-FAQ questions, and technical failures. A protected maintenance step recomputes old source matches before the audit; it cannot approve or publish.
+- The actionable confidence floor is 80%. Lower-confidence or unclear-authority drafts go to owner review instead of ordinary approval.
+
+Final Git publication remains deliberately blocked until a dedicated repository-scoped GitHub identity exists. A personal or broadly privileged token must not be reused.
 
 ## Purpose
 
@@ -90,9 +104,9 @@ Future runs use three conservative controls:
 
 1. After the first Google Doc/Sheet snapshot, the dashboard computes a deterministic change-only packet. DeepSeek sees additions, removals, and replacements, not the unchanged full source.
 2. The analyzer excludes no-change confirmations, duplicate restatements, daily metrics, coaching schedules, scripts/templates, CRM bookkeeping, internal admin steps, and one-off cases unless they establish a durable reusable compliance or sales-policy boundary.
-3. Exact cross-snapshot repeats and explicit no-change results are staged outside the active queue; candidates below 55% AI confidence go to `needs_owner`. Every original record and evidence quote remains auditable.
+3. Exact cross-snapshot repeats and explicit no-change results are staged outside the active queue; candidates below 80% AI confidence go to `needs_owner`. Every original record and evidence quote remains auditable.
 
-The admin page now defaults to the actionable lane and provides server-side search, source/conflict filters, pagination, visible counts for screened/duplicate/stale records, safe batch dispositions, and individual approval only. Blocked cards show the current-policy-versus-new-proposal comparison, the governed evidence behind the blocker, a plain-language decision prompt, and safe source links where available. Related policies are rendered as readable cards rather than raw JSON. Conflict labels can be recomputed against the current deployed V3 registry without changing candidate decisions or production knowledge.
+The admin page now defaults to the actionable Daily Knowledge Inbox and provides server-side search, filters, pagination, visible counts for screened/duplicate/stale records, safe batch dispositions, and individual acceptance only. A current-policy comparison appears only for a strong same-decision match. Weak legacy matches are called unreliable and cannot be accepted. Conflict metadata can be recomputed against the current deployed V3 registry without changing candidate decisions or production knowledge.
 
 ## Publication boundary
 

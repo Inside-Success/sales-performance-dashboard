@@ -159,23 +159,20 @@ export function classifyPolicyDecisionRelation(
     left.actions?.length &&
     left.entities?.length,
   );
+  const hasSpecificObjectOverlap = sharedPolicyObjects.length > 0;
   const sameDecision =
     !explicitDomainMismatch &&
     !explicitActionMismatch &&
-    (leftStructurallyClassified
-      ? (
-        (domainMention && actionMention && sharedSubjects.length >= 1) ||
-        (domainMention && sharedSubjects.length >= 2) ||
-        (actionMention && sharedSubjects.length >= 2) ||
-        (actionMention && hasStrongNumericAnchor) ||
-        (bothStructurallyClassified && sharedSubjects.length >= 3)
-      )
-      : (
-        (domainMention && actionMention && sharedSubjects.length >= 2) ||
-        (actionMention && hasStrongNumericAnchor) ||
-        (domainMention && sharedSubjects.length >= 3) ||
-        (actionMention && sharedSubjects.length >= 3)
-      ));
+    (bothStructurallyClassified
+      ? domainMention && actionMention && (hasSpecificObjectOverlap || sharedSubjects.length >= 2)
+      : leftStructurallyClassified
+        ? domainMention && actionMention && (hasSpecificObjectOverlap || sharedSubjects.length >= 2)
+        : (
+          (domainMention && actionMention && (
+            (hasSpecificObjectOverlap && sharedSubjects.length >= 1) || sharedSubjects.length >= 2
+          )) ||
+          (actionMention && (sharedSubjects.length >= 2 || hasStrongNumericAnchor))
+        ));
 
   const score = Math.min(
     0.99,
@@ -198,7 +195,8 @@ export function classifyPolicyDecisionRelation(
     };
   }
 
-  const related = !explicitDomainMismatch && (domainMention || actionMention || sharedSubjects.length >= 1);
+  const related = !explicitDomainMismatch && !explicitActionMismatch &&
+    (domainMention || actionMention || sharedSubjects.length >= 1);
   return {
     relation: related ? "related" : "unrelated",
     score,

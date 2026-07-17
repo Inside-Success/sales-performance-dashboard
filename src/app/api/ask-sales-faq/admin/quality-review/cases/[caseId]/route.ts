@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const requestSchema = z.object({
   expectedVersion: z.number().int().positive(),
-  action: z.enum(["answer_correct", "knowledge_gap", "runtime_issue", "needs_owner", "defer", "mark_fixed", "ignore"]),
+  action: z.enum(["answer_correct", "knowledge_gap", "runtime_issue", "wrong_answer", "wrong_policy", "correct_safe_route", "non_faq", "needs_owner", "defer", "mark_fixed", "ignore"]),
   note: z.string().max(2000).nullable().optional(),
 });
 

@@ -19,6 +19,7 @@ const requiredFiles = [
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/components/ask-sales-faq/quality-review-console.tsx",
   "src/components/ask-sales-faq/knowledge-refresh-console.tsx",
+  "src/components/ask-sales-faq/knowledge-inbox-card.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/admin-rep-review.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
@@ -84,6 +85,7 @@ if (missingFiles.length === 0) {
   const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
   const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
   const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
+  const knowledgeInboxCard = read("src/components/ask-sales-faq/knowledge-inbox-card.tsx");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
   const conversationHistory = read("src/lib/ask-sales-faq/conversation-history.ts");
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
@@ -162,10 +164,11 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "source review is Miami-timed, version-aware, and blocks combined policy approval",
-    refreshAdminPage.includes('title="Source updates"') &&
+    refreshAdminPage.includes('title="Daily Knowledge Inbox"') &&
       knowledgeRefreshConsole.includes("Updated from an earlier draft") &&
       knowledgeRefreshConsole.includes("Older drafts archived") &&
-      knowledgeRefreshConsole.includes("Approval disabled until separated") &&
+      knowledgeInboxCard.includes("old automatic comparison is not reliable") &&
+      knowledgeInboxCard.includes("Accept update") &&
       knowledgeRefreshStore.includes("combines more than one governed policy decision") &&
       knowledgeRefreshConsole.includes("formatMiamiDateTime"),
     "the queue explains refresh results and replacement lineage while one approval cannot cover several policy decisions",

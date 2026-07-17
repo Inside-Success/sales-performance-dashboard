@@ -13,6 +13,7 @@ const actionSchema = z.object({
   expectedVersion: z.number().int().positive(),
   action: z.enum(["approve_content", "reject", "defer", "needs_owner", "duplicate", "engineering_required"]),
   note: z.string().max(2000).nullable().optional(),
+  editedPolicy: z.string().min(1).max(6000).nullable().optional(),
   conflictResolution: z.enum(["supersede", "scoped_coexistence", "existing_remains", "owner_needed", "historical_case", "engineering_required"]).nullable().optional(),
 });
 

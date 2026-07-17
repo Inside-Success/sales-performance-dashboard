@@ -97,6 +97,8 @@ export type KnowledgeRefreshCandidateRow = {
   is_reusable: boolean;
   answer_impact: KnowledgeRefreshAnswerImpact;
   source_authority: KnowledgeRefreshSourceAuthority;
+  authority_name: string | null;
+  authority_basis: string | null;
   atomic_decision_count: number;
   ai_model: string;
   ai_confidence: number;
@@ -153,6 +155,8 @@ export type KnowledgeRefreshAiCandidate = {
   isReusable?: boolean;
   answerImpact?: KnowledgeRefreshAnswerImpact;
   sourceAuthority?: KnowledgeRefreshSourceAuthority;
+  authorityName?: string | null;
+  authorityBasis?: string | null;
   atomicDecisionCount?: number;
 };
 
@@ -262,6 +266,8 @@ async function buildKnowledgeRefreshSchema() {
       is_reusable boolean not null default true,
       answer_impact text not null default 'possible',
       source_authority text not null default 'unknown',
+      authority_name text,
+      authority_basis text,
       atomic_decision_count integer not null default 1,
       ai_model text not null,
       ai_confidence numeric not null default 0,
@@ -293,6 +299,8 @@ async function buildKnowledgeRefreshSchema() {
   await sql`alter table ask_sales_faq_refresh_candidates add column if not exists is_reusable boolean not null default true`;
   await sql`alter table ask_sales_faq_refresh_candidates add column if not exists answer_impact text not null default 'possible'`;
   await sql`alter table ask_sales_faq_refresh_candidates add column if not exists source_authority text not null default 'unknown'`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists authority_name text`;
+  await sql`alter table ask_sales_faq_refresh_candidates add column if not exists authority_basis text`;
   await sql`alter table ask_sales_faq_refresh_candidates add column if not exists atomic_decision_count integer not null default 1`;
   await sql`create index if not exists ask_sales_faq_refresh_candidates_status_idx on ask_sales_faq_refresh_candidates (status, updated_at desc)`;
   await sql`create index if not exists ask_sales_faq_refresh_candidates_source_idx on ask_sales_faq_refresh_candidates (source_id, created_at desc)`;
@@ -584,6 +592,8 @@ export async function recordKnowledgeRefreshCandidates(input: {
       isReusable: candidate.isReusable,
       answerImpact: candidate.answerImpact,
       sourceAuthority: candidate.sourceAuthority,
+      authorityName: candidate.authorityName,
+      authorityBasis: candidate.authorityBasis,
       atomicDecisionCount: candidate.atomicDecisionCount,
     }));
     const duplicateRows = (await sql.query(
@@ -611,6 +621,7 @@ export async function recordKnowledgeRefreshCandidates(input: {
       isReusable: candidate.isReusable,
       answerImpact: candidate.answerImpact,
       sourceAuthority: candidate.sourceAuthority,
+      authorityName: candidate.authorityName,
       atomicDecisionCount: candidate.atomicDecisionCount,
     });
     const candidateId = `kc_${randomUUID()}`;
@@ -620,12 +631,12 @@ export async function recordKnowledgeRefreshCandidates(input: {
          title, summary, proposed_policy, rationale, decision_key, product_scopes, effective_date,
          evidence_quotes, candidate_kind, policy_domains, policy_actions, policy_entities,
          policy_object, policy_conditions, is_durable, is_reusable, answer_impact, source_authority,
-         atomic_decision_count, ai_model, ai_confidence, conflict_level, conflict_summary,
+         authority_name, authority_basis, atomic_decision_count, ai_model, ai_confidence, conflict_level, conflict_summary,
          conflicting_policy_ids, related_policies, blocked_topic_ids, review_note
        ) values (
          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb, $14,
          $15::jsonb, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23,
-         $24, $25, $26, $27, $28, $29, $30, $31::jsonb, $32::jsonb, $33::jsonb, $34
+         $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35::jsonb, $36::jsonb, $37::jsonb, $38
        ) on conflict (snapshot_id, candidate_hash) do nothing returning id`,
       [
         candidateId,
@@ -653,6 +664,8 @@ export async function recordKnowledgeRefreshCandidates(input: {
         candidate.isReusable,
         candidate.answerImpact,
         candidate.sourceAuthority,
+        candidate.authorityName,
+        candidate.authorityBasis,
         candidate.atomicDecisionCount,
         sanitizeOperationalText(input.model, 120),
         candidate.confidence,
@@ -874,6 +887,7 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   action: "approve_content" | "reject" | "defer" | "needs_owner" | "duplicate" | "engineering_required";
   actor: string;
   note?: string | null;
+  editedPolicy?: string | null;
   conflictResolution?: KnowledgeRefreshConflictResolution | null;
 }) {
   await ensureKnowledgeRefreshStorage();
@@ -895,7 +909,33 @@ export async function transitionKnowledgeRefreshCandidate(input: {
 
   const targetStatus = actionTargetStatus(input.action);
   const conflictResolution = input.conflictResolution || null;
-  if (input.action === "approve_content" && ["direct", "blocked"].includes(candidate.conflict_level)) {
+  const editedPolicy = sanitizeOperationalText(input.editedPolicy || "", 6000) || null;
+  if (editedPolicy && input.action !== "approve_content") {
+    throw new KnowledgeRefreshValidationError("Edited wording can only be saved when accepting an update");
+  }
+  if (editedPolicy && !sanitizeOperationalText(input.note || "", 2000)) {
+    throw new KnowledgeRefreshValidationError("Add a note explaining why the accepted wording was edited");
+  }
+  const governance = editedPolicy
+    ? compareKnowledgeRefreshCandidate({
+        title: candidate.title,
+        proposedPolicy: editedPolicy,
+        decisionKey: candidate.decision_key,
+        productScopes: candidate.product_scopes,
+        domains: candidate.policy_domains,
+        actions: candidate.policy_actions,
+        entities: candidate.policy_entities,
+        policyObject: candidate.policy_object,
+        conditions: candidate.policy_conditions,
+      })
+    : {
+        conflictLevel: candidate.conflict_level,
+        conflictSummary: candidate.conflict_summary,
+        conflictingPolicyIds: candidate.conflicting_policy_ids,
+        relatedPolicies: candidate.related_policies as KnowledgeRefreshPolicyContext[],
+        blockedTopicIds: candidate.blocked_topic_ids,
+      };
+  if (input.action === "approve_content" && ["direct", "blocked"].includes(governance.conflictLevel)) {
     if (!conflictResolution || !["supersede", "scoped_coexistence"].includes(conflictResolution)) {
       throw new KnowledgeRefreshValidationError("Direct or blocked conflicts require an explicit supersede or scoped-coexistence decision");
     }
@@ -906,11 +946,11 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   if (input.action === "approve_content" && candidate.candidate_kind === "knowledge_gap") {
     throw new KnowledgeRefreshValidationError("A knowledge-gap record cannot be approved as policy. An accountable owner must provide the missing rule first.");
   }
-  if (input.action === "approve_content" && candidate.conflict_level === "blocked") {
+  if (input.action === "approve_content" && governance.conflictLevel === "blocked") {
     const blockedTopics = getKnowledgeRefreshBlockedTopicContexts(
-      candidate.blocked_topic_ids || [],
+      governance.blockedTopicIds || [],
       {
-        text: `${candidate.title} ${candidate.proposed_policy}`,
+        text: `${candidate.title} ${editedPolicy || candidate.proposed_policy}`,
         decisionKey: candidate.decision_key,
         productScopes: candidate.product_scopes,
         domains: candidate.policy_domains,
@@ -931,6 +971,10 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   const updateRows = (await sql.query(
     `update ask_sales_faq_refresh_candidates
      set status = $2, version = version + 1, review_note = $3, conflict_resolution = $4,
+         proposed_policy = coalesce($7, proposed_policy),
+         conflict_level = $8, conflict_summary = $9,
+         conflicting_policy_ids = $10::jsonb, related_policies = $11::jsonb,
+         blocked_topic_ids = $12::jsonb,
          reviewed_by = $5, reviewed_at = now(),
          approved_by = case when $2 = 'approved_content' then $5 else approved_by end,
          approved_at = case when $2 = 'approved_content' then now() else approved_at end,
@@ -945,12 +989,19 @@ export async function transitionKnowledgeRefreshCandidate(input: {
       conflictResolution,
       input.actor,
       input.expectedVersion,
+      editedPolicy,
+      governance.conflictLevel,
+      governance.conflictSummary,
+      JSON.stringify(governance.conflictingPolicyIds),
+      JSON.stringify(governance.relatedPolicies),
+      JSON.stringify(governance.blockedTopicIds),
     ],
   )) as Array<{ version: number }>;
   if (!updateRows.length) throw new KnowledgeRefreshConflictError("Candidate changed during review");
   await writeAudit("candidate", input.candidateId, input.action, input.actor, candidate.status, targetStatus, {
     expectedVersion: input.expectedVersion,
     conflictResolution,
+    editedPolicy,
     note: sanitizeOperationalText(input.note || "", 2000) || null,
   });
   return { id: input.candidateId, status: targetStatus, version: updateRows[0].version };
@@ -1014,7 +1065,7 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
             policy_domains, policy_actions, policy_entities, policy_object, policy_conditions,
             conflict_level, conflict_summary, conflicting_policy_ids, related_policies, blocked_topic_ids
      from ask_sales_faq_refresh_candidates
-     where status in ('needs_review', 'needs_owner')
+     where status in ('needs_review', 'needs_owner', 'approved_content', 'deferred')
      order by id`,
   )) as Array<KnowledgeRefreshCandidateRow>;
   const changes: Array<{
@@ -1079,7 +1130,7 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
            version = c.version + 1,
            updated_at = now()
        from changes
-       where c.id = changes.id and c.status in ('needs_review', 'needs_owner')
+       where c.id = changes.id and c.status in ('needs_review', 'needs_owner', 'approved_content', 'deferred')
        returning c.id
      ), audited as (
        insert into ask_sales_faq_refresh_audit (
@@ -1120,18 +1171,32 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     if (candidate.approved_snapshot_hash !== candidate.snapshot_hash || candidate.snapshot_hash !== candidate.last_content_hash) {
       throw new KnowledgeRefreshConflictError(`${candidate.title} is stale and must be reviewed again`);
     }
+    if (candidate.atomic_decision_count !== 1) {
+      throw new KnowledgeRefreshValidationError(`${candidate.title} must contain exactly one policy decision`);
+    }
+    if (!candidate.evidence_quotes.length || !candidate.product_scopes.length) {
+      throw new KnowledgeRefreshValidationError(`${candidate.title} is missing source evidence or product scope`);
+    }
+  }
+
+  const duplicateDecisionKeys = rows
+    .map((candidate) => candidate.decision_key)
+    .filter((value): value is string => Boolean(value))
+    .filter((value, index, all) => all.indexOf(value) !== index);
+  if (duplicateDecisionKeys.length) {
+    throw new KnowledgeRefreshValidationError("A release cannot contain two drafts for the same decision key");
   }
 
   const releaseId = `kr_${randomUUID()}`;
   const manifest = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     releaseId,
     knowledgeVersionBefore: getKnowledgeRefreshRegistryVersion(),
     preparedAt: new Date().toISOString(),
     preparedBy: input.actor,
     publicationMode: "reviewed_git_release",
     publicationSafety:
-      "This manifest is not runtime authority. Apply it to the FAQ governance repo, run all compilers and tests, review the generated registry diff, deploy the dashboard artifact, and production-smoke-test before marking verified.",
+      "This is a tested review preview, not runtime authority. Final publish remains blocked until a restricted GitHub publishing identity applies the manifest to both governed repositories, all compilers and tests pass, the registry diff is reviewed, and production smoke tests pass.",
     candidates: rows.map((candidate) => ({
       id: candidate.id,
       source: { id: candidate.source_id, label: candidate.source_label, url: candidate.source_url, revision: candidate.source_revision },
@@ -1145,6 +1210,12 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
       conditions: candidate.policy_conditions,
       effectiveDate: candidate.effective_date,
       proposedPolicy: candidate.proposed_policy,
+      preview: {
+        currentOfficialAnswers: candidate.related_policies
+          .filter((policy) => candidate.conflicting_policy_ids.includes(String(policy.id || "")))
+          .map((policy) => ({ id: policy.id, title: policy.title, decision: policy.decision })),
+        proposedAnswer: candidate.proposed_policy,
+      },
       evidenceQuotes: candidate.evidence_quotes,
       conflict: {
         level: candidate.conflict_level,
@@ -1156,19 +1227,39 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
       approval: { approvedBy: candidate.approved_by, approvedAt: candidate.approved_at, snapshotHash: candidate.approved_snapshot_hash },
     })),
   };
+  const validationChecks = {
+    currentSnapshot: true,
+    oneDecisionPerDraft: rows.every((candidate) => candidate.decision_key && candidate.proposed_policy),
+    sourceEvidencePresent: rows.every((candidate) => candidate.evidence_quotes.length > 0),
+    productScopePresent: rows.every((candidate) => candidate.product_scopes.length > 0),
+    duplicateDecisionKeysAbsent: duplicateDecisionKeys.length === 0,
+    conflictsHaveExplicitResolution: rows.every((candidate) =>
+      !["direct", "blocked"].includes(candidate.conflict_level) ||
+      ["supersede", "scoped_coexistence"].includes(candidate.conflict_resolution || ""),
+    ),
+  };
+  const validation = {
+    passed: Object.values(validationChecks).every(Boolean),
+    performedAt: new Date().toISOString(),
+    checks: validationChecks,
+    requiredPublishChecks: releaseValidationChecks(),
+  };
+  if (!validation.passed) {
+    throw new KnowledgeRefreshValidationError("The release preview did not pass every required validation check");
+  }
   await sql.query(
     `insert into ask_sales_faq_refresh_releases (id, status, knowledge_version, candidate_ids, manifest, validation, created_by)
-     values ($1, 'awaiting_implementation', $2, $3::jsonb, $4::jsonb, $5::jsonb, $6)`,
-    [releaseId, getKnowledgeRefreshRegistryVersion(), JSON.stringify(candidateIds), JSON.stringify(manifest), JSON.stringify({ requiredChecks: releaseValidationChecks() }), input.actor],
+     values ($1, 'awaiting_final_publish', $2, $3::jsonb, $4::jsonb, $5::jsonb, $6)`,
+    [releaseId, getKnowledgeRefreshRegistryVersion(), JSON.stringify(candidateIds), JSON.stringify(manifest), JSON.stringify(validation), input.actor],
   );
   await sql.query(
     `update ask_sales_faq_refresh_candidates
-     set status = 'preparing_release', release_id = $1, version = version + 1, updated_at = now()
+     set status = 'ready_to_publish', release_id = $1, version = version + 1, updated_at = now()
      where id in (${candidateIds.map((_, index) => `$${index + 2}`).join(", ")})`,
     [releaseId, ...candidateIds],
   );
-  await writeAudit("release", releaseId, "release_prepared", input.actor, null, "awaiting_implementation", { candidateIds });
-  return { releaseId, status: "awaiting_implementation", manifest };
+  await writeAudit("release", releaseId, "release_prepared", input.actor, null, "awaiting_final_publish", { candidateIds, validation });
+  return { releaseId, status: "awaiting_final_publish", manifest, validation };
 }
 
 function releaseValidationChecks() {
@@ -1236,6 +1327,8 @@ function normalizeAiCandidate(value: KnowledgeRefreshAiCandidate) {
     isReusable: value.isReusable !== false,
     answerImpact: normalizeAnswerImpact(value.answerImpact),
     sourceAuthority: normalizeSourceAuthority(value.sourceAuthority),
+    authorityName: sanitizeOperationalText(value.authorityName || "", 120) || null,
+    authorityBasis: sanitizeOperationalText(value.authorityBasis || "", 600) || null,
     atomicDecisionCount: Math.max(1, Math.min(20, Math.trunc(Number(value.atomicDecisionCount) || 1))),
   };
 }

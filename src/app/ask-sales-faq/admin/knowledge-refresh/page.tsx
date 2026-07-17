@@ -12,7 +12,7 @@ import type { KnowledgeRefreshQueueView } from "@/lib/ask-sales-faq/knowledge-re
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ask Sales Knowledge Refresh | Magic Mike Bot",
+  title: "Daily Knowledge Inbox | Magic Mike Bot",
   robots: { index: false, follow: false },
 };
 
@@ -52,8 +52,8 @@ export default async function AskSalesKnowledgeRefreshPage({
       <div className="mx-auto flex w-full max-w-[88rem] flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
         <AskSalesAdminHeader
           active="refresh"
-          title="Source updates"
-          description="Review daily Slack and Google policy changes in clear, one-decision proposals. Nothing on this page changes the live chatbot by itself."
+          title="Daily Knowledge Inbox"
+          description="Review only useful Slack and Google changes. Accepting an item saves a draft; it never changes the live chatbot until a separate tested publish."
           generatedAt={overview.generatedAt}
         />
         <KnowledgeRefreshConsole overview={overview} />
