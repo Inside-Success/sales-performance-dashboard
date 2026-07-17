@@ -43,6 +43,8 @@ const aiCandidateSchema = z.object({
   isReusable: z.boolean().optional(),
   answerImpact: z.enum(["material", "possible", "none"]).optional(),
   sourceAuthority: z.enum(["owner_confirmed", "manager_guidance", "rep_answer", "rep_question", "unknown"]).optional(),
+  authorityName: z.string().max(120).nullable().optional(),
+  authorityBasis: z.string().max(600).nullable().optional(),
   atomicDecisionCount: z.number().int().min(1).max(20).optional(),
 });
 

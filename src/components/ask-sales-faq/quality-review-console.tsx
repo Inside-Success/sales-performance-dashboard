@@ -32,6 +32,8 @@ type Overview = {
     needsReview: number;
     confirmedKnowledgeGap: number;
     confirmedRuntimeIssue: number;
+    confirmedWrongAnswer: number;
+    confirmedWrongPolicy: number;
     needsOwner: number;
     deferred: number;
     resolved: number;
@@ -44,7 +46,7 @@ type Overview = {
   pagination: { page: number; pageSize: number; total: number; totalPages: number };
 };
 
-type QualityAction = "answer_correct" | "knowledge_gap" | "runtime_issue" | "needs_owner" | "defer" | "mark_fixed" | "ignore";
+type QualityAction = "answer_correct" | "knowledge_gap" | "runtime_issue" | "wrong_answer" | "wrong_policy" | "correct_safe_route" | "non_faq" | "needs_owner" | "defer" | "mark_fixed" | "ignore";
 
 export function QualityReviewConsole({ overview }: { overview: Overview }) {
   const router = useRouter();
@@ -133,10 +135,10 @@ export function QualityReviewConsole({ overview }: { overview: Overview }) {
 function QualityCaseCard({ item, onDone }: { item: AskSalesQualityCaseRow; onDone: (text: string, tone: "good" | "bad") => void }) {
   const [note, setNote] = useState(item.reviewer_note || "");
   const [busy, setBusy] = useState(false);
-  const active = ["needs_review", "confirmed_knowledge_gap", "confirmed_runtime_issue", "needs_owner", "deferred"].includes(item.status);
+  const active = ["needs_review", "confirmed_knowledge_gap", "confirmed_runtime_issue", "confirmed_wrong_answer", "confirmed_wrong_policy", "needs_owner", "deferred"].includes(item.status);
 
   async function act(action: QualityAction) {
-    const highImpact = ["knowledge_gap", "runtime_issue", "needs_owner"].includes(action);
+    const highImpact = ["knowledge_gap", "runtime_issue", "wrong_answer", "wrong_policy", "needs_owner"].includes(action);
     if (highImpact && !note.trim()) {
       onDone("Add a short reviewer note before confirming the problem type.", "bad");
       return;
@@ -235,9 +237,13 @@ function QualityCaseCard({ item, onDone }: { item: AskSalesQualityCaseRow; onDon
               <label className="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Reviewer note</label>
               <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={4} maxLength={2000} placeholder="Record what is wrong, the correct source, or why the answer was acceptable." className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-red-300" />
               <div className="mt-3 grid gap-2">
-                <button type="button" disabled={busy} onClick={() => act("answer_correct")} className="h-10 rounded-lg bg-emerald-600 px-3 text-sm font-extrabold text-white disabled:opacity-50">Answer was acceptable</button>
-                <button type="button" disabled={busy} onClick={() => act("knowledge_gap")} className="h-10 rounded-lg border border-blue-200 bg-blue-50 px-3 text-sm font-extrabold text-blue-800 disabled:opacity-50">Confirm knowledge gap</button>
-                <button type="button" disabled={busy} onClick={() => act("runtime_issue")} className="h-10 rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-extrabold text-amber-800 disabled:opacity-50">Confirm runtime issue</button>
+                <button type="button" disabled={busy} onClick={() => act("wrong_answer")} className="h-10 rounded-lg border border-red-200 bg-red-50 px-3 text-sm font-extrabold text-red-800 disabled:opacity-50">Wrong or incomplete answer</button>
+                <button type="button" disabled={busy} onClick={() => act("wrong_policy")} className="h-10 rounded-lg border border-red-200 bg-white px-3 text-sm font-extrabold text-red-800 disabled:opacity-50">Wrong policy was matched</button>
+                <button type="button" disabled={busy} onClick={() => act("knowledge_gap")} className="h-10 rounded-lg border border-blue-200 bg-blue-50 px-3 text-sm font-extrabold text-blue-800 disabled:opacity-50">Missing repeated knowledge</button>
+                <button type="button" disabled={busy} onClick={() => act("correct_safe_route")} className="h-10 rounded-lg bg-emerald-600 px-3 text-sm font-extrabold text-white disabled:opacity-50">Correct safe route</button>
+                <button type="button" disabled={busy} onClick={() => act("answer_correct")} className="h-10 rounded-lg border border-emerald-200 bg-white px-3 text-sm font-extrabold text-emerald-800 disabled:opacity-50">Answer was correct</button>
+                <button type="button" disabled={busy} onClick={() => act("non_faq")} className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-extrabold text-slate-700 disabled:opacity-50">Not a reusable FAQ</button>
+                <button type="button" disabled={busy} onClick={() => act("runtime_issue")} className="h-10 rounded-lg border border-amber-200 bg-amber-50 px-3 text-sm font-extrabold text-amber-800 disabled:opacity-50">Technical runtime issue</button>
                 <div className="grid grid-cols-2 gap-2">
                   <SmallAction disabled={busy} label="Needs owner" onClick={() => act("needs_owner")} />
                   <SmallAction disabled={busy} label="Review later" onClick={() => act("defer")} />
@@ -261,7 +267,7 @@ function QualityCaseCard({ item, onDone }: { item: AskSalesQualityCaseRow; onDon
 
 function QualityFilters({ overview }: { overview: Overview }) {
   const views: Array<[Overview["filters"]["status"], string, number]> = [
-    ["active", "Needs action", overview.summary.needsReview + overview.summary.confirmedKnowledgeGap + overview.summary.confirmedRuntimeIssue + overview.summary.needsOwner],
+    ["active", "Needs action", overview.summary.needsReview + overview.summary.confirmedKnowledgeGap + overview.summary.confirmedRuntimeIssue + overview.summary.confirmedWrongAnswer + overview.summary.confirmedWrongPolicy + overview.summary.needsOwner],
     ["needs_review", "Unreviewed", overview.summary.needsReview],
     ["confirmed_knowledge_gap", "Knowledge gaps", overview.summary.confirmedKnowledgeGap],
     ["confirmed_runtime_issue", "Runtime issues", overview.summary.confirmedRuntimeIssue],
@@ -303,9 +309,9 @@ function QualityMetric({ label, value, icon: Icon, tone }: { label: string; valu
 }
 
 function QualityStatusBadge({ status }: { status: AskSalesQualityCaseStatus }) {
-  const color = status === "resolved_correct" || status === "fixed"
+  const color = ["resolved_correct", "resolved_safe_route", "resolved_non_faq", "fixed"].includes(status)
     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-    : status === "confirmed_runtime_issue" || status === "confirmed_knowledge_gap"
+    : ["confirmed_runtime_issue", "confirmed_knowledge_gap", "confirmed_wrong_answer", "confirmed_wrong_policy"].includes(status)
       ? "border-red-200 bg-red-50 text-red-700"
       : "border-amber-200 bg-amber-50 text-amber-700";
   return <Badge variant="outline" className={color}>{humanize(status)}</Badge>;

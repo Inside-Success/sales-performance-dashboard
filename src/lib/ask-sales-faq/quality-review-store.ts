@@ -37,6 +37,10 @@ export type AskSalesQualityIssueType =
   | "unnecessary_route"
   | "knowledge_gap"
   | "wrong_or_incomplete_answer"
+  | "wrong_policy_retrieved"
+  | "missing_repeated_knowledge"
+  | "correct_safe_route"
+  | "non_faq"
   | "stale_or_conflicting_policy"
   | "conversation_context"
   | "runtime_reliability"
@@ -47,9 +51,13 @@ export type AskSalesQualityCaseStatus =
   | "needs_review"
   | "confirmed_knowledge_gap"
   | "confirmed_runtime_issue"
+  | "confirmed_wrong_answer"
+  | "confirmed_wrong_policy"
   | "needs_owner"
   | "deferred"
   | "resolved_correct"
+  | "resolved_safe_route"
+  | "resolved_non_faq"
   | "fixed"
   | "ignored";
 
@@ -57,6 +65,10 @@ export type AskSalesQualityReviewAction =
   | "answer_correct"
   | "knowledge_gap"
   | "runtime_issue"
+  | "wrong_answer"
+  | "wrong_policy"
+  | "correct_safe_route"
+  | "non_faq"
   | "needs_owner"
   | "defer"
   | "mark_fixed"
@@ -425,7 +437,7 @@ export async function recordAskSalesQualityAuditEvaluations(input: {
     if (!message) continue;
 
     const packet = buildAuditPacket(message);
-    const enforced = enforceDeterministicSignals(evaluation, message);
+    const enforced = enforceDeterministicSignals(evaluation, message, packet);
     const inserted = (await getSql().query(
       `
         insert into ask_sales_faq_quality_audits (
@@ -485,7 +497,7 @@ async function upsertQualityCase(input: {
       ) values ($1,$2,'needs_review',$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::timestamptz,$12::timestamptz)
       on conflict (cluster_key) do update set
         status = case
-          when ask_sales_faq_quality_cases.status in ('resolved_correct','fixed','ignored')
+          when ask_sales_faq_quality_cases.status in ('resolved_correct','resolved_safe_route','resolved_non_faq','fixed','ignored')
             and not (ask_sales_faq_quality_cases.message_ids ? $9)
           then 'needs_review'
           else ask_sales_faq_quality_cases.status
@@ -600,9 +612,11 @@ export async function getAskSalesQualityReviewOverview(input?: {
         count(*) filter (where status = 'needs_review')::int as needs_review,
         count(*) filter (where status = 'confirmed_knowledge_gap')::int as confirmed_knowledge_gap,
         count(*) filter (where status = 'confirmed_runtime_issue')::int as confirmed_runtime_issue,
+        count(*) filter (where status = 'confirmed_wrong_answer')::int as confirmed_wrong_answer,
+        count(*) filter (where status = 'confirmed_wrong_policy')::int as confirmed_wrong_policy,
         count(*) filter (where status = 'needs_owner')::int as needs_owner,
         count(*) filter (where status = 'deferred')::int as deferred,
-        count(*) filter (where status in ('resolved_correct','fixed','ignored'))::int as resolved,
+        count(*) filter (where status in ('resolved_correct','resolved_safe_route','resolved_non_faq','fixed','ignored'))::int as resolved,
         count(*)::int as total
       from ask_sales_faq_quality_cases
     `,
@@ -632,6 +646,8 @@ export async function getAskSalesQualityReviewOverview(input?: {
       needsReview: Number(summaryRows[0]?.needs_review || 0),
       confirmedKnowledgeGap: Number(summaryRows[0]?.confirmed_knowledge_gap || 0),
       confirmedRuntimeIssue: Number(summaryRows[0]?.confirmed_runtime_issue || 0),
+      confirmedWrongAnswer: Number(summaryRows[0]?.confirmed_wrong_answer || 0),
+      confirmedWrongPolicy: Number(summaryRows[0]?.confirmed_wrong_policy || 0),
       needsOwner: Number(summaryRows[0]?.needs_owner || 0),
       deferred: Number(summaryRows[0]?.deferred || 0),
       resolved: Number(summaryRows[0]?.resolved || 0),
@@ -655,6 +671,7 @@ export async function transitionAskSalesQualityCase(input: {
   validateAskSalesQualityReviewDecision(input.action, input.note);
   await ensureAskSalesQualityReviewStorage();
   const target = qualityActionTarget(input.action);
+  const confirmedIssueType = qualityActionIssueType(input.action);
   const rows = (await getSql().query(
     `select status, version from ask_sales_faq_quality_cases where id = $1 limit 1`,
     [input.caseId],
@@ -666,11 +683,12 @@ export async function transitionAskSalesQualityCase(input: {
     `
       update ask_sales_faq_quality_cases
       set status = $2, version = version + 1, reviewer_note = $3,
-          reviewed_by = $4, reviewed_at = now(), updated_at = now()
+          reviewed_by = $4, reviewed_at = now(), updated_at = now(),
+          issue_type = coalesce($6, issue_type)
       where id = $1 and version = $5
       returning version
     `,
-    [input.caseId, target, sanitize(input.note || "", 2000) || null, input.actor, input.expectedVersion],
+    [input.caseId, target, sanitize(input.note || "", 2000) || null, input.actor, input.expectedVersion, confirmedIssueType],
   )) as Array<{ version: number }>;
   if (!update.length) throw new Error("Quality case changed during review");
   await getSql().query(
@@ -679,7 +697,7 @@ export async function transitionAskSalesQualityCase(input: {
         case_id, event_type, actor, from_status, to_status, details
       ) values ($1,$2,$3,$4,$5,$6::jsonb)
     `,
-    [input.caseId, input.action, input.actor, current.status, target, JSON.stringify({ note: sanitize(input.note || "", 2000) || null })],
+    [input.caseId, input.action, input.actor, current.status, target, JSON.stringify({ note: sanitize(input.note || "", 2000) || null, issueType: confirmedIssueType })],
   );
   return { id: input.caseId, status: target, version: update[0].version };
 }
@@ -689,6 +707,7 @@ function normalizeEvaluation(value: AskSalesQualityAuditEvaluation) {
   const verdicts: AskSalesQualityVerdict[] = ["looks_correct", "needs_review", "knowledge_gap", "runtime_issue", "needs_owner"];
   const issueTypes: AskSalesQualityIssueType[] = [
     "negative_feedback", "unnecessary_route", "knowledge_gap", "wrong_or_incomplete_answer",
+    "wrong_policy_retrieved", "missing_repeated_knowledge", "correct_safe_route", "non_faq",
     "stale_or_conflicting_policy", "conversation_context", "runtime_reliability", "presentation", "needs_owner",
   ];
   if (!verdicts.includes(value.verdict) || !issueTypes.includes(value.issueType)) return null;
@@ -733,12 +752,26 @@ export function applyAskSalesQualityAuditGuardrails(
   return evaluation;
 }
 
-function enforceDeterministicSignals(evaluation: AskSalesQualityAuditEvaluation, message: Record<string, unknown>) {
-  return applyAskSalesQualityAuditGuardrails(evaluation, message);
+function enforceDeterministicSignals(
+  evaluation: AskSalesQualityAuditEvaluation,
+  message: Record<string, unknown>,
+  packet: AskSalesQualityAuditPacket,
+) {
+  const guarded = applyAskSalesQualityAuditGuardrails(evaluation, message);
+  if (packet.deterministicSignals.includes("runtime_selected_irrelevant_policy") && guarded.verdict !== "runtime_issue") {
+    return {
+      ...guarded,
+      verdict: "needs_review" as const,
+      issueType: "wrong_policy_retrieved" as const,
+      severity: guarded.severity === "low" ? "medium" as const : guarded.severity,
+      summary: "The runtime selected a policy that does not answer the exact question.",
+    };
+  }
+  return guarded;
 }
 
 export function validateAskSalesQualityReviewDecision(action: AskSalesQualityReviewAction, note?: string | null) {
-  if (["knowledge_gap", "runtime_issue", "needs_owner"].includes(action) && !sanitize(note || "", 2000)) {
+  if (["knowledge_gap", "runtime_issue", "wrong_answer", "wrong_policy", "needs_owner"].includes(action) && !sanitize(note || "", 2000)) {
     throw new Error("Add a reviewer note before confirming a knowledge gap, runtime issue, or policy-owner decision");
   }
 }
@@ -749,8 +782,8 @@ function isTechnicalRuntimeErrorClass(value: unknown) {
 }
 
 function qualityViewStatuses(value: AskSalesQualityCaseStatus | "active" | "resolved" | "all") {
-  if (value === "active") return ["needs_review", "confirmed_knowledge_gap", "confirmed_runtime_issue", "needs_owner"];
-  if (value === "resolved") return ["resolved_correct", "fixed", "ignored"];
+  if (value === "active") return ["needs_review", "confirmed_knowledge_gap", "confirmed_runtime_issue", "confirmed_wrong_answer", "confirmed_wrong_policy", "needs_owner"];
+  if (value === "resolved") return ["resolved_correct", "resolved_safe_route", "resolved_non_faq", "fixed", "ignored"];
   if (value === "all") return [];
   return [value];
 }
@@ -759,10 +792,25 @@ function qualityActionTarget(action: AskSalesQualityReviewAction): AskSalesQuali
   if (action === "answer_correct") return "resolved_correct";
   if (action === "knowledge_gap") return "confirmed_knowledge_gap";
   if (action === "runtime_issue") return "confirmed_runtime_issue";
+  if (action === "wrong_answer") return "confirmed_wrong_answer";
+  if (action === "wrong_policy") return "confirmed_wrong_policy";
+  if (action === "correct_safe_route") return "resolved_safe_route";
+  if (action === "non_faq") return "resolved_non_faq";
   if (action === "needs_owner") return "needs_owner";
   if (action === "defer") return "deferred";
   if (action === "mark_fixed") return "fixed";
   return "ignored";
+}
+
+function qualityActionIssueType(action: AskSalesQualityReviewAction): AskSalesQualityIssueType | null {
+  if (action === "wrong_answer") return "wrong_or_incomplete_answer";
+  if (action === "wrong_policy") return "wrong_policy_retrieved";
+  if (action === "knowledge_gap") return "missing_repeated_knowledge";
+  if (action === "correct_safe_route") return "correct_safe_route";
+  if (action === "non_faq") return "non_faq";
+  if (action === "runtime_issue") return "runtime_reliability";
+  if (action === "needs_owner") return "needs_owner";
+  return null;
 }
 
 async function getRelatedRefreshCandidates(cases: AskSalesQualityCaseRow[]) {
@@ -830,6 +878,10 @@ function qualityCaseTitle(issueType: AskSalesQualityIssueType, question: string)
     unnecessary_route: "Possibly answerable question was routed",
     knowledge_gap: "Knowledge coverage gap",
     wrong_or_incomplete_answer: "Possibly wrong or incomplete answer",
+    wrong_policy_retrieved: "Wrong policy may have been retrieved",
+    missing_repeated_knowledge: "Repeated question may need knowledge",
+    correct_safe_route: "Safe route appears correct",
+    non_faq: "Not a reusable sales FAQ",
     stale_or_conflicting_policy: "Possible stale or conflicting answer",
     conversation_context: "Conversation or follow-up issue",
     runtime_reliability: "Runtime or validation failure",
@@ -910,6 +962,8 @@ function emptyOverview() {
       needsReview: 0,
       confirmedKnowledgeGap: 0,
       confirmedRuntimeIssue: 0,
+      confirmedWrongAnswer: 0,
+      confirmedWrongPolicy: 0,
       needsOwner: 0,
       deferred: 0,
       resolved: 0,

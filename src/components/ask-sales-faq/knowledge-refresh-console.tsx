@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { KnowledgeInboxCard } from "@/components/ask-sales-faq/knowledge-inbox-card";
 import { formatMiamiDateTime } from "@/lib/format";
 import type {
   KnowledgeRefreshCandidateRow,
@@ -81,7 +82,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
   async function prepareRelease() {
     if (!releaseSelected.length) return;
-    if (!window.confirm(`Prepare a governed release manifest for ${releaseSelected.length} approved proposal${releaseSelected.length === 1 ? "" : "s"}? This will not publish to production.`)) return;
+    if (!window.confirm(`Build a validation preview for ${releaseSelected.length} accepted draft${releaseSelected.length === 1 ? "" : "s"}? This will not publish to production.`)) return;
     setMessage(null);
     try {
       const response = await fetch("/api/ask-sales-faq/admin/knowledge-refresh/releases", {
@@ -92,7 +93,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       const body = await response.json().catch(() => ({}));
       if (!response.ok) return setMessage({ tone: "bad", text: body.message || "Release preparation failed safely." });
       setReleaseSelected([]);
-      setMessage({ tone: "good", text: `Release ${body.releaseId} was prepared. Production was not changed.` });
+      setMessage({ tone: "good", text: `Preview ${body.releaseId} passed the draft checks. Production was not changed.` });
       refresh();
     } catch {
       setMessage({ tone: "bad", text: "Release preparation could not reach the server. Production was not changed." });
@@ -214,8 +215,8 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         <div className="border-b border-slate-100 p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <h2 className="text-lg font-extrabold text-slate-950">Policy decisions to review</h2>
-              <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Each proposal should represent one decision. Replaced versions remain visible in the archive.</p>
+              <h2 className="text-lg font-extrabold text-slate-950">Useful updates to review</h2>
+              <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Each card is one proposed answer. If it is not useful, choose Ignore.</p>
             </div>
             <button type="button" onClick={recomputeGovernance} className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50"><ShieldAlert className="size-3.5" /> Recheck conflict labels</button>
           </div>
@@ -236,7 +237,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
         <div className="divide-y divide-slate-100">
           {cardsReady ? overview.candidates.map((candidate) => (
-            <CandidateReview
+            <KnowledgeInboxCard
               key={candidate.id}
               candidate={candidate}
               selected={reviewSelected.includes(candidate.id)}
@@ -251,7 +252,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
       {overview.filters.view === "approved" ? (
         <section className="magic-card overflow-hidden">
-          <div className="border-b border-slate-100 p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h2 className="text-lg font-extrabold text-slate-950">Release preparation</h2><p className="mt-1 text-sm text-slate-500">Select individually approved proposals. This creates a manifest and does not publish.</p></div><button type="button" onClick={prepareRelease} disabled={!releaseSelected.length} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:bg-slate-300"><FileCheck2 className="size-4" /> Prepare release ({releaseSelected.length})</button></div></div>
+          <div className="border-b border-slate-100 p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h2 className="text-lg font-extrabold text-slate-950">Test accepted drafts</h2><p className="mt-1 text-sm text-slate-500">Build a current-versus-proposed preview and validate scope, evidence, conflicts, and duplicate decisions. This does not publish.</p></div><button type="button" onClick={prepareRelease} disabled={!releaseSelected.length} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:bg-slate-300"><FileCheck2 className="size-4" /> Build test preview ({releaseSelected.length})</button></div></div>
           <div className="divide-y divide-slate-100">{approved.map((candidate) => <label key={candidate.id} className="flex cursor-pointer items-start gap-3 p-5 hover:bg-slate-50"><input type="checkbox" className="mt-1 size-4 accent-red-600" checked={releaseSelected.includes(candidate.id)} onChange={(event) => setReleaseSelected((current) => event.target.checked ? [...current, candidate.id] : current.filter((id) => id !== candidate.id))} /><span className="min-w-0"><span className="block font-extrabold text-slate-800">{candidate.title}</span><span className="mt-1 block text-sm leading-6 text-slate-500">{candidate.proposed_policy}</span></span></label>)}</div>
         </section>
       ) : null}
@@ -272,6 +273,8 @@ function QueueFilters({ overview }: { overview: Overview }) {
   return <div className="mt-5 space-y-3"><nav className="flex flex-wrap gap-2">{views.map(([view, label, count]) => <a key={view} href={queueHref(overview, { view, page: 1 })} className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${overview.filters.view === view ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{label} ({count})</a>)}</nav><form method="get" className="grid gap-2 md:grid-cols-[minmax(0,1fr)_180px_180px_auto]"><input type="hidden" name="view" value={overview.filters.view} /><label className="relative"><Search className="absolute left-3 top-2.5 size-4 text-slate-400" /><input name="q" defaultValue={overview.filters.query} placeholder="Search title, policy, source…" className="h-9 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm text-slate-700" /></label><select name="source" defaultValue={overview.filters.sourceKind} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All sources</option><option value="slack_channel">Slack</option><option value="google_doc">Google Docs</option><option value="google_sheet">Google Sheets</option></select><select name="conflict" defaultValue={overview.filters.conflictLevel} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All conflict levels</option><option value="none">No conflict</option><option value="possible">Possible</option><option value="direct">Direct</option><option value="blocked">Blocked topic</option></select><button className="h-9 rounded-lg border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Apply filters</button></form></div>;
 }
 
+// Preserved temporarily for audit-diff readability while the Daily Knowledge Inbox replaces the legacy card.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CandidateReview({ candidate, selected, onSelected, onDone }: { candidate: KnowledgeRefreshCandidateRow; selected: boolean; onSelected: (checked: boolean) => void; onDone: (text: string, tone: "good" | "bad") => void }) {
   const [note, setNote] = useState(candidate.review_note || "");
   const [resolution, setResolution] = useState<KnowledgeRefreshConflictResolution | "">(candidate.conflict_resolution || "");

@@ -267,6 +267,7 @@ function policyProfile(policy: V3Policy): PolicyDecisionProfile {
     domains: policy.domains,
     actions: policy.actions,
     entities: policy.entities,
+    policyObject: policy.title,
   });
 }
 

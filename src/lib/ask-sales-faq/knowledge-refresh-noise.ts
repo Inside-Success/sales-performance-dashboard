@@ -26,6 +26,7 @@ export function classifyKnowledgeRefreshCandidateNoise(input: {
   isReusable?: boolean;
   answerImpact?: "material" | "possible" | "none";
   sourceAuthority?: "owner_confirmed" | "manager_guidance" | "rep_answer" | "rep_question" | "unknown";
+  authorityName?: string | null;
   atomicDecisionCount?: number;
 }): KnowledgeRefreshNoiseDecision {
   if (input.duplicateOfCandidateId) {
@@ -70,10 +71,25 @@ export function classifyKnowledgeRefreshCandidateNoise(input: {
     };
   }
 
-  if (input.sourceAuthority === "rep_question" || input.sourceAuthority === "unknown") {
+  if (input.sourceAuthority === "rep_question" || input.sourceAuthority === "rep_answer" || input.sourceAuthority === "unknown") {
     return {
       status: "needs_owner",
       reason: "The source does not establish accountable policy authority; an owner must confirm the rule.",
+    };
+  }
+
+  const namedAuthority = normalizeAuthorityName(input.authorityName);
+  if (["owner_confirmed", "manager_guidance"].includes(input.sourceAuthority || "") && !namedAuthority) {
+    return {
+      status: "needs_owner",
+      reason: "The source was labeled authoritative, but no accountable person was identified in the evidence.",
+    };
+  }
+
+  if (input.sourceAuthority === "manager_guidance") {
+    return {
+      status: "needs_owner",
+      reason: `${namedAuthority} provided relevant guidance, but the final rule still requires an admin authority and scope check.`,
     };
   }
 
@@ -84,14 +100,20 @@ export function classifyKnowledgeRefreshCandidateNoise(input: {
     };
   }
 
-  if (input.confidence < 0.55) {
+  if (input.confidence < 0.8) {
     return {
       status: "needs_owner",
-      reason: "AI confidence is below 55%; an accountable owner must confirm the source before any approval.",
+      reason: "AI confidence is below 80%; an accountable owner must confirm the source before any approval.",
     };
   }
 
   return { status: "needs_review", reason: null };
+}
+
+function normalizeAuthorityName(value: string | null | undefined) {
+  const normalized = String(value || "").toLowerCase().replace(/[^a-z]+/g, " ").trim();
+  const potentialAuthorities = ["rudy", "rich", "mike", "raul", "madeline"];
+  return potentialAuthorities.find((name) => normalized.split(/\s+/).includes(name)) || null;
 }
 
 export function buildKnowledgeRefreshAnalysisPayload(input: {

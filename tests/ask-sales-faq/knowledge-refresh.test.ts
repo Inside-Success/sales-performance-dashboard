@@ -165,6 +165,39 @@ describe("Ask Sales knowledge-refresh governance", () => {
     }).status).toBe("needs_owner");
   });
 
+  it("does not blindly treat an unnamed or manager-level statement as final authority", () => {
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Potential policy update",
+      proposedPolicy: "Reps should follow the revised qualification step.",
+      confidence: 0.95,
+      candidateKind: "rule_change",
+      domains: ["qualification"],
+      actions: ["qualify"],
+      entities: ["qualification_step"],
+      isDurable: true,
+      isReusable: true,
+      answerImpact: "material",
+      sourceAuthority: "owner_confirmed",
+      atomicDecisionCount: 1,
+    }).status).toBe("needs_owner");
+
+    expect(classifyKnowledgeRefreshCandidateNoise({
+      title: "Manager guidance",
+      proposedPolicy: "Reps should follow the revised qualification step.",
+      confidence: 0.95,
+      candidateKind: "rule_change",
+      domains: ["qualification"],
+      actions: ["qualify"],
+      entities: ["qualification_step"],
+      isDurable: true,
+      isReusable: true,
+      answerImpact: "material",
+      sourceAuthority: "manager_guidance",
+      authorityName: "Madeline",
+      atomicDecisionCount: 1,
+    }).status).toBe("needs_owner");
+  });
+
   it("screens operational noise and keeps unanswered policy gaps non-approvable", () => {
     expect(classifyKnowledgeRefreshCandidateNoise({
       title: "Daily coaching reminder",
