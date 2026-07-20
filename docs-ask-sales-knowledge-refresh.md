@@ -4,6 +4,18 @@ Date: 2026-07-14
 
 Last updated: 2026-07-20
 
+## 2026-07-20 reviewer-correction repair
+
+The first correction of an approved draft exposed a usability gap: the admin correctly entered `Builders of America is the correct show name` in the audit note, but did not edit the separate proposed-policy field. The note was preserved correctly while the unresolved AI wording remained the release content. The readiness gate then blocked it later, creating an avoidable review loop.
+
+The review and Approved pages now enforce one clear contract:
+
+- `Final chatbot rule` is the exact proposed knowledge. `Audit note (not the chatbot rule)` records who confirmed it, scope, and reasoning.
+- Question wording and `if same / if different` alternatives cannot enter the Approved queue. The same deterministic release-readiness checks now run during acceptance, not only during preview creation.
+- Existing red drafts can be corrected in place, closed with `Keep current answer`, or sent for confirmation. Every action is exact-admin, version-checked, audited, and leaves production knowledge unchanged.
+- The Approved page states that red drafts never block green drafts. With no selection, the button says `Select a green draft` instead of displaying a confusing zero-count action.
+- The governed catalog already contains `Builders of America`, so a source proposal attempting to rename it is a no-change decision: keep the current answer rather than publish a rename unsupported by its Sheet row.
+
 ## 2026-07-20 release-readiness repair
 
 The first owner use of `Build test preview` exposed a real gap between content approval and release compilation: older approved drafts could have no stable `decision_key`. The compiler then failed safely with an incomplete-policy error, but the admin page showed only a generic message far above the action. No release row, Git operation, or production knowledge change occurred.

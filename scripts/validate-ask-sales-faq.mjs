@@ -21,6 +21,7 @@ const requiredFiles = [
   "src/components/ask-sales-faq/quality-review-console.tsx",
   "src/components/ask-sales-faq/knowledge-refresh-console.tsx",
   "src/components/ask-sales-faq/knowledge-inbox-card.tsx",
+  "src/components/ask-sales-faq/approved-draft-correction.tsx",
   "src/lib/ask-sales-faq/access.ts",
   "src/lib/ask-sales-faq/admin-rep-review.ts",
   "src/lib/ask-sales-faq/feedback-sync.ts",
@@ -91,6 +92,7 @@ if (missingFiles.length === 0) {
   const knowledgeRefreshGovernance = read("src/lib/ask-sales-faq/knowledge-refresh-governance.ts");
   const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
   const knowledgeInboxCard = read("src/components/ask-sales-faq/knowledge-inbox-card.tsx");
+  const approvedDraftCorrection = read("src/components/ask-sales-faq/approved-draft-correction.tsx");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
   const conversationHistory = read("src/lib/ask-sales-faq/conversation-history.ts");
   const chatUi = read("src/components/ask-sales-faq/ask-sales-faq-chat.tsx");
@@ -214,6 +216,18 @@ if (missingFiles.length === 0) {
       knowledgeRefreshStore.includes("combines more than one governed policy decision") &&
       knowledgeRefreshConsole.includes("formatMiamiDateTime"),
     "the queue explains refresh results and replacement lineage while one approval cannot cover several policy decisions",
+  );
+
+  addCheck(
+    "source approval distinguishes final policy wording from audit notes and supports safe correction",
+    knowledgeInboxCard.includes("Final chatbot rule") &&
+      knowledgeInboxCard.includes("Audit note (not the chatbot rule)") &&
+      approvedDraftCorrection.includes("Keep current answer") &&
+      approvedDraftCorrection.includes("red draft does not block any green draft") &&
+      knowledgeRefreshConsole.includes("Red drafts can be corrected or closed here and never block green drafts") &&
+      knowledgeRefreshStore.includes("correct_approved_content") &&
+      knowledgeRefreshStore.includes("This draft cannot enter the approved queue yet"),
+    "an admin must edit the actual final rule, can close a no-change proposal directly, and cannot approve unresolved wording that will fail later",
   );
 
   addCheck(

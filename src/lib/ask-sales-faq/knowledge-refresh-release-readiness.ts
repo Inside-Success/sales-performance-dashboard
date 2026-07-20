@@ -90,7 +90,7 @@ export function assessKnowledgeRefreshReleaseReadiness(
   ) {
     reasons.push("The conflict does not have a final replace-or-scope decision.");
   }
-  if (containsUnresolvedWording(candidate.proposed_policy)) {
+  if (hasUnresolvedPolicyWording(candidate.proposed_policy)) {
     reasons.push("The wording asks for clarification or gives alternatives instead of one final answer.");
   }
   if (structuredRows.length > 1) {
@@ -211,7 +211,7 @@ function parseStructuredShowRow(value: string): KnowledgeRefreshStructuredShowUp
   };
 }
 
-function containsUnresolvedWording(value: string) {
+export function hasUnresolvedPolicyWording(value: string) {
   return [
     /\bclarify whether\b/i,
     /\bneeds? (?:to be )?(?:confirmed|clarified|verified)\b/i,
