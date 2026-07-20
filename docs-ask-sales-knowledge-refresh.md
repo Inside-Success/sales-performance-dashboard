@@ -2,7 +2,31 @@
 
 Date: 2026-07-14
 
-Last updated: 2026-07-17
+Last updated: 2026-07-20
+
+## 2026-07-20 release-readiness repair
+
+The first owner use of `Build test preview` exposed a real gap between content approval and release compilation: older approved drafts could have no stable `decision_key`. The compiler then failed safely with an incomplete-policy error, but the admin page showed only a generic message far above the action. No release row, Git operation, or production knowledge change occurred.
+
+The release boundary now performs and displays a deterministic preflight before a draft can be selected:
+
+- Green `Ready for preview` drafts have current source snapshots, complete human approval lineage, one final decision, source evidence, product scope, and a stable policy identity. A missing identity is derived only from the accepted atomic decision or its single governed conflict.
+- Red `Needs correction` drafts cannot be selected. The card explains the exact reason, including combined Sheet rows, abbreviated evidence, unresolved alternatives, unsupported rename/replacement inferences, stale snapshots, or incomplete conflict decisions.
+- `Send back for correction` removes the draft's content approval and returns it to the owner-review queue with an audit note. It does not change chatbot knowledge.
+- Individually accepted rows from the governed ISTV Offers Sheet are compiled into one replacement for the current approved show catalog. This prevents disconnected per-show facts from leaving the general show-list answer stale. Only the rows the admin selected are applied, and the prior list policy is superseded through the governed release ledger.
+- Release creation and candidate state changes are guarded in one fail-closed database statement. A concurrent edit cannot leave a partial preview.
+- Preview errors now appear beside the preview action with an actionable explanation. Successful previews open in Release history with a side-by-side current-versus-proposed comparison. The action is single-flight to prevent accidental double submission.
+
+The admin operating order is shown directly on the Approved tab:
+
+1. Select only green drafts.
+2. Build the test preview; production is unchanged.
+3. Create both release pull requests and wait for their checks.
+4. Use `Publish verified release`; treat the change as live only after the release says `Production verified`.
+
+The implementation adds regression coverage for missing decision identities, current/stale approval lineage, combined Sheet rows, unresolved wording, unsupported inferred replacements, apostrophe/name normalization, show-catalog compilation, supersession, and original candidate lineage.
+
+Pre-release verification passed 234/234 Ask Sales tests, 104/104 static safety checks, TypeScript, scoped ESLint with zero warnings, `git diff --check`, and the optimized Next.js production build. A read-only evaluation of the six existing approved drafts found three release-ready atomic show updates and three correctly blocked drafts; it created no release or production change.
 
 ## 2026-07-17 Daily Knowledge Inbox replacement
 

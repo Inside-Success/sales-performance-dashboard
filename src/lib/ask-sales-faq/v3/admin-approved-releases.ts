@@ -62,11 +62,13 @@ export type V3AdminReleaseCandidate = {
   evidenceQuotes: string[];
   snapshotHash: string;
   approvedBy: string;
+  approvedByAll?: string[];
   approvedAt: string;
   conflictLevel: "none" | "possible" | "direct" | "blocked";
   conflictResolution: "supersede" | "scoped_coexistence" | null;
   conflictingPolicyIds: string[];
   blockedTopicIds: string[];
+  lineageCandidateIds?: string[];
 };
 
 const baseRegistry = baseRegistryJson as V3PolicyRegistry;
@@ -86,6 +88,7 @@ export function buildV3AdminApprovedRelease(input: {
   preparedBy: string;
   baseKnowledgeVersion: string;
   candidates: V3AdminReleaseCandidate[];
+  candidateIds?: string[];
 }) {
   if (!input.candidates.length) throw new Error("An approved release must contain at least one candidate");
   const policies = input.candidates.map((candidate) => buildReleasePolicy(input, candidate));
@@ -120,7 +123,9 @@ export function buildV3AdminApprovedRelease(input: {
     base_knowledge_version: input.baseKnowledgeVersion,
     prepared_at: input.preparedAt,
     prepared_by: input.preparedBy,
-    candidate_ids: input.candidates.map((candidate) => candidate.id),
+    candidate_ids: input.candidateIds?.length
+      ? [...new Set(input.candidateIds)]
+      : input.candidates.map((candidate) => candidate.id),
     policies,
     supersessions,
     resolved_blocked_topics: resolvedBlockedTopics,
@@ -243,8 +248,14 @@ function buildReleasePolicy(
     source: {
       kind: "admin_approved_knowledge_release",
       article_id: null,
-      ids: [`knowledge-refresh:${input.releaseId}:${candidate.id}`, candidate.sourceId],
-      approved_by: [candidate.approvedBy || input.preparedBy],
+      ids: [
+        ...(candidate.lineageCandidateIds?.length ? candidate.lineageCandidateIds : [candidate.id])
+          .map((candidateId) => `knowledge-refresh:${input.releaseId}:${candidateId}`),
+        candidate.sourceId,
+      ],
+      approved_by: candidate.approvedByAll?.length
+        ? [...new Set(candidate.approvedByAll)]
+        : [candidate.approvedBy || input.preparedBy],
     },
     search_text: normalizeSearch([
       candidate.title,

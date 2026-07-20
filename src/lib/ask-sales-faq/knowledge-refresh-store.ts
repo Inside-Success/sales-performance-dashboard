@@ -21,12 +21,20 @@ import {
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 import {
+  assessKnowledgeRefreshReleaseReadiness,
+  type KnowledgeRefreshReleaseReadiness,
+} from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
+import {
   buildV3AdminApprovedRelease,
   getMaterializedV3Registry,
   previewV3AdminApprovedRelease,
   type V3AdminApprovedRelease,
   type V3AdminReleaseCandidate,
 } from "@/lib/ask-sales-faq/v3/admin-approved-releases";
+import {
+  compileV3AdminReleaseCandidates,
+  type V3AdminReleaseDraft,
+} from "@/lib/ask-sales-faq/v3/admin-release-candidate-compiler";
 
 type SqlClient = ReturnType<typeof neon>;
 
@@ -126,6 +134,7 @@ export type KnowledgeRefreshCandidateRow = {
   approved_at: string | null;
   approved_snapshot_hash: string | null;
   release_id: string | null;
+  release_readiness?: KnowledgeRefreshReleaseReadiness;
   created_at: string;
   updated_at: string;
 };
@@ -774,7 +783,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
   const [sources, candidateRows, releases, counts, latestRunRows] = await Promise.all([
     listKnowledgeRefreshSources(),
     sql.query(
-      `select c.*, s.label as source_label, s.url as source_url
+      `select c.*, s.label as source_label, s.url as source_url, s.last_content_hash
        from ask_sales_faq_refresh_candidates c
        join ask_sales_faq_refresh_sources s on s.id = c.source_id
        ${where}
@@ -782,7 +791,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
                 c.updated_at desc
        limit $${values.length - 1} offset $${values.length}`,
       values,
-    ) as unknown as Promise<KnowledgeRefreshCandidateRow[]>,
+    ) as unknown as Promise<Array<KnowledgeRefreshCandidateRow & { last_content_hash: string | null }>>,
     sql.query(`select * from ask_sales_faq_refresh_releases order by created_at desc limit 30`) as unknown as Promise<KnowledgeRefreshReleaseRow[]>,
     sql.query(
       `select
@@ -854,6 +863,9 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
         [sourceIds],
       ) as Array<{ id: string; source_id: string; title: string; proposed_policy: string; created_at: string }>
     : [];
+  const registry = getMaterializedV3Registry();
+  const decisionKeysByPolicyId = Object.fromEntries(registry.policies.map((policy) => [policy.id, policy.decision_key]));
+  const activeDecisionKeys = registry.policies.map((policy) => policy.decision_key);
   const candidates = candidateRows.map((candidate) => {
     const previous = findPreviousCandidate(candidate, history);
     return {
@@ -865,6 +877,11 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
       change_kind: previous ? "updated" as const : "new" as const,
       previous_candidate_id: previous?.id || null,
       previous_candidate_title: previous?.title || null,
+      release_readiness: assessKnowledgeRefreshReleaseReadiness(candidate, {
+        lastContentHash: candidate.last_content_hash,
+        decisionKeysByPolicyId,
+        activeDecisionKeys,
+      }),
     };
   });
   const filteredRows = (await sql.query(
@@ -924,7 +941,8 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   if (!candidate) throw new KnowledgeRefreshConflictError("Candidate not found");
   if (candidate.version !== input.expectedVersion) throw new KnowledgeRefreshConflictError("Candidate changed; refresh before reviewing it again");
   if (candidate.snapshot_hash !== candidate.last_content_hash) throw new KnowledgeRefreshConflictError("The source changed after this candidate was created");
-  if (!["needs_review", "needs_owner", "deferred"].includes(candidate.status)) {
+  const returningApprovedDraft = candidate.status === "approved_content" && ["needs_owner", "defer"].includes(input.action);
+  if (!["needs_review", "needs_owner", "deferred"].includes(candidate.status) && !returningApprovedDraft) {
     throw new KnowledgeRefreshConflictError(`Candidate cannot be reviewed from status ${candidate.status}`);
   }
 
@@ -997,9 +1015,10 @@ export async function transitionKnowledgeRefreshCandidate(input: {
          conflicting_policy_ids = $10::jsonb, related_policies = $11::jsonb,
          blocked_topic_ids = $12::jsonb,
          reviewed_by = $5, reviewed_at = now(),
-         approved_by = case when $2 = 'approved_content' then $5 else approved_by end,
-         approved_at = case when $2 = 'approved_content' then now() else approved_at end,
-         approved_snapshot_hash = case when $2 = 'approved_content' then snapshot_hash else approved_snapshot_hash end,
+         approved_by = case when $2 = 'approved_content' then $5 when status = 'approved_content' then null else approved_by end,
+         approved_at = case when $2 = 'approved_content' then now() when status = 'approved_content' then null else approved_at end,
+         approved_snapshot_hash = case when $2 = 'approved_content' then snapshot_hash when status = 'approved_content' then null else approved_snapshot_hash end,
+         release_id = case when status = 'approved_content' and $2 <> 'approved_content' then null else release_id end,
          updated_at = now()
      where id = $1 and version = $6
      returning version`,
@@ -1175,7 +1194,7 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
 export async function prepareKnowledgeRefreshRelease(input: { candidateIds: string[]; actor: string }) {
   await ensureKnowledgeRefreshStorage();
   const candidateIds = Array.from(new Set(input.candidateIds)).slice(0, 50);
-  if (!candidateIds.length) throw new KnowledgeRefreshValidationError("Select at least one approved candidate");
+  if (!candidateIds.length) throw new KnowledgeRefreshValidationError("Select at least one draft marked Ready for preview");
   const sql = getSql();
   const placeholders = candidateIds.map((_, index) => `$${index + 1}`).join(", ");
   const rows = (await sql.query(
@@ -1187,68 +1206,97 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     candidateIds,
   )) as Array<KnowledgeRefreshCandidateRow & { last_content_hash: string | null }>;
   if (rows.length !== candidateIds.length) throw new KnowledgeRefreshValidationError("One or more candidates no longer exist");
-  for (const candidate of rows) {
-    if (candidate.status !== "approved_content") throw new KnowledgeRefreshValidationError(`${candidate.title} is not content-approved`);
-    if (candidate.approved_snapshot_hash !== candidate.snapshot_hash || candidate.snapshot_hash !== candidate.last_content_hash) {
-      throw new KnowledgeRefreshConflictError(`${candidate.title} is stale and must be reviewed again`);
-    }
-    if (candidate.atomic_decision_count !== 1) {
-      throw new KnowledgeRefreshValidationError(`${candidate.title} must contain exactly one policy decision`);
-    }
-    if (!candidate.evidence_quotes.length || !candidate.product_scopes.length) {
-      throw new KnowledgeRefreshValidationError(`${candidate.title} is missing source evidence or product scope`);
-    }
-  }
-
-  const duplicateDecisionKeys = rows
-    .map((candidate) => candidate.decision_key)
-    .filter((value): value is string => Boolean(value))
-    .filter((value, index, all) => all.indexOf(value) !== index);
-  if (duplicateDecisionKeys.length) {
-    throw new KnowledgeRefreshValidationError("A release cannot contain two drafts for the same decision key");
+  const registry = getMaterializedV3Registry();
+  const decisionKeysByPolicyId = Object.fromEntries(registry.policies.map((policy) => [policy.id, policy.decision_key]));
+  const activeDecisionKeys = registry.policies.map((policy) => policy.decision_key);
+  const assessed = rows.map((candidate) => ({
+    candidate,
+    readiness: assessKnowledgeRefreshReleaseReadiness(candidate, {
+      lastContentHash: candidate.last_content_hash,
+      decisionKeysByPolicyId,
+      activeDecisionKeys,
+    }),
+  }));
+  const failures = assessed.filter(({ readiness }) => !readiness.ready);
+  if (failures.length) {
+    const details = failures.slice(0, 3).map(({ candidate, readiness }) =>
+      `${candidate.title}: ${readiness.reasons.join(" ")}`,
+    ).join(" ");
+    throw new KnowledgeRefreshValidationError(
+      `Preview not built. ${details}${failures.length > 3 ? ` ${failures.length - 3} more selected draft(s) need correction.` : ""}`,
+    );
   }
 
   const releaseId = `kr_${randomUUID()}`;
   const preparedAt = new Date().toISOString();
   const knowledgeVersionBefore = getKnowledgeRefreshRegistryVersion();
-  const publicationRelease = buildV3AdminApprovedRelease({
-    releaseId,
-    preparedAt,
-    preparedBy: input.actor,
-    baseKnowledgeVersion: knowledgeVersionBefore,
-    candidates: rows.map((candidate) => ({
-      id: candidate.id,
-      title: candidate.title,
-      summary: candidate.summary,
-      proposedPolicy: candidate.proposed_policy,
-      decisionKey: candidate.decision_key || "",
-      productScopes: candidate.product_scopes,
-      domains: candidate.policy_domains,
-      actions: candidate.policy_actions,
-      entities: candidate.policy_entities,
-      policyObject: candidate.policy_object,
-      conditions: candidate.policy_conditions,
-      effectiveDate: candidate.effective_date,
-      answerImpact: candidate.answer_impact,
-      sourceAuthority: candidate.source_authority,
-      authorityName: candidate.authority_name,
-      authorityBasis: candidate.authority_basis,
-      sourceId: candidate.source_id,
-      sourceLabel: candidate.source_label,
-      sourceRevision: candidate.source_revision,
-      evidenceQuotes: candidate.evidence_quotes,
-      snapshotHash: candidate.snapshot_hash,
-      approvedBy: candidate.approved_by || input.actor,
-      approvedAt: candidate.approved_at || preparedAt,
-      conflictLevel: candidate.conflict_level,
-      conflictResolution: ["supersede", "scoped_coexistence"].includes(candidate.conflict_resolution || "")
-        ? candidate.conflict_resolution as V3AdminReleaseCandidate["conflictResolution"]
-        : null,
-      conflictingPolicyIds: candidate.conflicting_policy_ids,
-      blockedTopicIds: candidate.blocked_topic_ids,
-    })),
-  });
-  const compiledPreview = previewV3AdminApprovedRelease(publicationRelease);
+  const releaseDrafts = assessed.map(({ candidate, readiness }): V3AdminReleaseDraft => ({
+    id: candidate.id,
+    title: candidate.title,
+    summary: candidate.summary,
+    proposedPolicy: candidate.proposed_policy,
+    decisionKey: readiness.decisionKey || "",
+    productScopes: candidate.product_scopes,
+    domains: readiness.resolvedDomains,
+    actions: readiness.resolvedActions,
+    entities: readiness.resolvedEntities,
+    policyObject: readiness.resolvedPolicyObject,
+    conditions: candidate.policy_conditions,
+    effectiveDate: candidate.effective_date,
+    answerImpact: candidate.answer_impact,
+    sourceAuthority: candidate.source_authority,
+    authorityName: candidate.authority_name,
+    authorityBasis: candidate.authority_basis,
+    sourceId: candidate.source_id,
+    sourceLabel: candidate.source_label,
+    sourceRevision: candidate.source_revision,
+    evidenceQuotes: candidate.evidence_quotes,
+    snapshotHash: candidate.snapshot_hash,
+    approvedBy: candidate.approved_by || input.actor,
+    approvedByAll: [candidate.approved_by || input.actor],
+    approvedAt: candidate.approved_at || preparedAt,
+    conflictLevel: candidate.conflict_level,
+    conflictResolution: ["supersede", "scoped_coexistence"].includes(candidate.conflict_resolution || "")
+      ? candidate.conflict_resolution as V3AdminReleaseCandidate["conflictResolution"]
+      : null,
+    conflictingPolicyIds: candidate.conflicting_policy_ids,
+    blockedTopicIds: candidate.blocked_topic_ids,
+    lineageCandidateIds: [candidate.id],
+    structuredShowUpdate: readiness.structuredShowUpdate,
+  }));
+  let compiledCandidates: V3AdminReleaseCandidate[];
+  let publicationRelease: V3AdminApprovedRelease;
+  let compiledPreview: ReturnType<typeof previewV3AdminApprovedRelease>;
+  try {
+    compiledCandidates = compileV3AdminReleaseCandidates({
+      drafts: releaseDrafts,
+      currentPolicies: registry.policies,
+      preparedBy: input.actor,
+    });
+    const duplicateCompiledKeys = compiledCandidates
+      .map((candidate) => candidate.decisionKey)
+      .filter((value, index, all) => all.indexOf(value) !== index);
+    if (duplicateCompiledKeys.length) {
+      throw new KnowledgeRefreshValidationError("Two selected drafts resolve to the same policy decision. Preview them separately.");
+    }
+    publicationRelease = buildV3AdminApprovedRelease({
+      releaseId,
+      preparedAt,
+      preparedBy: input.actor,
+      baseKnowledgeVersion: knowledgeVersionBefore,
+      candidates: compiledCandidates,
+      candidateIds,
+    });
+    compiledPreview = previewV3AdminApprovedRelease(publicationRelease);
+  } catch (error) {
+    if (error instanceof KnowledgeRefreshValidationError) throw error;
+    console.error("Ask Sales release compiler rejected an approved draft", error instanceof Error ? error.message : "unknown error");
+    throw new KnowledgeRefreshValidationError(
+      error instanceof Error && /^The (current governed show catalog|selected show update)/.test(error.message)
+        ? error.message
+        : "The approved drafts could not be compiled into one safe release. Production remains unchanged.",
+    );
+  }
   const manifest = {
     schemaVersion: 2,
     releaseId,
@@ -1260,10 +1308,25 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     publicationSafety:
       "This preview is not runtime authority. A separate exact-admin action must create synchronized Git pull requests, both repository release checks must pass, and a second exact-admin action must merge the verified dashboard release before production can change.",
     publicationRelease,
-    candidates: rows.map((candidate) => ({
+    compilation: {
+      approvedDraftCount: rows.length,
+      compiledPolicyCount: compiledCandidates.length,
+      structuredShowCatalog: releaseDrafts.some((draft) => draft.structuredShowUpdate),
+    },
+    releasePreview: compiledCandidates.map((candidate) => ({
+      title: candidate.title,
+      proposedAnswer: candidate.proposedPolicy,
+      currentOfficialAnswers: candidate.conflictingPolicyIds
+        .map((policyId) => registry.policies.find((policy) => policy.id === policyId))
+        .filter((policy) => Boolean(policy))
+        .map((policy) => ({ id: policy?.id, title: policy?.title, decision: policy?.decision })),
+      sourceCandidateIds: candidate.lineageCandidateIds?.length ? candidate.lineageCandidateIds : [candidate.id],
+    })),
+    candidates: assessed.map(({ candidate, readiness }) => ({
       id: candidate.id,
       source: { id: candidate.source_id, label: candidate.source_label, url: candidate.source_url, revision: candidate.source_revision },
-      decisionKey: candidate.decision_key,
+      decisionKey: readiness.decisionKey,
+      decisionKeySource: readiness.decisionKeySource,
       productScopes: candidate.product_scopes,
       candidateKind: candidate.candidate_kind,
       domains: candidate.policy_domains,
@@ -1292,13 +1355,14 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
   };
   const validationChecks = {
     currentSnapshot: true,
-    oneDecisionPerDraft: rows.every((candidate) => candidate.decision_key && candidate.proposed_policy),
+    oneDecisionPerDraft: assessed.every(({ readiness }) => readiness.ready),
+    compiledPolicyIdentityPresent: compiledCandidates.every((candidate) => candidate.decisionKey && candidate.proposedPolicy),
     sourceEvidencePresent: rows.every((candidate) => candidate.evidence_quotes.length > 0),
     productScopePresent: rows.every((candidate) => candidate.product_scopes.length > 0),
-    duplicateDecisionKeysAbsent: duplicateDecisionKeys.length === 0,
-    conflictsHaveExplicitResolution: rows.every((candidate) =>
-      !["direct", "blocked"].includes(candidate.conflict_level) ||
-      ["supersede", "scoped_coexistence"].includes(candidate.conflict_resolution || ""),
+    duplicateDecisionKeysAbsent: new Set(compiledCandidates.map((candidate) => candidate.decisionKey)).size === compiledCandidates.length,
+    conflictsHaveExplicitResolution: compiledCandidates.every((candidate) =>
+      !["direct", "blocked"].includes(candidate.conflictLevel) ||
+      ["supersede", "scoped_coexistence"].includes(candidate.conflictResolution || ""),
     ),
   };
   const validation = {
@@ -1319,20 +1383,71 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     requiredPublishChecks: releaseValidationChecks(),
   };
   if (!validation.passed) {
-    throw new KnowledgeRefreshValidationError("The release preview did not pass every required validation check");
+    throw new KnowledgeRefreshValidationError("The preview did not pass every required safety check. Production remains unchanged.");
   }
-  await sql.query(
-    `insert into ask_sales_faq_refresh_releases (id, status, knowledge_version, candidate_ids, manifest, validation, publication, created_by)
-     values ($1, 'awaiting_final_publish', $2, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7)`,
-    [releaseId, knowledgeVersionBefore, JSON.stringify(candidateIds), JSON.stringify(manifest), JSON.stringify(validation), JSON.stringify({ phase: "awaiting_final_publish" }), input.actor],
-  );
-  await sql.query(
-    `update ask_sales_faq_refresh_candidates
-     set status = 'ready_to_publish', release_id = $1, version = version + 1, updated_at = now()
-     where id in (${candidateIds.map((_, index) => `$${index + 2}`).join(", ")})`,
-    [releaseId, ...candidateIds],
-  );
-  await writeAudit("release", releaseId, "release_prepared", input.actor, null, "awaiting_final_publish", { candidateIds, validation });
+  const requested = rows.map((candidate) => ({
+    candidate_id: candidate.id,
+    expected_version: candidate.version,
+    snapshot_hash: candidate.snapshot_hash,
+  }));
+  const stored = (await sql.query(
+    `with requested as (
+       select candidate_id, expected_version, snapshot_hash
+       from jsonb_to_recordset($1::jsonb) as item(candidate_id text, expected_version integer, snapshot_hash text)
+     ), eligible as (
+       select c.id
+       from ask_sales_faq_refresh_candidates c
+       join ask_sales_faq_refresh_sources s on s.id = c.source_id
+       join requested r on r.candidate_id = c.id
+       where c.status = 'approved_content'
+         and c.version = r.expected_version
+         and c.snapshot_hash = r.snapshot_hash
+         and c.approved_snapshot_hash = c.snapshot_hash
+         and s.last_content_hash = c.snapshot_hash
+     ), guard as (
+       select (select count(*) from requested) = (select count(*) from eligible) as all_eligible
+     ), inserted_release as (
+       insert into ask_sales_faq_refresh_releases (
+         id, status, knowledge_version, candidate_ids, manifest, validation, publication, created_by
+       )
+       select $2, 'awaiting_final_publish', $3, $4::jsonb, $5::jsonb, $6::jsonb, $7::jsonb, $8
+       from guard where all_eligible
+       returning id
+     ), updated as (
+       update ask_sales_faq_refresh_candidates c
+       set status = 'ready_to_publish', release_id = $2, version = c.version + 1, updated_at = now()
+       from requested r, inserted_release
+       where c.id = r.candidate_id and c.version = r.expected_version
+       returning c.id
+     ), audited as (
+       insert into ask_sales_faq_refresh_audit (
+         entity_type, entity_id, event_type, actor, from_status, to_status, details
+       )
+       select 'release', id, 'release_prepared', $8, null, 'awaiting_final_publish', $9::jsonb
+       from inserted_release
+     )
+     select id,
+            (select count(*)::int from updated) as updated_count,
+            1 / case
+              when (select count(*) from updated) = (select count(*) from requested) then 1
+              else 0
+            end as write_guard
+     from inserted_release`,
+    [
+      JSON.stringify(requested),
+      releaseId,
+      knowledgeVersionBefore,
+      JSON.stringify(candidateIds),
+      JSON.stringify(manifest),
+      JSON.stringify(validation),
+      JSON.stringify({ phase: "awaiting_final_publish" }),
+      input.actor,
+      JSON.stringify({ candidateIds, validation }),
+    ],
+  )) as Array<{ id: string; updated_count: number; write_guard: number }>;
+  if (!stored.length || stored[0].updated_count !== candidateIds.length) {
+    throw new KnowledgeRefreshConflictError("One or more approved drafts changed. Refresh the page and build the preview again.");
+  }
   return { releaseId, status: "awaiting_final_publish", manifest, validation };
 }
 
