@@ -18,6 +18,18 @@ The compatibility repair preserves all publication gates and changes no chatbot 
 
 The repair and the exact immutable three-draft release were each validated with 235/235 Ask Sales tests, 106/106 static safety checks, ESLint with zero warnings, TypeScript, and an optimized Next.js production build. A failed check still prevents every merge and production change; the release is live only when its dashboard row says `Production verified`.
 
+### First production knowledge release completed
+
+Release `kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0` completed the full governed path on 2026-07-20/21:
+
+- FAQ PR [#42](https://github.com/Inside-Success/faq-chatbot/pull/42) passed its governed check on exact head `21ea6974d0d124b89ed1e9016d9d375100f83ead` and merged as `b2d764753279ce8397f13fa38f5a2fe25053d2b7`.
+- Dashboard PR [#66](https://github.com/Inside-Success/sales-performance-dashboard/pull/66) passed governed run `29774511970` on unchanged exact head `eba529754e6cf80ce3ea9ff31cc0a96e03744759` and merged as `a09cd1199be395baa1b9296a94e0b2cff624319f`.
+- Publisher execution `370366` succeeded. Vercel production deployment `dpl_Ht8Su23RNguGS1DUMFcVZTJiAwS8` is `READY`, contains dashboard merge `a09cd1199be395baa1b9296a94e0b2cff624319f`, and owns the rose production alias.
+- Exact production health reached knowledge version `8c8c677c1209f2d7`, with policy `kr_7ace400fcdf68db9` present and both superseded show-catalog policies inactive. The release row is `production_verified` with no error.
+- The three accepted source rows compile into one governed current ISTV show catalog: `Internet Masters TV` is active; `Americas Top Trainers` and `Live Longer` are inactive; list membership still does not prove an episode has aired or is watchable.
+
+No further action is required for this release. Future releases follow the same four visible steps and are complete only at `Production verified`.
+
 ## 2026-07-20 reviewer-correction repair
 
 The first correction of an approved draft exposed a usability gap: the admin correctly entered `Builders of America is the correct show name` in the audit note, but did not edit the separate proposed-policy field. The note was preserved correctly while the unresolved AI wording remained the release content. The readiness gate then blocked it later, creating an avoidable review loop.
@@ -66,7 +78,7 @@ The former conflict-card workflow has been replaced at the review boundary by a 
 - The separate 9:20 PM quality review distinguishes wrong/incomplete answers, wrong policy retrieval, missing repeated knowledge, correct safe routes, non-FAQ questions, and technical failures. A protected maintenance step recomputes old source matches before the audit; it cannot approve or publish.
 - The actionable confidence floor is 80%. Lower-confidence or unclear-authority drafts go to owner review instead of ordinary approval.
 
-Final Git publication remains deliberately blocked until a dedicated repository-scoped GitHub identity exists. A personal or broadly privileged token must not be reused.
+Final Git publication uses the dedicated repository-scoped `Ask Sales Knowledge Publisher` identity and the two-step exact-admin release path described above. No personal or broadly privileged credential is used by the dashboard.
 
 ## Purpose
 
