@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Exact-admin approved Ask Sales knowledge releases. Entries become runtime authority only after the reviewed Git release is merged into the dashboard and deployed.",
+  "releases": []
+}

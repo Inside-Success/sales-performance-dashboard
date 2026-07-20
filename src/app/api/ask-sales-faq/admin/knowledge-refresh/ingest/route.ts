@@ -1,5 +1,8 @@
 import { z } from "zod";
 import {
+  claimKnowledgeRefreshReleaseAction,
+  completeKnowledgeRefreshReleaseAction,
+  getKnowledgeRefreshReleaseHealth,
   isKnowledgeRefreshServiceToken,
   listKnowledgeRefreshSources,
   recomputeActionableKnowledgeRefreshGovernance,
@@ -71,11 +74,35 @@ const recomputeGovernanceSchema = z.object({
   phase: z.literal("recompute_governance"),
 });
 
+const releaseClaimSchema = z.object({
+  phase: z.literal("release_claim"),
+  releaseId: z.string().min(1).max(160),
+  action: z.enum(["create_pull_requests", "publish_verified_release"]),
+  token: z.string().min(32).max(200),
+});
+
+const releaseCompleteSchema = z.object({
+  phase: z.literal("release_complete"),
+  releaseId: z.string().min(1).max(160),
+  action: z.enum(["create_pull_requests", "publish_verified_release"]),
+  outcome: z.enum(["success", "failure"]),
+  details: z.record(z.string(), z.unknown()).optional(),
+  message: z.string().max(1000).nullable().optional(),
+});
+
+const releaseHealthSchema = z.object({
+  phase: z.literal("release_health"),
+  releaseId: z.string().min(1).max(160),
+});
+
 const requestSchema = z.discriminatedUnion("phase", [
   snapshotSchema,
   candidatesSchema,
   sourceErrorSchema,
   recomputeGovernanceSchema,
+  releaseClaimSchema,
+  releaseCompleteSchema,
+  releaseHealthSchema,
 ]);
 
 function serviceToken(request: Request) {
@@ -130,6 +157,18 @@ export async function POST(request: Request) {
       return Response.json(await recomputeActionableKnowledgeRefreshGovernance({
         actor: "n8n:ask-sales-knowledge-refresh-maintenance",
       }));
+    }
+    if (parsed.data.phase === "release_claim") {
+      return Response.json(await claimKnowledgeRefreshReleaseAction(parsed.data));
+    }
+    if (parsed.data.phase === "release_complete") {
+      return Response.json(await completeKnowledgeRefreshReleaseAction({
+        ...parsed.data,
+        details: parsed.data.details || {},
+      }));
+    }
+    if (parsed.data.phase === "release_health") {
+      return Response.json(await getKnowledgeRefreshReleaseHealth(parsed.data.releaseId));
     }
     return Response.json(await recordKnowledgeRefreshCandidates(parsed.data));
   } catch (error) {

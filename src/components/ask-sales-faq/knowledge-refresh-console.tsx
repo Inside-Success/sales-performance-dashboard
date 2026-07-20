@@ -67,6 +67,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const [releaseSelected, setReleaseSelected] = useState<string[]>([]);
   const [batchAction, setBatchAction] = useState<BatchAction>("defer");
   const [batchNote, setBatchNote] = useState("");
+  const [busyReleaseId, setBusyReleaseId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ tone: "good" | "bad"; text: string } | null>(null);
   const cardsReady = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const [isPending, startTransition] = useTransition();
@@ -141,6 +142,36 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       refresh();
     } catch {
       setMessage({ tone: "bad", text: "Conflict labels could not be refreshed. Candidate decisions and production knowledge were untouched." });
+    }
+  }
+
+  async function runReleaseAction(release: KnowledgeRefreshReleaseRow, action: "create_pull_requests" | "publish_verified_release") {
+    const publishing = action === "publish_verified_release";
+    const prompt = publishing
+      ? "Publish this verified release? The publisher will recheck both repository release workflows, merge only passing pull requests, wait for the production deployment, and verify the exact knowledge version."
+      : "Create synchronized governed release pull requests? This prepares reviewed Git changes and runs release checks, but it will not change production.";
+    if (!window.confirm(prompt)) return;
+    setBusyReleaseId(release.id);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/ask-sales-faq/admin/knowledge-refresh/releases/${encodeURIComponent(release.id)}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) return setMessage({ tone: "bad", text: body.message || "The governed release action failed safely. Production was not changed." });
+      setMessage({
+        tone: "good",
+        text: publishing
+          ? "Verified publication is running. Refresh shortly to see the production verification result."
+          : "Release pull requests are being created. Production remains unchanged until you use the separate final publish action.",
+      });
+      refresh();
+    } catch {
+      setMessage({ tone: "bad", text: "The governed publisher could not be reached. Production was not changed." });
+    } finally {
+      setBusyReleaseId(null);
     }
   }
 
@@ -257,7 +288,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         </section>
       ) : null}
 
-      <ReleaseHistory releases={overview.releases} />
+      <ReleaseHistory releases={overview.releases} publishEnabled={overview.publishEnabled} busyReleaseId={busyReleaseId} onAction={runReleaseAction} />
     </>
   );
 }
@@ -405,7 +436,35 @@ function PolicyMatchCard({ policy }: { policy: Record<string, unknown> }) {
 function Pagination({ overview }: { overview: Overview }) { const previous = Math.max(1, overview.pagination.page - 1); const next = Math.min(overview.pagination.totalPages, overview.pagination.page + 1); return <div className="flex items-center justify-between border-t border-slate-100 p-4"><a aria-disabled={overview.pagination.page <= 1} href={queueHref(overview, { page: previous })} className={`inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 px-3 text-xs font-extrabold ${overview.pagination.page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-slate-50"}`}><ChevronLeft className="size-4" /> Previous</a><span className="text-xs font-semibold text-slate-500">Page {overview.pagination.page} of {overview.pagination.totalPages}</span><a aria-disabled={overview.pagination.page >= overview.pagination.totalPages} href={queueHref(overview, { page: next })} className={`inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 px-3 text-xs font-extrabold ${overview.pagination.page >= overview.pagination.totalPages ? "pointer-events-none opacity-40" : "hover:bg-slate-50"}`}>Next <ChevronRight className="size-4" /></a></div>; }
 function queueHref(overview: Overview, changes: { view?: KnowledgeRefreshQueueView; page?: number }) { const params = new URLSearchParams(); params.set("view", changes.view || overview.filters.view); if (overview.filters.query) params.set("q", overview.filters.query); if (overview.filters.sourceKind !== "all") params.set("source", overview.filters.sourceKind); if (overview.filters.conflictLevel !== "all") params.set("conflict", overview.filters.conflictLevel); if ((changes.page || 1) > 1) params.set("page", String(changes.page)); return `/ask-sales-faq/admin/knowledge-refresh?${params}`; }
 function SourceCard({ source }: { source: KnowledgeRefreshSourceRow }) { const healthy = source.availability === "available" || source.availability === "replacement_active"; const Icon = healthy ? CheckCircle2 : source.availability === "unavailable" ? AlertTriangle : CircleDashed; return <article className="min-w-0 bg-white p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><a href={source.url} target="_blank" rel="noreferrer" className="line-clamp-1 font-extrabold text-slate-800 hover:text-red-600">{source.label}</a><p className="mt-1 text-xs font-semibold text-slate-400">{source.kind.replaceAll("_", " ")}</p></div><Icon className={`size-5 shrink-0 ${healthy ? "text-emerald-500" : source.availability === "unavailable" ? "text-amber-500" : "text-slate-300"}`} /></div><div className="mt-3 text-xs leading-5 text-slate-500"><div>Last checked: {formatDate(source.last_checked_at)}</div><div>Last changed: {formatDate(source.last_changed_at)}</div>{source.last_error ? <p className="mt-2 line-clamp-2 font-semibold text-amber-700">{source.last_error}</p> : null}</div></article>; }
-function ReleaseHistory({ releases }: { releases: KnowledgeRefreshReleaseRow[] }) { return <section className="magic-card overflow-hidden"><div className="border-b border-slate-100 p-5"><h2 className="text-lg font-extrabold text-slate-950">Release history</h2><p className="mt-1 text-sm text-slate-500">Audit records for prepared and validated knowledge releases.</p></div><div className="divide-y divide-slate-100">{releases.map((release) => <article key={release.id} className="flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between"><div><div className="font-extrabold text-slate-800">{release.id}</div><div className="mt-1 text-xs text-slate-500">{release.candidate_ids.length} proposal{release.candidate_ids.length === 1 ? "" : "s"} · created by {release.created_by} · {formatDate(release.created_at)}</div></div><StatusBadge status={release.status} /></article>)}{!releases.length ? <div className="p-6 text-sm text-slate-500">No release has been prepared yet.</div> : null}</div></section>; }
+function ReleaseHistory({
+  releases,
+  publishEnabled,
+  busyReleaseId,
+  onAction,
+}: {
+  releases: KnowledgeRefreshReleaseRow[];
+  publishEnabled: boolean;
+  busyReleaseId: string | null;
+  onAction: (release: KnowledgeRefreshReleaseRow, action: "create_pull_requests" | "publish_verified_release") => void;
+}) {
+  return <section className="magic-card overflow-hidden"><div className="border-b border-slate-100 p-5"><h2 className="text-lg font-extrabold text-slate-950">Governed release history</h2><p className="mt-1 text-sm text-slate-500">Preview first, create reviewed Git pull requests second, then use the separate final publish action only after both release checks pass.</p></div><div className="divide-y divide-slate-100">{releases.map((release) => {
+    const faq = releasePr(release.publication, "faq");
+    const dashboard = releasePr(release.publication, "dashboard");
+    const creatingAllowed = ["awaiting_final_publish", "publication_failed"].includes(release.status);
+    const publishAllowed = ["prs_ready", "deployment_failed"].includes(release.status);
+    const busy = busyReleaseId === release.id || ["creating_pull_requests", "publishing"].includes(release.status);
+    return <article key={release.id} className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between"><div className="min-w-0"><div className="font-extrabold text-slate-800">{release.id}</div><div className="mt-1 text-xs text-slate-500">{release.candidate_ids.length} proposal{release.candidate_ids.length === 1 ? "" : "s"} · created by {release.created_by} · {formatDate(release.created_at)}</div>{faq || dashboard ? <div className="mt-2 flex flex-wrap gap-3 text-xs font-bold">{faq ? <a href={faq.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">FAQ source PR #{faq.number}</a> : null}{dashboard ? <a href={dashboard.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">Dashboard runtime PR #{dashboard.number}</a> : null}</div> : null}{release.last_error ? <p className="mt-2 max-w-3xl text-xs leading-5 text-red-700">{release.last_error}</p> : null}</div><div className="flex shrink-0 flex-wrap items-center gap-2"><StatusBadge status={release.status} />{publishEnabled && creatingAllowed ? <button type="button" disabled={busy} onClick={() => onAction(release, "create_pull_requests")} className="h-9 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:opacity-50">Create release PRs</button> : null}{publishEnabled && publishAllowed ? <button type="button" disabled={busy} onClick={() => onAction(release, "publish_verified_release")} className="h-9 rounded-full bg-[#DC2626] px-3 text-xs font-extrabold text-white hover:bg-red-700 disabled:opacity-50">{release.status === "deployment_failed" ? "Retry verification" : "Publish verified release"}</button> : null}</div></article>;
+  })}{!releases.length ? <div className="p-6 text-sm text-slate-500">No release has been prepared yet.</div> : null}</div></section>;
+}
+
+function releasePr(publication: Record<string, unknown>, key: "faq" | "dashboard") {
+  const value = publication?.[key];
+  if (!value || typeof value !== "object") return null;
+  const record = value as Record<string, unknown>;
+  const number = Number(record.number);
+  const url = typeof record.url === "string" ? record.url : "";
+  return Number.isInteger(number) && number > 0 && /^https:\/\/github\.com\/Inside-Success\//.test(url) ? { number, url } : null;
+}
 function Metric({ label, value, tone }: { label: string; value: string | number; tone: "default" | "good" | "warning" }) { const color = tone === "good" ? "text-emerald-600" : tone === "warning" ? "text-amber-600" : "text-slate-950"; return <article className="magic-card p-4"><div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</div><div className={`mt-3 text-3xl font-extrabold ${color}`}>{value}</div></article>; }
 function Detail({ label, value }: { label: string; value: string }) { return <div><div className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{label}</div><p className="mt-1 text-sm leading-6 text-slate-600">{value}</p></div>; }
 function ActionButton({ disabled, onClick, label }: { disabled: boolean; onClick: () => void; label: string }) { return <button type="button" disabled={disabled} onClick={onClick} className="h-9 rounded-lg border border-slate-200 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{label}</button>; }

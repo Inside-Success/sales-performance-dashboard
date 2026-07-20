@@ -1,4 +1,3 @@
-import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
 import ragIndexJson from "@/lib/ask-sales-faq/generated/policy-aware-rag-index.json";
 import {
   classifyPolicyDecisionRelation,
@@ -6,8 +5,9 @@ import {
   type PolicyDecisionProfile,
 } from "@/lib/ask-sales-faq/policy-relevance";
 import type { V3BlockedTopic, V3Policy, V3PolicyRegistry } from "@/lib/ask-sales-faq/v3/types";
+import { getMaterializedV3Registry } from "@/lib/ask-sales-faq/v3/admin-approved-releases";
 
-const registry = registryJson as V3PolicyRegistry;
+const registry = getMaterializedV3Registry() as V3PolicyRegistry;
 const ragIndex = ragIndexJson as KnowledgeRefreshRagIndex;
 
 type KnowledgeRefreshRagChunk = {

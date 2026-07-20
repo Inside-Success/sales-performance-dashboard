@@ -15,6 +15,7 @@ const requiredFiles = [
   "src/app/api/ask-sales-faq/feedback/route.ts",
   "src/app/api/ask-sales-faq/v3-benchmark/route.ts",
   "src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts",
+  "src/app/api/ask-sales-faq/admin/knowledge-refresh/releases/[releaseId]/route.ts",
   "src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts",
   "src/components/ask-sales-faq/ask-sales-faq-chat.tsx",
   "src/components/ask-sales-faq/quality-review-console.tsx",
@@ -33,6 +34,7 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/policy-relevance.ts",
   "src/lib/ask-sales-faq/knowledge-refresh-store.ts",
   "src/lib/ask-sales-faq/v3/provider.ts",
+  "src/lib/ask-sales-faq/v3/admin-approved-releases.ts",
   "src/lib/ask-sales-faq/v3/retrieval.ts",
   "src/lib/ask-sales-faq/v3/runtime.ts",
   "src/lib/ask-sales-faq/v3/turn-resolver.ts",
@@ -43,11 +45,12 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/generated/approved-claims.json",
   "src/lib/ask-sales-faq/generated/policy-aware-rag-index.json",
   "src/lib/ask-sales-faq/generated/v3-policy-registry.json",
+  "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json",
   "tests/ask-sales-faq/v3-regression-78.json",
   "scripts/benchmark-ask-sales-faq-v3.ts",
 ];
 
-const secretPatterns = [/sk-proj-[A-Za-z0-9_-]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za-z0-9_-]{32,}/];
+const secretPatterns = [/sk-proj-[A-Za-z0-9_-]{20,}/, /sk-ant-[A-Za-z0-9_-]{20,}/, /sk-[A-Za-z0-9_-]{32,}/, /github_pat_[A-Za-z0-9_]{20,}/, /xox[baprs]-[A-Za-z0-9-]{20,}/];
 
 const checks = [];
 
@@ -79,11 +82,13 @@ if (missingFiles.length === 0) {
   const v3BenchmarkRoute = read("src/app/api/ask-sales-faq/v3-benchmark/route.ts");
   const qualityAuditRoute = read("src/app/api/ask-sales-faq/admin/quality-audit/ingest/route.ts");
   const knowledgeRefreshIngestRoute = read("src/app/api/ask-sales-faq/admin/knowledge-refresh/ingest/route.ts");
+  const knowledgeReleaseRoute = read("src/app/api/ask-sales-faq/admin/knowledge-refresh/releases/[releaseId]/route.ts");
   const qualityDecisionRoute = read("src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts");
   const qualityReviewStore = read("src/lib/ask-sales-faq/quality-review-store.ts");
   const policyRelevance = read("src/lib/ask-sales-faq/policy-relevance.ts");
   const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
   const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
+  const knowledgeRefreshGovernance = read("src/lib/ask-sales-faq/knowledge-refresh-governance.ts");
   const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
   const knowledgeInboxCard = read("src/components/ask-sales-faq/knowledge-inbox-card.tsx");
   const feedbackSync = read("src/lib/ask-sales-faq/feedback-sync.ts");
@@ -94,6 +99,7 @@ if (missingFiles.length === 0) {
   const runtimeSelector = read("src/lib/ask-sales-faq/runtime-selector.ts");
   const v3Runtime = read("src/lib/ask-sales-faq/v3/runtime.ts");
   const v3Provider = read("src/lib/ask-sales-faq/v3/provider.ts");
+  const adminApprovedReleases = read("src/lib/ask-sales-faq/v3/admin-approved-releases.ts");
   const v3Retrieval = read("src/lib/ask-sales-faq/v3/retrieval.ts");
   const v3TurnResolver = read("src/lib/ask-sales-faq/v3/turn-resolver.ts");
   const questionFrame = read("src/lib/ask-sales-faq/question-frame.ts");
@@ -107,6 +113,7 @@ if (missingFiles.length === 0) {
   const policyUnits = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-policy-units.json"));
   const approvedClaims = JSON.parse(read("src/lib/ask-sales-faq/generated/approved-claims.json"));
   const v3Registry = JSON.parse(read("src/lib/ask-sales-faq/generated/v3-policy-registry.json"));
+  const v3AdminReleaseLedger = JSON.parse(read("src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json"));
   const v3Regression = JSON.parse(read("tests/ask-sales-faq/v3-regression-78.json"));
   const db = read("src/lib/db.ts");
   const envExample = read(".env.example");
@@ -160,6 +167,41 @@ if (missingFiles.length === 0) {
       !knowledgeRefreshIngestRoute.includes("prepareKnowledgeRefreshRelease") &&
       !knowledgeRefreshIngestRoute.includes("approve_content"),
     "the protected n8n credential can refresh conflict metadata without gaining approval or publication authority",
+  );
+
+  addCheck(
+    "governed publication requires two exact-admin actions and a single-use service claim",
+    knowledgeReleaseRoute.includes("isAskSalesFaqAdmin") &&
+      knowledgeReleaseRoute.includes("queueKnowledgeRefreshReleaseAction") &&
+      knowledgeReleaseRoute.includes("failQueuedKnowledgeRefreshReleaseAction") &&
+      knowledgeRefreshStore.includes("randomBytes(32)") &&
+      knowledgeRefreshStore.includes("action_token_expires_at") &&
+      knowledgeRefreshStore.includes("release_action_claimed") &&
+      knowledgeRefreshConsole.includes("Create release PRs") &&
+      knowledgeRefreshConsole.includes("Publish verified release"),
+    "content approval, Git PR creation, and final verified publication remain separate exact-admin events",
+  );
+
+  addCheck(
+    "publisher credential stays out of the dashboard and outbound webhook is host-allowlisted",
+    !knowledgeRefreshStore.includes("github_pat_") &&
+      !knowledgeRefreshStore.includes("api.github.com") &&
+      knowledgeRefreshStore.includes('url.hostname !== "insidesuccess.app.n8n.cloud"') &&
+      knowledgeRefreshStore.includes('url.pathname !== "/webhook/ask-sales-knowledge-publisher"') &&
+      knowledgeReleaseRoute.includes("Production was not changed"),
+    "the dashboard receives no GitHub credential and can invoke only the approved Inside Success publisher endpoint",
+  );
+
+  addCheck(
+    "published admin releases materialize through one governed V3 authority lane",
+    v3AdminReleaseLedger.schema_version === 1 &&
+      Array.isArray(v3AdminReleaseLedger.releases) &&
+      adminApprovedReleases.includes('source.kind !== "admin_approved_knowledge_release"') &&
+      adminApprovedReleases.includes("expected_knowledge_version") &&
+      v3Retrieval.includes("getMaterializedV3Registry") &&
+      knowledgeRefreshGovernance.includes("getMaterializedV3Registry") &&
+      knowledgeRefreshStore.includes("getKnowledgeRefreshReleaseHealth"),
+    "the merged ledger is schema-checked, version-chained, and verified against the exact deployed policies",
   );
 
   addCheck(

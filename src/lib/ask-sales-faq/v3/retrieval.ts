@@ -1,4 +1,4 @@
-import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
+import { getMaterializedV3Registry } from "@/lib/ask-sales-faq/v3/admin-approved-releases";
 import type {
   V3BlockedMatch,
   V3Policy,
@@ -8,7 +8,7 @@ import type {
   V3TurnResolution,
 } from "@/lib/ask-sales-faq/v3/types";
 
-const registry = registryJson as V3PolicyRegistry;
+const registry = getMaterializedV3Registry() as V3PolicyRegistry;
 const STOPWORDS = new Set([
   "a", "an", "and", "are", "as", "at", "be", "been", "but", "by", "can", "could", "do", "does", "for", "from",
   "had", "has", "have", "how", "i", "if", "in", "is", "it", "me", "my", "of", "on", "or", "our", "should", "that",

@@ -11,6 +11,12 @@ import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
+import {
+  buildV3AdminApprovedRelease,
+  getMaterializedV3Registry,
+  materializeV3Registry,
+  type V3AdminApprovedReleaseLedger,
+} from "@/lib/ask-sales-faq/v3/admin-approved-releases";
 
 describe("Ask Sales knowledge-refresh governance", () => {
   it("monitors only the two approved Slack channels plus the governed Google corpus", () => {
@@ -28,6 +34,103 @@ describe("Ask Sales knowledge-refresh governance", () => {
     expect(context.knowledgeVersion).toBe(getKnowledgeRefreshRegistryVersion());
     expect(context.knowledgeVersion).toBe(registryJson.knowledge_version);
     expect(context.authorityRule).toContain("Human approval");
+  });
+
+  it("materializes an exact-admin release without changing the frozen base registry", () => {
+    const current = getMaterializedV3Registry();
+    const entry = buildV3AdminApprovedRelease({
+      releaseId: "kr_test_addition",
+      preparedAt: "2026-07-18T20:00:00.000Z",
+      preparedBy: "admin@example.com",
+      baseKnowledgeVersion: current.knowledge_version,
+      candidates: [{
+        id: "candidate_addition",
+        title: "Approved release test policy",
+        summary: "A precise durable test policy.",
+        proposedPolicy: "Use the approved release test procedure when the exact test condition applies.",
+        decisionKey: "test.approved.release",
+        productScopes: ["product_agnostic"],
+        domains: ["general_sales"],
+        actions: ["explain"],
+        entities: ["approved_release_test"],
+        policyObject: "approved release test procedure",
+        conditions: "exact test condition",
+        effectiveDate: "2026-07-18",
+        answerImpact: "material",
+        sourceAuthority: "owner_confirmed",
+        authorityName: "Rich",
+        authorityBasis: "Owner-confirmed test fixture",
+        sourceId: "slack_channel:test",
+        sourceLabel: "#test",
+        sourceRevision: "123.45",
+        evidenceQuotes: ["Use the approved release test procedure."],
+        snapshotHash: "a".repeat(64),
+        approvedBy: "admin@example.com",
+        approvedAt: "2026-07-18T19:55:00.000Z",
+        conflictLevel: "none",
+        conflictResolution: null,
+        conflictingPolicyIds: [],
+        blockedTopicIds: [],
+      }],
+    });
+    const ledger: V3AdminApprovedReleaseLedger = { schema_version: 1, description: "test", releases: [entry] };
+    const materialized = materializeV3Registry(current, ledger);
+    expect(materialized.knowledge_version).toBe(entry.expected_knowledge_version);
+    expect(materialized.policies).toContainEqual(expect.objectContaining({
+      id: entry.policies[0].id,
+      decision_key: "test.approved.release",
+      quality_tier: "canonical",
+      answerability: "answer_evidence",
+    }));
+    expect(registryJson.policies.some((policy) => policy.id === entry.policies[0].id)).toBe(false);
+  });
+
+  it("applies an explicit admin supersession and rejects a release built for stale knowledge", () => {
+    const current = getMaterializedV3Registry();
+    const old = current.policies[0];
+    const entry = buildV3AdminApprovedRelease({
+      releaseId: "kr_test_supersession",
+      preparedAt: "2026-07-18T20:10:00.000Z",
+      preparedBy: "admin@example.com",
+      baseKnowledgeVersion: current.knowledge_version,
+      candidates: [{
+        id: "candidate_supersession",
+        title: "Approved replacement test policy",
+        summary: "A precise replacement for one governed test policy.",
+        proposedPolicy: "This exact-admin test fixture replaces the selected previous policy.",
+        decisionKey: old.decision_key,
+        productScopes: old.product_scopes,
+        domains: old.domains,
+        actions: old.actions,
+        entities: old.entities,
+        policyObject: old.title,
+        conditions: null,
+        effectiveDate: "2026-07-18",
+        answerImpact: "material",
+        sourceAuthority: "owner_confirmed",
+        authorityName: "Rich",
+        authorityBasis: "Owner-confirmed test fixture",
+        sourceId: "google_doc:test",
+        sourceLabel: "Test document",
+        sourceRevision: "revision-1",
+        evidenceQuotes: ["This fixture replaces the selected previous policy."],
+        snapshotHash: "b".repeat(64),
+        approvedBy: "admin@example.com",
+        approvedAt: "2026-07-18T20:05:00.000Z",
+        conflictLevel: "direct",
+        conflictResolution: "supersede",
+        conflictingPolicyIds: [old.id],
+        blockedTopicIds: [],
+      }],
+    });
+    const materialized = materializeV3Registry(current, { schema_version: 1, description: "test", releases: [entry] });
+    expect(materialized.policies.some((policy) => policy.id === old.id)).toBe(false);
+    expect(materialized.superseded_policies?.some((policy) => policy.id === old.id)).toBe(true);
+    expect(() => materializeV3Registry(current, {
+      schema_version: 1,
+      description: "test",
+      releases: [{ ...entry, base_knowledge_version: "stale-version" }],
+    })).toThrow(/built for knowledge/);
   });
 
   it("requires explicit conflict handling when a decision key already exists", () => {

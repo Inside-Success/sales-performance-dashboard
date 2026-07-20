@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import {
   buildKnowledgeRefreshAnalysisContext,
@@ -20,6 +20,13 @@ import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
+import {
+  buildV3AdminApprovedRelease,
+  getMaterializedV3Registry,
+  previewV3AdminApprovedRelease,
+  type V3AdminApprovedRelease,
+  type V3AdminReleaseCandidate,
+} from "@/lib/ask-sales-faq/v3/admin-approved-releases";
 
 type SqlClient = ReturnType<typeof neon>;
 
@@ -130,6 +137,8 @@ export type KnowledgeRefreshReleaseRow = {
   candidate_ids: string[];
   manifest: Record<string, unknown>;
   validation: Record<string, unknown>;
+  publication: Record<string, unknown>;
+  last_error: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -313,11 +322,23 @@ async function buildKnowledgeRefreshSchema() {
       candidate_ids jsonb not null default '[]'::jsonb,
       manifest jsonb not null default '{}'::jsonb,
       validation jsonb not null default '{}'::jsonb,
+      publication jsonb not null default '{}'::jsonb,
+      action_token_hash text,
+      action_token_expires_at timestamptz,
+      action_type text,
+      action_started_at timestamptz,
+      last_error text,
       created_by text not null,
       created_at timestamptz not null default now(),
       updated_at timestamptz not null default now()
     )
   `;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists publication jsonb not null default '{}'::jsonb`;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists action_token_hash text`;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists action_token_expires_at timestamptz`;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists action_type text`;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists action_started_at timestamptz`;
+  await sql`alter table ask_sales_faq_refresh_releases add column if not exists last_error text`;
 
   await sql`
     create table if not exists ask_sales_faq_refresh_audit (
@@ -1188,15 +1209,57 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
   }
 
   const releaseId = `kr_${randomUUID()}`;
+  const preparedAt = new Date().toISOString();
+  const knowledgeVersionBefore = getKnowledgeRefreshRegistryVersion();
+  const publicationRelease = buildV3AdminApprovedRelease({
+    releaseId,
+    preparedAt,
+    preparedBy: input.actor,
+    baseKnowledgeVersion: knowledgeVersionBefore,
+    candidates: rows.map((candidate) => ({
+      id: candidate.id,
+      title: candidate.title,
+      summary: candidate.summary,
+      proposedPolicy: candidate.proposed_policy,
+      decisionKey: candidate.decision_key || "",
+      productScopes: candidate.product_scopes,
+      domains: candidate.policy_domains,
+      actions: candidate.policy_actions,
+      entities: candidate.policy_entities,
+      policyObject: candidate.policy_object,
+      conditions: candidate.policy_conditions,
+      effectiveDate: candidate.effective_date,
+      answerImpact: candidate.answer_impact,
+      sourceAuthority: candidate.source_authority,
+      authorityName: candidate.authority_name,
+      authorityBasis: candidate.authority_basis,
+      sourceId: candidate.source_id,
+      sourceLabel: candidate.source_label,
+      sourceRevision: candidate.source_revision,
+      evidenceQuotes: candidate.evidence_quotes,
+      snapshotHash: candidate.snapshot_hash,
+      approvedBy: candidate.approved_by || input.actor,
+      approvedAt: candidate.approved_at || preparedAt,
+      conflictLevel: candidate.conflict_level,
+      conflictResolution: ["supersede", "scoped_coexistence"].includes(candidate.conflict_resolution || "")
+        ? candidate.conflict_resolution as V3AdminReleaseCandidate["conflictResolution"]
+        : null,
+      conflictingPolicyIds: candidate.conflicting_policy_ids,
+      blockedTopicIds: candidate.blocked_topic_ids,
+    })),
+  });
+  const compiledPreview = previewV3AdminApprovedRelease(publicationRelease);
   const manifest = {
     schemaVersion: 2,
     releaseId,
-    knowledgeVersionBefore: getKnowledgeRefreshRegistryVersion(),
-    preparedAt: new Date().toISOString(),
+    knowledgeVersionBefore,
+    knowledgeVersionAfter: compiledPreview.knowledge_version,
+    preparedAt,
     preparedBy: input.actor,
     publicationMode: "reviewed_git_release",
     publicationSafety:
-      "This is a tested review preview, not runtime authority. Final publish remains blocked until a restricted GitHub publishing identity applies the manifest to both governed repositories, all compilers and tests pass, the registry diff is reviewed, and production smoke tests pass.",
+      "This preview is not runtime authority. A separate exact-admin action must create synchronized Git pull requests, both repository release checks must pass, and a second exact-admin action must merge the verified dashboard release before production can change.",
+    publicationRelease,
     candidates: rows.map((candidate) => ({
       id: candidate.id,
       source: { id: candidate.source_id, label: candidate.source_label, url: candidate.source_url, revision: candidate.source_revision },
@@ -1242,15 +1305,26 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     passed: Object.values(validationChecks).every(Boolean),
     performedAt: new Date().toISOString(),
     checks: validationChecks,
+    publication: {
+      baseKnowledgeVersion: knowledgeVersionBefore,
+      expectedKnowledgeVersion: publicationRelease.expected_knowledge_version,
+      compiledKnowledgeVersion: compiledPreview.knowledge_version,
+      policyIds: publicationRelease.policies.map((policy) => policy.id),
+      supersededPolicyIds: publicationRelease.supersessions.flatMap((item) => item.superseded_policy_ids),
+      resolvedBlockedTopicIds: publicationRelease.resolved_blocked_topics.map((topic) => topic.id),
+      ledgerEntryHash: sha256(JSON.stringify(publicationRelease)),
+      compiledPolicyCount: compiledPreview.policies.length,
+      compiledBlockedTopicCount: compiledPreview.blocked_topics.length,
+    },
     requiredPublishChecks: releaseValidationChecks(),
   };
   if (!validation.passed) {
     throw new KnowledgeRefreshValidationError("The release preview did not pass every required validation check");
   }
   await sql.query(
-    `insert into ask_sales_faq_refresh_releases (id, status, knowledge_version, candidate_ids, manifest, validation, created_by)
-     values ($1, 'awaiting_final_publish', $2, $3::jsonb, $4::jsonb, $5::jsonb, $6)`,
-    [releaseId, getKnowledgeRefreshRegistryVersion(), JSON.stringify(candidateIds), JSON.stringify(manifest), JSON.stringify(validation), input.actor],
+    `insert into ask_sales_faq_refresh_releases (id, status, knowledge_version, candidate_ids, manifest, validation, publication, created_by)
+     values ($1, 'awaiting_final_publish', $2, $3::jsonb, $4::jsonb, $5::jsonb, $6::jsonb, $7)`,
+    [releaseId, knowledgeVersionBefore, JSON.stringify(candidateIds), JSON.stringify(manifest), JSON.stringify(validation), JSON.stringify({ phase: "awaiting_final_publish" }), input.actor],
   );
   await sql.query(
     `update ask_sales_faq_refresh_candidates
@@ -1260,6 +1334,232 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
   );
   await writeAudit("release", releaseId, "release_prepared", input.actor, null, "awaiting_final_publish", { candidateIds, validation });
   return { releaseId, status: "awaiting_final_publish", manifest, validation };
+}
+
+export type KnowledgeRefreshReleaseAction = "create_pull_requests" | "publish_verified_release";
+
+export async function queueKnowledgeRefreshReleaseAction(input: {
+  releaseId: string;
+  action: KnowledgeRefreshReleaseAction;
+  actor: string;
+}) {
+  await ensureKnowledgeRefreshStorage();
+  if (process.env.ASK_SALES_KNOWLEDGE_REFRESH_PUBLISH_ENABLED !== "true") {
+    throw new KnowledgeRefreshValidationError("The governed Git publisher is not enabled");
+  }
+  const webhookUrl = getKnowledgeRefreshPublisherWebhookUrl();
+  const token = randomBytes(32).toString("base64url");
+  const tokenHash = sha256(token);
+  const attemptId = randomUUID();
+  const allowedStatuses = input.action === "create_pull_requests"
+    ? ["awaiting_final_publish", "publication_failed"]
+    : ["prs_ready", "deployment_failed"];
+  const nextStatus = input.action === "create_pull_requests" ? "creating_pull_requests" : "publishing";
+  const rows = (await getSql().query(
+    `update ask_sales_faq_refresh_releases
+     set status = $2,
+         action_token_hash = $3,
+         action_token_expires_at = now() + interval '10 minutes',
+         action_type = $4,
+         action_started_at = now(),
+         last_error = null,
+         publication = publication || $5::jsonb,
+         updated_at = now()
+     where id = $1 and status = any($6::text[])
+     returning id, status`,
+    [input.releaseId, nextStatus, tokenHash, input.action, JSON.stringify({
+      phase: nextStatus,
+      attemptId,
+      requestedBy: input.actor,
+      requestedAt: new Date().toISOString(),
+    }), allowedStatuses],
+  )) as Array<{ id: string; status: string }>;
+  if (!rows.length) throw new KnowledgeRefreshConflictError("This release is not in a state that allows that action. Refresh the page before trying again.");
+  if (input.action === "publish_verified_release") {
+    await getSql().query(
+      `update ask_sales_faq_refresh_candidates
+       set status = 'publishing', version = version + 1, updated_at = now()
+       where release_id = $1 and status in ('ready_to_publish', 'deployment_failed')`,
+      [input.releaseId],
+    );
+  }
+  await writeAudit("release", input.releaseId, "release_action_queued", input.actor, allowedStatuses.join("|"), nextStatus, {
+    action: input.action,
+    attemptId,
+  });
+  return { releaseId: input.releaseId, action: input.action, token, attemptId, webhookUrl, status: nextStatus };
+}
+
+export async function failQueuedKnowledgeRefreshReleaseAction(input: {
+  releaseId: string;
+  action: KnowledgeRefreshReleaseAction;
+  actor: string;
+  message: string;
+}) {
+  await ensureKnowledgeRefreshStorage();
+  const fromStatus = input.action === "create_pull_requests" ? "creating_pull_requests" : "publishing";
+  const toStatus = input.action === "create_pull_requests" ? "publication_failed" : "prs_ready";
+  await getSql().query(
+    `update ask_sales_faq_refresh_releases
+     set status = $2, action_token_hash = null, action_token_expires_at = null, action_type = null,
+         last_error = $3, publication = publication || $4::jsonb, updated_at = now()
+     where id = $1 and status = $5`,
+    [input.releaseId, toStatus, sanitizeOperationalText(input.message, 1000), JSON.stringify({ phase: toStatus }), fromStatus],
+  );
+  if (input.action === "publish_verified_release") {
+    await getSql().query(
+      `update ask_sales_faq_refresh_candidates
+       set status = 'ready_to_publish', version = version + 1, updated_at = now()
+       where release_id = $1 and status = 'publishing'`,
+      [input.releaseId],
+    );
+  }
+  await writeAudit("release", input.releaseId, "release_action_queue_failed", input.actor, fromStatus, toStatus, {
+    action: input.action,
+    message: sanitizeOperationalText(input.message, 500),
+  });
+}
+
+export async function claimKnowledgeRefreshReleaseAction(input: {
+  releaseId: string;
+  action: KnowledgeRefreshReleaseAction;
+  token: string;
+}) {
+  await ensureKnowledgeRefreshStorage();
+  const rows = (await getSql().query(
+    `select id, status, knowledge_version, candidate_ids, manifest, validation, publication,
+            action_token_hash, action_token_expires_at::text, action_type
+     from ask_sales_faq_refresh_releases where id = $1`,
+    [input.releaseId],
+  )) as Array<KnowledgeRefreshReleaseRow & {
+    action_token_hash: string | null;
+    action_token_expires_at: string | null;
+    action_type: string | null;
+  }>;
+  const release = rows[0];
+  if (!release || !release.action_token_hash || !release.action_token_expires_at) throw new KnowledgeRefreshValidationError("Release action token is missing or expired");
+  if (release.action_type !== input.action || new Date(release.action_token_expires_at).getTime() <= Date.now()) {
+    throw new KnowledgeRefreshValidationError("Release action token is missing or expired");
+  }
+  const expected = Buffer.from(release.action_token_hash);
+  const actual = Buffer.from(sha256(input.token));
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) throw new KnowledgeRefreshValidationError("Release action token is invalid");
+  const expectedStatus = input.action === "create_pull_requests" ? "creating_pull_requests" : "publishing";
+  if (release.status !== expectedStatus) throw new KnowledgeRefreshConflictError("Release action is no longer current");
+
+  const cleared = (await getSql().query(
+    `update ask_sales_faq_refresh_releases
+     set action_token_hash = null, action_token_expires_at = null,
+         publication = publication || $2::jsonb, updated_at = now()
+     where id = $1 and action_token_hash = $3
+     returning id`,
+    [input.releaseId, JSON.stringify({ claimedAt: new Date().toISOString() }), release.action_token_hash],
+  )) as Array<{ id: string }>;
+  if (!cleared.length) throw new KnowledgeRefreshConflictError("Release action was already claimed");
+
+  const publicationRelease = (release.manifest as { publicationRelease?: V3AdminApprovedRelease }).publicationRelease;
+  if (!publicationRelease || publicationRelease.release_id !== release.id) throw new KnowledgeRefreshValidationError("Release publication entry is missing");
+  await writeAudit("release", release.id, "release_action_claimed", "n8n:ask-sales-knowledge-publisher", expectedStatus, expectedStatus, { action: input.action });
+  return {
+    releaseId: release.id,
+    action: input.action,
+    publicationRelease,
+    validation: release.validation,
+    publication: release.publication,
+    repositories: {
+      faq: { owner: "Inside-Success", repo: "faq-chatbot", ledgerPath: "runtime/v3-admin-approved-releases.json", baseBranch: "main" },
+      dashboard: { owner: "Inside-Success", repo: "sales-performance-dashboard", ledgerPath: "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json", baseBranch: "main" },
+    },
+  };
+}
+
+export async function completeKnowledgeRefreshReleaseAction(input: {
+  releaseId: string;
+  action: KnowledgeRefreshReleaseAction;
+  outcome: "success" | "failure";
+  details: Record<string, unknown>;
+  message?: string | null;
+}) {
+  await ensureKnowledgeRefreshStorage();
+  const sql = getSql();
+  const rows = (await sql.query(`select status, manifest, publication from ask_sales_faq_refresh_releases where id = $1`, [input.releaseId])) as Array<{
+    status: string;
+    manifest: Record<string, unknown>;
+    publication: Record<string, unknown>;
+  }>;
+  const release = rows[0];
+  if (!release) throw new KnowledgeRefreshValidationError("Unknown release");
+  const expectedStatus = input.action === "create_pull_requests" ? "creating_pull_requests" : "publishing";
+  if (release.status !== expectedStatus) throw new KnowledgeRefreshConflictError("Release action is no longer current");
+  const safeMessage = sanitizeOperationalText(input.message || "", 1000) || null;
+  const failureStage = typeof input.details.stage === "string" ? input.details.stage : "unknown";
+  const toStatus = input.outcome === "success"
+    ? input.action === "create_pull_requests" ? "prs_ready" : "production_verified"
+    : input.action === "create_pull_requests"
+      ? "publication_failed"
+      : failureStage === "preflight" ? "prs_ready" : "deployment_failed";
+  const publication = { ...release.publication, ...sanitizePublicationDetails(input.details), phase: toStatus, completedAt: new Date().toISOString() };
+  await sql.query(
+    `update ask_sales_faq_refresh_releases
+     set status = $2, publication = $3::jsonb, last_error = $4, action_type = null, updated_at = now()
+     where id = $1 and status = $5`,
+    [input.releaseId, toStatus, JSON.stringify(publication), input.outcome === "failure" ? safeMessage : null, expectedStatus],
+  );
+  const candidateStatus = input.outcome === "success" && input.action === "publish_verified_release"
+    ? "production_verified"
+    : "ready_to_publish";
+  await sql.query(
+    `update ask_sales_faq_refresh_candidates
+     set status = $2, version = version + 1, updated_at = now()
+     where release_id = $1 and status in ('ready_to_publish', 'publishing')`,
+    [input.releaseId, candidateStatus],
+  );
+  await writeAudit("release", input.releaseId, input.outcome === "success" ? "release_action_completed" : "release_action_failed", "n8n:ask-sales-knowledge-publisher", expectedStatus, toStatus, {
+    action: input.action,
+    message: safeMessage,
+    details: sanitizePublicationDetails(input.details),
+  });
+  return { releaseId: input.releaseId, status: toStatus };
+}
+
+export async function getKnowledgeRefreshReleaseHealth(releaseId: string) {
+  await ensureKnowledgeRefreshStorage();
+  const rows = (await getSql().query(`select manifest from ask_sales_faq_refresh_releases where id = $1`, [releaseId])) as Array<{ manifest: Record<string, unknown> }>;
+  const releaseEntry = (rows[0]?.manifest as { publicationRelease?: V3AdminApprovedRelease } | undefined)?.publicationRelease;
+  if (!releaseEntry) throw new KnowledgeRefreshValidationError("Unknown or incomplete release");
+  const registry = getMaterializedV3Registry();
+  const activeIds = new Set(registry.policies.map((policy) => policy.id));
+  const blockedIds = new Set(registry.blocked_topics.map((topic) => topic.id));
+  const missingPolicyIds = releaseEntry.policies.map((policy) => policy.id).filter((id) => !activeIds.has(id));
+  const stillActiveSupersededPolicyIds = releaseEntry.supersessions.flatMap((item) => item.superseded_policy_ids).filter((id) => activeIds.has(id));
+  const stillBlockedTopicIds = releaseEntry.resolved_blocked_topics.map((item) => item.id).filter((id) => blockedIds.has(id));
+  const ready = registry.knowledge_version === releaseEntry.expected_knowledge_version && !missingPolicyIds.length && !stillActiveSupersededPolicyIds.length && !stillBlockedTopicIds.length;
+  return {
+    ready,
+    releaseId,
+    knowledgeVersion: registry.knowledge_version,
+    expectedKnowledgeVersion: releaseEntry.expected_knowledge_version,
+    policyIds: releaseEntry.policies.map((policy) => policy.id),
+    missingPolicyIds,
+    stillActiveSupersededPolicyIds,
+    stillBlockedTopicIds,
+  };
+}
+
+function getKnowledgeRefreshPublisherWebhookUrl() {
+  const raw = process.env.ASK_SALES_KNOWLEDGE_PUBLISHER_WEBHOOK_URL;
+  if (!raw) throw new KnowledgeRefreshValidationError("The governed Git publisher webhook is not configured");
+  let url: URL;
+  try { url = new URL(raw); } catch { throw new KnowledgeRefreshValidationError("The governed Git publisher webhook is invalid"); }
+  if (url.protocol !== "https:" || url.hostname !== "insidesuccess.app.n8n.cloud" || url.pathname !== "/webhook/ask-sales-knowledge-publisher") {
+    throw new KnowledgeRefreshValidationError("The governed Git publisher webhook is outside the approved Inside Success endpoint");
+  }
+  return url.toString();
+}
+
+function sanitizePublicationDetails(details: Record<string, unknown>) {
+  const allowed = ["attemptId", "faq", "dashboard", "knowledgeVersion", "policyIds", "stage", "checks"];
+  return Object.fromEntries(allowed.filter((key) => key in details).map((key) => [key, details[key]]));
 }
 
 function releaseValidationChecks() {
