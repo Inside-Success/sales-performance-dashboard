@@ -12,6 +12,11 @@ import {
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 import {
+  buildKnowledgeRefreshCandidateInsert,
+  KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS,
+  type KnowledgeRefreshCandidateInsertColumn,
+} from "@/lib/ask-sales-faq/knowledge-refresh-candidate-insert";
+import {
   assessKnowledgeRefreshReleaseReadiness,
   hasUnresolvedPolicyWording,
 } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
@@ -56,6 +61,23 @@ function releaseReadinessFixture(overrides: Record<string, unknown> = {}) {
 }
 
 describe("Ask Sales knowledge-refresh governance", () => {
+  it("keeps candidate insert columns, placeholders, casts, and parameters in lockstep", () => {
+    const values = Object.fromEntries(
+      KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS.map((column) => [column, `${column}-value`]),
+    ) as Record<KnowledgeRefreshCandidateInsertColumn, unknown>;
+    const insert = buildKnowledgeRefreshCandidateInsert(values);
+    const placeholders = insert.valuesSql.match(/\$\d+/g) || [];
+
+    expect(KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS).toHaveLength(36);
+    expect(insert.columnsSql.split(", ")).toEqual([...KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS]);
+    expect(placeholders).toEqual(
+      KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS.map((_, index) => `$${index + 1}`),
+    );
+    expect(insert.params).toHaveLength(KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS.length);
+    expect(insert.valuesSql).toContain("$33::jsonb, $34::jsonb, $35::jsonb, $36");
+    expect(insert.valuesSql).not.toContain("$37");
+  });
+
   it("monitors only the two approved Slack channels plus the governed Google corpus", () => {
     expect(KNOWLEDGE_REFRESH_SOURCES).toHaveLength(43);
     expect(KNOWLEDGE_REFRESH_SOURCES.filter((source) => source.kind === "slack_channel").map((source) => source.externalId)).toEqual([
