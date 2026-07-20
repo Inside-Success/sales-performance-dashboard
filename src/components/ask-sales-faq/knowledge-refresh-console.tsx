@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ApprovedDraftCorrection } from "@/components/ask-sales-faq/approved-draft-correction";
 import { KnowledgeInboxCard } from "@/components/ask-sales-faq/knowledge-inbox-card";
 import { formatMiamiDateTime } from "@/lib/format";
 import type {
@@ -106,30 +107,6 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       setReleaseMessage({ tone: "bad", text: "The preview server could not be reached. Production was not changed." });
     } finally {
       setPreparingRelease(false);
-    }
-  }
-
-  async function returnApprovedForCorrection(candidate: KnowledgeRefreshCandidateRow) {
-    if (!window.confirm(`Send “${candidate.title}” back for correction? This removes its approval but does not change production knowledge.`)) return;
-    setReleaseMessage(null);
-    try {
-      const reasons = candidate.release_readiness?.reasons.join(" ") || "Release readiness checks require correction.";
-      const response = await fetch(`/api/ask-sales-faq/admin/knowledge-refresh/candidates/${encodeURIComponent(candidate.id)}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          expectedVersion: candidate.version,
-          action: "needs_owner",
-          note: `Returned from the approved queue before release: ${reasons}`.slice(0, 2000),
-        }),
-      });
-      const body = await response.json().catch(() => ({}));
-      if (!response.ok) return setReleaseMessage({ tone: "bad", text: body.message || "The draft was not moved. Production remains unchanged." });
-      setReleaseSelected((current) => current.filter((id) => id !== candidate.id));
-      setReleaseMessage({ tone: "good", text: `${candidate.title} was sent back for correction. Production was not changed.` });
-      refresh();
-    } catch {
-      setReleaseMessage({ tone: "bad", text: "The review server could not be reached. Production was not changed." });
     }
   }
 
@@ -319,10 +296,10 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h2 className="text-lg font-extrabold text-slate-950">Release approved updates</h2>
-                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">Only green, complete drafts can be selected. A test preview changes no chatbot answer.</p>
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">Only green, complete drafts can be selected. Red drafts can be corrected or closed here and never block green drafts. A test preview changes no chatbot answer.</p>
                 <p className="mt-2 text-xs font-bold text-slate-600">{readyApproved.length} ready · {approved.length - readyApproved.length} need correction</p>
               </div>
-              <button type="button" onClick={prepareRelease} disabled={!selectedReadyCount || preparingRelease} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:bg-slate-300"><FileCheck2 className="size-4" /> {preparingRelease ? "Checking…" : `Build test preview (${selectedReadyCount})`}</button>
+              <button type="button" onClick={prepareRelease} disabled={!selectedReadyCount || preparingRelease} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:bg-slate-300"><FileCheck2 className="size-4" /> {preparingRelease ? "Checking…" : selectedReadyCount ? `Build test preview (${selectedReadyCount})` : "Select a green draft"}</button>
             </div>
             <ol className="mt-4 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-4">
               <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">1. Select green drafts</span><br />Red drafts stay out.</li>
@@ -346,7 +323,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
                     {readiness?.summary ? <span className="mt-2 block text-xs font-semibold text-slate-500">{readiness.summary}</span> : null}
                   </span>
                 </label>
-                {!ready ? <div className="w-full shrink-0 rounded-xl border border-red-200 bg-white p-3 lg:w-96"><div className="text-xs font-extrabold text-red-700">Why it cannot be released yet</div><ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-5 text-slate-600">{(readiness?.reasons.length ? readiness.reasons : ["Refresh this page so the release checks can be loaded."]).map((reason) => <li key={reason}>{reason}</li>)}</ul><button type="button" onClick={() => returnApprovedForCorrection(candidate)} className="mt-3 h-9 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50">Send back for correction</button></div> : null}
+                {!ready ? <ApprovedDraftCorrection candidate={candidate} onDone={(text, tone) => { setReleaseMessage({ text, tone }); if (tone === "good") { setReleaseSelected((current) => current.filter((id) => id !== candidate.id)); refresh(); } }} /> : null}
               </div>
             </article>;
           })}{!approved.length ? <div className="p-6 text-sm text-slate-500">No content-approved drafts are waiting for a preview.</div> : null}</div>

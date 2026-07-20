@@ -7,6 +7,7 @@ import type {
   KnowledgeRefreshCandidateRow,
   KnowledgeRefreshConflictResolution,
 } from "@/lib/ask-sales-faq/knowledge-refresh-store";
+import { hasUnresolvedPolicyWording } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
 
 type ReviewAction = "approve_content" | "reject" | "needs_owner" | "duplicate";
 
@@ -29,12 +30,14 @@ export function KnowledgeInboxCard({
   const [busy, setBusy] = useState(false);
   const canReview = ["needs_review", "needs_owner", "deferred"].includes(candidate.status);
   const policyEdited = policy.trim() !== candidate.proposed_policy.trim();
+  const unresolvedWording = hasUnresolvedPolicyWording(policy);
   const hardConflict = candidate.conflict_level === "direct" || candidate.conflict_level === "blocked";
   const unreliableLegacyMatch = candidate.conflict_level === "blocked" &&
     (candidate.blocked_topics.length !== 1 || candidate.blocked_topics.some((topic) => !topic.reviewReady));
   const canAccept = candidate.candidate_kind !== "knowledge_gap" &&
     !unreliableLegacyMatch &&
     policy.trim().length > 0 &&
+    !unresolvedWording &&
     (!hardConflict || ["supersede", "scoped_coexistence"].includes(resolution)) &&
     (!hardConflict || note.trim().length > 0) &&
     (!policyEdited || note.trim().length > 0);
@@ -109,8 +112,10 @@ export function KnowledgeInboxCard({
 
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
             <section className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
-              <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">Proposed chatbot answer</div>
+              <label htmlFor={`final-policy-${candidate.id}`} className="block text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">Final chatbot rule</label>
+              <p className="mt-1 text-xs leading-5 text-emerald-800">This exact text enters the approved queue. The audit note does not replace it.</p>
               <textarea
+                id={`final-policy-${candidate.id}`}
                 value={policy}
                 onChange={(event) => setPolicy(event.target.value)}
                 rows={6}
@@ -118,6 +123,7 @@ export function KnowledgeInboxCard({
                 className="mt-2 w-full resize-y rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold leading-6 text-slate-800"
               />
               {policyEdited ? <p className="mt-2 text-xs font-semibold text-emerald-700">Edited wording will be rechecked before it is saved.</p> : null}
+              {unresolvedWording ? <p className="mt-2 text-xs font-semibold leading-5 text-red-700">Replace questions or “if this / if that” alternatives with one final rule before accepting.</p> : null}
             </section>
 
             <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -175,8 +181,9 @@ export function KnowledgeInboxCard({
                 </select>
               </>
             ) : null}
-            <label className="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Optional review note</label>
+            <label htmlFor={`audit-note-${candidate.id}`} className="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Audit note (not the chatbot rule)</label>
             <textarea
+              id={`audit-note-${candidate.id}`}
               value={note}
               onChange={(event) => setNote(event.target.value)}
               rows={4}
@@ -184,6 +191,7 @@ export function KnowledgeInboxCard({
               placeholder="Who confirmed this, its scope, or why you made this choice."
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700"
             />
+            <p className="text-xs leading-5 text-slate-500">Use this only for who confirmed the decision, scope, or reasoning. Edit Final chatbot rule above when the answer itself must change.</p>
             <button
               type="button"
               disabled={busy || !canAccept}

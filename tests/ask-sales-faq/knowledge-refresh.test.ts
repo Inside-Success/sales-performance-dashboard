@@ -11,7 +11,10 @@ import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
-import { assessKnowledgeRefreshReleaseReadiness } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
+import {
+  assessKnowledgeRefreshReleaseReadiness,
+  hasUnresolvedPolicyWording,
+} from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
 import {
   buildV3AdminApprovedRelease,
   getMaterializedV3Registry,
@@ -437,6 +440,15 @@ describe("Ask Sales knowledge-refresh governance", () => {
     }));
     expect(unresolved.ready).toBe(false);
     expect(unresolved.reasons.join(" ")).toContain("one final answer");
+  });
+
+  it("identifies clarification wording before an admin can accept it", () => {
+    expect(hasUnresolvedPolicyWording(
+      "Clarify whether Show A is Show B. If same, rename it. If different, add it.",
+    )).toBe(true);
+    expect(hasUnresolvedPolicyWording(
+      "Builders of America is the correct official show name and remains active.",
+    )).toBe(false);
   });
 
   it("does not publish an inferred show replacement that its row evidence does not prove", () => {

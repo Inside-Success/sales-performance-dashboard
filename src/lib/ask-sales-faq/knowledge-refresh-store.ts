@@ -941,18 +941,27 @@ export async function transitionKnowledgeRefreshCandidate(input: {
   if (!candidate) throw new KnowledgeRefreshConflictError("Candidate not found");
   if (candidate.version !== input.expectedVersion) throw new KnowledgeRefreshConflictError("Candidate changed; refresh before reviewing it again");
   if (candidate.snapshot_hash !== candidate.last_content_hash) throw new KnowledgeRefreshConflictError("The source changed after this candidate was created");
-  const returningApprovedDraft = candidate.status === "approved_content" && ["needs_owner", "defer"].includes(input.action);
-  if (!["needs_review", "needs_owner", "deferred"].includes(candidate.status) && !returningApprovedDraft) {
+  const note = sanitizeOperationalText(input.note || "", 2000) || null;
+  const editedPolicy = sanitizeOperationalText(input.editedPolicy || "", 6000) || null;
+  const policyWasEdited = Boolean(editedPolicy && editedPolicy !== candidate.proposed_policy);
+  const amendingApprovedDraft = candidate.status === "approved_content" && input.action === "approve_content" && policyWasEdited;
+  const resolvingApprovedDraft = candidate.status === "approved_content" && ["needs_owner", "defer", "reject"].includes(input.action);
+  if (!["needs_review", "needs_owner", "deferred"].includes(candidate.status) && !amendingApprovedDraft && !resolvingApprovedDraft) {
     throw new KnowledgeRefreshConflictError(`Candidate cannot be reviewed from status ${candidate.status}`);
+  }
+  if (candidate.status === "approved_content" && input.action === "approve_content" && !amendingApprovedDraft) {
+    throw new KnowledgeRefreshValidationError("Change the Final chatbot rule before saving a correction to an approved draft");
+  }
+  if (resolvingApprovedDraft && !note) {
+    throw new KnowledgeRefreshValidationError("Add an audit note before removing an approved draft from the release queue");
   }
 
   const targetStatus = actionTargetStatus(input.action);
   const conflictResolution = input.conflictResolution || null;
-  const editedPolicy = sanitizeOperationalText(input.editedPolicy || "", 6000) || null;
   if (editedPolicy && input.action !== "approve_content") {
     throw new KnowledgeRefreshValidationError("Edited wording can only be saved when accepting an update");
   }
-  if (editedPolicy && !sanitizeOperationalText(input.note || "", 2000)) {
+  if (editedPolicy && !note) {
     throw new KnowledgeRefreshValidationError("Add a note explaining why the accepted wording was edited");
   }
   const governance = editedPolicy
@@ -978,7 +987,7 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     if (!conflictResolution || !["supersede", "scoped_coexistence"].includes(conflictResolution)) {
       throw new KnowledgeRefreshValidationError("Direct or blocked conflicts require an explicit supersede or scoped-coexistence decision");
     }
-    if (!sanitizeOperationalText(input.note || "", 2000)) {
+    if (!note) {
       throw new KnowledgeRefreshValidationError("Conflict approval requires a reviewer note describing the authority, scope, and any exceptions");
     }
   }
@@ -1006,6 +1015,37 @@ export async function transitionKnowledgeRefreshCandidate(input: {
       throw new KnowledgeRefreshValidationError("This proposal combines more than one governed policy decision. It must be separated into one decision per proposal before approval.");
     }
   }
+  if (input.action === "approve_content") {
+    const registry = getMaterializedV3Registry();
+    const decisionKeysByPolicyId = Object.fromEntries(
+      registry.policies.map((policy) => [policy.id, policy.decision_key]),
+    );
+    const approvalCandidate: KnowledgeRefreshCandidateRow = {
+      ...candidate,
+      status: "approved_content",
+      proposed_policy: editedPolicy || candidate.proposed_policy,
+      conflict_level: governance.conflictLevel,
+      conflict_summary: governance.conflictSummary,
+      conflicting_policy_ids: governance.conflictingPolicyIds,
+      related_policies: governance.relatedPolicies,
+      blocked_topic_ids: governance.blockedTopicIds,
+      conflict_resolution: conflictResolution,
+      review_note: note,
+      approved_by: input.actor,
+      approved_at: new Date().toISOString(),
+      approved_snapshot_hash: candidate.snapshot_hash,
+    };
+    const readiness = assessKnowledgeRefreshReleaseReadiness(approvalCandidate, {
+      lastContentHash: candidate.last_content_hash,
+      decisionKeysByPolicyId,
+      activeDecisionKeys: registry.policies.map((policy) => policy.decision_key),
+    });
+    if (!readiness.ready) {
+      throw new KnowledgeRefreshValidationError(
+        `This draft cannot enter the approved queue yet. ${readiness.reasons.join(" ")} Edit Final chatbot rule, choose Keep current answer, or request confirmation.`,
+      );
+    }
+  }
 
   const updateRows = (await sql.query(
     `update ask_sales_faq_refresh_candidates
@@ -1025,7 +1065,7 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     [
       input.candidateId,
       targetStatus,
-      sanitizeOperationalText(input.note || "", 2000) || null,
+      note,
       conflictResolution,
       input.actor,
       input.expectedVersion,
@@ -1038,11 +1078,16 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     ],
   )) as Array<{ version: number }>;
   if (!updateRows.length) throw new KnowledgeRefreshConflictError("Candidate changed during review");
-  await writeAudit("candidate", input.candidateId, input.action, input.actor, candidate.status, targetStatus, {
+  const auditEvent = amendingApprovedDraft
+    ? "correct_approved_content"
+    : candidate.status === "approved_content" && input.action === "reject"
+      ? "keep_current_answer"
+      : input.action;
+  await writeAudit("candidate", input.candidateId, auditEvent, input.actor, candidate.status, targetStatus, {
     expectedVersion: input.expectedVersion,
     conflictResolution,
     editedPolicy,
-    note: sanitizeOperationalText(input.note || "", 2000) || null,
+    note,
   });
   return { id: input.candidateId, status: targetStatus, version: updateRows[0].version };
 }
