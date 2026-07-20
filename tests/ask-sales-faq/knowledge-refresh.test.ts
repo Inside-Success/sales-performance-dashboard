@@ -11,12 +11,46 @@ import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
+import { assessKnowledgeRefreshReleaseReadiness } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
 import {
   buildV3AdminApprovedRelease,
   getMaterializedV3Registry,
   materializeV3Registry,
   type V3AdminApprovedReleaseLedger,
 } from "@/lib/ask-sales-faq/v3/admin-approved-releases";
+import {
+  compileV3AdminReleaseCandidates,
+  extractActiveShows,
+  type V3AdminReleaseDraft,
+} from "@/lib/ask-sales-faq/v3/admin-release-candidate-compiler";
+
+function releaseReadinessFixture(overrides: Record<string, unknown> = {}) {
+  return {
+    source_id: "google_doc:test",
+    status: "approved_content",
+    title: "A final approved rule",
+    summary: "A final approved rule summary.",
+    proposed_policy: "Use the final approved procedure.",
+    rationale: "The source states this directly.",
+    decision_key: null,
+    product_scopes: ["product_agnostic"],
+    evidence_quotes: ["Use the final approved procedure."],
+    candidate_kind: "new_rule",
+    policy_domains: ["general_sales"],
+    policy_actions: ["explain"],
+    policy_entities: ["procedure"],
+    policy_object: "approved procedure",
+    atomic_decision_count: 1,
+    conflict_level: "none",
+    conflict_resolution: null,
+    conflicting_policy_ids: [],
+    snapshot_hash: "a".repeat(64),
+    approved_snapshot_hash: "a".repeat(64),
+    approved_by: "admin@example.com",
+    approved_at: "2026-07-20T12:00:00.000Z",
+    ...overrides,
+  };
+}
 
 describe("Ask Sales knowledge-refresh governance", () => {
   it("monitors only the two approved Slack channels plus the governed Google corpus", () => {
@@ -353,5 +387,147 @@ describe("Ask Sales knowledge-refresh governance", () => {
       currentContent: " Show A is active. \n\n Show B is off. ",
     });
     expect(result).toEqual({ mode: "delta", content: "", materialChange: false });
+  });
+
+  it("marks a complete structured show row ready and derives governed release metadata", () => {
+    const result = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      title: "New Show Added: Internet Masters TV (Status: On)",
+      proposed_policy: "Add 'Internet Masters TV' to the approved show list as an active show.",
+      evidence_quotes: ["Internet Masters TV\thttps://example.com/internet-masters\tINTV\tOn\tOnline entrepreneurs"],
+      source_id: "google_sheet:1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+      policy_domains: [],
+      policy_actions: [],
+      policy_entities: [],
+      policy_object: null,
+    }));
+    expect(result).toMatchObject({
+      ready: true,
+      decisionKey: "show-catalog.internet-masters-tv.status",
+      decisionKeySource: "derived",
+      resolvedDomains: ["shows_offers"],
+      structuredShowUpdate: { showName: "Internet Masters TV", status: "on" },
+    });
+    expect(result.resolvedActions).toContain("use_or_promote");
+
+    const apostropheVariant = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      title: "America's Top Trainers is off",
+      proposed_policy: "Update the approved list to mark 'America's Top Trainers' as inactive (Off).",
+      evidence_quotes: ["Americas Top Trainers\thttps://example.com/trainers\tATT\tOff\tTrainers"],
+      source_id: "google_sheet:1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+    }));
+    expect(apostropheVariant.ready).toBe(true);
+  });
+
+  it("keeps combined, abbreviated, and unresolved drafts out of release previews", () => {
+    const combined = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      title: "Multiple shows marked off",
+      proposed_policy: "Show A and Show B are inactive and should not be offered.",
+      evidence_quotes: [
+        "Show A\t...\tA\tOff\tNiche A",
+        "Show B\t...\tB\tOff\tNiche B",
+      ],
+      source_id: "google_sheet:1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+    }));
+    expect(combined.ready).toBe(false);
+    expect(combined.reasons.join(" ")).toContain("multiple Sheet rows");
+
+    const unresolved = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      title: "Possible show rename",
+      proposed_policy: "Clarify whether Show A is Show B. If same, rename it. If different, add it.",
+    }));
+    expect(unresolved.ready).toBe(false);
+    expect(unresolved.reasons.join(" ")).toContain("one final answer");
+  });
+
+  it("does not publish an inferred show replacement that its row evidence does not prove", () => {
+    const result = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      title: "Couples Empire replaces Couples of America",
+      summary: "The row suggests a name change.",
+      proposed_policy: "Replace 'Couples of America' with 'Couples Empire'. The show is active.",
+      rationale: "This is likely a rebranding.",
+      evidence_quotes: ["Couples Empire\thttps://example.com/couples\tCE\tOn\tCouples in business"],
+      source_id: "google_sheet:1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+    }));
+    expect(result.ready).toBe(false);
+    expect(result.reasons.join(" ")).toContain("does not prove the proposed rename or replacement");
+  });
+
+  it("derives a stable policy identity for an otherwise complete new rule", () => {
+    const result = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture());
+    expect(result).toMatchObject({
+      ready: true,
+      decisionKey: "admin.approved-procedure",
+      decisionKeySource: "derived",
+    });
+  });
+
+  it("compiles accepted Sheet rows into one replacement show catalog with original lineage", () => {
+    const current = getMaterializedV3Registry();
+    const common: V3AdminReleaseDraft = {
+      id: "candidate-internet-masters",
+      title: "Internet Masters TV is active",
+      summary: "Add the newly active show.",
+      proposedPolicy: "Add Internet Masters TV as an active show.",
+      decisionKey: "show-catalog.internet-masters-tv.status",
+      productScopes: ["product_agnostic"],
+      domains: ["shows_offers"],
+      actions: ["use_or_promote"],
+      entities: ["internet", "masters", "tv"],
+      policyObject: "Internet Masters TV show status",
+      conditions: null,
+      effectiveDate: null,
+      answerImpact: "material",
+      sourceAuthority: "unknown",
+      authorityName: null,
+      authorityBasis: null,
+      sourceId: "google_sheet:offers",
+      sourceLabel: "ISTV Offers",
+      sourceRevision: "927",
+      evidenceQuotes: ["Internet Masters TV\thttps://example.com/internet\tINTV\tOn\tOnline entrepreneurs"],
+      snapshotHash: "c".repeat(64),
+      approvedBy: "admin@example.com",
+      approvedAt: "2026-07-20T12:00:00.000Z",
+      conflictLevel: "none",
+      conflictResolution: null,
+      conflictingPolicyIds: [],
+      blockedTopicIds: [],
+      lineageCandidateIds: ["candidate-internet-masters"],
+      structuredShowUpdate: { kind: "istv_show_status", showName: "Internet Masters TV", status: "on", url: "https://example.com/internet", acronym: "INTV" },
+    };
+    const off: V3AdminReleaseDraft = {
+      ...common,
+      id: "candidate-top-trainers-off",
+      title: "America's Top Trainers is inactive",
+      proposedPolicy: "Mark America's Top Trainers inactive and do not offer it.",
+      decisionKey: "show-catalog.americas-top-trainers.status",
+      evidenceQuotes: ["Americas Top Trainers\thttps://example.com/trainers\tATT\tOff\tTrainers"],
+      lineageCandidateIds: ["candidate-top-trainers-off"],
+      structuredShowUpdate: { kind: "istv_show_status", showName: "Americas Top Trainers", status: "off", url: "https://example.com/trainers", acronym: "ATT" },
+    };
+    const [compiled] = compileV3AdminReleaseCandidates({ drafts: [common, off], currentPolicies: current.policies, preparedBy: "admin@example.com" });
+    const activeShows = extractActiveShows(compiled.proposedPolicy).map((show) => show.toLowerCase().replace(/[^a-z0-9]+/g, ""));
+    expect(compiled.decisionKey).toBe("current-show-source-latest-approved-show-list-1");
+    expect(compiled.lineageCandidateIds).toEqual(["candidate-internet-masters", "candidate-top-trainers-off"]);
+    expect(activeShows).toContain("internetmasterstv");
+    expect(activeShows).not.toContain("americastoptrainers");
+    expect(compiled.conflictResolution).toBe("supersede");
+    expect(compiled.conflictingPolicyIds.length).toBeGreaterThanOrEqual(1);
+
+    const release = buildV3AdminApprovedRelease({
+      releaseId: "kr_catalog_test",
+      preparedAt: "2026-07-20T12:10:00.000Z",
+      preparedBy: "admin@example.com",
+      baseKnowledgeVersion: current.knowledge_version,
+      candidateIds: ["candidate-internet-masters", "candidate-top-trainers-off"],
+      candidates: [compiled],
+    });
+    expect(release.candidate_ids).toEqual(["candidate-internet-masters", "candidate-top-trainers-off"]);
+    expect(release.policies[0].source.ids).toEqual(expect.arrayContaining([
+      "knowledge-refresh:kr_catalog_test:candidate-internet-masters",
+      "knowledge-refresh:kr_catalog_test:candidate-top-trainers-off",
+    ]));
+    const materialized = materializeV3Registry(current, { schema_version: 1, description: "test", releases: [release] });
+    expect(materialized.policies.some((policy) => policy.id === release.policies[0].id)).toBe(true);
+    expect(materialized.policies.some((policy) => compiled.conflictingPolicyIds.includes(policy.id))).toBe(false);
   });
 });
