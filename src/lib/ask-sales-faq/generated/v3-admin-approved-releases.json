@@ -1,5 +1,150 @@
 {
   "schema_version": 1,
   "description": "Exact-admin approved Ask Sales knowledge releases. Entries become runtime authority only after the reviewed Git release is merged into the dashboard and deployed.",
-  "releases": []
+  "releases": [
+    {
+      "status": "approved_for_publish",
+      "policies": [
+        {
+          "id": "kr_7ace400fcdf68db9",
+          "title": "Current approved ISTV show catalog",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0:kc_27895be7-83c1-4b55-b64e-0ccffb2921f7",
+              "knowledge-refresh:kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0:kc_2e3bdf0a-94f9-4a7f-aa00-e02d25e7c94e",
+              "knowledge-refresh:kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0:kc_2b1585c6-84fd-4efe-95e9-99012aed4059",
+              "google_sheet:1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "use_or_promote",
+            "hold_or_pause",
+            "verify"
+          ],
+          "domains": [
+            "shows_offers"
+          ],
+          "decision": "Use the following as the current approved ISTV sales/casting show list:\n- Legacy Makers\n- Women in Power\n- Operation CEO\n- America's Top Lawyers\n- America's Best Doctors\n- America's Top Agents\n- Kingdom Creators\n- Mompreneurs\n- Couples of America\n- Builders of America\n- Legal Titans\n- Life Changers\n- Project Beauty\n- Mindset Masters\n- Love Experts\n- Americas Top Contractors\n- Blue Collar America\n- America's Authors\n- America's Top Physicians\n- Doctors of America\n- Rise of Her\n- Made It In America\n- Wealth Makers\n- Beyond Success\n- American Founders\n- Leading with Purpose\n- Impact Makers TV\n- Masters of Innovation\n- Internet Masters TV\n\nThe following accepted source updates are inactive and must not be offered to new applicants:\n- Americas Top Trainers\n- Live Longer\n\nList membership confirms only current sales/casting availability. It does not by itself confirm that an episode has aired or is currently watchable.",
+          "entities": [
+            "current",
+            "approved",
+            "show",
+            "list",
+            "legacy",
+            "makers",
+            "women",
+            "in",
+            "power",
+            "operation",
+            "ceo",
+            "america",
+            "top",
+            "lawyers",
+            "best",
+            "doctors",
+            "agents",
+            "kingdom",
+            "creators",
+            "mompreneurs",
+            "couples",
+            "of",
+            "builders",
+            "legal",
+            "titans",
+            "life",
+            "changers",
+            "project",
+            "beauty",
+            "mindset",
+            "masters",
+            "love",
+            "experts",
+            "americas",
+            "contractors",
+            "blue",
+            "collar",
+            "authors",
+            "physicians",
+            "rise",
+            "her",
+            "made",
+            "it",
+            "wealth",
+            "beyond",
+            "success",
+            "american",
+            "founders",
+            "leading",
+            "with",
+            "purpose",
+            "impact",
+            "tv",
+            "innovation",
+            "internet",
+            "trainers",
+            "live",
+            "longer"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-current-show-source-latest-approved-show-list-1-cdf68db9",
+          "risk_level": "high",
+          "search_text": "current approved istv show catalog current approved istv show catalog compiled from 3 individually accepted show status updates current approved istv show catalog use list membership only for current sales casting availability it does not prove that an episode has aired or is watchable use the following as the current approved istv sales casting show list legacy makers women in power operation ceo america s top lawyers america s best doctors america s top agents kingdom creators mompreneurs couples of america builders of america legal titans life changers project beauty mindset masters love experts americas top contractors blue collar america america s authors america s top physicians doctors of america rise of her made it in america wealth makers beyond success american founders leading with purpose impact makers tv masters of innovation internet masters tv the following accepted source updates are inactive and must not be offered to new applicants americas top trainers live longer list membership confirms only current sales casting availability it does not by itself confirm that an episode has aired or is currently watchable product agnostic shows offers use or promote hold or pause verify current approved show list legacy makers women in power operation ceo america top lawyers best doctors agents kingdom creators mompreneurs couples of builders legal titans life changers project beauty mindset masters love experts americas contractors blue collar authors physicians rise her made it wealth beyond success american founders leading with purpose impact tv innovation internet trainers live longer",
+          "decision_key": "current-show-source-latest-approved-show-list-1",
+          "effective_at": "2026-07-15T18:52:49.638Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-07-20",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "Current approved ISTV show catalog",
+            "Compiled from 3 individually accepted show-status updates.",
+            "current approved ISTV show catalog",
+            "Use list membership only for current sales/casting availability; it does not prove that an episode has aired or is watchable."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        }
+      ],
+      "release_id": "kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0",
+      "prepared_at": "2026-07-20T19:10:05.573Z",
+      "prepared_by": "syed.haider@insidesuccess.com",
+      "candidate_ids": [
+        "kc_2e3bdf0a-94f9-4a7f-aa00-e02d25e7c94e",
+        "kc_27895be7-83c1-4b55-b64e-0ccffb2921f7",
+        "kc_2b1585c6-84fd-4efe-95e9-99012aed4059"
+      ],
+      "supersessions": [
+        {
+          "reason": "Exact-admin release kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0 approved the newer governed decision for current-show-source-latest-approved-show-list-1.",
+          "release_id": "kr_5cc0982c-e6f7-41e4-920a-03f1147dbbf0",
+          "decision_key": "current-show-source-latest-approved-show-list-1",
+          "effective_at": "2026-07-15T18:52:49.638Z",
+          "active_policy_ids": [
+            "kr_7ace400fcdf68db9"
+          ],
+          "superseded_policy_ids": [
+            "claim_45061abe2a61e6a0__a1",
+            "claim_8ec8d1d2bc04bb30"
+          ]
+        }
+      ],
+      "base_knowledge_version": "76d352e70fefd0f2",
+      "source_snapshot_hashes": [
+        "fabb127bbba8f8f6d7975e2494d5ffd33f6967d90fbe99b88076c806b9f70918"
+      ],
+      "resolved_blocked_topics": [],
+      "expected_knowledge_version": "8c8c677c1209f2d7"
+    }
+  ]
 }
