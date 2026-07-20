@@ -33,6 +33,7 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/runtime-selector.ts",
   "src/lib/ask-sales-faq/quality-review-store.ts",
   "src/lib/ask-sales-faq/policy-relevance.ts",
+  "src/lib/ask-sales-faq/knowledge-refresh-candidate-insert.ts",
   "src/lib/ask-sales-faq/knowledge-refresh-store.ts",
   "src/lib/ask-sales-faq/v3/provider.ts",
   "src/lib/ask-sales-faq/v3/admin-approved-releases.ts",
@@ -87,6 +88,7 @@ if (missingFiles.length === 0) {
   const qualityDecisionRoute = read("src/app/api/ask-sales-faq/admin/quality-review/cases/[caseId]/route.ts");
   const qualityReviewStore = read("src/lib/ask-sales-faq/quality-review-store.ts");
   const policyRelevance = read("src/lib/ask-sales-faq/policy-relevance.ts");
+  const knowledgeRefreshCandidateInsert = read("src/lib/ask-sales-faq/knowledge-refresh-candidate-insert.ts");
   const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
   const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
   const knowledgeRefreshGovernance = read("src/lib/ask-sales-faq/knowledge-refresh-governance.ts");
@@ -228,6 +230,18 @@ if (missingFiles.length === 0) {
       knowledgeRefreshStore.includes("combines more than one governed policy decision") &&
       knowledgeRefreshConsole.includes("formatMiamiDateTime"),
     "the queue explains refresh results and replacement lineage while one approval cannot cover several policy decisions",
+  );
+
+  addCheck(
+    "candidate staging generates one SQL value per governed column",
+    knowledgeRefreshStore.includes("buildKnowledgeRefreshCandidateInsert") &&
+      knowledgeRefreshStore.includes("values (${insert.valuesSql})") &&
+      knowledgeRefreshCandidateInsert.includes("KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS") &&
+      knowledgeRefreshCandidateInsert.includes("columns.map((column)") &&
+      knowledgeRefreshCandidateInsert.includes(".map((column, index)") &&
+      !knowledgeRefreshStore.includes("$37") &&
+      !knowledgeRefreshStore.includes("$38"),
+    "candidate columns, JSON casts, and parameters are generated from one ordered contract instead of hand-numbered placeholders",
   );
 
   addCheck(
