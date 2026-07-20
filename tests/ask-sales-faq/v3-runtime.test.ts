@@ -1337,8 +1337,8 @@ describe("Ask Sales FAQ V3 runtime", () => {
       const payload = JSON.parse(user) as Record<string, unknown>;
       if (purpose === "v3_semantic_recall") return { queries: ["current approved show list"] };
       if (purpose.startsWith("v3_evidence_selection")) {
-        const candidates = payload.candidates as Array<{ ref: string; title: string }>;
-        const target = candidates.find((card) => /approved show list|current show source/i.test(card.title));
+        const candidates = payload.candidates as Array<{ ref: string; decision_key: string }>;
+        const target = candidates.find((card) => card.decision_key === "current-show-source-latest-approved-show-list-1");
         return {
           needs: [{ text: "What is the current approved show list?" }],
           support: target ? [{ need_id: "N1", relation: "direct", refs: [target.ref], supported_claim: "The current approved show list.", reason: "The card is the requested show-list artifact." }] : [],

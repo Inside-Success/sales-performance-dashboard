@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -10,6 +10,7 @@ import {
   CircleDashed,
   ExternalLink,
   FileCheck2,
+  LoaderCircle,
   RefreshCw,
   Search,
   ShieldAlert,
@@ -60,6 +61,9 @@ type Overview = {
 
 type ReviewAction = "approve_content" | "reject" | "defer" | "needs_owner" | "duplicate" | "engineering_required";
 type BatchAction = Exclude<ReviewAction, "approve_content">;
+type ReleaseAction = "create_pull_requests" | "publish_verified_release";
+type UiMessage = { tone: "good" | "bad" | "info"; text: string };
+type BusyReleaseAction = { releaseId: string; action: ReleaseAction; startedAt: number };
 const subscribeToHydration = () => () => {};
 
 export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
@@ -68,10 +72,13 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const [releaseSelected, setReleaseSelected] = useState<string[]>([]);
   const [batchAction, setBatchAction] = useState<BatchAction>("defer");
   const [batchNote, setBatchNote] = useState("");
-  const [busyReleaseId, setBusyReleaseId] = useState<string | null>(null);
+  const [batchBusy, setBatchBusy] = useState(false);
+  const [governanceBusy, setGovernanceBusy] = useState(false);
+  const [busyReleaseAction, setBusyReleaseAction] = useState<BusyReleaseAction | null>(null);
   const [preparingRelease, setPreparingRelease] = useState(false);
   const [message, setMessage] = useState<{ tone: "good" | "bad"; text: string } | null>(null);
   const [releaseMessage, setReleaseMessage] = useState<{ tone: "good" | "bad"; text: string } | null>(null);
+  const [releaseActionNotice, setReleaseActionNotice] = useState<(UiMessage & { releaseId: string }) | null>(null);
   const cardsReady = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const [isPending, startTransition] = useTransition();
   const available = overview.sources.filter((source) => source.availability === "available" || source.availability === "replacement_active").length;
@@ -81,6 +88,23 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const selectedReadyCount = readyApproved.filter((candidate) => releaseSelected.includes(candidate.id)).length;
   const reviewable = overview.candidates.filter((candidate) => ["needs_review", "needs_owner", "deferred"].includes(candidate.status));
   const selectedCandidates = reviewable.filter((candidate) => reviewSelected.includes(candidate.id));
+  const hasServerReleaseInProgress = overview.releases.some((release) => ["creating_pull_requests", "publishing"].includes(release.status));
+  const busyReleaseRow = busyReleaseAction
+    ? overview.releases.find((release) => release.id === busyReleaseAction.releaseId)
+    : null;
+  const activeBusyReleaseAction = busyReleaseAction && (
+    !busyReleaseRow ||
+    Date.parse(busyReleaseRow.updated_at) <= busyReleaseAction.startedAt ||
+    ["creating_pull_requests", "publishing"].includes(busyReleaseRow.status)
+  ) ? busyReleaseAction : null;
+
+  useEffect(() => {
+    if (!activeBusyReleaseAction && !hasServerReleaseInProgress) return;
+    const timer = window.setTimeout(() => {
+      startTransition(() => router.refresh());
+    }, 3_000);
+    return () => window.clearTimeout(timer);
+  }, [activeBusyReleaseAction, hasServerReleaseInProgress, overview.generatedAt, router, startTransition]);
 
   function refresh() {
     startTransition(() => router.refresh());
@@ -111,10 +135,11 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   }
 
   async function applyBatchDecision() {
-    if (!selectedCandidates.length) return;
+    if (!selectedCandidates.length || batchBusy) return;
     const label = batchAction.replaceAll("_", " ");
     if (!window.confirm(`Record “${label}” for ${selectedCandidates.length} selected proposal${selectedCandidates.length === 1 ? "" : "s"}? This cannot approve or publish content.`)) return;
     setMessage(null);
+    setBatchBusy(true);
     try {
       const response = await fetch("/api/ask-sales-faq/admin/knowledge-refresh/candidates/batch", {
         method: "POST",
@@ -133,12 +158,16 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       refresh();
     } catch {
       setMessage({ tone: "bad", text: "The batch review server could not be reached. No decision was recorded." });
+    } finally {
+      setBatchBusy(false);
     }
   }
 
   async function recomputeGovernance() {
+    if (governanceBusy) return;
     if (!window.confirm("Recheck conflict labels for the current actionable queue against the deployed V3 registry? Candidate decisions and production knowledge will not change.")) return;
     setMessage(null);
+    setGovernanceBusy(true);
     try {
       const response = await fetch("/api/ask-sales-faq/admin/knowledge-refresh/maintenance", {
         method: "POST",
@@ -151,17 +180,19 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       refresh();
     } catch {
       setMessage({ tone: "bad", text: "Conflict labels could not be refreshed. Candidate decisions and production knowledge were untouched." });
+    } finally {
+      setGovernanceBusy(false);
     }
   }
 
-  async function runReleaseAction(release: KnowledgeRefreshReleaseRow, action: "create_pull_requests" | "publish_verified_release") {
+  async function runReleaseAction(release: KnowledgeRefreshReleaseRow, action: ReleaseAction) {
     const publishing = action === "publish_verified_release";
     const prompt = publishing
       ? "Publish this verified release? The publisher will recheck both repository release workflows, merge only passing pull requests, wait for the production deployment, and verify the exact knowledge version."
       : "Create synchronized governed release pull requests? This prepares reviewed Git changes and runs release checks, but it will not change production.";
     if (!window.confirm(prompt)) return;
-    setBusyReleaseId(release.id);
-    setMessage(null);
+    setBusyReleaseAction({ releaseId: release.id, action, startedAt: Date.now() });
+    setReleaseActionNotice(null);
     try {
       const response = await fetch(`/api/ask-sales-faq/admin/knowledge-refresh/releases/${encodeURIComponent(release.id)}`, {
         method: "POST",
@@ -169,18 +200,17 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         body: JSON.stringify({ action }),
       });
       const body = await response.json().catch(() => ({}));
-      if (!response.ok) return setMessage({ tone: "bad", text: body.message || "The governed release action failed safely. Production was not changed." });
-      setMessage({
-        tone: "good",
-        text: publishing
-          ? "Verified publication is running. Refresh shortly to see the production verification result."
-          : "Release pull requests are being created. Production remains unchanged until you use the separate final publish action.",
-      });
+      if (!response.ok) {
+        setBusyReleaseAction(null);
+        setReleaseActionNotice({ releaseId: release.id, tone: "bad", text: body.message || "The governed release action failed safely. Production was not changed." });
+        refresh();
+        return;
+      }
       refresh();
     } catch {
-      setMessage({ tone: "bad", text: "The governed publisher could not be reached. Production was not changed." });
-    } finally {
-      setBusyReleaseId(null);
+      setBusyReleaseAction(null);
+      setReleaseActionNotice({ releaseId: release.id, tone: "bad", text: "The governed publisher could not be reached. Production was not changed. You can safely retry this same step." });
+      refresh();
     }
   }
 
@@ -258,7 +288,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
               <h2 className="text-lg font-extrabold text-slate-950">Useful updates to review</h2>
               <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Each card is one proposed answer. If it is not useful, choose Ignore.</p>
             </div>
-            <button type="button" onClick={recomputeGovernance} className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50"><ShieldAlert className="size-3.5" /> Recheck conflict labels</button>
+            <button type="button" aria-busy={governanceBusy} disabled={governanceBusy} onClick={recomputeGovernance} className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60">{governanceBusy ? <LoaderCircle className="size-3.5 animate-spin" /> : <ShieldAlert className="size-3.5" />} {governanceBusy ? "Rechecking…" : "Recheck conflict labels"}</button>
           </div>
           <QueueFilters overview={overview} />
         </div>
@@ -269,7 +299,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
               <label className="inline-flex items-center gap-2 text-xs font-extrabold text-slate-700"><input type="checkbox" className="size-4 accent-red-600" checked={reviewable.length > 0 && reviewable.every((candidate) => reviewSelected.includes(candidate.id))} onChange={(event) => setReviewSelected(event.target.checked ? reviewable.map((candidate) => candidate.id) : [])} /> Select this page</label>
               <select value={batchAction} onChange={(event) => setBatchAction(event.target.value as BatchAction)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700"><option value="defer">Move out of active queue</option><option value="needs_owner">Needs policy owner</option><option value="duplicate">Mark duplicate</option><option value="engineering_required">Needs engineering</option><option value="reject">Reject proposal</option></select>
               <input value={batchNote} onChange={(event) => setBatchNote(event.target.value)} maxLength={2000} placeholder="Required audit note for the selected group" className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700" />
-              <button type="button" disabled={!selectedCandidates.length || !batchNote.trim()} onClick={applyBatchDecision} className="h-9 rounded-lg bg-slate-900 px-4 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:bg-slate-300">Apply to {selectedCandidates.length}</button>
+              <button type="button" aria-busy={batchBusy} disabled={batchBusy || !selectedCandidates.length || !batchNote.trim()} onClick={applyBatchDecision} className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:bg-slate-300">{batchBusy ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{batchBusy ? "Saving decisions…" : `Apply to ${selectedCandidates.length}`}</button>
             </div>
             <p className="mt-2 text-xs text-slate-500">Bulk approval is intentionally unavailable. Batch actions are version-checked, audited, and cannot publish knowledge.</p>
           </div>
@@ -299,7 +329,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">Only green, complete drafts can be selected. Red drafts can be corrected or closed here and never block green drafts. A test preview changes no chatbot answer.</p>
                 <p className="mt-2 text-xs font-bold text-slate-600">{readyApproved.length} ready · {approved.length - readyApproved.length} need correction</p>
               </div>
-              <button type="button" onClick={prepareRelease} disabled={!selectedReadyCount || preparingRelease} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:bg-slate-300"><FileCheck2 className="size-4" /> {preparingRelease ? "Checking…" : selectedReadyCount ? `Build test preview (${selectedReadyCount})` : "Select a green draft"}</button>
+              <button type="button" aria-busy={preparingRelease} onClick={prepareRelease} disabled={!selectedReadyCount || preparingRelease} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:bg-slate-300">{preparingRelease ? <LoaderCircle className="size-4 animate-spin" /> : <FileCheck2 className="size-4" />} {preparingRelease ? "Building and checking preview…" : selectedReadyCount ? `Build test preview (${selectedReadyCount})` : "Select a green draft"}</button>
             </div>
             <ol className="mt-4 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-4">
               <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">1. Select green drafts</span><br />Red drafts stay out.</li>
@@ -330,7 +360,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         </section>
       ) : null}
 
-      <ReleaseHistory releases={overview.releases} publishEnabled={overview.publishEnabled} busyReleaseId={busyReleaseId} onAction={runReleaseAction} />
+      <ReleaseHistory releases={overview.releases} publishEnabled={overview.publishEnabled} busyReleaseAction={activeBusyReleaseAction} releaseActionNotice={releaseActionNotice} onAction={runReleaseAction} />
     </>
   );
 }
@@ -481,29 +511,66 @@ function SourceCard({ source }: { source: KnowledgeRefreshSourceRow }) { const h
 function ReleaseHistory({
   releases,
   publishEnabled,
-  busyReleaseId,
+  busyReleaseAction,
+  releaseActionNotice,
   onAction,
 }: {
   releases: KnowledgeRefreshReleaseRow[];
   publishEnabled: boolean;
-  busyReleaseId: string | null;
-  onAction: (release: KnowledgeRefreshReleaseRow, action: "create_pull_requests" | "publish_verified_release") => void;
+  busyReleaseAction: BusyReleaseAction | null;
+  releaseActionNotice: (UiMessage & { releaseId: string }) | null;
+  onAction: (release: KnowledgeRefreshReleaseRow, action: ReleaseAction) => void;
 }) {
+  const anyReleaseBusy = Boolean(busyReleaseAction) || releases.some((release) => ["creating_pull_requests", "publishing"].includes(release.status));
   return <section className="magic-card overflow-hidden"><div className="border-b border-slate-100 p-5"><h2 className="text-lg font-extrabold text-slate-950">Release history and test previews</h2><p className="mt-1 text-sm text-slate-500">Open a preview to compare the current official answer with the proposed replacement. A preview alone never changes production.</p></div><div className="divide-y divide-slate-100">{releases.map((release, index) => {
     const faq = releasePr(release.publication, "faq");
     const dashboard = releasePr(release.publication, "dashboard");
     const preview = releasePreviewItems(release.manifest);
     const creatingAllowed = ["awaiting_final_publish", "publication_failed"].includes(release.status);
     const publishAllowed = ["prs_ready", "deployment_failed"].includes(release.status);
-    const busy = busyReleaseId === release.id || ["creating_pull_requests", "publishing"].includes(release.status);
+    const localAction = busyReleaseAction?.releaseId === release.id ? busyReleaseAction.action : null;
+    const serverAction = release.status === "creating_pull_requests"
+      ? "create_pull_requests"
+      : release.status === "publishing"
+        ? "publish_verified_release"
+        : null;
+    const activeAction = localAction || serverAction;
+    const busy = Boolean(activeAction);
+    const notice = releaseActionNotice?.releaseId === release.id ? releaseActionNotice : null;
+    const errorGuidance = release.last_error ? friendlyReleaseError(release.last_error) : null;
     return <article key={release.id} className="p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0"><div className="font-extrabold text-slate-800">{release.id}</div><div className="mt-1 text-xs text-slate-500">{release.candidate_ids.length} accepted draft{release.candidate_ids.length === 1 ? "" : "s"} · created by {release.created_by} · {formatDate(release.created_at)}</div>{faq || dashboard ? <div className="mt-2 flex flex-wrap gap-3 text-xs font-bold">{faq ? <a href={faq.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">FAQ source PR #{faq.number}</a> : null}{dashboard ? <a href={dashboard.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">Dashboard runtime PR #{dashboard.number}</a> : null}</div> : null}{release.last_error ? <p className="mt-2 max-w-3xl text-xs leading-5 text-red-700">{release.last_error}</p> : null}</div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2"><StatusBadge status={release.status} />{publishEnabled && creatingAllowed ? <button type="button" disabled={busy} onClick={() => onAction(release, "create_pull_requests")} className="h-9 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:opacity-50">Create release PRs</button> : null}{publishEnabled && publishAllowed ? <button type="button" disabled={busy} onClick={() => onAction(release, "publish_verified_release")} className="h-9 rounded-full bg-[#DC2626] px-3 text-xs font-extrabold text-white hover:bg-red-700 disabled:opacity-50">{release.status === "deployment_failed" ? "Retry verification" : "Publish verified release"}</button> : null}</div>
+        <div className="min-w-0"><div className="font-extrabold text-slate-800">{release.id}</div><div className="mt-1 text-xs text-slate-500">{release.candidate_ids.length} accepted draft{release.candidate_ids.length === 1 ? "" : "s"} · created by {release.created_by} · {formatDate(release.created_at)}</div>{faq || dashboard ? <div className="mt-2 flex flex-wrap gap-3 text-xs font-bold">{faq ? <a href={faq.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">FAQ source PR #{faq.number}</a> : null}{dashboard ? <a href={dashboard.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">Dashboard runtime PR #{dashboard.number}</a> : null}</div> : null}</div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2"><StatusBadge status={release.status} />{publishEnabled && creatingAllowed ? <button type="button" aria-busy={activeAction === "create_pull_requests"} disabled={anyReleaseBusy} onClick={() => onAction(release, "create_pull_requests")} className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50">{activeAction === "create_pull_requests" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "create_pull_requests" ? "Creating PRs…" : "Create release PRs"}</button> : null}{publishEnabled && publishAllowed ? <button type="button" aria-busy={activeAction === "publish_verified_release"} disabled={anyReleaseBusy} onClick={() => onAction(release, "publish_verified_release")} className="inline-flex h-9 items-center gap-2 rounded-full bg-[#DC2626] px-3 text-xs font-extrabold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-50">{activeAction === "publish_verified_release" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "publish_verified_release" ? "Checking and publishing…" : release.last_error ? "Retry publish checks" : release.status === "deployment_failed" ? "Retry verification" : "Publish verified release"}</button> : null}</div>
       </div>
+      {busy ? (
+        <div aria-live="polite" aria-busy="true" className="mt-4 flex gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
+          <LoaderCircle className="mt-0.5 size-5 shrink-0 animate-spin" />
+          <div><div className="font-extrabold">{activeAction === "create_pull_requests" ? "Creating release pull requests…" : "Verifying checks and publishing…"}</div><p className="mt-1">This can take a few minutes. Keep this page open; it refreshes automatically, and the button stays disabled until the step finishes.</p></div>
+        </div>
+      ) : notice ? (
+        <div role={notice.tone === "bad" ? "alert" : "status"} aria-live="polite" className={`mt-4 rounded-xl border p-4 text-sm font-semibold leading-6 ${notice.tone === "bad" ? "border-red-200 bg-red-50 text-red-800" : notice.tone === "good" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-blue-200 bg-blue-50 text-blue-900"}`}>{notice.text}</div>
+      ) : errorGuidance ? (
+        <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800"><div className="font-extrabold">This step stopped safely</div><p className="mt-1">{errorGuidance}</p><details className="mt-2 text-xs text-red-700"><summary className="cursor-pointer font-bold">Technical detail</summary><p className="mt-1">{release.last_error}</p></details></div>
+      ) : release.status === "prs_ready" ? (
+        <div role="status" className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><span className="font-extrabold">Pull requests created.</span> Wait for both governed checks to turn green, then click Publish verified release. Production is unchanged until that final verification succeeds.</div>
+      ) : release.status === "production_verified" ? (
+        <div role="status" className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-800"><span className="font-extrabold">Production verified.</span> The exact approved knowledge version is live.</div>
+      ) : null}
       {preview.length ? <details open={index === 0 && release.status === "awaiting_final_publish"} className="mt-4 rounded-xl border border-blue-200 bg-blue-50/40 p-4"><summary className="cursor-pointer text-sm font-extrabold text-blue-900">View test preview ({preview.length} compiled polic{preview.length === 1 ? "y" : "ies"})</summary><div className="mt-4 space-y-4">{preview.map((item, previewIndex) => <article key={`${item.title}-${previewIndex}`} className="rounded-xl border border-slate-200 bg-white p-4"><h3 className="font-extrabold text-slate-900">{item.title}</h3><div className="mt-3 grid gap-3 lg:grid-cols-2"><div className="rounded-lg border border-slate-200 bg-slate-50 p-3"><div className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Current official answer</div>{item.currentOfficialAnswers.length ? <div className="mt-2 space-y-3">{item.currentOfficialAnswers.map((answer, answerIndex) => <div key={`${answer.title}-${answerIndex}`}><div className="text-xs font-extrabold text-slate-700">{answer.title}</div><p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600">{answer.decision}</p></div>)}</div> : <p className="mt-2 text-xs leading-5 text-slate-600">No current policy will be removed. This is a new governed answer.</p>}</div><div className="rounded-lg border border-emerald-200 bg-emerald-50/30 p-3"><div className="text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">Proposed official answer</div><p className="mt-2 whitespace-pre-wrap text-xs font-semibold leading-5 text-slate-700">{item.proposedAnswer}</p></div></div></article>)}</div><p className="mt-4 text-xs font-semibold text-blue-900">Preview only: production is unchanged. Continue only if this comparison is correct.</p></details> : null}
     </article>;
   })}{!releases.length ? <div className="p-6 text-sm text-slate-500">No release has been prepared yet.</div> : null}</div></section>;
+}
+
+function friendlyReleaseError(error: string | null) {
+  if (!error) return "The release step did not finish. Production is unchanged, and this same step can be retried safely.";
+  if (/dashboard governed release check is not complete and successful/i.test(error)) {
+    return "The dashboard safety check did not pass, so publishing stopped before any merge. Production is unchanged. Open the Dashboard runtime PR, wait for its governed check to turn green, then click Retry publish checks. You do not need to rebuild the preview or recreate the pull requests.";
+  }
+  if (/faq governed release check is not complete and successful/i.test(error)) {
+    return "The FAQ safety check did not pass, so publishing stopped before any merge. Production is unchanged. Open the FAQ source PR, wait for its governed check to turn green, then click Retry publish checks. You do not need to rebuild the preview or recreate the pull requests.";
+  }
+  return `${error} Production is unchanged. Review the linked pull requests, then retry this same step when the issue is resolved.`;
 }
 
 type ReleasePreviewItem = {
@@ -547,7 +614,18 @@ function releasePr(publication: Record<string, unknown>, key: "faq" | "dashboard
 function Metric({ label, value, tone }: { label: string; value: string | number; tone: "default" | "good" | "warning" }) { const color = tone === "good" ? "text-emerald-600" : tone === "warning" ? "text-amber-600" : "text-slate-950"; return <article className="magic-card p-4"><div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</div><div className={`mt-3 text-3xl font-extrabold ${color}`}>{value}</div></article>; }
 function Detail({ label, value }: { label: string; value: string }) { return <div><div className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{label}</div><p className="mt-1 text-sm leading-6 text-slate-600">{value}</p></div>; }
 function ActionButton({ disabled, onClick, label }: { disabled: boolean; onClick: () => void; label: string }) { return <button type="button" disabled={disabled} onClick={onClick} className="h-9 rounded-lg border border-slate-200 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:opacity-50">{label}</button>; }
-function StatusBadge({ status }: { status: string }) { return <Badge variant="outline" className="w-fit border-slate-200 bg-slate-50 text-slate-700">{status.replaceAll("_", " ")}</Badge>; }
+function StatusBadge({ status }: { status: string }) {
+  const labels: Record<string, string> = {
+    awaiting_final_publish: "Preview ready",
+    creating_pull_requests: "Creating PRs",
+    prs_ready: "PRs created",
+    publishing: "Verifying release",
+    production_verified: "Production verified",
+    publication_failed: "PR creation failed",
+    deployment_failed: "Verification stopped",
+  };
+  return <Badge variant="outline" className="w-fit border-slate-200 bg-slate-50 text-slate-700">{labels[status] || status.replaceAll("_", " ")}</Badge>;
+}
 function ConflictBadge({ level }: { level: KnowledgeRefreshCandidateRow["conflict_level"] }) { const color = level === "none" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : level === "possible" ? "border-amber-200 bg-amber-50 text-amber-700" : "border-red-200 bg-red-50 text-red-700"; const Icon = level === "none" ? ShieldCheck : level === "possible" ? ShieldAlert : AlertTriangle; return <Badge variant="outline" className={color}><Icon className="mr-1 size-3" />{level} conflict</Badge>; }
 function RunStat({ label, value, tone = "default" }: { label: string; value: number; tone?: "default" | "warning" }) {
   return <div className={`rounded-xl border p-3 ${tone === "warning" ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50"}`}><div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</div><div className={`mt-2 text-xl font-extrabold ${tone === "warning" ? "text-amber-700" : "text-slate-900"}`}>{value}</div></div>;

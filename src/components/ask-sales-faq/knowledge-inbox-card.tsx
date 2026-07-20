@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, ExternalLink, HelpCircle, ShieldAlert } from "lucide-react";
+import { CheckCircle2, ExternalLink, HelpCircle, LoaderCircle, ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type {
   KnowledgeRefreshCandidateRow,
@@ -27,7 +27,7 @@ export function KnowledgeInboxCard({
   const [resolution, setResolution] = useState<KnowledgeRefreshConflictResolution | "">(
     candidate.conflict_resolution || "",
   );
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<ReviewAction | null>(null);
   const canReview = ["needs_review", "needs_owner", "deferred"].includes(candidate.status);
   const policyEdited = policy.trim() !== candidate.proposed_policy.trim();
   const unresolvedWording = hasUnresolvedPolicyWording(policy);
@@ -54,7 +54,7 @@ export function KnowledgeInboxCard({
       duplicate: "ignore this item as non-actionable or duplicate",
     };
     if (!window.confirm(`Do you want to ${labels[action]}? Nothing will be published to the chatbot yet.`)) return;
-    setBusy(true);
+    setBusyAction(action);
     try {
       const response = await fetch(
         `/api/ask-sales-faq/admin/knowledge-refresh/candidates/${encodeURIComponent(candidate.id)}`,
@@ -80,7 +80,7 @@ export function KnowledgeInboxCard({
     } catch {
       onDone("The review server could not be reached. No decision was saved.", "bad");
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -194,18 +194,19 @@ export function KnowledgeInboxCard({
             <p className="text-xs leading-5 text-slate-500">Use this only for who confirmed the decision, scope, or reasoning. Edit Final chatbot rule above when the answer itself must change.</p>
             <button
               type="button"
-              disabled={busy || !canAccept}
+              aria-busy={busyAction === "approve_content"}
+              disabled={Boolean(busyAction) || !canAccept}
               onClick={() => act("approve_content")}
               className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 text-sm font-extrabold text-white disabled:bg-slate-300"
             >
-              <CheckCircle2 className="size-4" /> {policyEdited ? "Save edit and accept" : "Accept update"}
+              {busyAction === "approve_content" ? <LoaderCircle className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} {busyAction === "approve_content" ? "Saving accepted draft…" : policyEdited ? "Save edit and accept" : "Accept update"}
             </button>
             {candidate.candidate_kind === "knowledge_gap" ? (
               <p className="text-xs leading-5 text-slate-500">A question without an official answer cannot be accepted as policy. Ask for confirmation instead.</p>
             ) : null}
-            <button type="button" disabled={busy} onClick={() => act("reject", "existing_remains")} className="h-9 w-full rounded-lg border border-slate-200 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Keep current answer</button>
-            <button type="button" disabled={busy} onClick={() => act("needs_owner", "owner_needed")} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-amber-200 text-xs font-extrabold text-amber-800 hover:bg-amber-50"><HelpCircle className="size-4" /> Needs confirmation</button>
-            <button type="button" disabled={busy} onClick={() => act("duplicate")} className="h-9 w-full rounded-lg border border-slate-200 text-xs font-extrabold text-slate-500 hover:bg-slate-50">Ignore</button>
+            <button type="button" aria-busy={busyAction === "reject"} disabled={Boolean(busyAction)} onClick={() => act("reject", "existing_remains")} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50">{busyAction === "reject" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{busyAction === "reject" ? "Saving decision…" : "Keep current answer"}</button>
+            <button type="button" aria-busy={busyAction === "needs_owner"} disabled={Boolean(busyAction)} onClick={() => act("needs_owner", "owner_needed")} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-amber-200 text-xs font-extrabold text-amber-800 hover:bg-amber-50 disabled:cursor-wait disabled:opacity-50">{busyAction === "needs_owner" ? <LoaderCircle className="size-3.5 animate-spin" /> : <HelpCircle className="size-4" />} {busyAction === "needs_owner" ? "Saving decision…" : "Needs confirmation"}</button>
+            <button type="button" aria-busy={busyAction === "duplicate"} disabled={Boolean(busyAction)} onClick={() => act("duplicate")} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-extrabold text-slate-500 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50">{busyAction === "duplicate" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{busyAction === "duplicate" ? "Saving decision…" : "Ignore"}</button>
             <p className="text-xs leading-5 text-slate-500">Accepting only creates a reviewed draft. It does not change the live chatbot.</p>
           </aside>
         ) : (

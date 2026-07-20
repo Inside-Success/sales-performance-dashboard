@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, HelpCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle2, HelpCircle, LoaderCircle, ShieldCheck } from "lucide-react";
 
 import { hasUnresolvedPolicyWording } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
 import type {
@@ -23,7 +23,7 @@ export function ApprovedDraftCorrection({
   const [resolution, setResolution] = useState<KnowledgeRefreshConflictResolution | "">(
     candidate.conflict_resolution || "",
   );
-  const [busy, setBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState<CorrectionAction | null>(null);
   const policyEdited = policy.trim() !== candidate.proposed_policy.trim();
   const unresolvedWording = hasUnresolvedPolicyWording(policy);
   const hardConflict = candidate.conflict_level === "direct" || candidate.conflict_level === "blocked";
@@ -38,7 +38,7 @@ export function ApprovedDraftCorrection({
       needs_owner: "Send this proposal back for confirmation? Production will remain unchanged.",
     };
     if (!window.confirm(prompts[action])) return;
-    setBusy(true);
+    setBusyAction(action);
     try {
       const response = await fetch(
         `/api/ask-sales-faq/admin/knowledge-refresh/candidates/${encodeURIComponent(candidate.id)}`,
@@ -72,7 +72,7 @@ export function ApprovedDraftCorrection({
     } catch {
       onDone("The review server could not be reached. Nothing was changed.", "bad");
     } finally {
-      setBusy(false);
+      setBusyAction(null);
     }
   }
 
@@ -140,28 +140,31 @@ export function ApprovedDraftCorrection({
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
-          disabled={busy || !canSave}
+          aria-busy={busyAction === "approve_content"}
+          disabled={Boolean(busyAction) || !canSave}
           onClick={() => act("approve_content")}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:bg-slate-300"
         >
-          <CheckCircle2 className="size-4" /> Save corrected draft
+          {busyAction === "approve_content" ? <LoaderCircle className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />} {busyAction === "approve_content" ? "Saving correction…" : "Save corrected draft"}
         </button>
         <button
           type="button"
-          disabled={busy || !canKeepCurrent}
+          aria-busy={busyAction === "reject"}
+          disabled={Boolean(busyAction) || !canKeepCurrent}
           onClick={() => act("reject")}
           className="h-10 rounded-lg border border-slate-300 px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Keep current answer
+          {busyAction === "reject" ? <span className="inline-flex items-center gap-2"><LoaderCircle className="size-3.5 animate-spin" /> Saving decision…</span> : "Keep current answer"}
         </button>
       </div>
       <button
         type="button"
-        disabled={busy}
+        aria-busy={busyAction === "needs_owner"}
+        disabled={Boolean(busyAction)}
         onClick={() => act("needs_owner")}
         className="mt-2 inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-amber-200 text-xs font-extrabold text-amber-800 hover:bg-amber-50 disabled:opacity-40"
       >
-        <HelpCircle className="size-4" /> Needs confirmation
+        {busyAction === "needs_owner" ? <LoaderCircle className="size-4 animate-spin" /> : <HelpCircle className="size-4" />} {busyAction === "needs_owner" ? "Saving decision…" : "Needs confirmation"}
       </button>
     </section>
   );
