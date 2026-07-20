@@ -1,0 +1,37 @@
+name: Ask Sales dashboard governed release checks
+
+on:
+  pull_request:
+    paths:
+      - "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json"
+      - "src/lib/ask-sales-faq/v3/admin-approved-releases.ts"
+      - "src/lib/ask-sales-faq/v3/retrieval.ts"
+      - "src/lib/ask-sales-faq/knowledge-refresh-governance.ts"
+      - ".github/workflows/ask-sales-release-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-governed-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+      - run: npm ci
+      - name: Ask Sales tests
+        run: npm run test:ask-sales-faq
+      - name: Ask Sales static safety validator
+        run: node scripts/validate-ask-sales-faq.mjs
+      - name: TypeScript
+        run: npx tsc --noEmit
+      - name: Scoped ESLint
+        run: npx eslint src/app/ask-sales-faq src/app/api/ask-sales-faq src/components/ask-sales-faq src/lib/ask-sales-faq tests/ask-sales-faq --max-warnings=0
+      - name: Production build
+        run: npm run build
