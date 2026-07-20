@@ -2,7 +2,21 @@
 
 Date: 2026-07-14
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
+
+## 2026-07-21 release progress and governed-check repair
+
+The first three-draft show-catalog release stopped safely before any merge because the Dashboard runtime PR's governed check failed. The FAQ source PR passed. The compiled release content was valid; the dashboard check had two stale test assumptions: one compared the materialized registry version with the frozen base-registry version, and one selected the current-show catalog by changeable display-title wording instead of its stable `decision_key`.
+
+The compatibility repair preserves all publication gates and changes no chatbot answer by itself:
+
+- Runtime and governance tests now treat the version of the fully materialized registry as the deployed knowledge version while preserving the frozen base registry.
+- The current-show regression selects the governed catalog by `current-show-source-latest-approved-show-list-1`, so an admin-approved title change cannot make the safety test lose the correct policy.
+- Review, correction, batch, conflict-recheck, preview, PR-creation, and final-publication buttons show an in-place spinner and action-specific text while work is running.
+- Long-running PR and publish operations refresh their release row automatically. Their progress, safe-stop explanation, retry instruction, and technical detail remain beside the exact release instead of appearing only at the top of the page.
+- Release statuses use admin-facing labels such as `PRs created`, `Verifying release`, `Verification stopped`, and `Production verified`.
+
+The repair and the exact immutable three-draft release were each validated with 235/235 Ask Sales tests, 106/106 static safety checks, ESLint with zero warnings, TypeScript, and an optimized Next.js production build. A failed check still prevents every merge and production change; the release is live only when its dashboard row says `Production verified`.
 
 ## 2026-07-20 reviewer-correction repair
 
@@ -146,9 +160,9 @@ The admin page now defaults to the actionable Daily Knowledge Inbox and provides
 
 ## Publication boundary
 
-Content approval does not change production. `Prepare release` creates an immutable manifest and records the required compiler, test, diff, deployment, signed-in QA, error-log, and rollback checks.
+Content approval does not change production. `Build test preview` creates an immutable manifest and records the required compiler and diff checks. `Create release PRs` is a separate exact-admin action that asks the dedicated n8n publisher to create synchronized FAQ-source and dashboard-runtime pull requests. `Publish verified release` is another separate exact-admin action; it rechecks both exact PR heads, requires both governed checks to succeed, merges only those verified heads, waits for production deployment, and verifies the exact expected knowledge version before recording success.
 
-Direct one-click Git publication is intentionally disabled until a dedicated, repository-scoped GitHub automation identity exists and the end-to-end governed compiler/deployment/rollback path is proven. Reusing a broad personal GitHub token or an unrelated n8n credential is prohibited. Until that final integration is supplied and validated, a prepared manifest must go through the existing reviewed Git release process.
+The repository-scoped GitHub credential remains only in the dedicated Inside Success n8n publisher. It is not available to the dashboard or browser. Single-use, expiring action claims, an allowlisted webhook, immutable release hashes, exact-head verification, and fail-closed deployment checks prevent an approval or preview from bypassing human publication control. Any failed or incomplete check stops safely with production unchanged and can be retried from the same release row; the admin does not need to rebuild the preview or recreate already-valid pull requests.
 
 ## Current production state
 

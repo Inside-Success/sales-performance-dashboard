@@ -185,6 +185,18 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
+    "long-running admin actions show local progress and safe inline release guidance",
+    knowledgeRefreshConsole.includes("busyReleaseAction") &&
+      knowledgeRefreshConsole.includes("LoaderCircle") &&
+      knowledgeRefreshConsole.includes("it refreshes automatically") &&
+      knowledgeRefreshConsole.includes("This step stopped safely") &&
+      knowledgeRefreshConsole.includes("Retry publish checks") &&
+      knowledgeInboxCard.includes("Saving decision…") &&
+      approvedDraftCorrection.includes("Saving correction…"),
+    "review, preview, PR, and publish controls visibly stay busy while release history refreshes and failures remain beside the affected release",
+  );
+
+  addCheck(
     "publisher credential stays out of the dashboard and outbound webhook is host-allowlisted",
     !knowledgeRefreshStore.includes("github_pat_") &&
       !knowledgeRefreshStore.includes("api.github.com") &&

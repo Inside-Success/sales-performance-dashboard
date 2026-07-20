@@ -69,7 +69,6 @@ describe("Ask Sales knowledge-refresh governance", () => {
   it("uses the deployed registry version and never grants raw discovery sources authority", () => {
     const context = buildKnowledgeRefreshAnalysisContext("Roku Fire Stick Apple TV availability");
     expect(context.knowledgeVersion).toBe(getKnowledgeRefreshRegistryVersion());
-    expect(context.knowledgeVersion).toBe(registryJson.knowledge_version);
     expect(context.authorityRule).toContain("Human approval");
   });
 
