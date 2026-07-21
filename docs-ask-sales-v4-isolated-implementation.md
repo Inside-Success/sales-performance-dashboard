@@ -8,7 +8,7 @@ Status: **implemented and verified in a separate protected Vercel Preview, but i
 
 The post-launch V4 recommendation has been implemented as a clean-room evaluation path. The existing V3 production selector, normal Ask Sales API, production page, Neon data, conversations, feedback, source-review workflows, governed publisher, and production deployment were not changed.
 
-The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. It is not a production cutover branch. Merge and production promotion remain separate future decisions.
+The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. It is published as draft dashboard PR [#70](https://github.com/Inside-Success/sales-performance-dashboard/pull/70). It is not a production cutover branch. Merge and production promotion remain separate future decisions.
 
 ## Why This Is Not A Simple Pinecone Migration
 
@@ -94,7 +94,9 @@ No local development server was started.
 - Scoped ESLint: passed with zero warnings.
 - Optimized Next.js production build: passed and included only the two new isolated routes in addition to existing routes.
 - `git diff --check`: passed.
-- Production-dependency audit: 2 low, 4 moderate, 3 high, 0 critical; this matches the recorded production-base count, and no automatic audit fix was run.
+- Independent clean-install parity on Node 22.13.1/npm 10.9.2: fresh `npm ci`, 338 tests, 107 static checks, 10 isolation checks, TypeScript, exact scoped ESLint, and the optimized build all passed without starting a server.
+- The clean install exposed a critical advisory limited to Vitest 3.2.4's optional UI server. Vitest was patched to 3.2.7 and the entire verification matrix passed again; no Vitest/UI server was run.
+- Final full and production-dependency audits both report 2 low, 4 moderate, 3 high, 0 critical. The production count matches the recorded base count, and no automatic audit fix was run.
 
 Final historical launch replay artifact (ignored/local only):
 
@@ -116,7 +118,9 @@ A manual review of all answer/partial outputs found no explicit unsupported fact
 - Normal `/ask-sales-faq` does not import or link the lab.
 - Shared V3 provider code and tests were restored exactly to the branch baseline; V4 provider transport lives only in the V4 namespace.
 - The isolated project contains only one final Preview deployment. Two earlier empty placeholder deployments, including an accidental Production-target 404 shell, were removed from the isolated project.
-- Production project `prj_DwQt5q1eNv9WZwwc1IIa5zQvIH5e`, its alias, and production deployment were not redeployed or reconfigured by the V4 lab.
+- Before GitHub publication, production project `prj_DwQt5q1eNv9WZwwc1IIa5zQvIH5e` temporarily received an exact experimental-branch ignored-build command. It was locally proven to return skip only for `agent/ask-sales-v4-isolated-2026-07-21`, then restored to its original `null` value immediately after publication.
+- Vercel attempted branch deployment `dpl_DTL8ZcRARUQVMcQcAtCEDC7KpKSR`, but the already-known Preview resource-provisioning boundary failed before any application build. Production `main` remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`, and production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`.
+- The production alias was not moved, no production deployment was created, and no lasting production-project reconfiguration remains.
 - No Slack, Google, n8n, Neon, or production API write was made.
 
 ## Honest Readiness Assessment
