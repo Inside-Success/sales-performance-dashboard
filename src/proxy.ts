@@ -2,16 +2,35 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 const PUBLIC_PATHS = new Set(["/sign-in"]);
+const V4_LAB_PATH = "/ask-sales-faq/v4-lab";
+export const V4_LAB_REQUEST_HEADER = "x-ask-sales-v4-lab-request";
+
+export function isV4LabAuthBypassEnabled(pathname: string) {
+  return pathname === V4_LAB_PATH &&
+    process.env.ASK_SALES_V4_ISOLATED === "true" &&
+    process.env.VERCEL_ENV === "preview";
+}
+
+function continueRequest(requestHeaders: Headers, markV4Lab = false) {
+  const headers = new Headers(requestHeaders);
+  headers.delete(V4_LAB_REQUEST_HEADER);
+  if (markV4Lab) headers.set(V4_LAB_REQUEST_HEADER, "1");
+  return NextResponse.next({ request: { headers } });
+}
 
 export const proxy = auth((request) => {
   const { nextUrl } = request;
+
+  if (isV4LabAuthBypassEnabled(nextUrl.pathname)) {
+    return continueRequest(request.headers, true);
+  }
 
   if (PUBLIC_PATHS.has(nextUrl.pathname)) {
     if (request.auth?.user && !nextUrl.searchParams.get("error")) {
       return NextResponse.redirect(new URL("/", nextUrl));
     }
 
-    return NextResponse.next();
+    return continueRequest(request.headers);
   }
 
   if (!request.auth?.user) {
@@ -20,7 +39,7 @@ export const proxy = auth((request) => {
     return NextResponse.redirect(signInUrl);
   }
 
-  return NextResponse.next();
+  return continueRequest(request.headers);
 });
 
 export const config = {

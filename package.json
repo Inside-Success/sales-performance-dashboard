@@ -8,13 +8,18 @@
     "start": "next start",
     "lint": "eslint",
     "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
+    "test:ask-sales-faq:v4": "vitest run tests/ask-sales-faq/v4-*.test.ts",
+    "validate:ask-sales-faq:v4:isolation": "node scripts/validate-ask-sales-v4-isolation.mjs",
     "smoke:ask-sales-quality-review": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-quality-review.ts",
     "benchmark:ask-sales-faq:v3": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v3.ts",
-    "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs"
+    "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs",
+    "benchmark:ask-sales-faq:v4:paired": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v4-paired.ts",
+    "export:ask-sales-faq:v4:launch-log": "vite-node --config vitest.config.ts scripts/export-ask-sales-v4-launch-log.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@neondatabase/serverless": "^1.1.0",
+    "ai": "^7.0.34",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
