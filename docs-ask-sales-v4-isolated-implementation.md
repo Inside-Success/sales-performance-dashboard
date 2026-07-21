@@ -119,7 +119,7 @@ A manual review of all answer/partial outputs found no explicit unsupported fact
 - Shared V3 provider code and tests were restored exactly to the branch baseline; V4 provider transport lives only in the V4 namespace.
 - The isolated project contains only one final Preview deployment. Two earlier empty placeholder deployments, including an accidental Production-target 404 shell, were removed from the isolated project.
 - Before GitHub publication, production project `prj_DwQt5q1eNv9WZwwc1IIa5zQvIH5e` temporarily received an exact experimental-branch ignored-build command. It was locally proven to return skip only for `agent/ask-sales-v4-isolated-2026-07-21`, then restored to its original `null` value immediately after publication.
-- Vercel attempted branch deployment `dpl_DTL8ZcRARUQVMcQcAtCEDC7KpKSR`, but the already-known Preview resource-provisioning boundary failed before any application build. Production `main` remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`, and production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`.
+- Vercel Git publication produced branch Preview records, including `dpl_DTL8ZcRARUQVMcQcAtCEDC7KpKSR` and `dpl_AwQX6f5xdB4PFTFXBYwCdq3dNdXB`; each observed record stopped at the already-known resource-provisioning boundary before any application build. Production `main` remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`, and production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`.
 - The production alias was not moved, no production deployment was created, and no lasting production-project reconfiguration remains.
 - No Slack, Google, n8n, Neon, or production API write was made.
 
