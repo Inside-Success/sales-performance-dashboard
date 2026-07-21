@@ -1058,6 +1058,8 @@ function validatorPrompt(composition: V4Composition, plan: V4AnswerPlan, candida
       "Formatting-equivalent numbers are equal: $20k equals $20,000 and $2.5k equals $2,500.",
       "A sentence with any unsupported clause is unsupported. Do not rewrite it and do not approve it because it sounds plausible.",
       "For each supported sentence, evidence_refs must contain at least one evidence ID from that sentence_audit and no ID outside that packet.",
+      "Sentence-check status must be exactly supported, unsupported, or irrelevant. Need-check status must be exactly answered, partial, or unresolved.",
+      "Return exactly one sentence_check for every supplied sentence_id and exactly one need_check for every supplied need_id. Do not omit, duplicate, rename, or add IDs.",
       "Return {sentence_checks:[{sentence_id,status,evidence_refs,reason}],need_checks:[{need_id,status,reason}],reason}.",
     ].join("\n"),
     user: JSON.stringify({
@@ -1067,29 +1069,46 @@ function validatorPrompt(composition: V4Composition, plan: V4AnswerPlan, candida
   };
 }
 
-function parseValidator(content: string) {
+function parseValidator(content: string, expectedSentenceIds: string[], expectedNeedIds: string[]) {
   const raw = parseV3Json<Record<string, unknown>>(content);
   if (!Array.isArray(raw.sentence_checks)) throw new Error("V4 validator omitted sentence checks");
+  if (!Array.isArray(raw.need_checks)) throw new Error("V4 validator omitted need checks");
   const checks = raw.sentence_checks.slice(0, 20).flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const entry = item as Record<string, unknown>;
     const sentenceId = clean(entry.sentence_id, 40);
     if (!sentenceId) return [];
-    const status = ["supported", "unsupported", "irrelevant"].includes(String(entry.status))
-      ? String(entry.status) as "supported" | "unsupported" | "irrelevant"
-      : "unsupported";
+    if (!["supported", "unsupported", "irrelevant"].includes(String(entry.status))) {
+      throw new Error("V4 validator returned an invalid sentence-check status");
+    }
+    const status = String(entry.status) as "supported" | "unsupported" | "irrelevant";
     return [{ sentenceId, status, evidenceRefs: stringArray(entry.evidence_refs, 8), reason: clean(entry.reason, 500) }];
   });
-  const needChecks = Array.isArray(raw.need_checks) ? raw.need_checks.slice(0, 12).flatMap((item) => {
+  const needChecks = raw.need_checks.slice(0, 12).flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const entry = item as Record<string, unknown>;
     const needId = clean(entry.need_id, 40);
     if (!needId) return [];
-    const status = ["answered", "partial", "unresolved"].includes(String(entry.status))
-      ? String(entry.status) as "answered" | "partial" | "unresolved"
-      : "unresolved";
+    if (!["answered", "partial", "unresolved"].includes(String(entry.status))) {
+      throw new Error("V4 validator returned an invalid need-check status");
+    }
+    const status = String(entry.status) as "answered" | "partial" | "unresolved";
     return [{ needId, status, reason: clean(entry.reason, 500) }];
-  }) : [];
+  });
+  const exactIds = (actual: string[], expected: string[], label: string) => {
+    const actualSet = new Set(actual);
+    const expectedSet = new Set(expected);
+    if (
+      actual.length !== actualSet.size ||
+      actual.length !== expected.length ||
+      actual.some((id) => !expectedSet.has(id)) ||
+      expected.some((id) => !actualSet.has(id))
+    ) {
+      throw new Error(`V4 validator must return exactly one ${label} for every supplied ID`);
+    }
+  };
+  exactIds(checks.map((check) => check.sentenceId), expectedSentenceIds, "sentence check");
+  exactIds(needChecks.map((check) => check.needId), expectedNeedIds, "need check");
   return { checks, needChecks, reason: clean(raw.reason, 700) };
 }
 
@@ -1114,7 +1133,15 @@ async function validateComposition(input: {
   if (!input.allowModelValidationBypass && input.composition.sentences.length) {
     try {
       const prompt = validatorPrompt(input.composition, input.plan, input.candidates);
-      const result = await input.provider({ purpose: "v4_claim_validation", system: prompt.system, user: prompt.user, maxTokens: 1800, parse: parseValidator });
+      const expectedSentenceIds = input.composition.sentences.map((sentence) => sentence.id);
+      const expectedNeedIds = input.plan.needs.filter((need) => need.lane === "answer").map((need) => need.id);
+      const result = await input.provider({
+        purpose: "v4_claim_validation",
+        system: prompt.system,
+        user: prompt.user,
+        maxTokens: 1800,
+        parse: (content) => parseValidator(content, expectedSentenceIds, expectedNeedIds),
+      });
       input.attempts.push(...result.attempts);
       modelChecks = new Map(result.output.checks.map((check) => [check.sentenceId, check]));
       modelNeedChecks = new Map(result.output.needChecks.map((check) => [check.needId, check]));

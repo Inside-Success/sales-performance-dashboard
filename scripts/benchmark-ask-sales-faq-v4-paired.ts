@@ -7,11 +7,23 @@ import { parseV3Json } from "../src/lib/ask-sales-faq/v3/provider";
 import { getMaterializedV3Registry } from "../src/lib/ask-sales-faq/v3/admin-approved-releases";
 import {
   evaluateV4PromotionGate,
+  inferV4ComparisonMode,
+  parseV4HumanScoreBundle,
   parseV4SystemJudgeScore,
   summarizeV4PairedEvaluation,
+  summarizeV4Runs,
+  type V4HumanScoreBundle,
+  type V4HumanScoreRecord,
   type V4PairedEvaluationItem,
   type V4SystemJudgeScore,
 } from "../src/lib/ask-sales-faq/v4/evaluation";
+import {
+  parseV4AdjudicationProvenance,
+  parseV4GoldNeeds,
+  type V4AdjudicationProvenance,
+  type V4GoldNeed,
+  type V4GoldReferenceCatalog,
+} from "../src/lib/ask-sales-faq/v4/adjudication";
 import { runAskSalesFaqV4 } from "../src/lib/ask-sales-faq/v4/runtime";
 import { generateV4Json } from "../src/lib/ask-sales-faq/v4/provider";
 
@@ -37,9 +49,11 @@ type Prompt = {
   goldContext: string[];
   blockedContext: string[];
   goldAdjudicated: boolean;
+  goldNeeds: V4GoldNeed[];
 };
 type Conversation = { id: string; title: string; prompts: Prompt[] };
-type Dataset = { name: string; conversations: Conversation[] };
+type Dataset = { name: string; conversations: Conversation[]; adjudication: V4AdjudicationProvenance | null };
+type ExecutionOrder = "alternating" | "v3-first" | "v4-first" | "parallel";
 
 type JudgeOutput = {
   A: V4SystemJudgeScore;
@@ -64,11 +78,16 @@ type PairedItem = V4PairedEvaluationItem & {
     goldContext: string[];
     blockedContext: string[];
     goldAdjudicated: boolean;
+    goldAdjudicationValid: boolean;
+    goldNeedCount: number;
+    goldNeedIds: string[];
+    goldResolutionErrors: string[];
     sameKnowledgeSnapshot: boolean;
+    executionOrder: ExecutionOrder;
   };
   independentJudge: boolean;
-  v3: V4PairedEvaluationItem["v3"] & { answer: string; outcome: string; needsRoute: boolean; selectedPolicyIds: string[]; source: "stored_production" | "fresh_runtime"; provider: string | null; model: string | null; knowledgeVersion: string | null };
-  v4: V4PairedEvaluationItem["v4"] & { answer: string; needsRoute: boolean; selectedPolicyIds: string[]; removedSentences: string[]; provider: string | null; model: string | null; executionMode: Record<string, string>; planningReason: string; validationReason: string };
+  v3: V4PairedEvaluationItem["v3"] & { answer: string; answerSha256: string; outcome: string; needsRoute: boolean; selectedPolicyIds: string[]; source: "stored_production" | "fresh_runtime"; provider: string | null; model: string | null; knowledgeVersion: string | null };
+  v4: V4PairedEvaluationItem["v4"] & { answer: string; answerSha256: string; needsRoute: boolean; selectedPolicyIds: string[]; removedSentences: string[]; provider: string | null; model: string | null; executionMode: Record<string, string>; providerAttempts: Array<{ purpose?: string; status?: string; provider?: string; model?: string; latencyMs?: number; error?: string }>; planningReason: string; validationReason: string };
   comparisonReason: string | null;
 };
 
@@ -130,7 +149,12 @@ function storedProduction(raw: Record<string, unknown>): StoredProductionAnswer 
   };
 }
 
-function parsedPrompt(value: unknown, label: string): Prompt {
+function parsedPrompt(
+  value: unknown,
+  label: string,
+  catalog: V4GoldReferenceCatalog,
+  adjudication: V4AdjudicationProvenance | null,
+): Prompt {
   const raw = typeof value === "string" ? { question: value } : value;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error(`${label} must be a question string or object.`);
   const entry = raw as Record<string, unknown>;
@@ -139,6 +163,12 @@ function parsedPrompt(value: unknown, label: string): Prompt {
   const context = messageList(entry.context ?? entry.messages, `${label}.context`);
   const gold = entry.gold && typeof entry.gold === "object" && !Array.isArray(entry.gold) ? entry.gold as Record<string, unknown> : {};
   const blocked = entry.blocked && typeof entry.blocked === "object" && !Array.isArray(entry.blocked) ? entry.blocked as Record<string, unknown> : {};
+  const goldNeeds = parseV4GoldNeeds(entry.goldNeeds ?? entry.gold_needs ?? gold.needs, catalog, `${label}.goldNeeds`);
+  if (goldNeeds.length && !adjudication) throw new Error(`${label}.goldNeeds requires valid dataset-level adjudication provenance.`);
+  const adjudicatedPolicyIds = [...new Set(goldNeeds.flatMap((need) => need.policyIds))];
+  const adjudicatedBlockedTopicIds = [...new Set(goldNeeds.flatMap((need) => need.blockedTopicIds))];
+  const adjudicatedGoldContext = [...new Set(goldNeeds.flatMap((need) => need.goldContext))];
+  const adjudicatedBlockedContext = [...new Set(goldNeeds.flatMap((need) => need.blockedContext))];
   return {
     question,
     production: storedProduction(entry),
@@ -146,11 +176,12 @@ function parsedPrompt(value: unknown, label: string): Prompt {
     context,
     v3Context: messageList(entry.v3Context ?? entry.v3_context, `${label}.v3Context`),
     v4Context: messageList(entry.v4Context ?? entry.v4_context, `${label}.v4Context`),
-    goldPolicyIds: stringList(entry.goldPolicyIds ?? entry.gold_policy_ids ?? gold.policyIds ?? gold.policy_ids, `${label}.goldPolicyIds`),
-    blockedTopicIds: stringList(entry.blockedTopicIds ?? entry.blocked_topic_ids ?? blocked.topicIds ?? blocked.topic_ids, `${label}.blockedTopicIds`),
-    goldContext: stringList(entry.goldContext ?? entry.gold_context ?? gold.context, `${label}.goldContext`, 20),
-    blockedContext: stringList(entry.blockedContext ?? entry.blocked_context ?? blocked.context, `${label}.blockedContext`, 20),
-    goldAdjudicated: exactBoolean(entry.goldAdjudicated ?? entry.gold_adjudicated ?? gold.adjudicated, `${label}.goldAdjudicated`, false),
+    goldPolicyIds: goldNeeds.length ? adjudicatedPolicyIds : stringList(entry.goldPolicyIds ?? entry.gold_policy_ids ?? gold.policyIds ?? gold.policy_ids, `${label}.goldPolicyIds`),
+    blockedTopicIds: goldNeeds.length ? adjudicatedBlockedTopicIds : stringList(entry.blockedTopicIds ?? entry.blocked_topic_ids ?? blocked.topicIds ?? blocked.topic_ids, `${label}.blockedTopicIds`),
+    goldContext: goldNeeds.length ? adjudicatedGoldContext : stringList(entry.goldContext ?? entry.gold_context ?? gold.context, `${label}.goldContext`, 20),
+    blockedContext: goldNeeds.length ? adjudicatedBlockedContext : stringList(entry.blockedContext ?? entry.blocked_context ?? blocked.context, `${label}.blockedContext`, 20),
+    goldAdjudicated: Boolean(adjudication && goldNeeds.length),
+    goldNeeds,
   };
 }
 
@@ -175,9 +206,16 @@ function assertedDatasetCounts(raw: Record<string, unknown>, dataset: Dataset, f
 
 async function loadDataset(filePath: string): Promise<Dataset> {
   const raw = JSON.parse(await readFile(filePath, "utf8")) as Record<string, unknown>;
+  const registry = getMaterializedV3Registry();
+  const catalog: V4GoldReferenceCatalog = {
+    policies: registry.policies.map((policy) => ({ id: policy.id, decisionKey: policy.decision_key, policyKey: policy.policy_key })),
+    blockedTopics: registry.blocked_topics.map((topic) => ({ id: topic.id })),
+  };
+  const adjudication = parseV4AdjudicationProvenance(raw.adjudication, registry.knowledge_version);
   if (Array.isArray(raw.conversations)) {
     const dataset = {
       name: String(raw.name || path.basename(filePath)),
+      adjudication,
       conversations: raw.conversations.map((value, index) => {
         if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(`conversations[${index}] must be an object.`);
         const conversation = value as Record<string, unknown>;
@@ -185,7 +223,7 @@ async function loadDataset(filePath: string): Promise<Dataset> {
         return {
           id: String(conversation.id || `conversation-${index + 1}`),
           title: String(conversation.title || `Conversation ${index + 1}`),
-          prompts: conversation.prompts.map((prompt, promptIndex) => parsedPrompt(prompt, `conversations[${index}].prompts[${promptIndex}]`)),
+          prompts: conversation.prompts.map((prompt, promptIndex) => parsedPrompt(prompt, `conversations[${index}].prompts[${promptIndex}]`, catalog, adjudication)),
         };
       }),
     };
@@ -198,10 +236,10 @@ async function loadDataset(filePath: string): Promise<Dataset> {
       const item = value as Record<string, unknown>;
       const key = String(item.conversationKey || item.conversationId || item.id || `independent-${itemIndex + 1}`);
       const current = groups.get(key) || { id: key, title: `Launch conversation ${groups.size + 1}`, prompts: [] };
-      current.prompts.push(parsedPrompt(item, `items[${itemIndex}]`));
+      current.prompts.push(parsedPrompt(item, `items[${itemIndex}]`, catalog, adjudication));
       groups.set(key, current);
     }
-    const dataset = { name: String(raw.name || path.basename(filePath)), conversations: [...groups.values()].filter((conversation) => conversation.prompts.some((prompt) => Boolean(prompt.question))) };
+    const dataset = { name: String(raw.name || path.basename(filePath)), adjudication, conversations: [...groups.values()].filter((conversation) => conversation.prompts.some((prompt) => Boolean(prompt.question))) };
     return assertedDatasetCounts(raw, dataset, filePath);
   }
   throw new Error(`Unsupported benchmark dataset shape: ${filePath}`);
@@ -213,6 +251,68 @@ function boundedInteger(value: string | null, fallback: number, min: number, max
   const parsed = Number(value);
   if (!Number.isSafeInteger(parsed) || parsed < min || parsed > max) throw new Error(`Expected an integer from ${min} to ${max}, received: ${value}`);
   return parsed;
+}
+
+function executionOrder(value: string | null): ExecutionOrder {
+  const selected = value || "alternating";
+  if (!["alternating", "v3-first", "v4-first", "parallel"].includes(selected)) {
+    throw new Error(`Invalid execution order: ${selected}`);
+  }
+  return selected as ExecutionOrder;
+}
+
+function sha256(value: string) {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+async function codeFingerprint() {
+  const files = [
+    "scripts/benchmark-ask-sales-faq-v4-paired.ts",
+    "src/lib/ask-sales-faq/v4/adjudication.ts",
+    "src/lib/ask-sales-faq/v4/evaluation.ts",
+    "src/lib/ask-sales-faq/v4/runtime.ts",
+    "src/lib/ask-sales-faq/v4/provider.ts",
+    "src/lib/ask-sales-faq/v4/retrieval.ts",
+    "src/lib/ask-sales-faq/v4/boundaries.ts",
+    "src/lib/ask-sales-faq/v4/facts.ts",
+    "src/lib/ask-sales-faq/v4/corpus.ts",
+    "src/lib/ask-sales-faq/v3/runtime.ts",
+    "src/lib/ask-sales-faq/v3/provider.ts",
+    "src/lib/ask-sales-faq/v3/admin-approved-releases.ts",
+  ];
+  const hash = createHash("sha256");
+  for (const file of files) {
+    hash.update(file).update("\0").update(await readFile(path.resolve(file), "utf8")).update("\0");
+  }
+  return hash.digest("hex");
+}
+
+function answerSha256(answer: string) {
+  return sha256(answer);
+}
+
+function applyHumanScore(item: PairedItem, score: V4HumanScoreRecord | undefined) {
+  if (!score) return item;
+  if (score.v3AnswerSha256 !== answerSha256(item.v3.answer) || score.v4AnswerSha256 !== answerSha256(item.v4.answer)) {
+    throw new Error(`Human score ${item.id} is not bound to the exact V3/V4 answers in this run.`);
+  }
+  const expectedNeeds = item.evaluationContext.goldNeedCount;
+  if (score.v3Score.totalNeeds !== expectedNeeds || score.v4Score.totalNeeds !== expectedNeeds) {
+    throw new Error(`Human score ${item.id} must score exactly ${expectedNeeds} adjudicated atomic need(s).`);
+  }
+  const expectedNeedIds = [...item.evaluationContext.goldNeedIds].sort();
+  const scoredNeedIds = score.needOutcomes.map((outcome) => outcome.needId).sort();
+  if (JSON.stringify(expectedNeedIds) !== JSON.stringify(scoredNeedIds)) {
+    throw new Error(`Human score ${item.id} does not cover the exact adjudicated atomic need IDs.`);
+  }
+  return {
+    ...item,
+    independentJudge: true,
+    preferred: score.preferred,
+    comparisonReason: score.comparisonReason,
+    v3: { ...item.v3, score: score.v3Score },
+    v4: { ...item.v4, score: score.v4Score },
+  } satisfies PairedItem;
 }
 
 function parseJudge(content: string): JudgeOutput {
@@ -233,8 +333,8 @@ function judgePrompt(input: {
   question: string;
   answerA: string;
   answerB: string;
-  candidateEvidence: Array<{ id: string; title: string; decision: string; scopes: string[]; answerability: string }>;
   goldEvidence: Array<{ id: string; title: string; decision: string; scopes: string[]; answerability: string }>;
+  goldNeeds: Array<{ id: string; text: string; expectedDisposition: string; expectedRouteKey: string | null }>;
   goldContext: string[];
   blockedTopics: Array<{ id: string; resolution: string | null; scopes: string[]; questionFamilies: string[] }>;
   blockedContext: string[];
@@ -254,7 +354,7 @@ function judgePrompt(input: {
     ].join("\n"),
     user: JSON.stringify({
       question: input.question,
-      candidateEvidenceSelectedOrRetrievedBySystems: input.candidateEvidence,
+      independentAtomicGoldNeeds: input.goldNeeds,
       independentGoldEvidence: input.goldEvidence,
       independentGoldContext: input.goldContext,
       independentBlockedTopics: input.blockedTopics,
@@ -324,14 +424,6 @@ function storedSelectedPolicyIds(metadata: Record<string, unknown> | null) {
   return nestedArray(metadata, ["v3", "selection", "selectedPolicyIds"]).map(String);
 }
 
-function storedCandidatePolicyIds(metadata: Record<string, unknown> | null) {
-  return nestedArray(metadata, ["v3", "retrieval", "candidates"]).flatMap((candidate) =>
-    candidate && typeof candidate === "object" && (candidate as Record<string, unknown>).id
-      ? [String((candidate as Record<string, unknown>).id)]
-      : [],
-  );
-}
-
 function countBy(values: Array<string | null>) {
   return Object.fromEntries([...new Set(values.map((value) => value || "unknown"))].sort().map((value) => [value, values.filter((candidate) => (candidate || "unknown") === value).length]));
 }
@@ -384,7 +476,9 @@ function markdownReport(report: {
     `Routes are scored by need-level correctness; a grounded useful partial is not automatically counted as a failure.`,
     report.comparisonMode === "historical_user_experience_replay"
       ? `Historical replay mixes captured knowledge versions and measures the user experience, not architecture alone. See the JSON strata for exact counts.`
-      : `Both systems ran against the current materialized snapshot; architecture comparison is still gated on adjudicated gold and an independent judge.`,
+      : report.comparisonMode === "mixed_stored_and_fresh_v3_diagnostic"
+        ? `This diagnostic mixes stored and fresh V3 answers; it cannot isolate architecture quality.`
+        : `Both systems ran against the current materialized snapshot; architecture comparison is still gated on adjudicated gold and an independent judge.`,
     ...(report.promotionGate.failures.length ? [``, `Promotion gate findings:`, ...report.promotionGate.failures.map((failure) => `- ${failure}`)] : []),
     ``,
   ].join("\n");
@@ -392,36 +486,149 @@ function markdownReport(report: {
 
 async function main() {
   const datasetPath = path.resolve(argument("dataset") || "tests/ask-sales-faq/v3-regression-78.json");
+  const datasetContents = await readFile(datasetPath, "utf8");
+  const datasetSha256 = sha256(datasetContents);
   const dataset = await loadDataset(datasetPath);
-  const limit = boundedInteger(argument("limit"), Number.MAX_SAFE_INTEGER, 1, 1000);
+  const totalPrompts = dataset.conversations.reduce((total, conversation) => total + conversation.prompts.length, 0);
+  const perRunLimit = Math.min(totalPrompts, boundedInteger(argument("limit"), totalPrompts, 1, 1000));
   const runs = boundedInteger(argument("runs"), 1, 1, 3);
-  const judge = truthy(argument("judge"), true);
-  const enforceGate = truthy(argument("enforce-gate"), judge);
+  const judge = truthy(argument("judge"), false);
+  const humanScoresPath = argument("human-scores") ? path.resolve(argument("human-scores") as string) : null;
+  if (judge && humanScoresPath) throw new Error("Use either the diagnostic model judge or independently adjudicated human scores, not both.");
+  const enforceGate = truthy(argument("enforce-gate"), Boolean(humanScoresPath));
+  if (judge && enforceGate) throw new Error("The built-in model judge is diagnostic-only. Use --human-scores with exact answer hashes for promotion enforcement.");
   const forceFreshV3 = argument("v3-source") === "fresh";
-  const comparisonMode = forceFreshV3 ? "same_current_snapshot_fresh_v3_vs_v4" : "historical_user_experience_replay";
+  const promptsWithStoredProduction = dataset.conversations.reduce(
+    (total, conversation) => total + conversation.prompts.filter((prompt) => Boolean(prompt.production)).length,
+    0,
+  );
+  const comparisonMode = inferV4ComparisonMode({ forceFreshV3, promptsWithStoredProduction, totalPrompts });
+  const requestedExecutionOrder = executionOrder(argument("execution-order"));
+  const minimumRuns = boundedInteger(argument("minimum-runs"), enforceGate ? 3 : 1, 1, 3);
+  const promotionGateOptions = {
+    minimumRuns,
+    maximumUtilitySpread: boundedInteger(argument("maximum-utility-spread"), 5, 0, 100),
+    maximumFalseAbstentionSpread: boundedInteger(argument("maximum-false-abstention-spread"), 5, 0, 100),
+    requireModelBacked: truthy(argument("require-model-backed"), true),
+  };
   const outputDir = path.resolve(argument("output-dir") || "artifacts/ask-sales-faq-v4");
-  const runId = `paired-${new Date().toISOString().replace(/[:.]/g, "-")}`;
-  const outputPath = path.join(outputDir, `${runId}.json`);
-  const markdownPath = path.join(outputDir, `${runId}.md`);
-  const items: PairedItem[] = [];
-  let attempted = 0;
-  await mkdir(outputDir, { recursive: true });
+  const resumePath = argument("resume") ? path.resolve(argument("resume") as string) : null;
+  if (resumePath && !/\.json$/i.test(resumePath)) throw new Error("--resume must point to a JSON checkpoint.");
+  const requestedRunId = argument("run-id");
+  const knowledgeVersion = getMaterializedV3Registry().knowledge_version;
+  const codeSha256 = await codeFingerprint();
+  let runId = requestedRunId || `paired-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  let outputPath = resumePath || path.join(outputDir, `${runId}.json`);
+  let markdownPath = outputPath.replace(/\.json$/i, ".md");
+  let items: PairedItem[] = [];
+  const manifest = {
+    datasetSha256,
+    codeSha256,
+    knowledgeVersion,
+    totalPrompts,
+    perRunLimit,
+    runs,
+    expectedCases: perRunLimit * runs,
+    comparisonMode,
+    forceFreshV3,
+    requestedExecutionOrder,
+  };
+
+  if (resumePath) {
+    const checkpoint = JSON.parse(await readFile(resumePath, "utf8")) as Record<string, unknown>;
+    if (checkpoint.schemaVersion !== 3) throw new Error("Only schemaVersion 3 benchmark checkpoints can be resumed.");
+    const checkpointManifest = checkpoint.manifest as Record<string, unknown> | undefined;
+    if (!checkpointManifest || JSON.stringify(checkpointManifest) !== JSON.stringify(manifest)) {
+      throw new Error("Checkpoint manifest does not match the requested dataset, code, knowledge, or run configuration.");
+    }
+    if (typeof checkpoint.runId !== "string" || !checkpoint.runId) throw new Error("Checkpoint runId is missing.");
+    if (requestedRunId && requestedRunId !== checkpoint.runId) throw new Error("--run-id does not match the checkpoint runId.");
+    if (!Array.isArray(checkpoint.items)) throw new Error("Checkpoint items are missing.");
+    runId = checkpoint.runId;
+    outputPath = resumePath;
+    markdownPath = outputPath.replace(/\.json$/i, ".md");
+    items = checkpoint.items as PairedItem[];
+    if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error("Checkpoint contains duplicate item IDs.");
+  }
+
+  let humanScores: V4HumanScoreBundle | null = null;
+  if (humanScoresPath) {
+    humanScores = parseV4HumanScoreBundle(JSON.parse(await readFile(humanScoresPath, "utf8")));
+    if (humanScores.sourceRunId !== runId) throw new Error("Human score bundle sourceRunId does not match this benchmark run.");
+    if (humanScores.sourceDatasetSha256 !== datasetSha256) throw new Error("Human score bundle dataset hash does not match.");
+    if (humanScores.sourceCodeSha256 !== codeSha256) throw new Error("Human score bundle code hash does not match.");
+    if (humanScores.sourceKnowledgeVersion !== knowledgeVersion) throw new Error("Human score bundle knowledge version does not match.");
+  }
+  const humanScoreById = new Map((humanScores?.scores || []).map((score) => [score.id, score]));
+  const usedHumanScoreIds = new Set<string>();
+  if ((judge || humanScores) && !dataset.adjudication) {
+    throw new Error("Judging requires dataset-level adjudication provenance and resolvable atomic gold needs.");
+  }
+
+  await mkdir(path.dirname(outputPath), { recursive: true });
+
+  const itemIndexById = new Map(items.map((item, index) => [item.id, index]));
+  const setItem = (item: PairedItem) => {
+    const index = itemIndexById.get(item.id);
+    if (index === undefined) {
+      itemIndexById.set(item.id, items.length);
+      items.push(item);
+    } else {
+      items[index] = item;
+    }
+  };
+  const reportFor = (status: "running" | "complete") => ({
+    schemaVersion: 3,
+    runId,
+    dataset: dataset.name,
+    datasetPath,
+    status,
+    judgeEnabled: judge,
+    humanScoresEnabled: Boolean(humanScores),
+    promotionGateEnforced: enforceGate,
+    comparisonMode,
+    manifest,
+    adjudication: dataset.adjudication,
+    humanScorer: humanScores?.scorer || null,
+    strata: replayStrata(items),
+    summary: summarizeV4PairedEvaluation(items),
+    perRun: summarizeV4Runs(items),
+    promotionGateOptions,
+    promotionGate: evaluateV4PromotionGate(items, promotionGateOptions),
+    items,
+  });
 
   for (let run = 1; run <= runs; run += 1) {
+    let attemptedThisRun = 0;
     for (const conversation of dataset.conversations) {
       const v3Messages: AskSalesFaqChatMessage[] = [];
       const v4Messages: AskSalesFaqChatMessage[] = [];
       for (let promptIndex = 0; promptIndex < conversation.prompts.length; promptIndex += 1) {
-        if (attempted >= limit) break;
+        if (attemptedThisRun >= perRunLimit) break;
         const promptEntry = conversation.prompts[promptIndex];
         const question = promptEntry.question;
         const v3InputMessages = contextForPrompt(promptEntry, "v3", v3Messages);
         const v4InputMessages = contextForPrompt(promptEntry, "v4", v4Messages);
-        attempted += 1;
-        process.stdout.write(`[${attempted}/${Math.min(limit, dataset.conversations.reduce((total, item) => total + item.prompts.length, 0) * runs)}] run ${run} ${conversation.id} Q${promptIndex + 1} ... `);
-        const [v3, v4] = await Promise.all([
-          !forceFreshV3 && promptEntry.production
-            ? Promise.resolve({
+        attemptedThisRun += 1;
+        const itemId = `${conversation.id}-${promptIndex + 1}-run-${run}`;
+        const resumed = itemIndexById.has(itemId) ? items[itemIndexById.get(itemId) as number] : null;
+        if (resumed) {
+          if (resumed.question !== question || resumed.run !== run || resumed.conversationId !== conversation.id || resumed.promptIndex !== promptIndex + 1) {
+            throw new Error(`Checkpoint item ${itemId} no longer matches the dataset.`);
+          }
+          const rescored = applyHumanScore(resumed, humanScoreById.get(itemId));
+          if (humanScoreById.has(itemId)) usedHumanScoreIds.add(itemId);
+          setItem(rescored);
+          if (!promptEntry.independent) {
+            v3Messages.splice(0, v3Messages.length, ...nextHistory(v3InputMessages, question, rescored.v3.answer));
+            v4Messages.splice(0, v4Messages.length, ...nextHistory(v4InputMessages, question, rescored.v4.answer));
+          }
+          continue;
+        }
+
+        process.stdout.write(`[${items.length + 1}/${manifest.expectedCases}] run ${run} ${conversation.id} Q${promptIndex + 1} ... `);
+        const runV3 = () => !forceFreshV3 && promptEntry.production
+          ? Promise.resolve({
                 answer: promptEntry.production.answer,
                 outcome: promptEntry.production.outcome,
                 needsRoute: promptEntry.production.needsRoute,
@@ -432,30 +639,41 @@ async function main() {
                 knowledgeVersion: promptEntry.production.knowledgeVersion,
                 source: "stored_production" as const,
               })
-            : runAskSalesFaqV3(question, v3InputMessages).then((result) => ({ ...result, knowledgeVersion: result.runtimeMetadata.knowledgeVersion, source: "fresh_runtime" as const })),
-          runAskSalesFaqV4(question, v4InputMessages),
-        ]);
+          : runAskSalesFaqV3(question, v3InputMessages).then((result) => ({ ...result, knowledgeVersion: result.runtimeMetadata.knowledgeVersion, source: "fresh_runtime" as const }));
+        const runV4 = () => runAskSalesFaqV4(question, v4InputMessages);
+        const alternatingV3First = Number.parseInt(sha256(`${run}:${conversation.id}:${promptIndex}`).slice(0, 2), 16) % 2 === 0;
+        const actualExecutionOrder: Exclude<ExecutionOrder, "alternating"> = requestedExecutionOrder === "alternating"
+          ? alternatingV3First ? "v3-first" : "v4-first"
+          : requestedExecutionOrder;
+        let v3: Awaited<ReturnType<typeof runV3>>;
+        let v4: Awaited<ReturnType<typeof runV4>>;
+        if (actualExecutionOrder === "parallel") {
+          [v3, v4] = await Promise.all([runV3(), runV4()]);
+        } else if (actualExecutionOrder === "v3-first") {
+          v3 = await runV3();
+          v4 = await runV4();
+        } else {
+          v4 = await runV4();
+          v3 = await runV3();
+        }
         const v3Selected = v3.source === "stored_production"
           ? storedSelectedPolicyIds(v3.runtimeMetadata)
           : v3.runtimeMetadata.v3?.selection.selectedPolicyIds || [];
-        const v3Candidates = v3.source === "stored_production"
-          ? storedCandidatePolicyIds(v3.runtimeMetadata).slice(0, 12)
-          : v3.runtimeMetadata.v3?.retrieval.candidates.map((candidate) => candidate.id).slice(0, 12) || [];
         const v4Selected = v4.selectedPolicyIds;
-        const v4Candidates = v4.runtimeMetadata.retrieval.candidates.map((candidate) => candidate.id).slice(0, 12);
         let v3Score: V4SystemJudgeScore | null = null;
         let v4Score: V4SystemJudgeScore | null = null;
         let preferred: PairedItem["preferred"] = "not_judged";
         let comparisonReason: string | null = null;
         let independentJudge = false;
         if (judge) {
+          if (!promptEntry.goldNeeds.length) throw new Error(`${itemId} lacks adjudicated atomic gold needs.`);
           const v4IsA = Number.parseInt(createHash("sha256").update(`${run}:${conversation.id}:${promptIndex}:${question}`).digest("hex").slice(0, 2), 16) % 2 === 0;
           const prompt = judgePrompt({
             question,
             answerA: v4IsA ? v4.answer : v3.answer,
             answerB: v4IsA ? v3.answer : v4.answer,
-            candidateEvidence: evidenceCards([...v3Selected, ...v4Selected, ...v3Candidates, ...v4Candidates]),
             goldEvidence: evidenceCards(promptEntry.goldPolicyIds),
+            goldNeeds: promptEntry.goldNeeds.map((need) => ({ id: need.id, text: need.text, expectedDisposition: need.expectedDisposition, expectedRouteKey: need.expectedRouteKey })),
             goldContext: promptEntry.goldContext,
             blockedTopics: blockedTopicCards(promptEntry.blockedTopicIds),
             blockedContext: promptEntry.blockedContext,
@@ -466,16 +684,22 @@ async function main() {
             const judged = await generateV4Json({ purpose: "v4_benchmark_blind_judge", system: prompt.system, user: prompt.user, maxTokens: 1800, parse: parseJudge });
             v4Score = v4IsA ? judged.output.A : judged.output.B;
             v3Score = v4IsA ? judged.output.B : judged.output.A;
+            if (v3Score.totalNeeds !== promptEntry.goldNeeds.length || v4Score.totalNeeds !== promptEntry.goldNeeds.length) {
+              throw new Error(`Judge must score exactly ${promptEntry.goldNeeds.length} adjudicated need(s).`);
+            }
             preferred = judged.output.preferred === "tie" ? "tie" : (judged.output.preferred === "A") === v4IsA ? "v4" : "v3";
             comparisonReason = judged.output.comparisonReason;
-            const generationModels = [v3.model, v4.model].filter((value): value is string => Boolean(value));
-            independentJudge = generationModels.length > 0 && generationModels.every((generationModel) => generationModel !== judged.model);
+            independentJudge = false;
+            comparisonReason = `${comparisonReason} [Diagnostic model judge: ${judged.model}; not promotion-independent.]`;
           } catch (error) {
+            v3Score = null;
+            v4Score = null;
+            preferred = "not_judged";
             comparisonReason = `Judge failed: ${error instanceof Error ? error.message : String(error)}`;
           }
         }
-        items.push({
-          id: `${conversation.id}-${promptIndex + 1}-run-${run}`,
+        let item: PairedItem = {
+          id: itemId,
           run,
           conversationId: conversation.id,
           promptIndex: promptIndex + 1,
@@ -490,55 +714,59 @@ async function main() {
             goldContext: promptEntry.goldContext,
             blockedContext: promptEntry.blockedContext,
             goldAdjudicated: promptEntry.goldAdjudicated,
+            goldAdjudicationValid: Boolean(dataset.adjudication && promptEntry.goldNeeds.length),
+            goldNeedCount: promptEntry.goldNeeds.length,
+            goldNeedIds: promptEntry.goldNeeds.map((need) => need.id),
+            goldResolutionErrors: [],
             sameKnowledgeSnapshot: v3.knowledgeVersion === v4.runtimeMetadata.knowledgeVersion,
+            executionOrder: actualExecutionOrder,
           },
           independentJudge,
           preferred,
           comparisonReason,
-          v3: { answer: v3.answer, outcome: v3.outcome, needsRoute: v3.needsRoute, latencyMs: v3.latencyMs, selectedPolicyIds: v3Selected, score: v3Score, source: v3.source, provider: v3.provider || null, model: v3.model || null, knowledgeVersion: v3.knowledgeVersion || null },
-          v4: { answer: v4.answer, lane: v4.lane, needsRoute: v4.needsRoute, latencyMs: v4.latencyMs, selectedPolicyIds: v4Selected, removedSentences: v4.runtimeMetadata.validation.removedSentences, score: v4Score, provider: v4.provider, model: v4.model, executionMode: v4.runtimeMetadata.executionMode, planningReason: v4.runtimeMetadata.plan.reasoning_summary, validationReason: v4.runtimeMetadata.validation.reason },
-        });
+          v3: { answer: v3.answer, answerSha256: answerSha256(v3.answer), outcome: v3.outcome, needsRoute: v3.needsRoute, latencyMs: v3.latencyMs, selectedPolicyIds: v3Selected, score: v3Score, source: v3.source, provider: v3.provider || null, model: v3.model || null, knowledgeVersion: v3.knowledgeVersion || null },
+          v4: {
+            answer: v4.answer,
+            answerSha256: answerSha256(v4.answer),
+            lane: v4.lane,
+            needsRoute: v4.needsRoute,
+            latencyMs: v4.latencyMs,
+            selectedPolicyIds: v4Selected,
+            removedSentences: v4.runtimeMetadata.validation.removedSentences,
+            score: v4Score,
+            provider: v4.provider,
+            model: v4.model,
+            executionMode: v4.runtimeMetadata.executionMode,
+            providerAttempts: v4.runtimeMetadata.providerAttempts.map((attempt) => ({
+              purpose: attempt.purpose,
+              status: attempt.status,
+              provider: attempt.provider,
+              model: attempt.model,
+              latencyMs: attempt.latencyMs,
+              ...(attempt.error ? { error: attempt.error } : {}),
+            })),
+            planningReason: v4.runtimeMetadata.plan.reasoning_summary,
+            validationReason: v4.runtimeMetadata.validation.reason,
+          },
+        };
+        item = applyHumanScore(item, humanScoreById.get(itemId));
+        if (humanScoreById.has(itemId)) usedHumanScoreIds.add(itemId);
+        setItem(item);
         if (!promptEntry.independent) {
           v3Messages.splice(0, v3Messages.length, ...nextHistory(v3InputMessages, question, v3.answer));
           v4Messages.splice(0, v4Messages.length, ...nextHistory(v4InputMessages, question, v4.answer));
         }
-        const partialReport = {
-          schemaVersion: 2,
-          runId,
-          dataset: dataset.name,
-          datasetPath,
-          knowledgeVersion: v4.runtimeMetadata.knowledgeVersion,
-          status: "running",
-          judgeEnabled: judge,
-          promotionGateEnforced: enforceGate,
-          comparisonMode,
-          strata: replayStrata(items),
-          summary: summarizeV4PairedEvaluation(items),
-          promotionGate: evaluateV4PromotionGate(items),
-          items,
-        };
+        const partialReport = reportFor("running");
         await writeFile(outputPath, `${JSON.stringify(partialReport, null, 2)}\n`, "utf8");
         process.stdout.write(`V3:${v3.outcome} V4:${v4.lane}${preferred === "not_judged" ? "" : ` preferred:${preferred}`}\n`);
       }
-      if (attempted >= limit) break;
+      if (attemptedThisRun >= perRunLimit) break;
     }
-    if (attempted >= limit) break;
   }
 
-  const report = {
-    schemaVersion: 2,
-    runId,
-    dataset: dataset.name,
-    datasetPath,
-    status: "complete",
-    judgeEnabled: judge,
-    promotionGateEnforced: enforceGate,
-    comparisonMode,
-    strata: replayStrata(items),
-    summary: summarizeV4PairedEvaluation(items),
-    promotionGate: evaluateV4PromotionGate(items),
-    items,
-  };
+  const unusedHumanScores = [...humanScoreById.keys()].filter((id) => !usedHumanScoreIds.has(id));
+  if (unusedHumanScores.length) throw new Error(`Human score bundle contains ${unusedHumanScores.length} unused item ID(s), beginning with ${unusedHumanScores[0]}.`);
+  const report = reportFor("complete");
   await writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   await writeFile(markdownPath, markdownReport(report), "utf8");
   console.log(JSON.stringify({ outputPath, markdownPath, summary: report.summary }, null, 2));

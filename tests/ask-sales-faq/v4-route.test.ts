@@ -13,7 +13,7 @@ const original = {
   flag: process.env.ASK_SALES_V4_ISOLATED,
   vercel: process.env.VERCEL_ENV,
   token: process.env.ASK_SALES_V4_LAB_TOKEN,
-  deepSeekKey: process.env.DEEPSEEK_API_KEY,
+  deepSeekKey: process.env.ASK_SALES_V4_DEEPSEEK_API_KEY,
   modelAccessConfirmed: process.env.ASK_SALES_V4_MODEL_ACCESS_CONFIRMED,
 };
 
@@ -26,7 +26,7 @@ beforeEach(() => {
   process.env.ASK_SALES_V4_ISOLATED = "true";
   process.env.VERCEL_ENV = "preview";
   process.env.ASK_SALES_V4_LAB_TOKEN = "a-secure-isolated-token-123456";
-  process.env.DEEPSEEK_API_KEY = "test-deepseek-key";
+  process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "test-deepseek-key";
   process.env.ASK_SALES_V4_MODEL_ACCESS_CONFIRMED = "true";
   mocks.runAskSalesFaqV4.mockResolvedValue({
     ok: true,
@@ -48,7 +48,7 @@ afterEach(() => {
   restoreEnv("ASK_SALES_V4_ISOLATED", original.flag);
   restoreEnv("VERCEL_ENV", original.vercel);
   restoreEnv("ASK_SALES_V4_LAB_TOKEN", original.token);
-  restoreEnv("DEEPSEEK_API_KEY", original.deepSeekKey);
+  restoreEnv("ASK_SALES_V4_DEEPSEEK_API_KEY", original.deepSeekKey);
   restoreEnv("ASK_SALES_V4_MODEL_ACCESS_CONFIRMED", original.modelAccessConfirmed);
 });
 
@@ -65,7 +65,7 @@ describe("Ask Sales V4 isolated route", () => {
       modelConfigured: true,
       provider: "deepseek",
       model: "deepseek-v4-pro",
-      deepSeekRetries: 0,
+      deepSeekRetries: 1,
     });
     expect(data.maxModelCallSeconds).toBeLessThanOrEqual(35);
   });

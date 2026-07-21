@@ -4,6 +4,7 @@ import path from "node:path";
 const root = process.cwd();
 const read = (file) => readFileSync(path.join(root, file), "utf8");
 const checks = [];
+const V4_RELEASE_BRANCH = "agent/ask-sales-v4-isolated-2026-07-21";
 
 function check(name, condition, detail) {
   checks.push({ name, condition: Boolean(condition), detail });
@@ -45,6 +46,11 @@ const provider = read("src/lib/ask-sales-faq/v4/provider.ts");
 const proxy = read("src/proxy.ts");
 const appHeader = read("src/components/dashboard/app-header.tsx");
 const labPage = read("src/app/ask-sales-faq/v4-lab/page.tsx");
+const vercelConfig = JSON.parse(read("vercel.json"));
+const deploymentEnabled = vercelConfig?.git?.deploymentEnabled;
+const deploymentEntries = deploymentEnabled && typeof deploymentEnabled === "object" && !Array.isArray(deploymentEnabled)
+  ? Object.entries(deploymentEnabled)
+  : [];
 const v4Dependencies = localDependencyClosure("src/app/api/ask-sales-faq/v4-isolated/route.ts");
 const relativeV4Dependencies = v4Dependencies.map((file) => path.relative(root, file));
 const forbiddenPersistenceImport = relativeV4Dependencies.find((file) =>
@@ -61,6 +67,27 @@ check(
   "production API route does not import isolated V4",
   !productionRoute.includes("v4-isolated") && !productionRoute.includes("runAskSalesFaqV4"),
   "The normal Ask Sales endpoint must stay on the production selector.",
+);
+check(
+  "V4 Git publication is disabled only for the exact isolated branch",
+  deploymentEntries.length === 1 &&
+    deploymentEntries[0]?.[0] === V4_RELEASE_BRANCH &&
+    deploymentEntries[0]?.[1] === false &&
+    deploymentEnabled !== false,
+  "Vercel Git auto-deployment must be disabled only for the isolated V4 branch, never globally or for main.",
+);
+check(
+  "V4 containment config does not alter production build behavior",
+  vercelConfig.ignoreCommand === undefined &&
+    vercelConfig.buildCommand === undefined &&
+    vercelConfig.installCommand === undefined &&
+    vercelConfig.outputDirectory === undefined &&
+    vercelConfig.framework === undefined &&
+    vercelConfig.github === undefined &&
+    deploymentEnabled?.main !== false &&
+    deploymentEnabled?.production !== false &&
+    deploymentEnabled?.["*"] !== false,
+  "The branch containment file must not add a broad skip, legacy Git override, or production/build setting.",
 );
 check(
   "V4 is enabled only in an explicit Vercel Preview",
@@ -99,12 +126,24 @@ check(
   "The lab page and API responses must remain outside search indexing.",
 );
 check(
-  "V4 provider is bounded and opt-in",
+  "V4 direct provider uses only its isolated credential",
+  provider.includes("process.env.ASK_SALES_V4_DEEPSEEK_API_KEY") &&
+    !provider.includes("process.env.DEEPSEEK_API_KEY"),
+  "Direct V4 must require its Preview-scoped credential and must never inherit the shared V3 DeepSeek key.",
+);
+check(
+  "V4 providers are DeepSeek-only and bounded",
   provider.includes('process.env.ASK_SALES_V4_USE_VERCEL_GATEWAY === "true"') &&
     provider.includes("maxRetries: 0") &&
     provider.includes("timeout: 32_000") &&
-    provider.includes('only: ["deepseek"]'),
-  "The isolated model path must be explicitly enabled, DeepSeek-only, non-retrying, and time-bounded.",
+    provider.includes('only: ["deepseek"]') &&
+    provider.includes("const DIRECT_MAX_ATTEMPTS = 2") &&
+    provider.includes("const deadlineAt = startedAt + directTimeoutSeconds() * 1000") &&
+    provider.includes("const remainingMs = deadlineAt - Date.now()") &&
+    provider.includes("setTimeout(() => controller.abort(), remainingMs)") &&
+    provider.includes('fetch("https://api.deepseek.com/chat/completions"') &&
+    provider.includes("Math.min(configured, 35)"),
+  "Gateway must remain zero-retry; direct mode may retry once, but both attempts share one absolute 35-second-or-less stage deadline and remain DeepSeek-only.",
 );
 check(
   "hosted model access must be live-confirmed",

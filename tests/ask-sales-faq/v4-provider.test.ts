@@ -13,7 +13,8 @@ vi.mock("ai", () => ({
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness, isV4ModelConfigured } from "@/lib/ask-sales-faq/v4/provider";
 
 const original = {
-  deepSeekKey: process.env.DEEPSEEK_API_KEY,
+  v4DeepSeekKey: process.env.ASK_SALES_V4_DEEPSEEK_API_KEY,
+  sharedDeepSeekKey: process.env.DEEPSEEK_API_KEY,
   gatewayFlag: process.env.ASK_SALES_V4_USE_VERCEL_GATEWAY,
   oidc: process.env.VERCEL_OIDC_TOKEN,
   gatewayModel: process.env.FAQ_V4_GATEWAY_MODEL,
@@ -32,6 +33,7 @@ function restore(name: keyof NodeJS.ProcessEnv, value: string | undefined) {
 }
 
 beforeEach(() => {
+  delete process.env.ASK_SALES_V4_DEEPSEEK_API_KEY;
   delete process.env.DEEPSEEK_API_KEY;
   delete process.env.ASK_SALES_V4_USE_VERCEL_GATEWAY;
   delete process.env.VERCEL_OIDC_TOKEN;
@@ -45,7 +47,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  restore("DEEPSEEK_API_KEY", original.deepSeekKey);
+  restore("ASK_SALES_V4_DEEPSEEK_API_KEY", original.v4DeepSeekKey);
+  restore("DEEPSEEK_API_KEY", original.sharedDeepSeekKey);
   restore("ASK_SALES_V4_USE_VERCEL_GATEWAY", original.gatewayFlag);
   restore("VERCEL_OIDC_TOKEN", original.oidc);
   restore("FAQ_V4_GATEWAY_MODEL", original.gatewayModel);
@@ -93,7 +96,7 @@ describe("Ask Sales V4 isolated provider", () => {
   });
 
   it("honors explicit Gateway transport even when a direct key is inherited", async () => {
-    process.env.DEEPSEEK_API_KEY = "direct-key";
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
     process.env.ASK_SALES_V4_USE_VERCEL_GATEWAY = "true";
     process.env.VERCEL_OIDC_TOKEN = "test-oidc-token";
     mocks.generateText.mockResolvedValue({
@@ -113,11 +116,11 @@ describe("Ask Sales V4 isolated provider", () => {
     expect(mocks.generateText).toHaveBeenCalledOnce();
   });
 
-  it("keeps direct V4 validation on the bounded non-retrying adapter", async () => {
-    process.env.DEEPSEEK_API_KEY = "direct-key";
+  it("keeps direct V4 validation on the bounded isolated adapter", async () => {
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
     process.env.FAQ_V4_DEEPSEEK_MODEL = "deepseek-v4-pro";
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse({
-      choices: [{ message: { content: '{"result":"validated"}' } }],
+      choices: [{ finish_reason: "stop", message: { content: '{"result":"validated"}' } }],
       usage: { completion_tokens: 4, total_tokens: 15 },
     }));
     vi.stubGlobal("fetch", fetchMock);
@@ -138,18 +141,21 @@ describe("Ask Sales V4 isolated provider", () => {
       model: "deepseek-v4-pro",
       response_format: { type: "json_object" },
       thinking: { type: "disabled" },
+      stream: false,
+      user_id: "ask-sales-v4-isolated",
     });
     expect(mocks.generateText).not.toHaveBeenCalled();
     expect(getV4ProviderReadiness()).toMatchObject({
       provider: "deepseek",
       model: "deepseek-v4-pro",
       maxModelCallSeconds: 35,
-      deepSeekRetries: 0,
+      deepSeekRetries: 1,
       transport: "direct",
     });
   });
 
   it("fails closed without drifting to Gateway or Anthropic when Gateway use is not explicit", async () => {
+    process.env.DEEPSEEK_API_KEY = "shared-v3-key-that-v4-must-ignore";
     process.env.VERCEL_OIDC_TOKEN = "test-oidc-token";
     process.env.ANTHROPIC_API_KEY = "test-anthropic-key";
     const fetchMock = vi.fn();
@@ -168,7 +174,7 @@ describe("Ask Sales V4 isolated provider", () => {
   });
 
   it("fails closed instead of drifting to direct transport when explicit Gateway OIDC is missing", async () => {
-    process.env.DEEPSEEK_API_KEY = "inherited-direct-key";
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "inherited-direct-key";
     process.env.ASK_SALES_V4_USE_VERCEL_GATEWAY = "true";
 
     await expect(generateV4Json({
@@ -182,11 +188,85 @@ describe("Ask Sales V4 isolated provider", () => {
     expect(mocks.generateText).not.toHaveBeenCalled();
   });
 
-  it("records one sanitized direct attempt and never retries", async () => {
-    process.env.DEEPSEEK_API_KEY = "direct-key";
+  it("retries one transient response and succeeds within the shared stage deadline", async () => {
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
     process.env.FAQ_V4_MODEL_TIMEOUT_SECONDS = "999";
     const timeoutSpy = vi.spyOn(globalThis, "setTimeout");
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ error: { message: "temporary failure" } }, 500));
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ error: { message: "temporary failure" } }, 503))
+      .mockResolvedValueOnce(jsonResponse({
+        choices: [{ finish_reason: "stop", message: { content: '{"result":"recovered"}' } }],
+        usage: { completion_tokens: 4, total_tokens: 12 },
+      }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await generateV4Json({
+      purpose: "v4_atomic_plan",
+      system: "Return JSON only.",
+      user: "Test",
+      maxTokens: 200,
+      parse: (content) => JSON.parse(content) as { result: string },
+    });
+
+    expect(result.output).toEqual({ result: "recovered" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(result.attempts).toEqual([
+      expect.objectContaining({ provider: "deepseek", status: "failed", error: "temporary failure" }),
+      expect.objectContaining({ provider: "deepseek", status: "success" }),
+    ]);
+    const requestDeadlines = timeoutSpy.mock.calls
+      .map((call) => Number(call[1]))
+      .filter((delay) => delay > 1000);
+    expect(requestDeadlines).toHaveLength(2);
+    expect(requestDeadlines.every((delay) => delay <= 35_000)).toBe(true);
+    expect(requestDeadlines[1]).toBeLessThan(requestDeadlines[0]);
+  });
+
+  it("retries an empty successful JSON response once", async () => {
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ choices: [{ finish_reason: "stop", message: { content: "" } }] }))
+      .mockResolvedValueOnce(jsonResponse({ choices: [{ finish_reason: "stop", message: { content: '{"result":"ok"}' } }] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await generateV4Json({
+      purpose: "v4_atomic_plan",
+      system: "Return JSON only.",
+      user: "Test",
+      maxTokens: 200,
+      parse: (content) => JSON.parse(content) as { result: string },
+    });
+
+    expect(result.output).toEqual({ result: "ok" });
+    expect(result.attempts[0]).toMatchObject({ status: "failed", error: expect.stringMatching(/empty JSON content/) });
+    expect(result.attempts[1]).toMatchObject({ status: "success" });
+  });
+
+  it("does not retry a non-transient authentication failure and sanitizes its error", async () => {
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ error: { message: "api_key=server-echoed-secret rejected" } }, 401));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const failure = generateV4Json({
+      purpose: "v4_atomic_plan",
+      system: "Return JSON only.",
+      user: "Test",
+      maxTokens: 200,
+      parse: (content) => JSON.parse(content) as { result: string },
+    });
+
+    await expect(failure).rejects.toMatchObject({
+      message: expect.not.stringContaining("server-echoed-secret"),
+      attempts: [expect.objectContaining({ status: "failed", error: expect.stringContaining("credential=[redacted]") })],
+    });
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("fails closed without retrying a truncated completion", async () => {
+    process.env.ASK_SALES_V4_DEEPSEEK_API_KEY = "direct-key";
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({
+      choices: [{ finish_reason: "length", message: { content: '{"result":' } }],
+    }));
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(generateV4Json({
@@ -196,11 +276,9 @@ describe("Ask Sales V4 isolated provider", () => {
       maxTokens: 200,
       parse: (content) => JSON.parse(content) as { result: string },
     })).rejects.toMatchObject({
-      attempts: [expect.objectContaining({ provider: "deepseek", status: "failed", error: "temporary failure" })],
+      attempts: [expect.objectContaining({ status: "failed", error: expect.stringContaining("finish_reason=length") })],
     });
-
     expect(fetchMock).toHaveBeenCalledOnce();
-    expect(timeoutSpy.mock.calls.filter((call) => call[1] === 35_000)).toHaveLength(1);
   });
 
   it("fails closed and preserves a sanitized attempt when Gateway JSON violates the stage parser", async () => {

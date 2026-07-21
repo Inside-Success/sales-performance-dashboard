@@ -70,7 +70,7 @@ describe("Ask Sales V4 isolated runtime", () => {
       if (purpose === "v4_claim_composition") {
         return { summary: "The minimum is $2.5k.", sentences: [{ id: "S1", text: "The minimum first payment is $2.5k.", need_ids: ["N1"], evidence_refs: [selectedRef], kind: "answer" }] };
       }
-      return { sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "$2.5k is equivalent to $2,500." }], need_checks: [{ need_id: "N1", status: "answered", reason: "The minimum is answered." }, { need_id: "N2", status: "unresolved", reason: "The schedule is unresolved." }], reason: "Grounded partial." };
+      return { sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "$2.5k is equivalent to $2,500." }], need_checks: [{ need_id: "N1", status: "answered", reason: "The minimum is answered." }], reason: "Grounded partial." };
     });
 
     const result = await runAskSalesFaqV4("Can they put $2.5k down on Lite now and use a special schedule to upgrade to VIP later?", [], { provider });
@@ -165,6 +165,56 @@ describe("Ask Sales V4 isolated runtime", () => {
     expect(result.runtimeMetadata.validation.unresolvedNeedIds).toContain("N2");
   });
 
+  it("fails closed when the validator omits the required need checks", async () => {
+    let selectedRef = "";
+    const provider = providerFor(({ purpose, payload }) => {
+      if (purpose === "v4_atomic_plan") {
+        selectedRef = refFor(payload, "VIP Tier-1 platform coverage and Apple TV paid-submission boundary");
+        return {
+          needs: [{ id: "N1", text: "Tier-1 platform count", lane: "answer", evidence_refs: [selectedRef], supported_claim: "VIP includes submission to one Tier-1 platform.", reason: "Direct.", route_key: null, clarification_question: "" }],
+          confidence_score: 95,
+          reasoning_summary: "Direct evidence.",
+        };
+      }
+      if (purpose === "v4_claim_composition") {
+        return { summary: "One platform.", sentences: [{ id: "S1", text: "VIP includes submission to one Tier-1 platform.", need_ids: ["N1"], evidence_refs: [selectedRef], kind: "answer" }] };
+      }
+      return { sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "Entailed." }], reason: "Need checks were omitted." };
+    });
+
+    const result = await runAskSalesFaqV4("For VIP, is it one Tier-1 platform?", [], { provider });
+    expect(result.lane).toBe("route");
+    expect(result.selectedPolicyIds).toEqual([]);
+    expect(result.runtimeMetadata.validation.reason).toMatch(/validator unavailable/i);
+  });
+
+  it("fails closed when the validator uses a sentence status for an atomic need", async () => {
+    let selectedRef = "";
+    const provider = providerFor(({ purpose, payload }) => {
+      if (purpose === "v4_atomic_plan") {
+        selectedRef = refFor(payload, "VIP Tier-1 platform coverage and Apple TV paid-submission boundary");
+        return {
+          needs: [{ id: "N1", text: "Tier-1 platform count", lane: "answer", evidence_refs: [selectedRef], supported_claim: "VIP includes submission to one Tier-1 platform.", reason: "Direct.", route_key: null, clarification_question: "" }],
+          confidence_score: 95,
+          reasoning_summary: "Direct evidence.",
+        };
+      }
+      if (purpose === "v4_claim_composition") {
+        return { summary: "One platform.", sentences: [{ id: "S1", text: "VIP includes submission to one Tier-1 platform.", need_ids: ["N1"], evidence_refs: [selectedRef], kind: "answer" }] };
+      }
+      return {
+        sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "Entailed." }],
+        need_checks: [{ need_id: "N1", status: "supported", reason: "Invalid need status." }],
+        reason: "Invalid enum.",
+      };
+    });
+
+    const result = await runAskSalesFaqV4("For VIP, is it one Tier-1 platform?", [], { provider });
+    expect(result.lane).toBe("route");
+    expect(result.selectedPolicyIds).toEqual([]);
+    expect(result.runtimeMetadata.validation.reason).toMatch(/validator unavailable/i);
+  });
+
   it("hard-routes a matching open governance topic even when the planner tries to answer", async () => {
     const provider = providerFor(({ purpose, payload }) => {
       if (purpose !== "v4_atomic_plan") throw new Error("Composition must not run for a blocked topic");
@@ -233,7 +283,7 @@ describe("Ask Sales V4 isolated runtime", () => {
         ], confidence_score: 85, reasoning_summary: "Answer plus clarification." };
       }
       if (purpose === "v4_claim_composition") return { summary: "One fact.", sentences: [{ id: "S1", text: "VIP includes submission to one Tier-1 platform.", need_ids: ["N1"], evidence_refs: [selectedRef], kind: "answer" }] };
-      return { sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "Entailed." }], need_checks: [{ need_id: "N1", status: "answered", reason: "Answered." }, { need_id: "N2", status: "unresolved", reason: "Clarification required." }], reason: "Grounded plus clarification." };
+      return { sentence_checks: [{ sentence_id: "S1", status: "supported", evidence_refs: [selectedRef], reason: "Entailed." }], need_checks: [{ need_id: "N1", status: "answered", reason: "Answered." }], reason: "Grounded plus clarification." };
     });
     const result = await runAskSalesFaqV4("How many Tier-1 platforms, and what is the price for the other program?", [], { provider });
     expect(result.lane).toBe("partial");

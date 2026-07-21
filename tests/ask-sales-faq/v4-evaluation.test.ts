@@ -1,11 +1,28 @@
 import { describe, expect, it } from "vitest";
 import {
   evaluateV4PromotionGate,
+  inferV4ComparisonMode,
+  parseV4HumanScoreBundle,
   parseV4SystemJudgeScore,
   summarizeV4PairedEvaluation,
+  summarizeV4Runs,
   type V4PairedEvaluationItem,
   type V4SystemJudgeScore,
 } from "@/lib/ask-sales-faq/v4/evaluation";
+
+const validGoldContext = {
+  goldAdjudicated: true,
+  goldPolicyIds: ["policy-1"],
+  blockedTopicIds: [],
+  goldContext: [],
+  blockedContext: [],
+  goldAdjudicationValid: true,
+  goldNeedCount: 2,
+  goldNeedIds: ["need-1", "need-2"],
+  goldResolutionErrors: [],
+  sameKnowledgeSnapshot: true,
+  executionOrder: "v3-first",
+};
 
 function rawScore(overrides: Record<string, unknown> = {}) {
   return {
@@ -86,9 +103,9 @@ describe("Ask Sales V4 fair evaluation", () => {
       v3: { latencyMs: 10, score: safe },
       v4: { latencyMs: 10, lane: "answer", score: unsafe },
       independentJudge: true,
-      evaluationContext: { goldAdjudicated: true, goldPolicyIds: ["policy-1"], blockedTopicIds: [], goldContext: [], blockedContext: [], sameKnowledgeSnapshot: true },
+      evaluationContext: validGoldContext,
     }];
-    const gate = evaluateV4PromotionGate(items);
+    const gate = evaluateV4PromotionGate(items, { requireModelBacked: false });
     expect(gate.passed).toBe(false);
     expect(gate.failures).toEqual(expect.arrayContaining([expect.stringMatching(/critical unsupported/)]));
   });
@@ -101,10 +118,10 @@ describe("Ask Sales V4 fair evaluation", () => {
       v4: { latencyMs: 10, lane: "answer", score: safe },
       independentJudge: false,
       evaluationContext: { goldAdjudicated: false, goldPolicyIds: [], blockedTopicIds: [], goldContext: [], blockedContext: [], sameKnowledgeSnapshot: false },
-    }]);
+    }], { requireModelBacked: false });
     expect(ungrounded.passed).toBe(false);
     expect(ungrounded.failures).toEqual(expect.arrayContaining([
-      expect.stringMatching(/independently adjudicated gold/),
+      expect.stringMatching(/independently adjudicated.*gold/),
       expect.stringMatching(/judge independent/),
       expect.stringMatching(/different knowledge snapshots/),
     ]));
@@ -114,8 +131,8 @@ describe("Ask Sales V4 fair evaluation", () => {
       v3: { latencyMs: 10, score: parseV4SystemJudgeScore(rawScore({ fully_resolved_needs: 0, appropriately_routed_needs: 1, false_abstained_needs: 1 })) },
       v4: { latencyMs: 10, lane: "answer", score: safe },
       independentJudge: true,
-      evaluationContext: { goldAdjudicated: true, goldPolicyIds: ["policy-1"], blockedTopicIds: [], goldContext: [], blockedContext: [], sameKnowledgeSnapshot: true },
-    }]);
+      evaluationContext: validGoldContext,
+    }], { requireModelBacked: false });
     expect(passing.status).toBe("pass");
     expect(passing.passed).toBe(true);
   });
@@ -128,5 +145,110 @@ describe("Ask Sales V4 fair evaluation", () => {
     }]);
     expect(gate.status).toBe("not_evaluated");
     expect(gate.passed).toBe(false);
+  });
+
+  it("binds independent human scores to a reproducible run manifest", () => {
+    const digest = "a".repeat(64);
+    const parsed = parseV4HumanScoreBundle({
+      schemaVersion: 1,
+      sourceRunId: "paired-fixed",
+      sourceDatasetSha256: digest,
+      sourceCodeSha256: digest,
+      sourceKnowledgeVersion: "knowledge-1",
+      scorer: {
+        id: "reviewer-1",
+        adjudicatedAt: "2026-07-21T18:00:00.000Z",
+        methodology: "Blind need-level human adjudication against governed evidence.",
+        independentFromSystems: true,
+      },
+      scores: [{
+        id: "case-1-run-1",
+        v3AnswerSha256: digest,
+        v4AnswerSha256: digest,
+        v3Score: rawScore(),
+        v4Score: rawScore(),
+        preferred: "tie",
+        comparisonReason: "Both answers satisfy the same two needs.",
+        needOutcomes: [
+          { needId: "need-1", v3: "fully_resolved", v4: "fully_resolved" },
+          { needId: "need-2", v3: "appropriately_routed", v4: "appropriately_routed" },
+        ],
+      }],
+    });
+    expect(parsed.scores[0].v4Score.totalNeeds).toBe(2);
+    expect(parsed.scorer.independentFromSystems).toBe(true);
+    expect(() => parseV4HumanScoreBundle({ ...parsed, scorer: { ...parsed.scorer, independentFromSystems: false } })).toThrow(/independentFromSystems/);
+  });
+
+  it("infers fresh and mixed comparison modes from actual stored-answer coverage", () => {
+    expect(inferV4ComparisonMode({ forceFreshV3: false, promptsWithStoredProduction: 0, totalPrompts: 78 })).toBe("same_current_snapshot_fresh_v3_vs_v4");
+    expect(inferV4ComparisonMode({ forceFreshV3: false, promptsWithStoredProduction: 40, totalPrompts: 78 })).toBe("mixed_stored_and_fresh_v3_diagnostic");
+    expect(inferV4ComparisonMode({ forceFreshV3: false, promptsWithStoredProduction: 78, totalPrompts: 78 })).toBe("historical_user_experience_replay");
+  });
+
+  it("requires model-backed answer stages and rejects a deterministic fallback", () => {
+    const safe = parseV4SystemJudgeScore(rawScore());
+    const gate = evaluateV4PromotionGate([{
+      id: "case-1-run-1",
+      run: 1,
+      preferred: "v4",
+      v3: { latencyMs: 10, score: safe },
+      v4: {
+        latencyMs: 10,
+        lane: "answer",
+        score: safe,
+        executionMode: { planning: "deterministic_fallback", composition: "exact_evidence", validation: "deterministic_exact_evidence" },
+        providerAttempts: [],
+      },
+      independentJudge: true,
+      evaluationContext: validGoldContext,
+    }]);
+    expect(gate.failures).toEqual(expect.arrayContaining([expect.stringMatching(/not fully model-backed/)]));
+  });
+
+  it("accepts complete model-stage provenance when every other gate is satisfied", () => {
+    const safe = parseV4SystemJudgeScore(rawScore());
+    const gate = evaluateV4PromotionGate([{
+      id: "case-1-run-1",
+      run: 1,
+      preferred: "v4",
+      v3: { latencyMs: 10, score: safe },
+      v4: {
+        latencyMs: 10,
+        lane: "answer",
+        score: safe,
+        executionMode: { planning: "model", composition: "model", validation: "model_and_deterministic" },
+        providerAttempts: [
+          { purpose: "v4_atomic_plan", status: "success" },
+          { purpose: "v4_claim_composition", status: "success" },
+          { purpose: "v4_claim_validation", status: "success" },
+        ],
+      },
+      independentJudge: true,
+      evaluationContext: validGoldContext,
+    }], { minimumRuns: 1 });
+    expect(gate).toMatchObject({ status: "pass", passed: true });
+  });
+
+  it("evaluates worst-run thresholds instead of hiding a weak repeat in the aggregate", () => {
+    const good = parseV4SystemJudgeScore(rawScore());
+    const weak = parseV4SystemJudgeScore(rawScore({ fully_resolved_needs: 0, appropriately_routed_needs: 0, false_abstained_needs: 2 }));
+    const items: V4PairedEvaluationItem[] = [1, 2].map((run) => ({
+      id: `case-1-run-${run}`,
+      run,
+      preferred: "v4",
+      v3: { latencyMs: 10, score: weak },
+      v4: { latencyMs: 10, lane: "answer", score: run === 1 ? good : weak },
+      independentJudge: true,
+      evaluationContext: validGoldContext,
+    }));
+    const summary = summarizeV4Runs(items);
+    expect(summary.runCount).toBe(2);
+    expect(summary.stability.v4WeightedNeedUtilitySpread).toBe(100);
+    const gate = evaluateV4PromotionGate(items, { minimumRuns: 2, requireModelBacked: false, maximumUtilitySpread: 5 });
+    expect(gate.failures).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Run 2 V4 weighted need utility/),
+      expect.stringMatching(/spread across runs/),
+    ]));
   });
 });
