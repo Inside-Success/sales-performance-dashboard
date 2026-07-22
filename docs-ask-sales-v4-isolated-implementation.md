@@ -8,7 +8,9 @@ Status: **implemented and verified end to end in a separate protected Vercel Pre
 
 The post-launch V4 recommendation is implemented as an isolated evaluation and stakeholder-review path. It can now run its real three-stage DeepSeek path in the protected Preview. The existing V3 production selector, normal Ask Sales API, production page, Neon data, conversations, feedback, source-review workflows, governed publisher, and production deployment were not changed by this implementation.
 
-The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. It is published as draft dashboard PR [#70](https://github.com/Inside-Success/sales-performance-dashboard/pull/70). Merge, production cutover, and production promotion remain separate future decisions.
+The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. The completed candidate and evaluator are frozen in dashboard commit `2d2ba16`. The branch is published as draft dashboard PR [#70](https://github.com/Inside-Success/sales-performance-dashboard/pull/70). Merge, production cutover, and production promotion remain separate future decisions.
+
+At the final GitHub check, PR #70 remained open and draft, its governed-release validation completed successfully, and its merge state was clean.
 
 ## Architecture
 
@@ -107,7 +109,7 @@ Observed end-to-end latency in this diagnostic was:
 
 An independent engineering audit decomposed the 78 prompts into 117 substantive needs. All 117/117 were appropriately handled in the retained replay: 61 answer needs, 27 route needs, 5 live-lookups, 3 artifact lookups, 2 clarifications, 2 intentionally partial needs, and 17 conversation/rewrite needs. It found 0 unsupported factual claims, 0 missing required routes, 0 wrong routes, and 0 false abstentions; all 28 route-required cases used the expected channel set, including the intentional multi-channel case.
 
-This is strong regression-engineering evidence, not a promotion score. The artifact records a dirty working-tree runtime at HEAD `ce937e3`, while its exact implementation fingerprint is preserved as code hash `97f1f9e7f3ec3ae4ac36651ff76e751f7c733e41f3d9036753ce08056578aad7`. It has no independent SME gold, judge scores, or blind human scores and therefore remains noncanonical and `not_evaluated` for promotion.
+This is strong regression-engineering evidence, not a promotion score. The artifact records a dirty working-tree runtime at HEAD `ce937e3`, while its exact implementation fingerprint is preserved as code hash `97f1f9e7f3ec3ae4ac36651ff76e751f7c733e41f3d9036753ce08056578aad7`; that implementation is now frozen in commit `2d2ba16`. It has no independent SME gold, judge scores, or blind human scores and therefore remains noncanonical and `not_evaluated` for promotion.
 
 The following incomplete or accidental artifacts were deleted/excluded and must not be used as evaluation evidence:
 
@@ -134,12 +136,14 @@ The current dependency audit reports 14 advisories: 2 low, 6 moderate, 6 high, a
 
 ## Production Isolation
 
+- Final read-only recheck: remote dashboard main remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`; production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`, its production aliases remained attached, and the production project build-ignore command remained unset.
+- Three earlier V4 branch commits triggered failed non-production Preview attempts in the production-linked Vercel project. None reached `READY`, changed the production target, or moved an alias. The exact-branch deployment guard prevented any new production-project deployment or Vercel check for final candidate `2d2ba16`.
 - The normal production selector remains V2/V3-only; V3 remains the selected live runtime.
 - Normal `/api/ask-sales-faq` does not import V4.
 - Normal `/ask-sales-faq` does not import or link the lab.
 - The production selector, normal API/page, and shared V3 provider were byte-compared with `origin/main` during isolation verification.
 - The V4 credential, history secret, capability token, feature flags, deployment, and hosted tests exist only in the separate isolated Preview project.
-- The production alias was not moved, no production deployment was created, and the V4 branch was not merged.
+- The production alias was not moved, no new production deployment was created, and the V4 branch was not merged.
 - No Slack, Google, n8n, Neon, or production API write was made.
 - No subscription, provider upgrade, or marketplace product was purchased.
 - No local development server was run.
@@ -152,13 +156,12 @@ V4 is materially stronger than the first isolated implementation checkpoint: its
 
 Presentation polish remains in several retained responses: repeated or awkward phrasing in `qa-1-3`, `qa-2-7`, `qa-3-8`, `qa-4-1`, `qa-6-2`, `qa-8-1`, and `qa-8-4`. Four additional reservations (`qa-2-9`, `qa-3-4`, `qa-8-2`, and `qa-8-3`) are nonmaterial blocker metadata that did not harm the user-facing result. These should be considered during human review without restarting a case-by-case patch loop before stronger evaluation evidence exists.
 
-The remaining sequence is:
+The candidate/evaluator freeze is complete at `2d2ba16`. The remaining sequence is:
 
-1. freeze and commit the evaluator/candidate implementation and runtime inputs;
-2. obtain independent source-only SME gold plus an externally preregistered, stratified holdout of at least ten cases while leaving the current five sealed;
-3. run the three canonical alternating V3/V4 comparisons under exact provider parity;
-4. attach the blind human score bundle and evaluate the promotion gate;
-5. complete protected-Preview stakeholder review; and
-6. only after explicit approval, design a separate cutover, rollback, deployment, and production-health plan.
+1. obtain independent source-only SME gold plus an externally preregistered, stratified holdout of at least ten cases while leaving the current five sealed;
+2. run the three canonical alternating V3/V4 comparisons under exact provider parity;
+3. attach the blind human score bundle and evaluate the promotion gate;
+4. complete protected-Preview stakeholder review; and
+5. only after explicit approval, design a separate cutover, rollback, deployment, and production-health plan.
 
 There is no `element.md` in this repository. This file is the dashboard implementation record; the FAQ documentation repository maintains its corresponding `implementation.md` and handoff records.
