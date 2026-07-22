@@ -10,6 +10,7 @@ const replayPath = path.resolve(
   process.argv.find((value) => value.startsWith("--replay="))?.slice("--replay=".length)
     || "tests/ask-sales-faq/v4-live-v3-log-replay-2026-07-22.json",
 );
+const benchmarkPath = path.resolve("scripts/benchmark-ask-sales-faq-v4-paired.ts");
 
 const stop = new Set([
   "a", "an", "and", "are", "as", "at", "be", "but", "by", "can", "do", "does", "for", "from", "had",
@@ -97,6 +98,20 @@ function validateGold(dataset, entries, label) {
   }
 }
 
+function validateEvaluationProviderGuard(source) {
+  const requiredFragments = [
+    'const v3UsesV4EvaluationProvider = argument("v3-provider") === "v4";',
+    "v3UsesV4EvaluationProvider && !forceFreshV3",
+    "--v3-provider=v4 is evaluation-only and requires --v3-source=fresh.",
+    "{ provider: generateV4Json, validatorProvider: generateV4Json }",
+    "v3UsesV4EvaluationProvider,",
+  ];
+  const missing = requiredFragments.filter((fragment) => !source.includes(fragment));
+  if (missing.length) {
+    throw new Error(`Paired evaluator lost its isolated V3 Gateway guard: ${missing.join(" | ")}`);
+  }
+}
+
 async function previousQuestions(excluded) {
   const directory = path.resolve("tests/ask-sales-faq");
   const files = (await readdir(directory))
@@ -142,8 +157,12 @@ function freshnessAudit(entries, prior) {
 }
 
 async function main() {
-  const freshContents = await readFile(freshPath, "utf8");
-  const replayContents = await readFile(replayPath, "utf8");
+  const [freshContents, replayContents, benchmarkContents] = await Promise.all([
+    readFile(freshPath, "utf8"),
+    readFile(replayPath, "utf8"),
+    readFile(benchmarkPath, "utf8"),
+  ]);
+  validateEvaluationProviderGuard(benchmarkContents);
   const fresh = JSON.parse(freshContents);
   const replay = JSON.parse(replayContents);
   const freshEntries = promptEntries(fresh);

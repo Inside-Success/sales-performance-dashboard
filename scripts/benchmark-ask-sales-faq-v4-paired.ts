@@ -443,7 +443,7 @@ function normalizedModelId(value: string | null) {
   return (value || "").trim().toLowerCase().replace(/^[a-z0-9_-]+\//, "");
 }
 
-function providerConfiguration() {
+function providerConfiguration(v3UsesV4EvaluationProvider: boolean) {
   const v4 = getV4ProviderReadiness();
   const v3DeepSeekConfigured = Boolean(process.env.DEEPSEEK_API_KEY);
   const v3ClaudeFallbackEnabled = process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true";
@@ -451,17 +451,18 @@ function providerConfiguration() {
   const v3Model = process.env.FAQ_V3_DEEPSEEK_MODEL || process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro";
   const v3ReasoningMode = process.env.FAQ_DEEPSEEK_DISABLE_THINKING === "false" ? "enabled" : "disabled";
   const v3 = {
-    modelConfigured: v3DeepSeekConfigured,
-    deepSeekCredentialConfigured: v3DeepSeekConfigured,
+    modelConfigured: v3UsesV4EvaluationProvider ? v4.modelConfigured : v3DeepSeekConfigured,
+    deepSeekCredentialConfigured: v3UsesV4EvaluationProvider ? false : v3DeepSeekConfigured,
     anthropicCredentialConfigured: v3ClaudeConfigured,
-    provider: v3DeepSeekConfigured ? "deepseek" as const : null,
-    model: v3DeepSeekConfigured ? v3Model : null,
-    transport: v3DeepSeekConfigured ? "direct" as const : null,
-    maxModelCallSeconds: normalizedIntegerEnv("FAQ_MODEL_TIMEOUT_SECONDS", 75, 15, 110),
-    deepSeekRetries: 1 as const,
+    provider: v3UsesV4EvaluationProvider ? v4.provider : v3DeepSeekConfigured ? "deepseek" as const : null,
+    model: v3UsesV4EvaluationProvider ? v4.model : v3DeepSeekConfigured ? v3Model : null,
+    transport: v3UsesV4EvaluationProvider ? v4.transport : v3DeepSeekConfigured ? "direct" as const : null,
+    maxModelCallSeconds: v3UsesV4EvaluationProvider ? v4.maxModelCallSeconds : normalizedIntegerEnv("FAQ_MODEL_TIMEOUT_SECONDS", 75, 15, 110),
+    deepSeekRetries: v3UsesV4EvaluationProvider ? v4.deepSeekRetries : 1 as const,
     reasoningMode: v3ReasoningMode,
     claudeFallbackEnabled: v3ClaudeFallbackEnabled,
     claudeFallbackReady: v3ClaudeFallbackEnabled && v3ClaudeConfigured,
+    evaluationProviderAdapter: v3UsesV4EvaluationProvider ? "v4_provider" as const : null,
   };
   return {
     v3,
@@ -827,6 +828,10 @@ async function main() {
   const enforceGate = truthy(argument("enforce-gate"), Boolean(humanScoresPath));
   if (judge && enforceGate) throw new Error("The built-in model judge is diagnostic-only. Use --human-scores with exact answer hashes for promotion enforcement.");
   const forceFreshV3 = argument("v3-source") === "fresh";
+  const v3UsesV4EvaluationProvider = argument("v3-provider") === "v4";
+  if (v3UsesV4EvaluationProvider && !forceFreshV3) {
+    throw new Error("--v3-provider=v4 is evaluation-only and requires --v3-source=fresh.");
+  }
   const promptsWithStoredProduction = dataset.conversations.reduce(
     (total, conversation) => total + conversation.prompts.filter((prompt) => Boolean(prompt.production)).length,
     0,
@@ -900,7 +905,7 @@ async function main() {
       throw new Error("Holdout-consumption ledger hash does not match the preregistered suite protocol.");
     }
   }
-  const providerConfig = providerConfiguration();
+  const providerConfig = providerConfiguration(v3UsesV4EvaluationProvider);
   if (enforceGate) {
     if (!humanScoresPath) throw new Error("Promotion enforcement requires an independently adjudicated --human-scores bundle.");
     if (!approvedSuite) throw new Error("Promotion enforcement requires a hashed --approved-suite-manifest containing both retained and holdout roles.");
@@ -964,6 +969,7 @@ async function main() {
     expectedCases: perRunLimit * runs,
     comparisonMode,
     forceFreshV3,
+    v3UsesV4EvaluationProvider,
     requestedExecutionOrder,
     diagnosticJudgeEnabled: judge,
     providerConfiguration: providerConfig,
@@ -1198,7 +1204,11 @@ async function main() {
                 routeReason: promptEntry.production.routeReason,
                 source: "stored_production" as const,
               })
-          : runAskSalesFaqV3(question, v3InputMessages).then((result) => ({ ...result, knowledgeVersion: result.runtimeMetadata.knowledgeVersion, source: "fresh_runtime" as const }));
+          : runAskSalesFaqV3(
+              question,
+              v3InputMessages,
+              v3UsesV4EvaluationProvider ? { provider: generateV4Json, validatorProvider: generateV4Json } : undefined,
+            ).then((result) => ({ ...result, knowledgeVersion: result.runtimeMetadata.knowledgeVersion, source: "fresh_runtime" as const }));
         const runV4 = () => runAskSalesFaqV4(question, v4InputMessages);
         const alternatingV3First = Number.parseInt(sha256(`${run}:${conversation.id}:${promptIndex}`).slice(0, 2), 16) % 2 === 0;
         const actualExecutionOrder: Exclude<ExecutionOrder, "alternating"> = requestedExecutionOrder === "alternating"

@@ -4,6 +4,8 @@ Date: 2026-07-22
 
 Status: **frozen before answer generation; diagnostic evaluation only; no production or promotion authority.**
 
+Provider amendment before valid generation: the initial post-freeze command found that Vercel correctly withheld locally pulled values for sensitive direct API-key variables. Both runtimes therefore used their fail-closed no-model paths and the judge could not run. That invalid artifact is excluded from evidence. The paired evaluator was amended and re-frozen to inject fresh V3 with the same existing V4 DeepSeek Gateway provider via `runAskSalesFaqV3`'s dependency option. This changes no V3 runtime logic, retrieval, evidence, answer, validation, production selector, or live environment. Valid fresh runs use the same DeepSeek model, Gateway transport, disabled reasoning mode, zero provider fallback, and short-lived local OIDC authorization for both systems.
+
 ## Purpose
 
 This evaluation checks whether isolated V4 generalizes beyond the retained 78-question replay and whether it would have helped on recent real production questions. It deliberately separates:
@@ -42,6 +44,7 @@ All generation uses the frozen candidate/evaluator commit produced with this pro
 
 - dataset: fresh authoritative Slack source gold;
 - V3 source: fresh runtime;
+- V3 model adapter: evaluator-injected V4 DeepSeek Gateway provider (`--v3-provider=v4`);
 - V4 source: fresh isolated runtime;
 - runs: three;
 - order: deterministic alternating V3-first/V4-first;
@@ -53,6 +56,7 @@ All generation uses the frozen candidate/evaluator commit produced with this pro
 
 - dataset: recent production V3 log replay;
 - V3 source: fresh runtime;
+- V3 model adapter: evaluator-injected V4 DeepSeek Gateway provider (`--v3-provider=v4`);
 - V4 source: fresh isolated runtime;
 - runs: three;
 - order: deterministic alternating V3-first/V4-first;
@@ -104,6 +108,7 @@ These exact questions must not be added to runtime code, synonym lists, policy c
 - Production Neon access is limited to the already completed redacted one-`SELECT` export. No Neon write or schema helper is allowed.
 - V4 remains on its isolated branch and protected Preview project with no company-source or persistence write path.
 - No Slack, Google, n8n, GitHub issue/comment, Vercel plan, subscription, purchase, or external-message write is part of generation.
+- The local Gateway adapter uses only a short-lived OIDC token and does not retrieve, print, copy, or persist a production or Preview DeepSeek API key.
 - Raw generated artifacts remain local and git-ignored. Only redacted datasets, hashes, summarized results, verification evidence, and documentation may be committed.
 - The pending saved policy-matching replacement remains separate and untouched.
 
