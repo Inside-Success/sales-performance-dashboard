@@ -10,6 +10,7 @@
     "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
     "test:ask-sales-faq:v4": "vitest run tests/ask-sales-faq/v4-*.test.ts",
     "validate:ask-sales-faq:v4:isolation": "node scripts/validate-ask-sales-v4-isolation.mjs",
+    "validate:ask-sales-faq:v4:fresh-evaluation": "node scripts/validate-ask-sales-v4-fresh-evaluation.mjs",
     "smoke:ask-sales-faq:v4:direct": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-v4-direct.ts",
     "smoke:ask-sales-quality-review": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-quality-review.ts",
     "benchmark:ask-sales-faq:v3": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v3.ts",
