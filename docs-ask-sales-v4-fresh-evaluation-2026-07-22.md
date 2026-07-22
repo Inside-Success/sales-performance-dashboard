@@ -2,7 +2,9 @@
 
 Date: 2026-07-22
 
-Status: **frozen before answer generation; diagnostic evaluation only; no production or promotion authority.**
+Status: **protocol completed from frozen commit `f61c73e`; diagnostic evaluation only; no production or promotion authority.**
+
+Results and the source-backed engineering assessment are recorded in `docs-ask-sales-v4-fresh-evaluation-results-2026-07-22.md`. The decision is to keep V3 live and not promote V4 from this evidence.
 
 Provider amendments before valid generation: the initial post-freeze command found that Vercel correctly withheld locally pulled values for sensitive direct API-key variables. Both runtimes therefore used their fail-closed no-model paths and the judge could not run. A later one-case Gateway smoke reached the provider but confirmed that this Vercel project tier cannot use the selected DeepSeek model; no plan or credit change was made. Both invalid artifacts are excluded from evidence. The paired evaluator was amended and re-frozen to inject fresh V3 with the same existing V4 provider via `runAskSalesFaqV3`'s dependency option. This changes no V3 runtime logic, retrieval, evidence, answer, validation, production selector, or live environment. Valid fresh runs use the same direct `deepseek-v4-pro` transport, disabled reasoning mode, retry contract, and no alternate-provider fallback for both systems.
 

@@ -2,13 +2,13 @@
 
 Date: 2026-07-22
 
-Status: **implemented and verified end to end in a separate protected Vercel Preview; intentionally not connected to production and not approved for production promotion.**
+Status: **implemented and evaluated in isolation; fresh-source evidence does not justify promotion, so V3 remains live.**
 
 ## Outcome
 
 The post-launch V4 recommendation is implemented as an isolated evaluation and stakeholder-review path. It can now run its real three-stage DeepSeek path in the protected Preview. The existing V3 production selector, normal Ask Sales API, production page, Neon data, conversations, feedback, source-review workflows, governed publisher, and production deployment were not changed by this implementation.
 
-The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. The completed candidate and evaluator are frozen in dashboard commit `2d2ba16`. The branch is published as draft dashboard PR [#70](https://github.com/Inside-Success/sales-performance-dashboard/pull/70). Merge, production cutover, and production promotion remain separate future decisions.
+The working branch is `agent/ask-sales-v4-isolated-2026-07-21`, based on dashboard main `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`. The runtime candidate was frozen in dashboard commit `2d2ba16`; the fresh Slack/log datasets, paired-provider adapter, and completed diagnostic protocol were frozen before valid generation in commit `f61c73e`. The branch is published as draft dashboard PR [#70](https://github.com/Inside-Success/sales-performance-dashboard/pull/70). Merge, production cutover, and production promotion remain separate future decisions.
 
 At the final GitHub check, PR #70 remained open and draft, its governed-release validation completed successfully, and its merge state was clean.
 
@@ -117,12 +117,24 @@ The following incomplete or accidental artifacts were deleted/excluded and must 
 - aborted `paired-2026-07-21T23-22-00-333Z.json`; and
 - accidental no-model `paired-2026-07-21T23-43-14-619Z.json` and `.md`.
 
+## Fresh-Source And Production-Log Evaluation
+
+The retained replay was followed by a genuinely fresh diagnostic using 13 authoritative Slack prompts and 16 recent production-log prompts. The Slack questions had no exact or near duplicate among 242 prior tracked questions. Fresh V3 and V4 used the same direct `deepseek-v4-pro` provider through evaluator-only dependency injection; the live V3 runtime and production environment were not changed.
+
+Three episodes produced 103 paired outputs: 39 fresh Slack pairs, 48 fresh-runtime production-log pairs, and 16 comparisons between fresh V4 and the exact stored V3 answers users received. All pairs completed. V4 recorded 203 successful provider attempts and one recovered validation retry, with no unrecovered generation failure.
+
+The result is mixed and blocks promotion. V4 is faster and clearly safer when user evidence conflicts with stale policy, especially Money Mondays. V3 remains more useful on several established-policy and multi-turn questions. V4 also made fresh operational mistakes and over-routed known Mastermind facts. A source-backed engineering review of all captured pairs found no broad V4 superiority.
+
+The main systemic bottleneck is governed-knowledge lag and conflict handling, not the absence of a vector database. Several reliable Slack decisions were not present in the materialized corpus, so neither retriever could answer them. The next isolated phase should improve authoritative-source promotion, supersession, supported-part preservation, clarification, route accuracy, and follow-up continuity, then use a new untouched set.
+
+The diagnostic model judge completed only 66/103 strict scores and made some route/artifact mistakes even when parsing succeeded. Its subset scores are retained as secondary evidence; the source-backed engineering review is the primary interpretation. Full results, case-level findings, limitations, artifact hashes, and the `keep V3 live` decision are in `docs-ask-sales-v4-fresh-evaluation-results-2026-07-22.md`.
+
 ## Final Verification Matrix
 
 No local development server was started.
 
-- Focused V4 tests: **371/371 passed across 15 files**.
-- Full Ask Sales tests: **607/607 passed across 30 files**, including unchanged V3 behavior.
+- Focused V4 tests: **374/374 passed across 16 files**.
+- Full Ask Sales tests: **610/610 passed across 31 files**, including unchanged V3 behavior.
 - Static Ask Sales validator: **107/107 passed**.
 - Transitive V4 isolation validator: **15/15 passed**.
 - TypeScript: passed with no errors.
@@ -136,7 +148,7 @@ The current dependency audit reports 14 advisories: 2 low, 6 moderate, 6 high, a
 
 ## Production Isolation
 
-- Final read-only recheck: remote dashboard main remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`; production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`, its production aliases remained attached, and the production project build-ignore command remained unset.
+- Final read-only recheck after fresh generation: remote dashboard main remained `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`; production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remained `READY`/`production`, its rose and main aliases remained attached, and no V4 commit moved a production alias.
 - Three earlier V4 branch commits triggered failed non-production Preview attempts in the production-linked Vercel project. None reached `READY`, changed the production target, or moved an alias. The exact-branch deployment guard prevented any new production-project deployment or Vercel check for final candidate `2d2ba16`.
 - The normal production selector remains V2/V3-only; V3 remains the selected live runtime.
 - Normal `/api/ask-sales-faq` does not import V4.
@@ -152,16 +164,16 @@ The saved policy-matching replacement remains a separate pending project. V4 nei
 
 ## Honest Readiness Assessment
 
-V4 is materially stronger than the first isolated implementation checkpoint: its real provider path works in the protected Preview, all retained model attempts succeeded, the 117-need engineering audit found no substantive handling defect, and the expanded security and governance suites pass. That is enough to begin controlled stakeholder review after the canonical evidence package is prepared. It is not evidence that the chatbot is “perfect,” and it is not authorization to replace V3.
+V4 is materially stronger than the first isolated implementation checkpoint, and its real provider path and isolation controls work. The fresh evaluation nevertheless shows that retained-replay success did not generalize into broad superiority. V4 has meaningful stale-policy safety wins and latency gains, but it also has false abstentions, weaker follow-up continuity, wrong routes, and fresh operational errors. It is not ready for stakeholder promotion review or authorization to replace V3.
 
 Presentation polish remains in several retained responses: repeated or awkward phrasing in `qa-1-3`, `qa-2-7`, `qa-3-8`, `qa-4-1`, `qa-6-2`, `qa-8-1`, and `qa-8-4`. Four additional reservations (`qa-2-9`, `qa-3-4`, `qa-8-2`, and `qa-8-3`) are nonmaterial blocker metadata that did not harm the user-facing result. These should be considered during human review without restarting a case-by-case patch loop before stronger evaluation evidence exists.
 
-The candidate/evaluator freeze is complete at `2d2ba16`. The remaining sequence is:
+The runtime candidate is frozen at `2d2ba16`, and the completed fresh evaluation ran from `f61c73e`. The remaining sequence is:
 
-1. obtain independent source-only SME gold plus an externally preregistered, stratified holdout of at least ten cases while leaving the current five sealed;
-2. run the three canonical alternating V3/V4 comparisons under exact provider parity;
-3. attach the blind human score bundle and evaluate the promotion gate;
-4. complete protected-Preview stakeholder review; and
-5. only after explicit approval, design a separate cutover, rollback, deployment, and production-health plan.
+1. systemically improve authoritative-source promotion, supersession/conflict handling, exact routing, clarification, supported-part preservation, and follow-up continuity in isolation;
+2. collect a newly untouched source-backed set rather than tuning against the 29 questions used here;
+3. obtain independent source-only SME gold plus an externally preregistered, stratified holdout of at least ten cases while leaving the current five sealed;
+4. run the canonical alternating V3/V4 comparison with blind human scoring and exact provider parity; and
+5. consider stakeholder review and a separate cutover/rollback plan only if that evidence is materially better and the user explicitly approves it.
 
 There is no `element.md` in this repository. This file is the dashboard implementation record; the FAQ documentation repository maintains its corresponding `implementation.md` and handoff records.
