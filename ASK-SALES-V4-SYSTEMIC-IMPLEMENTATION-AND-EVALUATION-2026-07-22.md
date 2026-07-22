@@ -7,6 +7,7 @@ Status: **implemented and frozen in isolation; materially better than frozen V4 
 ## Release Boundary
 
 - Branch: `agent/ask-sales-v4-systemic-knowledge-2026-07-22`
+- Draft dashboard PR: [#71](https://github.com/Inside-Success/sales-performance-dashboard/pull/71)
 - Frozen runtime commit: `7e639208f18a5b71ef144839c822ccf12ce9848f`
 - Frozen tree: `4e46b94e51e08d06ead6a4344308205893f646e4`
 - Production selector changed: no
@@ -186,6 +187,8 @@ Read-only verification after the frozen commit found:
 - normal Ask Sales API blob: `75407019453aba057202e5de5435df60f024740c`;
 - production alias `sales-performance-dashboard-rose.vercel.app`: deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw`;
 - deployment state/target: `READY` / `production`.
+
+After the branch and draft PR were published, the production-linked Vercel project's recent deployment list contained no deployment for the systemic branch. The production alias still resolved to the same `READY` production deployment above.
 
 ## Honest Decision
 
