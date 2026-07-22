@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/ask-sales-faq/v4-lab", headers: isolatedLabHeaders },
       { source: "/api/ask-sales-faq/v4-isolated", headers: isolatedLabHeaders },
+      { source: "/ask-sales-faq/v4-systemic-lab", headers: isolatedLabHeaders },
+      { source: "/api/ask-sales-faq/v4-systemic-isolated", headers: isolatedLabHeaders },
     ];
   },
 };

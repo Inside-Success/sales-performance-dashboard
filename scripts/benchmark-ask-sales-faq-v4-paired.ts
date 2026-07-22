@@ -34,6 +34,8 @@ import {
   type V4GoldReferenceCatalog,
 } from "../src/lib/ask-sales-faq/v4/adjudication";
 import { runAskSalesFaqV4 } from "../src/lib/ask-sales-faq/v4/runtime";
+import { getV4SystemicEffectiveCorpusSnapshot } from "../src/lib/ask-sales-faq/v4/systemic/corpus";
+import { runAskSalesFaqV4Systemic } from "../src/lib/ask-sales-faq/v4/systemic/runtime";
 import { generateV4Json, getV4ProviderReadiness } from "../src/lib/ask-sales-faq/v4/provider";
 import {
   getV3EffectiveCorpusSnapshot,
@@ -72,6 +74,7 @@ type Prompt = {
 type Conversation = { id: string; title: string; prompts: Prompt[] };
 type Dataset = { name: string; conversations: Conversation[]; adjudication: V4AdjudicationProvenance | null };
 type ExecutionOrder = "alternating" | "v3-first" | "v4-first" | "parallel";
+type CandidateRuntime = "current" | "systemic";
 
 type JudgeOutput = {
   A: V4SystemJudgeScore;
@@ -362,10 +365,10 @@ function canonicalJson(value: unknown): string {
   return value === undefined ? "null" : JSON.stringify(value);
 }
 
-function effectiveCorpusHashes() {
+function effectiveCorpusHashes(candidateRuntime: CandidateRuntime) {
   return {
     v3EffectiveCorpusSha256: sha256(canonicalJson(getV3EffectiveCorpusSnapshot())),
-    v4EffectiveCorpusSha256: sha256(canonicalJson(getV4EffectiveCorpusSnapshot())),
+    v4EffectiveCorpusSha256: sha256(canonicalJson(candidateRuntime === "systemic" ? getV4SystemicEffectiveCorpusSnapshot() : getV4EffectiveCorpusSnapshot())),
   };
 }
 
@@ -826,6 +829,9 @@ async function main() {
   const humanScoresPath = argument("human-scores") ? path.resolve(argument("human-scores") as string) : null;
   if (judge && humanScoresPath) throw new Error("Use either the diagnostic model judge or independently adjudicated human scores, not both.");
   const enforceGate = truthy(argument("enforce-gate"), Boolean(humanScoresPath));
+  const candidateRuntime = (argument("candidate-runtime") || "current") as CandidateRuntime;
+  if (!(["current", "systemic"] as string[]).includes(candidateRuntime)) throw new Error("--candidate-runtime must be current or systemic.");
+  if (candidateRuntime === "systemic" && enforceGate) throw new Error("The systemic challenger is diagnostic-only and cannot use the existing canonical promotion gate.");
   if (judge && enforceGate) throw new Error("The built-in model judge is diagnostic-only. Use --human-scores with exact answer hashes for promotion enforcement.");
   const forceFreshV3 = argument("v3-source") === "fresh";
   const v3UsesV4EvaluationProvider = argument("v3-provider") === "v4";
@@ -836,7 +842,7 @@ async function main() {
     (total, conversation) => total + conversation.prompts.filter((prompt) => Boolean(prompt.production)).length,
     0,
   );
-  const corpusHashes = effectiveCorpusHashes();
+  const corpusHashes = effectiveCorpusHashes(candidateRuntime);
   const comparisonMode = inferV4ComparisonMode({
     forceFreshV3,
     promptsWithStoredProduction,
@@ -968,6 +974,7 @@ async function main() {
     runs,
     expectedCases: perRunLimit * runs,
     comparisonMode,
+    candidateRuntime,
     forceFreshV3,
     v3UsesV4EvaluationProvider,
     requestedExecutionOrder,
@@ -1209,7 +1216,9 @@ async function main() {
               v3InputMessages,
               v3UsesV4EvaluationProvider ? { provider: generateV4Json, validatorProvider: generateV4Json } : undefined,
             ).then((result) => ({ ...result, knowledgeVersion: result.runtimeMetadata.knowledgeVersion, source: "fresh_runtime" as const }));
-        const runV4 = () => runAskSalesFaqV4(question, v4InputMessages);
+        const runV4 = () => candidateRuntime === "systemic"
+          ? runAskSalesFaqV4Systemic(question, v4InputMessages)
+          : runAskSalesFaqV4(question, v4InputMessages);
         const alternatingV3First = Number.parseInt(sha256(`${run}:${conversation.id}:${promptIndex}`).slice(0, 2), 16) % 2 === 0;
         const actualExecutionOrder: Exclude<ExecutionOrder, "alternating"> = requestedExecutionOrder === "alternating"
           ? alternatingV3First ? "v3-first" : "v4-first"

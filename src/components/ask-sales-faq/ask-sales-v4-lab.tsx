@@ -31,7 +31,7 @@ type LabAssistantMessage = {
 type LabMessage = LabAssistantMessage | { id: string; role: "user"; content: string };
 
 type LabExecutionMode = {
-  planning: "model" | "deterministic_governed" | "deterministic_fallback" | "conversation" | "unknown";
+  planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "conversation" | "unknown";
   composition: "model" | "exact_evidence" | "not_required" | "unknown";
   validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required" | "unknown";
 };
@@ -87,7 +87,17 @@ const starters = [
   "A lead wants to put $2.5k down on Lite and upgrade to VIP later. What can I confirm?",
 ];
 
-export function AskSalesV4Lab() {
+export function AskSalesV4Lab({
+  apiPath = "/api/ask-sales-faq/v4-isolated",
+  title = "Ask Sales V4 isolated lab",
+  eyebrow = "Clean-room evaluation",
+  description = "Parallel V4 retrieval and claim validation. It does not use V3 history, write to Neon, change the production selector, or save this chat.",
+}: {
+  apiPath?: string;
+  title?: string;
+  eyebrow?: string;
+  description?: string;
+}) {
   const [token, setToken] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<LabMessage[]>([]);
@@ -103,7 +113,7 @@ export function AskSalesV4Lab() {
 
     async function checkReadiness() {
       try {
-        const response = await fetch("/api/ask-sales-faq/v4-isolated", {
+        const response = await fetch(apiPath, {
           method: "GET",
           cache: "no-store",
           signal: controller.signal,
@@ -122,7 +132,7 @@ export function AskSalesV4Lab() {
 
     void checkReadiness();
     return () => controller.abort();
-  }, []);
+  }, [apiPath]);
 
   async function submit(event?: FormEvent, override?: string) {
     event?.preventDefault();
@@ -138,7 +148,7 @@ export function AskSalesV4Lab() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/ask-sales-faq/v4-isolated", {
+      const response = await fetch(apiPath, {
         method: "POST",
         headers: { "content-type": "application/json", "x-ask-sales-v4-token": token.trim() },
         body: JSON.stringify({
@@ -191,9 +201,9 @@ export function AskSalesV4Lab() {
         <header className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="mb-3 flex items-center gap-2 text-rose-300"><FlaskConical className="size-5" /><span className="text-xs font-black uppercase tracking-[0.22em]">Clean-room evaluation</span></div>
-              <h1 className="text-3xl font-black tracking-tight">Ask Sales V4 isolated lab</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Parallel V4 retrieval and claim validation. It does not use V3 history, write to Neon, change the production selector, or save this chat.</p>
+              <div className="mb-3 flex items-center gap-2 text-rose-300"><FlaskConical className="size-5" /><span className="text-xs font-black uppercase tracking-[0.22em]">{eyebrow}</span></div>
+              <h1 className="text-3xl font-black tracking-tight">{title}</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">{description}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="border-emerald-400/20 bg-emerald-400/10 text-emerald-200"><ShieldCheck className="mr-1 size-3.5" />No persistence</Badge>
@@ -267,7 +277,7 @@ function ExecutionBadges({ message }: { message: LabAssistantMessage }) {
   return (
     <>
       <Badge variant="outline" className={message.provider ? "border-sky-200 bg-sky-50 text-sky-700" : "border-slate-200 bg-white text-slate-600"}>{modelLabel}</Badge>
-      <ModeBadge label="Plan" value={formatExecutionMode(message.executionMode.planning)} model={message.executionMode.planning === "model"} />
+      <ModeBadge label="Plan" value={formatExecutionMode(message.executionMode.planning)} model={["model", "systemic_model"].includes(message.executionMode.planning)} />
       <ModeBadge label="Compose" value={formatExecutionMode(message.executionMode.composition)} model={message.executionMode.composition === "model"} />
       <ModeBadge label="Validate" value={formatExecutionMode(message.executionMode.validation)} model={message.executionMode.validation === "model_and_deterministic"} />
     </>
@@ -281,6 +291,8 @@ function ModeBadge({ label, value, model }: { label: string; value: string; mode
 function formatExecutionMode(mode: string) {
   const labels: Record<string, string> = {
     model: "model",
+    systemic_model: "systemic model",
+    systemic_fallback: "frozen V4 fallback",
     deterministic_fallback: "safe fallback",
     conversation: "conversation",
     exact_evidence: "exact evidence",

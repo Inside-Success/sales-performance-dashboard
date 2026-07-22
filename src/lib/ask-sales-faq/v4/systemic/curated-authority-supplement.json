@@ -1,0 +1,310 @@
+{
+  "schema_version": "ask-sales-v4-systemic-curated-authority-v1",
+  "generated_at": "2026-07-22T20:14:21Z",
+  "source_sha256": "a9804d966d70a242e631c22c8fe7fc2ff4b6f39bd8faefd4706a41212897dfd5",
+  "evidence_register": [
+    {
+      "source_id": "meeting:2026-07-07:ask-sales-review",
+      "file": "GMT20260707-135929_Recording.transcript.vtt",
+      "sha256": "c14b4f041cc8bbdef83bd2fb6414496e4ca524506e1aa6be56bb88e986f8185b",
+      "disposition": "partially_curated",
+      "note": "Curated only explicit Mike/Rich decisions on employed doctors and lead ownership. Tentative fit, criminal-history, political, religious, rescheduling-exception, and distribution discussion remains non-answering discovery evidence."
+    },
+    {
+      "source_id": "screenshot:2026-07-03-and-2026-07-08:rich-policy-replies",
+      "file": "codex-clipboard-3ae0c510-88f8-4bda-9b8e-442ade80f315.png",
+      "sha256": "9f6b49cfe8d1ec93e06b67415ecd862d69f35889edc71219457703ffe00e5628",
+      "disposition": "partially_curated",
+      "note": "Curated the explicit Call 1 pricing rule. The July 8 three-month reapplication statement is retained as historical evidence but not curated because later Slack decisions establish newer waiting periods."
+    },
+    {
+      "source_id": "screenshot:2026-07-08:rich-dj-and-payment-replies",
+      "file": "codex-clipboard-da39a223-987e-43d3-9c09-f39a8e9222a6.png",
+      "sha256": "b59560a7ba24a3db8a50dcdff529c321800ce30eb3c2589dda246ccf90e5dbac",
+      "disposition": "covered_by_existing_corpus",
+      "note": "No duplicate policies added. Existing independently verified Slack records already cover no DJ cohort, no DJ discounts, and use of approved payment options."
+    },
+    {
+      "source_id": "screenshot:after-2026-07-09:mike-onboarding-approval",
+      "file": "codex-clipboard-4f1652b3-f346-46b7-b9f6-b9a038650eb2.png",
+      "sha256": "1fdff1b7707625736f9c522ada21bcd8dde89065410f883cc3d148827b838cc8",
+      "disposition": "curated",
+      "note": "Mike explicitly approved the complete displayed answer. The source sequence places this approval after the Thursday July 9 marker; chronology is recorded conservatively at the start of July 9."
+    },
+    {
+      "source_id": "screenshot:after-2026-07-09:mike-onboarding-answer-detail",
+      "file": "codex-clipboard-06217b91-d7f9-4249-bfea-4697a7664d1a.png",
+      "sha256": "b3addeb24a422ce1f0d8743c8de92edbbb7f248a8a3477a7bc3eb20f6bc88b6f",
+      "disposition": "corroborating_duplicate",
+      "note": "Higher-resolution duplicate of the answer Mike approved; used to preserve every condition without adding a duplicate policy."
+    },
+    {
+      "source_id": "screenshot:2026-07-14:rich-istv-app-correction",
+      "file": "codex-clipboard-b22123c5-6fb1-4207-b2fa-455ab6268ae8.png",
+      "sha256": "48252c9563b387e789404072e9af30da1d614a6a7e40db7d6f57c84756bd95ea",
+      "disposition": "curated",
+      "note": "Curated Rich's exact correction for supported ISTV app devices and the unresolved-question route."
+    },
+    {
+      "source_id": "slack:C0AUQKNR8CF:1784568504.075709",
+      "file": "read-only-authority-thread-corpus",
+      "sha256": "40e1a0b34744a285a19b060064c1e3425f3cf6c78399db12f804a76331a2747f",
+      "disposition": "curated_missing_atomic_decision",
+      "note": "The automated classifier captured the contract-term boundary from this thread but omitted Madeline's separate instruction to use the new upgrade form before selecting the contract. The omitted atomic decision is curated without changing the source thread."
+    }
+  ],
+  "policies": [
+    {
+      "id": "curated_9848cdfb2da72c0a",
+      "decision_key": "americas-best-doctors-practice-ownership-not-required",
+      "policy_key": "v4-systemic-curated_9848cdfb2da72c0a",
+      "title": "America's Best Doctors does not require practice ownership",
+      "question_families": [
+        "Can an employed doctor qualify for America's Best Doctors?",
+        "Does an America's Best Doctors applicant have to own a medical practice?",
+        "Can a doctor who works at a hospital be cast without owning the practice?"
+      ],
+      "decision": "An employed doctor can qualify for America's Best Doctors even if they work in a hospital and do not own the practice. Owning a medical practice or business is not a hard requirement. Boundaries: This decision does not resolve whether nurses, physical therapists, or other non-doctor medical professionals qualify; route those profession-boundary cases for current approval.",
+      "product_scopes": ["main_istv"],
+      "domains": ["greenlight", "fit", "qualification"],
+      "actions": ["assess qualification", "greenlight"],
+      "entities": ["America's Best Doctors", "doctor", "medical practice", "hospital"],
+      "risk_level": "high",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "explicit_correction", "scope_boundary_preserved"],
+      "route_key": "greenlight",
+      "route_channel": null,
+      "route_reason": "Route only non-doctor profession-boundary cases.",
+      "authority": 10,
+      "effective_at": "2026-07-07T13:59:29.000Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_meeting_decision",
+        "article_id": null,
+        "ids": ["meeting:2026-07-07:00:09:16-00:09:42", "meeting:2026-07-07:00:13:12-00:13:34"],
+        "approved_by": ["Mike", "Rich"]
+      },
+      "search_text": "America's Best Doctors employed doctor hospital own medical practice business ownership required qualify greenlight fit An employed doctor can qualify even without owning the practice",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["meeting:2026-07-07:00:09:16-00:09:42", "meeting:2026-07-07:00:13:12-00:13:34"]
+      }
+    },
+    {
+      "id": "curated_32981b3dcba667da",
+      "decision_key": "call-one-price-discussion-financial-disqualification-exception",
+      "policy_key": "v4-systemic-curated_32981b3dcba667da",
+      "title": "Call 1 pricing discussion boundary",
+      "question_families": [
+        "Can a rep discuss price on Call 1?",
+        "When is pricing allowed on the first sales call?",
+        "Can I mention the price to disqualify someone who has no business and cannot afford it?"
+      ],
+      "decision": "Do not mention price on Call 1 by default. A rep may mention it only when the rep is sure the client does not have a business and is not financially qualified, for the purpose of disqualifying that client. Conditions: The rep is sure both that the client has no business and that the client is not financially qualified. Boundaries: This does not authorize routine Call 1 price disclosure or disclosure based on only one of those conditions.",
+      "product_scopes": ["main_istv"],
+      "domains": ["pricing", "call 1", "qualification"],
+      "actions": ["discuss price", "disqualify"],
+      "entities": ["Call 1", "price", "business", "financial qualification"],
+      "risk_level": "high",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "conditional_rule", "all_prerequisites_required"],
+      "route_key": null,
+      "route_channel": null,
+      "route_reason": "",
+      "authority": 10,
+      "effective_at": "2026-07-03T00:31:00.000Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_slack_screenshot",
+        "article_id": null,
+        "ids": ["screenshot:2026-07-03:rich-call-one-pricing"],
+        "approved_by": ["Rich"]
+      },
+      "search_text": "Call 1 first call price pricing discuss mention disqualify no business not financially qualified default do not disclose pricing",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["screenshot:2026-07-03:rich-call-one-pricing"]
+      }
+    },
+    {
+      "id": "curated_78f9823829434d41",
+      "decision_key": "lead-ownership-thirty-days-from-latest-documented-contact",
+      "policy_key": "v4-systemic-curated_78f9823829434d41",
+      "title": "Lead ownership lasts 30 days from latest documented contact",
+      "question_families": [
+        "How long does a rep own a lead after contacting them?",
+        "Does the 30-day lead ownership window refresh after another call?",
+        "When can another rep contact a lead after the prior rep's last contact?"
+      ],
+      "decision": "A rep owns a lead for 30 days from the rep's latest contact with that lead when the contact is documented in Keap. A later documented contact restarts the 30-day window. If 31 days pass without another documented contact, another rep may speak with the lead. Conditions: The contact is documented in Keap. Boundaries: This does not replace the separate first-booking rule when a client is simultaneously booked with multiple reps.",
+      "product_scopes": ["product_agnostic"],
+      "domains": ["lead ownership", "Keap", "outbound"],
+      "actions": ["claim lead", "contact lead", "document contact"],
+      "entities": ["lead", "rep", "Keap", "30 days"],
+      "risk_level": "medium",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "explicit_duration", "documented_contact_required"],
+      "route_key": null,
+      "route_channel": null,
+      "route_reason": "",
+      "authority": 10,
+      "effective_at": "2026-07-07T13:59:29.000Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_meeting_decision",
+        "article_id": null,
+        "ids": ["meeting:2026-07-07:00:20:02-00:22:20"],
+        "approved_by": ["Mike", "Rich"]
+      },
+      "search_text": "lead ownership 30 days thirty days latest contact documented communication Keap refresh restart 31 days another rep outbound",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "general",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["meeting:2026-07-07:00:20:02-00:22:20"]
+      }
+    },
+    {
+      "id": "curated_d6b8616db00c16df",
+      "decision_key": "same-day-onboarding-no-separate-notification-after-completed-post-sale-steps",
+      "policy_key": "v4-systemic-curated_d6b8616db00c16df",
+      "title": "Same-day onboarding needs no separate notification after all post-sale steps",
+      "question_families": [
+        "Do I need to notify anyone when I book a same-day onboarding call?",
+        "A client just closed and booked onboarding today; do I need to message the team?",
+        "Will the studio executive team be ready for a short-notice onboarding booking?"
+      ],
+      "decision": "No separate notification is required for a same-day onboarding call when all required post-sale steps are complete: payment has been taken, the contract is signed, the onboarding email has been reviewed and sent, and the available onboarding call has been booked. The studio executive team handles the onboarding call and will be ready. Conditions: Every listed post-sale step is complete and an available same-day slot was booked. Boundaries: If any listed step is incomplete or the issue is a post-sale change rather than the initial booking, use the normal fulfillment route.",
+      "product_scopes": ["main_istv"],
+      "domains": ["onboarding", "post-sale", "fulfillment"],
+      "actions": ["book onboarding", "notify team", "complete post-sale steps"],
+      "entities": ["same-day onboarding", "studio executive team", "contract", "onboarding email"],
+      "risk_level": "medium",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "explicit_answer_approval", "source_date_inferred_from_adjacent_marker", "all_prerequisites_required"],
+      "route_key": "fulfillment",
+      "route_channel": null,
+      "route_reason": "Route incomplete or changed post-sale cases to fulfillment.",
+      "authority": 10,
+      "effective_at": "2026-07-09T00:00:00.000Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_answer_approval_screenshot",
+        "article_id": null,
+        "ids": ["screenshot:after-2026-07-09:mike-onboarding-approval", "screenshot:after-2026-07-09:mike-onboarding-answer-detail"],
+        "approved_by": ["Mike"]
+      },
+      "search_text": "same day short notice onboarding notify message fulfillment studio executive team payment contract signed onboarding email post sale steps ready",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["screenshot:after-2026-07-09:mike-onboarding-approval", "screenshot:after-2026-07-09:mike-onboarding-answer-detail"]
+      }
+    },
+    {
+      "id": "curated_af3fa1d5bbe01125",
+      "decision_key": "vip-upgrade-use-new-upgrade-form-before-contract-selection",
+      "policy_key": "v4-systemic-curated_af3fa1d5bbe01125",
+      "title": "Use the new upgrade form before selecting VIP upgrade terms",
+      "question_families": [
+        "What is the first step when a client wants to upgrade to VIP?",
+        "Should I use the new upgrade form before choosing the upgrade contract?",
+        "How do I start a VIP upgrade when the client requests different payment terms?"
+      ],
+      "decision": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms.",
+      "product_scopes": ["main_istv"],
+      "domains": ["upgrade", "contract", "sales process"],
+      "actions": ["start upgrade", "fill upgrade form", "select contract"],
+      "entities": ["VIP", "new upgrade form", "contract", "payment option"],
+      "risk_level": "high",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "missing_atomic_decision_recovered", "artifact_identity_not_embedded"],
+      "route_key": null,
+      "route_channel": null,
+      "route_reason": "",
+      "authority": 10,
+      "effective_at": "2026-07-20T17:49:31.811Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_slack_operational_qna",
+        "article_id": null,
+        "ids": ["slack:C0AUQKNR8CF:1784568504.075709", "slack:C0AUQKNR8CF:1784569771.811719"],
+        "approved_by": ["Madeline"]
+      },
+      "search_text": "VIP upgrade new upgrade form fill out information first step before choose select send contract payment option six month plan",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["slack:C0AUQKNR8CF:1784568504.075709", "slack:C0AUQKNR8CF:1784569771.811719"]
+      }
+    },
+    {
+      "id": "curated_ebe493f9f76bba2a",
+      "decision_key": "istv-app-device-wording",
+      "policy_key": "v4-systemic-curated_ebe493f9f76bba2a",
+      "title": "Where the ISTV app can be downloaded",
+      "question_families": [
+        "Which TV devices support the ISTV app?",
+        "Where can someone download and watch the ISTV app?",
+        "Can prospects watch ISTV on Roku, Fire Stick, or Apple TV?"
+      ],
+      "decision": "The ISTV app can be downloaded on Roku, Fire Stick, or Apple TV devices. If the question remains unresolved, use #sales-questions-requests. Boundaries: This identifies supported device families; it does not guarantee availability for every region, model, or current app-store status.",
+      "product_scopes": ["main_istv"],
+      "domains": ["distribution", "streaming", "app"],
+      "actions": ["download app", "watch episodes", "route unresolved question"],
+      "entities": ["ISTV app", "Roku", "Fire Stick", "Apple TV", "#sales-questions-requests"],
+      "risk_level": "low",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "explicit_wording_correction"],
+      "route_key": "sales_policy",
+      "route_channel": "#sales-questions-requests",
+      "route_reason": "Use the sales questions channel if the supported-device answer does not resolve the request.",
+      "authority": 10,
+      "effective_at": "2026-07-14T00:19:00.000Z",
+      "last_reviewed": "2026-07-22",
+      "source": {
+        "kind": "authoritative_slack_screenshot",
+        "article_id": null,
+        "ids": ["screenshot:2026-07-14:rich-istv-app-correction"],
+        "approved_by": ["Rich"]
+      },
+      "search_text": "ISTV app download watch stream supported devices Roku Fire Stick Apple TV sales questions requests unresolved",
+      "specificity_priority": 95,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["screenshot:2026-07-14:rich-istv-app-correction"]
+      }
+    }
+  ]
+}

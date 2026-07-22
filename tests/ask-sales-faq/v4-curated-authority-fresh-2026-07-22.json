@@ -1,0 +1,101 @@
+{
+  "name": "Ask Sales V4 curated Mike and Rich authority fresh evaluation 2026-07-22",
+  "purpose": "Development-only source acceptance set. These prompts validate generalized use of newly supplied direct-authority evidence and are not promotion evidence or a sealed holdout.",
+  "conversations": [
+    {
+      "id": "curated-employed-doctor",
+      "prompts": [
+        {
+          "question": "A cardiologist works for a hospital and does not own the practice. Does that alone disqualify her from America's Best Doctors?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "qualification", "explicit_correction"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Decide whether lack of practice ownership alone disqualifies an employed doctor from America's Best Doctors.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_9848cdfb2da72c0a"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curated-call-one-pricing",
+      "prompts": [
+        {
+          "question": "On Call 1 I am sure the applicant has no business and is not financially qualified. May I mention price only to screen them out?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "pricing", "conditional_rule"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Decide whether price may be mentioned on Call 1 when both disqualification conditions are established.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_32981b3dcba667da"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curated-lead-ownership-refresh",
+      "prompts": [
+        {
+          "question": "I contacted a lead 14 days ago, logged it in Keap, then spoke to them again today and logged that too. When does my ownership window now expire?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "lead_ownership", "duration"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Explain when the 30-day ownership window starts after a later documented contact.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_78f9823829434d41"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curated-same-day-onboarding",
+      "prompts": [
+        {
+          "question": "The client just closed and took an available onboarding slot this afternoon. Payment is taken, the contract is signed, and I reviewed and sent the onboarding email. Must I alert fulfillment separately?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "onboarding", "conditional_rule"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Decide whether a separate notification is required after every listed post-sale step is complete for a same-day onboarding booking.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_d6b8616db00c16df"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curated-istv-app-devices",
+      "prompts": [
+        {
+          "question": "A prospect wants to watch ISTV from a television. Which devices should I tell them can download the app?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "distribution", "wording_correction"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Name the supported television device families for downloading the ISTV app.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_ebe493f9f76bba2a"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

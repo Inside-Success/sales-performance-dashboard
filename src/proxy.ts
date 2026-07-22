@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 const PUBLIC_PATHS = new Set(["/sign-in"]);
-const V4_LAB_PATH = "/ask-sales-faq/v4-lab";
+const V4_LAB_PATHS = new Set(["/ask-sales-faq/v4-lab", "/ask-sales-faq/v4-systemic-lab"]);
 export const V4_LAB_REQUEST_HEADER = "x-ask-sales-v4-lab-request";
 
 export function isV4LabAuthBypassEnabled(pathname: string) {
-  return pathname === V4_LAB_PATH &&
+  return V4_LAB_PATHS.has(pathname) &&
     process.env.ASK_SALES_V4_ISOLATED === "true" &&
     process.env.VERCEL_ENV === "preview";
 }

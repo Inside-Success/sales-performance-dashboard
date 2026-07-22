@@ -3,7 +3,10 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthorized } from "@/lib/ask-sales-faq/v4/isolation";
 
-const V4_RELEASE_BRANCH = "agent/ask-sales-v4-isolated-2026-07-21";
+const V4_RELEASE_BRANCHES = [
+  "agent/ask-sales-v4-isolated-2026-07-21",
+  "agent/ask-sales-v4-systemic-knowledge-2026-07-22",
+] as const;
 
 type VercelConfig = {
   git?: { deploymentEnabled?: boolean | Record<string, boolean> };
@@ -34,10 +37,12 @@ afterEach(() => {
 });
 
 describe("Ask Sales V4 isolation gate", () => {
-  it("disables Vercel Git deployment only for the exact isolated branch", () => {
+  it("disables Vercel Git deployment only for the exact isolated branches", () => {
     const config = readVercelConfig();
 
-    expect(config.git?.deploymentEnabled).toEqual({ [V4_RELEASE_BRANCH]: false });
+    expect(config.git?.deploymentEnabled).toEqual(Object.fromEntries(
+      V4_RELEASE_BRANCHES.map((branch) => [branch, false]),
+    ));
     expect(config.git?.deploymentEnabled).not.toBe(false);
   });
 

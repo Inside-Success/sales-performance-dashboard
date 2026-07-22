@@ -1,0 +1,46 @@
+{
+  "name": "Ask Sales V4 safe conditional-answer framing development check 2026-07-22",
+  "purpose": "Development-only regression set for answering stable rules without silently assuming missing case prerequisites.",
+  "conversations": [
+    {
+      "id": "conditional-author-fit",
+      "prompts": [
+        {
+          "question": "An author has a successful book and a website for it but no registered business. Can they qualify for America's Authors, and what still needs to be confirmed?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "conditional_answer", "qualification"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "State the conditional fit rule without assuming the author meets an unstated sales prerequisite.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["operational_8b94e9ca32170c04"],
+              "goldContext": ["The author can qualify without a registered business if the book has a website and physical copies are selling."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditional-call-one-pricing",
+      "prompts": [
+        {
+          "question": "Are reps ever allowed to mention price on Call 1, and exactly when would that exception apply?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "conditional_answer", "pricing"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Explain the default prohibition and preserve every condition on the narrow disqualification exception.",
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": ["curated_32981b3dcba667da"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "agent/ask-sales-v4-isolated-2026-07-21": false
+      "agent/ask-sales-v4-isolated-2026-07-21": false,
+      "agent/ask-sales-v4-systemic-knowledge-2026-07-22": false
     }
   }
 }

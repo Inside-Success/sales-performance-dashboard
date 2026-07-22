@@ -71,6 +71,7 @@ export type V4SentenceCheck = {
   sentenceId: string;
   status: "supported" | "unsupported" | "irrelevant";
   evidenceRefs: string[];
+  answeredNeedIds?: string[];
   reason: string;
   deterministicErrors: string[];
 };
@@ -94,7 +95,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated";
+  pipelineVersion: "v4-isolated" | "v4-systemic";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
@@ -113,14 +114,35 @@ export type V4RuntimeMetadata = {
       answerability: string;
       qualityTier: string;
       productScopes: string[];
+      sourceKind?: string;
+      temporalRisk?: string;
     }>;
     blockedTopicIds: string[];
   };
   plan: V4AnswerPlan;
+  sourcePlan?: {
+    needs: Array<{
+      needId: string;
+      lane: "answer" | "route";
+      directPolicyIds: string[];
+      preferredPolicyIds: string[];
+      excludedConflictPolicyIds: string[];
+      reason: string;
+    }>;
+    reasoningSummary: string;
+  };
   executionMode: {
-    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "conversation";
+    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "systemic_champion" | "conversation";
     composition: "model" | "exact_evidence" | "not_required";
     validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required";
+  };
+  championComparison?: {
+    selected: "current_v4" | "systemic_expansion";
+    championLane: V4Lane;
+    systemicLane: V4Lane;
+    selectionMode: "deterministic" | "evidence_arbiter" | "fail_closed";
+    confidence: number | null;
+    reason: string;
   };
   validation: V4Validation;
   providerAttempts: V3ProviderAttempt[];
@@ -148,6 +170,7 @@ export type V4RuntimeOptions = {
   provider?: V3Provider;
   validatorProvider?: V3Provider;
   skipModelValidation?: boolean;
+  skipChampionComparison?: boolean;
 };
 
 export type V4RunInput = {
