@@ -12,6 +12,7 @@ const catalog: V4GoldReferenceCatalog = {
     { id: "policy-payment", decisionKey: "main-payment", policyKey: "payment" },
   ],
   blockedTopics: [{ id: "block-discount" }],
+  routeKeys: ["sales_policy", "sales_tech"],
 };
 
 describe("Ask Sales V4 adjudicated gold schema", () => {
@@ -90,5 +91,28 @@ describe("Ask Sales V4 adjudicated gold schema", () => {
       goldContext: [],
       blockedContext: [],
     }], ambiguousCatalog)).toThrow(/ambiguous/);
+  });
+
+  it("validates route keys against the governed catalog and the gold disposition", () => {
+    const routed = {
+      id: "discount",
+      text: "Resolve the unapproved discount.",
+      atomic: true,
+      expectedDisposition: "route",
+      expectedRouteKey: "sales_policy",
+      policyIds: [],
+      blockedTopicIds: ["block-discount"],
+      goldContext: [],
+      blockedContext: [],
+    };
+    expect(parseV4GoldNeeds([routed], catalog)[0].expectedRouteKey).toBe("sales_policy");
+    expect(() => parseV4GoldNeeds([{ ...routed, expectedRouteKey: "invented_team" }], catalog)).toThrow(/governed route catalog/);
+    expect(() => parseV4GoldNeeds([{ ...routed, expectedRouteKey: null }], catalog)).toThrow(/required for route/);
+    expect(() => parseV4GoldNeeds([{
+      ...routed,
+      expectedDisposition: "answer",
+      expectedRouteKey: "sales_policy",
+      policyIds: ["policy-price"],
+    }], catalog)).toThrow(/must be null for answer/);
   });
 });

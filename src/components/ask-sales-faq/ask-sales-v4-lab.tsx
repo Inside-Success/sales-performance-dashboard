@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Bot, CheckCircle2, FlaskConical, KeyRound, Loader2, RefreshCcw, Route, Send, ShieldCheck } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import { Bot, CheckCircle2, FlaskConical, KeyRound, Loader2, RefreshCcw, Route, Send, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ type LabAssistantMessage = {
 type LabMessage = LabAssistantMessage | { id: string; role: "user"; content: string };
 
 type LabExecutionMode = {
-  planning: "model" | "deterministic_fallback" | "conversation" | "unknown";
+  planning: "model" | "deterministic_governed" | "deterministic_fallback" | "conversation" | "unknown";
   composition: "model" | "exact_evidence" | "not_required" | "unknown";
   validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required" | "unknown";
 };
@@ -40,6 +40,7 @@ type LabResponse = {
   ok?: boolean;
   error?: string;
   conversationId?: string;
+  historyToken?: string;
   messageId?: string;
   answer?: string;
   lane?: string;
@@ -63,6 +64,7 @@ type LabReadiness = {
   error?: string;
   ready?: boolean;
   accessTokenConfigured?: boolean;
+  historySigningConfigured?: boolean;
   modelConfigured?: boolean;
   modelAccessConfirmed?: boolean;
   provider?: "deepseek" | "anthropic" | null;
@@ -90,11 +92,11 @@ export function AskSalesV4Lab() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<LabMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [historyToken, setHistoryToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [readiness, setReadiness] = useState<ReadinessState>({ status: "checking" });
   const ready = readiness.status === "ready" && token.trim().length >= 24;
-  const requestMessages = useMemo(() => messages.slice(-9).map((message) => ({ role: message.role, content: message.content })), [messages]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -139,11 +141,16 @@ export function AskSalesV4Lab() {
       const response = await fetch("/api/ask-sales-faq/v4-isolated", {
         method: "POST",
         headers: { "content-type": "application/json", "x-ask-sales-v4-token": token.trim() },
-        body: JSON.stringify({ conversationId, messages: [...requestMessages, { role: "user", content: question }] }),
+        body: JSON.stringify({
+          question,
+          ...(historyToken ? { historyToken } : {}),
+          ...(conversationId ? { conversationId } : {}),
+        }),
       });
       const data = await readJsonResponse<LabResponse>(response, "V4 request");
-      if (!response.ok || !data.ok || !data.answer || !data.messageId) throw new Error(data.error || "V4 did not return an answer.");
+      if (!response.ok || !data.ok || !data.answer || !data.messageId || !data.historyToken) throw new Error(data.error || "V4 did not return a complete encrypted response.");
       setConversationId(data.conversationId || conversationId);
+      setHistoryToken(data.historyToken);
       setMessages((current) => [...current, {
         id: data.messageId!,
         role: "assistant",
@@ -174,6 +181,7 @@ export function AskSalesV4Lab() {
     setInput("");
     setMessages([]);
     setConversationId(null);
+    setHistoryToken(null);
     setError(null);
   }
 
@@ -197,6 +205,10 @@ export function AskSalesV4Lab() {
           <div className="mt-5 flex max-w-xl items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/60 p-2">
             <KeyRound className="ml-2 size-4 text-slate-400" />
             <Input aria-label="Isolated lab access token" type="password" value={token} onChange={(event) => setToken(event.target.value)} placeholder="Enter the isolated lab access token" className="border-0 bg-transparent text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:ring-0" autoComplete="off" />
+          </div>
+          <div role="note" className="mt-4 flex max-w-3xl items-start gap-2 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-xs font-semibold leading-5 text-amber-100">
+            <ShieldAlert className="mt-0.5 size-4 shrink-0" />
+            <span>Use fictional or already-redacted examples only. Never enter real client names, contact details, bank or card data, passwords, access tokens, or company credentials.</span>
           </div>
         </header>
 
@@ -290,11 +302,13 @@ function ReadinessBadge({ state }: { state: ReadinessState }) {
   if (state.status === "not_ready") {
     const reason = !state.data.accessTokenConfigured
       ? "token not configured"
-      : !state.data.modelConfigured
-        ? "model not configured"
-        : !state.data.modelAccessConfirmed
-          ? "model access not confirmed"
-          : "configuration incomplete";
+      : !state.data.historySigningConfigured
+        ? "history signing not configured"
+        : !state.data.modelConfigured
+          ? "model not configured"
+          : !state.data.modelAccessConfirmed
+            ? "model access not confirmed"
+            : "configuration incomplete";
     return <Badge className="border-amber-400/20 bg-amber-400/10 text-amber-200">Not ready · {reason}</Badge>;
   }
   const provider = state.data.provider === "deepseek" ? "DeepSeek" : state.data.provider === "anthropic" ? "Anthropic" : "No model";

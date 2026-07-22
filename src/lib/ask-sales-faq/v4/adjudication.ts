@@ -32,6 +32,7 @@ export type V4GoldNeed = {
 export type V4GoldReferenceCatalog = {
   policies: Array<{ id: string; decisionKey?: string; policyKey?: string }>;
   blockedTopics: Array<{ id: string }>;
+  routeKeys: string[];
 };
 
 export class V4AdjudicationParseError extends Error {
@@ -172,6 +173,21 @@ export function parseV4GoldNeeds(value: unknown, catalog: V4GoldReferenceCatalog
     const expectedRouteKey = raw.expectedRouteKey === undefined || raw.expectedRouteKey === null
       ? null
       : text(raw.expectedRouteKey, `${label}[${index}].expectedRouteKey`, 100);
+    if (expectedRouteKey && !catalog.routeKeys.includes(expectedRouteKey)) {
+      throw new V4AdjudicationParseError(
+        `${label}[${index}].expectedRouteKey does not resolve to the governed route catalog: ${expectedRouteKey}`,
+      );
+    }
+    if (["answer", "conversation"].includes(expectedDisposition) && expectedRouteKey !== null) {
+      throw new V4AdjudicationParseError(
+        `${label}[${index}].expectedRouteKey must be null for ${expectedDisposition}.`,
+      );
+    }
+    if (["route", "live_lookup", "artifact"].includes(expectedDisposition) && expectedRouteKey === null) {
+      throw new V4AdjudicationParseError(
+        `${label}[${index}].expectedRouteKey is required for ${expectedDisposition}.`,
+      );
+    }
     return {
       id,
       text: text(raw.text, `${label}[${index}].text`, 1200),

@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -17,6 +19,7 @@ vi.mock("@/auth", () => ({
 
 import { AppHeader } from "@/components/dashboard/app-header";
 import { isV4LabAuthBypassEnabled, proxy, V4_LAB_REQUEST_HEADER } from "@/proxy";
+import nextConfig from "../../next.config";
 
 const originalFlag = process.env.ASK_SALES_V4_ISOLATED;
 const originalVercelEnv = process.env.VERCEL_ENV;
@@ -34,6 +37,32 @@ beforeEach(() => {
 });
 
 describe("Ask Sales V4 hosted lab isolation", () => {
+  it("keeps encrypted history only in React memory and never resubmits rendered messages", () => {
+    const source = readFileSync(path.join(process.cwd(), "src/components/ask-sales-faq/ask-sales-v4-lab.tsx"), "utf8");
+
+    expect(source).toContain("const [historyToken, setHistoryToken] = useState<string | null>(null)");
+    expect(source).toContain("...(historyToken ? { historyToken } : {})");
+    expect(source).toContain("setHistoryToken(data.historyToken)");
+    expect(source).toContain("setHistoryToken(null)");
+    expect(source).not.toContain("requestMessages");
+    expect(source).not.toContain("localStorage");
+    expect(source).not.toContain("sessionStorage");
+    expect(source).not.toContain("body: JSON.stringify({ conversationId, messages:");
+  });
+
+  it("warns against real PII and applies clickjacking headers only to isolated lab paths", async () => {
+    const source = readFileSync(path.join(process.cwd(), "src/components/ask-sales-faq/ask-sales-v4-lab.tsx"), "utf8");
+    expect(source).toContain("Use fictional or already-redacted examples only");
+    expect(source).toContain("Never enter real client names");
+
+    const rules = await nextConfig.headers?.();
+    expect(rules).toEqual(expect.arrayContaining([
+      expect.objectContaining({ source: "/ask-sales-faq/v4-lab", headers: expect.arrayContaining([expect.objectContaining({ key: "X-Frame-Options", value: "DENY" })]) }),
+      expect.objectContaining({ source: "/api/ask-sales-faq/v4-isolated", headers: expect.arrayContaining([expect.objectContaining({ key: "Content-Security-Policy", value: "frame-ancestors 'none'" })]) }),
+    ]));
+    expect(rules?.some((rule) => rule.source === "/:path*" || rule.source === "/")).toBe(false);
+  });
+
   it("bypasses page auth only for the exact flagged preview path", () => {
     process.env.ASK_SALES_V4_ISOLATED = "true";
     process.env.VERCEL_ENV = "preview";

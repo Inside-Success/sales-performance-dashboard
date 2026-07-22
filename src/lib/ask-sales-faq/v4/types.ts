@@ -21,6 +21,7 @@ export type V4BlockedCandidate = {
   topic: V3BlockedTopic;
   score: number;
   matchedTerms: string[];
+  matchKind: "canonical_family" | "legacy_anchor" | "structured";
 };
 
 export type V4RetrievalResult = {
@@ -117,7 +118,7 @@ export type V4RuntimeMetadata = {
   };
   plan: V4AnswerPlan;
   executionMode: {
-    planning: "model" | "deterministic_fallback" | "conversation";
+    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "conversation";
     composition: "model" | "exact_evidence" | "not_required";
     validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required";
   };

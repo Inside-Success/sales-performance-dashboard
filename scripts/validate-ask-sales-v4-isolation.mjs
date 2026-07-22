@@ -41,11 +41,13 @@ const selector = read("src/lib/ask-sales-faq/runtime-selector.ts");
 const productionRoute = read("src/app/api/ask-sales-faq/route.ts");
 const isolatedRoute = read("src/app/api/ask-sales-faq/v4-isolated/route.ts");
 const isolation = read("src/lib/ask-sales-faq/v4/isolation.ts");
+const historyToken = read("src/lib/ask-sales-faq/v4/history-token.ts");
 const runtime = read("src/lib/ask-sales-faq/v4/runtime.ts");
 const provider = read("src/lib/ask-sales-faq/v4/provider.ts");
 const proxy = read("src/proxy.ts");
 const appHeader = read("src/components/dashboard/app-header.tsx");
 const labPage = read("src/app/ask-sales-faq/v4-lab/page.tsx");
+const labUi = read("src/components/ask-sales-faq/ask-sales-v4-lab.tsx");
 const vercelConfig = JSON.parse(read("vercel.json"));
 const deploymentEnabled = vercelConfig?.git?.deploymentEnabled;
 const deploymentEntries = deploymentEnabled && typeof deploymentEnabled === "object" && !Array.isArray(deploymentEnabled)
@@ -100,6 +102,40 @@ check(
   "V4 requires a capability token",
   isolatedRoute.includes("isV4LabTokenAuthorized") && isolation.includes("timingSafeEqual") && isolation.includes("length < 24"),
   "The clean-room route must require a constant-time checked token of at least 24 characters.",
+);
+check(
+  "V4 requires separately encrypted stateless history",
+  isolation.includes("process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET") &&
+    isolation.includes("length < 32") &&
+    historyToken.includes("createCipheriv") &&
+    historyToken.includes("createDecipheriv") &&
+    historyToken.includes('createHash("sha256"') &&
+    historyToken.includes('createCipheriv("aes-256-gcm"') &&
+    historyToken.includes('createDecipheriv("aes-256-gcm"') &&
+    historyToken.includes("cipher.setAAD(V4_HISTORY_AAD)") &&
+    historyToken.includes("decipher.setAAD(V4_HISTORY_AAD)") &&
+    historyToken.includes("decipher.setAuthTag(authenticationTag)") &&
+    historyToken.includes("cipher.getAuthTag()") &&
+    historyToken.includes('const V4_HISTORY_AUDIENCE = "ask-sales-v4-isolated-history"') &&
+    historyToken.includes("payload.kv !== input.knowledgeVersion") &&
+    historyToken.includes("payload.rv !== runtimeRevision()") &&
+    historyToken.includes("payload.exp > now") &&
+    isolatedRoute.includes("V4HistoryTokenError") &&
+    isolatedRoute.includes("}, 409)"),
+  "Client-supplied assistant text must never become V4 history; only short-lived AES-GCM-encrypted server observations may be reused.",
+);
+check(
+  "V4 lab accepts only the strict question and encrypted-history contract",
+  isolatedRoute.includes("question: z.string().trim().min(1).max(6000)") &&
+    isolatedRoute.includes("historyToken: z.string().min(1).max(64 * 1024).optional()") &&
+    isolatedRoute.includes("}).strict()") &&
+    !isolatedRoute.includes("messages: z.array") &&
+    labUi.includes("...(historyToken ? { historyToken } : {})") &&
+    labUi.includes("setHistoryToken(null)") &&
+    !labUi.includes("requestMessages") &&
+    !labUi.includes("localStorage") &&
+    !labUi.includes("sessionStorage"),
+  "The browser may render its own transcript, but the API trusts only the current question plus a server-encrypted in-memory history token.",
 );
 check(
   "V4 page auth bypass is exact and Preview-only",

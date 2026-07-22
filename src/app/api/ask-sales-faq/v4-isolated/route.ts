@@ -1,6 +1,13 @@
 import { createHash, randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getV4KnowledgeVersion } from "@/lib/ask-sales-faq/v4/corpus";
+import {
+  isV4HistorySigningConfigured,
+  mintV4HistoryToken,
+  V4HistoryTokenError,
+  verifyV4HistoryToken,
+} from "@/lib/ask-sales-faq/v4/history-token";
 import { runAskSalesFaqV4 } from "@/lib/ask-sales-faq/v4/runtime";
 import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthorized } from "@/lib/ask-sales-faq/v4/isolation";
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
@@ -12,6 +19,8 @@ const V4_MAX_BODY_BYTES = 70 * 1024;
 const V4_RATE_WINDOW_MS = 10 * 60 * 1000;
 const V4_RATE_MAX = 20;
 const V4_CONCURRENT_MAX = 2;
+// This deliberately has no external persistence: it is a best-effort guard per
+// warm serverless instance, not a deployment-wide quota or billing control.
 const v4RequestWindows = new Map<string, { startedAt: number; count: number; active: number }>();
 
 function reserveV4LabRequest(token: string) {
@@ -38,12 +47,10 @@ function reserveV4LabRequest(token: string) {
 }
 
 const requestSchema = z.object({
-  conversationId: z.string().trim().min(1).max(120).optional().nullable(),
-  messages: z.array(z.object({
-    role: z.enum(["user", "assistant"]),
-    content: z.string().trim().min(1).max(6000),
-  })).min(1).max(10),
-});
+  question: z.string().trim().min(1).max(6000),
+  historyToken: z.string().min(1).max(64 * 1024).optional(),
+  conversationId: z.string().min(1).max(120).regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/).optional(),
+}).strict();
 
 function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
@@ -57,14 +64,16 @@ export async function GET() {
   if (!isV4IsolatedRuntimeEnabled()) return new NextResponse(null, { status: 404 });
   const provider = getV4ProviderReadiness();
   const accessTokenConfigured = (process.env.ASK_SALES_V4_LAB_TOKEN || "").length >= 24;
+  const historySigningConfigured = isV4HistorySigningConfigured();
   const modelAccessConfirmed = process.env.ASK_SALES_V4_MODEL_ACCESS_CONFIRMED === "true";
   return json({
     ok: true,
-    ready: accessTokenConfigured && provider.modelConfigured && modelAccessConfirmed,
+    ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
     runtime: "v4-isolated",
     persistence: false,
     productionSelectorChanged: false,
     accessTokenConfigured,
+    historySigningConfigured,
     modelAccessConfirmed,
     ...provider,
   });
@@ -96,11 +105,34 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const messages = parsed.data.messages.map((message) => ({ role: message.role, content: message.content.trim() }));
-    const last = messages.at(-1);
-    if (!last || last.role !== "user") return json({ ok: false, error: "The final message must be a user question." }, 400);
+    const knowledgeVersion = getV4KnowledgeVersion();
+    let conversationId = parsed.data.conversationId || `v4_lab_${randomUUID()}`;
+    let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
+    if (parsed.data.historyToken) {
+      try {
+        const verified = verifyV4HistoryToken({
+          token: parsed.data.historyToken,
+          knowledgeVersion,
+          conversationId: parsed.data.conversationId,
+        });
+        conversationId = verified.conversationId;
+        verifiedMessages = verified.messages;
+      } catch (error) {
+        if (error instanceof V4HistoryTokenError) {
+          return json({
+            ok: false,
+            error: "The isolated conversation history is invalid, expired, or no longer matches this knowledge release. Start a new case safely.",
+          }, 409);
+        }
+        throw error;
+      }
+    }
     if (process.env.ASK_SALES_V4_MODEL_ACCESS_CONFIRMED !== "true") {
       return json({ ok: false, error: "The isolated model transport is configured but has not passed a live access check." }, 503);
+    }
+    const providerReadiness = getV4ProviderReadiness();
+    if (!providerReadiness.modelConfigured || !providerReadiness.provider || !providerReadiness.model || !providerReadiness.transport) {
+      return json({ ok: false, error: "The isolated model provider is not currently configured. No fallback answer was generated." }, 503);
     }
 
     const reservation = reserveV4LabRequest(labToken!);
@@ -116,13 +148,22 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const result = await runAskSalesFaqV4(last.content, messages, {
+      const question = parsed.data.question;
+      const result = await runAskSalesFaqV4(question, [...verifiedMessages, { role: "user", content: question }], {
         provider: generateV4Json,
         validatorProvider: generateV4ValidationJson,
       });
+      const historyToken = mintV4HistoryToken({
+        conversationId,
+        knowledgeVersion,
+        previousMessages: verifiedMessages,
+        question: result.runtimeMetadata.turn.currentQuestion,
+        answer: result.answer,
+      });
       return json({
         ...result,
-        conversationId: parsed.data.conversationId || `v4_lab_${randomUUID()}`,
+        conversationId,
+        historyToken,
         messageId: `v4_lab_assistant_${randomUUID()}`,
       });
     } finally {

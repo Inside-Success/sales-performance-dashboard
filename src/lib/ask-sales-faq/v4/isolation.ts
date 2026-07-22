@@ -20,6 +20,14 @@ export function assertV4IsolatedRuntime() {
   if ((process.env.ASK_SALES_V4_LAB_TOKEN || "").length < 24) {
     throw new Error("V4 isolated runtime requires a capability token of at least 24 characters");
   }
+  const labToken = process.env.ASK_SALES_V4_LAB_TOKEN || "";
+  const historySecret = process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET || "";
+  if (historySecret.length < 32) {
+    throw new Error("V4 isolated runtime requires a separate history signing secret of at least 32 characters");
+  }
+  if (historySecret === labToken) {
+    throw new Error("V4 isolated runtime requires the history signing secret to differ from the lab access token");
+  }
 }
 
 export function isV4LabTokenAuthorized(candidate: string | null) {

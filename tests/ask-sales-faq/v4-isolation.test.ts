@@ -23,12 +23,14 @@ const original = {
   flag: process.env.ASK_SALES_V4_ISOLATED,
   vercel: process.env.VERCEL_ENV,
   token: process.env.ASK_SALES_V4_LAB_TOKEN,
+  historySecret: process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET,
 };
 
 afterEach(() => {
   if (original.flag === undefined) delete process.env.ASK_SALES_V4_ISOLATED; else process.env.ASK_SALES_V4_ISOLATED = original.flag;
   if (original.vercel === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = original.vercel;
   if (original.token === undefined) delete process.env.ASK_SALES_V4_LAB_TOKEN; else process.env.ASK_SALES_V4_LAB_TOKEN = original.token;
+  if (original.historySecret === undefined) delete process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET; else process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET = original.historySecret;
 });
 
 describe("Ask Sales V4 isolation gate", () => {
@@ -67,6 +69,25 @@ describe("Ask Sales V4 isolation gate", () => {
     process.env.VERCEL_ENV = "preview";
     process.env.ASK_SALES_V4_LAB_TOKEN = "short";
     expect(() => assertV4IsolatedRuntime()).toThrow(/at least 24/);
+  });
+
+  it("requires a separate history signing secret", () => {
+    process.env.ASK_SALES_V4_ISOLATED = "true";
+    process.env.VERCEL_ENV = "preview";
+    process.env.ASK_SALES_V4_LAB_TOKEN = "a-secure-isolated-token-123456";
+    process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET = "too-short";
+    expect(() => assertV4IsolatedRuntime()).toThrow(/separate history signing secret/);
+
+    process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET = "a-separate-history-signing-secret-123456789";
+    expect(() => assertV4IsolatedRuntime()).not.toThrow();
+  });
+
+  it("rejects reusing the lab access token as the history signing secret", () => {
+    process.env.ASK_SALES_V4_ISOLATED = "true";
+    process.env.VERCEL_ENV = "preview";
+    process.env.ASK_SALES_V4_LAB_TOKEN = "same-secret-value-that-is-long-enough-123456";
+    process.env.ASK_SALES_V4_HISTORY_SIGNING_SECRET = process.env.ASK_SALES_V4_LAB_TOKEN;
+    expect(() => assertV4IsolatedRuntime()).toThrow(/differ from the lab access token/);
   });
 
   it("compares the supplied lab token exactly", () => {
