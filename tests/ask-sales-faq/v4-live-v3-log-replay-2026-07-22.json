@@ -1,0 +1,670 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales recent production V3 log replay with source gold - 2026-07-22",
+  "capturedAt": "2026-07-22",
+  "purpose": "Redacted replay of recent real production questions. Captured V3 answers measure historical user experience; fresh V3 runs are a separate end-to-end diagnostic. Feedback is context, never ground truth by itself.",
+  "promptCount": 16,
+  "conversationCount": 10,
+  "productionSnapshot": {
+    "readOnly": true,
+    "from": "2026-07-13T13:00:00.000Z",
+    "to": "2026-07-22T23:59:59.999Z",
+    "itemCount": 88,
+    "conversationCount": 59,
+    "sha256": "6ffe442b834814d49578006af673c40b583b2cf852960109c410b7b4e7440486",
+    "containsViewerIdentity": false,
+    "containsFreeTextFeedback": false
+  },
+  "adjudication": {
+    "schemaVersion": 1,
+    "adjudicatorId": "codex-source-review-2026-07-22",
+    "adjudicatedAt": "2026-07-22T12:35:23.000Z",
+    "methodology": "Cases were selected from a one-SELECT redacted production export to represent good answers, false abstentions, routed-but-correct answers, correction handling, multi-turn use, artifacts, and unresolved current facts. Atomic gold was assigned from current governed FAQ sources and authoritative Slack replies; captured V3 answers and thumbs feedback were visible for case selection but were never treated as factual authority. Exact unknown or live details remain routing needs. This is diagnostic source adjudication, not blind SME scoring or promotion evidence.",
+    "sourceRefs": [
+      "production-neon-read-only:ask-sales-launch-log@sha256:6ffe442b834814d49578006af673c40b583b2cf852960109c410b7b4e7440486",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784555076088309",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784488828139569",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784465945328319",
+      "faq:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md",
+      "faq:knowledge-base/payments-contracts/payment-plan-and-link-boundaries.md",
+      "faq:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+      "faq:knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
+      "faq:knowledge-base/sales-tech-support/sales-tech-routing-and-support-requests.md",
+      "faq:knowledge-base/events-mastermind/events-mastermind-red-carpet.md",
+      "faq:_logs/known-gaps.md"
+    ],
+    "independentFromSystems": true,
+    "knowledgeVersion": "8c8c677c1209f2d7"
+  },
+  "conversations": [
+    {
+      "id": "live-upgrade-scope",
+      "title": "Ambiguous Lite-to-VIP upgrade",
+      "prompts": [
+        {
+          "question": "how to upgrade from lite license with 2.5k down to vip license",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-029",
+          "productionLogId": "launch-029",
+          "capturedAt": "2026-07-14 10:24:52.013966+00",
+          "feedbackRating": "down",
+          "productionAnswer": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 34380,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["independent_single_turn", "high_risk", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "upgrade-product-and-stage-clarification",
+              "text": "Clarify whether this is main ISTV or Daymond John and whether filming has happened before quoting an upgrade process or amount.",
+              "atomic": true,
+              "expectedDisposition": "clarify",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["A $2,500 installment points toward a Daymond John Lite plan, while the governed main ISTV upgrade rule and amounts are different. The question does not identify the program or filming status, so an exact amount would be unsafe."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-roi-correction",
+      "title": "Short typo followed by ROI correction",
+      "prompts": [
+        {
+          "question": "what's the roe",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-040",
+          "productionLogId": "launch-040",
+          "capturedAt": "2026-07-15 14:23:25.511609+00",
+          "feedbackRating": null,
+          "productionAnswer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 12983,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["stateful_follow_up", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "roe-or-roi-clarification",
+              "text": "Ask whether the rep meant ROI or ROE instead of routing an ambiguous three-letter typo as a policy exception.",
+              "atomic": true,
+              "expectedDisposition": "clarify",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The short acronym is ambiguous in a sales-policy chatbot and the next message shows that the user meant ROI, not ROE."]
+            }
+          ]
+        },
+        {
+          "question": "ROI",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-041",
+          "productionLogId": "launch-041",
+          "capturedAt": "2026-07-15 14:23:43.117158+00",
+          "feedbackRating": null,
+          "productionAnswer": "You cannot discuss ROI, make ROI claims, or promise ROI. If a prospect asks, you can let them know it's against company policy and keep the conversation to approved platform and fit language.",
+          "productionOutcome": "answer_from_evidence",
+          "productionNeedsRoute": false,
+          "productionRouteReason": null,
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 17383,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["stateful_follow_up", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "roi-claim-boundary",
+              "text": "State the approved boundary on discussing, claiming, or promising ROI.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Current governed guidance prohibits discussing, claiming, or promising ROI and keeps reps to approved platform and fit language."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-money-mondays-conflict",
+      "title": "User correction conflicts with governed weekly-support status",
+      "prompts": [
+        {
+          "question": "The 6 months of weekly social media support calls: when do they start and what are the logistics around them? What exactly happens on the calls and what kind of support can they expect?",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-045",
+          "productionLogId": "launch-045",
+          "capturedAt": "2026-07-15 20:11:05.272982+00",
+          "feedbackRating": null,
+          "productionAnswer": "The six-month weekly training program has been discontinued. Reps can explain the approved ways to use the episode from Rudy's call videos and highlight the current Media Kit assets before ending the Zoom call. Do not promise the discontinued weekly program.",
+          "productionOutcome": "answer_from_evidence",
+          "productionNeedsRoute": false,
+          "productionRouteReason": null,
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 26352,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["compound", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "weekly-support-current-status-and-logistics",
+              "text": "Verify the current status and exact logistics of the weekly social-media support program before describing or denying it.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The governed article says the older six-month weekly program was discontinued, while the rep reports that current Call 2 material still presents an active program called Money Mondays. Exact current logistics require an owner-confirmed source." ]
+            }
+          ]
+        },
+        {
+          "question": "The Call 2 videos still include them.",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-046",
+          "productionLogId": "launch-046",
+          "capturedAt": "2026-07-15 20:12:48.297357+00",
+          "feedbackRating": null,
+          "productionAnswer": "The six-month weekly training program has been discontinued, so the Call 2 videos do not include it. Reps should not promise this program and instead explain the approved ways to use the episode from Rudy's call videos and highlight the current Media Kit assets before ending the Zoom call. Use #sales-questions-requests for the unresolved part.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 21699,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["stateful_follow_up", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "acknowledge-call-two-source-conflict",
+              "text": "Acknowledge that the rep is seeing the program in the current Call 2 video and route the source conflict without asserting that the video cannot include it.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The user's direct observation conflicts with the governed discontinued-program article; the chatbot cannot resolve which source is current and must not contradict the observed video as a fact."]
+            }
+          ]
+        },
+        {
+          "question": "I'm looking at the Call 2 video. It does include it. i have checked with the team: it is still active. It is called Money Mondays.",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-047",
+          "productionLogId": "launch-047",
+          "capturedAt": "2026-07-15 20:19:50.253148+00",
+          "feedbackRating": null,
+          "productionAnswer": "I can’t confirm a reliable answer for that exact case from the applicable guidance. Please check #sales-questions-requests before replying to the prospect.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 11860,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["stateful_follow_up", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "money-mondays-owner-verification",
+              "text": "Recognize the explicit correction and route the named Money Mondays conflict for current owner verification rather than repeating the stale discontinued claim.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The rep explicitly reports a team-confirmed active program named Money Mondays, but the controlling owner-approved source and exact logistics are not in the governed corpus."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-built-for-more-script",
+      "title": "Built for More script",
+      "prompts": [
+        {
+          "question": "script for Built for more",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-055",
+          "productionLogId": "launch-055",
+          "capturedAt": "2026-07-20 13:40:57.815673+00",
+          "feedbackRating": null,
+          "productionAnswer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 11782,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["independent_single_turn", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "built-for-more-script-match",
+              "text": "State which approved script should be used for Built for More.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["The Head of Sales and Sales Ops and Training independently confirmed that Built for More uses exactly the same script as Next Level CEO."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-vip-tier-one-submission",
+      "title": "VIP Tier-1 submission sequence",
+      "prompts": [
+        {
+          "question": "with the VIP license, do we only submit to 1 platform of the tier 1 or all 3 platforms?",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-061",
+          "productionLogId": "launch-061",
+          "capturedAt": "2026-07-20 15:44:07.047291+00",
+          "feedbackRating": "down",
+          "productionAnswer": "I can’t confirm a reliable answer for that exact case from the applicable guidance. Please check #sales-questions-requests before replying to the prospect.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 16808,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "vip-one-platform-goal",
+              "text": "Explain the target number of Tier-1 placements and whether the client chooses the platform.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Rich's response, relayed by Sales Ops, says the client does not choose and the goal is placement on one Tier-1 platform."],
+              "blockedContext": []
+            },
+            {
+              "id": "vip-fallback-submissions",
+              "text": "Explain what happens if the first Tier-1 submission is turned down.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Rich's response says the company would submit to all three options if the initial platform turned the episode down."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-client-recording-boundary",
+      "title": "Client recording a sales call",
+      "prompts": [
+        {
+          "question": "can the client record our call",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-068",
+          "productionLogId": "launch-068",
+          "capturedAt": "2026-07-20 18:01:14.787618+00",
+          "feedbackRating": "up",
+          "productionAnswer": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 12558,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "76d352e70fefd0f2" },
+          "evaluationStrata": ["independent_single_turn", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "client-must-not-record",
+              "text": "State whether a client should record the sales call.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops answered no and said the client should not record the call."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-new-studio-preview",
+      "title": "New studio preview artifact",
+      "prompts": [
+        {
+          "question": "send me a preview video of the new studio",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-080",
+          "productionLogId": "launch-080",
+          "capturedAt": "2026-07-21 14:55:18.289708+00",
+          "feedbackRating": null,
+          "productionAnswer": "If the requested video is a pre-audition video, we cannot send it. Instead, guide the prospect to check their inbox/spam or resend the pre-call email with the episode-watching assignment. Use #sales-questions-requests for the unresolved part.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 25941,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["independent_single_turn", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "current-studio-preview-artifact",
+              "text": "Locate or verify a currently approved new-studio preview artifact without confusing it with the pre-audition video.",
+              "atomic": true,
+              "expectedDisposition": "artifact",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The current corpus says to use an approved virtual studio walkthrough but does not contain a verified current new-studio preview link. The request is not for the pre-audition assignment video." ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-current-revenue-goal",
+      "title": "Current ISTV revenue goal",
+      "prompts": [
+        {
+          "question": "what is ISTV revenue goal for this year?",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-081",
+          "productionLogId": "launch-081",
+          "capturedAt": "2026-07-21 16:04:09.20286+00",
+          "feedbackRating": null,
+          "productionAnswer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 12867,
+          "productionErrorClass": "v3_grounding_rejected",
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["independent_single_turn", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "current-revenue-goal-live-owner",
+              "text": "Route the current annual revenue-goal question to the current owner rather than inventing an internal metric.",
+              "atomic": true,
+              "expectedDisposition": "live_lookup",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The governed sales corpus contains no current annual ISTV revenue target; this is a live internal metric that requires an authorized current source." ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-self-generated-referral",
+      "title": "Self-generated and client referral workflow",
+      "prompts": [
+        {
+          "question": "What is the process of approval with a self generated referral? Or client referral that has not applied through formal channels",
+          "independent": true,
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-084",
+          "productionLogId": "launch-084",
+          "capturedAt": "2026-07-22 00:14:08.891867+00",
+          "feedbackRating": null,
+          "productionAnswer": "For a self-generated referral, the approval process uses the same onboarding process as other referrals; the key difference is ensuring the self-generated lead commission is applied correctly. For a client referral who hasn't applied through formal channels, call the potentially interested applicant from the rep's Zoom phone number once contact info is provided, ask if they are interested in booking an audition, and book while on the phone if yes. Use #sales-questions-requests for the unresolved part.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 22709,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "self-generated-application-workflow",
+              "text": "Obtain the current approved application and calendar workflow for a self-generated or client referral that has not applied formally.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_tech",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The current governed corpus does not contain a complete self-generated referral application and booking SOP; the active workflow must be confirmed by sales tech." ]
+            },
+            {
+              "id": "self-generated-attribution",
+              "text": "Obtain the current process that preserves rep attribution and commission for the referral.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_tech",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["Referral attribution and commission mapping are system-owned. The chatbot must not invent a form field, record edit, or attribution procedure." ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-mastermind-details",
+      "title": "Mastermind access, purpose, and attendance follow-ups",
+      "prompts": [
+        {
+          "question": "for next level ceo, what is the mastermind event access",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-085",
+          "productionLogId": "launch-085",
+          "capturedAt": "2026-07-22 08:34:31.794015+00",
+          "feedbackRating": "down",
+          "productionAnswer": "Mastermind event access is included in all Next Level CEO packages under the current meeting-confirmed rule.",
+          "productionOutcome": "answer_from_evidence",
+          "productionNeedsRoute": false,
+          "productionRouteReason": null,
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 16158,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["compound", "answerable", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "mastermind-access-included",
+              "text": "State the current governed package-inclusion rule for Mastermind or red-carpet access.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Current meeting-confirmed guidance says Mastermind or red-carpet access is included in all packages."],
+              "blockedContext": []
+            },
+            {
+              "id": "mastermind-access-meaning",
+              "text": "Explain what the event access consists of beyond package inclusion.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The governed source confirms access and the attendance fee but does not define the event's program, sessions, networking format, or marketing curriculum." ]
+            }
+          ]
+        },
+        {
+          "question": "what is it and what's included",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-086",
+          "productionLogId": "launch-086",
+          "capturedAt": "2026-07-22 08:35:34.05434+00",
+          "feedbackRating": null,
+          "productionAnswer": "Mastermind event access is included in all Next Level CEO packages under the current meeting-confirmed rule. It includes a $200 non-refundable attendance fee for food and drinks.",
+          "productionOutcome": "answer_from_evidence",
+          "productionNeedsRoute": false,
+          "productionRouteReason": null,
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 17013,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["stateful_follow_up", "compound", "answerable", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "mastermind-package-access",
+              "text": "Confirm that Mastermind or red-carpet access is included in all packages.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Current meeting-confirmed guidance says the access is included in all packages."],
+              "blockedContext": []
+            },
+            {
+              "id": "mastermind-attendance-fee",
+              "text": "State the current attendance-fee rule accurately.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["There is a $200 non-refundable fee to attend Mastermind, and the fee is for food and drinks; it is a fee, not a benefit included in the package price."],
+              "blockedContext": []
+            },
+            {
+              "id": "mastermind-program-details",
+              "text": "Explain the exact sessions, activities, or benefits included at the event.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The current governed source does not define the detailed event program or activities." ]
+            }
+          ]
+        },
+        {
+          "question": "is it networking or is it to learn marketing",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-087",
+          "productionLogId": "launch-087",
+          "capturedAt": "2026-07-22 08:36:09.52086+00",
+          "feedbackRating": "down",
+          "productionAnswer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 15407,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["stateful_follow_up", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "mastermind-networking-or-marketing-purpose",
+              "text": "Determine whether the current Mastermind is a networking event, marketing education, or both.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The governed source does not define Mastermind as networking, marketing education, or a specific mix, so the current event owner must confirm it." ]
+            }
+          ]
+        },
+        {
+          "question": "is it a 1 time entry, and what if they miss it",
+          "sourceCohort": "production_v3_log",
+          "sourceRef": "production-neon-read-only:launch-088",
+          "productionLogId": "launch-088",
+          "capturedAt": "2026-07-22 08:40:26.400236+00",
+          "feedbackRating": "down",
+          "productionAnswer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+          "productionOutcome": "route_from_evidence",
+          "productionNeedsRoute": true,
+          "productionRouteReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "productionProvider": "deepseek",
+          "productionModel": "deepseek-v4-pro",
+          "productionLatencyMs": 11893,
+          "productionErrorClass": null,
+          "productionRuntimeMetadata": { "pipelineVersion": "v3", "knowledgeVersion": "8c8c677c1209f2d7" },
+          "evaluationStrata": ["stateful_follow_up", "compound", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "mastermind-one-time-entry",
+              "text": "Determine whether the included access is for one event only or can be used for another occurrence.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The current governed source does not define whether access is a one-time entry or recurring." ]
+            },
+            {
+              "id": "mastermind-missed-event",
+              "text": "Determine what happens if the cast member misses the event.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["Missed-event consequences, replacement access, and current event availability are not approved in the governed source and must be confirmed by the current event owner." ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

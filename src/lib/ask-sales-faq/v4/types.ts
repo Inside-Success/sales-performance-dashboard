@@ -1,0 +1,157 @@
+import type { AskSalesFaqChatMessage, AskSalesFaqStructuredAnswer } from "@/lib/ask-sales-faq/types";
+import type { V3BlockedTopic, V3Policy, V3Provider, V3ProviderAttempt, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+
+export type V4Lane = "answer" | "partial" | "clarify" | "live_lookup" | "artifact" | "route" | "conversation";
+
+export type V4Candidate = {
+  policy: V3Policy;
+  rank: number;
+  score: number;
+  reciprocalRankScore: number;
+  lexicalScore: number;
+  familyScore: number;
+  characterScore: number;
+  fieldScore: number;
+  scopeScore: number;
+  matchedTerms: string[];
+  rankSources: Record<string, number>;
+};
+
+export type V4BlockedCandidate = {
+  topic: V3BlockedTopic;
+  score: number;
+  matchedTerms: string[];
+  matchKind: "canonical_family" | "legacy_anchor" | "structured";
+};
+
+export type V4RetrievalResult = {
+  query: string;
+  queryTokens: string[];
+  expandedTokens: string[];
+  candidates: V4Candidate[];
+  blocked: V4BlockedCandidate[];
+  corpusSize: number;
+  stageTimings: Record<string, number>;
+};
+
+export type V4NeedLane = Exclude<V4Lane, "partial" | "conversation">;
+
+export type V4PlannedNeed = {
+  id: string;
+  text: string;
+  lane: V4NeedLane;
+  evidence_refs: string[];
+  supported_claim: string;
+  reason: string;
+  route_key: string | null;
+  clarification_question: string;
+};
+
+export type V4AnswerPlan = {
+  needs: V4PlannedNeed[];
+  overall_lane: V4Lane;
+  confidence_score: number;
+  reasoning_summary: string;
+};
+
+export type V4ComposedSentence = {
+  id: string;
+  text: string;
+  need_ids: string[];
+  evidence_refs: string[];
+  kind: "answer" | "boundary" | "clarification";
+};
+
+export type V4Composition = {
+  summary: string;
+  sentences: V4ComposedSentence[];
+};
+
+export type V4SentenceCheck = {
+  sentenceId: string;
+  status: "supported" | "unsupported" | "irrelevant";
+  evidenceRefs: string[];
+  reason: string;
+  deterministicErrors: string[];
+};
+
+export type V4Validation = {
+  verdict: "pass" | "repair" | "partial_recovery" | "route";
+  sentenceChecks: V4SentenceCheck[];
+  removedSentences: string[];
+  unresolvedNeedIds: string[];
+  reason: string;
+};
+
+export type V4EvidenceCitation = {
+  policyId: string;
+  title: string;
+  decisionKey: string;
+  lastReviewed: string;
+  authority: number;
+  sourceKind: string;
+  approvedBy: string[];
+};
+
+export type V4RuntimeMetadata = {
+  pipelineVersion: "v4-isolated";
+  isolation: {
+    productionSelectorChanged: false;
+    databaseWrites: false;
+    historyPersistence: false;
+  };
+  knowledgeVersion: string;
+  turn: V3TurnResolution;
+  retrieval: {
+    corpusSize: number;
+    candidateCount: number;
+    candidates: Array<{
+      id: string;
+      rank: number;
+      score: number;
+      decisionKey: string;
+      answerability: string;
+      qualityTier: string;
+      productScopes: string[];
+    }>;
+    blockedTopicIds: string[];
+  };
+  plan: V4AnswerPlan;
+  executionMode: {
+    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "conversation";
+    composition: "model" | "exact_evidence" | "not_required";
+    validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required";
+  };
+  validation: V4Validation;
+  providerAttempts: V3ProviderAttempt[];
+  stageTimings: Record<string, number>;
+};
+
+export type AskSalesFaqV4Result = {
+  ok: true;
+  answer: string;
+  structuredAnswer: AskSalesFaqStructuredAnswer;
+  lane: V4Lane;
+  needsRoute: boolean;
+  routeReason: string | null;
+  routeChannels: string[];
+  provider: "deepseek" | "anthropic" | null;
+  model: string | null;
+  latencyMs: number;
+  citations: V4EvidenceCitation[];
+  selectedPolicyIds: string[];
+  redactions: string[];
+  runtimeMetadata: V4RuntimeMetadata;
+};
+
+export type V4RuntimeOptions = {
+  provider?: V3Provider;
+  validatorProvider?: V3Provider;
+  skipModelValidation?: boolean;
+};
+
+export type V4RunInput = {
+  question: string;
+  messages?: AskSalesFaqChatMessage[];
+  options?: V4RuntimeOptions;
+};
