@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales V4 fresh authoritative Slack source-gold evaluation - 2026-07-22",
+  "capturedAt": "2026-07-22",
+  "purpose": "Fresh, redacted, source-backed generalization evaluation. These prompts must never become routing rules, synonyms, hard-coded answers, or question-specific patches.",
+  "promptCount": 13,
+  "conversationCount": 12,
+  "adjudication": {
+    "schemaVersion": 1,
+    "adjudicatorId": "codex-source-review-2026-07-22",
+    "adjudicatedAt": "2026-07-22T12:35:23.000Z",
+    "methodology": "Questions were redacted and decomposed into atomic needs from read-only Slack threads before either candidate was run. Only replies from Sales Ops, the Head of Sales, Sales Ops and Training, or a directly confirmed operating owner were treated as answer evidence. Ambiguous, tentative, live, artifact, and compliance-conflicted details were labeled for precise routing instead of being forced into direct answers. V3 and V4 outputs were not used as answer authority.",
+    "sourceRefs": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784656912361629",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784655953617479",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784650564750089",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784639519121099",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784636075363209",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784573106019439",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784568504075709",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784440460500479",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784396519062379",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784410332914089",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784652173603419",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784637334539369"
+    ],
+    "independentFromSystems": true,
+    "knowledgeVersion": "8c8c677c1209f2d7"
+  },
+  "conversations": [
+    {
+      "id": "fresh-reality-tv-boundary",
+      "title": "Reality TV versus documentary boundary",
+      "prompts": [
+        {
+          "question": "A prospect asks whether we offer casting for reality TV programs. Do we offer reality TV, or only documentary-style shows?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784656912361629",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "reality-tv-offer-boundary",
+              "text": "State whether the company offers reality-TV casting opportunities or documentary-style programming only.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops confirmed on 2026-07-22 that the company does not offer reality TV and offers documentary-style programming only."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-cast-member-privacy",
+      "title": "Prior cast-member examples and privacy",
+      "prompts": [
+        {
+          "question": "Can I describe a previously signed cast member's situation to a prospect without naming them, and can I share that cast member's contact details?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784655953617479",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "anonymous-cast-example",
+              "text": "Determine whether a rep may describe a signed cast member's situation without identifying the person.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops confirmed that discussing the situation without naming the cast member is allowed."],
+              "blockedContext": []
+            },
+            {
+              "id": "cast-contact-privacy",
+              "text": "State whether the cast member's personal contact information may be shared for calls or texts.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops explicitly prohibited giving out cast members' personal contact information for calls or texts."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-daymond-access-boundaries",
+      "title": "Daymond John access and collaboration boundaries",
+      "prompts": [
+        {
+          "question": "Can a Next Level CEO cast member fly to Miami at a different time from their own filming just to meet Daymond John while he records their introduction?",
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784650564750089",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["answerable"],
+          "goldNeeds": [
+            {
+              "id": "daymond-separate-meeting",
+              "text": "Determine whether a separate Miami visit to meet Daymond while he records the introduction is offered.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops confirmed that a separate visit to meet Daymond at another filming time is not currently offered."],
+              "blockedContext": []
+            }
+          ]
+        },
+        {
+          "question": "Can Daymond John's team collaborate with that cast member on a social-media post?",
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784650564750089",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["stateful_follow_up", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "daymond-team-social-collaboration",
+              "text": "Determine whether Daymond John's team will collaborate with the cast member on a social-media post.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops answered no to the follow-up asking whether Daymond John's team would collaborate on a social-media post."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-promotional-assets",
+      "title": "Contract promotional-activity explanation",
+      "prompts": [
+        {
+          "question": "The contract asks clients to cooperate with promotional activities. What should they do with the social assets provided after onboarding?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784639519121099",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "onboarding-social-assets-use",
+              "text": "Explain the approved use of the social assets supplied in the onboarding email.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said clients are encouraged to post the supplied social assets to announce their feature, build awareness, and direct their audience to the episode."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-call-one-in-car",
+      "title": "Call 1 while prospect is a passenger",
+      "prompts": [
+        {
+          "question": "A prospect says they will join Call 1 while riding as a passenger in a car. Should I take the call or reschedule it?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784636075363209",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "passenger-call-one",
+              "text": "State whether Call 1 should proceed while the prospect is a passenger or be rescheduled.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops instructed the rep to reschedule the Call 1."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-duplicate-lead-routing",
+      "title": "Duplicate lead and appointment repair",
+      "prompts": [
+        {
+          "question": "The same prospect is booked twice under different reps. I need the duplicate records combined and the later appointment replaced. Where should this be handled?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784573106019439",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "duplicate-lead-tech-route",
+              "text": "Route duplicate-record merging and appointment replacement to the current sales-tech channel without inventing backend steps.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_tech",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["Sales Ops instructed the rep to repost this duplicate-lead and appointment-repair request in the tech channel; the rep should not merge records from a chatbot answer."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-vip-upgrade-contract",
+      "title": "VIP upgrade and unlisted payment terms",
+      "prompts": [
+        {
+          "question": "A client wants to upgrade to VIP using a six-month payment plan that would require changing the contract. What process and contract boundary should I follow?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784568504075709",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "vip-upgrade-form",
+              "text": "Direct the rep to use the current upgrade form for the upgrade details.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops asked the rep to use the new upgrade form before processing the upgrade."],
+              "blockedContext": []
+            },
+            {
+              "id": "no-contract-term-edit",
+              "text": "State that contracts and terms are not edited for an unlisted plan and the client must use an offered option.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops confirmed that contracts or terms will not be edited and the client must choose an offered payment option."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-phone-onboarding-recording",
+      "title": "Phone payment and onboarding with Zoom recording",
+      "prompts": [
+        {
+          "question": "If a client has no usable internet, can I collect payment and complete onboarding by phone, and how should the call be recorded?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784440460500479",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "keep-onboarding-on-zoom",
+              "text": "State the company recording boundary for a payment and onboarding call when the client cannot join normally.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said to keep the interaction on Zoom video if possible because company policy requires it."],
+              "blockedContext": []
+            },
+            {
+              "id": "zoom-plus-phone-workaround",
+              "text": "Explain the approved workaround of keeping Zoom running on the computer while calling the client by phone so the call remains captured.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops approved the experienced closer's suggestion to keep Zoom running on the computer and call the client by phone so Zoom captures the conversation."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-owner-without-appointment",
+      "title": "HubSpot owner with no Keap appointment",
+      "prompts": [
+        {
+          "question": "A lead has an owner in HubSpot but no appointment in Keap. How do I check whether another rep already contacted or auditioned them?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784396519062379",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "compound", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "check-keap-notes-and-rep",
+              "text": "Give the first approved check for prior rep contact when HubSpot has an owner but Keap has no appointment.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said to check Keap notes and, if notes exist, contact the rep who wrote them."],
+              "blockedContext": []
+            },
+            {
+              "id": "ask-applicant-if-no-notes",
+              "text": "Explain the fallback when Keap notes do not show prior contact.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said that if no useful note exists, call the applicant and ask whether anyone from ISTV contacted them or conducted an audition."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-main-istv-missed-deadline",
+      "title": "Main ISTV missed cohort payment deadline",
+      "prompts": [
+        {
+          "question": "A main ISTV prospect could not complete payment by the cohort deadline because the bank was closed, but says they can pay Monday. Is there an exception, or must they wait?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784410332914089",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "high_risk", "answerable"],
+          "goldNeeds": [
+            {
+              "id": "main-istv-bank-closure-exception",
+              "text": "Determine whether a closed bank creates an exception to the main ISTV cohort payment deadline.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops gave no exception for the missed main ISTV payment deadline in this bank-closure scenario."],
+              "blockedContext": []
+            },
+            {
+              "id": "main-istv-wait-six-months",
+              "text": "State the waiting period given by Sales Ops after this missed main ISTV deadline.",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said the prospect has to wait six months."],
+              "blockedContext": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-cancellation-optout-boundary",
+      "title": "Cancellation follow-up versus opt-out boundary",
+      "prompts": [
+        {
+          "question": "If a lead cancels before Call 1, may I follow up to ask why? If they cancel before Call 2 after opting out of texts, may I email them to reschedule?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784652173603419",
+          "sourceAuthority": "Sales Ops with a compliance conflict preserved",
+          "evaluationStrata": ["independent_single_turn", "compound", "high_risk", "answerable", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "ordinary-cancel-follow-up",
+              "text": "Explain the approved follow-up expectation for an ordinary cancellation or no-show when the person has not opted out or asked for no contact.",
+              "atomic": true,
+              "expectedDisposition": "partial",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops said reps may try to follow up and that two follow-up calls are expected for a no-show, provided the person has not asked not to be contacted."],
+              "blockedContext": []
+            },
+            {
+              "id": "text-optout-cross-channel-contact",
+              "text": "Determine whether an opt-out from texts still permits a new email or call for rescheduling.",
+              "atomic": true,
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The Slack reply allowed ordinary follow-up absent a do-not-contact request, while the governed DNC article treats STOP or opt-out conservatively across outreach. The exact cross-channel effect of a text opt-out must be verified before contacting the person again."]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-upgrade-sheet-artifact",
+      "title": "Current upgrade sheet lookup",
+      "prompts": [
+        {
+          "question": "Where can I find the current upgrade sheet and how do I identify the right form?",
+          "independent": true,
+          "sourceCohort": "fresh_slack_authoritative_thread",
+          "sourceRef": "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1784637334539369",
+          "sourceAuthority": "Sales Ops",
+          "evaluationStrata": ["independent_single_turn", "compound", "answerable", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "upgrade-slack-search",
+              "text": "Give the source-approved discovery instruction for finding the upgrade form in Slack.",
+              "atomic": true,
+              "expectedDisposition": "partial",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": ["Sales Ops instructed the rep to search the word upgrade in Slack."],
+              "blockedContext": []
+            },
+            {
+              "id": "current-upgrade-form-artifact",
+              "text": "Provide or verify the exact current upgrade form rather than inventing a link or relying on an unavailable screenshot.",
+              "atomic": true,
+              "expectedDisposition": "artifact",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [],
+              "blockedContext": ["The authoritative reply identified the form with a Slack image, but the governed chatbot corpus does not contain a verified current artifact link or the image needed to identify it exactly."]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

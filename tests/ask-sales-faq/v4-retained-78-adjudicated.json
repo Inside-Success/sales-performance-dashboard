@@ -1,0 +1,594 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales V4 retained 78 independently adjudicated regression set with source-reviewed corrections",
+  "purpose": "Regression-only adjudication of the immutable retained 78 prompts. This is not an unseen holdout and is not a promotion decision by itself.",
+  "capturedAt": "2026-07-21T18:27:32.000Z",
+  "conversationCount": 8,
+  "promptCount": 78,
+  "adjudication": {
+    "schemaVersion": 1,
+    "adjudicatorId": "codex-independent-source-review-2026-07-21",
+    "adjudicatedAt": "2026-07-21T18:27:32.000Z",
+    "methodology": "Independent manual source adjudication performed without consulting V4 retrieval selections or generated V3/V4 answers. Each prompt was decomposed into atomic needs and checked against the current materialized governed registry, admin-approved release ledger, authoritative FAQ articles, and documented unresolved-source gaps. Current owner-approved and clearly authoritative decisions were used within their scope. Exact operational details without a controlling current decision are labeled for precise routing, clarification, live lookup, or artifact lookup rather than treated as automatic failures.",
+    "sourceRefs": [
+      "dashboard:tests/ask-sales-faq/v3-regression-78.json@sha256:840bb449bc0e8996520d949c5d140c27546d68c555ddd0a75cdb132f43c9dd9f",
+      "dashboard:src/lib/ask-sales-faq/generated/v3-policy-registry.json",
+      "dashboard:src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json",
+      "faq:runtime/v3-policy-registry.json",
+      "faq:runtime/v3-admin-approved-releases.json",
+      "faq:_logs/known-gaps.md#2026-07-11-v3-governed-source-launch-gaps",
+      "faq:knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md",
+      "faq:knowledge-base/payments-contracts/payment-plan-and-link-boundaries.md",
+      "faq:knowledge-base/payments-contracts/contracts-edits-and-signature-process.md",
+      "faq:knowledge-base/call-process/post-sale-handoff-after-close.md",
+      "faq:knowledge-base/sales-tech-support/sales-tech-routing-and-support-requests.md",
+      "faq:knowledge-base/sales-tech-support/opt-out-dnc-and-security-escalation.md",
+      "faq:knowledge-base/outbound-20-percent/twenty-percent-dial-out-sop.md",
+      "faq:knowledge-base/offers-packages/current-show-source.md",
+      "faq:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md",
+      "faq:knowledge-base/content-rights/platform-hosting-and-client-license-duration.md",
+      "faq:knowledge-base/compliance-proof/platform-proof-and-claims-boundaries.md",
+      "faq:knowledge-base/compliance-proof/internal-material-sharing-boundaries.md",
+      "faq:knowledge-base/events-mastermind/events-mastermind-red-carpet.md"
+    ],
+    "independentFromSystems": true,
+    "knowledgeVersion": "8c8c677c1209f2d7",
+    "lastSourceReviewAt": "2026-07-23T00:00:00.000Z",
+    "sourceReviewNote": "The original adjudication remains preserved except for seven exact decisions corrected after read-only review of authoritative source evidence: the Operation CEO multiple-business mention rule, the no-launch early-stage boundary, ACH-before-onboarding, repeated-disqualified-applicant handling, previously claimed/no-show lead handling, Tier-1 platform client choice, and event-access workflow stage. These corrections were made from source evidence rather than candidate answer preference."
+  },
+  "conversations": [
+    {
+      "id": "qa-1",
+      "title": "QA Retest 1 - Qualification",
+      "prompts": [
+        {
+          "question": "Hey there! Hope you’re doing well—can you help me with a few qualification questions?",
+          "goldNeeds": [
+            {"id":"conversation-greeting","text":"Acknowledge the greeting briefly and invite the qualification questions without retrieving an unrelated policy.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["A brief friendly acknowledgment and invitation to continue fully resolves this conversational turn."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Are we equating social media presence or follower count with success when evaluating applicants? How much weight should we give social media versus the overall business, story, and fit?",
+          "goldNeeds": [
+            {"id":"followers-not-pass-fail","text":"Determine whether follower count or social presence is a pass-or-fail qualification rule.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-social-followers-qualification-weight"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"holistic-fit-factors","text":"Explain what should be weighed instead of follower count alone.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-social-followers-qualification-weight"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "I have a Call 1 for Operation CEO, and the applicant has two different businesses. Should they choose one business to focus on, or can they mention both during the episode?",
+          "goldNeeds": [
+            {"id":"operation-ceo-multi-business-focus","text":"State the authoritative rule that an applicant with multiple businesses may mention both during the episode and does not have to choose only one.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_b990c2fbc5565b4e"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "An author has a successful book, a corresponding podcast, and a screenplay gaining traction, but no official business. Is that a fit for America’s Authors if they have a website for the book?",
+          "goldNeeds": [
+            {"id":"author-without-separate-company","text":"Determine whether a legitimate author can qualify without a separate unrelated company.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-authors-legitimate-book-business-fit"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"author-evidence-boundary","text":"State what establishes the author-business exception and what does not establish it alone.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-authors-legitimate-book-business-fit"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Is a franchise owner eligible for Next Level CEO?",
+          "goldNeeds": [
+            {"id":"franchise-owner-eligibility","text":"Determine whether a franchise owner or part-owner can qualify despite not founding the franchise.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_c068cf9ac8f5d089"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Should a non-veteran be auditioning for Operation CEO if their business partner is a veteran and they have five employees?",
+          "goldNeeds": [
+            {"id":"operation-ceo-veteran-partner-rule","text":"Determine whether a non-veteran applicant qualifies for Operation CEO through a veteran business partner.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":["blocked_65d2e70d14703b7e"],"goldContext":[],"blockedContext":["The governed corpus has no controlling Operation CEO veteran-partner eligibility rule for this edge case."]}
+          ]
+        },
+        {
+          "question": "A lead says their website, social media, and company have not launched yet and they are in the very early stages. Should I still conduct Call 1 or tell them now that they are not a fit?",
+          "goldNeeds": [
+            {"id":"early-stage-no-launch-reapply","text":"Apply the later exact no-launch boundary: tell the lead it may be too soon and that they can reapply in the future.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_7888fa50e96a3ede"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Do we have a live episode on the network featuring someone who owns or runs a charity or nonprofit that I can send to a potential cast member?",
+          "goldNeeds": [
+            {"id":"live-nonprofit-episode","text":"Find a currently live, sendable episode featuring a charity or nonprofit owner.","atomic":true,"expectedDisposition":"live_lookup","expectedRouteKey":"sales_policy","policyIds":["owner-current-show-list-watchability-boundary","owner-current-show-watchability-route"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The materialized registry does not identify a confirmed current live charity or nonprofit episode; current watchability must be verified rather than inferred."]},
+            {"id":"approved-viewing-path","text":"Explain where available live episodes can be viewed without inventing a specific nonprofit example.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_70baa6ddc112bd58"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Are we still running Kingdom Creators?",
+          "goldNeeds": [
+            {"id":"kingdom-creators-current-offer","text":"Determine whether Kingdom Creators is on the current approved sales and casting show list.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["kr_7ace400fcdf68db9"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-2",
+      "title": "QA Retest 2 - Payments Rights",
+      "prompts": [
+        {
+          "question": "Thanks. I’m switching to payments, contracts, and content rights now.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the topic switch briefly and invite the payment, contract, and rights questions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition, not a request for a policy answer."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Why is there a commercial reuse license? If a cast member declines the reuse license, does being greenlit mean we can use their segment but they cannot reuse the content?",
+          "goldNeeds": [
+            {"id":"reuse-license-purpose","text":"Explain the governed purpose and scope of the company reuse license without inventing legal terms.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_74f78173844719e2","claim_b3d565ada1ff6fd8"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"rights-if-license-declined","text":"Decide the exact company and cast-member usage rights if the reuse license is declined but the person was greenlit.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":["claim_c03cee3ec04cfde4"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The exact product-specific rights created by declining the reuse license require current contracts or legal-approved wording; greenlight status alone is not enough to infer those rights."]}
+          ]
+        },
+        {
+          "question": "Clients understand that they own their episode with the license, but some ask, “How come I don’t make money from the residuals?”",
+          "goldNeeds": [
+            {"id":"residual-revenue-boundary","text":"Explain the approved boundary on residuals and money earned from the client’s episode.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-client-episode-revenue-boundary"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Are the promotional views included in the $20K package for Facebook only?",
+          "goldNeeds": [
+            {"id":"standard-package-view-inclusion","text":"Confirm whether the $20,000 main ISTV Standard package includes promotional views and the governed amount.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_c9e50172a4cd057b"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"exact-promotional-platform","text":"Determine whether those included views are specifically Facebook-only.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current governed offer confirms 100,000 pre-promotion views but does not approve an exact Facebook-only platform statement; verify current promotional-platform wording before promising it."]}
+          ]
+        },
+        {
+          "question": "With the 100K guaranteed trailer views, does that mean 100K clicks or 100K views of the trailer all the way to the end? How long is the trailer?",
+          "goldNeeds": [
+            {"id":"trailer-view-measurement","text":"Define whether the 100,000 metric counts clicks, starts, completions, or full trailer views.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Exact trailer click, view, and completion measurement semantics are not approved in the current governed corpus."]},
+            {"id":"trailer-length","text":"Provide the current approved trailer duration.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["No controlling current trailer-length decision is present in the governed corpus."]}
+          ]
+        },
+        {
+          "question": "If someone splits $20K into four payments and makes the first payment by ACH, will the remaining payments draft automatically by ACH? Do they need to approve each payment, or do we need a credit card for future payments?",
+          "goldNeeds": [
+            {"id":"ach-future-auto-draft","text":"Determine whether future installments automatically draft by ACH after the first ACH payment.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"finance","policyIds":["claim_f2bddec7b84e1829__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Future ACH draft mechanics are finance-owned and are not resolved by the approved payment-plan list."]},
+            {"id":"ach-per-payment-approval","text":"Determine whether the payer must approve each future ACH installment.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"finance","policyIds":["claim_f2bddec7b84e1829__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Per-installment ACH authorization mechanics are not approved for a rep-facing direct answer."]},
+            {"id":"future-card-requirement","text":"Determine whether a credit card is required for the remaining installments.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"finance","policyIds":["claim_f2bddec7b84e1829__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current payment-method matrix does not resolve whether a card is required after an initial ACH payment."]}
+          ]
+        },
+        {
+          "question": "A client paid through the link by ACH, but the contract did not appear; it only said “ACH in progress.” I sent the agreement separately, and the client says they signed it. Where can I see the signed agreement?",
+          "goldNeeds": [
+            {"id":"signed-agreement-location","text":"Identify the current system or location where the separately signed agreement can be verified.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The exact signed-agreement storage and viewing method after ACH and separate signing is not approved in the governed corpus; sales tech or the current contract owner must verify it."]}
+          ]
+        },
+        {
+          "question": "I have the signed contract, but the client paid by ACH. Do I need to wait for the payment to clear before signing them up for onboarding?",
+          "goldNeeds": [
+            {"id":"ach-clear-before-onboarding","text":"Apply Madeline's exact answer that onboarding should wait while ACH remains pending even though the contract is signed.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_8822431e281b23ac"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "My lead wants the $20K license but wants to make a $3K first payment now and pay the remaining $17K in three weeks. Which contract should they sign?",
+          "goldNeeds": [
+            {"id":"custom-3k-17k-split","text":"Determine whether the proposed $3,000 plus $17,000 timing is an allowed listed plan.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-unlisted-payment-split-boundary"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"matching-contract-boundary","text":"Explain which contract rule applies when the requested split is unlisted.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-unlisted-payment-split-boundary"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-3",
+      "title": "QA Retest 3 - Calls Leads",
+      "prompts": [
+        {
+          "question": "Appreciate it. Next I have questions about calls, greenlights, recordings, and lead handling.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the topic switch briefly and invite the call, greenlight, recording, and lead-handling questions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition, not a substantive policy request."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Are we allowed to send the payment link through a Zoom Phone message if the lead had to leave Call 2 and wants to complete payment afterward?",
+          "goldNeeds": [
+            {"id":"post-call-payment-link-channel","text":"Determine whether the approved payment link may be sent by Zoom Phone message after Call 2.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-zoom-phone-payment-link-email-only"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "A client is trying to pay on their phone, but the payment page will not let them tap the button to agree to the terms. I sent backup links, and the same thing happens. What should I do?",
+          "goldNeeds": [
+            {"id":"mobile-checkout-failure","text":"Give the approved next step for a repeated mobile checkout-page failure without inventing troubleshooting or creating links.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_f2bddec7b84e1829__a2"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Exact checkout troubleshooting is not approved; post the non-sensitive failure details to sales tech and do not create or substitute another link."]}
+          ]
+        },
+        {
+          "question": "When Call 1 happens on a Friday, are we supposed to schedule Call 2 for Monday, or should it happen before the Sunday cohort closes?",
+          "goldNeeds": [
+            {"id":"friday-call1-call2-deadline","text":"Apply Rich's later exact rule that after a Friday Call 1, weekend work is optional and Call 2 may be scheduled Monday when it is not conducted Saturday or Sunday.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_8a9c0c6ea1953a5a"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If a prospect says they already read the greenlight letter, do we still need to walk them through it on the call?",
+          "goldNeeds": [
+            {"id":"greenlight-letter-already-read","text":"Explain how the rep should handle required call content when the prospect says they already read the material.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_9bd7262dbc3ca13a"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Am I allowed to use Fathom and Zoom recording at the same time, using Zoom as the backup and Fathom for transcripts, summaries, coaching feedback, action items, and call review?",
+          "goldNeeds": [
+            {"id":"fathom-plus-zoom","text":"Determine whether Fathom may be used together with the required Zoom recording for sales calls.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-fathom-zoom-recording-prohibited"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "When dialing out on Zoom for the 20% list, do we have to record the calls? If so, do we have to tell prospects they are being recorded?",
+          "goldNeeds": [
+            {"id":"twenty-percent-recording-required","text":"Determine whether 20 percent outbound calls must be recorded through the approved Zoom process.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-twenty-percent-recording-and-disclosure"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"twenty-percent-recording-disclosure","text":"Determine whether the prospect must be told and acknowledgment obtained before continuing.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-twenty-percent-recording-and-disclosure"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "For self-sourced clients, what is the proper process for getting them through the application and onto my own calendar? How do I make sure the application is attributed to me instead of routed to the general pool?",
+          "goldNeeds": [
+            {"id":"self-sourced-application-calendar","text":"Give the current approved process for putting a self-sourced applicant through the application onto the sourcing rep’s calendar.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current governed corpus does not contain a complete self-sourced application and calendar SOP; sales tech must confirm the active workflow."]},
+            {"id":"self-sourced-attribution","text":"Give the current approved step that prevents the self-sourced application from entering the general pool and attributes it to the rep.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Self-sourced attribution and commission mapping require the current sales-tech process; do not invent a form field or backend edit."]}
+          ]
+        },
+        {
+          "question": "A lead originally applied for Legacy Makers but canceled Call 2 because they could not make the investment. They are now asking about America’s Authors. Since it is a different show, must they wait three to six months, or can they apply now?",
+          "goldNeeds": [
+            {"id":"cross-show-reapply-wait","text":"Determine whether changing to another main ISTV show removes the waiting period after canceling Call 2 for inability to invest.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-main-istv-cross-show-reapply-wait"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-4",
+      "title": "QA Retest 4 - Production Events",
+      "prompts": [
+        {
+          "question": "Last section—proof, production, support, platforms, and events. Thank you for sticking with me.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the final topic switch briefly and invite the proof, production, support, platform, and event questions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition and should not trigger unrelated retrieval."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "For Next Level CEO, our morning confirmation text says we cannot rebook because the cohort closes Sunday, but DJ has no cohort. Can I change that wording myself, or should I leave it unchanged until the team updates it?",
+          "goldNeeds": [
+            {"id":"nlceo-no-cohort-boundary","text":"Confirm whether main ISTV Sunday cohort pressure applies to Next Level CEO or Daymond John.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_bb04a794e0a74ea5__a4"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"confirmation-template-edit","text":"Decide whether the rep may edit the current confirmation template wording independently.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The no-cohort rule is governed, but there is no controlling current authorization for reps to edit the shared confirmation template; use the approved template and ask its current owner to correct it."]}
+          ]
+        },
+        {
+          "question": "Where can I find a client’s show name if it is missing from their Keap profile and is no longer on my calendar?",
+          "goldNeeds": [
+            {"id":"missing-show-name-recovery","text":"Give the approved recovery process when the show name is absent from Keap and the rep’s calendar.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-keap-missing-show-name-recovery"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "A potential cast member asked whether I can send the 2025 Inside Success statistics slide, including the social reach and combined following. Can I send a screenshot, or should I only reference the information in a message?",
+          "goldNeeds": [
+            {"id":"stats-slide-screenshot","text":"Determine whether the internal statistics slide or a screenshot may be sent externally.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_49827b5abfa86d45","claim_848ba0ca58988282__a2"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"approved-stats-wording","text":"Determine whether and how the statistics may be referenced in a message using current approved wording.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":["claim_9a12d8eaefcf143a__a8"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Current proof statistics and public wording must come from the approved proof or source owner; do not quote the internal deck from memory."]}
+          ]
+        },
+        {
+          "question": "Are the podcast questions designed for lead generation? What is the podcast episode structure, and how is it intelligently designed?",
+          "goldNeeds": [
+            {"id":"podcast-lead-generation-boundary","text":"Explain whether the podcast is designed or promised to generate leads.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-podcast-purpose-and-current-format"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"podcast-format","text":"Describe the current approved podcast recording and interviewer format.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-podcast-purpose-and-current-format"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"podcast-design-purpose","text":"Explain the approved authority, credibility, story, trust, and education purpose without promising outcomes.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-podcast-purpose-and-current-format"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Do we have any additional material that explains the six-month training program really well?",
+          "goldNeeds": [
+            {"id":"six-month-training-status","text":"State the current status of the six-month weekly training program.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-six-month-training-discontinued"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"current-training-alternatives","text":"Identify the approved current alternatives that reps may explain instead of promising the discontinued program.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-six-month-training-discontinued"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "On the fulfillment side, are cast members still paired with a scriptwriter? If a cast member is filming in August, when will they receive the script?",
+          "goldNeeds": [
+            {"id":"current-scripting-process","text":"Explain the governed portion of the current scripting process after onboarding.","atomic":true,"expectedDisposition":"partial","expectedRouteKey":null,"policyIds":["claim_5996647e28cf3b69","claim_9829630199781d19"],"blockedTopicIds":[],"goldContext":["The current sources confirm a production-handled scripting call, but do not establish a universal one-to-one scriptwriter pairing promise."],"blockedContext":[]},
+            {"id":"august-script-timing","text":"Provide the exact script delivery timing for a cast member filming in August.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"fulfillment","policyIds":["owner-scriptwriter-scheduling-fulfillment-route"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Exact scriptwriter assignment and script delivery dates are current fulfillment scheduling decisions and must not be invented."]}
+          ]
+        },
+        {
+          "question": "Can a cast member choose which Tier 1 streaming platform their show will be submitted to?",
+          "goldNeeds": [
+            {"id":"tier-one-client-choice","text":"Determine whether the client controls which Tier-1 platform receives the submission.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_56eb2c8181d936c9","owner-vip-tier-one-platform-boundary"],"blockedTopicIds":[],"goldContext":["The authoritative Slack answer states that clients do not choose the streaming platform; the platform decides placement."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Is the Mastermind only once a year? Are there other in-person training and networking programs throughout the year, or just the one event?",
+          "goldNeeds": [
+            {"id":"mastermind-frequency","text":"Provide the current approved annual frequency of Mastermind.","atomic":true,"expectedDisposition":"live_lookup","expectedRouteKey":"sales_policy","policyIds":["claim_9e04ab861ce2702f"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Current Mastermind frequency is not resolved in the governed corpus and event schedules can drift."]},
+            {"id":"other-in-person-programs","text":"Identify other currently active in-person training or networking programs during the year.","atomic":true,"expectedDisposition":"live_lookup","expectedRouteKey":"sales_policy","policyIds":["claim_9e04ab861ce2702f"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current complete in-person event program calendar is not governed; verify it with the current event owner."]}
+          ]
+        },
+        {
+          "question": "Thanks—can you make that last answer shorter?",
+          "goldNeeds": [
+            {"id":"shorten-prior-event-answer","text":"Condense the immediately prior answer while preserving its uncertainty and route boundary.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["A concise restatement should say the current frequency and full event calendar need confirmation; it must not invent an annual schedule."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Perfect, thank you!",
+          "goldNeeds": [
+            {"id":"conversation-closing-thanks","text":"Acknowledge the thanks briefly without retrieving or repeating policy content.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["A brief natural closing acknowledgment fully resolves this turn."],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-5",
+      "title": "QA Retest 5 - Qualification Natural",
+      "prompts": [
+        {
+          "question": "Hi! How’s your day going?",
+          "goldNeeds": [
+            {"id":"conversation-greeting","text":"Respond naturally and briefly to the greeting without retrieving unrelated sales policy.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["A brief friendly greeting fully resolves this turn."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "I have several unrelated sales questions. Can you keep your answers short and practical?",
+          "goldNeeds": [
+            {"id":"conversation-style-request","text":"Acknowledge the request to keep subsequent answers short and practical.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["Confirm the requested concise style without adding an unrelated policy answer."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "For Operation CEO, must the applicant own an LLC, or can the owner of a nonprofit qualify?",
+          "goldNeeds": [
+            {"id":"operation-ceo-nonprofit","text":"Determine whether nonprofit status or lack of an LLC automatically disqualifies an Operation CEO applicant.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_bfb97bf2dc197bdc"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Can you explain that in simpler language?",
+          "goldNeeds": [
+            {"id":"simplify-prior-nonprofit-answer","text":"Restate the immediately prior Operation CEO nonprofit answer in simpler language without changing its qualification boundary.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":["claim_bfb97bf2dc197bdc"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If a prospect is early-stage and budget-sensitive, may I start by recommending Lite, or must I present the higher package first and then move down?",
+          "goldNeeds": [
+            {"id":"package-presentation-order","text":"Determine whether a rep should start with Lite based only on perceived budget sensitivity or present the higher applicable package first.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-package-presentation-high-to-low"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Can a Next Level CEO applicant be greenlit if the business officially launches in three months but they already have a website, a strong story, and the ability to invest?",
+          "goldNeeds": [
+            {"id":"future-launch-not-automatic-dq","text":"Determine whether an early-stage future launch is automatically disqualified when other fit signals exist.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_aa93466af64a3cdd"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"specific-nlceo-greenlight","text":"Make the final greenlight decision for this future-launch Next Level CEO applicant.","atomic":true,"expectedDisposition":"clarify","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":["blocked_65d2e70d14703b7e"],"goldContext":[],"blockedContext":["The general early-stage policy supplies evaluation factors, but the final edge-case greenlight requires the complete qualification facts and current owner review rather than an automatic approval."]}
+          ]
+        },
+        {
+          "question": "For America’s Top Agents, does a real-estate agent need written brokerage legal or compliance approval before moving forward?",
+          "goldNeeds": [
+            {"id":"brokerage-written-approval","text":"Determine whether written brokerage legal or compliance approval is required for an America’s Top Agents applicant.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["No controlling current governed policy resolves the brokerage written-approval requirement; confirm with the current show or compliance owner."]}
+          ]
+        },
+        {
+          "question": "Should freelancers move to Call 2, or do they need an established business to qualify?",
+          "goldNeeds": [
+            {"id":"freelancing-qualification","text":"Determine whether freelance work alone qualifies someone as an entrepreneur for Call 2.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_59be9c344b9359a4"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"genuine-business-factors","text":"Explain the business, offer, ownership, and broader-fit factors required beyond taking freelance jobs.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_59be9c344b9359a4"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Is the $5,000 CEO Day upgrade currently available for Next Level CEO? If it is available, what payment and turnaround terms apply?",
+          "goldNeeds": [
+            {"id":"ceo-day-current-offer","text":"Determine whether CEO Day is listed in the current owner-approved Next Level CEO offer.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-dj-nlceo-current-offer-overview"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"ceo-day-payment-term","text":"State the current approved CEO Day price and payment term.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-dj-nlceo-current-offer-overview"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"ceo-day-turnaround","text":"Provide the current approved CEO Day turnaround time.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The owner-approved offer lists CEO Day at $5,000 paid in full but does not approve a turnaround promise; verify timing with the current offer or fulfillment owner."]}
+          ]
+        },
+        {
+          "question": "That’s helpful. Can you give me the answer without repeating the route note?",
+          "goldNeeds": [
+            {"id":"restate-ceo-day-without-route","text":"Briefly restate only the grounded CEO Day availability and payment facts while preserving that no turnaround is approved, without repeating channel-routing instructions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":["owner-dj-nlceo-current-offer-overview"],"blockedTopicIds":[],"goldContext":["A concise restatement may give the $5,000 paid-in-full fact and say no approved turnaround is stated; it should not invent timing."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?",
+          "goldNeeds": [
+            {"id":"existing-client-new-show","text":"Determine whether an existing ISTV cast member may buy another show and whether the new application should automatically be skipped.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_606e9d59e3cd964f"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"existing-client-rep-ownership","text":"Explain how the rep assignment should be checked for the existing client’s new-show interest.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_606e9d59e3cd964f"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-6",
+      "title": "QA Retest 6 - Payments Context",
+      "prompts": [
+        {
+          "question": "Thanks. I’m switching to payments and contracts now.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the switch to payments and contracts without dumping policy content.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If a business partner who is not in Keap pays on behalf of the cast member, how should I confirm the payment and get the contract signed if it does not populate automatically?",
+          "goldNeeds": [
+            {"id":"partner-payment-allowed","text":"Determine whether a business owner or partner may pay when the payment is clearly tied to the correct client.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_51695e7c59d2608a"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"confirm-third-party-payment","text":"Confirm the payment when the payer is not the Keap contact.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"finance","policyIds":["claim_f2bddec7b84e1829__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Finance must match and confirm a third-party payment to the correct client before the sale is treated as paid."]},
+            {"id":"missing-contract-population","text":"Get the correct contract signed when it does not populate automatically for the client.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The exact fallback for a non-populating contract is a current contract-automation or sales-tech action; do not substitute a nearby contract."]}
+          ]
+        },
+        {
+          "question": "I’m not sure which show this applies to. What information do you need from me?",
+          "goldNeeds": [
+            {"id":"clarify-payment-contract-case","text":"Ask for the minimum non-sensitive facts needed to route the preceding third-party payment and contract-population case correctly.","atomic":true,"expectedDisposition":"clarify","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The show or product, selected package and payment option, payer-to-client relationship, where the payment appears, and contract status are needed because payment and contract workflows differ by product; do not request raw bank, card, login, or other sensitive details."]}
+          ]
+        },
+        {
+          "question": "Do I need to submit another PayMe entry when a recurring payment appears in the payment feed?",
+          "goldNeeds": [
+            {"id":"recurring-payment-payme","text":"Determine whether a recurring installment on the same sale requires a second PayMe post.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_459770c0a9f5dc53"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "How do I verify that a Next Level CEO contract has been signed?",
+          "goldNeeds": [
+            {"id":"nlceo-contract-verification","text":"Give the approved current route for verifying a Next Level CEO or Daymond John contract instead of guessing from an old link.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_6232701406d4ef3e"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Actually, my previous question was about main ISTV, not Next Level CEO. Does that change your answer?",
+          "goldNeeds": [
+            {"id":"main-istv-contract-verification-correction","text":"Correct the product scope and provide the current main ISTV signed-contract verification method.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The Next Level CEO contract-channel answer does not transfer to main ISTV, and the exact main ISTV signed-agreement viewing method remains unapproved; sales tech or the current contract owner must verify it."]}
+          ]
+        },
+        {
+          "question": "Do reps send invoices for recurring client payments, or is that automated? Should those payments appear in the sales ledger?",
+          "goldNeeds": [
+            {"id":"recurring-client-invoices","text":"Determine whether recurring client installment invoices are automated or manually sent by reps.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_754c01ed0089dc82"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"recurring-payment-ledger","text":"Determine whether recurring payments should appear in the sales ledger.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_754c01ed0089dc82"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"rep-commission-invoice-boundary","text":"Distinguish client invoicing from the rep’s approved commission-invoice process.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_754c01ed0089dc82"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "What was my previous question about?",
+          "goldNeeds": [
+            {"id":"recall-previous-question","text":"Accurately summarize the immediately preceding user question from conversation history.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["The previous question asked whether recurring client invoices are automated or sent by reps and whether recurring payments appear in the sales ledger."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "How does the first Next Level CEO payment appear on the receipt for tax write-off purposes?",
+          "goldNeeds": [
+            {"id":"nlceo-receipt-tax-description","text":"Provide the exact current receipt description for the first Next Level CEO payment and its tax-write-off treatment.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"finance","policyIds":["claim_f2bddec7b84e1829__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Exact receipt wording and tax treatment are finance or tax matters not approved in the governed sales corpus; do not provide tax advice or invent a receipt label."]}
+          ]
+        },
+        {
+          "question": "What discount is currently available to a VIP client who purchases a second VIP ISTV episode, and where can I find the list of included media outlets?",
+          "goldNeeds": [
+            {"id":"vip-to-vip-second-episode-discount","text":"State the governed repeat-purchase eligibility and discount for a VIP ISTV client buying a second VIP ISTV episode.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_313aa422c956e5c1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"current-media-outlet-list","text":"Locate the current approved list of media outlets included with the purchase.","atomic":true,"expectedDisposition":"artifact","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current complete media-outlet list and its source location are not governed in the materialized corpus; obtain the current approved asset from the offer or proof owner."]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-7",
+      "title": "QA Retest 7 - Calls Compliance",
+      "prompts": [
+        {
+          "question": "Appreciate it. Now I have some questions about calls, ownership, and compliance.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the topic switch briefly and invite the call, ownership, and compliance questions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If my public calendar only allows bookings within two days but an outbound lead is available next week, what is the correct booking process?",
+          "goldNeeds": [
+            {"id":"outbound-booking-beyond-public-window","text":"Give the approved booking fallback when the public calendar cannot expose the needed outbound appointment time.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_d93982445e426907","claim_5af708598311071c"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"master-calendar-boundary","text":"State the calendar action the rep must avoid while creating the fallback booking.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_5af708598311071c"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "What should I do if a prospect starts taking photos of the Call 1 presentation slides during the call?",
+          "goldNeeds": [
+            {"id":"photographing-confidential-slides","text":"Give the rep’s approved immediate response when a prospect photographs confidential Call 1 slides.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_d8f7bb6d2647ddd3"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "You misunderstood me—I’m asking what the rep should do, not what the prospect should do.",
+          "goldNeeds": [
+            {"id":"correct-slide-photo-perspective","text":"Correct the misunderstanding and state the actions the rep should take in the immediately prior slide-photo scenario.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":["claim_d8f7bb6d2647ddd3"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Can I cancel an audition for someone I recently disqualified who keeps applying again, and how should I stop repeat bookings?",
+          "goldNeeds": [
+            {"id":"repeated-disqualification-cancel","text":"State that the rep may cancel when a repeatedly disqualified applicant keeps applying again.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_6385430e3a079b63"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"stop-repeat-bookings","text":"Give the approved sales-tech unsubscribe or block request and official opt-out process for the repeatedly disqualified person.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_6385430e3a079b63"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If a client opts out and I can no longer text them in Zoom Phone or email them through Keap, how do I complete the opt-out process?",
+          "goldNeeds": [
+            {"id":"stop-outreach-after-optout","text":"Confirm that the rep should not try another normal outreach channel after the client opts out.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_3c2e38fb0d7a1eb6"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"complete-internal-optout","text":"Give the approved internal completion step when the rep cannot contact the person again.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_29ecf8b8cbed836a"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "What email and text wording should I use the night before and the morning of a call booked from the 20% list?",
+          "goldNeeds": [
+            {"id":"twenty-percent-approved-templates","text":"Identify which approved email and SMS templates apply to 20 percent list bookings.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_3585b16e8ef643a9"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"calendar-day-before-confirmation","text":"State when the day-before confirmation email and text should be sent.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["v3src_confirmation_calendar_day_before"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"exact-current-template-copy","text":"Provide the exact current night-before and morning template copy without rewriting it from memory.","atomic":true,"expectedDisposition":"artifact","expectedRouteKey":"sales_policy","policyIds":["claim_3585b16e8ef643a9"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Use the current mandatory email and SMS templates; the exact live template copy is an approved source asset and is not reproduced in the governed policy decision."]}
+          ]
+        },
+        {
+          "question": "If a client books calls with two different reps, which rep owns the client?",
+          "goldNeeds": [
+            {"id":"two-calendar-ownership-resolution","text":"Give the current governed process for resolving a client who appears on two reps’ calendars without applying an overbroad first-booking shortcut.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["v3src_two_calendar_engagement"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "If a dial-out lead no-showed Call 1 with another rep, may I rebook the lead on my calendar, or should I contact the original rep?",
+          "goldNeeds": [
+            {"id":"previously-claimed-dialout-lead","text":"Contact or inform the original rep first and learn what happened before deciding whether to rebook the previously claimed no-show lead.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["v3src_previously_claimed_twenty_percent_lead","operational_49a3fe2589bb8c18"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qa-8",
+      "title": "QA Retest 8 - Production Resources",
+      "prompts": [
+        {
+          "question": "Last section—I have questions about production, resources, platforms, and events.",
+          "goldNeeds": [
+            {"id":"conversation-topic-switch","text":"Acknowledge the final topic switch briefly and invite the production, resource, platform, and event questions.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["This is a conversational transition."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Does the estimated nine-month timeline for appearing on Amazon Prime begin when the client signs the license or when they film at the studio? When should the episode appear on our own platform?",
+          "goldNeeds": [
+            {"id":"amazon-timeline-anchor","text":"Identify whether the estimated Amazon Prime clock begins at license signing or studio filming.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The governed corpus does not approve an exact Amazon timeline anchor; platform and fulfillment timing must be verified rather than inferred."]},
+            {"id":"own-platform-release-timing","text":"Provide the current approved timing for the episode to appear on the ISTV platform.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":["claim_a67cbc990c0e81d9__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current policy confirms that all tiers air on the ISTV app but does not approve a release-date clock for the client’s episode."]}
+          ]
+        },
+        {
+          "question": "What is the current studio address, and is the Mastermind held at that location?",
+          "goldNeeds": [
+            {"id":"current-studio-address","text":"Provide the current verified studio address.","atomic":true,"expectedDisposition":"live_lookup","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current studio address is not approved in the materialized corpus and should be verified from the current official location source."]},
+            {"id":"mastermind-venue-match","text":"Determine whether the current Mastermind is held at that studio address.","atomic":true,"expectedDisposition":"live_lookup","expectedRouteKey":"sales_policy","policyIds":["claim_9e04ab861ce2702f"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["Mastermind venue details are currentness-sensitive and must be confirmed with the current event owner."]}
+          ]
+        },
+        {
+          "question": "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+          "goldNeeds": [
+            {"id":"nlceo-lite-exact-social-assets","text":"List the exact current social promotional assets included in the $10,000 Next Level CEO package.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":["claim_3a43cb9eed71cb37"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current governed policy says some promotional assets may be included but does not enumerate a complete current asset list; use the current listed deliverables rather than inventing one."]},
+            {"id":"nlceo-social-promise-boundary","text":"State what the rep must avoid promising about social-media services.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_3a43cb9eed71cb37"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Can a prospect’s friends tour the studio before the shoot, and how many guests may attend filming?",
+          "goldNeeds": [
+            {"id":"pre-shoot-friend-tour","text":"Determine whether prospects or friends may receive an in-person studio tour before signing or filming.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_4d14d445a904a4af"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"filming-guest-limit","text":"State the current approved number of guests a client may bring to filming.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_4d14d445a904a4af"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Where can I find the document that explains the complete production process, including pre-production, filming, post-production, and expected scheduling timelines?",
+          "goldNeeds": [
+            {"id":"complete-production-process-document","text":"Locate the current approved document covering the complete production lifecycle and scheduling timelines.","atomic":true,"expectedDisposition":"artifact","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current complete production-process document location is not resolved in the governed corpus; obtain the approved resource from the current production or fulfillment source owner."]}
+          ]
+        },
+        {
+          "question": "Please turn your previous answer into a short checklist.",
+          "goldNeeds": [
+            {"id":"checklist-prior-production-resource-answer","text":"Reformat the immediately prior answer into a short checklist without inventing a document, link, or production timeline.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["The checklist should preserve the prior artifact-lookup boundary: use the current production or fulfillment owner, request the approved lifecycle document, and verify that it covers pre-production, filming, post-production, and scheduling."],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Is there approved training for transferring or managing leads between Keap and HubSpot, or should reps avoid doing that themselves?",
+          "goldNeeds": [
+            {"id":"keap-hubspot-transfer-training","text":"Determine whether a current approved Keap-to-HubSpot lead-transfer or management training source exists and whether reps may perform the transfer themselves.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_tech","policyIds":["claim_cfb5be032755c9e4__a1"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["No complete approved Keap or HubSpot transfer-training source exists in the governed corpus; reps should not edit or transfer records from an invented process and must use sales tech."]}
+          ]
+        },
+        {
+          "question": "Should details about event access be explained during Call 2 or during onboarding after the sale?",
+          "goldNeeds": [
+            {"id":"event-access-sales-vs-onboarding","text":"State that event-access details are provided during onboarding rather than during Call 2.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_285778124bfd39c6"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+          ]
+        },
+        {
+          "question": "Thanks, that’s everything for now.",
+          "goldNeeds": [
+            {"id":"conversation-closing","text":"Acknowledge the close briefly and naturally without repeating policies or routing notes.","atomic":true,"expectedDisposition":"conversation","expectedRouteKey":null,"policyIds":[],"blockedTopicIds":[],"goldContext":["A brief natural closing acknowledgment fully resolves this turn."],"blockedContext":[]}
+          ]
+        }
+      ]
+    }
+  ]
+}
