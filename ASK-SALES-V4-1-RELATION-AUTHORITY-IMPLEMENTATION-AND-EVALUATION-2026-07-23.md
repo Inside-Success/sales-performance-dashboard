@@ -7,6 +7,7 @@ Status: **implemented, verified, frozen, and evaluated in isolation. V4.1 is dir
 ## Release Boundary
 
 - Branch: `agent/ask-sales-v4-1-relation-authority-2026-07-23`
+- Draft dashboard PR: [#72](https://github.com/Inside-Success/sales-performance-dashboard/pull/72)
 - Frozen implementation commit: `bdee9db7764c28ed77df82ef2e96f256fabb4e9d`
 - Frozen implementation tree: `60747fa96ae3f9121e6b0e8c3d6615172bd2953b`
 - Production selector, API, page, database, Neon, Slack, n8n, Google, feedback, and conversation persistence changed: no
