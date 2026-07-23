@@ -21,6 +21,7 @@
     "benchmark:ask-sales-faq:v4:hybrid-candidate": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v4-hybrid-candidate.ts",
     "benchmark:ask-sales-faq:v5:retrieval": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v5-bounded-retrieval.ts",
     "benchmark:ask-sales-faq:v5:three-way": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v5-three-way.ts",
+    "benchmark:ask-sales-faq:v5:conversations": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v5-conversations.ts",
     "compile:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/compile-ask-sales-v4-systemic-operational-knowledge.ts",
     "prepare:ask-sales-faq:v4:systemic-enriched-classification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-enriched-classification.ts",
     "prepare:ask-sales-faq:v4:systemic-authority-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-authority-grounding-reclassification.ts",

@@ -14,6 +14,42 @@ function providerFor(handler: (purpose: string, payload: Record<string, unknown>
 }
 
 describe("Ask Sales V5 bounded runtime", () => {
+  it("handles greetings naturally without retrieval or a provider call", async () => {
+    const unavailableProvider: V3Provider = async () => {
+      throw new Error("A greeting must not invoke the provider");
+    };
+    const result = await runAskSalesFaqV5("Hi!", [], {
+      provider: unavailableProvider,
+      validatorProvider: unavailableProvider,
+    });
+
+    expect(result.lane).toBe("conversation");
+    expect(result.answer).toBe("Hi! I’m ready whenever you are.");
+    expect(result.provider).toBeNull();
+    expect(result.runtimeMetadata.retrieval.candidateCount).toBe(0);
+    expect(result.runtimeMetadata.providerAttempts).toEqual([]);
+  });
+
+  it("rewrites the immediately previous answer as a natural follow-up without re-retrieval", async () => {
+    const unavailableProvider: V3Provider = async () => {
+      throw new Error("A rewrite follow-up must not invoke the provider");
+    };
+    const previous = "Check #sales-questions-requests before replying about Is the Mastermind event held only once a year. Check #sales-questions-requests before replying about Are there other in-person training and networking programs throughout the year.";
+    const result = await runAskSalesFaqV5("Thanks—can you make that last answer shorter?", [
+      { role: "user", content: "Is the Mastermind only once a year, and are there other in-person programs?" },
+      { role: "assistant", content: previous },
+    ], {
+      provider: unavailableProvider,
+      validatorProvider: unavailableProvider,
+    });
+
+    expect(result.lane).toBe("conversation");
+    expect(result.answer).toBe("Mastermind frequency and other in-person programs: check #sales-questions-requests.");
+    expect(result.answer.length).toBeLessThan(previous.length);
+    expect(result.runtimeMetadata.retrieval.candidateCount).toBe(0);
+    expect(result.runtimeMetadata.providerAttempts).toEqual([]);
+  });
+
   it("answers through the bounded source planner and sentence validator", async () => {
     const policy = getV5KnowledgeSnapshot().policies.find(
       (candidate) => candidate.id === "claim_e30857cfce9af5e5",
