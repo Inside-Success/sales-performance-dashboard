@@ -231,9 +231,19 @@ function guaranteePolarity(value: string) {
 function permissionPolarity(value: string) {
   const normalizedValue = value.toLowerCase().replace(/[’]/g, "'");
   const negative = /\b(?:cannot|can't|may\s+not|must\s+not|not\s+(?:be\s+)?(?:allowed|permitted)|do(?:es)?\s+not|don't|doesn't|never|prohibit(?:ed|s)?|forbidden)\b/.test(normalizedValue);
-  const positive = /\b(?:may|can|allowed|permitted|fine\s+to|okay\s+to|ok\s+to)\b/.test(normalizedValue) &&
-    !/\b(?:cannot|can't|may\s+not|not\s+(?:be\s+)?(?:allowed|permitted))\b/.test(normalizedValue) ||
-    /\b(?:is|are)\s+up\s+to\s+(?:the\s+)?reps?\b/.test(normalizedValue);
+  let positive = /\b(?:is|are)\s+up\s+to\s+(?:the\s+)?reps?\b/.test(normalizedValue);
+  const positivePermission = /\b(?:may|can|allowed|permitted|fine\s+to|okay\s+to|ok\s+to)\b/g;
+  for (const match of normalizedValue.matchAll(positivePermission)) {
+    const start = match.index || 0;
+    const end = start + match[0].length;
+    const prefix = normalizedValue.slice(Math.max(0, start - 18), start);
+    const suffix = normalizedValue.slice(end, Math.min(normalizedValue.length, end + 12));
+    const locallyNegated = /\bnot\s+(?:be\s+)?$/.test(prefix) || /^\s+not\b/.test(suffix);
+    if (!locallyNegated) {
+      positive = true;
+      break;
+    }
+  }
   return { positive, negative };
 }
 

@@ -17,6 +17,7 @@ import { resolveV4SystemicTurn } from "@/lib/ask-sales-faq/v4/systemic/turn";
 import type { AskSalesFaqV4Result } from "@/lib/ask-sales-faq/v4/types";
 
 const operationalPolicy = getV4SystemicCorpus().find((policy) =>
+  policy.id.startsWith("operational_") &&
   policy.systemic.sourceClass === "authoritative_operational_qna" &&
   policy.source.kind === "authoritative_slack_operational_qna" &&
   policy.answerability === "answer_evidence" &&
@@ -31,6 +32,9 @@ const generalUnscopedOperationalPolicy = getV4SystemicCorpus().find((policy) =>
 );
 const curatedAuthorityPolicy = getV4SystemicCorpus().find((policy) =>
   policy.id === "curated_9848cdfb2da72c0a",
+);
+const completeAuthorityPolicy = getV4SystemicCorpus().find((policy) =>
+  policy.id === "curated_v43_phone_onboarding_zoom_recording",
 );
 
 function providerFor(handler: (input: { purpose: string; payload: Record<string, unknown> }) => Record<string, unknown>): V3Provider {
@@ -234,6 +238,29 @@ describe("Ask Sales V4 systemic runtime", () => {
     });
   });
 
+  it("preserves every material condition from a completeness-locked authority source", async () => {
+    expect(completeAuthorityPolicy).toBeDefined();
+    const result = await runAskSalesFaqV4Systemic(completeAuthorityPolicy!.question_families[0], [], {
+      provider: operationalAnswerProvider(
+        false,
+        completeAuthorityPolicy!,
+        completeAuthorityPolicy!.product_scopes[0] || "unknown",
+        "supported",
+        false,
+        false,
+        false,
+        false,
+        "When a client has no internet, payment may be collected by phone.",
+      ),
+      skipChampionComparison: true,
+    });
+
+    expect(result.lane).toBe("answer");
+    expect(result.answer).toMatch(/keep the interaction on Zoom video/i);
+    expect(result.answer).toMatch(/Zoom records the conversation/i);
+    expect(result.selectedPolicyIds).toContain(completeAuthorityPolicy!.id);
+  });
+
   it("retries a model false abstention when the enforced source plan already resolved the need", async () => {
     const result = await runAskSalesFaqV4Systemic(operationalPolicy!.question_families[0], [], {
       provider: operationalAnswerProvider(false, operationalPolicy!, operationalPolicy!.product_scopes[0] || "unknown", "supported", false, true),
@@ -274,7 +301,8 @@ describe("Ask Sales V4 systemic runtime", () => {
     expect(result.selectedPolicyIds).toContain(operationalPolicy!.id);
     expect(result.needsRoute).toBe(true);
     expect(result.routeChannels).toEqual(expect.arrayContaining([expect.any(String)]));
-    expect(result.answer).toContain("current controlled link");
+    expect(result.answer).toContain("current approved resource");
+    expect(result.answer).not.toMatch(/unresolved|determine whether|before replying about/i);
     expect(result.runtimeMetadata.validation.unresolvedNeedIds).toContain("N2");
     expect(result.runtimeMetadata.validation.unresolvedNeedIds).not.toContain("N1");
   });
@@ -288,7 +316,8 @@ describe("Ask Sales V4 systemic runtime", () => {
 
     expect(result.lane).toBe("partial");
     expect(result.runtimeMetadata.validation.unresolvedNeedIds).toContain("N2");
-    expect(result.answer).toContain("current controlled link");
+    expect(result.answer).toContain("current approved resource");
+    expect(result.answer).not.toMatch(/unresolved|determine whether|before replying about/i);
   });
 
   it("allows a verified general operational rule to answer a named product without weakening scoped boundaries", async () => {
@@ -605,6 +634,13 @@ describe("Ask Sales V4 systemic runtime", () => {
       clarificationQuestion: "",
     };
     expect(v4SystemicNeedRequiresCurrentArtifact({ ...base, text: "Where can I find the upgrade form?" })).toBe(false);
+    expect(v4SystemicNeedRequiresCurrentArtifact({
+      ...base,
+      text: "Where can I find the upgrade form?",
+      authorityText: "Where can I find the current upgrade sheet?",
+      originalRequestText: "Where can I find the current upgrade sheet?",
+      retrievalQueries: ["identify the correct current upgrade form"],
+    })).toBe(false);
     expect(v4SystemicNeedRequiresCurrentArtifact({ ...base, text: "How do I identify the correct current upgrade form?" })).toBe(true);
   });
 

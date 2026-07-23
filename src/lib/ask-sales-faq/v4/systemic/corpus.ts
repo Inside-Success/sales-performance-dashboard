@@ -95,7 +95,7 @@ const authorityResolutionErrors = validateV4SystemicAuthorityResolutions(
   getV4BlockedTopics().map((topic) => topic.id),
 );
 if (authorityResolutionErrors.length) {
-  throw new Error(`Invalid V4.1 authority resolution register: ${authorityResolutionErrors.join("; ")}`);
+  throw new Error(`Invalid V4 systemic authority resolution register: ${authorityResolutionErrors.join("; ")}`);
 }
 
 const systemicVersion = createHash("sha256")

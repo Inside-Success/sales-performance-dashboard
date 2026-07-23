@@ -155,6 +155,41 @@ describe("V4 systemic operational knowledge compiler", () => {
     expect(result.policies.filter((policy) => policy.decision_key === "freelancing-automatic-qualification").some((policy) => policy.answerability === "answer_evidence")).toBe(false);
   });
 
+  it("keeps Rich's answer and withholds a conflicting Madeline answer for the same decision and scope", () => {
+    const richSource = source("rich-reapply", "How long must a main ISTV prospect wait to reapply?", "The minimum wait is three months.");
+    richSource.authority_replies = [{ authority: "rich", message_ts: "1777500001.000000", text: "The minimum wait is three months." }];
+    const madelineSource = source("madeline-reapply", "How long must a main ISTV prospect wait to reapply?", "The minimum wait is six months.");
+    const richDecision = decision({
+      decision_key: "main-istv-reapplication-minimum",
+      title: "Main ISTV reapplication minimum",
+      question_families: ["How long must a main ISTV prospect wait to reapply?"],
+      decision: "The minimum wait is three months.",
+      product_scopes: ["main_istv"],
+      domains: ["reapplication"],
+      actions: ["wait", "reapply"],
+      entities: ["main ISTV prospect"],
+    });
+    const madelineDecision = { ...richDecision, decision: "The minimum wait is six months." };
+    const result = compileV4SystemicOperationalKnowledge({
+      sources: [richSource, madelineSource],
+      checkpoint: checkpoint([
+        classified(richSource, [richDecision]),
+        classified(madelineSource, [madelineDecision]),
+      ]),
+      governedPolicies: [],
+      routeCatalog,
+    });
+
+    const reapplyPolicies = result.policies.filter((policy) => policy.decision_key === "main-istv-reapplication-minimum");
+    expect(reapplyPolicies.find((policy) => policy.source.approved_by.includes("Rich"))).toMatchObject({
+      answerability: "answer_evidence",
+      authority: 10,
+    });
+    expect(reapplyPolicies.find((policy) => policy.source.approved_by.includes("Madeline"))).toMatchObject({
+      answerability: "route_or_support",
+    });
+  });
+
   it("keeps stable ownership-check procedures answerable without treating an assigned owner as a live owner lookup", () => {
     const item = source(
       "assigned-owner-procedure",

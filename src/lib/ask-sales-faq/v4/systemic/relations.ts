@@ -562,7 +562,7 @@ export function v4SystemicMaterialQualifierErrors(need: Pick<V4SystemicNeed, "te
     errors.push("a missing-contract recovery link does not establish where the completed signed agreement is stored");
   }
 
-  const missingContractAutomation = /\b(?:contract|agreement)\b.{0,140}\b(?:does\s*not|doesn't|did\s*not|didn't|not|missing|fail\w*)\b.{0,90}\b(?:populate|generate|appear|arrive|send)\w*\b|\b(?:populate|generate|appear|arrive|send)\w*\b.{0,90}\b(?:contract|agreement)\b/i.test(needText);
+  const missingContractAutomation = /\b(?:contract|agreement)\b.{0,140}\b(?:does\s*not|doesn't|did\s*not|didn't|not|missing|fail\w*)\b.{0,90}\b(?:populate|generate|appear|arrive|send)\w*\b|\b(?:does\s*not|doesn't|did\s*not|didn't|fail(?:ed|s)?\s+to|unable\s+to)\b.{0,80}\b(?:populate|generate|appear|arrive|send)\w*\b.{0,90}\b(?:contract|agreement)\b/i.test(needText);
   const evidenceSuppliesContractRecovery = /\b(?:contract|agreement)\b.{0,160}\b(?:does\s*not|doesn't|did\s*not|didn't|missing|fail\w*)\b.{0,100}\b(?:populate|generate|appear|arrive|send)\w*\b|\b(?:manual\w*|separate\w*|fallback|recover\w*|resend\w*|reissue\w*)\b.{0,100}\b(?:contract|agreement)\b/i.test(evidence);
   if (missingContractAutomation && !evidenceSuppliesContractRecovery) {
     errors.push("a general contract-signing requirement does not establish the requested recovery process when contract automation fails");

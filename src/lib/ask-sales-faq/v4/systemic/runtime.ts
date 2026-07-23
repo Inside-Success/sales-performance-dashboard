@@ -298,6 +298,42 @@ function mergeSingleAlternativeDecision(request: string, needs: V4SystemicNeed[]
   };
 }
 
+function mergeCompleteAuthorityWorkflowDecision(request: string, needs: V4SystemicNeed[], turn: V3TurnResolution) {
+  if (needs.length < 2 || needs.length > 6 || (request.match(/[?]/g) || []).length > 1) return null;
+  const describesOneSequence = /\b(?:then|before|after)\b/i.test(request) || (request.match(/,/g) || []).length >= 2;
+  const asksPermissionForSequence = /\b(?:may|can|could|should)\s+(?:i|we|reps?)\b/i.test(request) && describesOneSequence;
+  const relation = asksPermissionForSequence ? "permission" as const : inferV4SystemicRelation(request);
+  const requestKind = asksPermissionForSequence ? "knowledge" as const : inferV4SystemicRequestKind(request);
+  if (!describesOneSequence || requestKind !== "knowledge" || relation === "other") return null;
+  const productScopes = new Set(needs.map((need) => need.productScope));
+  const merged: V4SystemicNeed = {
+    id: "N1",
+    text: request,
+    authorityText: request,
+    originalRequestText: request,
+    retrievalQueries: [...new Set([request, ...needs.flatMap((need) => need.retrievalQueries)])].slice(0, 5),
+    productScope: productScopes.size === 1 ? needs[0].productScope : turn.productScope,
+    domains: [...new Set(needs.flatMap((need) => need.domains))],
+    actions: [...new Set(needs.flatMap((need) => need.actions))],
+    entities: [...new Set(needs.flatMap((need) => need.entities))],
+    relation,
+    requestKind,
+    ambiguity: "none",
+    clarificationQuestion: "",
+  };
+  const resolutions = matchingV4SystemicAuthorityResolutions(merged);
+  const policies = getV4SystemicCorpus();
+  const completeResolutions = resolutions.filter((resolution) => resolution.controlling_policy_ids.some((id) => {
+    const policy = policies.find((candidate) => candidate.id === id);
+    if (!policy || policy.answerability !== "answer_evidence" || policy.systemic.temporalRisk !== "stable") return false;
+    return v4SystemicMaterialQualifierErrors(merged, policy).length === 0;
+  }));
+  // Claim-scoped authority may collapse a planner-created decomposition only
+  // when one and only one registered decision covers every proposed branch.
+  // Otherwise the atomic needs remain independent and fail closed.
+  return completeResolutions.length === 1 ? merged : null;
+}
+
 export function applyV4SystemicDeterministicQueryGuards(
   plan: V4SystemicQueryPlan,
   turn: V3TurnResolution,
@@ -305,6 +341,10 @@ export function applyV4SystemicDeterministicQueryGuards(
   const request = v4DecisionQuestion(turn);
   const originalMaterialClauses = v4SystemicMaterialQuestionClauses(request);
   const requestFramesAConsequence = /^\s*what\s+happens\s+if\b/i.test(request);
+  const originalRequestsLiveMutation = /\b(?:can|could|would)\s+someone\b|\bplease\b/i.test(request) &&
+    /\b(?:fix|correct|update|change|repair|restore|rerun|re-run|reprocess|re-process|void|cancel)\w*\b/i.test(request);
+  const requestAsksPermissionToUseExistingArtifact = /\b(?:may|can|could|should)\s+(?:i|we|reps?)\b.{0,140}\b(?:use|include|share|send)\w*\b/i.test(request) &&
+    !/\b(?:where|which|what is|find|locate|provide me|send me|give me|need the|want the|looking for)\b/i.test(request);
   const contextualRequest = clean([
     turn.immediatePreviousUserQuestion,
     turn.currentQuestion,
@@ -346,10 +386,16 @@ export function applyV4SystemicDeterministicQueryGuards(
       // and accidentally relabel the outcome as eligibility/status. Preserve
       // the user's consequence relationship so a following "does that happen
       // or how does it work?" restatement is not invented as a second need.
-      relation: requestFramesAConsequence && index === 0
+      relation: requestAsksPermissionToUseExistingArtifact
+        ? "permission" as const
+        : requestFramesAConsequence && index === 0
         ? "consequence" as const
         : inferredRelation === "other" ? need.relation : inferredRelation,
-      requestKind: inferV4SystemicRequestKind(guardedText),
+      requestKind: requestAsksPermissionToUseExistingArtifact
+        ? "knowledge" as const
+        : originalRequestsLiveMutation
+        ? "operational_action" as const
+        : inferV4SystemicRequestKind(guardedText),
       ambiguity: "none" as const,
       clarificationQuestion: "",
     };
@@ -359,8 +405,12 @@ export function applyV4SystemicDeterministicQueryGuards(
   // which is useful decision content even though the generic fragment pruner
   // would otherwise mistake it for background.
   const earlyMergedAlternative = mergeSingleAlternativeDecision(request, normalizedNeeds, turn);
-  const prunedNeeds = earlyMergedAlternative
-    ? [earlyMergedAlternative]
+  const completeAuthorityWorkflow = earlyMergedAlternative
+    ? null
+    : mergeCompleteAuthorityWorkflowDecision(request, normalizedNeeds, turn);
+  const premergedNeed = earlyMergedAlternative || completeAuthorityWorkflow;
+  const prunedNeeds = premergedNeed
+    ? [premergedNeed]
     : pruneV4SystemicPlannerNeeds(normalizedNeeds, request);
   // Sending an internal attachment and paraphrasing/reference-only wording are
   // separately governed actions. Keeping them as separate needs allows a safe
@@ -378,14 +428,14 @@ export function applyV4SystemicDeterministicQueryGuards(
   const alternativeNeeds = splitSensitiveAlternative || prunedNeeds;
   const mergedAlternative = splitSensitiveAlternative
     ? null
-    : earlyMergedAlternative || mergeSingleAlternativeDecision(request, alternativeNeeds, turn);
+    : premergedNeed || mergeSingleAlternativeDecision(request, alternativeNeeds, turn);
   const plannerNormalized: V4SystemicQueryPlan = {
     ...plan,
     needs: mergedAlternative ? [mergedAlternative] : alternativeNeeds.length ? alternativeNeeds : normalizedNeeds,
     reasoningSummary: splitSensitiveAlternative
       ? `${plan.reasoningSummary} Separated attachment sharing from reference-only wording because they require independent policy support.`
       : mergedAlternative
-      ? `${plan.reasoningSummary} Preserved the either/or wording as one atomic decision.`
+      ? `${plan.reasoningSummary} Preserved the source-governed workflow as one atomic decision.`
       : plan.reasoningSummary,
   };
   const shortAcronym = request.match(/^\s*(?:what(?:'s| is)\s+(?:the\s+)?)?([a-z]{2,5})[?.!]*\s*$/i)?.[1] || null;
@@ -400,7 +450,8 @@ export function applyV4SystemicDeterministicQueryGuards(
       reasoningSummary: `${plannerNormalized.reasoningSummary} A short unexplained acronym requires context before policy retrieval.`,
     }
     : plannerNormalized;
-  const currentArtifactRequest = CURRENT_ARTIFACT_REQUEST_PATTERN.test(request) || CURRENT_LOCATION_REQUEST_PATTERN.test(request);
+  const currentArtifactRequest = (CURRENT_ARTIFACT_REQUEST_PATTERN.test(request) || CURRENT_LOCATION_REQUEST_PATTERN.test(request)) &&
+    !requestAsksPermissionToUseExistingArtifact;
   const artifactClauses = request.split(/\s+\band\b\s+/i).map((clause) => clean(clause, 700)).filter(Boolean);
   const discoveryClause = artifactClauses.find((clause) => ARTIFACT_DISCOVERY_PATTERN.test(clause));
   const identityClause = artifactClauses.find((clause) => ARTIFACT_IDENTITY_PATTERN.test(clause));
@@ -441,6 +492,8 @@ export function applyV4SystemicDeterministicQueryGuards(
       ...artifactSplitPlan,
       needs: artifactSplitPlan.needs.map((need) => {
         const inferredArtifactRelation = inferV4SystemicRelation(`${need.text} ${request}`);
+        const explicitDiscoveryRequest = /\b(?:where|find|locate|search|how (?:do|can)\s+(?:i|we)\s+access)\b/i.test(request) &&
+          !/\b(?:which|right|correct|exact|send|provide|give|download|preview)\b/i.test(request);
         return {
           ...need,
           ambiguity: "none" as const,
@@ -448,7 +501,9 @@ export function applyV4SystemicDeterministicQueryGuards(
           domains: [...new Set([...need.domains, "controlled artifact"])],
           actions: [...new Set([...need.actions, "locate current artifact"])],
           requestKind: "artifact_request" as const,
-          relation: ["artifact_identity", "artifact_location"].includes(need.relation)
+          relation: explicitDiscoveryRequest
+            ? "artifact_location" as const
+            : ["artifact_identity", "artifact_location"].includes(need.relation)
             ? need.relation
             : ["artifact_identity", "artifact_location"].includes(inferredArtifactRelation)
               ? inferredArtifactRelation
@@ -699,7 +754,13 @@ type V4SystemicSourcePlan = {
 
 export function v4SystemicNeedRequiresCurrentArtifact(need: V4SystemicNeed) {
   if (!need.domains.includes("controlled artifact")) return false;
-  const text = [need.text, ...need.retrievalQueries, ...need.actions, ...need.entities].join(" ");
+  // Artifact identity versus stable discovery is determined only from the
+  // user's guarded request. Model retrieval expansions may improve recall but
+  // cannot turn "where can I find it?" into "identify the exact current file."
+  const text = need.authorityText || need.originalRequestText || need.text;
+  const currentContext = [text, need.originalRequestText].filter(Boolean).join(" ");
+  const namesControlledArtifact = /\b(?:video|episode|preview|walkthrough|link|url|form|sheet|document|template|pdf|letter|recording|contract|agreement|script|file|asset|address|location)\b/i.test(text);
+  if (!namesControlledArtifact || (!CURRENT_ARTIFACT_REQUEST_PATTERN.test(currentContext) && !CURRENT_LOCATION_REQUEST_PATTERN.test(currentContext))) return false;
   const exactIdentity = need.relation === "artifact_identity" ||
     /\b(?:identify|which|right|correct|exact|send|provide|give|share|download|preview|need|want|looking for)\b/i.test(text) ||
     CURRENT_LOCATION_REQUEST_PATTERN.test(text);
@@ -883,10 +944,30 @@ function policySuppliesSubstantiveConflictPosition(policy: V4SystemicCandidate["
   return /\b(?:may|may not|can|cannot|can't|must|must not|required|not required|allowed|not allowed|permitted|prohibited|forbidden|eligible|ineligible|includes?|does not include|costs?|discount|deadline|before|after|within|never|do not|don't|does not|no (?:cohort|discount|exception|payment|sharing))\b|[$£€%]|\b\d+(?:\.\d+)?\s*(?:minutes?|hours?|days?|weeks?|months?|years?|payments?|installments?|instalments?)\b/i.test(decision);
 }
 
+function normalizedPolicyApprovers(policy: V4SystemicCandidate["policy"]) {
+  return policy.source.approved_by.map((name) => normalizedSentence(name));
+}
+
+function policyIsRichAuthority(policy: V4SystemicCandidate["policy"]) {
+  return normalizedPolicyApprovers(policy).some((name) => name === "rich" || name.startsWith("rich allen"));
+}
+
+function policyIsMadelineAuthorityOnly(policy: V4SystemicCandidate["policy"]) {
+  const approvers = normalizedPolicyApprovers(policy);
+  return approvers.length > 0 && approvers.every((name) => name === "madeline" || name.startsWith("madeline cary"));
+}
+
+function routingTextForNeed(need: V4SystemicNeed) {
+  const atomic = [need.text, ...need.domains, ...need.actions, ...need.entities].join(" ");
+  const plannerNeedIsVague = answerContentTokens(need.text).length <= 3 ||
+    /^(?:who|where|which channel|can someone|please handle|what about|how about|this request)\b/i.test(need.text);
+  return [plannerNeedIsVague ? need.originalRequestText : "", atomic].filter(Boolean).join(" ");
+}
+
 function needRequiresFinanceOwnerAction(need: V4SystemicNeed) {
   // Retrieval expansions may contain the full compound request and must not
   // leak one need's finance action into an independent contract/tech need.
-  const text = [need.text, ...need.domains, ...need.actions, ...need.entities].join(" ");
+  const text = routingTextForNeed(need);
   const asksForContractArtifact = ["artifact_identity", "artifact_location", "location"].includes(need.relation) &&
     /\b(?:contract|agreement)\b/i.test(text);
   if (asksForContractArtifact) return false;
@@ -896,7 +977,17 @@ function needRequiresFinanceOwnerAction(need: V4SystemicNeed) {
   // answerable policy. Confirming or tracing an actual transaction belongs to
   // Finance, even when phrased as "how should I confirm it?".
   const explicitPolicyQuestion = /\b(?:what is the (?:rule|policy)|allowed|permitted|must (?:i|we|reps?)|do (?:i|we|reps?) need to wait|payment plan|payment option)\b/i.test(text);
-  return financialObject && verificationAction && !explicitPolicyQuestion;
+  const reusableWorkflowQuestion = /^(?:for|when|if)\b.{0,160}\b(?:can|may|should)\s+(?:i|we|reps?)\b/i.test(text) &&
+    /\b(?:before|after|then|process|procedure|sop|post(?:ing)?|send|sign|proof|receipt)\b/i.test(text);
+  return financialObject && verificationAction && !explicitPolicyQuestion && !reusableWorkflowQuestion;
+}
+
+function needRequiresLiveOperationalOwnerAction(need: V4SystemicNeed) {
+  if (need.requestKind !== "operational_action") return false;
+  const text = routingTextForNeed(need);
+  const mutation = /\b(?:fix|correct|update|void|cancel|change|repair|restore|rerun|re-run|reprocess|re-process)\w*\b/i.test(text);
+  const liveObject = /\b(?:automation|integration|workflow|leaderboard|rpc|rpct|record|dashboard|contract|agreement|order|redirect)\b/i.test(text);
+  return mutation && liveObject;
 }
 
 function deterministicDirectPolicyIdsForNeed(
@@ -976,6 +1067,14 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
       excludedConflictPolicyIds: [],
       reason: "Confirming or tracing a financial transaction requires the Finance action owner; stable policy evidence cannot perform that operational check.",
     };
+    if (needRequiresLiveOperationalOwnerAction(need)) return {
+      needId: need.id,
+      lane: "route",
+      directPolicyIds: [],
+      preferredPolicyIds: [],
+      excludedConflictPolicyIds: [],
+      reason: "This asks an operational owner to change a live system, automation, or record; stable knowledge can explain a rule but cannot perform or verify that mutation.",
+    };
     const unresolvedBlockedTopicIds = unresolvedBlockedTopicIdsForNeed(need, retrieval);
     if (unresolvedBlockedTopicIds.length) return {
       needId: need.id,
@@ -1034,6 +1133,7 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
     const retrievalPolicyIds = new Set(retrieval.candidates.map((candidate) => candidate.policy.id));
     const excluded = new Set<string>([...resolutionExcludedIds].filter((id) => retrievalPolicyIds.has(id)));
     let hasUnresolvedConflict = false;
+    let richAuthorityApplied = false;
     const rawConflicts = Array.isArray(item.conflicts) ? item.conflicts : [];
     for (const rawConflict of rawConflicts) {
       if (!rawConflict || typeof rawConflict !== "object") continue;
@@ -1051,8 +1151,34 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
       });
       if (positions.length < 2) continue;
       const conflictIds = [...new Set(positions.flatMap((position) => position.ids))];
+      // A matching claim-scoped resolution is the governed source contract for
+      // this exact relationship and scope. Model-declared conflict groupings
+      // cannot reopen it merely because the adjudicator omitted the controller
+      // from, or duplicated it across, its positions.
+      if (controllingPolicyIds.length) {
+        for (const id of controllingPolicyIds) preferred.add(id);
+        for (const id of conflictIds) {
+          if (!controllingPolicyIds.includes(id)) excluded.add(id);
+        }
+        continue;
+      }
       for (const id of conflictIds) preferred.delete(id);
       const controllingPositions = positions.filter((position) => position.ids.some((id) => controllingPolicyIds.includes(id)));
+      const richPositions = controllingPolicyIds.length
+        ? []
+        : positions.filter((position) => position.ids.some((id) => {
+          const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+          return Boolean(policy && policyIsRichAuthority(policy));
+        }));
+      const richAuthorityWinner = richPositions.length === 1 && positions
+        .filter((position) => position !== richPositions[0])
+        .flatMap((position) => position.ids)
+        .every((id) => {
+          const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+          return Boolean(policy && policyIsMadelineAuthorityOnly(policy));
+        })
+        ? richPositions[0]
+        : null;
       const ownerPositions = controllingPolicyIds.length
         ? []
         : positions.filter((position) => position.ids.some((id) => ownerApprovedPolicyIds.includes(id)));
@@ -1085,6 +1211,8 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
       // to match first.
       const winner = controllingPositions.length === 1
         ? controllingPositions[0]
+        : !controllingPolicyIds.length && richAuthorityWinner
+          ? richAuthorityWinner
         : !controllingPolicyIds.length && ownerPositions.length === 1
           ? ownerPositions[0]
           : !controllingPolicyIds.length && !ownerApprovedPolicyIds.length && deterministicWinnerIsMateriallyMoreSpecific
@@ -1095,8 +1223,14 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
         hasUnresolvedConflict = true;
         continue;
       }
+      if (winner === richAuthorityWinner) richAuthorityApplied = true;
       const authoritativeWinnerIds = controllingPolicyIds.length
         ? winner.ids
+        : winner === richAuthorityWinner
+          ? winner.ids.filter((id) => {
+            const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+            return Boolean(policy && policyIsRichAuthority(policy));
+          })
         : ownerApprovedPolicyIds.length
           ? winner.ids.filter((id) => ownerApprovedPolicyIds.includes(id))
           : winner.ids.filter((id) => deterministicDirectPolicyIds.includes(id));
@@ -1106,7 +1240,7 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
     const modelDisposition = clean(item.disposition, 20) === "route" ? "route" : "answer";
     const candidateRank = new Map(retrieval.candidates.map((candidate) => [candidate.policy.id, candidate.rank]));
     const preferredPolicyIds = hasUnresolvedConflict || (
-      modelDisposition === "route" && !controllingPolicyIds.length && !ownerApprovedPolicyIds.length && !deterministicDirectPolicyIds.length
+      modelDisposition === "route" && !controllingPolicyIds.length && !richAuthorityApplied && !ownerApprovedPolicyIds.length && !deterministicDirectPolicyIds.length
     )
       ? []
       : [...preferred]
@@ -1123,6 +1257,8 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
         ? "Directly applicable source positions conflict and no claim-scoped authority resolution applies."
         : controllingPolicyIds.length
           ? `Applied the matching claim-scoped authority resolution using ${controllingPolicyIds.join(", ")}.`
+          : richAuthorityApplied
+            ? "Applied Rich's Head-of-Sales decision over conflicting Madeline Sales Ops evidence for the same decision and scope."
           : ownerApprovedPolicyIds.length === 1
             ? `Applied the directly matching owner-approved policy ${ownerApprovedPolicyIds[0]}.`
             : deterministicDirectPolicyIds.length
@@ -1755,8 +1891,24 @@ export function v4SystemicExactControllingEvidenceSupports(
 }
 
 export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4SystemicNeedDecision, retrieval: V4SystemicRetrieval) {
-  const text = `${need.text} ${need.domains.join(" ")} ${need.actions.join(" ")} ${need.entities.join(" ")}`;
+  // Ownership is determined from the user's requested operation. Keep the
+  // original request available because an atomic model paraphrase can omit the
+  // mutation verb or named object that identifies Finance, Greenlight, Tech,
+  // or Fulfillment.
+  const text = routingTextForNeed(need);
   const financeOwnerAction = needRequiresFinanceOwnerAction(need);
+  const greenlightSupportingEvidence = /\b(?:documents?|links?|evidence|proof|supporting material)\b.{0,140}\b(?:greenlight|green light)(?:\s+approval)?\b|\b(?:greenlight|green light)(?:\s+approval)?\b.{0,140}\b(?:documents?|links?|evidence|proof|supporting material)\b/i.test(text) &&
+    /\b(?:lead|prospect|call\s*1|call one|provided|supplied|sent)\b/i.test(text);
+  if (greenlightSupportingEvidence) return "fulfillment";
+  const leaderboardRecordCorrection = /\b(?:leaderboard|rpc|rpct|call totals?|percentages?|daily stats|eod stats)\b/i.test(text) &&
+    /\b(?:wrong|incorrect|mistake|correct|correction|fix|update|change)\w*\b/i.test(text);
+  if (leaderboardRecordCorrection && need.requestKind !== "knowledge") return "sales_tech";
+  const paymentContractAutomationRepair = /\b(?:payment|paid)\b.{0,160}\b(?:contract|agreement)\b|\b(?:contract|agreement)\b.{0,160}\b(?:payment|paid)\b/i.test(text) &&
+    /\b(?:automation|automatic|integration|workflow|failed|missing|fix|repair|rerun|re-run|reprocess|re-process|did not|didn't|does not|doesn't)\b/i.test(text);
+  if (paymentContractAutomationRepair && need.requestKind !== "knowledge") return "sales_tech";
+  const contractVoidAfterPaymentSwitch = /\b(?:void|cancel|invalidate|replace)\w*\b.{0,140}\b(?:contract|agreement)\b|\b(?:contract|agreement)\b.{0,140}\b(?:void|cancel|invalidate|replace)\w*\b/i.test(text) &&
+    /\b(?:payment|wire|ach|card|finance|method)\b/i.test(text);
+  if (contractVoidAfterPaymentSwitch) return "finance";
   const greenlightArtifact = /\b(?:greenlight|green light|greenlit|green lighted)\b.{0,120}\b(?:letters?|emails?|messages?|links?|urls?|pdfs?|status)\b|\b(?:letters?|emails?|messages?|links?|urls?|pdfs?|status)\b.{0,120}\b(?:greenlight|green light|greenlit|green lighted)\b|\bapproval\s+(?:letters?|pdfs?)\b/i.test(text);
   const greenlightAccessAction = need.requestKind !== "knowledge" && /\b(?:greenlight|green light)\b/i.test(text) &&
     /\b(?:access|find|locate|see|join|have|channel|group|form|sheet|link)\b/i.test(text);
@@ -1793,14 +1945,14 @@ export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4Syst
     technicalMutationGroups.some((group) => group.request.test(text));
   if (technicalRecordMutation) return "sales_tech";
   const missingContractAutomation = /\b(?:contract|agreement)\b.{0,120}\b(?:does\s*not|doesn't|did\s*not|didn't|not|missing|failed?\s+to)\b.{0,80}\b(?:populate|generate|appear|arrive|send)\w*\b/i.test(text) ||
-    /\b(?:populate|generate|appear|arrive|send)\w*\b.{0,80}\b(?:contract|agreement)\b/i.test(text);
+    /\b(?:does\s*not|doesn't|did\s*not|didn't|fail(?:ed|s)?\s+to|unable\s+to)\b.{0,80}\b(?:populate|generate|appear|arrive|send)\w*\b.{0,80}\b(?:contract|agreement)\b/i.test(text);
   if (missingContractAutomation) return "sales_tech";
+  if (need.requestKind === "knowledge" && need.relation !== "routing" && !financeOwnerAction && !greenlightOwnerAction) return "sales_policy";
   // Route ownership follows the requested operation, not incidental topic
   // words. A reusable policy question that mentions payment or greenlight still
   // belongs to Sales Questions unless it actually asks for a live owner action.
   // Explicit system, recording, contract-record, and automation failures above
   // remain Sales Tech work even when phrased as "how do I" knowledge questions.
-  if (need.requestKind === "knowledge" && need.relation !== "routing" && !financeOwnerAction && !greenlightOwnerAction) return "sales_policy";
   // A model or evidence card may correctly identify the operational owner even
   // when the user phrases the gap as a reusable knowledge question. Accept the
   // hint only when the need text independently names that owner's domain; this
@@ -1812,7 +1964,7 @@ export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4Syst
   const routeHintMatchesTopic = (key: string) => {
     if (key === "finance") return /\b(?:ach|wire|payment|transaction|installment|invoice|billing|charge|refund|commission|finance)\b/i.test(text);
     if (key === "greenlight") return /\b(?:greenlight|green light)(?:\s+letter)?\b/i.test(text);
-    if (key === "sales_tech") return /\b(?:keap|hubspot|oncehub|zoom|crm|record|calendar|appointment|attribution|payment page|button|link|contract|agreement|automation|technical|tech)\b/i.test(text);
+    if (key === "sales_tech") return /\b(?:keap|hubspot|oncehub|zoom|crm|record|calendar|appointment|attribution|payment page|button|link|contract|agreement|automation|leaderboard|rpc|rpct|daily stats|technical|tech)\b/i.test(text);
     if (key === "fulfillment") return /\b(?:scriptwriter|filming|production|fulfillment|delivery|onboarding|trailer)\b/i.test(text);
     return key === "sales_policy";
   };
@@ -1822,7 +1974,6 @@ export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4Syst
   // question, but when the requested operation is a finance, greenlight,
   // recording, CRM, or failed-automation action, route to that action owner.
   // Ordinary policy gaps continue to the sales-policy channel.
-  if (need.requestKind === "knowledge") return "sales_policy";
   if (/\b(?:scriptwriter|filming|production|fulfillment|delivery|onboarding)\b/i.test(text)) return "fulfillment";
   if (decision.routeKey && allowedRouteKeys.has(decision.routeKey)) return decision.routeKey;
   for (const id of decision.evidenceRefs) {
@@ -1878,7 +2029,7 @@ function planMetadata(queryPlan: V4SystemicQueryPlan, draft: V4SystemicDraft, va
 function structuredAnswer(answer: string, lane: V4Lane, confidence: number, routeChannels: string[], answeredSentences: string[]): AskSalesFaqStructuredAnswer {
   const sections = [];
   if (answeredSentences.length) sections.push({ title: answeredSentences.length > 1 ? "Answer" : "Guidance", items: answeredSentences, tone: "good" as const });
-  if (routeChannels.length) sections.push({ title: "Verify", body: `Check ${routeChannels.join(" or ")} only for the unresolved part.`, tone: "route" as const });
+  if (routeChannels.length) sections.push({ title: "Next step", body: `Use ${routeChannels.join(" or ")} for the part that still needs confirmation.`, tone: "route" as const });
   if (!sections.length) sections.push({ title: lane === "clarify" ? "Clarification needed" : "Next step", body: answer, tone: lane === "clarify" ? "warning" as const : "route" as const });
   return {
     summary: answer,
@@ -1887,6 +2038,32 @@ function structuredAnswer(answer: string, lane: V4Lane, confidence: number, rout
     confidenceScore: confidence,
     sourceMode: answeredSentences.length ? "evidence" : "fallback",
   };
+}
+
+function naturalRouteInstruction(
+  channel: string,
+  lane: V4SystemicNeedDecision["lane"],
+  hasSupportedAnswer: boolean,
+) {
+  if (lane === "live_lookup") return `Please use ${channel} to check the current record or status.`;
+  if (lane === "artifact") return `Please request the current approved resource from ${channel}.`;
+  if (hasSupportedAnswer) return `For the remaining case-specific part, please ask in ${channel}.`;
+  if (channel === routeCatalog.finance.channel) return `This needs a Finance action, so please post it in ${channel}.`;
+  if (channel === routeCatalog.sales_tech.channel) return `This needs a system or record action, so please post it in ${channel}.`;
+  if (channel === routeCatalog.greenlight.channel) return `Please submit this greenlight request in ${channel}.`;
+  if (channel === routeCatalog.fulfillment.channel) return `Please send this fulfillment request to ${channel}.`;
+  return `I can’t confirm this safely from the approved guidance. Please ask in ${channel}.`;
+}
+
+export function naturalizeV4SystemicRouteLanguage(value: string) {
+  return clean(value, 5000)
+    .replace(/Check\s+(#[a-z0-9_-]+|the fulfillment hotline)\s+before replying\.\s+Unresolved:\s+[^.!?]+[.!?]?/gi, "Please ask in $1 for the part that still needs confirmation.")
+    .replace(/Check\s+(#[a-z0-9_-]+|the fulfillment hotline)\s+before replying about\s+(?:Determine whether\s+)?(.+?)[.!](?=\s|$)/gi, "Please ask in $1 to confirm $2.")
+    .replace(/Use\s+(#[a-z0-9_-]+|the fulfillment hotline)\s+for the unresolved part[.!]?/gi, "If you still need confirmation on the remaining part, ask in $1.")
+    .replace(/\bunresolved\b/gi, "not yet confirmed")
+    .replace(/\bDetermine whether\s+/gi, "Confirm whether ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 async function frozenV4Fallback(
@@ -2235,8 +2412,30 @@ async function runAskSalesFaqV4SystemicCandidate(
   };
 
   const metadataPlan = planMetadata(queryPlan, draft, validation);
-  const answeredText = deduplicateAnswerSentences(supportedSentences
-    .map((sentence) => clean(sentence.text, 900).replace(/^[a-z]/, (letter) => letter.toUpperCase()))
+  const completeSourceAnswers = queryPlan.needs.flatMap((need) => {
+    if (!answeredNeedIds.has(need.id)) return [];
+    const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === need.id);
+    const completePolicies = (sourceDecision?.preferredPolicyIds || []).flatMap((id) => {
+      const policy = adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+      if (!policy || !policy.quality_flags.includes("all-material-conditions-combined")) return [];
+      if (v4SystemicResolutionPolicyDisposition(need, policy.id) !== "controlling") return [];
+      const text = evidenceDecision(policy).split(/\b(?:Conditions?|Boundaries):/i)[0].trim();
+      const evidence = `${policy.title}: ${evidenceDecision(policy)}`;
+      const errors = [
+        ...deterministicV4SentenceErrors(text, evidence, need.text),
+        ...v4SystemicNeedRelationErrors(need.text, text),
+        ...v4SystemicPolicyRelationErrorsForNeed(policy, need),
+      ];
+      return text && text.length <= 700 && !errors.length ? [{ needId: need.id, text, policyId: policy.id }] : [];
+    });
+    return completePolicies.length === 1 ? completePolicies : [];
+  });
+  const completeNeedIds = new Set(completeSourceAnswers.map((answer) => answer.needId));
+  const answeredText = deduplicateAnswerSentences([
+    ...completeSourceAnswers.map((answer) => answer.text),
+    ...supportedSentences.filter((sentence) => !completeNeedIds.has(sentence.needId)).map((sentence) => sentence.text),
+  ]
+    .map((sentence) => clean(sentence, 900).replace(/^[a-z]/, (letter) => letter.toUpperCase()))
     .map((sentence) => /[.!?](?:[\"'”’])?$/.test(sentence) ? sentence : `${sentence}.`));
   const unresolvedInstructions: string[] = [];
   const routeChannels: string[] = [];
@@ -2249,14 +2448,15 @@ async function runAskSalesFaqV4SystemicCandidate(
     const key = v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
     const route = routeCatalog[key] || routeCatalog.sales_policy;
     routeChannels.push(route.channel);
-    if (decision.lane === "live_lookup") unresolvedInstructions.push(`Check ${route.channel} for the current status of ${clean(need.text, 220).replace(/[?.!]+$/g, "")}.`);
-    else if (decision.lane === "artifact") unresolvedInstructions.push(`Request the current controlled resource for ${clean(need.text, 220).replace(/[?.!]+$/g, "")} from ${route.channel}.`);
-    else unresolvedInstructions.push(`Check ${route.channel} before replying about ${clean(need.text, 220).replace(/[?.!]+$/g, "")}.`);
+    unresolvedInstructions.push(naturalRouteInstruction(route.channel, decision.lane, answeredText.length > 0));
   }
   const uniqueRouteChannels = [...new Set(routeChannels)];
-  const answer = [...answeredText, ...new Set(unresolvedInstructions)].filter(Boolean).join(" ") || `Check ${routeCatalog.sales_policy.channel} before replying.`;
+  const answer = naturalizeV4SystemicRouteLanguage(
+    [...answeredText, ...new Set(unresolvedInstructions)].filter(Boolean).join(" ") ||
+    `I can’t confirm this safely from the approved guidance. Please ask in ${routeCatalog.sales_policy.channel}.`,
+  );
   const answeredCount = answeredNeedIds.size;
-  const hasSupportedHelp = supportedSentences.length > 0;
+  const hasSupportedHelp = supportedSentences.length > 0 || completeSourceAnswers.length > 0;
   const lane: V4Lane = hasSupportedHelp && unresolvedNeedIds.length
     ? "partial"
     : answeredCount
@@ -2273,7 +2473,10 @@ async function runAskSalesFaqV4SystemicCandidate(
   const confidence = answeredCount
     ? Math.round((answerConfidences.reduce((total, value) => total + value, 0) / Math.max(1, answerConfidences.length)) * 100)
     : lane === "clarify" ? 50 : 35;
-  const selectedPolicyIds = [...new Set(supportedSentences.flatMap((sentence) => sentence.evidenceRefs))];
+  const selectedPolicyIds = [...new Set([
+    ...completeSourceAnswers.map((answer) => answer.policyId),
+    ...supportedSentences.flatMap((sentence) => sentence.evidenceRefs),
+  ])];
   const selectedPolicies = selectedPolicyIds.map((id) => adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy)
     .filter((policy): policy is V4SystemicCandidate["policy"] => Boolean(policy));
   stageTimings.totalMs = Date.now() - startedAt;
@@ -2680,8 +2883,21 @@ function withChampionComparison(
   startedAt: number,
 ): AskSalesFaqV4Result {
   const selectedMetadata = selectedResult.runtimeMetadata;
+  const naturalAnswer = naturalizeV4SystemicRouteLanguage(selectedResult.answer);
+  const naturalStructuredAnswer: AskSalesFaqStructuredAnswer = {
+    ...selectedResult.structuredAnswer,
+    summary: naturalizeV4SystemicRouteLanguage(selectedResult.structuredAnswer.summary),
+    sections: selectedResult.structuredAnswer.sections.map((section) => ({
+      ...section,
+      ...(section.body ? { body: naturalizeV4SystemicRouteLanguage(section.body) } : {}),
+      ...(section.items ? { items: section.items.map(naturalizeV4SystemicRouteLanguage) } : {}),
+      ...(section.title === "Needs confirmation" || section.title === "Verify" ? { title: "Next step" } : {}),
+    })),
+  };
   return {
     ...selectedResult,
+    answer: naturalAnswer,
+    structuredAnswer: naturalStructuredAnswer,
     latencyMs: Date.now() - startedAt,
     runtimeMetadata: {
       ...selectedMetadata,

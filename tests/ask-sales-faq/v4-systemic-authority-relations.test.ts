@@ -12,11 +12,13 @@ import {
   inferV4SystemicRequestKind,
   v4SystemicDecisionObjectErrors,
   v4SystemicMaterialQuestionClauses,
+  v4SystemicMaterialQualifierErrors,
   v4SystemicNeedPolicyRelationErrors,
 } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import { retrieveV4SystemicPolicies } from "@/lib/ask-sales-faq/v4/systemic/retrieval";
 import {
   applyV4SystemicDeterministicQueryGuards,
+  naturalizeV4SystemicRouteLanguage,
   parseV4SystemicSourcePlan,
   v4SystemicExactControllingEvidenceSupports,
   v4SystemicExactDirectFallbackSentence,
@@ -141,6 +143,61 @@ describe("V4.1 claim relations and authority controls", () => {
       decision("artifact"),
       retrieval,
     )).toBe("greenlight");
+    expect(v4SystemicGenericRouteKey(
+      need("Where should this go?", {
+        originalRequestText: "Where do I send documents a Call 1 lead provided to support greenlight approval?",
+        relation: "routing",
+        requestKind: "knowledge",
+      }),
+      decision(),
+      retrieval,
+    )).toBe("fulfillment");
+    expect(v4SystemicGenericRouteKey(
+      need("Can someone fix this?", {
+        originalRequestText: "My leaderboard RPC and RPCT are wrong after an EOD mistake. Can someone correct them?",
+        relation: "procedure",
+        requestKind: "current_lookup",
+      }),
+      decision("live_lookup"),
+      retrieval,
+    )).toBe("sales_tech");
+    expect(v4SystemicGenericRouteKey(
+      need("Who handles this?", {
+        originalRequestText: "We switched from card to wire; can someone void the first contract?",
+        relation: "routing",
+        requestKind: "current_lookup",
+      }),
+      decision("live_lookup"),
+      retrieval,
+    )).toBe("finance");
+  });
+
+  it("removes internal planner wording from user-facing route prose", () => {
+    const answer = naturalizeV4SystemicRouteLanguage(
+      "Check #sales-questions-requests before replying. Unresolved: Determine whether the exception applies.",
+    );
+    expect(answer).toBe("Please ask in #sales-questions-requests for the part that still needs confirmation.");
+    expect(answer).not.toMatch(/unresolved|determine whether|before replying about/i);
+    expect(answer).toMatch(/sales-questions-requests|confirmation/i);
+  });
+
+  it("applies Rich's three-month reapplication decision and excludes conflicting six-month cards", () => {
+    const question = "After a main ISTV prospect misses the Call 2 deadline, how long must they wait before they can reapply?";
+    const guarded = applyV4SystemicDeterministicQueryGuards({
+      needs: [need(question, { productScope: "main_istv", relation: "duration" })],
+      conversationIntent: "answer",
+      reasoningSummary: "authority precedence regression",
+    }, resolveV4SystemicTurn(question, []));
+    const matching = matchingV4SystemicAuthorityResolutions(guarded.needs[0]);
+    expect(matching.map((resolution) => resolution.id)).toContain("main-istv-reapplication-three-month-minimum");
+    expect(v4SystemicResolutionPolicyDisposition(
+      guarded.needs[0],
+      "curated_v43_rich_main_reapply_three_months",
+    )).toBe("controlling");
+    expect(v4SystemicResolutionPolicyDisposition(
+      guarded.needs[0],
+      "operational_4e037bdf053bbc44",
+    )).toBe("excluded");
   });
 
   it("keeps an either-or applicant qualification choice in the eligibility relationship", () => {
@@ -1895,6 +1952,273 @@ describe("V4.1 claim relations and authority controls", () => {
     expect(matchingV4SystemicAuthorityResolutions(plannedNeed).map((resolution) => resolution.id)).toContain(
       "custom-payment-plan-boundary",
     );
+  });
+
+  it("matches the V4.3 source resolutions on their complete decision signatures", () => {
+    const cases: Array<[string, string, Partial<V4SystemicNeed>]> = [
+      [
+        "main-istv-paid-client-upgrade-process",
+        "What is the current process when a client has paid and wants to upgrade their package?",
+        { relation: "procedure" },
+      ],
+      [
+        "telephone-onboarding-zoom-recording-completeness",
+        "If a client has no internet, can I collect payment and onboard by phone only?",
+        { relation: "permission" },
+      ],
+      [
+        "first-no-answer-text-oncehub-link",
+        "In the current no-answer protocol, may I include my public OnceHub calendar link in the first text?",
+        { relation: "permission" },
+      ],
+    ];
+    for (const [resolutionId, question, overrides] of cases) {
+      expect(matchingV4SystemicAuthorityResolutions(need(question, {
+        authorityText: question,
+        originalRequestText: question,
+        ...overrides,
+      })).map((resolution) => resolution.id), question).toContain(resolutionId);
+    }
+  });
+
+  it("forces eligible V4.3 controlling evidence even when the model abstains", () => {
+    const cases: Array<[string, string, Partial<V4SystemicNeed>]> = [
+      [
+        "main-istv-paid-client-upgrade-process",
+        "What is the current process when a client has paid and wants to upgrade their package?",
+        { relation: "procedure" },
+      ],
+      [
+        "telephone-onboarding-zoom-recording-completeness",
+        "If a client has no internet, can I collect payment and onboard by phone only?",
+        { relation: "permission" },
+      ],
+      [
+        "first-no-answer-text-oncehub-link",
+        "In the current no-answer protocol, may I include my public OnceHub calendar link in the first text?",
+        { relation: "permission" },
+      ],
+    ];
+    for (const [resolutionId, question, overrides] of cases) {
+      const plannedNeed = need(question, {
+        authorityText: question,
+        originalRequestText: question,
+        ...overrides,
+      });
+      const plan: V4SystemicQueryPlan = {
+        needs: [plannedNeed],
+        conversationIntent: "answer",
+        reasoningSummary: "V4.3 controlling-source regression",
+      };
+      const retrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(question, []), plan);
+      const resolution = matchingV4SystemicAuthorityResolutions(plannedNeed).find((candidate) => candidate.id === resolutionId);
+      expect(resolution).toBeDefined();
+      const sourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+        needs: [{ need_id: "N1", direct_refs: [], preferred_refs: [], conflicts: [], disposition: "route" }],
+      }), plan, retrieval);
+      expect(sourcePlan.needs[0].lane, question).toBe("answer");
+      expect(sourcePlan.needs[0].preferredPolicyIds.some((id) => resolution!.controlling_policy_ids.includes(id)), question).toBe(true);
+    }
+  });
+
+  it("does not let a model-declared conflict reopen an explicit authority resolution", () => {
+    const question = "After missing the main ISTV Call 2 deadline, how long must a prospect wait before reapplying?";
+    const plannedNeed = need(question, {
+      authorityText: question,
+      originalRequestText: question,
+      productScope: "main_istv",
+      relation: "duration",
+    });
+    const plan: V4SystemicQueryPlan = {
+      needs: [plannedNeed],
+      conversationIntent: "answer",
+      reasoningSummary: "explicit-resolution conflict regression",
+    };
+    const retrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(question, []), plan);
+    expect(matchingV4SystemicAuthorityResolutions(plannedNeed).map((resolution) => resolution.id)).toContain(
+      "main-istv-reapplication-three-month-minimum",
+    );
+    expect(retrieval.blockedMatches.map((match) => match.topicId)).toContain("blocked_7c7231256f066513");
+    const candidateIds = retrieval.candidates.map((candidate) => candidate.policy.id);
+    expect(candidateIds).toContain("curated_v43_rich_main_reapply_three_months");
+    const resolution = matchingV4SystemicAuthorityResolutions(plannedNeed).find((candidate) => (
+      candidate.id === "main-istv-reapplication-three-month-minimum"
+    ))!;
+    const opposingCandidate = retrieval.candidates.find((candidate) => (
+      !resolution.controlling_policy_ids.includes(candidate.policy.id) &&
+      !resolution.excluded_policy_ids.includes(candidate.policy.id) &&
+      /\b(?:can|cannot|must|required|allowed|wait|deadline|before|after|within)\b|\b\d+\s*(?:days?|months?)\b/i.test(candidate.policy.decision)
+    ));
+    expect(opposingCandidate).toBeDefined();
+    const opposingPolicyId = opposingCandidate!.policy.id;
+    const sourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{
+        need_id: "N1",
+        direct_refs: ["curated_v43_rich_main_reapply_three_months", opposingPolicyId],
+        preferred_refs: [],
+        conflicts: [{
+          positions: [
+            { refs: ["curated_v43_rich_main_reapply_three_months"] },
+            { refs: [opposingPolicyId] },
+          ],
+        }],
+        disposition: "route",
+      }],
+    }), plan, retrieval);
+    expect(sourcePlan.needs[0].lane).toBe("answer");
+    expect(sourcePlan.needs[0].preferredPolicyIds).toContain("curated_v43_rich_main_reapply_three_months");
+    expect(sourcePlan.needs[0].preferredPolicyIds).not.toContain(opposingPolicyId);
+  });
+
+  it("keeps a reusable wire-close sequence answerable but routes live mutations", () => {
+    const wireQuestion = "For a wire payment, can I have the client sign on Zoom, send proof, wait for receipt confirmation, and only then post in PayMe?";
+    const wireNeed = need(wireQuestion, {
+      originalRequestText: wireQuestion,
+      authorityText: wireQuestion,
+      relation: "procedure",
+      requestKind: "knowledge",
+      domains: ["wire payment", "contract"],
+    });
+    const wirePlan: V4SystemicQueryPlan = {
+      needs: [wireNeed],
+      conversationIntent: "answer",
+      reasoningSummary: "stable wire workflow",
+    };
+    const wireRetrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(wireQuestion, []), wirePlan);
+    const wireSourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{ need_id: "N1", direct_refs: [], preferred_refs: [], conflicts: [], disposition: "route" }],
+    }), wirePlan, wireRetrieval);
+    expect(wireSourcePlan.needs[0].lane).toBe("answer");
+
+    for (const question of [
+      "Please fix the payment-to-contract automation for this client.",
+      "Please correct this rep's leaderboard record.",
+    ]) {
+      const actionNeed = need(question, {
+        originalRequestText: question,
+        requestKind: "operational_action",
+        relation: "procedure",
+      });
+      const actionPlan: V4SystemicQueryPlan = {
+        needs: [actionNeed],
+        conversationIntent: "answer",
+        reasoningSummary: "live mutation boundary",
+      };
+      const actionRetrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(question, []), actionPlan);
+      const actionSourcePlan = parseV4SystemicSourcePlan(JSON.stringify({ needs: [] }), actionPlan, actionRetrieval);
+      expect(actionSourcePlan.needs[0].lane, question).toBe("route");
+      expect(actionSourcePlan.needs[0].reason, question).toMatch(/change a live system/i);
+      expect(v4SystemicGenericRouteKey(actionNeed, {
+        needId: "N1",
+        lane: "route",
+        evidenceRefs: [],
+        answerSentences: [],
+        routeKey: null,
+        clarificationQuestion: "",
+        confidence: 0.5,
+        reason: "test",
+      }, actionRetrieval), question).toBe("sales_tech");
+    }
+  });
+
+  it("preserves complete governed workflows and distinguishes policy use from artifact lookup", () => {
+    const wireQuestion = "For a wire payment, can I send the contract on Zoom, have it signed, get proof of the wire, and then verify receipt before posting the sale?";
+    expect(matchingV4SystemicAuthorityResolutions(need(wireQuestion, {
+      authorityText: wireQuestion,
+      originalRequestText: wireQuestion,
+      relation: "permission",
+      requestKind: "knowledge",
+    })).map((resolution) => resolution.id)).toContain("wire-contract-proof-confirmation-payme-sequence");
+    const wirePolicy = getV4SystemicCorpus().find((policy) => policy.id === "curated_v43_wire_close_sequence")!;
+    expect(v4SystemicMaterialQualifierErrors(need(wireQuestion, {
+      authorityText: wireQuestion,
+      originalRequestText: wireQuestion,
+      relation: "permission",
+      requestKind: "knowledge",
+    }), wirePolicy)).toEqual([]);
+    const wireTurn = resolveV4SystemicTurn(wireQuestion, []);
+    const wirePlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [
+        need("Can I send the contract on Zoom for a wire payment?", { relation: "permission" }),
+        need("Can the client sign it?", { relation: "permission" }),
+        need("Can I get proof of the wire?", { relation: "permission" }),
+        need("Can I verify receipt before posting the sale?", { relation: "permission", requestKind: "current_lookup" }),
+      ],
+      conversationIntent: "answer",
+      reasoningSummary: "planner split one governed sequence",
+    }, wireTurn);
+    expect(wirePlan.needs).toHaveLength(1);
+    expect(wirePlan.needs[0]).toMatchObject({ text: wireQuestion, requestKind: "knowledge" });
+    expect(matchingV4SystemicAuthorityResolutions(wirePlan.needs[0]).map((resolution) => resolution.id)).toContain(
+      "wire-contract-proof-confirmation-payme-sequence",
+    );
+
+    const onceHubQuestion = "In the current no-answer protocol, may I include my public OnceHub calendar link in the first text?";
+    const onceHubPlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [need(onceHubQuestion, { relation: "artifact_identity", requestKind: "artifact_request" })],
+      conversationIntent: "answer",
+      reasoningSummary: "planner mistook permission for artifact lookup",
+    }, resolveV4SystemicTurn(onceHubQuestion, []));
+    expect(onceHubPlan.needs[0].domains).not.toContain("controlled artifact");
+    expect(v4SystemicNeedRequiresCurrentArtifact(onceHubPlan.needs[0])).toBe(false);
+    expect(matchingV4SystemicAuthorityResolutions(onceHubPlan.needs[0]).map((resolution) => resolution.id)).toContain(
+      "first-no-answer-text-oncehub-link",
+    );
+
+    const upgradeQuestion = "Where can I find the current upgrade sheet?";
+    const upgradePlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [need(upgradeQuestion, { relation: "artifact_identity", requestKind: "artifact_request" })],
+      conversationIntent: "answer",
+      reasoningSummary: "stable discovery path",
+    }, resolveV4SystemicTurn(upgradeQuestion, []));
+    expect(upgradePlan.needs[0]).toMatchObject({ relation: "artifact_location" });
+    expect(v4SystemicNeedRequiresCurrentArtifact(upgradePlan.needs[0])).toBe(false);
+    const upgradeRetrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(upgradeQuestion, []), upgradePlan);
+    const upgradeSourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{ need_id: "N1", direct_refs: [], preferred_refs: [], conflicts: [], disposition: "route" }],
+    }), upgradePlan, upgradeRetrieval);
+    expect(upgradeSourcePlan.needs[0].lane).toBe("answer");
+  });
+
+  it("retires the exact stale blocker after greenlight and preserves explicit live-mutation intent", () => {
+    const disconnectQuestion = "A client's internet dropped after I greenlit him before the congratulations video. Should I greenlight now or wait for tomorrow's follow-up?";
+    const disconnectPlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [need(disconnectQuestion, { relation: "eligibility" })],
+      conversationIntent: "answer",
+      reasoningSummary: "post-greenlight disconnect",
+    }, resolveV4SystemicTurn(disconnectQuestion, []));
+    const disconnectNeed = disconnectPlan.needs[0];
+    expect(matchingV4SystemicAuthorityResolutions(disconnectNeed).map((resolution) => resolution.id)).toContain(
+      "post-greenlight-internet-drop-followup",
+    );
+    const disconnectRetrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(disconnectQuestion, []), disconnectPlan);
+    expect(disconnectRetrieval.blockedMatches.map((match) => match.topicId)).toContain("blocked_1c8b0ffdc9afcc77");
+    const disconnectSourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{ need_id: "N1", direct_refs: [], preferred_refs: [], conflicts: [], disposition: "route" }],
+    }), disconnectPlan, disconnectRetrieval);
+    expect(disconnectSourcePlan.needs[0].lane).toBe("answer");
+
+    const mutationQuestion = "My leaderboard call totals are wrong after an EOD mistake. Can someone correct my RPC and RPCT percentages?";
+    const mutationPlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [
+        need("Determine the correction process for RPC and RPCT percentages.", { relation: "procedure" }),
+        need("Identify who can correct the leaderboard.", { relation: "owner" }),
+      ],
+      conversationIntent: "answer",
+      reasoningSummary: "planner softened a live action",
+    }, resolveV4SystemicTurn(mutationQuestion, []));
+    expect(mutationPlan.needs.every((plannedNeed) => plannedNeed.requestKind === "operational_action")).toBe(true);
+    const routeDecision = {
+      needId: "N1",
+      lane: "route" as const,
+      evidenceRefs: [],
+      answerSentences: [],
+      routeKey: "sales_tech",
+      clarificationQuestion: "",
+      confidence: 0.8,
+      reason: "live mutation",
+    };
+    expect(v4SystemicGenericRouteKey(mutationPlan.needs[0], routeDecision, { candidates: [] } as unknown as V4SystemicRetrieval)).toBe("sales_tech");
   });
 
   it("never uses stable policy evidence as proof of a live payment status", () => {

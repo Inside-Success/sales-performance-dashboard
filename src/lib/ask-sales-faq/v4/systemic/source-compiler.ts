@@ -124,7 +124,9 @@ const DIRECT_CONFIDENCE_THRESHOLD = 0.88;
 const AUTHORITY_SCORE: Record<V4SystemicAuthority, number> = {
   madeline: 9.5,
   raul: 9.5,
-  rich: 9.5,
+  // Head-of-Sales decisions control conflicting Sales Ops answers for the
+  // same decision and scope. This is deliberately a role rule, not recency.
+  rich: 10,
   mike: 10,
   rudy: 10,
 };
@@ -333,6 +335,26 @@ function sameScope(left: Candidate, right: Candidate) {
   return a === b || a === "unknown" || b === "unknown";
 }
 
+function candidateAuthorities(candidate: Candidate) {
+  return new Set(candidate.source.authority_replies.map((reply) => reply.authority));
+}
+
+function candidateAuthorityScore(candidate: Candidate) {
+  return Math.max(...[...candidateAuthorities(candidate)].map((authority) => AUTHORITY_SCORE[authority]), 0);
+}
+
+function richControlledClustersForMadelineOnlyConflicts(clusters: Candidate[][]) {
+  const answerClusters = clusters.filter((cluster) => cluster.some((candidate) => candidate.answerability === "answer_evidence"));
+  return new Set(answerClusters.filter((richCluster) => {
+    if (!richCluster.some((candidate) => candidateAuthorities(candidate).has("rich"))) return false;
+    const opposing = answerClusters.filter((cluster) => cluster !== richCluster && sameScope(cluster[0], richCluster[0]));
+    const opposingAuthorities = opposing.flatMap((cluster) =>
+      cluster.flatMap((candidate) => [...candidateAuthorities(candidate)]),
+    );
+    return opposingAuthorities.length > 0 && opposingAuthorities.every((authority) => authority === "madeline");
+  }));
+}
+
 function holdoutItem(source: V4SystemicSourceThread, classification: V4SystemicClassifiedThread): V4SystemicHoldoutItem {
   return {
     sourceId: source.source_id,
@@ -393,7 +415,10 @@ export function compileV4SystemicOperationalKnowledge(input: {
 
   for (const [decisionKey, group] of groups) {
     const clusters: Candidate[][] = [];
-    for (const candidate of group.sort((left, right) => right.decision.confidence - left.decision.confidence)) {
+    for (const candidate of group.sort((left, right) =>
+      candidateAuthorityScore(right) - candidateAuthorityScore(left) ||
+      right.decision.confidence - left.decision.confidence,
+    )) {
       const cluster = clusters.find((items) => sameScope(items[0], candidate) && jaccard(items[0].decision.decision, candidate.decision.decision) >= 0.72);
       if (cluster) {
         cluster.push(candidate);
@@ -407,13 +432,19 @@ export function compileV4SystemicOperationalKnowledge(input: {
       answerClusters.slice(index + 1).some((other) => sameScope(cluster[0], other[0])),
     );
     if (hasUnresolvedConflict) conflictingDecisionGroups += 1;
+    const richControlledClusters = hasUnresolvedConflict
+      ? richControlledClustersForMadelineOnlyConflicts(clusters)
+      : new Set<Candidate[]>();
 
     for (const cluster of clusters) {
       const representative = cluster[0];
       const sourceIds = [...new Set(cluster.map((candidate) => candidate.source.source_id))];
-      if (hasUnresolvedConflict && representative.answerability === "answer_evidence") {
+      const clusterHasConflict = answerClusters.some((other) => other !== cluster && sameScope(cluster[0], other[0]));
+      if (clusterHasConflict && representative.answerability === "answer_evidence" && !richControlledClusters.has(cluster)) {
         representative.answerability = "route_or_support";
-        representative.exclusionReason = "multiple authoritative source threads produced materially different decisions";
+        representative.exclusionReason = richControlledClusters.size
+          ? "a conflicting Sales Ops decision is superseded by Rich for the same decision and scope"
+          : "multiple authoritative source threads produced materially different decisions";
       }
 
       const governed = governedByKey.get(decisionKey);

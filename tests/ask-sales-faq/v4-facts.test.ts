@@ -113,6 +113,10 @@ describe("Ask Sales V4 typed facts", () => {
       "Reps can schedule through a public or personal calendar, but must not touch the master calendar.",
       "Scheduling is up to the rep through public/personal calendar hours, but do not touch the master calendar.",
     )).not.toContain("prohibitive evidence cannot authorize an unstated permission");
+    expect(deterministicV4SentenceErrors(
+      "When the client has no internet, payment may be collected by phone.",
+      "Payment and onboarding may be completed by phone when the client cannot join Zoom, but this does not make phone-only handling the preferred default.",
+    )).not.toContain("prohibitive evidence cannot authorize an unstated permission");
   });
 
   it("allows an exact evidence-backed internal channel while still rejecting invented channels", () => {
