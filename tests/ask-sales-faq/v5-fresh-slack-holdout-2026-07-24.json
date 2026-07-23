@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales V5 fresh Slack source holdout 2026-07-24",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-24T03:52:39+05:00",
+  "sourceChannelId": "C0AUQKNR8CF",
+  "sourceChannelName": "sales-questions-requests",
+  "governance": {
+    "readOnlyCollection": true,
+    "productionWrites": false,
+    "runtimeTuningAfterUnseal": false,
+    "promotionEvidence": "diagnostic_only_until_blind_human_review",
+    "authorityOrder": ["Rich", "Rudy", "Mike", "Raul", "Madeline"],
+    "notes": [
+      "Every case has a bounded authoritative threaded reply.",
+      "Cases are split by whether the exact source was already present in the frozen systemic snapshot.",
+      "No source answer from this file may be added to the runtime before this holdout is consumed."
+    ]
+  },
+  "cases": [
+    {
+      "id": "v5fresh-01",
+      "question": "A client's bank flags the standard Whop payment link. May I use the emergency payment link listed in the spreadsheet?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The emergency payment links may be used in this situation.",
+      "requiredConcepts": ["emergency payment links", "may use"],
+      "forbiddenConcepts": ["create a custom payment link"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784839254.159649", "slack:C0AUQKNR8CF:1784839331.349689"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-02",
+      "question": "Can a rep accept a client-written proposal with a custom payment structure instead of one of our standard payment plans?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not accept a custom structure; return the client to the approved standard payment plans.",
+      "requiredConcepts": ["no custom structure", "standard payment plans"],
+      "forbiddenConcepts": ["accept the proposal", "negotiate custom terms"],
+      "sourceState": "equivalent_rule_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784838224.621059", "slack:C0AUQKNR8CF:1784838668.035509", "slack:C0AUQKNR8CF:1784838671.613809"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "v5fresh-03",
+      "question": "A business owner wants to start with a nine-episode docuseries. What should the rep recommend first?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Start with a one-episode license so both sides can assess the working relationship, then decide whether a larger project is a fit.",
+      "requiredConcepts": ["one episode first", "decide larger project later"],
+      "forbiddenConcepts": ["sell nine episodes immediately"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784836729.280629", "slack:C0AUQKNR8CF:1784837264.011379"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-04",
+      "question": "If an existing client's payment arrangement changes, does the rep need to send a new contract?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. A changed payment arrangement requires a new contract.",
+      "requiredConcepts": ["yes", "new contract"],
+      "forbiddenConcepts": ["keep the old contract without review"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784836671.425839", "slack:C0AUQKNR8CF:1784837174.500719"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-05",
+      "question": "After an outbound prospect does not answer, may the rep include their public OnceHub calendar link in the initial text or email?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The public OnceHub calendar link may be included in the text, and Madeline also confirmed email is acceptable.",
+      "requiredConcepts": ["yes", "OnceHub calendar link", "text or email"],
+      "forbiddenConcepts": ["against policy"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784814786.469689", "slack:C0AUQKNR8CF:1784819158.621339", "slack:C0AUQKNR8CF:1784820581.551149"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-06",
+      "question": "Are there live America's Authors episodes or success-story pages available now?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No live episodes were known to be available. If that changes, they should appear on the company website and network app.",
+      "requiredConcepts": ["no live episodes known", "website", "network app"],
+      "forbiddenConcepts": ["confirmed live episodes are available"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784805742.121699", "slack:C0AUQKNR8CF:1784818883.157139"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-07",
+      "question": "For a same-day outbound booking that cannot be placed through the public calendar, may the rep send the Zoom link directly?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Madeline confirmed that sending the Zoom link directly is acceptable when needed for this fast-track case.",
+      "requiredConcepts": ["yes", "send the Zoom link directly"],
+      "forbiddenConcepts": ["must cancel the call"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784761955.078429", "slack:C0AUQKNR8CF:1784818675.198889"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-08",
+      "question": "How long does a Next Level CEO client have to film, and where should a rep ask about exact studio availability?",
+      "expectedDisposition": "answer_and_route",
+      "goldAnswer": "The client must film within six months. Ask production in #sales-fulfilment-hotline for exact studio-date availability.",
+      "requiredConcepts": ["within six months", "sales-fulfilment-hotline"],
+      "forbiddenConcepts": ["three-month reapplication rule governs filming"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784758022.370399", "slack:C0AUQKNR8CF:1784818632.523199"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-09",
+      "question": "Where should prospects RSVP for the current Success Event?",
+      "expectedDisposition": "artifact",
+      "goldAnswer": "Use the current RSVP page supplied by Sales Ops: https://www.insidesuccess.com/mastermind-nrf.",
+      "requiredConcepts": ["insidesuccess.com/mastermind-nrf"],
+      "forbiddenConcepts": ["invent a different RSVP URL"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784755449.938079", "slack:C0AUQKNR8CF:1784818359.094229"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-10",
+      "question": "May a Next Level CEO client's mother join the onboarding call using the same onboarding link?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. She may join using the same onboarding link.",
+      "requiredConcepts": ["yes", "same link"],
+      "forbiddenConcepts": ["contact Trey first"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784747023.078829", "slack:C0AUQKNR8CF:1784747050.973239"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-11",
+      "question": "Where should a rep confirm whether a greenlit prospect's contract was sent?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "Confirm it in #greenlight-requests.",
+      "requiredConcepts": ["greenlight-requests"],
+      "forbiddenConcepts": ["finance request channel"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784740348.331429", "slack:C0AUQKNR8CF:1784740406.484939"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-12",
+      "question": "For Next Level CEO, what do the SEO benefit, social promo assets, and swag package mean?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "SEO benefit means the client's name and business can rank higher for affiliated searches. Social promo assets are content created for the client to announce and promote the feature on social media or their website. The swag package is merchandise and promotional material provided as a souvenir.",
+      "requiredConcepts": ["search ranking", "content for social media or website", "merchandise"],
+      "forbiddenConcepts": ["guaranteed first-page ranking"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784738661.915609", "slack:C0AUQKNR8CF:1784738782.244079", "slack:C0AUQKNR8CF:1784738816.318329", "slack:C0AUQKNR8CF:1784738926.518609"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-13",
+      "question": "A booking only says 'TV show application' and gives no show name. Should the rep choose a pitch themselves?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Do not guess the show. Post the booking issue in the sales tech channel because it may be a test show or an intentional booking configuration.",
+      "requiredConcepts": ["do not guess", "tech channel"],
+      "forbiddenConcepts": ["pick any show"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784734388.883789", "slack:C0AUQKNR8CF:1784737407.833509"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-14",
+      "question": "Where can prospects watch complete Inside Success TV episodes, and do we have a confirmed exact total of released episodes?",
+      "expectedDisposition": "partial_answer",
+      "goldAnswer": "Complete episodes are available on the ISTV network app and at https://insidesuccess.tv. Do not state an exact released-episode total because Sales Ops did not confirm one.",
+      "requiredConcepts": ["ISTV network app", "insidesuccess.tv", "exact total not confirmed"],
+      "forbiddenConcepts": ["a guessed exact episode count"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784732467.271399", "slack:C0AUQKNR8CF:1784737325.878709"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-15",
+      "question": "A prospect's compliance officer asks for Inside Success TV company-registration information. Where should the rep direct them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Direct them to the Inside Success TV listing on Sunbiz. Do not invent or send unsupported corporate documents.",
+      "requiredConcepts": ["Sunbiz", "Inside Success TV"],
+      "forbiddenConcepts": ["fabricate corporate documents"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784727536.012199", "slack:C0AUQKNR8CF:1784739591.733129"],
+      "approvedBy": ["Mike"]
+    },
+    {
+      "id": "v5fresh-16",
+      "question": "If a Next Level CEO client misses the August Mastermind event, is the following event date already confirmed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No later date was confirmed. The client may attend the following event when it is scheduled.",
+      "requiredConcepts": ["no later date confirmed", "may attend the following event"],
+      "forbiddenConcepts": ["invent a date"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784709829.515609", "slack:C0AUQKNR8CF:1784736625.024209"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-17",
+      "question": "What exact process should a rep use for a self-generated or client referral, including how to submit the greenlight?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "goldAnswer": "The referral uses a different process. Ask Mike for the current procedure; the thread did not establish the exact steps.",
+      "requiredConcepts": ["different process", "ask Mike"],
+      "forbiddenConcepts": ["invent exact submission steps", "assert double commission from the authoritative reply"],
+      "sourceState": "newer_than_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784679446.772399", "slack:C0AUQKNR8CF:1784736575.781789"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-18",
+      "question": "How are Call 2 appointments counted in end-of-day stats, and how should a rep correct stats they already submitted?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Call 2 appointments count as follow-ups. Post corrected numbers in the thread of the original daily-stat submission; tag Tech and Alex there if the dashboard figures need correction.",
+      "requiredConcepts": ["Call 2 counts as follow-ups", "original daily-stat thread", "Tech and Alex"],
+      "forbiddenConcepts": ["count Call 2 as new first appointments"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784677042.055679", "slack:C0AUQKNR8CF:1784736441.246859", "slack:C0AUQKNR8CF:1784746159.356719", "slack:C0AUQKNR8CF:1784749928.323159"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-19",
+      "question": "Where should a rep send documents or links that may help the greenlight team review a prospect?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "Send them to #sales-fulfilment-hotline.",
+      "requiredConcepts": ["sales-fulfilment-hotline"],
+      "forbiddenConcepts": ["finance request channel"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784672218.223119", "slack:C0AUQKNR8CF:1784733536.498409"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v5fresh-20",
+      "question": "Do we offer reality-TV casting opportunities for real-estate prospects?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The company offers documentary-style programming, not reality TV.",
+      "requiredConcepts": ["no reality TV", "documentary style"],
+      "forbiddenConcepts": ["Love Island casting", "reality-TV placement"],
+      "sourceState": "exact_source_in_snapshot",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784656912.361629", "slack:C0AUQKNR8CF:1784661119.191769"],
+      "approvedBy": ["Madeline"]
+    }
+  ]
+}

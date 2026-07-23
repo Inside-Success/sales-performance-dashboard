@@ -58,6 +58,16 @@ import type {
   V4Validation,
 } from "@/lib/ask-sales-faq/v4/types";
 
+export type V4SystemicCandidateRuntimeProfile = {
+  pipelineVersion: "v4-hybrid" | "v5-isolated";
+  knowledgeVersion: () => string;
+  operationalPolicyCount: () => number;
+  retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
+  fallbackLabel: string;
+  fallbackOnEmptyRetrieval: boolean;
+  fallbackOnStageFailure: boolean;
+};
+
 const routeCatalog = getV4SystemicRouteCatalog();
 const allowedRouteKeys = new Set(Object.keys(routeCatalog));
 const CONVERSATION_KINDS = new Set(["social", "topic_intro", "memory", "rewrite", "clarification"]);
@@ -2276,14 +2286,15 @@ async function frozenV4Fallback(
   startedAt: number,
   reason: string,
   priorAttempts: V3ProviderAttempt[] = [],
+  profile: V4SystemicCandidateRuntimeProfile = v4SystemicCandidateRuntimeProfile,
 ): Promise<AskSalesFaqV4Result> {
   const result = await runAskSalesFaqV4(question, messages, options);
   return {
     ...result,
     runtimeMetadata: {
       ...result.runtimeMetadata,
-      pipelineVersion: "v4-hybrid",
-      knowledgeVersion: v4HybridKnowledgeVersion(),
+      pipelineVersion: profile.pipelineVersion,
+      knowledgeVersion: profile.knowledgeVersion(),
       authorityResolutionVersion: getV4SystemicAuthorityVersion(),
       providerAttempts: [...priorAttempts, ...result.runtimeMetadata.providerAttempts],
       executionMode: { ...result.runtimeMetadata.executionMode, planning: "hybrid_fallback" },
@@ -2293,16 +2304,27 @@ async function frozenV4Fallback(
       },
       plan: {
         ...result.runtimeMetadata.plan,
-        reasoning_summary: `${reason} Frozen V4 supplied the non-regression fallback.`,
+        reasoning_summary: `${reason} ${profile.fallbackLabel} supplied the non-regression fallback.`,
       },
     },
   };
 }
 
-async function runAskSalesFaqV4SystemicCandidate(
+const v4SystemicCandidateRuntimeProfile: V4SystemicCandidateRuntimeProfile = {
+  pipelineVersion: "v4-hybrid",
+  knowledgeVersion: v4HybridKnowledgeVersion,
+  operationalPolicyCount: getV4SystemicOperationalPolicyCount,
+  retrieve: retrieveV4SystemicPolicies,
+  fallbackLabel: "Frozen V4",
+  fallbackOnEmptyRetrieval: true,
+  fallbackOnStageFailure: true,
+};
+
+export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   question: string,
   conversationMessages: AskSalesFaqChatMessage[] = [],
   options: V4RuntimeOptions = {},
+  profile: V4SystemicCandidateRuntimeProfile = v4SystemicCandidateRuntimeProfile,
 ): Promise<AskSalesFaqV4Result> {
   const startedAt = Date.now();
   const stageTimings: Record<string, number> = {};
@@ -2321,7 +2343,7 @@ async function runAskSalesFaqV4SystemicCandidate(
   stageTimings.turnResolutionMs = Date.now() - turnStarted;
 
   if (CONVERSATION_KINDS.has(turn.kind)) {
-    return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "Conversation-only turn.");
+    return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "Conversation-only turn.", [], profile);
   }
 
   let queryPlan: V4SystemicQueryPlan;
@@ -2349,10 +2371,10 @@ async function runAskSalesFaqV4SystemicCandidate(
   }
   stageTimings.queryPlanningMs = Date.now() - queryPlanningStarted;
 
-  const retrieval = retrieveV4SystemicPolicies(turn, queryPlan);
+  const retrieval = profile.retrieve(turn, queryPlan);
   Object.assign(stageTimings, retrieval.stageTimings);
-  if (!retrieval.candidates.length) {
-    return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic retriever found no viable candidate.", attempts);
+  if (!retrieval.candidates.length && profile.fallbackOnEmptyRetrieval) {
+    return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic retriever found no viable candidate.", attempts, profile);
   }
 
   let sourcePlan: V4SystemicSourcePlan;
@@ -2385,7 +2407,20 @@ async function runAskSalesFaqV4SystemicCandidate(
       model = result.model;
     } catch (error) {
       attempts.push(...providerAttemptsFromV4Error(error));
-      return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic source-timeline adjudicator was unavailable.", attempts);
+      if (profile.fallbackOnStageFailure) {
+        return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic source-timeline adjudicator was unavailable.", attempts, profile);
+      }
+      sourcePlan = {
+        needs: queryPlan.needs.map((need) => ({
+          needId: need.id,
+          lane: "route",
+          directPolicyIds: [],
+          preferredPolicyIds: [],
+          excludedConflictPolicyIds: [],
+          reason: "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer.",
+        })),
+        reasoningSummary: "V5 failed closed because source-timeline adjudication was unavailable.",
+      };
     }
   }
   stageTimings.sourcePlanningMs = Date.now() - sourcePlanningStarted;
@@ -2408,7 +2443,23 @@ async function runAskSalesFaqV4SystemicCandidate(
     model = result.model;
   } catch (error) {
     attempts.push(...providerAttemptsFromV4Error(error));
-    return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic evidence selector was unavailable.", attempts);
+    if (profile.fallbackOnStageFailure) {
+      return frozenV4Fallback(redactedQuestion.text, safeMessages, options, startedAt, "The systemic evidence selector was unavailable.", attempts, profile);
+    }
+    draft = {
+      needs: queryPlan.needs.map((need) => ({
+        needId: need.id,
+        lane: "route",
+        evidenceRefs: [],
+        answerSentences: [],
+        routeKey: null,
+        clarificationQuestion: "",
+        confidence: 0.1,
+        reason: "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+      })),
+      naturalAnswer: "",
+      reasoningSummary: "V5 failed closed because evidence selection was unavailable.",
+    };
   }
   const missedSourceAnswerNeedIds = sourcePlan.needs
     .filter((need) => need.lane === "answer" && draft.needs.find((candidate) => candidate.needId === need.needId)?.lane !== "answer")
@@ -2738,9 +2789,9 @@ async function runAskSalesFaqV4SystemicCandidate(
     selectedPolicyIds,
     redactions,
     runtimeMetadata: {
-      pipelineVersion: "v4-hybrid",
+      pipelineVersion: profile.pipelineVersion,
       isolation: { productionSelectorChanged: false, databaseWrites: false, historyPersistence: false },
-      knowledgeVersion: v4HybridKnowledgeVersion(),
+      knowledgeVersion: profile.knowledgeVersion(),
       authorityResolutionVersion: getV4SystemicAuthorityVersion(),
       turn,
       retrieval: {
@@ -2762,10 +2813,11 @@ async function runAskSalesFaqV4SystemicCandidate(
         })),
         blockedTopicIds: retrieval.blockedTopicIds,
         blockedMatches: retrieval.blockedMatches,
+        diagnostics: retrieval.diagnostics,
       },
       plan: {
         ...metadataPlan,
-        reasoning_summary: `${queryPlan.reasoningSummary} ${metadataPlan.reasoning_summary} Operational overlay policies available: ${getV4SystemicOperationalPolicyCount()}.`,
+        reasoning_summary: `${queryPlan.reasoningSummary} ${metadataPlan.reasoning_summary} Operational overlay policies available: ${profile.operationalPolicyCount()}.`,
       },
       sourcePlan,
       executionMode: {
@@ -3177,12 +3229,12 @@ export async function runAskSalesFaqV4Systemic(
   options: V4RuntimeOptions = {},
 ): Promise<AskSalesFaqV4Result> {
   if (options.skipChampionComparison) {
-    return runAskSalesFaqV4SystemicCandidate(question, conversationMessages, options);
+    return runAskSalesFaqV4SystemicCandidateWithProfile(question, conversationMessages, options);
   }
 
   const startedAt = Date.now();
   const championPromise = runAskSalesFaqV4(question, conversationMessages, options).catch(() => null);
-  const systemic = await runAskSalesFaqV4SystemicCandidate(question, conversationMessages, options);
+  const systemic = await runAskSalesFaqV4SystemicCandidateWithProfile(question, conversationMessages, options);
   const champion = await championPromise;
   if (!champion) return systemic;
 

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 const PUBLIC_PATHS = new Set(["/sign-in"]);
-const V4_LAB_PATHS = new Set(["/ask-sales-faq/v4-lab", "/ask-sales-faq/v4-systemic-lab"]);
+const V4_LAB_PATHS = new Set(["/ask-sales-faq/v4-lab", "/ask-sales-faq/v4-systemic-lab", "/ask-sales-faq/v5-lab"]);
 export const V4_LAB_REQUEST_HEADER = "x-ask-sales-v4-lab-request";
 
 export function isV4LabAuthBypassEnabled(pathname: string) {

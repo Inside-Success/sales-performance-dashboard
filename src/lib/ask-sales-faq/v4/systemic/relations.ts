@@ -345,7 +345,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
     /\bshould\b.{0,140}\b(?:be\s+)?(?:explain(?:ed)?|discuss(?:ed)?|share(?:d)?|provide(?:d)?|tell)\b.{0,140}\b(?:during|at|in|after|before)\b/i.test(text) ||
     /\b(?:details?|information)\b.{0,100}\b(?:provided|explained|discussed|shared)\b.{0,100}\b(?:during|at|in|after|before)\b/i.test(text)
   ) return "procedure";
-  if (/\b(?:when\s+(?:does|do|will|should|can)|how soon|begin|start|first appear|go live|release|publish|air)\b/i.test(text) &&
+  if (/\b(?:when\s+(?:is|are|was|were|does|do|will|should|can)|what\s+is\s+(?:the\s+)?(?:confirmed\s+|current\s+|next\s+)?date|confirmed\s+date|event\s+date|how soon|begin|start|first appear|go live|release|publish|air)\b/i.test(text) &&
     !/\bhow long\b/i.test(text) &&
     !/\b(?:start|begin)\s+(?:with|by)\b/i.test(text)) return "timing_start";
   if (/\b(?:how long|how much time|how many (?:days?|weeks?|months?|years?|hours?|minutes?)|for how long|duration|lasts?|remain|stay|hosted for|available for)\b/i.test(text)) return "duration";

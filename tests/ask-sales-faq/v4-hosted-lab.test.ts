@@ -61,6 +61,8 @@ describe("Ask Sales V4 hosted lab isolation", () => {
       expect.objectContaining({ source: "/api/ask-sales-faq/v4-isolated", headers: expect.arrayContaining([expect.objectContaining({ key: "Content-Security-Policy", value: "frame-ancestors 'none'" })]) }),
       expect.objectContaining({ source: "/ask-sales-faq/v4-systemic-lab", headers: expect.arrayContaining([expect.objectContaining({ key: "X-Frame-Options", value: "DENY" })]) }),
       expect.objectContaining({ source: "/api/ask-sales-faq/v4-systemic-isolated", headers: expect.arrayContaining([expect.objectContaining({ key: "Content-Security-Policy", value: "frame-ancestors 'none'" })]) }),
+      expect.objectContaining({ source: "/ask-sales-faq/v5-lab", headers: expect.arrayContaining([expect.objectContaining({ key: "X-Frame-Options", value: "DENY" })]) }),
+      expect.objectContaining({ source: "/api/ask-sales-faq/v5-isolated", headers: expect.arrayContaining([expect.objectContaining({ key: "Content-Security-Policy", value: "frame-ancestors 'none'" })]) }),
     ]));
     expect(rules?.some((rule) => rule.source === "/:path*" || rule.source === "/")).toBe(false);
   });
@@ -71,13 +73,16 @@ describe("Ask Sales V4 hosted lab isolation", () => {
 
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-lab")).toBe(true);
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-systemic-lab")).toBe(true);
+    expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v5-lab")).toBe(true);
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-lab/extra")).toBe(false);
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-systemic-lab/extra")).toBe(false);
+    expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v5-lab/extra")).toBe(false);
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-lab-copy")).toBe(false);
 
     process.env.VERCEL_ENV = "production";
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-lab")).toBe(false);
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-systemic-lab")).toBe(false);
+    expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v5-lab")).toBe(false);
     process.env.VERCEL_ENV = "development";
     expect(isV4LabAuthBypassEnabled("/ask-sales-faq/v4-lab")).toBe(false);
   });
@@ -87,6 +92,19 @@ describe("Ask Sales V4 hosted lab isolation", () => {
     process.env.VERCEL_ENV = "preview";
     const response = await (proxy as unknown as (request: unknown) => Promise<Response> | Response)({
       nextUrl: new URL("https://preview.example.com/ask-sales-faq/v4-lab"),
+      headers: new Headers(),
+      auth: null,
+    });
+
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get(`x-middleware-request-${V4_LAB_REQUEST_HEADER}`)).toBe("1");
+  });
+
+  it("marks the exact V5 preview request for the server layout", async () => {
+    process.env.ASK_SALES_V4_ISOLATED = "true";
+    process.env.VERCEL_ENV = "preview";
+    const response = await (proxy as unknown as (request: unknown) => Promise<Response> | Response)({
+      nextUrl: new URL("https://preview.example.com/ask-sales-faq/v5-lab"),
       headers: new Headers(),
       auth: null,
     });
