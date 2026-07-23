@@ -102,7 +102,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated" | "v4-systemic";
+  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
@@ -125,6 +125,8 @@ export type V4RuntimeMetadata = {
       sourceKind?: string;
       temporalRisk?: string;
       relationScore?: number;
+      semanticVectorScore?: number;
+      matchedDecisionId?: string;
     }>;
     blockedTopicIds: string[];
     blockedMatches?: Array<{
@@ -147,7 +149,7 @@ export type V4RuntimeMetadata = {
     reasoningSummary: string;
   };
   executionMode: {
-    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "systemic_champion" | "conversation";
+    planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "systemic_champion" | "hybrid_model" | "hybrid_fallback" | "conversation";
     composition: "model" | "exact_evidence" | "not_required";
     validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required";
   };

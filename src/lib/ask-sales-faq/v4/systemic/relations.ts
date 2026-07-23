@@ -34,7 +34,7 @@ const CURRENT_LOOKUP = /\b(?:current|currently|latest|today|right now|still|conf
 const OPERATIONAL_ACTION = /\b(?:send|submit|post|request|process|issue|confirm|verify|trace|locate|find|get|provide|share|refund|cancel|pause|update|edit|merge|combine|replace|delete|remove|book|rebook|reschedule|schedule|upload|download|open|access|fix|repair|escalate)\b/i;
 const ARTIFACT_ACQUISITION_ACTION = /\b(?:send|request|issue|locate|find|get|provide|share|upload|download|open|access)\b/i;
 const ARTIFACT = /\b(?:link|url|form|sheet|spreadsheet|document|template|email|message|pdf|letter|recording|video|episode|file|contract|agreement|script|media\s*kit|asset)\b/i;
-const REP_ACTION_PERMISSION = /\b(?:(?:can|could|may)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)|(?:am|are|is)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+allowed\s+to|(?:do|does)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+have\s+permission\s+to)\s+(?:send|share|provide|discuss|mention|cancel|pause|stop|block|unsubscribe|book|rebook|reschedule|schedule|contact|notify|route|post|submit|request|process|issue|confirm|verify|trace|refund|update|edit|merge|combine|replace|delete|remove|upload|download|open|access|fix|repair|escalate)\b/i;
+const REP_ACTION_PERMISSION = /\b(?:(?:can|could|may)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)|(?:am|are|is)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+allowed\s+to|(?:do|does)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+have\s+permission\s+to)\s+(?:send|share|provide|text|email|call|discuss|mention|cancel|pause|stop|block|unsubscribe|book|rebook|reschedule|schedule|contact|notify|route|post|submit|request|process|issue|confirm|verify|trace|refund|update|edit|merge|combine|replace|delete|remove|upload|download|open|access|fix|repair|escalate)\b/i;
 
 const normalizedValueCache = new Map<string, string>();
 const MAX_RELATION_CACHE_ENTRIES = 4096;
@@ -115,6 +115,11 @@ const DECISION_OBJECT_FACETS: Array<{ name: string; pattern: RegExp }> = [
   { name: "reapplication", pattern: /\b(?:reapply|reapplication|apply again)\b/i },
   { name: "contract", pattern: /\b(?:contract|agreement)\b/i },
   { name: "payment", pattern: /\b(?:payment|ach|wire|invoice|refund|deposit|installment)\b/i },
+  { name: "post_call_notes", pattern: /\b(?:post[- ]?call|after (?:the )?call)\b.{0,100}\b(?:note|record|document|keap|sheet|report)\b|\b(?:note|record|document|keap|sheet|report)\b.{0,100}\b(?:post[- ]?call|after (?:the )?call)\b/i },
+  { name: "lead_ownership", pattern: /\b(?:already booked|booked (?:by|with) another rep|assigned rep|lead ownership|ownership credit|who gets credit|which rep owns)\b/i },
+  { name: "outreach_sequence", pattern: /\b(?:outreach|follow[- ]?up|text|sms|email|call)\b.{0,100}\b(?:sequence|cadence|sop|steps?|order)\b|\b(?:sequence|cadence|sop|steps?|order)\b.{0,100}\b(?:outreach|follow[- ]?up|text|sms|email|call)\b/i },
+  { name: "call_volume", pattern: /\b(?:more|generate|increase|build|create)\b.{0,80}\b(?:calls?|call volume|appointments?)\b|\b(?:calls?|call volume|appointments?)\b.{0,80}\b(?:more|generate|increase|build|create)\b/i },
+  { name: "technical_report", pattern: /\b(?:totals?|numbers?|counts?|stats?|dashboard|report)\b.{0,100}\b(?:chang|wrong|incorrect|glitch|bug|fix|repair)\w*\b|\b(?:chang|wrong|incorrect|glitch|bug|fix|repair)\w*\b.{0,100}\b(?:totals?|numbers?|counts?|stats?|dashboard|report)\b/i },
 ];
 
 const decisionObjectFacetCache = new Map<string, Set<string>>();
@@ -197,7 +202,7 @@ export function v4SystemicDecisionObjectErrors(request: string, evidence: string
 
   const requestedFacets = decisionObjectFacets(request);
   const evidenceFacets = decisionObjectFacets(evidence);
-  const exclusiveFacets = new Set(["handoff", "licensing", "pre_call", "post_greenlight_noncommit", "onboarding", "recording", "episode_media", "crm_record", "stats_reporting", "reapplication", "contract"]);
+  const exclusiveFacets = new Set(["handoff", "licensing", "pre_call", "post_greenlight_noncommit", "onboarding", "recording", "episode_media", "crm_record", "stats_reporting", "reapplication", "contract", "post_call_notes", "lead_ownership", "outreach_sequence", "call_volume", "technical_report"]);
   const requestedExclusive = [...requestedFacets].filter((facet) => exclusiveFacets.has(facet));
   const evidenceExclusive = [...evidenceFacets].filter((facet) => exclusiveFacets.has(facet));
   if (requestedExclusive.length && evidenceExclusive.length && ![...requestedFacets].some((facet) => evidenceFacets.has(facet))) {
@@ -284,7 +289,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   if (/\b(?:payment plan|installment|instalment|split payment|payment option|payment schedule|custom plan|custom split|first payment|remaining balance|pay (?:the )?remaining|one amount now)\b/i.test(text)) return "payment_option";
   // Preserve procedural intent when a sentence contains an incidental status
   // fact such as "the lead is available next week".
-  if (/^(?:what\s+(?:is|are)\b.{0,100}\b(?:process|procedure|steps?|workflow)|how\s+(?:do|does|should|can|to)\b|what\s+(?:do|should)\s+(?:i|we|reps?)\s+do\b)/i.test(text)) return "procedure";
+  if (/^(?:what\s+(?:is|are)\b.{0,100}\b(?:process|procedure|steps?|workflow|sequence|cadence|sop)|how\s+(?:do|does|should|can|to)\b|what\s+(?:do|should)\s+(?:i|we|reps?)\s+do\b)/i.test(text)) return "procedure";
   if (/^(?:(?:i|we)\s+)?(?:need|want|am looking for|are looking for)\b.{0,100}\b(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b/i.test(text)) return "artifact_identity";
   if (/^(?:please\s+)?(?:send|provide|share|give|get|request|download)\b.{0,100}\b(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b/i.test(text)) return "artifact_identity";
   if (/\b(?:which|what)\s+(?:exact\s+)?(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b|\bidentify\s+(?:the\s+)?(?:right|correct|current|exact)\b/i.test(text)) return "artifact_identity";
@@ -303,6 +308,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   // decision about who performs the action, not a lookup of a particular
   // invoice's live status.
   if (/\binvoices?\b.{0,140}\b(?:automated|automatic|manually|manual|sent by|issued by)\b|\b(?:automated|automatic|manually|manual)\b.{0,140}\binvoices?\b/i.test(text)) return "owner";
+  if (/\bwho (?:should|can|will)\s+(?:verify|review|check|confirm|approve|handle|own|send|issue|provide)\b/i.test(text)) return "owner";
   // Do not let an incidental state word (signed, received, pending, cleared)
   // erase a policy requirement such as whether the rep must wait or proceed.
   // Price, timing, inclusion, and eligibility checks below still retain their
@@ -346,7 +352,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   if (/\b(?:do|does)\s+(?:i|we|reps?|representatives?|the rep|the representative)\s+(?:send|issue|provide|book|schedule|invoice|contact|notify)\b/i.test(text)) return "owner";
   if (/\bshould\s+(?:i|we|you|they|he|she|it|the|a|an|reps?|clients?|prospects?|applicants?)\b/i.test(text)) return "requirement";
   if (/\b(?:allowed|allow|permitted|permission|may\b|can\b|prohibited|forbidden|not allowed)\b/i.test(text)) return "permission";
-  if (/\b(?:who (?:owns|handles|approves|confirms|sends|issues|provides|books|schedules|invoices|contacts|notifies|is responsible)|who should (?:own|handle|approve|confirm|send|issue|provide|book|schedule|invoice|contact|notify)|owner|responsible for|point of contact)\b/i.test(text)) return "owner";
+  if (/\b(?:who (?:owns|handles|approves|confirms|verifies|reviews|checks|sends|issues|provides|books|schedules|invoices|contacts|notifies|is responsible)|who should (?:own|handle|approve|confirm|verify|review|check|send|issue|provide|book|schedule|invoice|contact|notify)|owner|responsible for|point of contact)\b/i.test(text)) return "owner";
   if (/\b(?:where (?:is|are)|location|address|stored|storage)\b/i.test(text)) return "location";
   if (/\b(?:difference|compare|versus|vs\b|which is better)\b/i.test(text)) return "comparison";
   if (/\b(?:how (?:do|does|should|can|to)|process|procedure|steps?|workflow|handle|what (?:do|should) (?:i|we|reps?) do)\b/i.test(text)) return "procedure";

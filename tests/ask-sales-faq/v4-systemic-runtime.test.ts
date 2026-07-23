@@ -232,9 +232,9 @@ describe("Ask Sales V4 systemic runtime", () => {
       expect.objectContaining({ policyId: operationalPolicy!.id, sourceKind: "authoritative_slack_operational_qna" }),
     ]));
     expect(result.runtimeMetadata).toMatchObject({
-      pipelineVersion: "v4-systemic",
+      pipelineVersion: "v4-hybrid",
       isolation: { productionSelectorChanged: false, databaseWrites: false, historyPersistence: false },
-      executionMode: { planning: "systemic_model", composition: "model", validation: "model_and_deterministic" },
+      executionMode: { planning: "hybrid_model", composition: "model", validation: "model_and_deterministic" },
     });
   });
 
@@ -779,7 +779,7 @@ describe("Ask Sales V4 systemic runtime", () => {
 
     expect(result.lane).toBe("answer");
     expect(result.selectedPolicyIds).toEqual([operationalPolicy!.id]);
-    expect(result.runtimeMetadata.executionMode.planning).toBe("systemic_model");
+    expect(result.runtimeMetadata.executionMode.planning).toBe("hybrid_model");
     expect(result.runtimeMetadata.plan.reasoning_summary).not.toContain("Frozen V4 supplied the non-regression fallback");
     expect(result.runtimeMetadata.validation.removedSentences).toHaveLength(0);
   });
@@ -830,7 +830,7 @@ describe("Ask Sales V4 systemic runtime", () => {
     expect(result.answer).not.toContain("No additional explanatory material is available");
   });
 
-  it("still withholds a rejected sentence that lacks the tightly bounded exact-source fallback", async () => {
+  it("answers the supported atomic need while routing a separate current-artifact need", async () => {
     const result = await runAskSalesFaqV4Systemic(
       `${operationalPolicy!.question_families[0]} Also, where is the exact current controlled link?`,
       [],
@@ -840,9 +840,9 @@ describe("Ask Sales V4 systemic runtime", () => {
       },
     );
 
-    expect(result.lane).toBe("artifact");
-    expect(result.selectedPolicyIds).toEqual([]);
-    expect(result.runtimeMetadata.validation.removedSentences).not.toHaveLength(0);
+    expect(result.lane).toBe("partial");
+    expect(result.selectedPolicyIds).toContain(operationalPolicy!.id);
+    expect(result.routeChannels.length).toBeGreaterThan(0);
   });
 
   it("does not mark a need answered when validation supports wording but assigns it to no need", async () => {
@@ -872,8 +872,8 @@ describe("Ask Sales V4 systemic runtime", () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(result.runtimeMetadata.pipelineVersion).toBe("v4-systemic");
-    expect(result.runtimeMetadata.executionMode.planning).toBe("systemic_fallback");
+    expect(result.runtimeMetadata.pipelineVersion).toBe("v4-hybrid");
+    expect(result.runtimeMetadata.executionMode.planning).toBe("hybrid_fallback");
     expect(result.runtimeMetadata.plan.reasoning_summary).toContain("Frozen V4 supplied the non-regression fallback");
   });
 

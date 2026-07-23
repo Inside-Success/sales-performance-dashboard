@@ -1,12 +1,17 @@
 import {
   getV4SystemicBlockedTopics,
   getV4SystemicCorpus,
-  v4SystemicPolicyText,
 } from "@/lib/ask-sales-faq/v4/systemic/corpus";
 import { matchingV4SystemicAuthorityResolutions } from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
 import {
+  getV4AtomicDecisionLedger,
+  v4AtomicDecisionEvidence,
+  v4AtomicTerms,
+} from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
+import {
   inferV4SystemicPolicyRelations,
   inferV4SystemicRelation,
+  v4SystemicDecisionObjectErrors,
   v4SystemicDecisionObjectScore,
   v4SystemicMaterialQualifierErrors,
   v4SystemicRelationCompatibility,
@@ -20,6 +25,7 @@ import type {
 import type { V3ProductScope, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
 
 const corpus = getV4SystemicCorpus();
+const policyById = new Map(corpus.map((policy) => [policy.id, policy]));
 
 type SourceStratum = "governed_answer" | "operational_answer" | "governed_support" | "operational_support";
 
@@ -140,10 +146,21 @@ function overlap(query: string[], document: string[]) {
   return query.filter((token) => set.has(token)).length / new Set(query).size;
 }
 
-const documents = corpus.map((policy) => {
-  const text = v4SystemicPolicyText(policy);
-  return {
+const documents = getV4AtomicDecisionLedger().flatMap((decision) => {
+  const policy = policyById.get(decision.parentPolicyId);
+  if (!policy) return [];
+  const text = [
+    policy.title,
+    ...policy.question_families,
+    v4AtomicDecisionEvidence(decision),
+    ...policy.product_scopes,
+    ...policy.domains,
+    ...policy.actions,
+    ...policy.entities,
+  ].join(" ");
+  return [{
     policy,
+    decision,
     text,
     tokens: tokens(text),
     familyTokens: policy.question_families.map((family) => tokens(family)),
@@ -153,8 +170,8 @@ const documents = corpus.map((policy) => {
       ...policy.actions,
       ...policy.entities,
     ].flatMap(tokens)),
-    relations: inferV4SystemicPolicyRelations(policy),
-  };
+    relations: decision.relations.length ? decision.relations : inferV4SystemicPolicyRelations(policy),
+  }];
 });
 
 const documentFrequency = new Map<string, number>();
@@ -181,6 +198,24 @@ function bm25(query: string[], document: string[]) {
   return score;
 }
 
+function sparseVector(value: string) {
+  const vector = new Map<string, number>();
+  for (const token of v4AtomicTerms(value)) vector.set(token, (vector.get(token) || 0) + 1);
+  return vector;
+}
+
+function cosineSimilarity(left: Map<string, number>, right: Map<string, number>) {
+  let dot = 0;
+  let leftNorm = 0;
+  let rightNorm = 0;
+  for (const value of left.values()) leftNorm += value * value;
+  for (const value of right.values()) rightNorm += value * value;
+  for (const [key, value] of left) dot += value * (right.get(key) || 0);
+  return leftNorm && rightNorm ? dot / Math.sqrt(leftNorm * rightNorm) : 0;
+}
+
+const documentVectors = new Map(documents.map((document) => [document.decision.id, sparseVector(document.text)]));
+
 function scopeCompatibility(policy: V4SystemicCandidate["policy"], scope: V3ProductScope, turn: V3TurnResolution) {
   if (turn.excludedScopes.some((excluded) => policy.product_scopes.includes(excluded))) return -20;
   if (scope === "unknown" || scope === "comparison") return policy.product_scopes.includes("comparison") ? 1 : 0;
@@ -202,7 +237,7 @@ function structuredNeedTerms(need: V4SystemicNeed) {
 const GENERIC_BLOCKED_MATCH_TERMS = new Set([
   "a", "after", "already", "an", "and", "are", "be", "before", "do", "does", "did", "for", "from", "had", "has", "have", "if", "in", "into", "is", "it", "need", "needs", "of", "on", "one", "or", "the", "to", "with",
   "agreement", "allow", "allowed", "applicant", "answer", "ask", "can", "client", "contract", "could", "create", "current", "determine", "eligible", "explain", "general", "handle", "make", "may", "pay", "permitted",
-  "business", "call", "how", "lead", "media", "must", "payment", "policy", "price", "process", "prospect", "qualify", "qualification", "sign", "up",
+  "business", "call", "cast", "member", "person", "people", "how", "lead", "media", "must", "payment", "policy", "price", "process", "prospect", "qualify", "qualification", "sign", "up",
   "onboard", "post", "question", "rep", "reps", "request", "required", "rule", "sale", "sales", "send", "should", "show", "status", "tell", "that", "this",
   "use", "verify", "what", "when", "where", "which", "who", "will", "would",
 ].flatMap((term) => [term, stem(term)]));
@@ -243,6 +278,7 @@ function queryScore(
   const characterScore = jaccard(trigrams(query), document.trigrams) * 5;
   const structured = structuredNeedTerms(need);
   const structuredScore = overlap(structured, [...document.structured]) * 8;
+  const semanticVectorScore = cosineSimilarity(sparseVector(query), documentVectors.get(document.decision.id) || new Map()) * 12;
   const relationCompatibility = v4SystemicRelationCompatibility(need.relation, document.relations);
   const resolutionControlsPolicy = resolution.controlling.has(document.policy.id);
   const relationScore = resolutionControlsPolicy
@@ -266,8 +302,8 @@ function queryScore(
     ? -18
     : 0;
   const scopeScore = scopeCompatibility(document.policy, need.productScope === "unknown" ? turn.productScope : need.productScope, turn);
-  const total = lexicalScore + familyScore + characterScore + structuredScore + relationScore + decisionObjectScore + resolutionScore + qualifierPenalty + scopeScore + qualityScore(document);
-  return { total, lexicalScore, familyScore, characterScore, structuredScore, relationScore };
+  const total = lexicalScore + familyScore + characterScore + structuredScore + semanticVectorScore + relationScore + decisionObjectScore + resolutionScore + qualifierPenalty + scopeScore + qualityScore(document);
+  return { total, lexicalScore, familyScore, characterScore, structuredScore, semanticVectorScore, relationScore };
 }
 
 function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
@@ -286,13 +322,14 @@ function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
         familyScore: best?.familyScore || 0,
         characterScore: best?.characterScore || 0,
         structuredScore: best?.structuredScore || 0,
+        semanticVectorScore: best?.semanticVectorScore || 0,
         relationScore: best?.relationScore || 0,
         matchedQueries: scored.filter((item) => item.total >= Math.max(3, (best?.total || 0) * 0.75)).map((item) => item.query),
         matchedTerms: [...new Set(expandedTokens(best?.query || "").filter((token) => document.tokens.includes(token)))],
       };
     })
     .filter((candidate) => candidate.score > 1)
-    .sort((left, right) => right.score - left.score || right.document.policy.authority - left.document.policy.authority)
+    .sort((left, right) => right.score - left.score || right.document.policy.authority - left.document.policy.authority || left.document.decision.id.localeCompare(right.document.decision.id))
     .map((candidate) => ({ ...candidate, policy: candidate.document.policy }));
   return balancedBySource(ranked, {
     governed_answer: 70,
@@ -318,6 +355,13 @@ function blockedMatches(plan: V4SystemicQueryPlan) {
     return getV4SystemicBlockedTopics()
       .flatMap((topic) => {
         const families = topic.question_families || [];
+        const topicText = [
+          ...families,
+          ...(topic.domains || []),
+          ...(topic.actions || []),
+          ...(topic.entities || []),
+        ].join(" ");
+        if (v4SystemicDecisionObjectErrors(need.authorityText || need.originalRequestText || need.text, topicText).length) return [];
         const topicRelations = [...new Set(families.map(inferV4SystemicRelation).filter((relation) => relation !== "other"))];
         if (topicRelations.length && need.relation !== "other") {
           const compatibility = v4SystemicRelationCompatibility(need.relation, topicRelations);
@@ -379,6 +423,8 @@ export function retrieveV4SystemicPolicies(
       const id = candidate.document.policy.id;
       const reciprocal = 1 / (50 + index + 1);
       const existing = fused.get(id);
+      const existingNeedScore = existing?.needScores?.[need.id];
+      const candidateIsBestAtom = !existingNeedScore || candidate.score > existingNeedScore.score;
       const next = {
         policy: candidate.document.policy,
         score: Math.max(existing?.score || 0, candidate.score) + (existing?.reciprocal || 0) + reciprocal,
@@ -388,8 +434,26 @@ export function retrieveV4SystemicPolicies(
         familyScore: Math.max(existing?.familyScore || 0, candidate.familyScore),
         characterScore: Math.max(existing?.characterScore || 0, candidate.characterScore),
         structuredScore: Math.max(existing?.structuredScore || 0, candidate.structuredScore),
+        semanticVectorScore: Math.max(existing?.semanticVectorScore || 0, candidate.semanticVectorScore),
         authorityScore: Math.min(2, candidate.document.policy.authority / 5),
         relationScore: Math.max(existing?.relationScore ?? Number.NEGATIVE_INFINITY, candidate.relationScore),
+        matchedDecisionId: candidateIsBestAtom ? candidate.document.decision.id : existing?.matchedDecisionId,
+        matchedDecisionText: candidateIsBestAtom ? v4AtomicDecisionEvidence(candidate.document.decision) : existing?.matchedDecisionText,
+        needScores: {
+          ...(existing?.needScores || {}),
+          ...(candidateIsBestAtom ? { [need.id]: {
+            score: candidate.score,
+            rank: index + 1,
+            lexicalScore: candidate.lexicalScore,
+            familyScore: candidate.familyScore,
+            characterScore: candidate.characterScore,
+            structuredScore: candidate.structuredScore,
+            semanticVectorScore: candidate.semanticVectorScore,
+            relationScore: candidate.relationScore,
+            matchedDecisionId: candidate.document.decision.id,
+            matchedDecisionText: v4AtomicDecisionEvidence(candidate.document.decision),
+          } } : {}),
+        },
         reciprocal: (existing?.reciprocal || 0) + reciprocal,
       };
       fused.set(id, next);
