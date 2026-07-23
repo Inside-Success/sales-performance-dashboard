@@ -137,12 +137,17 @@ describe("V4 systemic generalized retrieval", () => {
     expect(curatedAuthority.evidence_register.every((record) => record.disposition && record.note)).toBe(true);
   });
 
-  it("retrieves every curated direct-authority decision through the same generalized path", () => {
-    const curatedIds = new Set(curatedAuthority.policies.map((policy) => policy.id));
-    const curatedPolicies = getV4SystemicCorpus().filter((policy) => curatedIds.has(policy.id));
+  const curatedIds = new Set(curatedAuthority.policies.map((policy) => policy.id));
+  const curatedPolicies = getV4SystemicCorpus().filter((policy) => curatedIds.has(policy.id));
+  const curatedPolicyChunks = Array.from({ length: 4 }, (_, index) => {
+    const chunkSize = Math.ceil(curatedPolicies.length / 4);
+    return curatedPolicies.slice(index * chunkSize, (index + 1) * chunkSize);
+  }).filter((policies) => policies.length).map((policies) => [policies] as const);
+
+  it.each(curatedPolicyChunks)("retrieves every curated direct-authority decision through the same generalized path (chunk %#)", (policies) => {
     expect(curatedPolicies).toHaveLength(curatedAuthority.policies.length);
 
-    for (const policy of curatedPolicies) {
+    for (const policy of policies) {
       const question = policy.question_families[0];
       const turn = resolveV4Turn(question, []);
       const plan: V4SystemicQueryPlan = {
@@ -168,7 +173,7 @@ describe("V4 systemic generalized retrieval", () => {
       expect(candidate, policy.id).toBeDefined();
       expect(candidate!.rank, policy.id).toBeLessThanOrEqual(20);
     }
-  }, 45_000);
+  }, 30_000);
 
   it("places the Mike and Rich ownership correction after the older contradictory Slack rule", () => {
     const corpus = getV4SystemicCorpus();
