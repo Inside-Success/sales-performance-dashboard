@@ -1,0 +1,31 @@
+{
+  "name": "Ask Sales V4.1 final systemic completeness development checks",
+  "conversations": [
+    {
+      "id": "v4-1-final-completeness",
+      "title": "Relationship, authority, and complete-boundary checks",
+      "prompts": [
+        {
+          "question": "A lead says their website, social media, and company have not launched yet and they are in the very early stages. Should I still conduct Call 1 or tell them now that they are not a fit?",
+          "independent": true
+        },
+        {
+          "question": "Are the podcast questions designed for lead generation? What is the podcast episode structure, and how is it intelligently designed?",
+          "independent": true
+        },
+        {
+          "question": "Should freelancers move to Call 2, or do they need an established business to qualify?",
+          "independent": true
+        },
+        {
+          "question": "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?",
+          "independent": true
+        },
+        {
+          "question": "If my public calendar only allows bookings within two days but an outbound lead is available next week, what is the correct booking process?",
+          "independent": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "name": "Ask Sales V4.1 final systemic-fix development replay",
+  "diagnosticOnly": true,
+  "conversations": [
+    {
+      "id": "v4-1-final-systemic-fixes",
+      "prompts": [
+        {
+          "question": "I have the signed contract, but the client paid by ACH. Do I need to wait for the payment to clear before signing them up for onboarding?",
+          "independent": true,
+          "evaluationStrata": ["request_kind", "requirement", "authority_resolution"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["operational_8822431e281b23ac"], "claim": "Wait until the ACH payment clears before onboarding even when the contract is signed."}]
+        },
+        {
+          "question": "My lead wants the $20K license but wants to make a $3K first payment now and pay the remaining $17K in three weeks. Which contract should they sign?",
+          "independent": true,
+          "evaluationStrata": ["payment_option", "owner_boundary", "validator_recovery"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["owner-unlisted-payment-split-boundary"], "claim": "The unlisted amount/date combination is a custom split; do not offer it, and use a listed plan with its matching contract and official link."}]
+        },
+        {
+          "question": "When Call 1 happens on a Friday, are we supposed to schedule Call 2 for Monday, or should it happen before the Sunday cohort closes?",
+          "independent": true,
+          "evaluationStrata": ["atomic_alternative", "scheduling", "authority_resolution"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["curated_8a9c0c6ea1953a5a"], "claim": "After a Friday Call 1, weekend work is optional and Call 2 may be scheduled Monday when it is not conducted Saturday or Sunday."}]
+        },
+        {
+          "question": "Do reps send invoices for recurring client payments, or is that automated? Should those payments appear in the sales ledger?",
+          "independent": true,
+          "evaluationStrata": ["owner_relation", "requirement", "compound"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["claim_754c01ed0089dc82"], "claim": "Client invoices are automated, recurring payments appear in the ledger, reps keep tracking records and invoice ISTV for commission, and reps do not manually invoice the client."}]
+        },
+        {
+          "question": "If a dial-out lead no-showed Call 1 with another rep, may I rebook the lead on my calendar, or should I contact the original rep?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "blocked_topic", "owner"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["v3src_previously_claimed_twenty_percent_lead", "operational_49a3fe2589bb8c18"], "claim": "Contact or inform the original rep first, learn what happened, and then decide whether to proceed."}]
+        },
+        {
+          "question": "If a business partner who is not in Keap pays on behalf of the cast member, how should I confirm the payment and get the contract signed if it does not populate automatically?",
+          "independent": true,
+          "evaluationStrata": ["negative_owner_match", "finance_route", "sales_tech_route"],
+          "goldNeeds": [
+            {"expectedDisposition": "answer", "policyIds": ["claim_51695e7c59d2608a"], "claim": "A business owner or partner may pay when the payment is clearly tied to the correct client."},
+            {"expectedDisposition": "route", "expectedRouteKey": "finance", "claim": "Finance must confirm and match the third-party payment."},
+            {"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "Use the current contract-automation owner when the contract does not populate."},
+            {"expectedDisposition": "prohibited", "claim": "Do not mention custom or unlisted payment splits because that policy is unrelated."}
+          ]
+        },
+        {
+          "question": "I have a Call 1 for Operation CEO, and the applicant has two different businesses. Should they choose one business to focus on, or can they mention both during the episode?",
+          "independent": true,
+          "evaluationStrata": ["source_review", "episode_content", "answerability"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["operational_b990c2fbc5565b4e"], "claim": "The applicant may mention both businesses and does not have to limit the episode to one."}]
+        },
+        {
+          "question": "Can you confirm whether this client's ACH payment cleared?",
+          "independent": true,
+          "evaluationStrata": ["negative_request_kind", "current_lookup", "finance_route"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "finance", "claim": "Stable policy evidence cannot establish a particular live ACH status."}]
+        },
+        {
+          "question": "Do we have a live episode on the network featuring someone who owns or runs a nonprofit that I can send to a prospect?",
+          "independent": true,
+          "evaluationStrata": ["artifact_identity", "negative_owner_relation", "current_lookup"],
+          "goldNeeds": [{"expectedDisposition": "artifact", "expectedRouteKey": "sales_policy", "claim": "A specific currently watchable episode must be located rather than answered with an unrelated cast-member privacy rule."}]
+        },
+        {
+          "question": "If a prospect is early-stage and budget-sensitive, may I start by recommending Lite, or must I present the higher package first and then move down?",
+          "independent": true,
+          "evaluationStrata": ["negative_timing_relation", "atomic_alternative", "requirement"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["owner-package-presentation-high-to-low"], "claim": "Present the higher applicable package first, then move down when the prospect's needs or budget call for it."}]
+        },
+        {
+          "question": "The payment page will not let the client tap the agree-to-terms button on their phone, and the backup link also fails. What should I do?",
+          "independent": true,
+          "evaluationStrata": ["route_owner", "sales_tech", "technical_failure"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "An unresolved payment-page failure belongs to Sales Tech, not the general policy channel."}]
+        },
+        {
+          "question": "Is there approved training for transferring or managing leads between Keap and HubSpot, or should reps avoid doing that themselves?",
+          "independent": true,
+          "evaluationStrata": ["route_owner", "sales_tech", "cross_crm"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "Current cross-CRM training or lead-transfer help belongs to Sales Tech."}]
+        },
+        {
+          "question": "For self-sourced clients, how do I make sure the application is attributed to me instead of routed to the general pool?",
+          "independent": true,
+          "evaluationStrata": ["route_owner", "sales_tech", "attribution"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "A live system-attribution workflow belongs to Sales Tech."}]
+        },
+        {
+          "question": "What should the rep do if a prospect starts taking photos of the Call 1 presentation slides during the call?",
+          "independent": true,
+          "evaluationStrata": ["negative_recording_route", "procedure", "source_resolution"],
+          "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["claim_d8f7bb6d2647ddd3"], "claim": "Ask the prospect to stop, explain the slides are confidential, and ask them to delete photos already taken."}]
+        }
+      ]
+    }
+  ]
+}

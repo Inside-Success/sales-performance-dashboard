@@ -8,13 +8,36 @@
     "start": "next start",
     "lint": "eslint",
     "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
+    "test:ask-sales-faq:v4": "vitest run tests/ask-sales-faq/v4-*.test.ts",
+    "validate:ask-sales-faq:v4:isolation": "node scripts/validate-ask-sales-v4-isolation.mjs",
+    "validate:ask-sales-faq:v4:fresh-evaluation": "node scripts/validate-ask-sales-v4-fresh-evaluation.mjs",
+    "smoke:ask-sales-faq:v4:direct": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-v4-direct.ts",
     "smoke:ask-sales-quality-review": "vite-node --config vitest.config.ts scripts/smoke-ask-sales-quality-review.ts",
     "benchmark:ask-sales-faq:v3": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v3.ts",
-    "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs"
+    "benchmark:ask-sales-faq:v3:remote": "node scripts/benchmark-ask-sales-faq-v3-remote.mjs",
+    "benchmark:ask-sales-faq:v4:paired": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-faq-v4-paired.ts",
+    "benchmark:ask-sales-faq:v4:systemic-retrieval": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v4-systemic-retrieval.ts",
+    "benchmark:ask-sales-faq:v4:systemic-candidate": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v4-systemic-candidate.ts",
+    "compile:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/compile-ask-sales-v4-systemic-operational-knowledge.ts",
+    "prepare:ask-sales-faq:v4:systemic-enriched-classification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-enriched-classification.ts",
+    "prepare:ask-sales-faq:v4:systemic-authority-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-authority-grounding-reclassification.ts",
+    "prepare:ask-sales-faq:v4:systemic-endorsed-participant-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-endorsed-participant-reclassification.ts",
+    "prepare:ask-sales-faq:v4:systemic-modality-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-modality-grounding-reclassification.ts",
+    "prepare:ask-sales-faq:v4:systemic-permission-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-permission-grounding-reclassification.ts",
+    "prepare:ask-sales-faq:v4:systemic-permission-preference-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-permission-preference-reclassification.ts",
+    "prepare:ask-sales-faq:v4:systemic-navigation-artifact-split": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-navigation-artifact-reclassification.ts",
+    "verify:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/verify-ask-sales-v4-systemic-operational-knowledge.ts",
+    "prepare:ask-sales-faq:v4:systemic-source-verification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-source-verification.ts",
+    "apply:ask-sales-faq:v4:systemic-verification": "vite-node --config vitest.config.ts scripts/apply-ask-sales-v4-systemic-source-verification.ts",
+    "build:ask-sales-faq:v4:systemic-holdout": "vite-node --config vitest.config.ts scripts/build-ask-sales-v4-systemic-holdout-evaluation.ts",
+    "build:ask-sales-faq:v4-1:sealed-holdout": "vite-node --config vitest.config.ts scripts/build-ask-sales-v4-1-sealed-holdout.ts",
+    "judge:ask-sales-faq:v4:systemic-three-way": "vite-node --config vitest.config.ts scripts/judge-ask-sales-v4-systemic-three-way.ts",
+    "export:ask-sales-faq:v4:launch-log": "vite-node --config vitest.config.ts scripts/export-ask-sales-v4-launch-log.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@neondatabase/serverless": "^1.1.0",
+    "ai": "^7.0.34",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
@@ -36,6 +59,6 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.7"
   }
 }

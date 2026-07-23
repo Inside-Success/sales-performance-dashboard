@@ -1,0 +1,173 @@
+{
+  "name": "Ask Sales V4.1 final route-owner and relation development replay",
+  "diagnosticOnly": true,
+  "conversations": [
+    {
+      "id": "finance-contract-compound",
+      "prompts": [{
+        "question": "If a business partner who is not in Keap pays on behalf of the cast member, how should I confirm the payment and get the contract signed if it does not populate automatically?",
+        "independent": true,
+        "evaluationStrata": ["finance_route", "sales_tech_recovery", "compound_isolation"],
+        "goldNeeds": [
+          {"expectedDisposition": "route", "expectedRouteKey": "finance", "claim": "Finance must confirm and match the third-party payment."},
+          {"expectedDisposition": "answer", "policyIds": ["operational_26b9360616d8b7fe", "operational_fd8af741c6707d6d"], "claim": "Use the Contract Automation List and send the Jotform signing link when the contract does not populate."}
+        ]
+      }]
+    },
+    {
+      "id": "payment-page-owner",
+      "prompts": [{
+        "question": "The payment page will not let the client tap the agree-to-terms button on their phone, and the backup link also fails. What should I do?",
+        "independent": true,
+        "evaluationStrata": ["route_owner", "sales_tech", "technical_failure"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "An unresolved payment-page failure belongs to Sales Tech."}]
+      }]
+    },
+    {
+      "id": "cross-crm-owner",
+      "prompts": [{
+        "question": "Is there approved training for transferring or managing leads between Keap and HubSpot, or should reps avoid doing that themselves?",
+        "independent": true,
+        "evaluationStrata": ["route_owner", "sales_tech", "cross_crm"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "Current cross-CRM training or lead-transfer help belongs to Sales Tech."}]
+      }]
+    },
+    {
+      "id": "attribution-owner",
+      "prompts": [{
+        "question": "For self-sourced clients, how do I make sure the application is attributed to me instead of routed to the general pool?",
+        "independent": true,
+        "evaluationStrata": ["route_owner", "sales_tech", "attribution"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "A live system-attribution workflow belongs to Sales Tech."}]
+      }]
+    },
+    {
+      "id": "slide-photo-relation",
+      "prompts": [{
+        "question": "What should the rep do if a prospect starts taking photos of the Call 1 presentation slides during the call?",
+        "independent": true,
+        "evaluationStrata": ["negative_recording_route", "procedure", "source_resolution"],
+        "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["claim_d8f7bb6d2647ddd3"], "claim": "Ask the prospect to stop, explain the slides are confidential, and ask them to delete photos already taken."}]
+      }]
+    },
+    {
+      "id": "recommendation-order-relation",
+      "prompts": [{
+        "question": "If a prospect is early-stage and budget-sensitive, may I start by recommending Lite, or must I present the higher package first and then move down?",
+        "independent": true,
+        "evaluationStrata": ["negative_timing_relation", "atomic_alternative", "requirement"],
+        "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["owner-package-presentation-high-to-low"], "claim": "Present the higher applicable package first, then move down when the prospect's needs or budget call for it."}]
+      }]
+    },
+    {
+      "id": "live-episode-relation",
+      "prompts": [{
+        "question": "Do we have a live episode on the network featuring someone who owns or runs a nonprofit that I can send to a prospect?",
+        "independent": true,
+        "evaluationStrata": ["artifact_identity", "negative_owner_relation", "current_lookup"],
+        "goldNeeds": [{"expectedDisposition": "artifact", "expectedRouteKey": "sales_policy", "claim": "A specific currently watchable episode must be located rather than answered with an unrelated cast-member privacy rule."}]
+      }]
+    },
+    {
+      "id": "facebook-only-completeness",
+      "prompts": [{
+        "question": "Are promotional views included in the $20K package for Facebook only?",
+        "independent": true,
+        "evaluationStrata": ["exclusive_platform", "answer_completeness", "negative_quantity_only"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "The system must not treat the package quantity as proof that delivery is limited to Facebook."}]
+      }]
+    },
+    {
+      "id": "signed-agreement-artifact-owner",
+      "prompts": [{
+        "question": "A client paid by ACH, the contract did not appear, so I sent the agreement separately and the client signed it. Where can I see the signed agreement?",
+        "independent": true,
+        "evaluationStrata": ["artifact_location", "sales_tech", "negative_finance_leakage"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "Locating the signed agreement is a contract-system artifact request for Sales Tech, not a transaction-confirmation request for Finance."}]
+      }]
+    },
+    {
+      "id": "nonprofit-eligibility-relation",
+      "prompts": [{
+        "question": "For Operation CEO, must the applicant own an LLC, or can the owner of a nonprofit qualify?",
+        "independent": true,
+        "evaluationStrata": ["eligibility", "either_or_relation", "authoritative_operational_answer"],
+        "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["operational_2332220cd7a14095"], "claim": "Nonprofit organizations are acceptable for Operation CEO."}]
+      }]
+    },
+    {
+      "id": "ceo-day-payment-claim-scope",
+      "prompts": [{
+        "question": "Is the $5,000 CEO Day upgrade currently available for Next Level CEO? If it is available, what payment and turnaround terms apply?",
+        "independent": true,
+        "evaluationStrata": ["claim_scoped_authority", "payment_terms", "current_status_boundary"],
+        "goldNeeds": [
+          {"expectedDisposition": "answer", "policyIds": ["owner-dj-nlceo-current-offer-overview"], "claim": "The current Next Level CEO offer includes the CEO Day upgrade."},
+          {"expectedDisposition": "answer", "policyIds": ["owner-dj-nlceo-current-offer-overview"], "claim": "The CEO Day upgrade is $5,000 paid in full only."},
+          {"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "Turnaround is not established by the owner-approved offer overview."}
+        ]
+      }]
+    },
+    {
+      "id": "controlled-wording-permission",
+      "prompts": [{
+        "question": "For Next Level CEO, our morning confirmation text says we cannot rebook because the cohort closes Sunday, but DJ has no cohort. Can I change that wording myself, or should I leave it unchanged until the team updates it?",
+        "independent": true,
+        "evaluationStrata": ["controlled_wording", "permission_completeness", "negative_policy_fact_only"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "Knowing that DJ has no cohort does not establish whether a rep may edit the controlled confirmation text."}]
+      }]
+    },
+    {
+      "id": "retired-weekly-training",
+      "prompts": [{
+        "question": "Is the Mastermind only once a year? Are there other in-person training and networking programs throughout the year, or just the one event?",
+        "independent": true,
+        "evaluationStrata": ["global_retirement", "outdated_policy", "training_status"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "The discontinued Weekly Marketing Training card must never be used as a current alternative program."}]
+      }]
+    },
+    {
+      "id": "asset-list-completeness",
+      "prompts": [{
+        "question": "What social promotional assets are included in the $10,000 Next Level CEO package, and what should I avoid promising?",
+        "independent": true,
+        "evaluationStrata": ["list_completeness", "partial_recovery", "promise_boundary"],
+        "goldNeeds": [
+          {"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "A generic statement that some assets exist does not identify the included assets."},
+          {"expectedDisposition": "answer", "policyIds": ["claim_3a43cb9eed71cb37"], "claim": "Do not promise ongoing social-media management; explain only current listed deliverables."}
+        ]
+      }]
+    },
+    {
+      "id": "plural-freelancer-authority",
+      "prompts": [{
+        "question": "Should freelancers move to Call 2, or do they need an established business to qualify?",
+        "independent": true,
+        "evaluationStrata": ["claim_scoped_authority", "plural_phrase", "eligibility"],
+        "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["claim_59be9c344b9359a4"], "claim": "Freelance work alone does not establish entrepreneurship; evaluate a genuine business, offer, ownership, and broader fit."}]
+      }]
+    },
+    {
+      "id": "retired-training-current-materials",
+      "prompts": [{
+        "question": "Do we have any additional material that explains the six-month training program really well?",
+        "independent": true,
+        "evaluationStrata": ["global_retirement", "negative_absence_inference", "replacement_materials"],
+        "goldNeeds": [{"expectedDisposition": "answer", "policyIds": ["owner-six-month-training-discontinued"], "claim": "The former weekly program is discontinued; reps may use Rudy's call videos and current Media Kit assets instead."}]
+      }]
+    },
+    {
+      "id": "main-istv-contract-verification-owner",
+      "prompts": [{
+        "question": "Actually, my previous question was about main ISTV, not Next Level CEO. Does that change your answer?",
+        "independent": true,
+        "context": [
+          {"role": "user", "content": "How do I verify that a Next Level CEO contract has been signed?"},
+          {"role": "assistant", "content": "Use the DJ contract channel to verify that a Next Level CEO contract has been signed."}
+        ],
+        "evaluationStrata": ["route_owner", "sales_tech", "product_scope_correction"],
+        "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "The DJ contract-channel procedure does not transfer to main ISTV; the current main ISTV verification method belongs to Sales Tech."}]
+      }]
+    }
+  ]
+}
