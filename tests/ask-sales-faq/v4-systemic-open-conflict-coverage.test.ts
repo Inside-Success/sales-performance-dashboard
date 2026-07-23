@@ -32,7 +32,7 @@ const canonicalOpenConflictChunks = Array.from({ length: 4 }, (_, index) => {
 describe("V4 systemic open-conflict coverage", () => {
   it.each(canonicalOpenConflictChunks)("recognizes every canonical open-conflict question without broad topic-only matching (chunk %#)", (topics) => {
     for (const topic of topics) {
-      const question = topic.question_families[0];
+      const question = topic.question_families![0];
       const turn = resolveV4SystemicTurn(question, []);
       const firstProductScope = topic.product_scopes?.[0];
       const productScope = firstProductScope === "main_istv" || firstProductScope === "dj_nlceo"
