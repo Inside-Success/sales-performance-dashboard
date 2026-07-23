@@ -44,7 +44,8 @@ const selector = read("src/lib/ask-sales-faq/runtime-selector.ts");
 const productionRoute = read("src/app/api/ask-sales-faq/route.ts");
 const isolatedRoute = read("src/app/api/ask-sales-faq/v4-isolated/route.ts");
 const systemicIsolatedRoute = read("src/app/api/ask-sales-faq/v4-systemic-isolated/route.ts");
-const isolatedRoutes = [isolatedRoute, systemicIsolatedRoute];
+const v5IsolatedRoute = read("src/app/api/ask-sales-faq/v5-isolated/route.ts");
+const isolatedRoutes = [isolatedRoute, systemicIsolatedRoute, v5IsolatedRoute];
 const isolation = read("src/lib/ask-sales-faq/v4/isolation.ts");
 const historyToken = read("src/lib/ask-sales-faq/v4/history-token.ts");
 const runtime = read("src/lib/ask-sales-faq/v4/runtime.ts");
@@ -53,6 +54,7 @@ const proxy = read("src/proxy.ts");
 const appHeader = read("src/components/dashboard/app-header.tsx");
 const labPage = read("src/app/ask-sales-faq/v4-lab/page.tsx");
 const systemicLabPage = read("src/app/ask-sales-faq/v4-systemic-lab/page.tsx");
+const v5LabPage = read("src/app/ask-sales-faq/v5-lab/page.tsx");
 const labUi = read("src/components/ask-sales-faq/ask-sales-v4-lab.tsx");
 const vercelConfig = JSON.parse(read("vercel.json"));
 const deploymentEnabled = vercelConfig?.git?.deploymentEnabled;
@@ -62,6 +64,7 @@ const deploymentEntries = deploymentEnabled && typeof deploymentEnabled === "obj
 const v4Dependencies = [...new Set([
   ...localDependencyClosure("src/app/api/ask-sales-faq/v4-isolated/route.ts"),
   ...localDependencyClosure("src/app/api/ask-sales-faq/v4-systemic-isolated/route.ts"),
+  ...localDependencyClosure("src/app/api/ask-sales-faq/v5-isolated/route.ts"),
 ])];
 const relativeV4Dependencies = v4Dependencies.map((file) => path.relative(root, file));
 const forbiddenPersistenceImport = relativeV4Dependencies.find((file) =>
@@ -71,12 +74,12 @@ const transitiveSources = v4Dependencies.filter((file) => !file.endsWith(".json"
 
 check(
   "production selector remains V2/V3 only",
-  !selector.includes("v4") && selector.includes("runAskSalesFaqV3") && selector.includes('? "v3" : "v2"'),
-  "The production runtime selector must not import or select V4.",
+  !selector.includes("v4") && !selector.includes("v5") && selector.includes("runAskSalesFaqV3") && selector.includes('? "v3" : "v2"'),
+  "The production runtime selector must not import or select V4/V5.",
 );
 check(
   "production API route does not import isolated V4",
-  !productionRoute.includes("v4-isolated") && !productionRoute.includes("runAskSalesFaqV4"),
+  !productionRoute.includes("v4-isolated") && !productionRoute.includes("v5-isolated") && !productionRoute.includes("runAskSalesFaqV4") && !productionRoute.includes("runAskSalesFaqV5"),
   "The normal Ask Sales endpoint must stay on the production selector.",
 );
 check(
@@ -147,7 +150,7 @@ check(
 );
 check(
   "V4 page auth bypass is exact and Preview-only",
-  proxy.includes('const V4_LAB_PATHS = new Set(["/ask-sales-faq/v4-lab", "/ask-sales-faq/v4-systemic-lab"])') &&
+  proxy.includes('const V4_LAB_PATHS = new Set(["/ask-sales-faq/v4-lab", "/ask-sales-faq/v4-systemic-lab", "/ask-sales-faq/v5-lab"])') &&
     proxy.includes("V4_LAB_PATHS.has(pathname)") &&
     !proxy.includes("pathname.startsWith") &&
     proxy.includes('process.env.ASK_SALES_V4_ISOLATED === "true"') &&
@@ -169,7 +172,7 @@ check(
 check(
   "V4 remains non-indexable",
   isolatedRoutes.every((route) => route.includes("noindex, nofollow, noarchive")) &&
-    [labPage, systemicLabPage].every((page) => page.includes("noindex") || page.includes("index: false")),
+    [labPage, systemicLabPage, v5LabPage].every((page) => page.includes("noindex") || page.includes("index: false")),
   "The lab page and API responses must remain outside search indexing.",
 );
 check(

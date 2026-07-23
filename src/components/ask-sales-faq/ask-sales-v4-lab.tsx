@@ -92,11 +92,13 @@ export function AskSalesV4Lab({
   title = "Ask Sales V4 isolated lab",
   eyebrow = "Clean-room evaluation",
   description = "Parallel V4 retrieval and claim validation. It does not use V3 history, write to Neon, change the production selector, or save this chat.",
+  versionLabel = "V4",
 }: {
   apiPath?: string;
   title?: string;
   eyebrow?: string;
   description?: string;
+  versionLabel?: string;
 }) {
   const [token, setToken] = useState("");
   const [input, setInput] = useState("");
@@ -252,7 +254,7 @@ export function AskSalesV4Lab({
         </section>
 
         <form onSubmit={submit} className="flex items-end gap-2 rounded-3xl border border-white/10 bg-white/[0.07] p-3">
-          <Textarea aria-label="Ask Sales V4 test question" value={input} onChange={(event) => setInput(event.target.value)} rows={2} maxLength={6000} placeholder={ready ? "Ask an isolated V4 test question…" : readiness.status === "checking" ? "Checking isolated runtime readiness…" : readiness.status === "ready" ? "Enter the access token above first" : "The isolated runtime is not ready"} disabled={!ready || loading} className="min-h-14 flex-1 resize-none border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500" />
+          <Textarea aria-label={`Ask Sales ${versionLabel} test question`} value={input} onChange={(event) => setInput(event.target.value)} rows={2} maxLength={6000} placeholder={ready ? `Ask an isolated ${versionLabel} test question…` : readiness.status === "checking" ? "Checking isolated runtime readiness…" : readiness.status === "ready" ? "Enter the access token above first" : "The isolated runtime is not ready"} disabled={!ready || loading} className="min-h-14 flex-1 resize-none border-white/10 bg-slate-950/70 text-white placeholder:text-slate-500" />
           <Button type="submit" disabled={!ready || !input.trim() || loading} className="h-14 rounded-2xl bg-rose-600 px-5 hover:bg-rose-500"><Send className="mr-2 size-4" />Send</Button>
         </form>
       </div>

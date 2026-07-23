@@ -353,7 +353,7 @@ function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   });
 }
 
-function blockedMatches(plan: V4SystemicQueryPlan) {
+export function retrieveV4SystemicBlockedMatches(plan: V4SystemicQueryPlan) {
   return plan.needs.flatMap((need) => {
     // A model-generated retrieval expansion may improve document recall, but it
     // must never create a governance conflict that the user's actual need did
@@ -512,7 +512,7 @@ export function retrieveV4SystemicPolicies(
       };
     });
 
-  const perNeedBlockedMatches = blockedMatches(plan);
+  const perNeedBlockedMatches = retrieveV4SystemicBlockedMatches(plan);
   return {
     query: turn.standaloneQuestion,
     turn,

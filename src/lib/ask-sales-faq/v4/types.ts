@@ -102,7 +102,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid";
+  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
@@ -135,6 +135,18 @@ export type V4RuntimeMetadata = {
       score: number;
       matchedTerms: string[];
     }>;
+    diagnostics?: {
+      snapshotVersion: string;
+      needs: Array<{
+        needId: string;
+        documentsConsidered: number;
+        hardCompatible: number;
+        directLaneSelected: number;
+        expansionLaneSelected: number;
+        selectedPolicyIds: string[];
+        rejectionCounts: Record<string, number>;
+      }>;
+    };
   };
   plan: V4AnswerPlan;
   sourcePlan?: {

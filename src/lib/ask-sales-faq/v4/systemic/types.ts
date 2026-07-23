@@ -80,6 +80,18 @@ export type V4SystemicRetrieval = {
   blockedTopicIds: string[];
   blockedMatches: V4SystemicBlockedMatch[];
   stageTimings: Record<string, number>;
+  diagnostics?: {
+    snapshotVersion: string;
+    needs: Array<{
+      needId: string;
+      documentsConsidered: number;
+      hardCompatible: number;
+      directLaneSelected: number;
+      expansionLaneSelected: number;
+      selectedPolicyIds: string[];
+      rejectionCounts: Record<string, number>;
+    }>;
+  };
 };
 
 export type V4SystemicNeedDecision = {
