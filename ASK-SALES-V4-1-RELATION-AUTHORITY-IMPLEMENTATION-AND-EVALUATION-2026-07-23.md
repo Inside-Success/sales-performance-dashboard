@@ -208,6 +208,15 @@ Other important findings:
 | Secret/path scan | no secret-shaped provider key, private key, or workstation path in the frozen candidate |
 | Local development server | not run |
 
+## Publication And Production-Unchanged Proof
+
+- Dashboard PR [#72](https://github.com/Inside-Success/sales-performance-dashboard/pull/72) and FAQ record PR [#47](https://github.com/Inside-Success/faq-chatbot/pull/47) remain open drafts. Neither was merged.
+- The dashboard governed PR workflow passed Ask Sales tests, static safety, V4 isolation, TypeScript, scoped lint, and the production build on the published branch.
+- Automatic Vercel Preview attempts failed before a build began: the deployment showed `ERROR`, zero build duration, and no build logs. This is consistent with the repository's known Preview-provisioning problem. It was not retried or worked around, and no Preview acceptance claim is made.
+- Dashboard `main` remains `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`.
+- The production alias still resolves to deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw`, target `production`, state `READY`.
+- A read-only request to the production root returned the expected authentication redirect. No production alias or project setting changed.
+
 ## Honest Decision
 
 V4.1 confirms that the architecture is headed in the right direction. It improves source authority, condition preservation, relationship typing, and safety in a way that is meaningful rather than question-specific. On the untouched replacement set, it scored 9.3 utility points above V3 and 7.3 above current V4, while reducing judge-flagged critical unsupported answers from two to zero.
