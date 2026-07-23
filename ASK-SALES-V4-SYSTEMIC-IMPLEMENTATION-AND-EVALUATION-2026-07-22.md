@@ -4,6 +4,8 @@ Date: 2026-07-22
 
 Status: **implemented and frozen in isolation; materially better than frozen V4 on two sealed diagnostic runs, but not safe or sufficiently proven for production. V3 remains live.**
 
+Update on 2026-07-23: the isolated V4.1 relation/authority follow-up is implemented and evaluated. It improves the sealed diagnostic result and removes judge-flagged critical unsupported answers, but manual audit still found three material failures and excessive safe routing. V3 remains live. See [ASK-SALES-V4-1-RELATION-AUTHORITY-IMPLEMENTATION-AND-EVALUATION-2026-07-23.md](./ASK-SALES-V4-1-RELATION-AUTHORITY-IMPLEMENTATION-AND-EVALUATION-2026-07-23.md).
+
 ## Release Boundary
 
 - Branch: `agent/ask-sales-v4-systemic-knowledge-2026-07-22`
