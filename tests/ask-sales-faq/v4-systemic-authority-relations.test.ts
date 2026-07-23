@@ -2244,9 +2244,14 @@ describe("V4.1 claim relations and authority controls", () => {
     expect(sourcePlan.needs[0].reason).toMatch(/live owner lookup/i);
   });
 
-  it("recognizes every canonical open-conflict question without broad topic-only matching", () => {
-    for (const topic of getV4SystemicBlockedTopics()) {
-      if (!topic?.question_families?.[0]) continue;
+  const canonicalOpenConflictTopics = getV4SystemicBlockedTopics().filter((topic) => topic?.question_families?.[0]);
+  const canonicalOpenConflictChunks = Array.from({ length: 4 }, (_, index) => {
+    const chunkSize = Math.ceil(canonicalOpenConflictTopics.length / 4);
+    return canonicalOpenConflictTopics.slice(index * chunkSize, (index + 1) * chunkSize);
+  }).filter((topics) => topics.length).map((topics) => [topics] as const);
+
+  it.each(canonicalOpenConflictChunks)("recognizes every canonical open-conflict question without broad topic-only matching (chunk %#)", (topics) => {
+    for (const topic of topics) {
       const question = topic.question_families[0];
       const turn = resolveV4SystemicTurn(question, []);
       const firstProductScope = topic.product_scopes?.[0];
@@ -2267,5 +2272,5 @@ describe("V4.1 claim relations and authority controls", () => {
       });
       expect(retrieval.blockedMatches.map((match) => match.topicId), topic.id).toContain(topic.id);
     }
-  }, 90_000);
+  }, 30_000);
 });
