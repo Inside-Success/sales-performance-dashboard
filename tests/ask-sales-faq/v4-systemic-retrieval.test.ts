@@ -167,7 +167,7 @@ describe("V4 systemic generalized retrieval", () => {
       expect(candidate, policy.id).toBeDefined();
       expect(candidate!.rank, policy.id).toBeLessThanOrEqual(20);
     }
-  });
+  }, 15_000);
 
   it("places the Mike and Rich ownership correction after the older contradictory Slack rule", () => {
     const corpus = getV4SystemicCorpus();

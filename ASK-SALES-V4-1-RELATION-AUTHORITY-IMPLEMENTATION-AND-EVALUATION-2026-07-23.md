@@ -212,6 +212,7 @@ Other important findings:
 
 - Dashboard PR [#72](https://github.com/Inside-Success/sales-performance-dashboard/pull/72) and FAQ record PR [#47](https://github.com/Inside-Success/faq-chatbot/pull/47) remain open drafts. Neither was merged.
 - The dashboard governed PR workflow passed Ask Sales tests, static safety, V4 isolation, TypeScript, scoped lint, and the production build on the published branch.
+- A later docs-only head exposed one CI timing flake: the exhaustive nine-policy curated-retrieval test took 5.013 seconds against Vitest's 5.000-second default. That test alone now has a 15-second ceiling; its assertions and all runtime code are unchanged.
 - Automatic Vercel Preview attempts failed before a build began: the deployment showed `ERROR`, zero build duration, and no build logs. This is consistent with the repository's known Preview-provisioning problem. It was not retried or worked around, and no Preview acceptance claim is made.
 - Dashboard `main` remains `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`.
 - The production alias still resolves to deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw`, target `production`, state `READY`.
