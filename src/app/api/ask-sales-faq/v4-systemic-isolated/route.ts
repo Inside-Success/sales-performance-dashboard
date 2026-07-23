@@ -10,6 +10,7 @@ import {
 import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthorized } from "@/lib/ask-sales-faq/v4/isolation";
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { getV4SystemicKnowledgeVersion, getV4SystemicOperationalPolicyCount } from "@/lib/ask-sales-faq/v4/systemic/corpus";
+import { getV4AtomicDecisionLedgerVersion } from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
 import { runAskSalesFaqV4Systemic } from "@/lib/ask-sales-faq/v4/systemic/runtime";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +24,10 @@ const CONCURRENT_MAX = 2;
 // Deliberately instance-local and persistence-free. It limits accidental test
 // bursts but is not represented as a deployment-wide quota or billing guard.
 const requestWindows = new Map<string, { startedAt: number; count: number; active: number }>();
+
+function hybridKnowledgeVersion() {
+  return `${getV4SystemicKnowledgeVersion()}+${getV4AtomicDecisionLedgerVersion()}`;
+}
 
 function reserveRequest(token: string) {
   const now = Date.now();
@@ -57,7 +62,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", "v4-systemic-isolated");
+  response.headers.set("x-ask-sales-runtime", "v4-hybrid-isolated");
   return response;
 }
 
@@ -70,11 +75,11 @@ export async function GET() {
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: "v4-systemic-isolated",
+    runtime: "v4-hybrid-isolated",
     persistence: false,
     productionSelectorChanged: false,
     operationalPolicyCount: getV4SystemicOperationalPolicyCount(),
-    knowledgeVersion: getV4SystemicKnowledgeVersion(),
+    knowledgeVersion: hybridKnowledgeVersion(),
     accessTokenConfigured,
     historySigningConfigured,
     modelAccessConfirmed,
@@ -104,7 +109,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV4SystemicKnowledgeVersion();
+    const knowledgeVersion = hybridKnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v4_systemic_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {
@@ -161,7 +166,7 @@ export async function POST(request: NextRequest) {
       reservation.release();
     }
   } catch (error) {
-    console.error("Ask Sales V4 systemic isolated request failed", error instanceof Error ? error.message : "unknown error");
-    return json({ ok: false, error: "The isolated systemic runtime failed safely. No production request or database write was attempted." }, 503);
+    console.error("Ask Sales V4.4 hybrid isolated request failed", error instanceof Error ? error.message : "unknown error");
+    return json({ ok: false, error: "The isolated V4.4 hybrid runtime failed safely. No production request or database write was attempted." }, 503);
   }
 }

@@ -31,7 +31,7 @@ type LabAssistantMessage = {
 type LabMessage = LabAssistantMessage | { id: string; role: "user"; content: string };
 
 type LabExecutionMode = {
-  planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "conversation" | "unknown";
+  planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "systemic_champion" | "hybrid_model" | "hybrid_fallback" | "conversation" | "unknown";
   composition: "model" | "exact_evidence" | "not_required" | "unknown";
   validation: "model_and_deterministic" | "deterministic_exact_evidence" | "not_required" | "unknown";
 };
@@ -277,7 +277,7 @@ function ExecutionBadges({ message }: { message: LabAssistantMessage }) {
   return (
     <>
       <Badge variant="outline" className={message.provider ? "border-sky-200 bg-sky-50 text-sky-700" : "border-slate-200 bg-white text-slate-600"}>{modelLabel}</Badge>
-      <ModeBadge label="Plan" value={formatExecutionMode(message.executionMode.planning)} model={["model", "systemic_model"].includes(message.executionMode.planning)} />
+      <ModeBadge label="Plan" value={formatExecutionMode(message.executionMode.planning)} model={["model", "systemic_model", "hybrid_model"].includes(message.executionMode.planning)} />
       <ModeBadge label="Compose" value={formatExecutionMode(message.executionMode.composition)} model={message.executionMode.composition === "model"} />
       <ModeBadge label="Validate" value={formatExecutionMode(message.executionMode.validation)} model={message.executionMode.validation === "model_and_deterministic"} />
     </>
@@ -293,6 +293,8 @@ function formatExecutionMode(mode: string) {
     model: "model",
     systemic_model: "systemic model",
     systemic_fallback: "frozen V4 fallback",
+    hybrid_model: "V4.4 hybrid model",
+    hybrid_fallback: "frozen V4 fallback",
     deterministic_fallback: "safe fallback",
     conversation: "conversation",
     exact_evidence: "exact evidence",

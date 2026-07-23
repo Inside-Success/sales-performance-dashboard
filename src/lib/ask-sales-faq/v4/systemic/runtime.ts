@@ -20,6 +20,12 @@ import {
   v4SystemicResolutionPolicyDisposition,
 } from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
 import {
+  bestV4AtomicDecisionForNeed,
+  getV4AtomicDecisionsForPolicy,
+  getV4AtomicDecisionLedgerVersion,
+  v4AtomicDecisionIsSafeStableSupport,
+} from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
+import {
   inferV4SystemicPolicyRelations,
   inferV4SystemicRelation,
   inferV4SystemicRequestKind,
@@ -55,6 +61,10 @@ import type {
 const routeCatalog = getV4SystemicRouteCatalog();
 const allowedRouteKeys = new Set(Object.keys(routeCatalog));
 const CONVERSATION_KINDS = new Set(["social", "topic_intro", "memory", "rewrite", "clarification"]);
+
+function v4HybridKnowledgeVersion() {
+  return `${getV4SystemicKnowledgeVersion()}+${getV4AtomicDecisionLedgerVersion()}`;
+}
 
 function clean(value: unknown, limit = 4000) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, limit);
@@ -334,6 +344,28 @@ function mergeCompleteAuthorityWorkflowDecision(request: string, needs: V4System
   return completeResolutions.length === 1 ? merged : null;
 }
 
+function forcedRouteKeyForNeed(need: Pick<V4SystemicNeed, "text" | "authorityText" | "originalRequestText" | "requestKind" | "relation" | "domains" | "actions" | "entities">): V4SystemicNeed["forcedRouteKey"] {
+  if (need.requestKind === "knowledge") return null;
+  const action = /\b(?:send|submit|post|request|process|issue|confirm|verify|trace|locate|find|provide|share|contact|notify|tell|inform|refund|reverse|cancel|pause|stop|update|edit|merge|combine|replace|delete|remove|book|rebook|reschedule|schedule|upload|fix|repair|rerun|reprocess|expedite)\w*\b/i;
+  const atomicText = clean([need.text, ...need.domains, ...need.actions, ...need.entities].join(" "), 1200);
+  const text = action.test(atomicText)
+    ? atomicText
+    : clean(need.authorityText || need.originalRequestText, 1600);
+  if (!action.test(text)) return null;
+  const liveNotificationOwner = ["owner", "routing"].includes(need.relation) &&
+    /\b(?:notify|contact|tell|inform)\w*\b.{0,120}\b(?:current\s+)?(?:manager|owner|person|team)\b|\b(?:current\s+)?(?:manager|owner|person|team)\b.{0,120}\b(?:notify|contact|tell|inform)\w*\b/i.test(text) &&
+    /\b(?:availability|appointment|schedule)\b/i.test(text);
+  if (liveNotificationOwner) return "sales_policy";
+  const deliveryScheduleAction = /\b(?:delivery|filming|production|fulfillment)\b.{0,100}\b(?:schedule|timeline|call)\b|\b(?:schedule|timeline|call)\b.{0,100}\b(?:delivery|filming|production|fulfillment)\b/i.test(text) &&
+    /\b(?:update|change|pause|reschedule|schedule)\w*\b/i.test(text);
+  if (deliveryScheduleAction) return "fulfillment";
+  if (/\b(?:ach|wire|payments?|transactions?|invoices?|billing|charges?|refunds?|commissions?|finance|payment plan)\b/i.test(text)) return "finance";
+  if (/\b(?:greenlight|green light|greenlit|approval letter)\b/i.test(text) && /\b(?:specific|this|that|my|lead|prospect|applicant|letter|status|approval)\b/i.test(text)) return "greenlight";
+  if (/\b(?:keap|hubspot|oncehub|zoom|crm|calendar|dashboard|leaderboard|rpc|rpct|daily stats|eod stats|automation|integration|technical|tech|record|report|lead ownership|ownership credit|assignment|booking name|correct name)\b/i.test(text)) return "sales_tech";
+  if (/\b(?:filming|production|fulfillment|delivery|onboarding|episode|recording|trailer|scriptwriter)\b/i.test(text)) return "fulfillment";
+  return null;
+}
+
 export function applyV4SystemicDeterministicQueryGuards(
   plan: V4SystemicQueryPlan,
   turn: V3TurnResolution,
@@ -341,7 +373,7 @@ export function applyV4SystemicDeterministicQueryGuards(
   const request = v4DecisionQuestion(turn);
   const originalMaterialClauses = v4SystemicMaterialQuestionClauses(request);
   const requestFramesAConsequence = /^\s*what\s+happens\s+if\b/i.test(request);
-  const originalRequestsLiveMutation = /\b(?:can|could|would)\s+someone\b|\bplease\b/i.test(request) &&
+  const originalRequestsLiveMutation = /\b(?:can|could|would)\s+(?:someone|you)\b|\bplease\b/i.test(request) &&
     /\b(?:fix|correct|update|change|repair|restore|rerun|re-run|reprocess|re-process|void|cancel)\w*\b/i.test(request);
   const requestAsksPermissionToUseExistingArtifact = /\b(?:may|can|could|should)\s+(?:i|we|reps?)\b.{0,140}\b(?:use|include|share|send)\w*\b/i.test(request) &&
     !/\b(?:where|which|what is|find|locate|provide me|send me|give me|need the|want the|looking for)\b/i.test(request);
@@ -362,16 +394,47 @@ export function applyV4SystemicDeterministicQueryGuards(
     const originalAuthorityClause = originalMaterialClauses
       .map((clause) => ({ clause, coverage: v4SystemicClauseCoverage(clause, [need]) }))
       .sort((left, right) => right.coverage - left.coverage)[0];
-    return {
+    const authorityText = originalAuthorityClause && (originalAuthorityClause.coverage >= 0.55 || originalMaterialClauses.length === 1)
+      ? originalAuthorityClause.clause
+      : guardedText;
+    const originalRelation = inferV4SystemicRelation(authorityText);
+    const originalRequestKind = inferV4SystemicRequestKind(authorityText);
+    const liveOwnershipVerification = originalRelation === "owner" &&
+      /\b(?:ownership credit|lead ownership|already booked|booked (?:by|with) another)\b/i.test([authorityText, guardedText, ...need.entities].join(" ")) &&
+      /\b(?:verify|check|confirm|review)\w*\b/i.test([authorityText, guardedText, ...need.actions].join(" "));
+    const liveNotificationOwnerLookup = originalRelation === "owner" &&
+      /\b(?:current|today|right now)\b/i.test([authorityText, guardedText].join(" ")) &&
+      /\b(?:notify|contact|tell|inform)\w*\b.{0,120}\b(?:manager|owner|person|team)\b|\b(?:manager|owner|person|team)\b.{0,120}\b(?:notify|contact|tell|inform)\w*\b/i.test([authorityText, guardedText, ...need.actions, ...need.entities].join(" "));
+    const guardedRelation = requestAsksPermissionToUseExistingArtifact
+      ? "permission" as const
+      : requestFramesAConsequence && index === 0
+      ? "consequence" as const
+      : originalRelation !== "other"
+        ? originalRelation
+        : inferredRelation === "other" ? need.relation : inferredRelation;
+    const guardedRequestKind = requestAsksPermissionToUseExistingArtifact
+      ? "knowledge" as const
+      : originalRequestsLiveMutation
+      ? "operational_action" as const
+      : liveOwnershipVerification || liveNotificationOwnerLookup
+      ? "current_lookup" as const
+      : originalRequestKind;
+    const guardedNeed = {
       ...need,
+      text: guardedText,
+      authorityText,
+      originalRequestText: request,
+      relation: guardedRelation,
+      requestKind: guardedRequestKind,
+    };
+    return {
+      ...guardedNeed,
       text: guardedText,
       // Bind claim-scoped authority and material prerequisites to the user's
       // best-matching original atomic clause. Model paraphrases may improve
       // retrieval, but they may not delete a qualifier such as "keeps
       // applying" or invent one such as "canceled Call 2".
-      authorityText: originalAuthorityClause?.coverage >= 0.55
-        ? originalAuthorityClause.clause
-        : guardedText,
+      authorityText,
       originalRequestText: request,
       retrievalQueries: [...new Set([
         guardedText,
@@ -386,16 +449,9 @@ export function applyV4SystemicDeterministicQueryGuards(
       // and accidentally relabel the outcome as eligibility/status. Preserve
       // the user's consequence relationship so a following "does that happen
       // or how does it work?" restatement is not invented as a second need.
-      relation: requestAsksPermissionToUseExistingArtifact
-        ? "permission" as const
-        : requestFramesAConsequence && index === 0
-        ? "consequence" as const
-        : inferredRelation === "other" ? need.relation : inferredRelation,
-      requestKind: requestAsksPermissionToUseExistingArtifact
-        ? "knowledge" as const
-        : originalRequestsLiveMutation
-        ? "operational_action" as const
-        : inferV4SystemicRequestKind(guardedText),
+      relation: guardedRelation,
+      requestKind: guardedRequestKind,
+      forcedRouteKey: forcedRouteKeyForNeed(guardedNeed),
       ambiguity: "none" as const,
       clarificationQuestion: "",
     };
@@ -491,6 +547,10 @@ export function applyV4SystemicDeterministicQueryGuards(
     ? {
       ...artifactSplitPlan,
       needs: artifactSplitPlan.needs.map((need) => {
+        const atomicArtifactContext = [need.text, ...need.actions, ...need.entities].filter(Boolean).join(" ");
+        const needIsCurrentArtifactRequest = CURRENT_ARTIFACT_REQUEST_PATTERN.test(atomicArtifactContext) ||
+          CURRENT_LOCATION_REQUEST_PATTERN.test(atomicArtifactContext);
+        if (!needIsCurrentArtifactRequest) return need;
         const inferredArtifactRelation = inferV4SystemicRelation(`${need.text} ${request}`);
         const explicitDiscoveryRequest = /\b(?:where|find|locate|search|how (?:do|can)\s+(?:i|we)\s+access)\b/i.test(request) &&
           !/\b(?:which|right|correct|exact|send|provide|give|download|preview)\b/i.test(request);
@@ -605,9 +665,16 @@ export function applyV4SystemicDeterministicQueryGuards(
     LICENSE_TIER_PATTERN.test(request) &&
     PACKAGE_CHANGE_PATTERN.test(request) &&
     MONETARY_CONTEXT_PATTERN.test(request);
-  if (!needsProductAndStage) return workflowAccessGuardedPlan;
+  const withFinalForcedRoutes = (value: V4SystemicQueryPlan): V4SystemicQueryPlan => ({
+    ...value,
+    needs: value.needs.map((need) => ({
+      ...need,
+      forcedRouteKey: forcedRouteKeyForNeed(need),
+    })),
+  });
+  if (!needsProductAndStage) return withFinalForcedRoutes(workflowAccessGuardedPlan);
   const clarificationQuestion = "Is this for main ISTV or Next Level CEO, and has filming already happened?";
-  return {
+  return withFinalForcedRoutes({
     ...workflowAccessGuardedPlan,
     needs: workflowAccessGuardedPlan.needs.map((need) => {
       const text = [need.text, ...need.retrievalQueries, ...need.actions, ...need.entities].join(" ");
@@ -620,7 +687,7 @@ export function applyV4SystemicDeterministicQueryGuards(
       };
     }),
     reasoningSummary: `${workflowAccessGuardedPlan.reasoningSummary} Product and filming stage are material before applying a cross-product license change amount or process.`,
-  };
+  });
 }
 
 function queryPlannerPrompt(turn: V3TurnResolution) {
@@ -703,7 +770,8 @@ function candidateCards(retrieval: V4SystemicRetrieval, candidates = retrieval.c
     id: candidate.policy.id,
     title: candidate.policy.title,
     question_families: candidate.policy.question_families.slice(0, 6),
-    decision: evidenceDecision(candidate.policy),
+    decision: candidate.matchedDecisionText || evidenceDecision(candidate.policy),
+    atomic_decision_id: candidate.matchedDecisionId || null,
     product_scopes: productApplicability(candidate.policy) === "all_products_unless_stated"
       ? ["all_products_unless_stated"]
       : candidate.policy.product_scopes,
@@ -723,6 +791,8 @@ function candidateCards(retrieval: V4SystemicRetrieval, candidates = retrieval.c
     source_effective_at: candidate.policy.effective_at,
     last_reviewed: candidate.policy.last_reviewed,
     matched_queries: candidate.matchedQueries,
+    semantic_vector_score: candidate.semanticVectorScore || 0,
+    per_need_scores: candidate.needScores || {},
   }));
 }
 
@@ -809,6 +879,7 @@ function roundRobinCandidates(
 function sourcePlanCandidateSelection(retrieval: V4SystemicRetrieval, plan: V4SystemicQueryPlan) {
   const answerLists = plan.needs.map((need) => retrieval.candidates
     .filter((candidate) => policyEligibleForNeed(candidate.policy, need, retrieval.turn))
+    .sort((left, right) => (left.needScores?.[need.id]?.rank || 9999) - (right.needScores?.[need.id]?.rank || 9999) || (right.needScores?.[need.id]?.score || 0) - (left.needScores?.[need.id]?.score || 0))
     .slice(0, 10));
   const answerCandidates = roundRobinCandidates(answerLists, 30);
   const selectedIds = new Set(answerCandidates.map((candidate) => candidate.policy.id));
@@ -817,6 +888,7 @@ function sourcePlanCandidateSelection(retrieval: V4SystemicRetrieval, plan: V4Sy
       !policyEligibleForNeed(candidate.policy, need, retrieval.turn) &&
       policyRelevantForConflictReview(candidate.policy, need, retrieval.turn),
     )
+    .sort((left, right) => (left.needScores?.[need.id]?.rank || 9999) - (right.needScores?.[need.id]?.rank || 9999) || (right.needScores?.[need.id]?.score || 0) - (left.needScores?.[need.id]?.score || 0))
     .slice(0, 8));
   const conflictCandidates = roundRobinCandidates(conflictLists, 12, selectedIds);
   return [...answerCandidates, ...conflictCandidates]
@@ -957,6 +1029,33 @@ function policyIsMadelineAuthorityOnly(policy: V4SystemicCandidate["policy"]) {
   return approvers.length > 0 && approvers.every((name) => name === "madeline" || name.startsWith("madeline cary"));
 }
 
+function policySourceLineageKeys(policy: V4SystemicCandidate["policy"]) {
+  return new Set(policy.source.ids.map((sourceId) => {
+    const timestamp = sourceId.match(/(\d{9,}(?:\.\d+)?)$/)?.[1];
+    return timestamp ? `slack-thread:${timestamp}` : normalizedSentence(sourceId);
+  }).filter(Boolean));
+}
+
+function policyDecisionStance(policy: V4SystemicCandidate["policy"]) {
+  const mainDecision = evidenceDecision(policy).split(/\b(?:Conditions?|Boundaries):/i)[0];
+  if (/\b(?:may not|must not|cannot|can't|do not|don't|does not|not allowed|not permitted|prohibited|forbidden|never|no sharing)\b/i.test(mainDecision)) return "negative";
+  if (/\b(?:may|must|can|allowed|permitted|required|should)\b/i.test(mainDecision)) return "positive";
+  return "unknown";
+}
+
+function policiesShareSourceLineage(policyIds: string[], retrieval: V4SystemicRetrieval) {
+  const policies = policyIds.map((id) => retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy)
+    .filter((policy): policy is V4SystemicCandidate["policy"] => Boolean(policy));
+  if (policies.length < 2 || policies.length !== policyIds.length) return false;
+  const shared = policySourceLineageKeys(policies[0]);
+  for (const policy of policies.slice(1)) {
+    const keys = policySourceLineageKeys(policy);
+    for (const key of [...shared]) if (!keys.has(key)) shared.delete(key);
+  }
+  const stances = new Set(policies.map(policyDecisionStance));
+  return shared.size > 0 && stances.size === 1 && !stances.has("unknown");
+}
+
 function routingTextForNeed(need: V4SystemicNeed) {
   const atomic = [need.text, ...need.domains, ...need.actions, ...need.entities].join(" ");
   const plannerNeedIsVague = answerContentTokens(need.text).length <= 3 ||
@@ -992,28 +1091,36 @@ function needRequiresLiveOperationalOwnerAction(need: V4SystemicNeed) {
 
 function deterministicDirectPolicyIdsForNeed(
   need: V4SystemicNeed,
-  plan: V4SystemicQueryPlan,
+  _plan: V4SystemicQueryPlan,
   retrieval: V4SystemicRetrieval,
   cardIds: Set<string>,
 ) {
-  // Fused retrieval metrics can reflect another need in a compound request,
-  // so deterministic promotion is intentionally limited to one atomic need.
-  // Compound requests remain under source-adjudicator control.
-  if (plan.needs.length !== 1) return [];
   const eligible = retrieval.candidates
     .filter((candidate) => cardIds.has(candidate.policy.id))
     .filter((candidate) => policyEligibleForNeed(candidate.policy, need, retrieval.turn))
-    .filter((candidate) => candidate.relationScore >= 8)
-    .sort((left, right) => right.score - left.score || left.rank - right.rank);
+    .filter((candidate) => (candidate.needScores?.[need.id]?.relationScore ?? candidate.relationScore) >= 8)
+    .sort((left, right) => (left.needScores?.[need.id]?.rank || 9999) - (right.needScores?.[need.id]?.rank || 9999) || (right.needScores?.[need.id]?.score || 0) - (left.needScores?.[need.id]?.score || 0));
+  const explicitSuperseding = eligible.filter((candidate) => {
+    const atom = bestV4AtomicDecisionForNeed(candidate.policy, need);
+    if (!atom?.explicitlySuperseding || (candidate.needScores?.[need.id]?.rank || candidate.rank) > 10) return false;
+    const evidence = candidate.needScores?.[need.id]?.matchedDecisionText || candidate.matchedDecisionText || atom.searchText;
+    return v4SystemicDecisionObjectScore(need.authorityText || need.text, evidence) >= 0;
+  });
+  if (explicitSuperseding.length) return [explicitSuperseding[0].policy.id];
   const strongest = eligible[0];
   if (!strongest) return [];
-  const strongestObjectText = [strongest.policy.title, ...strongest.policy.question_families, strongest.policy.decision, ...strongest.policy.actions, ...strongest.policy.entities].join(" ");
+  const strongestNeedScore = strongest.needScores?.[need.id];
+  const strongestObjectText = strongestNeedScore?.matchedDecisionText || strongest.matchedDecisionText || [strongest.policy.title, ...strongest.policy.question_families, strongest.policy.decision, ...strongest.policy.actions, ...strongest.policy.entities].join(" ");
   const objectScore = v4SystemicDecisionObjectScore(need.authorityText || need.text, strongestObjectText);
-  const enoughQuestionFamilyCoverage = strongest.familyScore >= 3.25;
-  const enoughDistinctiveOverlap = strongest.matchedTerms.length >= 4 || strongest.familyScore >= 5;
-  const nearTop = strongest.rank <= 3;
-  const runnerUp = eligible.find((candidate) => candidate.policy.decision_key !== strongest.policy.decision_key);
-  const decisivelyAhead = !runnerUp || strongest.score - runnerUp.score >= 5;
+  const enoughQuestionFamilyCoverage = (strongestNeedScore?.familyScore ?? strongest.familyScore) >= 3.25 || (strongestNeedScore?.semanticVectorScore || 0) >= 3.5;
+  const enoughDistinctiveOverlap = strongest.matchedTerms.length >= 4 || (strongestNeedScore?.familyScore ?? strongest.familyScore) >= 5 || (strongestNeedScore?.semanticVectorScore || 0) >= 5;
+  const nearTop = (strongestNeedScore?.rank || strongest.rank) <= 5;
+  const strongestLineage = policySourceLineageKeys(strongest.policy);
+  const runnerUp = eligible.find((candidate) =>
+    candidate.policy.decision_key !== strongest.policy.decision_key &&
+    ![...policySourceLineageKeys(candidate.policy)].some((key) => strongestLineage.has(key)),
+  );
+  const decisivelyAhead = !runnerUp || (strongestNeedScore?.score || strongest.score) - (runnerUp.needScores?.[need.id]?.score || runnerUp.score) >= 4;
   if (!enoughQuestionFamilyCoverage || !enoughDistinctiveOverlap || !nearTop || !decisivelyAhead) return [];
   if (objectScore < 0) return [];
   return [strongest.policy.id];
@@ -1035,6 +1142,14 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
     .filter((id): id is string => Boolean(id && cardIds.has(id)));
 
   const needs = plan.needs.map((need): V4SystemicSourceNeedPlan => {
+    if (need.forcedRouteKey) return {
+      needId: need.id,
+      lane: "route",
+      directPolicyIds: [],
+      preferredPolicyIds: [],
+      excludedConflictPolicyIds: [],
+      reason: `This request asks the ${need.forcedRouteKey.replace(/_/g, " ")} action owner to perform or verify live work; the knowledge layer must not pretend to complete it.`,
+    };
     if (v4SystemicNeedRequiresCurrentArtifact(need)) return {
       needId: need.id,
       lane: "route",
@@ -1110,6 +1225,10 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
     const deterministicDirectPolicyIds = controllingPolicyIds.length || ownerApprovedPolicyIds.length
       ? []
       : deterministicDirectPolicyIdsForNeed(need, plan, retrieval, cardIds);
+    const explicitSupersedingPolicyIds = deterministicDirectPolicyIds.filter((id) => {
+      const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+      return Boolean(policy && bestV4AtomicDecisionForNeed(policy, need)?.explicitlySuperseding);
+    });
     const resolutionExcludedIds = new Set(matchingResolutions.flatMap((resolution) => resolution.excluded_policy_ids));
     const directPolicyIds = [...new Set([
       ...resolveRefs(item.direct_refs).filter((id) => eligiblePolicyIds.has(id) && !resolutionExcludedIds.has(id)),
@@ -1160,6 +1279,28 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
         for (const id of conflictIds) {
           if (!controllingPolicyIds.includes(id)) excluded.add(id);
         }
+        continue;
+      }
+      // The governed and operational compilers may emit separate cards for
+      // the same Slack thread. They are two representations of one source,
+      // not two independent policy positions.
+      if (policiesShareSourceLineage(conflictIds, retrieval)) {
+        const duplicateWinner = directPolicyIds
+          .filter((id) => conflictIds.includes(id))
+          .sort((left, right) => {
+            const leftRank = retrieval.candidates.find((candidate) => candidate.policy.id === left)?.needScores?.[need.id]?.rank || 9999;
+            const rightRank = retrieval.candidates.find((candidate) => candidate.policy.id === right)?.needScores?.[need.id]?.rank || 9999;
+            return leftRank - rightRank;
+          })[0];
+        if (duplicateWinner) preferred.add(duplicateWinner);
+        continue;
+      }
+      // Recency by itself never wins. A source that explicitly says the old
+      // value was replaced by the new value is different: the supersession is
+      // part of the authoritative decision itself.
+      if (explicitSupersedingPolicyIds.length === 1) {
+        preferred.add(explicitSupersedingPolicyIds[0]);
+        for (const id of conflictIds) if (id !== explicitSupersedingPolicyIds[0]) excluded.add(id);
         continue;
       }
       for (const id of conflictIds) preferred.delete(id);
@@ -1237,10 +1378,20 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
       for (const id of authoritativeWinnerIds) if (!resolutionExcludedIds.has(id)) preferred.add(id);
       for (const id of conflictIds) if (!winner.ids.includes(id)) excluded.add(id);
     }
+    const boundedDirectSupportIds = directPolicyIds.filter((id) => {
+      const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+      const atoms = policy ? getV4AtomicDecisionsForPolicy(policy.id) : [];
+      return Boolean(policy?.answerability === "route_or_support" && atoms.some((atom) =>
+        v4AtomicDecisionIsSafeStableSupport(atom, policy) ||
+        (policy.systemic.ownerReviewRequired && /\bmay be eligible as long as\b/i.test(atom.statement) && /\bdoes not guarantee (?:final )?approval\b/i.test(policy.decision)),
+      ));
+    });
+    const boundedDirectSupportApplied = !hasUnresolvedConflict && preferred.size === 0 && boundedDirectSupportIds.length === 1;
+    if (boundedDirectSupportApplied) preferred.add(boundedDirectSupportIds[0]);
     const modelDisposition = clean(item.disposition, 20) === "route" ? "route" : "answer";
     const candidateRank = new Map(retrieval.candidates.map((candidate) => [candidate.policy.id, candidate.rank]));
     const preferredPolicyIds = hasUnresolvedConflict || (
-      modelDisposition === "route" && !controllingPolicyIds.length && !richAuthorityApplied && !ownerApprovedPolicyIds.length && !deterministicDirectPolicyIds.length
+      modelDisposition === "route" && !boundedDirectSupportApplied && !controllingPolicyIds.length && !richAuthorityApplied && !ownerApprovedPolicyIds.length && !deterministicDirectPolicyIds.length
     )
       ? []
       : [...preferred]
@@ -1263,6 +1414,8 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
             ? `Applied the directly matching owner-approved policy ${ownerApprovedPolicyIds[0]}.`
             : deterministicDirectPolicyIds.length
               ? `Applied the uniquely dominant exact-family and exact-relationship evidence ${deterministicDirectPolicyIds.join(", ")}.`
+            : boundedDirectSupportApplied
+              ? `Preserved the exact stable boundary from ${boundedDirectSupportIds[0]} while leaving its required owner action explicit.`
         : clean(item.reason, 700) || "Applied exact relationship, scope, and claim-scoped authority controls.",
     };
   });
@@ -1522,7 +1675,33 @@ function policyEligibleForNeed(
     ["procedure", "routing", "artifact_location"].includes(need.relation) &&
     /\b(?:check|verify|use|route|look|find|locate|ask|contact|go to|post)\b/i.test(policy.decision) &&
     v4SystemicPolicyBoundaryErrors(policy, turn).length === 0;
-  return (policyEligibleForAnswer(policy, turn) || explicitlyControlling || stableCurrentNavigationProcedure) &&
+  const atomicDecision = bestV4AtomicDecisionForNeed(policy, need);
+  const safeStableAtomicSupport = need.requestKind === "knowledge" &&
+    Boolean(atomicDecision && v4AtomicDecisionIsSafeStableSupport(atomicDecision, policy)) &&
+    exactResolutionBoundaryErrors.length === 0;
+  // Rich may deliberately give a qualified rule (for example "probably
+  // needs approval"). Preserve that qualification instead of discarding the
+  // whole authoritative answer, while still refusing amounts, dates, live
+  // status, owner-review sources, and any invented exact process.
+  const richQualifiedStableSupport = need.requestKind === "knowledge" &&
+    policy.answerability === "route_or_support" &&
+    policy.systemic.temporalRisk === "stable" &&
+    policy.systemic.ownerReviewRequired !== true &&
+    policy.source.approved_by.some((name) => /^(?:rich|rich allen)\b/i.test(name.trim())) &&
+    Boolean(atomicDecision && /\b(?:probably|likely|may need)\b/i.test(atomicDecision.statement)) &&
+    !/[$£€%]|\b\d+(?:\.\d+)?\s*(?:minutes?|hours?|days?|weeks?|months?|years?)\b/i.test(atomicDecision?.statement || "") &&
+    exactResolutionBoundaryErrors.length === 0;
+  const boundedConditionalReviewSupport = need.requestKind === "knowledge" &&
+    policy.answerability === "route_or_support" &&
+    policy.systemic.sourceClass === "authoritative_operational_qna" &&
+    policy.systemic.temporalRisk === "stable" &&
+    policy.systemic.ownerReviewRequired === true &&
+    policy.source.ids.length > 0 && policy.source.approved_by.length > 0 &&
+    Boolean(atomicDecision && /\bmay be eligible as long as\b/i.test(atomicDecision.statement)) &&
+    /\bdoes not guarantee (?:final )?approval\b/i.test(policy.decision) &&
+    !/[$£€%]|\b\d+(?:\.\d+)?\s*(?:minutes?|hours?|days?|weeks?|months?|years?)\b/i.test(atomicDecision?.statement || "") &&
+    exactResolutionBoundaryErrors.length === 0;
+  return (policyEligibleForAnswer(policy, turn) || explicitlyControlling || stableCurrentNavigationProcedure || safeStableAtomicSupport || richQualifiedStableSupport || boundedConditionalReviewSupport) &&
     disposition !== "excluded" &&
     v4SystemicPolicyRelationErrorsForNeed(policy, need).length === 0;
 }
@@ -1829,7 +2008,13 @@ export function v4SystemicExactDirectFallbackSentence(
     if (!directlyBoundedOwnerOverride && !explicitlyControlling) return null;
   } else if (!directIds.includes(policyId) && !explicitlyControlling) return null;
   if (!policyEligibleForNeed(policy, need, retrieval.turn)) return null;
-  const decisionWithoutMetadata = evidenceDecision(policy).split(/\b(?:Conditions?|Boundaries):/i)[0].trim();
+  const fullDecisionWithoutMetadata = evidenceDecision(policy).split(/\b(?:Conditions?|Boundaries):/i)[0].trim();
+  const atomicDecision = bestV4AtomicDecisionForNeed(policy, need);
+  const decisionWithoutMetadata = (
+    (directlyBoundedOwnerOverride || explicitlyControlling) && fullDecisionWithoutMetadata.length <= 360
+      ? fullDecisionWithoutMetadata
+      : atomicDecision?.statement || fullDecisionWithoutMetadata
+  ).trim();
   const decisionSentences = decisionWithoutMetadata.split(/(?<=[.!?])\s+/).map((candidate) => candidate.trim()).filter(Boolean);
   const firstSentence = decisionSentences[0]?.length >= 20
     ? decisionSentences[0]
@@ -1890,12 +2075,30 @@ export function v4SystemicExactControllingEvidenceSupports(
   return Boolean(normalized && (decision === normalized || decision.includes(normalized)));
 }
 
+function v4SystemicUnconditionalGeneralProhibitionSupports(
+  need: V4SystemicNeed,
+  sentence: string,
+  policy: V4SystemicCandidate["policy"],
+) {
+  if (need.relation !== "permission" || policy.answerability !== "answer_evidence") return false;
+  if (policy.systemic.temporalRisk !== "stable" || policy.systemic.ownerReviewRequired) return false;
+  if (!policy.product_scopes.includes("product_agnostic") && policy.systemic.scopeRisk !== "general") return false;
+  const decision = evidenceDecision(policy);
+  const mainDecision = decision.split(/\b(?:Conditions?|Boundaries):/i)[0];
+  if (/\bconditions?:\b/i.test(decision) && !/\bconditions?:\s*no (?:additional )?conditions? stated\b/i.test(decision)) return false;
+  const prohibition = /\b(?:do not|don't|does not|may not|must not|cannot|can't|not allowed|not permitted|prohibited|forbidden|never)\b/i;
+  if (!prohibition.test(mainDecision) || !prohibition.test(sentence)) return false;
+  if (v4SystemicDecisionObjectErrors(need.authorityText || need.text, [policy.title, ...policy.question_families, decision].join(" ")).length) return false;
+  return v4SystemicPolicyRelationErrorsForNeed(policy, need).length === 0;
+}
+
 export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4SystemicNeedDecision, retrieval: V4SystemicRetrieval) {
   // Ownership is determined from the user's requested operation. Keep the
   // original request available because an atomic model paraphrase can omit the
   // mutation verb or named object that identifies Finance, Greenlight, Tech,
   // or Fulfillment.
   const text = routingTextForNeed(need);
+  if (need.forcedRouteKey) return need.forcedRouteKey;
   const financeOwnerAction = needRequiresFinanceOwnerAction(need);
   const greenlightSupportingEvidence = /\b(?:documents?|links?|evidence|proof|supporting material)\b.{0,140}\b(?:greenlight|green light)(?:\s+approval)?\b|\b(?:greenlight|green light)(?:\s+approval)?\b.{0,140}\b(?:documents?|links?|evidence|proof|supporting material)\b/i.test(text) &&
     /\b(?:lead|prospect|call\s*1|call one|provided|supplied|sent)\b/i.test(text);
@@ -2079,11 +2282,11 @@ async function frozenV4Fallback(
     ...result,
     runtimeMetadata: {
       ...result.runtimeMetadata,
-      pipelineVersion: "v4-systemic",
-      knowledgeVersion: getV4SystemicKnowledgeVersion(),
+      pipelineVersion: "v4-hybrid",
+      knowledgeVersion: v4HybridKnowledgeVersion(),
       authorityResolutionVersion: getV4SystemicAuthorityVersion(),
       providerAttempts: [...priorAttempts, ...result.runtimeMetadata.providerAttempts],
-      executionMode: { ...result.runtimeMetadata.executionMode, planning: "systemic_fallback" },
+      executionMode: { ...result.runtimeMetadata.executionMode, planning: "hybrid_fallback" },
       stageTimings: {
         ...result.runtimeMetadata.stageTimings,
         systemicFallbackTotalMs: Date.now() - startedAt,
@@ -2122,7 +2325,7 @@ async function runAskSalesFaqV4SystemicCandidate(
   }
 
   let queryPlan: V4SystemicQueryPlan;
-  let planningMode: "systemic_model" | "systemic_fallback" = "systemic_model";
+  let planningMode: "hybrid_model" | "hybrid_fallback" = "hybrid_model";
   let providerName: "deepseek" | "anthropic" | null = null;
   let model: string | null = null;
   const queryPlanningStarted = Date.now();
@@ -2142,7 +2345,7 @@ async function runAskSalesFaqV4SystemicCandidate(
   } catch (error) {
     attempts.push(...providerAttemptsFromV4Error(error));
     queryPlan = applyV4SystemicDeterministicQueryGuards(fallbackQueryPlan(turn), turn);
-    planningMode = "systemic_fallback";
+    planningMode = "hybrid_fallback";
   }
   stageTimings.queryPlanningMs = Date.now() - queryPlanningStarted;
 
@@ -2374,6 +2577,21 @@ async function runAskSalesFaqV4SystemicCandidate(
         reason: "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
       };
     }
+    const unconditionalGeneralProhibition = sentence.evidenceRefs
+      .filter((id) => sourceDecision.preferredPolicyIds.includes(id))
+      .map((id) => adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy)
+      .find((policy): policy is V4SystemicCandidate["policy"] => Boolean(
+        policy && v4SystemicUnconditionalGeneralProhibitionSupports(need, sentence.text, policy),
+      ));
+    if (unconditionalGeneralProhibition) {
+      return {
+        ...check,
+        status: "supported",
+        evidenceRefs: [unconditionalGeneralProhibition.id],
+        answeredNeedIds: [sentence.needId],
+        reason: "The preferred source states an unconditional general prohibition for this exact decision object; mentioning the user's call stage does not narrow or invent the rule.",
+      };
+    }
     const controllingPolicy = sentence.evidenceRefs
       .filter((id) => sourceDecision.preferredPolicyIds.includes(id))
       .map((id) => adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy)
@@ -2450,6 +2668,22 @@ async function runAskSalesFaqV4SystemicCandidate(
     routeChannels.push(route.channel);
     unresolvedInstructions.push(naturalRouteInstruction(route.channel, decision.lane, answeredText.length > 0));
   }
+  const supportedRefsByNeed = new Map(queryPlan.needs.map((need) => [
+    need.id,
+    new Set(supportedSentences.filter((sentence) => sentence.needId === need.id).flatMap((sentence) => sentence.evidenceRefs)),
+  ]));
+  for (const need of queryPlan.needs.filter((item) => answeredNeedIds.has(item.id))) {
+    const selectedSupportPolicies = [...(supportedRefsByNeed.get(need.id) || [])]
+      .map((id) => adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy)
+      .filter((policy): policy is V4SystemicCandidate["policy"] => Boolean(policy?.answerability === "route_or_support"));
+    if (!selectedSupportPolicies.length) continue;
+    const decision = draft.needs.find((item) => item.needId === need.id)!;
+    const requiresEligibilityApproval = need.relation === "eligibility" && selectedSupportPolicies.some((policy) => policy.systemic.ownerReviewRequired);
+    const key = requiresEligibilityApproval ? "greenlight" : v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
+    const route = routeCatalog[key] || routeCatalog.sales_policy;
+    routeChannels.push(route.channel);
+    unresolvedInstructions.push(naturalRouteInstruction(route.channel, "route", true));
+  }
   const uniqueRouteChannels = [...new Set(routeChannels)];
   const answer = naturalizeV4SystemicRouteLanguage(
     [...answeredText, ...new Set(unresolvedInstructions)].filter(Boolean).join(" ") ||
@@ -2487,7 +2721,7 @@ async function runAskSalesFaqV4SystemicCandidate(
     structuredAnswer: structuredAnswer(clean(answer, 5000), lane, confidence, uniqueRouteChannels, answeredText),
     lane,
     needsRoute,
-    routeReason: needsRoute ? `Verify only the unresolved need${uniqueRouteChannels.length > 1 ? "s" : ""} in ${uniqueRouteChannels.join(" or ")}.` : null,
+    routeReason: needsRoute ? `Use ${uniqueRouteChannels.join(" or ")} only for the remaining owner action or confirmation.` : null,
     routeChannels: uniqueRouteChannels,
     provider: providerName,
     model,
@@ -2504,9 +2738,9 @@ async function runAskSalesFaqV4SystemicCandidate(
     selectedPolicyIds,
     redactions,
     runtimeMetadata: {
-      pipelineVersion: "v4-systemic",
+      pipelineVersion: "v4-hybrid",
       isolation: { productionSelectorChanged: false, databaseWrites: false, historyPersistence: false },
-      knowledgeVersion: getV4SystemicKnowledgeVersion(),
+      knowledgeVersion: v4HybridKnowledgeVersion(),
       authorityResolutionVersion: getV4SystemicAuthorityVersion(),
       turn,
       retrieval: {
@@ -2523,6 +2757,8 @@ async function runAskSalesFaqV4SystemicCandidate(
           sourceKind: candidate.policy.systemic.sourceClass,
           temporalRisk: candidate.policy.systemic.temporalRisk,
           relationScore: candidate.relationScore,
+          semanticVectorScore: candidate.semanticVectorScore,
+          matchedDecisionId: candidate.matchedDecisionId,
         })),
         blockedTopicIds: retrieval.blockedTopicIds,
         blockedMatches: retrieval.blockedMatches,
@@ -2901,8 +3137,8 @@ function withChampionComparison(
     latencyMs: Date.now() - startedAt,
     runtimeMetadata: {
       ...selectedMetadata,
-      pipelineVersion: "v4-systemic",
-      knowledgeVersion: getV4SystemicKnowledgeVersion(),
+      pipelineVersion: "v4-hybrid",
+      knowledgeVersion: v4HybridKnowledgeVersion(),
       authorityResolutionVersion: getV4SystemicAuthorityVersion(),
       plan: {
         ...selectedMetadata.plan,

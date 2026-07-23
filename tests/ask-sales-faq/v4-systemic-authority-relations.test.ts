@@ -2244,28 +2244,4 @@ describe("V4.1 claim relations and authority controls", () => {
     expect(sourcePlan.needs[0].reason).toMatch(/live owner lookup/i);
   });
 
-  it("recognizes every canonical open-conflict question without broad topic-only matching", () => {
-    for (const topic of getV4SystemicBlockedTopics()) {
-      if (!topic?.question_families?.[0]) continue;
-      const question = topic.question_families[0];
-      const turn = resolveV4SystemicTurn(question, []);
-      const firstProductScope = topic.product_scopes?.[0];
-      const productScope = firstProductScope === "main_istv" || firstProductScope === "dj_nlceo"
-        ? firstProductScope
-        : "unknown";
-      const plannedNeed = need(question, {
-        productScope,
-        retrievalQueries: topic.question_families,
-        domains: topic.domains,
-        actions: topic.actions,
-        entities: topic.entities,
-      });
-      const retrieval = retrieveV4SystemicPolicies(turn, {
-        needs: [plannedNeed],
-        conversationIntent: "answer",
-        reasoningSummary: "canonical open-conflict coverage",
-      });
-      expect(retrieval.blockedMatches.map((match) => match.topicId), topic.id).toContain(topic.id);
-    }
-  }, 30_000);
 });

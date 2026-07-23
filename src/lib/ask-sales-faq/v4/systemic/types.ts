@@ -27,6 +27,7 @@ export type V4SystemicNeed = {
   requestKind: V4SystemicRequestKind;
   ambiguity: "none" | "material";
   clarificationQuestion: string;
+  forcedRouteKey?: "sales_policy" | "sales_tech" | "finance" | "fulfillment" | "greenlight" | null;
 };
 
 export type V4SystemicQueryPlan = {
@@ -47,6 +48,21 @@ export type V4SystemicCandidate = {
   structuredScore: number;
   authorityScore: number;
   relationScore: number;
+  semanticVectorScore?: number;
+  matchedDecisionId?: string;
+  matchedDecisionText?: string;
+  needScores?: Record<string, {
+    score: number;
+    rank: number;
+    lexicalScore: number;
+    familyScore: number;
+    characterScore: number;
+    structuredScore: number;
+    semanticVectorScore: number;
+    relationScore: number;
+    matchedDecisionId: string;
+    matchedDecisionText: string;
+  }>;
 };
 
 export type V4SystemicBlockedMatch = {

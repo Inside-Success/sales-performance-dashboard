@@ -9,6 +9,7 @@ vi.mock("@/lib/ask-sales-faq/v4/systemic/runtime", () => ({
 
 import { GET, POST } from "@/app/api/ask-sales-faq/v4-systemic-isolated/route";
 import { getV4SystemicKnowledgeVersion } from "@/lib/ask-sales-faq/v4/systemic/corpus";
+import { getV4AtomicDecisionLedgerVersion } from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
 import { verifyV4HistoryToken } from "@/lib/ask-sales-faq/v4/history-token";
 
 const original = {
@@ -65,13 +66,13 @@ describe("Ask Sales V4 systemic isolated route", () => {
     await expect(response.json()).resolves.toMatchObject({
       ok: true,
       ready: true,
-      runtime: "v4-systemic-isolated",
+      runtime: "v4-hybrid-isolated",
       persistence: false,
       productionSelectorChanged: false,
-      knowledgeVersion: getV4SystemicKnowledgeVersion(),
+      knowledgeVersion: `${getV4SystemicKnowledgeVersion()}+${getV4AtomicDecisionLedgerVersion()}`,
       operationalPolicyCount: expect.any(Number),
     });
-    expect(response.headers.get("x-ask-sales-runtime")).toBe("v4-systemic-isolated");
+    expect(response.headers.get("x-ask-sales-runtime")).toBe("v4-hybrid-isolated");
   });
 
   it("calls only the systemic runtime and signs history against systemic knowledge", async () => {
@@ -89,7 +90,7 @@ describe("Ask Sales V4 systemic isolated route", () => {
     const verified = verifyV4HistoryToken({
       token: data.historyToken,
       conversationId: "v4_systemic_case",
-      knowledgeVersion: getV4SystemicKnowledgeVersion(),
+      knowledgeVersion: `${getV4SystemicKnowledgeVersion()}+${getV4AtomicDecisionLedgerVersion()}`,
     });
     expect(verified.messages).toEqual([
       { role: "user", content: "Can this operational question be answered?" },

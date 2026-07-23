@@ -31,10 +31,10 @@ export type V4SystemicRelationCompatibility = "exact" | "compatible" | "unknown"
 
 const KNOWLEDGE_QUESTION = /\b(?:what\s+(?:is|are)\s+the\s+(?:rule|policy)|is\s+(?:it|this|that)\s+(?:allowed|permitted|required)|are\s+reps\s+allowed|can\s+(?:a|an|the|reps?|we|i)\b|should\s+(?:a|an|the|reps?|we|i)\b|must\s+(?:a|an|the|reps?|we|i)\b|do\s+(?:a|an|the|reps?|we|i)\s+have\s+to)\b/i;
 const CURRENT_LOOKUP = /\b(?:current|currently|latest|today|right now|still|confirm|verify|check|trace|status|pending|cleared|received|went through)\b/i;
-const OPERATIONAL_ACTION = /\b(?:send|submit|post|request|process|issue|confirm|verify|trace|locate|find|get|provide|share|refund|cancel|pause|update|edit|merge|combine|replace|delete|remove|book|rebook|reschedule|schedule|upload|download|open|access|fix|repair|escalate)\b/i;
+const OPERATIONAL_ACTION = /\b(?:send|submit|post|request|process|issue|confirm|verify|trace|locate|find|get|provide|share|refund|cancel|cancelled|canceled|pause|paused|stop|stopped|update|edit|merge|combine|replace|delete|remove|book|rebook|reschedule|schedule|upload|download|open|access|fix|repair|escalate)\b/i;
 const ARTIFACT_ACQUISITION_ACTION = /\b(?:send|request|issue|locate|find|get|provide|share|upload|download|open|access)\b/i;
 const ARTIFACT = /\b(?:link|url|form|sheet|spreadsheet|document|template|email|message|pdf|letter|recording|video|episode|file|contract|agreement|script|media\s*kit|asset)\b/i;
-const REP_ACTION_PERMISSION = /\b(?:(?:can|could|may)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)|(?:am|are|is)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+allowed\s+to|(?:do|does)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+have\s+permission\s+to)\s+(?:send|share|provide|discuss|mention|cancel|pause|stop|block|unsubscribe|book|rebook|reschedule|schedule|contact|notify|route|post|submit|request|process|issue|confirm|verify|trace|refund|update|edit|merge|combine|replace|delete|remove|upload|download|open|access|fix|repair|escalate)\b/i;
+const REP_ACTION_PERMISSION = /\b(?:(?:can|could|may)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)|(?:am|are|is)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+allowed\s+to|(?:do|does)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+have\s+permission\s+to)\s+(?:send|share|provide|text|email|call|discuss|mention|cancel|pause|stop|block|unsubscribe|book|rebook|reschedule|schedule|contact|notify|route|post|submit|request|process|issue|confirm|verify|trace|refund|update|edit|merge|combine|replace|delete|remove|upload|download|open|access|fix|repair|escalate)\b/i;
 
 const normalizedValueCache = new Map<string, string>();
 const MAX_RELATION_CACHE_ENTRIES = 4096;
@@ -115,6 +115,17 @@ const DECISION_OBJECT_FACETS: Array<{ name: string; pattern: RegExp }> = [
   { name: "reapplication", pattern: /\b(?:reapply|reapplication|apply again)\b/i },
   { name: "contract", pattern: /\b(?:contract|agreement)\b/i },
   { name: "payment", pattern: /\b(?:payment|ach|wire|invoice|refund|deposit|installment)\b/i },
+  { name: "post_call_notes", pattern: /\b(?:post[- ]?call|after (?:the )?call)\b.{0,100}\b(?:note|record|document|keap|sheet|report)\b|\b(?:note|record|document|keap|sheet|report)\b.{0,100}\b(?:post[- ]?call|after (?:the )?call)\b/i },
+  { name: "lead_ownership", pattern: /\b(?:already booked|booked (?:by|with) another rep|assigned rep|lead ownership|ownership credit|who gets credit|which rep owns)\b/i },
+  { name: "outreach_sequence", pattern: /\b(?:outreach|follow[- ]?up|text|sms|email|call)\b.{0,100}\b(?:sequence|cadence|sop|steps?|order)\b|\b(?:sequence|cadence|sop|steps?|order)\b.{0,100}\b(?:outreach|follow[- ]?up|text|sms|email|call)\b/i },
+  { name: "call_volume", pattern: /\b(?:more|generate|increase|build|create)\b.{0,80}\b(?:calls?|call volume|appointments?)\b|\b(?:calls?|call volume|appointments?)\b.{0,80}\b(?:more|generate|increase|build|create)\b/i },
+  { name: "technical_report", pattern: /\b(?:totals?|numbers?|counts?|stats?|dashboard|report)\b.{0,100}\b(?:chang|wrong|incorrect|glitch|bug|fix|repair)\w*\b|\b(?:chang|wrong|incorrect|glitch|bug|fix|repair)\w*\b.{0,100}\b(?:totals?|numbers?|counts?|stats?|dashboard|report)\b/i },
+  { name: "social_visibility", pattern: /\b(?:social (?:media|profile|visibility|presence)|online presence|private profile|followers?|instagram|tiktok|facebook|youtube)\b/i },
+  { name: "negative_search_result", pattern: /\b(?:google|web|online)\s+search\b.{0,100}\b(?:negative|criminal|charge|bad result|adverse)\w*\b|\b(?:negative|criminal|charge|bad result|adverse)\w*\b.{0,100}\b(?:google|web|online)\s+search\b/i },
+  { name: "political_candidate", pattern: /\b(?:political candidate|candidate for (?:public )?office|running for office|elected official|political topic)\b/i },
+  { name: "extremist_content", pattern: /\b(?:extremis\w*|hate toward|hate speech|nazi|racis\w*|terroris\w*)\b/i },
+  { name: "franchise_approval", pattern: /\bfranchise\w*\b.{0,100}\b(?:brand|franchisor|approval|approve)\w*\b|\b(?:brand|franchisor)\b.{0,100}\bfranchise\w*\b/i },
+  { name: "union_approval", pattern: /\b(?:sag[- ]?aftra|union|guild)\b.{0,100}\b(?:approval|approve|permission)\w*\b|\b(?:approval|approve|permission)\w*\b.{0,100}\b(?:sag[- ]?aftra|union|guild)\b/i },
 ];
 
 const decisionObjectFacetCache = new Map<string, Set<string>>();
@@ -197,10 +208,18 @@ export function v4SystemicDecisionObjectErrors(request: string, evidence: string
 
   const requestedFacets = decisionObjectFacets(request);
   const evidenceFacets = decisionObjectFacets(evidence);
-  const exclusiveFacets = new Set(["handoff", "licensing", "pre_call", "post_greenlight_noncommit", "onboarding", "recording", "episode_media", "crm_record", "stats_reporting", "reapplication", "contract"]);
+  const exclusiveFacets = new Set(["handoff", "licensing", "pre_call", "post_greenlight_noncommit", "onboarding", "recording", "episode_media", "crm_record", "stats_reporting", "reapplication", "contract", "post_call_notes", "lead_ownership", "outreach_sequence", "call_volume", "technical_report", "social_visibility", "negative_search_result", "political_candidate", "extremist_content", "franchise_approval", "union_approval"]);
   const requestedExclusive = [...requestedFacets].filter((facet) => exclusiveFacets.has(facet));
   const evidenceExclusive = [...evidenceFacets].filter((facet) => exclusiveFacets.has(facet));
-  if (requestedExclusive.length && evidenceExclusive.length && ![...requestedFacets].some((facet) => evidenceFacets.has(facet))) {
+  const genericStorageFacets = new Set(["crm_record"]);
+  const requestedSpecific = requestedExclusive.filter((facet) => !genericStorageFacets.has(facet));
+  const evidenceSpecific = evidenceExclusive.filter((facet) => !genericStorageFacets.has(facet));
+  const incompatibleSpecificObjects = requestedSpecific.length && evidenceSpecific.length &&
+    !requestedSpecific.some((facet) => evidenceSpecific.includes(facet));
+  if (incompatibleSpecificObjects || (
+    requestedExclusive.length && evidenceExclusive.length &&
+    !requestedExclusive.some((facet) => evidenceExclusive.includes(facet))
+  )) {
     errors.push("the evidence governs a different decision object than the request");
   }
   return [...new Set(errors)];
@@ -220,6 +239,13 @@ export function v4SystemicDecisionObjectScore(request: string, evidence: string)
     candidate.amount === requested.amount && candidate.unit === requested.unit && durationRoleCompatible(requested.role, candidate.role),
   ));
   return Math.min(8, facetMatches * 3) + (artifactMatch ? 7 : 0) + (measurementMatch ? 6 : 0);
+}
+
+export function v4SystemicArtifactIdentityProcedureCompatible(request: string, evidence: string) {
+  const requested = artifactKinds(request);
+  const supplied = artifactKinds(evidence);
+  if (!requested.size || ![...requested].some((kind) => supplied.has(kind))) return false;
+  return /\b(?:use|called|named|same|approved|correct|right|replace|swap|select|choose)\b/i.test(evidence);
 }
 
 export function v4SystemicRelation(value: unknown, fallback: V4SystemicRelation = "other"): V4SystemicRelation {
@@ -282,9 +308,11 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   // the user phrases the output as "which contract". The contract is
   // downstream of whether the split is an approved option.
   if (/\b(?:payment plan|installment|instalment|split payment|payment option|payment schedule|custom plan|custom split|first payment|remaining balance|pay (?:the )?remaining|one amount now)\b/i.test(text)) return "payment_option";
+  if (/\b(?:placement|hosting|episode)\s+guarantee\b.{0,100}\b(?:year|month|week|day)s?\b|\b(?:year|month|week|day)s?\b.{0,100}\b(?:placement|hosting|episode)\s+guarantee\b/i.test(text)) return "duration";
+  if (/\b(?:what|which)\s+(?:approved\s+)?(?:option|method|tool|script|process)\b.{0,120}\b(?:use|follow|choose|select)\b/i.test(text)) return "procedure";
   // Preserve procedural intent when a sentence contains an incidental status
   // fact such as "the lead is available next week".
-  if (/^(?:what\s+(?:is|are)\b.{0,100}\b(?:process|procedure|steps?|workflow)|how\s+(?:do|does|should|can|to)\b|what\s+(?:do|should)\s+(?:i|we|reps?)\s+do\b)/i.test(text)) return "procedure";
+  if (/^(?:what\s+(?:is|are)\b.{0,100}\b(?:process|procedure|steps?|workflow|sequence|cadence|sop)|how\s+(?:do|does|should|can|to)\b|what\s+(?:do|should)\s+(?:i|we|reps?)\s+do\b)/i.test(text)) return "procedure";
   if (/^(?:(?:i|we)\s+)?(?:need|want|am looking for|are looking for)\b.{0,100}\b(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b/i.test(text)) return "artifact_identity";
   if (/^(?:please\s+)?(?:send|provide|share|give|get|request|download)\b.{0,100}\b(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b/i.test(text)) return "artifact_identity";
   if (/\b(?:which|what)\s+(?:exact\s+)?(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b|\bidentify\s+(?:the\s+)?(?:right|correct|current|exact)\b/i.test(text)) return "artifact_identity";
@@ -298,11 +326,13 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   // prevents access-boundary warnings from being promoted as location answers.
   if (/\b(?:has|have|had|having|given|granted|denied)\s+access\s+to\b|\baccess\s+(?:is|isn't|is not|was|wasn't|was not)\s+(?:allowed|available|granted|permitted|restricted|denied)\b/i.test(text)) return "permission";
   if (/\b(?:where|locate|find|access|download|get)\b.{0,80}\b(?:form|link|url|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|asset)\b/i.test(text)) return "artifact_location";
-  if (/\b(?:which|what)\s+channel\b|\bwhere\s+(?:do|should|can)\s+(?:i|we|reps?)\s+(?:post|send|submit|request|escalate)\b|\broute\b/i.test(text)) return "routing";
+  if (/\b(?:which|what)\s+channel\b|\bwhere\s+(?:do|should|can)\s+(?:i|we|reps?)\s+(?:post|send|submit|request|escalate)\b|\bwhere\s+(?:does|do)\s+(?:a|the|this|that|these|those)?\s*(?:request|requests?)\b.{0,100}\bgo\b|\broute\b/i.test(text)) return "routing";
   // "Are recurring invoices automated or sent by reps?" is an ownership
   // decision about who performs the action, not a lookup of a particular
   // invoice's live status.
   if (/\binvoices?\b.{0,140}\b(?:automated|automatic|manually|manual|sent by|issued by)\b|\b(?:automated|automatic|manually|manual)\b.{0,140}\binvoices?\b/i.test(text)) return "owner";
+  if (/\bwho\s+(?:exactly\s+)?(?:must|should|can|will)\s+(?:verify|review|check|confirm|approve|handle|own|send|issue|provide)\b/i.test(text)) return "owner";
+  if (/\bwho\s+(?:is|are)\s+(?:the\s+)?(?:current\s+)?(?:manager|owner|person|team)\b.{0,140}\b(?:notify|contact|tell|inform)\b/i.test(text)) return "owner";
   // Do not let an incidental state word (signed, received, pending, cleared)
   // erase a policy requirement such as whether the rep must wait or proceed.
   // Price, timing, inclusion, and eligibility checks below still retain their
@@ -339,6 +369,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   // describes one proposed qualification path. The requested output is still
   // which applicant type qualifies, not an unrelated procedural requirement.
   if (eligibilityDecision && /\bor\b/i.test(text)) return "eligibility";
+  if (/\b(?:does|do)\b.{0,100}\b(?:franchise|franchisor|brand)\b.{0,100}\bneed\s+(?:brand\s+)?approval\b|\b(?:franchise|franchisor|brand)\b.{0,100}\bneed\s+(?:brand\s+)?approval\b/i.test(text)) return "requirement";
   if (/\b(?:required|requirement|must\b|need to|have to|mandatory|obligated)\b/i.test(text)) return "requirement";
   if (/\bshould\b/i.test(text) && !eligibilityDecision) return "requirement";
   if (/\b(?:included|include|comes with|receive|entitled|benefit|access to)\b/i.test(text)) return "inclusion";
@@ -346,7 +377,7 @@ export function inferV4SystemicRelation(value: string): V4SystemicRelation {
   if (/\b(?:do|does)\s+(?:i|we|reps?|representatives?|the rep|the representative)\s+(?:send|issue|provide|book|schedule|invoice|contact|notify)\b/i.test(text)) return "owner";
   if (/\bshould\s+(?:i|we|you|they|he|she|it|the|a|an|reps?|clients?|prospects?|applicants?)\b/i.test(text)) return "requirement";
   if (/\b(?:allowed|allow|permitted|permission|may\b|can\b|prohibited|forbidden|not allowed)\b/i.test(text)) return "permission";
-  if (/\b(?:who (?:owns|handles|approves|confirms|sends|issues|provides|books|schedules|invoices|contacts|notifies|is responsible)|who should (?:own|handle|approve|confirm|send|issue|provide|book|schedule|invoice|contact|notify)|owner|responsible for|point of contact)\b/i.test(text)) return "owner";
+  if (/\b(?:who (?:owns|handles|approves|confirms|verifies|reviews|checks|sends|issues|provides|books|schedules|invoices|contacts|notifies|is responsible)|who should (?:own|handle|approve|confirm|verify|review|check|send|issue|provide|book|schedule|invoice|contact|notify)|owner of|owned by|ownership|responsible for|point of contact|(?:rep|team|department) owns?)\b/i.test(text)) return "owner";
   if (/\b(?:where (?:is|are)|location|address|stored|storage)\b/i.test(text)) return "location";
   if (/\b(?:difference|compare|versus|vs\b|which is better)\b/i.test(text)) return "comparison";
   if (/\b(?:how (?:do|does|should|can|to)|process|procedure|steps?|workflow|handle|what (?:do|should) (?:i|we|reps?) do)\b/i.test(text)) return "procedure";
@@ -600,7 +631,9 @@ export function v4SystemicMaterialQualifierErrors(need: Pick<V4SystemicNeed, "te
 
 export function v4SystemicNeedPolicyRelationErrors(need: V4SystemicNeed, policy: V4SystemicPolicy) {
   const relations = inferV4SystemicPolicyRelations(policy);
-  const compatibility = v4SystemicRelationCompatibility(need.relation, relations);
+  const artifactProcedureCompatible = need.relation === "artifact_identity" &&
+    v4SystemicArtifactIdentityProcedureCompatible(need.authorityText || need.text, rawPolicyText(policy));
+  const compatibility = artifactProcedureCompatible ? "compatible" : v4SystemicRelationCompatibility(need.relation, relations);
   const materialErrors = v4SystemicMaterialQualifierErrors(need, policy);
   const correctsManualArtifactPremise = ["artifact_identity", "artifact_location"].includes(need.relation) &&
     /\b(?:automatic|automatically|no need to manually|do not manually|not sent manually|without manual)\w*\b/i.test(policy.decision) &&
