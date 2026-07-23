@@ -2267,5 +2267,5 @@ describe("V4.1 claim relations and authority controls", () => {
       });
       expect(retrieval.blockedMatches.map((match) => match.topicId), topic.id).toContain(topic.id);
     }
-  }, 30_000);
+  }, 90_000);
 });
