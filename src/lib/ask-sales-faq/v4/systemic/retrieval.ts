@@ -11,6 +11,7 @@ import {
 import {
   inferV4SystemicPolicyRelations,
   inferV4SystemicRelation,
+  v4SystemicArtifactIdentityProcedureCompatible,
   v4SystemicDecisionObjectErrors,
   v4SystemicDecisionObjectScore,
   v4SystemicMaterialQualifierErrors,
@@ -279,7 +280,17 @@ function queryScore(
   const structured = structuredNeedTerms(need);
   const structuredScore = overlap(structured, [...document.structured]) * 8;
   const semanticVectorScore = cosineSimilarity(sparseVector(query), documentVectors.get(document.decision.id) || new Map()) * 12;
-  const relationCompatibility = v4SystemicRelationCompatibility(need.relation, document.relations);
+  const decisionObjectText = [
+    need.authorityText || need.text || need.originalRequestText,
+    ...need.domains,
+    ...need.actions,
+    ...need.entities,
+  ].filter(Boolean).join(" ");
+  const artifactProcedureCompatible = need.relation === "artifact_identity" &&
+    v4SystemicArtifactIdentityProcedureCompatible(decisionObjectText, document.text);
+  const relationCompatibility = artifactProcedureCompatible
+    ? "exact"
+    : v4SystemicRelationCompatibility(need.relation, document.relations);
   const resolutionControlsPolicy = resolution.controlling.has(document.policy.id);
   const relationScore = resolutionControlsPolicy
     ? 8
@@ -290,7 +301,6 @@ function queryScore(
       : relationCompatibility === "incompatible"
         ? -18
         : 0;
-  const decisionObjectText = need.originalRequestText || need.authorityText || need.text;
   const decisionObjectScore = v4SystemicDecisionObjectScore(decisionObjectText, document.text);
   const resolutionDisposition = resolution.excluded.has(document.policy.id)
     ? "excluded"

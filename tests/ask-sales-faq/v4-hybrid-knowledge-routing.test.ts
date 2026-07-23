@@ -8,9 +8,13 @@ import { getV4SystemicCorpus } from "@/lib/ask-sales-faq/v4/systemic/corpus";
 import {
   inferV4SystemicRelation,
   inferV4SystemicRequestKind,
+  v4SystemicDecisionObjectErrors,
 } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import { retrieveV4SystemicPolicies } from "@/lib/ask-sales-faq/v4/systemic/retrieval";
-import { applyV4SystemicDeterministicQueryGuards } from "@/lib/ask-sales-faq/v4/systemic/runtime";
+import {
+  applyV4SystemicDeterministicQueryGuards,
+  parseV4SystemicSourcePlan,
+} from "@/lib/ask-sales-faq/v4/systemic/runtime";
 import { resolveV4SystemicTurn } from "@/lib/ask-sales-faq/v4/systemic/turn";
 import type { V4SystemicNeed, V4SystemicQueryPlan } from "@/lib/ask-sales-faq/v4/systemic/types";
 
@@ -77,6 +81,9 @@ describe("Ask Sales V4.4 hybrid knowledge and routing", () => {
   it("recognizes owner verification and SOP sequence relationships", () => {
     expect(inferV4SystemicRelation("Who should verify a signed contract?")).toBe("owner");
     expect(inferV4SystemicRelation("What is the official text, email, and call sequence?")).toBe("procedure");
+    expect(inferV4SystemicRelation("For ISTV, is the placement guarantee two years or five?")).toBe("duration");
+    expect(inferV4SystemicRelation("Does a franchise owner need approval from the brand?")).toBe("requirement");
+    expect(inferV4SystemicRelation("Who exactly must approve it?")).toBe("owner");
   });
 
   it("retrieves the exact Built for More script decision rather than a generic artifact card", () => {
@@ -118,6 +125,64 @@ describe("Ask Sales V4.4 hybrid knowledge and routing", () => {
       entities: ["past cast member", "approved testimonial"],
     });
     expect(testimonial.blockedTopicIds).toEqual([]);
+
+    const alreadyBooked = retrieve("A 20% dial-list lead says another rep already booked her, but Keap does not show that rep. What should I record?", {
+      relation: "requirement",
+      domains: ["lead ownership"],
+      actions: ["record"],
+      entities: ["20% dial-list lead", "Keap", "another rep"],
+    });
+    expect(alreadyBooked.blockedTopicIds).not.toContain("blocked_1350b414e9d4ba38");
+    expect(v4SystemicDecisionObjectErrors(
+      "A 20% lead is already booked with another rep; what should I record in Keap?",
+      "For 20% post-call notes, report in both the spreadsheet and Keap.",
+    )).toContain("the evidence governs a different decision object than the request");
+  });
+
+  it("does not treat two compiled cards from the same Slack thread as a conflict", () => {
+    const text = "Can I share our viewer demographic data during Call 2?";
+    const plannedNeed = need(text, { relation: "permission" });
+    const plan: V4SystemicQueryPlan = { needs: [plannedNeed], conversationIntent: "answer", reasoningSummary: "duplicate lineage" };
+    const retrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(text, []), plan);
+    const duplicates = retrieval.candidates.filter((candidate) =>
+      candidate.policy.systemic.sourceIds.some((sourceId) => sourceId.endsWith("1780607943.627119")),
+    ).slice(0, 2);
+    expect(duplicates).toHaveLength(2);
+    const sourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{
+        need_id: "N1",
+        direct_refs: duplicates.map((candidate) => candidate.policy.id),
+        conflicts: [{
+          positions: duplicates.map((candidate) => ({ refs: [candidate.policy.id] })),
+        }],
+        preferred_refs: [],
+        disposition: "route",
+      }],
+    }), plan, retrieval);
+    expect(sourcePlan.needs[0].lane).toBe("answer");
+    expect(sourcePlan.needs[0].preferredPolicyIds).toHaveLength(1);
+  });
+
+  it("preserves one exact stable support boundary when an owner action is still required", () => {
+    const text = "This lead's phone looks fake and they ignored calls, texts, and email. Can I cancel their booked call now?";
+    const plannedNeed = need(text, { relation: "permission" });
+    const plan: V4SystemicQueryPlan = { needs: [plannedNeed], conversationIntent: "answer", reasoningSummary: "bounded support" };
+    const retrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(text, []), plan);
+    const exact = retrieval.candidates.find((candidate) => /requires one-by-one approval from rich/i.test(candidate.policy.decision));
+    expect(exact).toBeDefined();
+    const sourcePlan = parseV4SystemicSourcePlan(JSON.stringify({
+      needs: [{
+        need_id: "N1",
+        direct_refs: [exact!.policy.id],
+        preferred_refs: [],
+        conflicts: [],
+        disposition: "route",
+      }],
+    }), plan, retrieval);
+    expect(sourcePlan.needs[0]).toMatchObject({
+      lane: "answer",
+      preferredPolicyIds: [exact!.policy.id],
+    });
   });
 
   it("assigns each live action in a compound request to its actual owner", () => {
@@ -131,6 +196,75 @@ describe("Ask Sales V4.4 hybrid knowledge and routing", () => {
       reasoningSummary: "compound action",
     }, resolveV4SystemicTurn(question, []));
     expect(guarded.needs.map((item) => item.forcedRouteKey)).toEqual(["finance", "fulfillment"]);
+
+    const currentArtifactQuestion = "A cast member wants future payments stopped and I also need the current onboarding recording. Where do those two requests go?";
+    const currentArtifactPlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [
+        need("Where does a request to stop future payments for a cast member go?", {
+          id: "N1",
+          requestKind: "operational_action",
+          relation: "routing",
+          domains: ["payments"],
+          actions: ["stop"],
+          entities: ["future payments"],
+        }),
+        need("Where is the current onboarding recording located?", {
+          id: "N2",
+          requestKind: "artifact_request",
+          relation: "artifact_location",
+          domains: ["onboarding"],
+          actions: ["locate"],
+          entities: ["onboarding recording"],
+        }),
+      ],
+      conversationIntent: "answer",
+      reasoningSummary: "current artifact compound action",
+    }, resolveV4SystemicTurn(currentArtifactQuestion, []));
+    expect(currentArtifactPlan.needs.map((item) => item.forcedRouteKey)).toEqual(["finance", "fulfillment"]);
+    expect(currentArtifactPlan.needs[0]).toMatchObject({ relation: "routing", requestKind: "operational_action" });
+
+    const downstreamDeliveryPlan = applyV4SystemicDeterministicQueryGuards({
+      needs: [need("How should the delivery schedule be updated after pausing payments?", {
+        requestKind: "operational_action",
+        relation: "procedure",
+        domains: ["delivery"],
+        actions: ["update schedule"],
+        entities: ["delivery schedule"],
+      })],
+      conversationIntent: "answer",
+      reasoningSummary: "downstream owner",
+    }, resolveV4SystemicTurn("Please pause payments and update the delivery schedule.", []));
+    expect(downstreamDeliveryPlan.needs[0].forcedRouteKey).toBe("fulfillment");
+  });
+
+  it("routes live ownership verification to Sales Tech but current notification ownership to Sales Policy", () => {
+    const ownershipQuestion = "A 20% lead was already booked to another closer and contacted again. Who should verify the ownership credit before anyone changes it?";
+    const ownership = applyV4SystemicDeterministicQueryGuards({
+      needs: [need("Who should verify the ownership credit before anyone changes it?", {
+        relation: "owner",
+        requestKind: "knowledge",
+        domains: ["lead ownership"],
+        actions: ["verify ownership credit"],
+        entities: ["20% lead", "ownership credit"],
+      })],
+      conversationIntent: "answer",
+      reasoningSummary: "live ownership verification",
+    }, resolveV4SystemicTurn(ownershipQuestion, []));
+    expect(ownership.needs[0]).toMatchObject({ requestKind: "current_lookup", forcedRouteKey: "sales_tech" });
+
+    const notificationQuestion = "I changed OnceHub for an appointment today. Who is the current manager I must notify about the reduced availability?";
+    const notification = applyV4SystemicDeterministicQueryGuards({
+      needs: [need(notificationQuestion, {
+        relation: "owner",
+        requestKind: "current_lookup",
+        domains: ["availability"],
+        actions: ["notify manager"],
+        entities: ["current manager", "OnceHub"],
+      })],
+      conversationIntent: "answer",
+      reasoningSummary: "notification owner",
+    }, resolveV4SystemicTurn(notificationQuestion, []));
+    expect(notification.needs[0].forcedRouteKey).toBe("sales_policy");
   });
 
   it("keeps knowledge questions in policy even when they mention finance", () => {
