@@ -65,3 +65,10 @@ V3, frozen V4.1, and frozen V4.2 must be run on the same untouched set with the 
 
 V4.2 is not eligible to replace V3 unless the untouched evidence shows a meaningful practical improvement over both V3 and V4.1, no material unsafe policy answer, correct routing for live/action needs, and no regression large enough to offset its safety or usefulness gain. A percentage alone is not a promotion rule. Independent blind stakeholder or SME approval remains required before any production cutover.
 
+## Post-freeze source-pool amendment
+
+The registered builder was run after runtime freeze commit `36a5a00a25a2ebfa0aae718d30a51b507c4bf50c` (tree `3444359c39e06cbad4901c76b507477d175d0d25`). It failed closed before producing or revealing a holdout because the remaining sealed source pool contained only one unused answer case and could not satisfy the registered 30-answer/20-route quota. No question from a replacement sealed set was opened.
+
+To avoid reusing a previously evaluated set, evaluation continued on a post-freeze, source-backed diagnostic set of 50 recent authoritative Slack threads: 30 answerable and 20 route/live/artifact cases. Every prompt was normalized and checked against the 257 prior prompts; there were zero exact overlaps. Slack access was read-only and no message, reaction, file, or channel was changed.
+
+This replacement is stronger than a retained replay but weaker than the originally registered promotion evidence: it was manually source-curated after freeze, not randomly sampled from a preregistered pool, and it did not receive blind SME gold creation. It can fail the V4.2 candidate, but it cannot by itself authorize production promotion. The full outcome is recorded in `ASK-SALES-V4-2-SYSTEMIC-IMPLEMENTATION-AND-EVALUATION-2026-07-23.md`.
