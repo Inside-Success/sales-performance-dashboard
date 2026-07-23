@@ -2213,7 +2213,7 @@ describe("V4.1 claim relations and authority controls", () => {
       lane: "route" as const,
       evidenceRefs: [],
       answerSentences: [],
-      routeKey: "sales_tech",
+      routeKey: "sales_tech" as const,
       clarificationQuestion: "",
       confidence: 0.8,
       reason: "live mutation",
