@@ -13,6 +13,9 @@
 # testing
 /coverage
 /artifacts/ask-sales-faq-v3/
+/artifacts/ask-sales-faq-v4/
+/artifacts/ask-sales-faq-v4-live-export/
+/artifacts/ask-sales-faq-v4-systemic/
 
 # next.js
 /.next/

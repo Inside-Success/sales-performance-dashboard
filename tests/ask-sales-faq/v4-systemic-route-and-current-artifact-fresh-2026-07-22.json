@@ -1,0 +1,58 @@
+{
+  "name": "Ask Sales V4 deterministic route and current-artifact development check 2026-07-22",
+  "purpose": "Development-only regression set for high-confidence route destinations and volatile exact-location requests.",
+  "conversations": [
+    {
+      "id": "route-third-party-payment-contract",
+      "prompts": [
+        {
+          "question": "If a business partner who is not in Keap pays for the client, where do I confirm that payment, and where do I get help if the contract does not populate automatically?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "compound", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Route third-party payment confirmation to finance.",
+              "expectedDisposition": "route",
+              "expectedRouteKey": "finance",
+              "policyIds": ["claim_f2bddec7b84e1829__a1"]
+            },
+            {
+              "id": "N2",
+              "text": "Route a contract that failed to populate automatically to sales tech.",
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_tech",
+              "policyIds": ["claim_cfb5be032755c9e4__a1"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route-current-studio-address",
+      "prompts": [
+        {
+          "question": "What is the current exact studio address, and is the next Mastermind being held at that same location?",
+          "independent": true,
+          "evaluationStrata": ["fresh_paraphrase", "current_artifact", "route_required"],
+          "goldNeeds": [
+            {
+              "id": "N1",
+              "text": "Route the current exact studio address to the current official source.",
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": []
+            },
+            {
+              "id": "N2",
+              "text": "Route the current Mastermind venue rather than inferring it from an older studio location.",
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "policyIds": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

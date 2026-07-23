@@ -1,0 +1,136 @@
+{
+  "name": "Ask Sales V4.1 authority and exact-relationship development set",
+  "diagnosticOnly": true,
+  "conversations": [
+    {
+      "id": "v4-1-authority",
+      "title": "Claim-scoped authoritative decisions",
+      "prompts": [
+        {
+          "question": "Can a hospital-employed doctor who does not own a practice qualify for America's Best Doctors?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "qualification"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Practice ownership is not a hard requirement for an employed doctor; do not generalize to non-doctor professions."}]
+        },
+        {
+          "question": "Are reps allowed to discuss pricing during Call 1?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "permission", "pricing"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Do not mention price by default; the narrow exception requires both no business and lack of financial qualification, for disqualification."}]
+        },
+        {
+          "question": "Which devices can someone use to download the ISTV app?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "artifact_location"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Roku, Fire Stick, or Apple TV devices."}]
+        },
+        {
+          "question": "Can I make up a custom payment split if the client asks for one?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "payment_option"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "No; use only the approved plans in the current source."}]
+        },
+        {
+          "question": "Does the Daymond John offer use the main ISTV cohort deadline or cohort reschedule rule?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "product_boundary"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "No cohort for DJ/NLCEO; do not import the main ISTV cohort rule."}]
+        },
+        {
+          "question": "If I logged a real contact in Keap today, when does my 30-day lead ownership expire?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "duration"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "The documented contact refreshes the 30-day window; release is after the boundary specified by the approved rule."}]
+        },
+        {
+          "question": "I just closed a client and booked an available onboarding slot for later today. Payment is taken, the contract is signed, and the onboarding email was reviewed and sent. Do I need to notify anyone separately?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "same_day_onboarding"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "No separate notification is required only because every listed post-sale step is complete."}]
+        },
+        {
+          "question": "Does the Lite plan still include the six-month Weekly Marketing Training program?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "supersession"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "No; the former six-month weekly program is discontinued and must not be promised."}]
+        }
+      ]
+    },
+    {
+      "id": "v4-1-relations-and-routes",
+      "title": "Exact relationship, qualifier, and owner routes",
+      "prompts": [
+        {
+          "question": "What is the earliest time I can send the day-of SMS reminder?",
+          "independent": true,
+          "evaluationStrata": ["relation_boundary", "timing_start"],
+          "goldNeeds": [{"expectedDisposition": "route", "claim": "Do not substitute the unrelated 9 PM latest-time cutoff or turn tentative 5/6 AM advice into policy."}]
+        },
+        {
+          "question": "An applicant is using Zoom for the first time and is struggling to join. What should I do?",
+          "independent": true,
+          "evaluationStrata": ["qualifier_boundary", "procedure"],
+          "goldNeeds": [{"expectedDisposition": "answer_or_precise_route", "claim": "Do not substitute a generic no-show rule; the authoritative thread says to try to assist, without deciding fit."}]
+        },
+        {
+          "question": "Where can I find the recording of a phone call?",
+          "independent": true,
+          "evaluationStrata": ["modality_boundary", "artifact_location"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_tech", "claim": "Do not substitute a Zoom recording link."}]
+        },
+        {
+          "question": "A main ISTV client paid a $2,500 lock-in and now wants Standard. What exact upgrade steps should I follow?",
+          "independent": true,
+          "evaluationStrata": ["amount_boundary", "procedure"],
+          "goldNeeds": [{"expectedDisposition": "clarify_or_route", "claim": "Do not invent that a lock-in is the same as the separately documented $2,500 Lite deposit path."}]
+        },
+        {
+          "question": "I need the current green light letter.",
+          "independent": true,
+          "evaluationStrata": ["current_artifact", "routing"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "greenlight", "claim": "Request the controlled current letter through #greenlight-requests."}]
+        },
+        {
+          "question": "Can you confirm whether this client's ACH payment cleared?",
+          "independent": true,
+          "evaluationStrata": ["current_lookup", "routing"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "finance", "claim": "Current finance actions go to #sales-finance-requests."}]
+        },
+        {
+          "question": "Can a well-qualified applicant with a non-violent criminal history from ten years ago be approved?",
+          "independent": true,
+          "evaluationStrata": ["unresolved_conflict", "qualification"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "The directly matching conflict is unresolved; do not choose one Slack answer."}]
+        },
+        {
+          "question": "What happens if a prospect without a strong story is approved and pays? Do they get denied on the production side or how does that work?",
+          "independent": true,
+          "evaluationStrata": ["planner_deduplication", "consequence"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Treat the second sentence as a restatement, not a fake unresolved need."}]
+        },
+        {
+          "question": "Can I email the contract link if the client wants to review it and is paying by wire?",
+          "independent": true,
+          "evaluationStrata": ["planner_condition_handling", "permission"],
+          "goldNeeds": [{"expectedDisposition": "answer_or_precise_route", "claim": "The review and wire clauses are conditions, not separate questions."}]
+        }
+      ]
+    },
+    {
+      "id": "v4-1-follow-up",
+      "title": "Natural follow-up continuity",
+      "prompts": [
+        {
+          "question": "Can reps create a custom payment plan for a client?",
+          "evaluationStrata": ["follow_up", "payment_option"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Only approved listed plans may be used."}]
+        },
+        {
+          "question": "What if the client keeps insisting?",
+          "evaluationStrata": ["follow_up", "context_resolution"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "The prior payment-plan boundary remains in force; do not invent an exception."}]
+        }
+      ]
+    }
+  ]
+}

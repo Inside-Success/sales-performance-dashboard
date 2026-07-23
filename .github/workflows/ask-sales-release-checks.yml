@@ -6,8 +6,22 @@ on:
       - "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json"
       - "src/lib/ask-sales-faq/v3/admin-approved-releases.ts"
       - "src/lib/ask-sales-faq/v3/retrieval.ts"
+      - "src/lib/ask-sales-faq/v4/**"
+      - "src/app/ask-sales-faq/v4-lab/**"
+      - "src/app/api/ask-sales-faq/v4-isolated/**"
+      - "src/components/ask-sales-faq/ask-sales-v4-lab.tsx"
+      - "src/components/dashboard/app-header.tsx"
+      - "src/proxy.ts"
+      - "tests/ask-sales-faq/v4-*"
+      - "scripts/benchmark-ask-sales-faq-v4-paired.ts"
+      - "scripts/export-ask-sales-v4-launch-log.ts"
+      - "scripts/validate-ask-sales-v4-isolation.mjs"
+      - "package.json"
+      - "package-lock.json"
       - "src/lib/ask-sales-faq/knowledge-refresh-governance.ts"
       - ".github/workflows/ask-sales-release-checks.yml"
+      - ".vercelignore"
+      - ".env.example"
 
 permissions:
   contents: read
@@ -29,9 +43,11 @@ jobs:
         run: npm run test:ask-sales-faq
       - name: Ask Sales static safety validator
         run: node scripts/validate-ask-sales-faq.mjs
+      - name: Ask Sales V4 isolation validator
+        run: npm run validate:ask-sales-faq:v4:isolation
       - name: TypeScript
         run: npx tsc --noEmit
       - name: Scoped ESLint
-        run: npx eslint src/app/ask-sales-faq src/app/api/ask-sales-faq src/components/ask-sales-faq src/lib/ask-sales-faq tests/ask-sales-faq --max-warnings=0
+        run: npx eslint src/app/ask-sales-faq src/app/api/ask-sales-faq src/components/ask-sales-faq src/components/dashboard/app-header.tsx src/lib/ask-sales-faq src/proxy.ts scripts/benchmark-ask-sales-faq-v4-paired.ts scripts/export-ask-sales-v4-launch-log.ts scripts/validate-ask-sales-v4-isolation.mjs tests/ask-sales-faq --max-warnings=0
       - name: Production build
         run: npm run build

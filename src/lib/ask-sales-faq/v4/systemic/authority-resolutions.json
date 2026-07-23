@@ -1,0 +1,896 @@
+{
+  "schema_version": "ask-sales-v4.3-claim-authority-resolutions-v19",
+  "generated_at": "2026-07-23T12:00:00.000Z",
+  "resolutions": [
+    {
+      "id": "abd-practice-ownership",
+      "title": "America's Best Doctors practice-ownership requirement",
+      "status": "source_resolved",
+      "effective_at": "2026-07-10T00:00:00+05:00",
+      "product_scopes": ["main_istv"],
+      "relations": ["eligibility", "requirement", "permission"],
+      "match_groups": [
+        ["america's best doctors", "americas best doctors"],
+        ["doctor", "physician"],
+        ["own practice", "practice ownership", "hospital employed", "works at a hospital"]
+      ],
+      "controlling_policy_ids": [
+        "owner-hospital-employed-doctor-qualification",
+        "claim_54e4d8f4163f0486__a1",
+        "claim_025c646cfb2def32__a1",
+        "curated_9848cdfb2da72c0a"
+      ],
+      "excluded_policy_ids": ["operational_c4d65012f8c4c11d"],
+      "resolved_blocked_topic_ids": ["blocked_65d2e70d14703b7e"],
+      "authority_basis": "Mike and Rich explicitly corrected the practice-ownership rule; the governed qualification article carries the bounded current decision.",
+      "source_ids": [
+        "meeting:2026-07-07:00:09:16-00:09:42",
+        "meeting:2026-07-07:00:13:12-00:13:34"
+      ]
+    },
+    {
+      "id": "call-one-pricing-boundary",
+      "title": "Call 1 pricing boundary and financial-disqualification exception",
+      "status": "source_resolved",
+      "effective_at": "2026-07-03T00:31:00.000Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "exception", "requirement"],
+      "match_groups": [
+        ["call 1", "call one"],
+        ["price", "pricing", "investment", "budget"],
+        ["mention", "discuss", "disclose", "tell", "talk", "bring up", "share"]
+      ],
+      "controlling_policy_ids": [
+        "claim_33cdaf41e66bed31__a1",
+        "claim_bc6feb1c60e8c90d__a1",
+        "claim_bc6feb1c60e8c90d__a2",
+        "curated_32981b3dcba667da"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_5bd0a1e1f41418c9"],
+      "authority_basis": "Rich supplied the exact default and the narrow two-prerequisite disqualification exception; the governed Call 1 article preserves both parts.",
+      "source_ids": ["screenshot:2026-07-03-and-2026-07-08:rich-policy-replies"]
+    },
+    {
+      "id": "main-istv-reapplication-three-month-minimum",
+      "title": "Rich controls the three-month main ISTV reapplication minimum",
+      "status": "source_resolved",
+      "effective_at": "2026-07-08T00:45:00.000Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["duration", "deadline", "timing_start", "requirement", "procedure"],
+      "match_groups": [
+        ["reapply", "reapplying", "reapplication", "apply again", "reaudition"],
+        ["wait", "waiting period", "minimum", "how long", "when"],
+        ["no show", "missed deadline", "missing the deadline", "missing deadline", "misses the deadline", "sunday cutoff", "not fit", "rejected", "financially disqualified", "call 1", "call 2", "cohort", "passed last week", "booked again", "passed"]
+      ],
+      "controlling_policy_ids": [
+        "curated_v43_rich_main_reapply_three_months",
+        "owner-main-istv-cross-show-reapply-wait",
+        "claim_91adcd3b411340ef__a2",
+        "claim_20ba7b6e4fc904b7__a3",
+        "claim_396379cd8a7da9ba__a2",
+        "claim_0de0110a15158df9__a4",
+        "operational_b216451e36dc26c0",
+        "operational_60aac92e69e089ba",
+        "operational_191f3167ff67e26c"
+      ],
+      "excluded_policy_ids": [
+        "operational_90f39d10e63f2bbc",
+        "operational_c5b47d150bc1f1f0",
+        "operational_1ba92919bb81e1a5",
+        "operational_74073cdfea93e4bb",
+        "operational_dbd84eb65d2fef16",
+        "operational_415dc6b476d7c2f9",
+        "operational_ac1aa93627c77b27",
+        "operational_2fd512dd952c680d",
+        "operational_a2f41e407e26a6d4",
+        "operational_4e037bdf053bbc44"
+      ],
+      "resolved_blocked_topic_ids": ["blocked_7c7231256f066513"],
+      "authority_basis": "Rich, Head of Sales, explicitly set the normal main ISTV reapplication minimum at three months. Later conflicting Sales Ops replies do not supersede the same scoped decision. Separately approved evidence-based exceptions and repeated-abuse handling remain separate decisions.",
+      "source_ids": [
+        "screenshot:2026-07-08:rich-main-istv-reapply-three-months",
+        "kb:knowledge-base/greenlight-cohort/greenlight-pdf-and-cohort-deadlines.md",
+        "kb:knowledge-base/greenlight-cohort/main-istv-call-2-cohort-reschedule-rules.md"
+      ]
+    },
+    {
+      "id": "istv-app-device-wording",
+      "title": "ISTV app supported device-family wording",
+      "status": "source_resolved",
+      "effective_at": "2026-07-14T00:19:00.000Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["inclusion", "artifact_location", "location"],
+      "match_groups": [
+        ["istv app", "inside success tv app", "app"],
+        ["roku", "apple tv", "fire stick", "fire tv"],
+        ["download", "device", "watch"]
+      ],
+      "controlling_policy_ids": [
+        "owner-istv-app-download-devices",
+        "claim_a67cbc990c0e81d9__a2",
+        "claim_9a12d8eaefcf143a__a2",
+        "curated_ebe493f9f76bba2a"
+      ],
+      "excluded_policy_ids": [
+        "operational_56eb2c8181d936c9",
+        "operational_7b63cae5908e03f6"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rich corrected the rep-facing wording to Roku, Fire Stick, or Apple TV devices.",
+      "source_ids": ["screenshot:2026-07-14:rich-istv-app-correction"]
+    },
+    {
+      "id": "telephone-onboarding-zoom-recording-completeness",
+      "title": "Telephone onboarding must preserve the Zoom-video and recording conditions",
+      "status": "source_resolved",
+      "effective_at": "2026-07-19T04:07:40.500Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["permission", "procedure", "requirement"],
+      "match_groups": [
+        ["telephone", "phone", "call the client"],
+        ["payment", "onboarding"],
+        ["no internet", "cannot join zoom", "unable to join zoom", "zoom video", "recording"]
+      ],
+      "controlling_policy_ids": ["curated_v43_phone_onboarding_zoom_recording"],
+      "excluded_policy_ids": [
+        "operational_4e94452ae30fb103",
+        "operational_33d11d08e600955f",
+        "operational_0e5b1524ad7fea36"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline approved telephone payment and onboarding only for the no-internet case while also requiring the interaction to remain on Zoom video when possible; the approved workaround keeps Zoom running on the computer so the phone conversation is recorded.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784440460.500479"]
+    },
+    {
+      "id": "bank-closed-payment-deadline-no-monday-exception",
+      "title": "Bank closure does not create a Monday payment exception",
+      "status": "source_resolved",
+      "effective_at": "2026-07-19T20:18:52.914Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["permission", "exception", "deadline", "procedure", "requirement"],
+      "match_groups": [
+        ["bank closed", "bank is closed", "bank closure"],
+        ["missed deadline", "misses the deadline", "payment deadline", "sunday deadline"],
+        ["exception", "monday", "pay monday"]
+      ],
+      "controlling_policy_ids": ["curated_v43_bank_closed_deadline_no_exception"],
+      "excluded_policy_ids": [
+        "operational_dbd84eb65d2fef16",
+        "claim_aa5693a927f4c445",
+        "claim_3bc5c8d2b2e10ba5"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline denied the exact bank-closure Monday exception. Rich's Head-of-Sales three-month minimum controls the attached reapplication duration over the conflicting six-month wording; unrelated emergency examples do not redefine this exact case.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1784410332.914089",
+        "screenshot:2026-07-08:rich-main-istv-reapply-three-months"
+      ]
+    },
+    {
+      "id": "greenlight-supporting-documents-fulfillment-destination",
+      "title": "Call 1 greenlight-supporting documents go to the fulfillment hotline",
+      "status": "source_resolved",
+      "effective_at": "2026-07-21T18:16:58.223Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["routing", "location", "procedure", "owner"],
+      "match_groups": [
+        ["greenlight", "green light"],
+        ["supporting document", "supporting links", "links provided by lead", "evidence from the lead", "proof from the lead"],
+        ["send", "where", "channel", "provided by lead", "lead provides"]
+      ],
+      "controlling_policy_ids": ["curated_v43_greenlight_supporting_documents"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline supplied the exact stable destination for lead-provided evidence supporting greenlight approval: the fulfillment hotline, not the generic Greenlight Requests channel.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784672218.223119"]
+    },
+    {
+      "id": "multiple-business-partners-one-episode",
+      "title": "Three partners from one business may appear together in one episode",
+      "status": "source_resolved",
+      "effective_at": "2026-07-16T14:01:58.493Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["permission", "inclusion", "requirement"],
+      "match_groups": [
+        ["three partners", "multiple partners", "business partners"],
+        ["one episode", "same episode", "separate episodes", "appear together"]
+      ],
+      "controlling_policy_ids": [
+        "curated_v43_multiple_partners_one_episode",
+        "operational_653b93b28eee7fab"
+      ],
+      "excluded_policy_ids": [
+        "claim_2583836171d98405",
+        "operational_dbab2efe84483fc0"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's later exact three-partner decision permits one episode when all partners attend and participate together. Earlier generic two-person guidance does not control this exact same-business case.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784229718.493559"]
+    },
+    {
+      "id": "daymond-custom-intro-no-personal-interview",
+      "title": "Daymond creates the license-dependent intro but does not personally conduct the studio interview",
+      "status": "source_resolved",
+      "effective_at": "2026-07-22T16:12:39.950Z",
+      "product_scopes": ["dj_nlceo"],
+      "relations": ["owner", "procedure", "inclusion", "status", "requirement"],
+      "match_groups": [
+        ["daymond john", "daymond"],
+        ["personally interview", "interview clients", "studio interview", "custom intro", "personally create"]
+      ],
+      "controlling_policy_ids": ["curated_v43_daymond_intro_interview_boundary"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline directly answered both actor-role questions: Daymond does not conduct the studio interview and instead creates a small custom intro whose exact form depends on the purchased license.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784751159.950699"]
+    },
+    {
+      "id": "daily-stats-classification-and-correction",
+      "title": "Second calls are follow-ups and EOD corrections stay in the original thread",
+      "status": "source_resolved",
+      "effective_at": "2026-07-21T18:17:22.055Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["definition", "procedure", "location", "routing"],
+      "match_groups": [
+        ["daily stats", "eod stats", "end of day stats", "second calls", "call 2"],
+        ["classify", "follow ups", "correction", "corrected", "incorrect", "where post"]
+      ],
+      "controlling_policy_ids": ["curated_v43_daily_stats_workflow"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline directly classified second calls as follow-ups and directed an EOD correction to the original daily-stats thread, while keeping live leaderboard mutation with Sales Tech.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784677042.055679"]
+    },
+    {
+      "id": "immediate-booking-direct-zoom-link",
+      "title": "A direct Zoom link is allowed for an immediate booking when the public calendar cannot be used",
+      "status": "source_resolved",
+      "effective_at": "2026-07-22T19:02:35.078Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "procedure", "artifact_location"],
+      "match_groups": [
+        ["immediate booking", "fast track booking", "outbound booking"],
+        ["direct zoom link", "send the zoom link"],
+        ["public calendar", "cannot use calendar", "can't use calendar"]
+      ],
+      "controlling_policy_ids": ["curated_v43_direct_zoom_immediate_booking"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's late threaded reply directly approved the Zoom-link workflow for this bounded immediate-booking case.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784761955.078429"]
+    },
+    {
+      "id": "first-no-answer-text-oncehub-link",
+      "title": "The first no-answer text may include the rep's public OnceHub link",
+      "status": "source_resolved",
+      "effective_at": "2026-07-23T09:13:06.469Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "procedure", "artifact_location"],
+      "match_groups": [
+        ["no answer", "does not answer", "did not answer", "first text", "initial text"],
+        ["oncehub", "public calendar link", "calendar link"],
+        ["include", "send", "allowed", "may i"]
+      ],
+      "controlling_policy_ids": ["curated_v43_oncehub_first_no_answer_text"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_f46bdf307acb27f9"],
+      "authority_basis": "Madeline's late threaded reply directly permits including the rep's public OnceHub link in the first no-answer text.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784814786.469689"]
+    },
+    {
+      "id": "seo-pr-exposure-definition",
+      "title": "SEO from PR exposure means ranking the client or business higher on Google for affiliated keywords",
+      "status": "source_resolved",
+      "effective_at": "2026-07-22T18:26:38.000Z",
+      "product_scopes": ["product_agnostic", "unknown", "dj_nlceo"],
+      "relations": ["definition", "inclusion", "procedure"],
+      "match_groups": [
+        ["seo"],
+        ["benefit", "mean", "meaning", "rank"],
+        ["pr exposure", "google", "keywords"]
+      ],
+      "controlling_policy_ids": ["curated_v43_seo_definition"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline supplied the exact bounded definition in the authoritative offer-question thread.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784738661.915609"]
+    },
+    {
+      "id": "wire-contract-proof-confirmation-payme-sequence",
+      "title": "Wire closes proceed through contract signature, prompt proof, receipt confirmation, and only then PayMe posting",
+      "status": "source_resolved",
+      "effective_at": "2026-07-22T17:52:14.190Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["procedure", "permission", "requirement"],
+      "match_groups": [
+        ["wire"],
+        ["contract"],
+        ["proof", "screenshot"],
+        ["post sale", "posting the sale", "payme", "pay me"]
+      ],
+      "controlling_policy_ids": ["curated_v43_wire_close_sequence"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline approved the quoted wire SOP, and Rich's meeting instruction independently confirms that PayMe posting waits for payment confirmation.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784742185.568689", "meeting:2026-07-07:00:36:34-00:37:28"]
+    },
+    {
+      "id": "pre-call-cancellation-followup-permission",
+      "title": "A reasonable follow-up attempt is allowed after a pre-call cancellation unless the lead says do not contact",
+      "status": "source_resolved",
+      "effective_at": "2026-07-21T16:50:40.800Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "procedure", "requirement"],
+      "match_groups": [
+        ["cancel before", "canceled before", "cancelled before"],
+        ["call", "appointment"],
+        ["follow up", "reschedule", "reach out"]
+      ],
+      "controlling_policy_ids": ["curated_v43_precall_cancel_followup"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline directly permitted the bounded follow-up while preserving the explicit do-not-contact boundary.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784652173.603419"]
+    },
+    {
+      "id": "same-outbound-lead-twice-one-day",
+      "title": "A rep may call the same outbound lead twice in one day",
+      "status": "source_resolved",
+      "effective_at": "2026-07-16T15:35:12.857Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "procedure", "requirement"],
+      "match_groups": [
+        ["same outbound lead", "same lead"],
+        ["twice", "two times"],
+        ["one day", "same day", "in a day"]
+      ],
+      "controlling_policy_ids": ["curated_v43_outbound_same_lead_twice"],
+      "excluded_policy_ids": ["claim_351cd002f878d239__a4", "claim_822bc33285ea3b9e"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline answered this exact frequency decision. Double-booking ownership and following-week attempt guidance address different relationships and cannot override it.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784214516.671009"]
+    },
+    {
+      "id": "outbound-sheet-rep-name-marker",
+      "title": "The rep's name on the outbound sheet marks the lead as taken and being contacted",
+      "status": "source_resolved",
+      "effective_at": "2026-07-16T15:35:12.857Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["procedure", "requirement", "location"],
+      "match_groups": [
+        ["outbound sheet", "dial sheet"],
+        ["lead is taken", "lead taken", "being contacted", "already contacted"],
+        ["mark", "show", "indicate", "put my name", "rep name"]
+      ],
+      "controlling_policy_ids": ["curated_v43_outbound_sheet_name_marker"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline supplied the stable sheet-recording instruction in the exact outbound-frequency thread.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784214516.671009"]
+    },
+    {
+      "id": "rudy-assigned-outbound-lead-permission",
+      "title": "A Rudy Mawer assignment does not block the bounded outbound call",
+      "status": "source_resolved",
+      "effective_at": "2026-07-16T15:34:11.862Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "procedure", "requirement"],
+      "match_groups": [
+        ["rudy mawer", "rudy"],
+        ["assigned", "taken"],
+        ["call", "dial"]
+      ],
+      "controlling_policy_ids": ["curated_v43_rudy_assigned_outbound_lead"],
+      "excluded_policy_ids": ["claim_351cd002f878d239__a1", "claim_e35e7791f5b1616a__a2"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline answered the exact Rudy-assignment display case. The generic another-rep rule does not establish that this named system assignment is active rep ownership, so the decisions are not the same scope.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784214015.775119"]
+    },
+    {
+      "id": "upgrade-form-slack-search-discovery",
+      "title": "Find the upgrade sheet by searching upgrade in Slack",
+      "status": "source_resolved",
+      "effective_at": "2026-07-21T14:52:51.870Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["artifact_location", "location", "procedure"],
+      "match_groups": [
+        ["upgrade sheet", "upgrade form"],
+        ["where can i find", "where find", "slack search", "search bar"]
+      ],
+      "controlling_policy_ids": ["operational_924d1e28f055e435"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_f46bdf307acb27f9"],
+      "authority_basis": "Madeline supplied a stable discovery path without claiming that the exact current form link is embedded in the answer.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784637334.539369"]
+    },
+    {
+      "id": "public-testimonials-no-private-contact",
+      "title": "Use approved public testimonials and never share or arrange private cast-member contact",
+      "status": "source_resolved",
+      "effective_at": "2026-07-23T12:00:00.000Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["permission", "prohibition", "procedure", "artifact_location"],
+      "match_groups": [
+        ["cast member", "past participant", "previous cast"],
+        ["prospect", "future prospect", "reference", "testimonial"],
+        ["contact", "details", "introduction", "examples", "mention", "discuss"]
+      ],
+      "controlling_policy_ids": ["v3src_testimonials_landing_page", "v3src_past_cast_contact_boundary"],
+      "excluded_policy_ids": ["operational_ecf60219942d4a40"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "The accepted rep-facing rule is to use approved public testimonials while withholding personal details and private introductions; this preserves the user's reviewed acceptance feedback and the existing governed privacy boundary.",
+      "source_ids": ["kb:approved-cast-member-testimonials-resource", "owner-feedback:2026-07-23:reviewed50-item-13"]
+    },
+    {
+      "id": "post-greenlight-internet-drop-followup",
+      "title": "An already completed greenlight stays in the original day's stats after an internet drop",
+      "status": "source_resolved",
+      "effective_at": "2026-07-23T14:54:58.666Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["procedure", "status", "requirement", "permission", "eligibility"],
+      "match_groups": [
+        ["internet dropped", "internet drop", "connection dropped"],
+        ["after i greenlit", "after greenlight", "already greenlit"],
+        ["follow up", "greenlight now", "wait until", "reconnect"]
+      ],
+      "controlling_policy_ids": ["curated_v43_post_greenlight_disconnect_followup"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_1c8b0ffdc9afcc77"],
+      "authority_basis": "Madeline confirmed both the completed greenlight status and the reconnect-and-follow-up procedure without inventing the unresolved call-merge process.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784757428.033849"]
+    },
+    {
+      "id": "custom-payment-plan-boundary",
+      "title": "Only listed payment plans may be offered",
+      "status": "source_resolved",
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["payment_option", "permission", "requirement", "procedure", "exception"],
+      "match_groups": [
+        ["payment plan", "payment split", "payment schedule", "installment", "custom plan", "custom split"],
+        ["custom", "listed", "approved", "allowed", "offer", "make up", "create", "different"]
+      ],
+      "controlling_policy_ids": [
+        "owner-unlisted-payment-split-boundary",
+        "claim_e30857cfce9af5e5",
+        "claim_49bd9449c5bfb1a7",
+        "claim_527d746a2e41c49f__a2",
+        "claim_011c2a2b1fcc2c79__a1",
+        "claim_011c2a2b1fcc2c79__a2",
+        "claim_29f612c569904696"
+      ],
+      "excluded_policy_ids": [
+        "operational_900445e46bb3d277",
+        "operational_cb037f3ca4b6257b"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rich confirmed that reps may use only the approved plans listed in the current source; the governed payment article preserves that rule and separates it from Finance actions.",
+      "source_ids": ["screenshot:2026-07-08:rich-dj-and-payment-replies"]
+    },
+    {
+      "id": "main-istv-paid-client-upgrade-process",
+      "title": "Paid-client package upgrades use the upgrade form, new contract, and payment difference before filming",
+      "status": "source_resolved",
+      "effective_at": "2026-07-20T17:49:31.811Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["procedure", "requirement", "permission", "payment_option"],
+      "match_groups": [
+        ["upgrade", "upgraded package", "package upgrade"],
+        ["client has paid", "already paid", "paid client", "mid payment plan", "payment difference"],
+        ["current process", "process when", "wants to upgrade", "want to upgrade", "how does a paid client upgrade"]
+      ],
+      "controlling_policy_ids": [
+        "curated_af3fa1d5bbe01125",
+        "claim_d4765c6b8aa3730e",
+        "claim_9ecfb269cce72cbe__a1",
+        "claim_9ecfb269cce72cbe__a2",
+        "claim_9ecfb269cce72cbe__a7"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rich's paid-client upgrade process and Madeline's later upgrade-form instruction are sequential and compatible: start with the upgrade form, use the upgraded contract and approved payment-difference path, and complete the upgrade before filming. A separate CEO Day availability conflict does not govern a generic paid-client package upgrade.",
+      "source_ids": [
+        "slack:#sales-questions-requests:upgrade-from-lower-license-mid-payment-plan",
+        "slack:C0AUQKNR8CF:1784568504.075709",
+        "slack:C0AUQKNR8CF:1784569771.811719",
+        "kb:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md"
+      ]
+    },
+    {
+      "id": "ach-clearance-before-onboarding",
+      "title": "ACH must come through before the client is signed up for onboarding",
+      "status": "source_resolved",
+      "effective_at": "2026-06-25T15:19:30.092Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["requirement", "procedure", "permission"],
+      "match_groups": [
+        ["ach"],
+        ["onboarding", "sign up for onboarding"],
+        ["wait", "clear", "come through"],
+        ["signed contract", "contract is signed", "contract already signed"]
+      ],
+      "controlling_policy_ids": ["operational_8822431e281b23ac"],
+      "excluded_policy_ids": [
+        "operational_218f15b0a75fa20f",
+        "claim_79d169f5420166a4",
+        "claim_0d687aaee6ce547e__a1",
+        "claim_0d687aaee6ce547e__a2",
+        "claim_0d687aaee6ce547e__a3",
+        "claim_0d687aaee6ce547e__a4"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline answered this exact signed-contract/ACH/onboarding question directly: the rep should wait for the ACH to come through. Earlier proof-based welcome-email guidance and post-sale confirmation boundaries do not control this later exact onboarding decision.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1782340715.818709",
+        "slack:C0AUQKNR8CF:1782400770.092919"
+      ]
+    },
+    {
+      "id": "contract-email-review-permission",
+      "title": "A requested contract copy may be sent; screen-sharing remains preferred",
+      "status": "source_resolved",
+      "effective_at": "2026-07-10T13:17:31+05:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["permission", "procedure", "artifact_location"],
+      "match_groups": [
+        ["contract"],
+        ["email", "send", "share", "review"]
+      ],
+      "controlling_policy_ids": ["operational_95ddcec72a090d31"],
+      "excluded_policy_ids": ["operational_6034269702586108"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline explicitly said a requested contract can be sent while screen-sharing the terms remains best practice. The later compound Slack reply says screen-sharing is best; it does not revoke permission. The compiled 'do not send' card exceeded its source and is retired for this exact claim.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1783671451.715859",
+        "slack:C0AUQKNR8CF:1784223853.911689"
+      ]
+    },
+    {
+      "id": "failed-contract-automation-jotform-recovery",
+      "title": "Use the Contract Automation List Jotform when the contract does not populate",
+      "status": "source_resolved",
+      "effective_at": "2026-06-24T18:46:27.377Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["procedure", "artifact_identity", "artifact_location"],
+      "match_groups": [
+        ["contract", "agreement"],
+        ["does not populate", "did not populate", "not populate", "doesn't populate", "didn't populate", "does not appear", "did not appear", "not appear", "missing contract", "failed to generate"],
+        ["sign", "signing", "client"]
+      ],
+      "controlling_policy_ids": ["operational_fd8af741c6707d6d"],
+      "excluded_policy_ids": ["operational_26b9360616d8b7fe"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's direct answer covers the exact failed-population recovery: send the Jotform link from the Contract Automation List. The separate wire-review answer has an unmet wire-review condition and does not control automation failure.",
+      "source_ids": ["slack:C0AUQKNR8CF:1782321987.377749"]
+    },
+    {
+      "id": "dj-no-cohort",
+      "title": "Daymond John and Next Level CEO do not use the main ISTV cohort rule",
+      "status": "source_resolved",
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "product_scopes": ["dj_nlceo"],
+      "relations": ["deadline", "requirement", "permission", "procedure"],
+      "match_groups": [
+        ["daymond john", "dj", "next level ceo", "nlceo"],
+        ["cohort", "sunday deadline", "rebook", "reschedule"]
+      ],
+      "controlling_policy_ids": [
+        "owner-dj-nlceo-current-offer-overview",
+        "claim_49d7d7b8c2c45c22__a1",
+        "claim_bb04a794e0a74ea5__a1",
+        "claim_0de0110a15158df9__a5"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_913ac98aba6b4bca"],
+      "authority_basis": "Rich's direct reply and the governed product article agree that the main ISTV cohort rule does not apply to DJ/NLCEO.",
+      "source_ids": ["screenshot:2026-07-08:rich-dj-and-payment-replies"]
+    },
+    {
+      "id": "dj-ceo-day-upgrade-current-offer",
+      "title": "The current Next Level CEO offer includes the $5,000 paid-in-full CEO Day upgrade",
+      "status": "source_resolved",
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "product_scopes": ["dj_nlceo"],
+      "relations": ["status", "inclusion", "payment_option", "price_amount", "requirement"],
+      "match_groups": [
+        ["ceo day", "ceo day upgrade"],
+        ["current", "currently available", "available", "availability", "sell", "include", "upgrade", "payment terms", "paid in full", "pay", "$5,000", "$5000"]
+      ],
+      "controlling_policy_ids": ["owner-dj-nlceo-current-offer-overview"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_f46bdf307acb27f9"],
+      "authority_basis": "The July 14 owner-approved current Next Level CEO offer overview explicitly lists the CEO Day upgrade at $5,000 paid in full only. It supersedes the July 4 unresolved-availability blocker for availability and payment terms, but it does not establish turnaround.",
+      "source_ids": [
+        "kb:knowledge-base/offers-packages/istv-nlceo-pricing-and-same-day-discount.md",
+        "owner-review:2026-07-14:dj-nlceo-current-offer-overview"
+      ]
+    },
+    {
+      "id": "lead-ownership-thirty-day-window",
+      "title": "Lead ownership is refreshed by documented Keap contact",
+      "status": "source_resolved",
+      "effective_at": "2026-07-07T13:59:29.000Z",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["duration", "deadline", "requirement", "procedure"],
+      "match_groups": [
+        ["lead ownership", "owns a lead", "ownership window"],
+        ["30 day", "31 day", "latest contact", "documented contact"],
+        ["keap", "logged", "documented"]
+      ],
+      "controlling_policy_ids": [
+        "claim_c376ae6963df3bfe__a2",
+        "claim_c376ae6963df3bfe__a3",
+        "claim_c376ae6963df3bfe__a4",
+        "curated_78f9823829434d41"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Mike and Rich confirmed the 30-day window, the latest documented-contact reset, and the 31-day release boundary.",
+      "source_ids": ["meeting:2026-07-07:ask-sales-review"]
+    },
+    {
+      "id": "same-day-onboarding-notification",
+      "title": "No separate same-day onboarding notification after completed post-sale handoff",
+      "status": "source_resolved",
+      "effective_at": "2026-07-09T00:00:00+05:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["requirement", "procedure", "routing", "owner"],
+      "match_groups": [
+        ["same day onboarding", "short notice onboarding", "last minute onboarding", "onboarding today", "onboarding later today", "onboarding slot for later today"],
+        ["notify", "notification", "message", "inform"]
+      ],
+      "controlling_policy_ids": [
+        "claim_00511e4e86668762__a5",
+        "claim_0d687aaee6ce547e__a5",
+        "curated_d6b8616db00c16df"
+      ],
+      "excluded_policy_ids": ["operational_99c259c37a3816ff"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Mike approved the no-separate-notification answer when all listed post-sale steps are complete; the governed post-sale handoff policy preserves the same bounded rule.",
+      "source_ids": [
+        "screenshot:after-2026-07-09:mike-onboarding-approval",
+        "screenshot:after-2026-07-09:mike-onboarding-answer-detail"
+      ]
+    },
+    {
+      "id": "confidential-slide-photo-response",
+      "title": "Stop photographs of confidential sales slides and request deletion",
+      "status": "source_resolved",
+      "effective_at": "2026-07-06T20:03:53.220Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["permission", "requirement", "procedure"],
+      "match_groups": [
+        ["photo", "photos", "photograph", "photographs", "screenshot", "screenshots"],
+        ["slide", "slides", "presentation"],
+        ["call 1", "sales call", "during the call"]
+      ],
+      "controlling_policy_ids": ["claim_d8f7bb6d2647ddd3"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline directly stated that photographing the slides is not allowed, instructed the rep to ask the prospect to stop, explain confidentiality, and request deletion of photos already taken.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1783364412.262609",
+        "slack:C0AUQKNR8CF:1783364479.240509",
+        "slack:C0AUQKNR8CF:1783368233.220909"
+      ]
+    },
+    {
+      "id": "friday-call-one-weekend-scheduling",
+      "title": "Friday Call 1 does not require weekend work; Monday is allowed when no weekend call is conducted",
+      "status": "source_resolved",
+      "effective_at": "2026-07-10T20:52:40.296Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["permission", "requirement", "procedure", "timing_start", "deadline"],
+      "match_groups": [
+        ["call 1", "call one"],
+        ["friday"],
+        ["call 2", "call two"],
+        ["monday", "weekend", "saturday", "sunday"]
+      ],
+      "controlling_policy_ids": ["curated_8a9c0c6ea1953a5a"],
+      "excluded_policy_ids": [
+        "v3src_weekend_call_choice",
+        "operational_f71ab703a9e563ed",
+        "claim_55c460c7f88e3de1",
+        "claim_ecc77594f73a2c9e",
+        "operational_77537b341aeac5ce"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rich's later direct answer specifically addresses whether reps must work after a Friday Call 1: weekend work is optional, and Call 2 may be scheduled Monday when the rep does not conduct it over the weekend. The curated controlling decision restores the Call 1/Call 2 roles that were blurred in generated summaries and supersedes older Friday-specific summaries that required Sunday for this exact scenario.",
+      "source_ids": ["slack:C0AUQKNR8CF:1783716760.296289"]
+    },
+    {
+      "id": "freelancer-business-qualification",
+      "title": "Freelancing alone does not establish entrepreneurship for qualification",
+      "status": "source_resolved",
+      "effective_at": "2026-06-08T17:24:44.996369+00:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["eligibility", "requirement", "permission", "procedure"],
+      "match_groups": [
+        ["freelancer", "freelance"],
+        ["business", "entrepreneur", "qualify", "qualification", "eligible", "call 2"]
+      ],
+      "controlling_policy_ids": ["claim_59be9c344b9359a4"],
+      "excluded_policy_ids": ["claim_9453401ae5d6b749"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's freelancer-specific answer is more exact than the generic audition fallback: freelance jobs alone do not establish entrepreneurship, so the rep must evaluate a genuine business, offer, ownership, and overall fit.",
+      "source_ids": ["slack:#sales-questions-requests:1782936353.417679"]
+    },
+    {
+      "id": "two-calendar-ownership-resolution",
+      "title": "Two-calendar ownership conflicts are resolved between reps and escalated to Sales Ops if needed",
+      "status": "source_resolved",
+      "effective_at": "2026-07-10T17:14:23.283449+00:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["owner", "procedure", "routing", "requirement"],
+      "match_groups": [
+        ["two calendars", "two different reps", "two reps", "different reps", "multiple reps"],
+        ["client", "prospect", "lead", "applicant"],
+        ["owns", "ownership", "which rep", "original rep", "calendar conflict"]
+      ],
+      "controlling_policy_ids": ["v3src_two_calendar_engagement"],
+      "excluded_policy_ids": [
+        "operational_53ef4e4b0f7547aa",
+        "operational_73e36ae00420b064"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "The later Madeline-approved two-calendar decision is intentionally more specific than generic first-contact or first-booking rules: the reps should resolve the conflict together, then use Sales Ops when unresolved.",
+      "source_ids": ["slack:#sales-questions-requests:1783702498.867049"]
+    },
+    {
+      "id": "existing-client-new-show-application",
+      "title": "An existing ISTV customer may proceed with an application for another ISTV show",
+      "status": "source_resolved",
+      "effective_at": "2026-05-27T15:16:32.644399+00:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["permission", "eligibility", "procedure", "requirement"],
+      "match_groups": [
+        ["existing customer", "existing client", "current customer", "current client", "already an istv customer"],
+        ["different show", "another show", "new show", "second show"],
+        ["apply", "application", "proceed", "skip the call", "buy"]
+      ],
+      "controlling_policy_ids": ["claim_606e9d59e3cd964f"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's direct existing-client decision permits another-show purchase and requires checking Keap for the original assignment rather than skipping solely because the applicant is already a customer.",
+      "source_ids": ["slack:#sales-questions-requests:1779894992.644399"]
+    },
+    {
+      "id": "previously-claimed-lead-contact-first",
+      "title": "Contact the original rep before acting on a previously claimed or no-show lead",
+      "status": "source_resolved",
+      "effective_at": "2026-07-07T16:20:49.388239+00:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["permission", "requirement", "procedure", "owner"],
+      "match_groups": [
+        ["no show", "no-show", "no showed", "no-showed", "previously claimed", "claimed lead"],
+        ["another rep", "original rep", "different rep"],
+        ["rebook", "book", "calendar", "contact", "inform"]
+      ],
+      "controlling_policy_ids": [
+        "v3src_previously_claimed_twenty_percent_lead",
+        "operational_49a3fe2589bb8c18"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": ["blocked_6522ba21e9d254b6"],
+      "authority_basis": "The reviewed source and the direct operational answer agree on the safe decision: contact or inform the original rep first, learn what happened, and then decide whether to proceed instead of automatically rebooking.",
+      "source_ids": [
+        "slack:#sales-questions-requests:1783439649.388239",
+        "slack:C0AUQKNR8CF:1783439649.388239"
+      ]
+    },
+    {
+      "id": "early-stage-no-launch-reapply",
+      "title": "A lead with no launched company presence may be told it is too soon and to reapply",
+      "status": "source_resolved",
+      "effective_at": "2026-06-29T18:52:10.231Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["eligibility", "permission", "requirement", "procedure", "consequence"],
+      "match_groups": [
+        ["early stage", "very early stages", "startup"],
+        ["website and social media haven't launched", "website social media and company have not launched", "no online presence", "haven't launched", "not launched"],
+        ["not a fit", "too soon", "reapply", "call 1", "disqualify", "dq"]
+      ],
+      "controlling_policy_ids": ["operational_7888fa50e96a3ede"],
+      "excluded_policy_ids": [
+        "claim_aa93466af64a3cdd",
+        "operational_a6e3242a5928bea5"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's later direct answer addresses the narrower no-launch scenario: when the company, website, and social presence have not launched, the rep may say it is too soon and invite the lead to reapply. The earlier general startup guidance expressly depends on an active website or social proof and does not control this exact boundary.",
+      "source_ids": ["slack:C0AUQKNR8CF:1782759130.231449"]
+    },
+    {
+      "id": "oncehub-public-window-google-calendar-fallback",
+      "title": "Use Google Calendar when OnceHub cannot expose the needed outbound time",
+      "status": "source_resolved",
+      "effective_at": "2026-06-02T21:20:42.218859+00:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["procedure", "permission", "requirement"],
+      "match_groups": [
+        ["public calendar", "oncehub"],
+        ["only allows bookings within two days", "cannot provide the needed time", "missing later times", "available next week"],
+        ["booking process", "book", "schedule", "google calendar", "use google"]
+      ],
+      "controlling_policy_ids": [
+        "claim_d93982445e426907",
+        "claim_5af708598311071c"
+      ],
+      "excluded_policy_ids": [
+        "claim_d9e7c2f5a04fc7ae",
+        "operational_448f8c2704df8e55"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline answered the exact OnceHub-later-time scheduling failure by approving Google as the fallback. Rich's compatible scheduling boundary requires reps to use public or personal calendar hours without overlapping or touching the master calendar. General outbound audition and lead-ownership procedures do not answer this bounded scheduling decision.",
+      "source_ids": [
+        "slack:#sales-questions-requests:1780435242.218859",
+        "slack:#sales-questions-requests:1780347654.965099"
+      ]
+    },
+    {
+      "id": "repeated-disqualified-applicant-cancel-block",
+      "title": "Repeatedly disqualified applicants who keep reapplying may be canceled and blocked",
+      "status": "source_resolved",
+      "effective_at": "2026-07-06T20:04:50.557Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["permission", "requirement", "procedure", "routing"],
+      "match_groups": [
+        ["disqualified", "not a good candidate"],
+        ["keeps applying", "repeat booking", "repeat bookings", "repeatedly returns", "applied multiple times"]
+      ],
+      "controlling_policy_ids": ["curated_6385430e3a079b63"],
+      "excluded_policy_ids": [
+        "claim_4c5932f5c97e68ed",
+        "claim_a5945bc4fd156d47",
+        "operational_f29f2a35b24e2437",
+        "operational_1ba92919bb81e1a5",
+        "operational_be17543c50abcfd0",
+        "owner-main-istv-cross-show-reapply-wait"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's reply to the exact repeated-disqualification scenario approved cancellation and the sales-tech unsubscribe/block plus opt-out process. The newer single-reapplication thread uses a different contact-first/rejection-letter process and is not generalized to repeated abuse.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1783365171.377379",
+        "slack:C0AUQKNR8CF:1783368290.557619",
+        "slack:C0AUQKNR8CF:1784657910.455209"
+      ]
+    },
+    {
+      "id": "internal-statistics-screenshot-prohibition",
+      "title": "Internal statistics and ranking screenshots must not be shared with prospects",
+      "status": "source_resolved",
+      "effective_at": "2026-05-13T15:29:26.348Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["permission", "requirement", "procedure"],
+      "match_groups": [
+        ["statistics", "stats", "social reach", "combined following", "rankings"],
+        ["screenshot", "screen shot", "statistics slide", "stats slide"],
+        ["send", "share", "give out", "provide"]
+      ],
+      "controlling_policy_ids": ["operational_eef854a24abf5bd5"],
+      "excluded_policy_ids": ["operational_cd78979d3c4a3551"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's internal-statistics rule specifically prohibits giving out internal podcast statistics and does not authorize screenshots of rankings. That narrower sensitive-content rule controls the generic slide-deck transport instruction for a statistics screenshot; it does not authorize any alternative wording.",
+      "source_ids": ["slack:C0AUQKNR8CF:1778686166.348639"]
+    },
+    {
+      "id": "weekly-marketing-training-discontinued",
+      "title": "The former six-month weekly training program is discontinued",
+      "status": "source_resolved",
+      "effective_at": "2026-07-09T19:17:46+05:00",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv"],
+      "relations": ["inclusion", "status", "requirement", "artifact_identity", "artifact_location"],
+      "match_groups": [
+        ["weekly marketing training", "weekly training", "six month training"],
+        ["lite", "cast member", "training program", "access", "included", "discontinued"]
+      ],
+      "controlling_policy_ids": ["owner-six-month-training-discontinued"],
+      "excluded_policy_ids": ["operational_5389822b467bab54"],
+      "globally_retired_policy_ids": ["operational_5389822b467bab54"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "The later owner-approved override explicitly discontinues the former six-month weekly program and instructs reps not to promise it; this is an approved claim replacement, not a recency inference.",
+      "source_ids": ["slack:C0AUQKNR8CF:1783606666.740729"]
+    }
+  ]
+}

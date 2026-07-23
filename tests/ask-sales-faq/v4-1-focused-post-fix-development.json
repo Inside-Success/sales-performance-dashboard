@@ -1,0 +1,44 @@
+{
+  "name": "Ask Sales V4.1 focused post-fix development checks",
+  "diagnosticOnly": true,
+  "conversations": [
+    {
+      "id": "v4-1-focused-routes",
+      "prompts": [
+        {
+          "question": "What is the earliest time I can send the day-of SMS reminder?",
+          "independent": true,
+          "evaluationStrata": ["relation_boundary", "route_ownership"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "sales_policy", "claim": "Do not substitute the 9 PM cutoff or route a policy gap to tech."}]
+        },
+        {
+          "question": "Can you confirm whether this client's ACH payment cleared?",
+          "independent": true,
+          "evaluationStrata": ["current_lookup", "route_ownership"],
+          "goldNeeds": [{"expectedDisposition": "route", "expectedRouteKey": "finance", "claim": "Stable policy cannot establish a live payment state."}]
+        },
+        {
+          "question": "Can I email the contract link if the client wants to review it and is paying by wire?",
+          "independent": true,
+          "evaluationStrata": ["source_fidelity", "permission"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "A requested contract may be sent; screen-sharing remains best practice. The source never said do not send."}]
+        }
+      ]
+    },
+    {
+      "id": "v4-1-focused-follow-up",
+      "prompts": [
+        {
+          "question": "Can reps create a custom payment plan for a client?",
+          "evaluationStrata": ["follow_up", "payment_option"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Only approved listed plans may be used."}]
+        },
+        {
+          "question": "What if the client keeps insisting?",
+          "evaluationStrata": ["follow_up", "intent_fidelity"],
+          "goldNeeds": [{"expectedDisposition": "answer", "claim": "Restate the approved-plan boundary without inventing an escalation or exception request."}]
+        }
+      ]
+    }
+  ]
+}
