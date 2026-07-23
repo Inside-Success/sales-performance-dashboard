@@ -23,6 +23,8 @@ import {
   inferV4SystemicPolicyRelations,
   inferV4SystemicRelation,
   inferV4SystemicRequestKind,
+  v4SystemicDecisionObjectErrors,
+  v4SystemicDecisionObjectScore,
   v4SystemicClauseCoverage,
   v4SystemicMaterialQualifierErrors,
   v4SystemicMaterialQuestionClauses,
@@ -518,17 +520,43 @@ export function applyV4SystemicDeterministicQueryGuards(
       reasoningSummary: `${requestPreservedPlan.reasoningSummary} The proposed multi-amount schedule is a payment-option decision even when phrased as a contract-selection question.`,
     }
     : requestPreservedPlan;
+  const workflowAccessGap = request.match(/\b(?:i|we)\s+(?:do\s+not|don['’]?t|can(?:not|'t)|could\s+not|couldn['’]?t)\s+(?:find|see|access|join|locate|have)\b[^.?!]{0,180}\b(?:channel|group|form|sheet|link)\b|\b(?:channel|group|form|sheet|link)\b[^.?!]{0,120}\b(?:isn['’]?t|is\s+not|doesn['’]?t|does\s+not)\s+(?:visible|available|working|on my list)\b/i)?.[0] || "";
+  const asksWorkflowProcedure = /\b(?:how\s+(?:do|can|should)\s+(?:i|we)|where\s+(?:do|can|should)\s+(?:i|we)|what\s+is\s+the\s+(?:process|procedure|workflow))\b/i.test(request);
+  const workflowAccessGuardedPlan: V4SystemicQueryPlan = workflowAccessGap && asksWorkflowProcedure && paymentGuardedPlan.needs.length === 1
+    ? {
+      ...paymentGuardedPlan,
+      needs: [
+        { ...paymentGuardedPlan.needs[0], id: "N1" },
+        {
+          id: "N2",
+          text: `Resolve the stated missing access to the ${/\bgreen\s*light|greenlight/i.test(request) ? "greenlight or daily-stats " : ""}workflow channel, group, form, sheet, or link.`,
+          authorityText: workflowAccessGap,
+          originalRequestText: request,
+          retrievalQueries: [workflowAccessGap, request],
+          productScope: turn.productScope,
+          domains: ["workflow access", ...(/\bgreen\s*light|greenlight/i.test(request) ? ["greenlight"] : [])],
+          actions: ["locate or restore access"],
+          entities: ["required workflow resource"],
+          relation: "location" as const,
+          requestKind: "current_lookup" as const,
+          ambiguity: "none" as const,
+          clarificationQuestion: "",
+        },
+      ],
+      reasoningSummary: `${paymentGuardedPlan.reasoningSummary} Preserved the separately actionable workflow-access gap instead of treating it as background to the policy question.`,
+    }
+    : paymentGuardedPlan;
   const needsProductAndStage = turn.productScope === "unknown" &&
     LICENSE_TIER_PATTERN.test(request) &&
     PACKAGE_CHANGE_PATTERN.test(request) &&
     MONETARY_CONTEXT_PATTERN.test(request);
-  if (!needsProductAndStage) return paymentGuardedPlan;
+  if (!needsProductAndStage) return workflowAccessGuardedPlan;
   const clarificationQuestion = "Is this for main ISTV or Next Level CEO, and has filming already happened?";
   return {
-    ...paymentGuardedPlan,
-    needs: paymentGuardedPlan.needs.map((need) => {
+    ...workflowAccessGuardedPlan,
+    needs: workflowAccessGuardedPlan.needs.map((need) => {
       const text = [need.text, ...need.retrievalQueries, ...need.actions, ...need.entities].join(" ");
-      if (!PACKAGE_CHANGE_PATTERN.test(text) && paymentGuardedPlan.needs.length > 1) return need;
+      if (!PACKAGE_CHANGE_PATTERN.test(text) && workflowAccessGuardedPlan.needs.length > 1) return need;
       return {
         ...need,
         productScope: "unknown",
@@ -536,7 +564,7 @@ export function applyV4SystemicDeterministicQueryGuards(
         clarificationQuestion,
       };
     }),
-    reasoningSummary: `${paymentGuardedPlan.reasoningSummary} Product and filming stage are material before applying a cross-product license change amount or process.`,
+    reasoningSummary: `${workflowAccessGuardedPlan.reasoningSummary} Product and filming stage are material before applying a cross-product license change amount or process.`,
   };
 }
 
@@ -888,12 +916,15 @@ function deterministicDirectPolicyIdsForNeed(
     .sort((left, right) => right.score - left.score || left.rank - right.rank);
   const strongest = eligible[0];
   if (!strongest) return [];
+  const strongestObjectText = [strongest.policy.title, ...strongest.policy.question_families, strongest.policy.decision, ...strongest.policy.actions, ...strongest.policy.entities].join(" ");
+  const objectScore = v4SystemicDecisionObjectScore(need.authorityText || need.text, strongestObjectText);
   const enoughQuestionFamilyCoverage = strongest.familyScore >= 3.25;
   const enoughDistinctiveOverlap = strongest.matchedTerms.length >= 4 || strongest.familyScore >= 5;
   const nearTop = strongest.rank <= 3;
   const runnerUp = eligible.find((candidate) => candidate.policy.decision_key !== strongest.policy.decision_key);
   const decisivelyAhead = !runnerUp || strongest.score - runnerUp.score >= 5;
   if (!enoughQuestionFamilyCoverage || !enoughDistinctiveOverlap || !nearTop || !decisivelyAhead) return [];
+  if (objectScore < 0) return [];
   return [strongest.policy.id];
 }
 
@@ -1476,7 +1507,7 @@ type SentenceForValidation = {
 };
 
 export function v4SystemicNeedRelationErrors(needText: string, sentence: string) {
-  const errors: string[] = [];
+  const errors: string[] = [...v4SystemicDecisionObjectErrors(needText, sentence)];
   const exclusivePlatform = needText.match(/\b(?:for|on)\s+(facebook|instagram|youtube|tiktok|linkedin|amazon prime|roku|apple tv|fire stick)\s+only\b/i)?.[1];
   if (exclusivePlatform && !new RegExp(`\\b${exclusivePlatform.replace(/\s+/g, "\\s+")}\\b`, "i").test(sentence)) {
     errors.push(`package inclusion alone does not answer whether delivery is limited to ${exclusivePlatform}`);
@@ -1725,14 +1756,25 @@ export function v4SystemicExactControllingEvidenceSupports(
 
 export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4SystemicNeedDecision, retrieval: V4SystemicRetrieval) {
   const text = `${need.text} ${need.domains.join(" ")} ${need.actions.join(" ")} ${need.entities.join(" ")}`;
+  const financeOwnerAction = needRequiresFinanceOwnerAction(need);
+  const greenlightArtifact = /\b(?:greenlight|green light|greenlit|green lighted)\b.{0,120}\b(?:letters?|emails?|messages?|links?|urls?|pdfs?|status)\b|\b(?:letters?|emails?|messages?|links?|urls?|pdfs?|status)\b.{0,120}\b(?:greenlight|green light|greenlit|green lighted)\b|\bapproval\s+(?:letters?|pdfs?)\b/i.test(text);
+  const greenlightAccessAction = need.requestKind !== "knowledge" && /\b(?:greenlight|green light)\b/i.test(text) &&
+    /\b(?:access|find|locate|see|join|have|channel|group|form|sheet|link)\b/i.test(text);
+  const greenlightOwnerAction = greenlightArtifact || greenlightAccessAction || (
+    /\b(?:check|confirm|verify|request|send|provide|locate|find|expedite|prioriti[sz]e)\w*\b.{0,120}\b(?:greenlight|green light)\b|\b(?:greenlight|green light)\b.{0,120}\b(?:check|confirm|verify|request|send|provide|locate|find|expedite|prioriti[sz]e)\w*\b/i.test(text) &&
+    need.requestKind !== "knowledge"
+  );
   const contractArtifactLookup = ["artifact_identity", "artifact_location", "location"].includes(need.relation) &&
     /\b(?:contract|agreement)\b/i.test(text);
   if (contractArtifactLookup) return "sales_tech";
-  const contractSignatureVerification = /\b(?:verify|confirm|check)\w*\b.{0,120}\b(?:contract|agreement)\b.{0,80}\b(?:signed|signature|completed|executed)\b|\b(?:signed|completed|executed)\s+(?:contract|agreement)\b.{0,120}\b(?:verify|confirm|check|find|locate|view|see)\w*\b/i.test(text);
+  const contractSignatureVerification = /\b(?:verify|confirm|check|find|locate|view|see)\w*\b.{0,120}\b(?:(?:signed|completed|executed)\s+(?:contract|agreement)|(?:contract|agreement)\b.{0,50}\b(?:signed|signature|completed|executed))\b|\b(?:signed|completed|executed)\s+(?:contract|agreement)\b.{0,120}\b(?:verify|confirm|check|find|locate|view|see)\w*\b/i.test(text);
   if (contractSignatureVerification) return "sales_tech";
-  const financeOperation = needRequiresFinanceOwnerAction(need) || /\b(?:confirm|verify|check|locate|trace|process|issue|request|submit|post|send|refund|reverse|cancel|update|correct|receive|clear)\w*\b.{0,120}\b(?:ach|wire|payment|transaction|invoice|billing|charge|refund|commission|finance)\b|\b(?:ach|wire|payment|transaction|invoice|billing|charge|refund|commission|finance)\b.{0,120}\b(?:confirm|verify|check|locate|trace|process|issue|request|submit|post|send|refund|reverse|cancel|update|correct|receive|clear)\w*\b/i.test(text);
+  const contractTermsPolicyQuestion = /\b(?:contract|agreement)\b.{0,100}\b(?:redlin\w*|edit\w*|chang\w*|modif\w*|custom terms?)\b|\b(?:redlin\w*|edit\w*|chang\w*|modif\w*|custom terms?)\b.{0,100}\b(?:contract|agreement)\b/i.test(text) &&
+    /\b(?:can|could|may|allowed|permitted|should|must|policy|rule|whether|determine if|exceptions?)\b/i.test(text);
+  if (contractTermsPolicyQuestion) return "sales_policy";
+  const financeOperation = financeOwnerAction || (need.requestKind !== "knowledge" && /\b(?:confirm|verify|check|locate|trace|process|issue|request|submit|post|send|refund|reverse|cancel|update|correct|receive|clear)\w*\b.{0,120}\b(?:ach|wire|payment|transaction|invoice|billing|charge|refund|commission|finance)\b|\b(?:ach|wire|payment|transaction|invoice|billing|charge|refund|commission|finance)\b.{0,120}\b(?:confirm|verify|check|locate|trace|process|issue|request|submit|post|send|refund|reverse|cancel|update|correct|receive|clear)\w*\b/i.test(text));
   if (financeOperation) return "finance";
-  const greenlightOperation = /\b(?:greenlight|green light)\s+(?:letter|pdf|status|cap|capacity)\b|\b(?:send|request|provide|share|locate|find|check|confirm|stop|expedite|prioriti[sz]e)\w*\b.{0,100}\b(?:greenlight|green light)\b/i.test(text);
+  const greenlightOperation = greenlightOwnerAction || (need.requestKind !== "knowledge" && /\b(?:greenlight|green light)\s+(?:letter|pdf|status|cap|capacity)\b|\b(?:send|request|provide|share|locate|find|check|confirm|stop|expedite|prioriti[sz]e)\w*\b.{0,100}\b(?:greenlight|green light)\b/i.test(text));
   if (greenlightOperation) return "greenlight";
   const recordingOperation = (
     /\b(?:phone|call|zoom)\b.{0,80}\brecording\b|\brecording\b.{0,80}\b(?:phone|call|zoom)\b/i.test(text)
@@ -1753,6 +1795,12 @@ export function v4SystemicGenericRouteKey(need: V4SystemicNeed, decision: V4Syst
   const missingContractAutomation = /\b(?:contract|agreement)\b.{0,120}\b(?:does\s*not|doesn't|did\s*not|didn't|not|missing|failed?\s+to)\b.{0,80}\b(?:populate|generate|appear|arrive|send)\w*\b/i.test(text) ||
     /\b(?:populate|generate|appear|arrive|send)\w*\b.{0,80}\b(?:contract|agreement)\b/i.test(text);
   if (missingContractAutomation) return "sales_tech";
+  // Route ownership follows the requested operation, not incidental topic
+  // words. A reusable policy question that mentions payment or greenlight still
+  // belongs to Sales Questions unless it actually asks for a live owner action.
+  // Explicit system, recording, contract-record, and automation failures above
+  // remain Sales Tech work even when phrased as "how do I" knowledge questions.
+  if (need.requestKind === "knowledge" && need.relation !== "routing" && !financeOwnerAction && !greenlightOwnerAction) return "sales_policy";
   // A model or evidence card may correctly identify the operational owner even
   // when the user phrases the gap as a reusable knowledge question. Accept the
   // hint only when the need text independently names that owner's domain; this

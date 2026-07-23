@@ -33,11 +33,193 @@ const KNOWLEDGE_QUESTION = /\b(?:what\s+(?:is|are)\s+the\s+(?:rule|policy)|is\s+
 const CURRENT_LOOKUP = /\b(?:current|currently|latest|today|right now|still|confirm|verify|check|trace|status|pending|cleared|received|went through)\b/i;
 const OPERATIONAL_ACTION = /\b(?:send|submit|post|request|process|issue|confirm|verify|trace|locate|find|get|provide|share|refund|cancel|pause|update|edit|merge|combine|replace|delete|remove|book|rebook|reschedule|schedule|upload|download|open|access|fix|repair|escalate)\b/i;
 const ARTIFACT_ACQUISITION_ACTION = /\b(?:send|request|issue|locate|find|get|provide|share|upload|download|open|access)\b/i;
-const ARTIFACT = /\b(?:link|url|form|sheet|spreadsheet|document|template|pdf|letter|recording|video|episode|file|contract|agreement|script|media\s*kit|asset)\b/i;
+const ARTIFACT = /\b(?:link|url|form|sheet|spreadsheet|document|template|email|message|pdf|letter|recording|video|episode|file|contract|agreement|script|media\s*kit|asset)\b/i;
 const REP_ACTION_PERMISSION = /\b(?:(?:can|could|may)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)|(?:am|are|is)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+allowed\s+to|(?:do|does)\s+(?:i|we|reps?|representatives?|the\s+reps?|the\s+representatives?)\s+have\s+permission\s+to)\s+(?:send|share|provide|discuss|mention|cancel|pause|stop|block|unsubscribe|book|rebook|reschedule|schedule|contact|notify|route|post|submit|request|process|issue|confirm|verify|trace|refund|update|edit|merge|combine|replace|delete|remove|upload|download|open|access|fix|repair|escalate)\b/i;
 
+const normalizedValueCache = new Map<string, string>();
+const MAX_RELATION_CACHE_ENTRIES = 4096;
+
+function rememberRelationValue<T>(cache: Map<string, T>, key: string, value: T) {
+  if (!cache.has(key) && cache.size >= MAX_RELATION_CACHE_ENTRIES) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
+  }
+  cache.set(key, value);
+  return value;
+}
+
 function normalize(value: string) {
-  return value.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9$%]+/g, " ").replace(/\s+/g, " ").trim();
+  const cached = normalizedValueCache.get(value);
+  if (cached !== undefined) return cached;
+  const normalized = value.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9$%]+/g, " ").replace(/\s+/g, " ").trim();
+  return rememberRelationValue(normalizedValueCache, value, normalized);
+}
+
+const NUMBER_WORDS: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+  eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+  eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, ninety: 90,
+};
+
+type DurationMeasurement = {
+  amount: number;
+  unit: "minute" | "hour" | "day" | "week" | "month" | "year";
+  role: "handoff_window" | "deadline_window" | "reapplication_wait" | "availability_duration" | "session_duration" | "time_window" | "generic_duration";
+};
+
+const durationMeasurementCache = new Map<string, DurationMeasurement[]>();
+const DURATION_MEASUREMENT_PATTERN = new RegExp(
+  "\\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|ninety|\\d+(?:\\.\\d+)?)\\s+(minutes?|hours?|days?|weeks?|months?|years?)\\b",
+  "gi",
+);
+
+function durationMeasurements(value: string): DurationMeasurement[] {
+  const cached = durationMeasurementCache.get(value);
+  if (cached) return cached;
+  const text = normalize(value);
+  const matches = [...text.matchAll(DURATION_MEASUREMENT_PATTERN)];
+  const measurements = matches.flatMap((match) => {
+    const amount = NUMBER_WORDS[match[1].toLowerCase()] ?? Number.parseFloat(match[1]);
+    if (!Number.isFinite(amount)) return [];
+    const unit = match[2].toLowerCase().replace(/s$/, "") as DurationMeasurement["unit"];
+    const index = match.index || 0;
+    const context = text.slice(Math.max(0, index - 110), Math.min(text.length, index + match[0].length + 110));
+    const role: DurationMeasurement["role"] = /\b(?:pass off|passoff|hand off|handoff|covering rep|original rep|reclaim|reassign|join the call)\b/i.test(context)
+      ? "handoff_window"
+      : /\b(?:reapply|reapplication|apply again|waiting period)\b/i.test(context)
+        ? "reapplication_wait"
+        : /\b(?:deadline|cutoff|cut off|due|no later than|by sunday|within)\b/i.test(context)
+          ? "deadline_window"
+          : /\b(?:hosted|remain|stay|release term)\b|\b(?:available|access)\s+for\b|\baccess\b.{0,30}\b(?:lasts?|duration)\b/i.test(context)
+            ? "availability_duration"
+            : /\b(?:zoom|meeting|appointment|session|interview|licensing)\b.{0,50}\bcall\b|\bcall\b.{0,50}\b(?:zoom|meeting|appointment|session|interview|licensing)\b/i.test(context)
+              ? "session_duration"
+              : /\b(?:window|grace|wait|early|late|start time)\b/i.test(context)
+                ? "time_window"
+                : "generic_duration";
+    return [{ amount, unit, role }];
+  });
+  return rememberRelationValue(durationMeasurementCache, value, measurements);
+}
+
+const DECISION_OBJECT_FACETS: Array<{ name: string; pattern: RegExp }> = [
+  { name: "handoff", pattern: /\b(?:pass off|passoff|hand off|handoff|covering rep|original rep|reclaim(?: a)? call)\b/i },
+  { name: "licensing", pattern: /\b(?:licensing terms?|reuse licen[cs]e|commercial reuse)\b/i },
+  { name: "pre_call", pattern: /\b(?:pre call|before (?:the )?call|self booked prospect|booking confirmation)\b/i },
+  { name: "post_greenlight_noncommit", pattern: /\b(?:greenlit|green lighted|greenlighted)\b.{0,180}\b(?:did not|didn't|does not|doesn't|not)\b.{0,80}\b(?:commit|pay|sign|book)|\b(?:monday|sunday 11 59|cohort deadline)\b.{0,180}\b(?:rejection|noncommit|did not commit|didn't commit)\b/i },
+  { name: "onboarding", pattern: /\bonboard\w*\b/i },
+  { name: "recording", pattern: /\brecording\b/i },
+  { name: "episode_media", pattern: /\b(?:episode|watchable video|network video|documentary|podcast)\b/i },
+  { name: "crm_record", pattern: /\b(?:keap|hubspot|oncehub|crm record|calendar record)\b/i },
+  { name: "stats_reporting", pattern: /\b(?:daily stats|eod stats|end of day stats|dial list|call stats)\b/i },
+  { name: "reapplication", pattern: /\b(?:reapply|reapplication|apply again)\b/i },
+  { name: "contract", pattern: /\b(?:contract|agreement)\b/i },
+  { name: "payment", pattern: /\b(?:payment|ach|wire|invoice|refund|deposit|installment)\b/i },
+];
+
+const decisionObjectFacetCache = new Map<string, Set<string>>();
+
+function decisionObjectFacets(value: string) {
+  const cached = decisionObjectFacetCache.get(value);
+  if (cached) return cached;
+  const text = normalize(value);
+  const facets = new Set(DECISION_OBJECT_FACETS.filter(({ pattern }) => pattern.test(text)).map(({ name }) => name));
+  return rememberRelationValue(decisionObjectFacetCache, value, facets);
+}
+
+type ArtifactKind =
+  | "pre_call_message"
+  | "post_greenlight_noncommit_message"
+  | "greenlight_letter"
+  | "rejection_message"
+  | "onboarding_message"
+  | "booking_confirmation"
+  | "contract"
+  | "payment_link"
+  | "recording"
+  | "episode_media"
+  | "upgrade_form"
+  | "stats_sheet"
+  | "generic_script_or_template";
+
+const artifactKindCache = new Map<string, Set<ArtifactKind>>();
+
+function artifactKinds(value: string) {
+  const cached = artifactKindCache.get(value);
+  if (cached) return cached;
+  const text = normalize(value);
+  const kinds = new Set<ArtifactKind>();
+  const hasMessageArtifact = /\b(?:letter|email|message|template|link|url|pdf)\b/i.test(text);
+  if (hasMessageArtifact && /\b(?:greenlit|green lighted|greenlighted)\b/i.test(text) && /\b(?:did not|didn t|does not|doesn t|not)\b.{0,80}\b(?:commit|pay|sign|book)|\b(?:monday|sunday 11 59|cohort deadline)\b/i.test(text)) {
+    kinds.add("post_greenlight_noncommit_message");
+  }
+  if (hasMessageArtifact && /\b(?:pre call|before (?:the )?call|self booked prospect)\b/i.test(text)) kinds.add("pre_call_message");
+  if (hasMessageArtifact && /\bgreen\s*light\s+letter\b|\bgreenlight\s+letter\b/i.test(text)) kinds.add("greenlight_letter");
+  if (hasMessageArtifact && /\b(?:rejection|rejected|decline|denial)\b/i.test(text)) kinds.add("rejection_message");
+  if (hasMessageArtifact && /\bonboard\w*\b/i.test(text)) kinds.add("onboarding_message");
+  if (hasMessageArtifact && /\b(?:booking|appointment)\b.{0,80}\b(?:confirm|confirmation)\b|\bconfirmation\b.{0,80}\b(?:booking|appointment)\b/i.test(text)) kinds.add("booking_confirmation");
+  if (/\b(?:contract|agreement)\b/i.test(text)) kinds.add("contract");
+  if (/\b(?:payment|checkout)\s+(?:link|url|page)\b/i.test(text)) kinds.add("payment_link");
+  if (/\brecording\b/i.test(text)) kinds.add("recording");
+  if (/\b(?:episode|watchable video|network video|documentary|podcast)\b/i.test(text)) kinds.add("episode_media");
+  if (/\bupgrade\b.{0,80}\b(?:form|sheet|spreadsheet)\b|\b(?:form|sheet|spreadsheet)\b.{0,80}\bupgrade\b/i.test(text)) kinds.add("upgrade_form");
+  if (/\b(?:daily stats|eod stats|end of day stats)\b.{0,80}\b(?:sheet|spreadsheet|form|link)\b/i.test(text)) kinds.add("stats_sheet");
+  if (!kinds.size && /\b(?:script|template)\b/i.test(text)) kinds.add("generic_script_or_template");
+  return rememberRelationValue(artifactKindCache, value, kinds);
+}
+
+function durationRoleCompatible(left: DurationMeasurement["role"], right: DurationMeasurement["role"]) {
+  return left === right || left === "generic_duration" || right === "generic_duration" ||
+    (left === "time_window" && ["handoff_window", "deadline_window", "reapplication_wait"].includes(right)) ||
+    (right === "time_window" && ["handoff_window", "deadline_window", "reapplication_wait"].includes(left));
+}
+
+export function v4SystemicDecisionObjectErrors(request: string, evidence: string) {
+  const errors: string[] = [];
+  const requestedMeasurements = durationMeasurements(request);
+  const evidenceMeasurements = durationMeasurements(evidence);
+  for (const requested of requestedMeasurements) {
+    if (!evidenceMeasurements.length) continue;
+    const covered = evidenceMeasurements.some((candidate) =>
+      candidate.amount === requested.amount && candidate.unit === requested.unit && durationRoleCompatible(requested.role, candidate.role),
+    );
+    if (!covered) {
+      errors.push(`the requested ${requested.amount}-${requested.unit} ${requested.role.replace(/_/g, " ")} is not established by the evidence`);
+    }
+  }
+
+  const requestedArtifacts = artifactKinds(request);
+  const evidenceArtifacts = artifactKinds(evidence);
+  if (ARTIFACT.test(request) && requestedArtifacts.size && evidenceArtifacts.size &&
+      ![...requestedArtifacts].some((kind) => evidenceArtifacts.has(kind))) {
+    errors.push("the evidence refers to a different artifact kind or lifecycle stage than the requested artifact");
+  }
+
+  const requestedFacets = decisionObjectFacets(request);
+  const evidenceFacets = decisionObjectFacets(evidence);
+  const exclusiveFacets = new Set(["handoff", "licensing", "pre_call", "post_greenlight_noncommit", "onboarding", "recording", "episode_media", "crm_record", "stats_reporting", "reapplication", "contract"]);
+  const requestedExclusive = [...requestedFacets].filter((facet) => exclusiveFacets.has(facet));
+  const evidenceExclusive = [...evidenceFacets].filter((facet) => exclusiveFacets.has(facet));
+  if (requestedExclusive.length && evidenceExclusive.length && ![...requestedFacets].some((facet) => evidenceFacets.has(facet))) {
+    errors.push("the evidence governs a different decision object than the request");
+  }
+  return [...new Set(errors)];
+}
+
+export function v4SystemicDecisionObjectScore(request: string, evidence: string) {
+  if (v4SystemicDecisionObjectErrors(request, evidence).length) return -36;
+  const requestedFacets = decisionObjectFacets(request);
+  const evidenceFacets = decisionObjectFacets(evidence);
+  const facetMatches = [...requestedFacets].filter((facet) => evidenceFacets.has(facet)).length;
+  const requestedArtifacts = artifactKinds(request);
+  const evidenceArtifacts = artifactKinds(evidence);
+  const artifactMatch = [...requestedArtifacts].some((kind) => evidenceArtifacts.has(kind));
+  const requestedMeasurements = durationMeasurements(request);
+  const evidenceMeasurements = durationMeasurements(evidence);
+  const measurementMatch = requestedMeasurements.some((requested) => evidenceMeasurements.some((candidate) =>
+    candidate.amount === requested.amount && candidate.unit === requested.unit && durationRoleCompatible(requested.role, candidate.role),
+  ));
+  return Math.min(8, facetMatches * 3) + (artifactMatch ? 7 : 0) + (measurementMatch ? 6 : 0);
 }
 
 export function v4SystemicRelation(value: unknown, fallback: V4SystemicRelation = "other"): V4SystemicRelation {
@@ -58,6 +240,9 @@ export function v4SystemicRequestKind(value: unknown, fallback: V4SystemicReques
 
 export function inferV4SystemicRequestKind(value: string): V4SystemicRequestKind {
   const text = normalize(value);
+  const explicitKnowledgeDecision = REP_ACTION_PERMISSION.test(text) ||
+    /\b(?:what\s+(?:is|are)\s+the\s+(?:rule|policy)|is\s+(?:it|this|that)\s+(?:allowed|permitted|required)|are\s+reps\s+allowed|must\s+(?:i|we|reps?)\b|do\s+(?:i|we|reps?)\s+need\s+to)\b/i.test(text);
+  if (explicitKnowledgeDecision) return "knowledge";
   const asksForProcedure = /^(?:what\s+(?:is|are)\s+(?:the\s+)?(?:correct\s+)?(?:process|procedure|steps?|workflow)|how\s+(?:do|does|should|can|to)\b)/i.test(text);
   const asksForArtifact = ARTIFACT.test(text) && (
     ARTIFACT_ACQUISITION_ACTION.test(text) ||
@@ -409,23 +594,29 @@ export function v4SystemicMaterialQualifierErrors(need: Pick<V4SystemicNeed, "te
       errors.push("the request's material payment amount is not covered by the evidence");
     }
   }
+  errors.push(...v4SystemicDecisionObjectErrors(authoritativeNeedText, rawEvidence));
   return [...new Set(errors)];
 }
 
 export function v4SystemicNeedPolicyRelationErrors(need: V4SystemicNeed, policy: V4SystemicPolicy) {
   const relations = inferV4SystemicPolicyRelations(policy);
   const compatibility = v4SystemicRelationCompatibility(need.relation, relations);
+  const materialErrors = v4SystemicMaterialQualifierErrors(need, policy);
+  const correctsManualArtifactPremise = ["artifact_identity", "artifact_location"].includes(need.relation) &&
+    /\b(?:automatic|automatically|no need to manually|do not manually|not sent manually|without manual)\w*\b/i.test(policy.decision) &&
+    ARTIFACT.test(policy.decision) &&
+    materialErrors.length === 0;
   const exactRelationshipRequired = new Set<V4SystemicRelation>([
     "price_amount", "payment_option", "discount", "timing_start", "duration", "deadline", "status", "limit",
     "routing", "owner", "location", "artifact_identity", "artifact_location",
   ]).has(need.relation);
   return [
-    ...(compatibility === "incompatible"
+    ...(!correctsManualArtifactPremise && compatibility === "incompatible"
       ? [`the evidence answers ${relations.join("/")} rather than the requested ${need.relation} relationship`]
-      : compatibility === "unknown" && exactRelationshipRequired
+      : !correctsManualArtifactPremise && compatibility === "unknown" && exactRelationshipRequired
         ? [`the evidence does not establish the requested ${need.relation} relationship`]
       : []),
-    ...v4SystemicMaterialQualifierErrors(need, policy),
+    ...materialErrors,
   ];
 }
 

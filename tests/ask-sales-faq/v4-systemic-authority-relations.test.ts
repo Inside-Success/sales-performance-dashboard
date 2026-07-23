@@ -10,6 +10,7 @@ import {
   inferV4SystemicRelation,
   inferV4SystemicPolicyRelations,
   inferV4SystemicRequestKind,
+  v4SystemicDecisionObjectErrors,
   v4SystemicMaterialQuestionClauses,
   v4SystemicNeedPolicyRelationErrors,
 } from "@/lib/ask-sales-faq/v4/systemic/relations";
@@ -19,6 +20,7 @@ import {
   parseV4SystemicSourcePlan,
   v4SystemicExactControllingEvidenceSupports,
   v4SystemicExactDirectFallbackSentence,
+  v4SystemicGenericRouteKey,
   v4SystemicNeedRelationErrors,
   v4SystemicNeedRequiresCurrentArtifact,
   v4SystemicPolicyBoundaryErrors,
@@ -51,6 +53,96 @@ function need(text: string, overrides: Partial<V4SystemicNeed> = {}): V4Systemic
 }
 
 describe("V4.1 claim relations and authority controls", () => {
+  it("keeps measurement objects and artifact lifecycle stages distinct", () => {
+    expect(v4SystemicDecisionObjectErrors(
+      "The pass-off grace window is seven minutes; is that the correct reclaim period?",
+      "Licensing details are discussed on a 30-minute Zoom call.",
+    )).toEqual(expect.arrayContaining([
+      expect.stringContaining("7-minute handoff window"),
+    ]));
+    expect(v4SystemicDecisionObjectErrors(
+      "The pass-off grace window is seven minutes; is that the correct reclaim period?",
+      "The original rep has a 7-minute window from the scheduled start time to reclaim the pass-off call.",
+    )).toEqual([]);
+
+    const preCallTemplate = getV4SystemicCorpus().find((policy) => policy.id === "operational_8d3136d507b2fc07");
+    const mondayNoncommit = getV4SystemicCorpus().find((policy) => policy.id === "operational_9a9af4b445cf8d7e");
+    expect(preCallTemplate).toBeDefined();
+    expect(mondayNoncommit).toBeDefined();
+    const artifactNeed = need(
+      "Which email or link applies after a greenlit applicant does not commit by the Sunday deadline and receives the Monday message?",
+      { relation: "artifact_identity", requestKind: "artifact_request" },
+    );
+    expect(v4SystemicNeedPolicyRelationErrors(artifactNeed, preCallTemplate!)).toContain(
+      "the evidence refers to a different artifact kind or lifecycle stage than the requested artifact",
+    );
+    expect(v4SystemicNeedPolicyRelationErrors(artifactNeed, mondayNoncommit!)).toEqual([]);
+  });
+
+  it("ranks the exact decision object above a same-unit but unrelated policy", () => {
+    const question = "Is the seven-minute reclaim window measured from the scheduled start of a pass-off call?";
+    const plan: V4SystemicQueryPlan = {
+      needs: [need(question, {
+        relation: "duration",
+        requestKind: "knowledge",
+        domains: ["call handoff"],
+        actions: ["reclaim pass-off call"],
+        entities: ["original rep", "seven-minute window"],
+      })],
+      conversationIntent: "answer",
+      reasoningSummary: "generic object-identity regression",
+    };
+    const retrieval = retrieveV4SystemicPolicies(resolveV4SystemicTurn(question, []), plan);
+    const exactRank = retrieval.candidates.find((candidate) => candidate.policy.id === "operational_941811560f35aa76")?.rank;
+    const unrelatedRank = retrieval.candidates.find((candidate) => candidate.policy.id === "operational_eaa72925b1ef5aa7")?.rank;
+    expect(exactRank).toBeDefined();
+    expect(exactRank).toBeLessThanOrEqual(3);
+    expect(unrelatedRank === undefined || unrelatedRank > exactRank!).toBe(true);
+  });
+
+  it("routes by requested operation before incidental finance or greenlight topic words", () => {
+    const retrieval = { candidates: [] } as unknown as V4SystemicRetrieval;
+    const decision = (lane: "route" | "artifact" | "live_lookup" = "route") => ({
+      needId: "N1",
+      lane,
+      evidenceRefs: [],
+      answerSentences: [],
+      routeKey: null,
+      clarificationQuestion: "",
+      confidence: 0.4,
+      reason: "test",
+    });
+    expect(v4SystemicGenericRouteKey(
+      need("What is the policy after payment when a client is greenlit?", {
+        relation: "procedure",
+        requestKind: "knowledge",
+        domains: ["payment", "greenlight"],
+      }),
+      decision(),
+      retrieval,
+    )).toBe("sales_policy");
+    expect(v4SystemicGenericRouteKey(
+      need("Please confirm whether this ACH payment cleared.", {
+        relation: "status",
+        requestKind: "current_lookup",
+        actions: ["confirm payment"],
+        entities: ["ACH transaction"],
+      }),
+      decision("live_lookup"),
+      retrieval,
+    )).toBe("finance");
+    expect(v4SystemicGenericRouteKey(
+      need("I need the letter for this greenlit applicant.", {
+        relation: "artifact_identity",
+        requestKind: "artifact_request",
+        actions: ["request letter"],
+        entities: ["greenlight letter"],
+      }),
+      decision("artifact"),
+      retrieval,
+    )).toBe("greenlight");
+  });
+
   it("keeps an either-or applicant qualification choice in the eligibility relationship", () => {
     expect(inferV4SystemicRelation(
       "For Operation CEO, must the applicant own an LLC, or can the owner of a nonprofit qualify?",

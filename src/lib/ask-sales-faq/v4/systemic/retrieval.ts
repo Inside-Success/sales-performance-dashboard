@@ -7,6 +7,7 @@ import { matchingV4SystemicAuthorityResolutions } from "@/lib/ask-sales-faq/v4/s
 import {
   inferV4SystemicPolicyRelations,
   inferV4SystemicRelation,
+  v4SystemicDecisionObjectScore,
   v4SystemicMaterialQualifierErrors,
   v4SystemicRelationCompatibility,
 } from "@/lib/ask-sales-faq/v4/systemic/relations";
@@ -253,6 +254,8 @@ function queryScore(
       : relationCompatibility === "incompatible"
         ? -18
         : 0;
+  const decisionObjectText = need.originalRequestText || need.authorityText || need.text;
+  const decisionObjectScore = v4SystemicDecisionObjectScore(decisionObjectText, document.text);
   const resolutionDisposition = resolution.excluded.has(document.policy.id)
     ? "excluded"
     : resolution.controlling.has(document.policy.id)
@@ -260,10 +263,10 @@ function queryScore(
       : "unresolved";
   const resolutionScore = resolutionDisposition === "controlling" ? 18 : resolutionDisposition === "excluded" ? -100 : 0;
   const qualifierPenalty = (!resolutionControlsPolicy && relationCompatibility === "incompatible") || v4SystemicMaterialQualifierErrors(need, document.policy).length
-    ? -12
+    ? -18
     : 0;
   const scopeScore = scopeCompatibility(document.policy, need.productScope === "unknown" ? turn.productScope : need.productScope, turn);
-  const total = lexicalScore + familyScore + characterScore + structuredScore + relationScore + resolutionScore + qualifierPenalty + scopeScore + qualityScore(document);
+  const total = lexicalScore + familyScore + characterScore + structuredScore + relationScore + decisionObjectScore + resolutionScore + qualifierPenalty + scopeScore + qualityScore(document);
   return { total, lexicalScore, familyScore, characterScore, structuredScore, relationScore };
 }
 

@@ -298,7 +298,6 @@ describe("Ask Sales V4 systemic runtime", () => {
       provider: operationalAnswerProvider(false, generalUnscopedOperationalPolicy!, "main_istv"),
       skipChampionComparison: true,
     });
-
     expect(result.lane).toBe("answer");
     expect(result.selectedPolicyIds).toContain(generalUnscopedOperationalPolicy!.id);
   });
@@ -524,13 +523,15 @@ describe("Ask Sales V4 systemic runtime", () => {
     expect(v4SystemicGenericRouteKey(makeNeed("Confirm whether this ACH cleared", "current_lookup"), decision, retrieval)).toBe("finance");
     expect(v4SystemicGenericRouteKey(makeNeed("What qualifies a doctor for the show?", "knowledge"), decision, retrieval)).toBe("sales_policy");
     expect(v4SystemicGenericRouteKey(makeNeed("Send the current greenlight letter", "artifact_request"), decision, retrieval)).toBe("greenlight");
+    expect(v4SystemicGenericRouteKey(makeNeed("Who can send an approval PDF?", "artifact_request"), decision, retrieval)).toBe("greenlight");
+    expect(v4SystemicGenericRouteKey(makeNeed("Are greenlight PDFs sent automatically?", "knowledge"), decision, retrieval)).toBe("greenlight");
     expect(v4SystemicGenericRouteKey(makeNeed("Find the phone call recording", "artifact_request"), decision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey(makeNeed("Which channel handles finance requests?", "operational_action"), decision, retrieval)).toBe("finance");
     expect(v4SystemicGenericRouteKey(makeNeed("Which channel handles green light letter requests?", "operational_action"), decision, retrieval)).toBe("greenlight");
 
     const financeDecision: V4SystemicNeedDecision = { ...decision, routeKey: "finance" };
     const techDecision: V4SystemicNeedDecision = { ...decision, routeKey: "sales_tech" };
-    expect(v4SystemicGenericRouteKey(makeNeed("Will future ACH installments draft automatically?", "knowledge"), financeDecision, retrieval)).toBe("finance");
+    expect(v4SystemicGenericRouteKey(makeNeed("Will future ACH installments draft automatically?", "knowledge"), financeDecision, retrieval)).toBe("sales_policy");
     expect(v4SystemicGenericRouteKey(makeNeed("Where can I find the signed agreement record?", "knowledge"), techDecision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey(makeNeed("How do I verify that a main ISTV contract has been signed?", "knowledge"), decision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey({
@@ -541,6 +542,7 @@ describe("Ask Sales V4 systemic runtime", () => {
       relation: "artifact_location" as const,
     }, financeDecision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey(makeNeed("How is a self-sourced lead attribution recorded?", "knowledge"), techDecision, retrieval)).toBe("sales_tech");
+    expect(v4SystemicGenericRouteKey(makeNeed("Determine if a paid client can request contract redlining", "operational_action"), financeDecision, retrieval)).toBe("sales_policy");
     expect(v4SystemicGenericRouteKey(makeNeed("The payment page button will not work on the client's phone", "knowledge"), decision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey({
       ...makeNeed("Determine the troubleshooting steps when the backup link also fails", "knowledge"),
@@ -550,6 +552,43 @@ describe("Ask Sales V4 systemic runtime", () => {
     expect(v4SystemicGenericRouteKey(makeNeed("Is there training for moving leads between Keap and HubSpot?", "knowledge"), decision, retrieval)).toBe("sales_tech");
     expect(v4SystemicGenericRouteKey(makeNeed("What should the rep do if a prospect photographs Call 1 slides?", "knowledge"), decision, retrieval)).toBe("sales_policy");
     expect(v4SystemicGenericRouteKey(makeNeed("Can reps offer a custom payment plan?", "knowledge"), decision, retrieval)).toBe("sales_policy");
+  });
+
+  it("preserves a missing workflow-resource access gap beside the policy question", () => {
+    const question = "How do I greenlight? I was told to use daily stats, but I don't have such a group on my list.";
+    const turn = resolveV4SystemicTurn(question, []);
+    const plan: V4SystemicQueryPlan = {
+      needs: [{
+        id: "N1",
+        text: "How do I greenlight?",
+        retrievalQueries: ["greenlight process"],
+        productScope: "main_istv",
+        domains: ["greenlight"],
+        actions: ["submit greenlight"],
+        entities: ["greenlight request"],
+        relation: "procedure",
+        requestKind: "knowledge",
+        ambiguity: "none",
+        clarificationQuestion: "",
+      }],
+      conversationIntent: "answer",
+      reasoningSummary: "test",
+    };
+    const guarded = applyV4SystemicDeterministicQueryGuards(plan, turn);
+    expect(guarded.needs).toHaveLength(2);
+    expect(guarded.needs[1].requestKind).toBe("current_lookup");
+    expect(guarded.needs[1].actions).toContain("locate or restore access");
+    const decision: V4SystemicNeedDecision = {
+      needId: "N2",
+      lane: "route",
+      evidenceRefs: [],
+      answerSentences: [],
+      routeKey: null,
+      clarificationQuestion: "",
+      confidence: 0.5,
+      reason: "test",
+    };
+    expect(v4SystemicGenericRouteKey(guarded.needs[1], decision, { candidates: [] } as unknown as V4SystemicRetrieval)).toBe("greenlight");
   });
 
   it("keeps a stable search path distinct from identifying the exact current artifact", () => {
