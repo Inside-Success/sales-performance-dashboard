@@ -141,3 +141,9 @@ The next candidate should not be another patch over these 40 questions. It shoul
 6. freeze that new architecture before using another untouched source-backed evaluation set.
 
 This is a justified V4.4 direction, not authorization to implement or promote it. The saved production V3 policy-matching replacement remains separately pending and was not implemented or superseded.
+
+## GitHub Publication
+
+- Dashboard draft PR [#74](https://github.com/Inside-Success/sales-performance-dashboard/pull/74) contains the isolated V4.3 candidate and this result record.
+- FAQ documentation draft PR [#49](https://github.com/Inside-Success/faq-chatbot/pull/49) contains the matching governance, current-work, and restart records.
+- Both PRs are intentionally draft and unmerged because V4.3 failed the replacement gate.
