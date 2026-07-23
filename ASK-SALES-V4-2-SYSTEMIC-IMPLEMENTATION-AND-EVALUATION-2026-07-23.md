@@ -147,6 +147,15 @@ Manual audit artifact SHA-256: `d23f2f6c3a6a163c0924194234f76145684bbafdd07d7619
 
 These checks prove implementation integrity and isolation. They do not override the failed behavioral release gate.
 
+## Publication And Production-Unchanged Proof
+
+- Dashboard draft PR [#73](https://github.com/Inside-Success/sales-performance-dashboard/pull/73) and FAQ documentation draft PR [#48](https://github.com/Inside-Success/faq-chatbot/pull/48) are open. Neither was merged.
+- Dashboard governed CI run `30015751997` passed Ask Sales tests, static safety, V4 isolation, TypeScript, scoped ESLint, and the production build.
+- The automatic branch Preview `dpl_AWPQwfaKCV7yTj2y1uCz5xvH7kTH` returned `ERROR` with no build log output. It was not retried or used as acceptance evidence.
+- Dashboard `main` remains `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`.
+- The production alias still resolves to `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw`, target `production`, state `READY`.
+- No production alias, deployment, environment variable, project setting, or integration was changed.
+
 ## Honest Decision
 
 V4.2 is not better overall than V4.1 on fresh authoritative questions and is not ready to replace production V3. It meaningfully solved the object/artifact failures it targeted, so the work was not wasted, but the route-owner regressions offset those gains. V4.1 remains the strongest isolated baseline from this evaluation; V3 remains the only authorized live system.
