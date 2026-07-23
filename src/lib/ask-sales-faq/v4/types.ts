@@ -1,5 +1,6 @@
 import type { AskSalesFaqChatMessage, AskSalesFaqStructuredAnswer } from "@/lib/ask-sales-faq/types";
 import type { V3BlockedTopic, V3Policy, V3Provider, V3ProviderAttempt, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+import type { V4SystemicRelation, V4SystemicRequestKind } from "@/lib/ask-sales-faq/v4/systemic/relations";
 
 export type V4Lane = "answer" | "partial" | "clarify" | "live_lookup" | "artifact" | "route" | "conversation";
 
@@ -39,6 +40,12 @@ export type V4NeedLane = Exclude<V4Lane, "partial" | "conversation">;
 export type V4PlannedNeed = {
   id: string;
   text: string;
+  relation?: V4SystemicRelation;
+  request_kind?: V4SystemicRequestKind;
+  product_scope?: "main_istv" | "dj_nlceo" | "comparison" | "unknown";
+  domains?: string[];
+  actions?: string[];
+  entities?: string[];
   lane: V4NeedLane;
   evidence_refs: string[];
   supported_claim: string;
@@ -102,6 +109,7 @@ export type V4RuntimeMetadata = {
     historyPersistence: false;
   };
   knowledgeVersion: string;
+  authorityResolutionVersion?: string;
   turn: V3TurnResolution;
   retrieval: {
     corpusSize: number;
@@ -116,8 +124,15 @@ export type V4RuntimeMetadata = {
       productScopes: string[];
       sourceKind?: string;
       temporalRisk?: string;
+      relationScore?: number;
     }>;
     blockedTopicIds: string[];
+    blockedMatches?: Array<{
+      needId: string;
+      topicId: string;
+      score: number;
+      matchedTerms: string[];
+    }>;
   };
   plan: V4AnswerPlan;
   sourcePlan?: {
@@ -140,7 +155,7 @@ export type V4RuntimeMetadata = {
     selected: "current_v4" | "systemic_expansion";
     championLane: V4Lane;
     systemicLane: V4Lane;
-    selectionMode: "deterministic" | "evidence_arbiter" | "fail_closed";
+    selectionMode: "deterministic" | "evidence_arbiter" | "fail_closed" | "safety_veto";
     confidence: number | null;
     reason: string;
   };

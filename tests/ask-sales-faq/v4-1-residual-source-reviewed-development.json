@@ -1,0 +1,75 @@
+{
+  "name": "Ask Sales V4.1 source-reviewed residual development set",
+  "purpose": "Development-only replay of known retained failures after checking their controlling source lineage. This is not sealed promotion evidence.",
+  "conversations": [
+    {
+      "id": "residual-source-reviewed",
+      "title": "Known residuals with current source-reviewed expectations",
+      "prompts": [
+        {
+          "question": "I have the signed contract, but the client paid by ACH. Do I need to wait for the payment to clear before signing them up for onboarding?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "payment", "onboarding", "high_risk"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["operational_8822431e281b23ac"],"claim":"Wait for the ACH payment to come through before signing the client up for onboarding."}]
+        },
+        {
+          "question": "My lead wants the $20K license but wants to make a $3K first payment now and pay the remaining $17K in three weeks. Which contract should they sign?",
+          "independent": true,
+          "evaluationStrata": ["payment_option", "generic_boundary", "high_risk"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["owner-unlisted-payment-split-boundary"],"claim":"Do not offer the unlisted split; use only a current listed plan and its matching contract."}]
+        },
+        {
+          "question": "When Call 1 happens on a Friday, are we supposed to schedule Call 2 for Monday, or should it happen before the Sunday cohort closes?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "scheduling", "high_risk"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["operational_f71ab703a9e563ed"],"claim":"Weekend work is optional; Monday is allowed if the rep does not conduct the call on the weekend."}]
+        },
+        {
+          "question": "A potential cast member asked whether I can send the 2025 Inside Success statistics slide, including the social reach and combined following. Can I send a screenshot, or should I only reference the information in a message?",
+          "independent": true,
+          "evaluationStrata": ["permission_polarity", "partial", "high_risk"],
+          "goldNeeds": [
+            {"expectedDisposition":"answer","policyIds":["operational_eef854a24abf5bd5","claim_848ba0ca58988282__a3"],"claim":"Do not send the internal statistics slide or screenshot."},
+            {"expectedDisposition":"route","expectedRouteKey":"sales_policy","claim":"Use current approved public proof wording rather than inferring permission to quote the internal deck."}
+          ]
+        },
+        {
+          "question": "If someone is already an ISTV customer but applies for a different ISTV show, should I proceed with the new application or skip the call?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "existing_customer", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["claim_606e9d59e3cd964f"],"claim":"Proceed rather than skip solely because the applicant is an existing customer, and check Keap for the original assignment."}]
+        },
+        {
+          "question": "How do I verify that a Next Level CEO contract has been signed?",
+          "independent": true,
+          "evaluationStrata": ["stable_navigation", "contract", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["claim_6232701406d4ef3e"],"claim":"Use the DJ contract channel to verify the current contract rather than guessing from an old link."}]
+        },
+        {
+          "question": "If my public calendar only allows bookings within two days but an outbound lead is available next week, what is the correct booking process?",
+          "independent": true,
+          "evaluationStrata": ["retrieval", "calendar", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["claim_d93982445e426907","claim_5af708598311071c"],"claim":"Use the approved Google/public-personal calendar fallback without touching or overlapping the master calendar."}]
+        },
+        {
+          "question": "What should I do if a prospect starts taking photos of the Call 1 presentation slides during the call?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "permission", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["claim_d8f7bb6d2647ddd3"],"claim":"Ask the prospect to stop, explain that the slides are confidential, and request deletion of photos already taken."}]
+        },
+        {
+          "question": "Can I cancel an audition for someone I recently disqualified who keeps applying again, and how should I stop repeat bookings?",
+          "independent": true,
+          "evaluationStrata": ["authority_resolution", "bounded_exception", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["curated_6385430e3a079b63"],"claim":"For the exact repeatedly disqualified/reapplying scenario, cancellation is allowed; request unsubscribe/block through sales tech and add the person to the official opt-out process."}]
+        },
+        {
+          "question": "Should details about event access be explained during Call 2 or during onboarding after the sale?",
+          "independent": true,
+          "evaluationStrata": ["relation_boundary", "workflow_stage", "procedure"],
+          "goldNeeds": [{"expectedDisposition":"answer","policyIds":["operational_285778124bfd39c6"],"claim":"Detailed event-access information is provided during onboarding as a post-sale procedure."}]
+        }
+      ]
+    }
+  ]
+}

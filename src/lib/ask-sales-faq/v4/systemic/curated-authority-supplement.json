@@ -1,7 +1,7 @@
 {
   "schema_version": "ask-sales-v4-systemic-curated-authority-v1",
-  "generated_at": "2026-07-22T20:14:21Z",
-  "source_sha256": "a9804d966d70a242e631c22c8fe7fc2ff4b6f39bd8faefd4706a41212897dfd5",
+  "generated_at": "2026-07-23T04:33:36Z",
+  "source_sha256": "606ce980e484b1f79c6dd425e2d5717802183715130c07ccdc45e55a0623d0dc",
   "evidence_register": [
     {
       "source_id": "meeting:2026-07-07:ask-sales-review",
@@ -51,6 +51,27 @@
       "sha256": "40e1a0b34744a285a19b060064c1e3425f3cf6c78399db12f804a76331a2747f",
       "disposition": "curated_missing_atomic_decision",
       "note": "The automated classifier captured the contract-term boundary from this thread but omitted Madeline's separate instruction to use the new upgrade form before selecting the contract. The omitted atomic decision is curated without changing the source thread."
+    },
+    {
+      "source_id": "slack:C0AUQKNR8CF:1778777859.325359",
+      "file": "read-only-authority-thread-corpus",
+      "sha256": "7c703c0ac9d69f3affc99f40ba397e202e7394fea07b5d0f4c89cfe79ff12374",
+      "disposition": "partially_curated",
+      "note": "Curated only Madeline's explicit operational instruction to assist a first-time Zoom user with joining. Her tentative red-flag commentary remains non-answering and cannot be used to decide fit or qualification."
+    },
+    {
+      "source_id": "slack:C0AUQKNR8CF:1783365171.377379",
+      "file": "read-only-authority-thread-corpus",
+      "sha256": "a883f497d5986ff8599326771d541982cbe09dac117d3a090bd34535a662f351",
+      "disposition": "curated_missing_atomic_decision",
+      "note": "Madeline's reply answered both parts of the exact repeated-disqualified-applicant scenario. The compiled summary retained the tech/opt-out process but omitted the explicit permission to cancel, so the complete bounded decision is curated here."
+    },
+    {
+      "source_id": "slack:C0AUQKNR8CF:1783716760.296289",
+      "file": "read-only-authority-thread-corpus",
+      "sha256": "21b22350eddcc4a1c5cebe86a2361f46d1879e0121e34c64ef37c3220d1aa96c",
+      "disposition": "curated_scope_restoration",
+      "note": "Rich's direct reply resolves the Friday Call 1 scenario: weekend work is optional and Call 2 may be scheduled Monday. The generated summaries blurred which call moves to Monday, so this curated decision restores the source thread's exact Call 1 and Call 2 roles."
     }
   ],
   "policies": [
@@ -146,9 +167,9 @@
       "question_families": [
         "How long does a rep own a lead after contacting them?",
         "Does the 30-day lead ownership window refresh after another call?",
-        "When can another rep contact a lead after the prior rep's last contact?"
+        "If I log a real contact today, when does my 30-day lead ownership expire?"
       ],
-      "decision": "A rep owns a lead for 30 days from the rep's latest contact with that lead when the contact is documented in Keap. A later documented contact restarts the 30-day window. If 31 days pass without another documented contact, another rep may speak with the lead. Conditions: The contact is documented in Keap. Boundaries: This does not replace the separate first-booking rule when a client is simultaneously booked with multiple reps.",
+      "decision": "A rep owns a lead for 30 days from the rep's latest contact with that lead when the contact is documented in Keap. A later documented contact restarts the 30-day window. Conditions: The contact is documented in Keap. Boundaries: This does not replace the separate first-booking rule when a client is simultaneously booked with multiple reps.",
       "product_scopes": ["product_agnostic"],
       "domains": ["lead ownership", "Keap", "outbound"],
       "actions": ["claim lead", "contact lead", "document contact"],
@@ -162,14 +183,14 @@
       "route_reason": "",
       "authority": 10,
       "effective_at": "2026-07-07T13:59:29.000Z",
-      "last_reviewed": "2026-07-22",
+      "last_reviewed": "2026-07-23",
       "source": {
         "kind": "authoritative_meeting_decision",
         "article_id": null,
         "ids": ["meeting:2026-07-07:00:20:02-00:22:20"],
         "approved_by": ["Mike", "Rich"]
       },
-      "search_text": "lead ownership 30 days thirty days latest contact documented communication Keap refresh restart 31 days another rep outbound",
+      "search_text": "lead ownership 30 days thirty days latest contact documented communication Keap refresh restart expiration outbound",
       "specificity_priority": 95,
       "blocked_for_decision_keys": [],
       "systemic": {
@@ -304,6 +325,132 @@
         "sourceClass": "authoritative_operational_qna",
         "ownerReviewRequired": false,
         "sourceIds": ["screenshot:2026-07-14:rich-istv-app-correction"]
+      }
+    },
+    {
+      "id": "curated_57cb23fd1f148047",
+      "decision_key": "first-time-zoom-user-assistance-without-fit-decision",
+      "policy_key": "v4-systemic-curated_57cb23fd1f148047",
+      "title": "Assist a first-time Zoom user with joining the meeting",
+      "question_families": [
+        "How should a rep help an applicant who is using Zoom for the first time?",
+        "What should I do when an applicant is struggling to join the Zoom meeting?",
+        "Should a Zoom-unfamiliarity no-show be handled only as a generic no-show?"
+      ],
+      "decision": "Try your best to assist an applicant who is unfamiliar with Zoom by walking them through how to join the meeting. Boundaries: Zoom difficulty alone does not establish whether the applicant is a good or bad fit, does not authorize disqualification, and does not replace a separate qualification assessment.",
+      "product_scopes": ["product_agnostic"],
+      "domains": ["call support", "applicant experience", "sales process"],
+      "actions": ["assist applicant", "join Zoom meeting"],
+      "entities": ["applicant", "Zoom", "meeting"],
+      "risk_level": "medium",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "tentative_fit_comment_excluded", "exact_operational_instruction_only"],
+      "route_key": "sales_tech",
+      "route_channel": null,
+      "route_reason": "Route only an unresolved technical failure; do not route or decide fit merely because the applicant needed first-time Zoom help.",
+      "authority": 9.5,
+      "effective_at": "2026-05-14T16:58:59.365Z",
+      "last_reviewed": "2026-07-23",
+      "source": {
+        "kind": "authoritative_slack_operational_qna",
+        "article_id": null,
+        "ids": ["slack:C0AUQKNR8CF:1778777859.325359"],
+        "approved_by": ["Madeline"]
+      },
+      "search_text": "first time Zoom unfamiliar difficulty struggling join meeting applicant late no show assist walk through how to join do not decide fit",
+      "specificity_priority": 92,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["slack:C0AUQKNR8CF:1778777859.325359"]
+      }
+    },
+    {
+      "id": "curated_6385430e3a079b63",
+      "decision_key": "repeatedly-disqualified-applicant-cancel-and-block-process",
+      "policy_key": "v4-systemic-curated_6385430e3a079b63",
+      "title": "Cancel and block a repeatedly disqualified applicant who keeps reapplying",
+      "question_families": [
+        "Can I cancel an audition for someone I recently disqualified who keeps applying again?",
+        "How should a rep stop repeat bookings from a repeatedly disqualified applicant?",
+        "What should I do when the same unsuitable applicant repeatedly returns to the pipeline?"
+      ],
+      "decision": "A rep may cancel the audition when a repeatedly disqualified applicant keeps applying again. Post the case in #sales-tech-requests to ask for the applicant to be unsubscribed or blocked from reapplying, and add the applicant's information to the official opt-out process. Conditions: The applicant has been disqualified repeatedly and keeps reapplying. Boundaries: This does not authorize automatic cancellation for every prior pass or single reapplication; those cases require the applicable ownership and waiting-period process.",
+      "product_scopes": ["product_agnostic"],
+      "domains": ["audition management", "sales tech", "opt out"],
+      "actions": ["cancel audition", "block reapplication", "unsubscribe applicant", "add to opt out"],
+      "entities": ["repeatedly disqualified applicant", "repeat bookings", "#sales-tech-requests", "opt-out process"],
+      "risk_level": "high",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "missing_atomic_decision_recovered", "repeat-behavior-scope-preserved"],
+      "route_key": "sales_tech",
+      "route_channel": "#sales-tech-requests",
+      "route_reason": "Use sales tech to implement the unsubscribe or block request.",
+      "authority": 9.5,
+      "effective_at": "2026-07-06T20:04:50.557Z",
+      "last_reviewed": "2026-07-23",
+      "source": {
+        "kind": "authoritative_slack_operational_qna",
+        "article_id": null,
+        "ids": ["slack:C0AUQKNR8CF:1783365171.377379", "slack:C0AUQKNR8CF:1783368290.557619"],
+        "approved_by": ["Madeline"]
+      },
+      "search_text": "repeatedly disqualified applicant keeps applying again repeat bookings cancel audition sales tech unsubscribe block reapplying opt out pipeline unsuitable applicant",
+      "specificity_priority": 98,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["slack:C0AUQKNR8CF:1783365171.377379", "slack:C0AUQKNR8CF:1783368290.557619"]
+      }
+    },
+    {
+      "id": "curated_8a9c0c6ea1953a5a",
+      "decision_key": "friday-call-one-call-two-monday-choice",
+      "policy_key": "v4-systemic-curated_8a9c0c6ea1953a5a",
+      "title": "Friday Call 1 allows Call 2 on Monday without mandatory weekend work",
+      "question_families": [
+        "If Call 1 happens Friday, may Call 2 be scheduled Monday?",
+        "Does a Friday Call 1 require the rep to conduct Call 2 before the Sunday cohort closes?",
+        "Must a rep work the weekend after a Friday Call 1?"
+      ],
+      "decision": "When Call 1 happens on Friday, the rep is not required to work over the weekend. If the rep does not conduct Call 2 on Saturday or Sunday, Call 2 may be scheduled for Monday. Boundaries: This resolves the Friday Call 1 and following Call 2 scheduling choice; it does not establish a different general cohort deadline.",
+      "product_scopes": ["main_istv"],
+      "domains": ["scheduling", "cohort process"],
+      "actions": ["schedule Call 2", "work weekend"],
+      "entities": ["Call 1", "Call 2", "Friday", "Saturday", "Sunday", "Monday"],
+      "risk_level": "medium",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "source_scope_restored", "call_roles_disambiguated"],
+      "route_key": null,
+      "route_channel": null,
+      "route_reason": "",
+      "authority": 9.5,
+      "effective_at": "2026-07-10T20:52:40.296Z",
+      "last_reviewed": "2026-07-23",
+      "source": {
+        "kind": "authoritative_slack_operational_qna",
+        "article_id": null,
+        "ids": ["slack:C0AUQKNR8CF:1783716760.296289"],
+        "approved_by": ["Rich"]
+      },
+      "search_text": "Friday Call 1 Call 2 Monday Saturday Sunday weekend optional cohort scheduling no mandatory weekend work",
+      "specificity_priority": 99,
+      "blocked_for_decision_keys": [],
+      "systemic": {
+        "temporalRisk": "stable",
+        "scopeRisk": "scoped",
+        "sourceClass": "authoritative_operational_qna",
+        "ownerReviewRequired": false,
+        "sourceIds": ["slack:C0AUQKNR8CF:1783716760.296289"]
       }
     }
   ]

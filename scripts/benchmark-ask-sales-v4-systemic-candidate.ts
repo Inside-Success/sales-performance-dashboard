@@ -23,11 +23,13 @@ type RawDataset = {
   conversations: Array<{ id: string; title?: string; prompts: RawPrompt[] }>;
 };
 type ReferenceItem = {
-  caseId: string;
-  run: number;
-  question: string;
+  caseId?: string;
+  id?: string;
+  run?: number;
+  question?: string;
   v3?: Record<string, unknown>;
   v4?: Record<string, unknown>;
+  reference?: { v3?: Record<string, unknown> | null; currentV4?: Record<string, unknown> | null };
 };
 type ReferenceArtifact = { runId?: string; manifest?: Record<string, unknown>; items?: ReferenceItem[] };
 type CandidateItem = {
@@ -51,6 +53,7 @@ type Report = {
   referenceSha256: string | null;
   referenceRun: number;
   liveReferences: boolean;
+  skipChampionComparison: boolean;
   expectedCases: number;
   items: CandidateItem[];
   summary: Record<string, unknown>;
@@ -141,6 +144,7 @@ const datasetPath = resolve(argument("dataset", "tests/ask-sales-faq/v3-regressi
 const referencePath = argument("reference") ? resolve(argument("reference")) : null;
 const referenceRun = Math.max(1, Number.parseInt(argument("reference-run", "1"), 10) || 1);
 const liveReferences = argument("live-references", "false") === "true";
+const skipChampionComparison = argument("skip-champion-comparison", "false") === "true";
 if (liveReferences && referencePath) throw new Error("use either --reference or --live-references=true, not both");
 const outputPath = resolve(argument("output", "artifacts/ask-sales-faq-v4-systemic/candidate-benchmark.json"));
 const concurrency = Math.max(1, Math.min(8, Number.parseInt(argument("concurrency", "4"), 10) || 4));
@@ -149,14 +153,27 @@ const dataset = JSON.parse(datasetRaw) as RawDataset;
 if (!Array.isArray(dataset.conversations)) throw new Error("dataset conversations are missing");
 const referenceRaw = referencePath ? readFileSync(referencePath, "utf8") : null;
 const reference = referenceRaw ? JSON.parse(referenceRaw) as ReferenceArtifact : null;
-const referenceByCase = new Map((reference?.items || []).filter((item) => item.run === referenceRun).map((item) => [item.caseId, item]));
+const referenceByCase = new Map((reference?.items || []).flatMap((item) => {
+  if (item.id && item.reference) return [[item.id, {
+    v3: item.reference.v3 || undefined,
+    v4: item.reference.currentV4 || undefined,
+  } satisfies Pick<ReferenceItem, "v3" | "v4">] as const];
+  if (item.caseId && item.run === referenceRun) return [[item.caseId, item] as const];
+  return [];
+}));
 const expectedCases = dataset.conversations.reduce((total, conversation) => total + conversation.prompts.length, 0);
 const datasetSha256 = sha(datasetRaw);
 const referenceSha256 = referenceRaw ? sha(referenceRaw) : null;
 let items: CandidateItem[] = [];
 if (existsSync(outputPath)) {
   const existing = JSON.parse(readFileSync(outputPath, "utf8")) as Report;
-  if (existing.datasetSha256 !== datasetSha256 || existing.referenceSha256 !== referenceSha256 || existing.referenceRun !== referenceRun || existing.liveReferences !== liveReferences) {
+  if (
+    existing.datasetSha256 !== datasetSha256 ||
+    existing.referenceSha256 !== referenceSha256 ||
+    existing.referenceRun !== referenceRun ||
+    existing.liveReferences !== liveReferences ||
+    (existing.skipChampionComparison || false) !== skipChampionComparison
+  ) {
     throw new Error("existing candidate benchmark does not match the requested dataset and reference");
   }
   if (existing.status === "complete") throw new Error("complete candidate benchmark is immutable");
@@ -176,6 +193,7 @@ function save(status: Report["status"]) {
     referenceSha256,
     referenceRun,
     liveReferences,
+    skipChampionComparison,
     expectedCases,
     items: ordered,
     summary: summary(ordered),
@@ -204,11 +222,11 @@ async function worker() {
       if (liveReferences && !entry.independent) throw new Error("live three-way references are restricted to independent prompts so system histories cannot be mixed");
       const [systemic, liveCurrentV4, liveV3] = liveReferences
         ? await Promise.all([
-          runAskSalesFaqV4Systemic(entry.question, inputContext),
+          runAskSalesFaqV4Systemic(entry.question, inputContext, { skipChampionComparison }),
           runAskSalesFaqV4(entry.question, inputContext),
           runAskSalesFaqV3(entry.question, inputContext, { provider: generateV4Json, validatorProvider: generateV4Json }),
         ])
-        : [await runAskSalesFaqV4Systemic(entry.question, inputContext), null, null];
+        : [await runAskSalesFaqV4Systemic(entry.question, inputContext, { skipChampionComparison }), null, null];
       byId.set(id, {
         id,
         conversationId: conversation.id,

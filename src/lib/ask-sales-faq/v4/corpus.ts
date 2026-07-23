@@ -30,7 +30,7 @@ const v4PolicyDecisionOverrides = new Map<string, string>([
   ],
   [
     "claim_74f78173844719e2",
-    "A prospect still needs the company reuse license even if they already own another TV production license. The company license covers reuse of company-produced content plus the time, energy, and deliverables promised in the license.",
+    "The company reuse license exists to cover reuse of company-produced content plus the time, energy, and deliverables promised in the license. A prospect still needs that license even if they already own another TV production license.",
   ],
   [
     "claim_49827b5abfa86d45",

@@ -1,4 +1,5 @@
 import type { V3Policy, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+import type { V4SystemicRelation, V4SystemicRequestKind } from "@/lib/ask-sales-faq/v4/systemic/relations";
 
 export type V4SystemicKnowledgeMetadata = {
   temporalRisk: "stable" | "time_sensitive" | "live_only";
@@ -15,11 +16,15 @@ export type V4SystemicPolicy = V3Policy & {
 export type V4SystemicNeed = {
   id: string;
   text: string;
+  authorityText?: string;
+  originalRequestText?: string;
   retrievalQueries: string[];
   productScope: "main_istv" | "dj_nlceo" | "comparison" | "unknown";
   domains: string[];
   actions: string[];
   entities: string[];
+  relation: V4SystemicRelation;
+  requestKind: V4SystemicRequestKind;
   ambiguity: "none" | "material";
   clarificationQuestion: string;
 };
@@ -41,6 +46,14 @@ export type V4SystemicCandidate = {
   characterScore: number;
   structuredScore: number;
   authorityScore: number;
+  relationScore: number;
+};
+
+export type V4SystemicBlockedMatch = {
+  needId: string;
+  topicId: string;
+  score: number;
+  matchedTerms: string[];
 };
 
 export type V4SystemicRetrieval = {
@@ -49,6 +62,7 @@ export type V4SystemicRetrieval = {
   corpusSize: number;
   candidates: V4SystemicCandidate[];
   blockedTopicIds: string[];
+  blockedMatches: V4SystemicBlockedMatch[];
   stageTimings: Record<string, number>;
 };
 

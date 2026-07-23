@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "name": "Ask Sales V4 retained 78 independently adjudicated regression set",
+  "name": "Ask Sales V4 retained 78 independently adjudicated regression set with source-reviewed corrections",
   "purpose": "Regression-only adjudication of the immutable retained 78 prompts. This is not an unseen holdout and is not a promotion decision by itself.",
   "capturedAt": "2026-07-21T18:27:32.000Z",
   "conversationCount": 8,
@@ -32,7 +32,9 @@
       "faq:knowledge-base/events-mastermind/events-mastermind-red-carpet.md"
     ],
     "independentFromSystems": true,
-    "knowledgeVersion": "8c8c677c1209f2d7"
+    "knowledgeVersion": "8c8c677c1209f2d7",
+    "lastSourceReviewAt": "2026-07-23T00:00:00.000Z",
+    "sourceReviewNote": "The original adjudication remains preserved except for seven exact decisions corrected after read-only review of authoritative source evidence: the Operation CEO multiple-business mention rule, the no-launch early-stage boundary, ACH-before-onboarding, repeated-disqualified-applicant handling, previously claimed/no-show lead handling, Tier-1 platform client choice, and event-access workflow stage. These corrections were made from source evidence rather than candidate answer preference."
   },
   "conversations": [
     {
@@ -55,7 +57,7 @@
         {
           "question": "I have a Call 1 for Operation CEO, and the applicant has two different businesses. Should they choose one business to focus on, or can they mention both during the episode?",
           "goldNeeds": [
-            {"id":"operation-ceo-multi-business-focus","text":"Decide whether an Operation CEO applicant may feature two separate businesses in one episode or must choose one.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":[],"blockedTopicIds":[],"goldContext":[],"blockedContext":["No controlling current governed decision resolves two-business focus within one Operation CEO episode; verify the exact case with the current sales-policy owner."]}
+            {"id":"operation-ceo-multi-business-focus","text":"State the authoritative rule that an applicant with multiple businesses may mention both during the episode and does not have to choose only one.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_b990c2fbc5565b4e"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {
@@ -80,8 +82,7 @@
         {
           "question": "A lead says their website, social media, and company have not launched yet and they are in the very early stages. Should I still conduct Call 1 or tell them now that they are not a fit?",
           "goldNeeds": [
-            {"id":"early-stage-not-automatic-dq","text":"Determine whether being early-stage is an automatic disqualification before Call 1.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_aa93466af64a3cdd"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
-            {"id":"early-stage-evaluation-factors","text":"Explain the current factors to examine for an early-stage applicant.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_aa93466af64a3cdd"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"early-stage-no-launch-reapply","text":"Apply the later exact no-launch boundary: tell the lead it may be too soon and that they can reapply in the future.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_7888fa50e96a3ede"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {
@@ -153,7 +154,7 @@
         {
           "question": "I have the signed contract, but the client paid by ACH. Do I need to wait for the payment to clear before signing them up for onboarding?",
           "goldNeeds": [
-            {"id":"ach-clear-before-onboarding","text":"Determine whether onboarding should wait while ACH remains pending even though the contract is signed.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_00511e4e86668762__a1","claim_00511e4e86668762__a3"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"ach-clear-before-onboarding","text":"Apply Madeline's exact answer that onboarding should wait while ACH remains pending even though the contract is signed.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_8822431e281b23ac"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {
@@ -190,7 +191,7 @@
         {
           "question": "When Call 1 happens on a Friday, are we supposed to schedule Call 2 for Monday, or should it happen before the Sunday cohort closes?",
           "goldNeeds": [
-            {"id":"friday-call1-call2-deadline","text":"Determine whether Call 2 may wait until Monday after a Friday Call 1 or must occur before the Sunday cohort deadline.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_ecc77594f73a2c9e"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"friday-call1-call2-deadline","text":"Apply Rich's later exact rule that after a Friday Call 1, weekend work is optional and Call 2 may be scheduled Monday when it is not conducted Saturday or Sunday.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_8a9c0c6ea1953a5a"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {
@@ -282,8 +283,7 @@
         {
           "question": "Can a cast member choose which Tier 1 streaming platform their show will be submitted to?",
           "goldNeeds": [
-            {"id":"tier-one-client-choice","text":"Determine whether the client controls which Tier-1 platform receives the submission.","atomic":true,"expectedDisposition":"route","expectedRouteKey":"sales_policy","policyIds":["owner-vip-tier-one-platform-boundary"],"blockedTopicIds":[],"goldContext":[],"blockedContext":["The current policy identifies eligible Tier-1 destinations and the platform-placement boundary, but does not grant the cast member a selection right; confirm the submission-selection process before stating yes or no."]},
-            {"id":"tier-one-no-placement-guarantee","text":"State the approved Tier-1 placement boundary that remains safe to explain.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["owner-vip-tier-one-platform-boundary"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"tier-one-client-choice","text":"Determine whether the client controls which Tier-1 platform receives the submission.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_56eb2c8181d936c9","owner-vip-tier-one-platform-boundary"],"blockedTopicIds":[],"goldContext":["The authoritative Slack answer states that clients do not choose the streaming platform; the platform decides placement."],"blockedContext":[]}
           ]
         },
         {
@@ -487,8 +487,8 @@
         {
           "question": "Can I cancel an audition for someone I recently disqualified who keeps applying again, and how should I stop repeat bookings?",
           "goldNeeds": [
-            {"id":"recent-disqualification-reapply","text":"State the current waiting rule for someone recently disqualified who reapplies for another show.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_a5945bc4fd156d47"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
-            {"id":"stop-repeat-bookings","text":"Give the approved process for stopping automated outreach or repeat bookings from the repeatedly disqualified person.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["claim_4c5932f5c97e68ed"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"repeated-disqualification-cancel","text":"State that the rep may cancel when a repeatedly disqualified applicant keeps applying again.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_6385430e3a079b63"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]},
+            {"id":"stop-repeat-bookings","text":"Give the approved sales-tech unsubscribe or block request and official opt-out process for the repeatedly disqualified person.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["curated_6385430e3a079b63"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {
@@ -515,7 +515,7 @@
         {
           "question": "If a dial-out lead no-showed Call 1 with another rep, may I rebook the lead on my calendar, or should I contact the original rep?",
           "goldNeeds": [
-            {"id":"previously-claimed-dialout-lead","text":"Give the approved next step before rebooking a previously claimed 20 percent lead who no-showed another rep.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["v3src_previously_claimed_twenty_percent_lead"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
+            {"id":"previously-claimed-dialout-lead","text":"Contact or inform the original rep first and learn what happened before deciding whether to rebook the previously claimed no-show lead.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["v3src_previously_claimed_twenty_percent_lead","operational_49a3fe2589bb8c18"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         }
       ]
@@ -579,7 +579,7 @@
         {
           "question": "Should details about event access be explained during Call 2 or during onboarding after the sale?",
           "goldNeeds": [
-            {"id":"event-access-sales-vs-onboarding","text":"Separate the approved sales explanation of event access from current detailed post-sale event logistics.","atomic":true,"expectedDisposition":"partial","expectedRouteKey":null,"policyIds":["claim_e35c3076026455e6","claim_d33f7f1813b3f7a5","claim_9e04ab861ce2702f"],"blockedTopicIds":[],"goldContext":["Sales may state the approved package-inclusion boundary; current dates, venue, travel, guests, and other logistics belong to onboarding or the current event owner and must not be promised from memory."],"blockedContext":[]}
+            {"id":"event-access-sales-vs-onboarding","text":"State that event-access details are provided during onboarding rather than during Call 2.","atomic":true,"expectedDisposition":"answer","expectedRouteKey":null,"policyIds":["operational_285778124bfd39c6"],"blockedTopicIds":[],"goldContext":[],"blockedContext":[]}
           ]
         },
         {

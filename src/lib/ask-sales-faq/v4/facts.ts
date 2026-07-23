@@ -1,8 +1,8 @@
 const EXPLICIT_MONEY = /(?:\bUSD\s*)?\$\s*(\d+(?:,\d{3})*(?:\.\d+)?)\s*([km])?/gi;
 const BARE_SCALED_MONEY = /\b(\d+(?:\.\d+)?)\s*([km])\b/gi;
 const PERCENT = /\b(\d+(?:\.\d+)?)\s*%/gi;
-const DURATION = /\b(\d+(?:\.\d+)?)\s*(business\s+)?(minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)\b/gi;
-const DURATION_RANGE = /\b(\d+(?:\.\d+)?)\s*(?:-|–|—|to|through)\s*(\d+(?:\.\d+)?)\s*(business\s+)?(minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)\b/gi;
+const DURATION = /\b(\d+(?:\.\d+)?)[\s-]*(business[\s-]+)?(minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)\b/gi;
+const DURATION_RANGE = /\b(\d+(?:\.\d+)?)\s*(?:-|–|—|to|through)\s*(\d+(?:\.\d+)?)[\s-]*(business[\s-]+)?(minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)\b/gi;
 const MONEY_RANGE = /(?:\bUSD\s*)?(\$\s*)?(\d+(?:,\d{3})*(?:\.\d+)?)\s*([km])?\s*(?:-|–|—|to|through)\s*(?:\bUSD\s*)?(\$\s*)?(\d+(?:,\d{3})*(?:\.\d+)?)\s*([km])?\b/gi;
 const COUNT = /\b(\d+(?:\.\d+)?\s*[km]?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(payments?|installments?|instalments?|episodes?|seasons?|platforms?|shows?|calls?|texts?|emails?|greenlights?|leads?|clients?|prospects?|applicants?|followers?|viewers?|views?)\b/gi;
 const COUNT_RANGE = /\b(\d+(?:\.\d+)?\s*[km]?)\s*(?:-|–|—|to|through)\s*(\d+(?:\.\d+)?\s*[km]?)\s+(payments?|installments?|instalments?|episodes?|seasons?|platforms?|shows?|calls?|texts?|emails?|greenlights?|leads?|clients?|prospects?|applicants?|followers?|viewers?|views?)\b/gi;
@@ -152,6 +152,12 @@ export function extractV4TypedFacts(value: string): V4TypedFact[] {
     pushFact(facts, { type: "range", canonical: `range:money:usd:${stableNumber(minimum)}:${stableNumber(maximum)}`, raw: match[0] });
   }
   for (const match of value.matchAll(COUNT)) {
+    const start = match.index || 0;
+    // In "Call 1 episode" the numeral names the workflow stage; it is not a
+    // claim that there is exactly one episode. Treating it as an episode count
+    // causes a grounded answer to fail merely for preserving the user's Call 1
+    // context.
+    if (/\bcall\s*$/i.test(value.slice(Math.max(0, start - 12), start))) continue;
     const amount = parsedCount(match[1]);
     if (!Number.isFinite(amount)) continue;
     const unit = normalizedCountUnit(match[2]);
@@ -222,12 +228,32 @@ function guaranteePolarity(value: string) {
   return { positive, negative };
 }
 
-export function deterministicV4SentenceErrors(sentence: string, evidence: string) {
+function permissionPolarity(value: string) {
+  const normalizedValue = value.toLowerCase().replace(/[’]/g, "'");
+  const negative = /\b(?:cannot|can't|may\s+not|must\s+not|not\s+(?:be\s+)?(?:allowed|permitted)|do(?:es)?\s+not|don't|doesn't|never|prohibit(?:ed|s)?|forbidden)\b/.test(normalizedValue);
+  const positive = /\b(?:may|can|allowed|permitted|fine\s+to|okay\s+to|ok\s+to)\b/.test(normalizedValue) &&
+    !/\b(?:cannot|can't|may\s+not|not\s+(?:be\s+)?(?:allowed|permitted))\b/.test(normalizedValue) ||
+    /\b(?:is|are)\s+up\s+to\s+(?:the\s+)?reps?\b/.test(normalizedValue);
+  return { positive, negative };
+}
+
+export function deterministicV4SentenceErrors(sentence: string, evidence: string, request = "") {
   const errors: string[] = [];
-  const unsupported = unsupportedV4TypedFacts(sentence, evidence);
+  const genericUnlistedPaymentBoundary =
+    /\bany combination of payment amounts? or dates? that is not one of the current listed plans\b/i.test(evidence) ||
+    /\bproposed payment split\b.{0,120}\bnot one of (?:the )?(?:current )?(?:listed|approved) (?:plans?|options?)\b/i.test(evidence);
+  // Exact user-supplied amounts may be restated only while applying a cited
+  // generic all-unlisted-splits rule. They never become evidence for a price,
+  // approved plan, or other numeric policy claim.
+  const typedFactEvidence = genericUnlistedPaymentBoundary ? `${evidence}\n${request}` : evidence;
+  const unsupported = unsupportedV4TypedFacts(sentence, typedFactEvidence);
   if (unsupported.length) errors.push(`unsupported typed facts: ${unsupported.map((fact) => fact.raw).join(", ")}`);
 
-  const unknownChannels = (sentence.match(CHANNEL) || []).filter((channel) => !V4_ALLOWED_ROUTE_CHANNELS.has(channel.toLowerCase()));
+  const evidenceChannels = new Set((evidence.match(CHANNEL) || []).map((channel) => channel.toLowerCase()));
+  const unknownChannels = (sentence.match(CHANNEL) || []).filter((channel) =>
+    !V4_ALLOWED_ROUTE_CHANNELS.has(channel.toLowerCase()) &&
+    !evidenceChannels.has(channel.toLowerCase()),
+  );
   if (unknownChannels.length) errors.push(`unapproved route channels: ${unknownChannels.join(", ")}`);
 
   const normalizedSentence = sentence.toLowerCase();
@@ -242,6 +268,45 @@ export function deterministicV4SentenceErrors(sentence: string, evidence: string
   const evidenceGuarantee = guaranteePolarity(evidence);
   if (sentenceGuarantee.positive && !evidenceGuarantee.positive) errors.push("unsupported positive guarantee language");
   if (sentenceGuarantee.negative && !evidenceGuarantee.negative) errors.push("unsupported negative guarantee boundary");
+
+  const sentencePermission = permissionPolarity(sentence);
+  const evidencePermission = permissionPolarity(evidence);
+  if (sentencePermission.positive && evidencePermission.negative && !evidencePermission.positive) {
+    errors.push("prohibitive evidence cannot authorize an unstated permission");
+  }
+
+  // Not mentioning an artifact is not evidence that it does not exist. This
+  // matters when an authority card retires one program but also names current
+  // replacement materials: a draft must not turn evidence silence into a
+  // categorical "no material is available" answer.
+  const claimsNoMaterial = /\b(?:no|not any)\b.{0,50}\b(?:additional|other|supporting|explanatory|training)?\s*(?:materials?|resources?|documents?|assets?|videos?)\b.{0,50}\b(?:available|exist|exists|provided|offered|found)\b|\b(?:materials?|resources?|documents?|assets?|videos?)\b.{0,50}\b(?:are|is)\s+(?:not|no longer)\s+available\b/i.test(sentence);
+  const evidenceSaysNoMaterial = /\b(?:no|not any)\b.{0,50}\b(?:additional|other|supporting|explanatory|training)?\s*(?:materials?|resources?|documents?|assets?|videos?)\b.{0,50}\b(?:available|exist|exists|provided|offered|found)\b|\b(?:materials?|resources?|documents?|assets?|videos?)\b.{0,50}\b(?:are|is)\s+(?:not|no longer)\s+available\b/i.test(evidence);
+  if (claimsNoMaterial && !evidenceSaysNoMaterial) errors.push("absence of evidence cannot establish that no material is available");
+
+  // A source may describe podcast and documentary formats in the same card
+  // while assigning Hollywood-documentary styling only to the documentary.
+  // Do not let a fluent paraphrase move that design attribute onto a podcast.
+  const podcastIndex = normalizedSentence.search(/\bpodcast(?:\s+episode)?(?:\s+structure)?\b/);
+  const documentaryStyleIndex = normalizedSentence.search(/\b(?:hollywood[\s-]*documentary(?:[\s-]*style)?|documentary[\s-]*style|emotional storytelling)\b/);
+  const evidenceSeparatesDocumentaryStyle = /\bdocumentary episode\b.{0,160}\b(?:hollywood[\s-]*documentary(?:[\s-]*style)?|documentary[\s-]*style|emotional storytelling)\b/i.test(evidence);
+  if (podcastIndex >= 0 && documentaryStyleIndex > podcastIndex && evidenceSeparatesDocumentaryStyle) {
+    const intervening = normalizedSentence.slice(podcastIndex, documentaryStyleIndex);
+    const explicitlyChangesSubjectToDocumentary = /\bdocumentary(?:\s+episode)?\b/.test(intervening);
+    const attributesStyleToPodcast = /\b(?:structure|designed|through|using|uses|follows|style)\b/.test(intervening);
+    if (attributesStyleToPodcast && !explicitlyChangesSubjectToDocumentary) {
+      errors.push("documentary-only style evidence cannot define the podcast structure");
+    }
+  }
+
+  // "Freelancing alone is insufficient" is a one-way boundary. It does not
+  // establish the stronger inverse that an established business is always a
+  // mandatory prerequisite. Preserve that distinction in generated wording.
+  const evidenceOnlyRejectsFreelancingAlone = /\bfreelanc(?:e|er|ers|ing)\b.{0,80}\b(?:alone|by itself)\b|\bsolely because\b.{0,80}\bfreelance\b/i.test(evidence);
+  const evidenceRequiresEstablishedBusiness = /\b(?:without|unless)\b.{0,60}\b(?:established|genuine|official)\s+business\b|\b(?:must|need(?:s)?\s+to|required to)\s+have\b.{0,40}\b(?:established|genuine|official)\s+business\b/i.test(evidence);
+  const sentenceRequiresEstablishedBusiness = /\b(?:without|unless)\b.{0,60}\b(?:established|genuine|official)\s+business\b|\b(?:must|need(?:s)?\s+to|required to)\s+have\b.{0,40}\b(?:established|genuine|official)\s+business\b/i.test(sentence);
+  if (evidenceOnlyRejectsFreelancingAlone && sentenceRequiresEstablishedBusiness && !evidenceRequiresEstablishedBusiness) {
+    errors.push("freelancing-alone evidence cannot create an absolute established-business prerequisite");
+  }
 
   return errors;
 }

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import curatedAuthority from "@/lib/ask-sales-faq/v4/systemic/curated-authority-supplement.json";
 import { getV4SystemicCorpus } from "@/lib/ask-sales-faq/v4/systemic/corpus";
 import { retrieveV4SystemicPolicies } from "@/lib/ask-sales-faq/v4/systemic/retrieval";
+import { inferV4SystemicPolicyRelations, inferV4SystemicRelation, inferV4SystemicRequestKind } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import type { V4SystemicQueryPlan } from "@/lib/ask-sales-faq/v4/systemic/types";
 import { resolveV4Turn } from "@/lib/ask-sales-faq/v4/turn";
 
@@ -30,6 +31,8 @@ describe("V4 systemic generalized retrieval", () => {
         domains: operationalAnswer!.domains,
         actions: operationalAnswer!.actions,
         entities: operationalAnswer!.entities,
+        relation: inferV4SystemicPolicyRelations(operationalAnswer!)[0],
+        requestKind: inferV4SystemicRequestKind(question),
         ambiguity: "none",
         clarificationQuestion: "",
       }],
@@ -74,6 +77,8 @@ describe("V4 systemic generalized retrieval", () => {
         domains: governed!.domains,
         actions: governed!.actions,
         entities: governed!.entities,
+        relation: inferV4SystemicPolicyRelations(governed!)[0],
+        requestKind: inferV4SystemicRequestKind(question),
         ambiguity: "none",
         clarificationQuestion: "",
       }],
@@ -105,6 +110,8 @@ describe("V4 systemic generalized retrieval", () => {
         domains: ["events"],
         actions: ["confirm access"],
         entities: ["Mastermind", "red carpet"],
+        relation: inferV4SystemicRelation(question),
+        requestKind: inferV4SystemicRequestKind(question),
         ambiguity: "none",
         clarificationQuestion: "",
       }],
@@ -124,7 +131,7 @@ describe("V4 systemic generalized retrieval", () => {
   });
 
   it("accounts for every supplied meeting and screenshot source before curating decisions", () => {
-    expect(curatedAuthority.evidence_register).toHaveLength(7);
+    expect(curatedAuthority.evidence_register).toHaveLength(10);
     expect(curatedAuthority.evidence_register.every((record) => record.sha256.length === 64)).toBe(true);
     expect(curatedAuthority.evidence_register.every((record) => record.disposition && record.note)).toBe(true);
   });
@@ -148,6 +155,8 @@ describe("V4 systemic generalized retrieval", () => {
           domains: policy.domains,
           actions: policy.actions,
           entities: policy.entities,
+          relation: inferV4SystemicPolicyRelations(policy)[0],
+          requestKind: inferV4SystemicRequestKind(question),
           ambiguity: "none",
           clarificationQuestion: "",
         }],
@@ -167,5 +176,33 @@ describe("V4 systemic generalized retrieval", () => {
     expect(correction?.decision).toMatch(/not a hard requirement/i);
     expect(olderRule?.decision).toMatch(/not a good fit/i);
     expect(Date.parse(correction!.effective_at)).toBeGreaterThan(Date.parse(olderRule!.effective_at));
+  });
+
+  it("treats the approved current show catalog as status evidence", () => {
+    const policy = getV4SystemicCorpus().find((item) => item.id === "kr_7ace400fcdf68db9");
+    expect(policy).toBeDefined();
+    expect(inferV4SystemicPolicyRelations(policy!)).toContain("status");
+    const question = "Are we still running Kingdom Creators?";
+    const plan: V4SystemicQueryPlan = {
+      needs: [{
+        id: "N1",
+        text: question,
+        retrievalQueries: [question],
+        productScope: "main_istv",
+        domains: ["shows", "casting"],
+        actions: ["confirm current availability"],
+        entities: ["Kingdom Creators"],
+        relation: "status",
+        requestKind: "knowledge",
+        ambiguity: "none",
+        clarificationQuestion: "",
+      }],
+      conversationIntent: "answer",
+      reasoningSummary: "current catalog status",
+    };
+    const retrieval = retrieveV4SystemicPolicies(resolveV4Turn(question, []), plan);
+    const rank = retrieval.candidates.find((candidate) => candidate.policy.id === policy!.id)?.rank;
+    expect(rank).toBeDefined();
+    expect(rank).toBeLessThanOrEqual(10);
   });
 });

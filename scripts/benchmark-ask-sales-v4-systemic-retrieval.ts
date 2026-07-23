@@ -1,8 +1,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
+import { v4SystemicResolutionPolicyDisposition } from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
 import { getV4SystemicCorpus } from "@/lib/ask-sales-faq/v4/systemic/corpus";
 import { retrieveV4SystemicPolicies } from "@/lib/ask-sales-faq/v4/systemic/retrieval";
+import { inferV4SystemicPolicyRelations, inferV4SystemicRequestKind } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import type { V4SystemicNeed, V4SystemicPolicy } from "@/lib/ask-sales-faq/v4/systemic/types";
 import { resolveV4Turn } from "@/lib/ask-sales-faq/v4/turn";
 
@@ -29,20 +31,26 @@ function scope(policy: V4SystemicPolicy): V4SystemicNeed["productScope"] {
   return candidate === "main_istv" || candidate === "dj_nlceo" || candidate === "comparison" ? candidate : "unknown";
 }
 
+function benchmarkNeed(policy: V4SystemicPolicy, question: string, structured: boolean): V4SystemicNeed {
+  return {
+    id: "N1",
+    text: question,
+    retrievalQueries: [question],
+    productScope: scope(policy),
+    domains: structured ? policy.domains : [],
+    actions: structured ? policy.actions : [],
+    entities: structured ? policy.entities : [],
+    relation: inferV4SystemicPolicyRelations(policy)[0],
+    requestKind: inferV4SystemicRequestKind(question),
+    ambiguity: "none",
+    clarificationQuestion: "",
+  };
+}
+
 function rank(policy: V4SystemicPolicy, question: string, structured: boolean) {
   const turn = resolveV4Turn(question, []);
   const retrieval = retrieveV4SystemicPolicies(turn, {
-    needs: [{
-      id: "N1",
-      text: question,
-      retrievalQueries: [question],
-      productScope: scope(policy),
-      domains: structured ? policy.domains : [],
-      actions: structured ? policy.actions : [],
-      entities: structured ? policy.entities : [],
-      ambiguity: "none",
-      clarificationQuestion: "",
-    }],
+    needs: [benchmarkNeed(policy, question, structured)],
     conversationIntent: "answer",
     reasoningSummary: structured ? "structured" : "plain",
   });
@@ -53,11 +61,19 @@ const sourcePath = resolve(process.argv[2] || "artifacts/ask-sales-faq-v4-system
 const outputPath = resolve(process.argv[3] || "artifacts/ask-sales-faq-v4-systemic/retrieval-benchmark.json");
 const sources = JSON.parse(readFileSync(sourcePath, "utf8")) as SourceCorpus;
 const sourceById = new Map(sources.records.map((source) => [source.source_id, source.question]));
-const policies = getV4SystemicCorpus().filter((policy) =>
+const eligiblePolicies = getV4SystemicCorpus().filter((policy) =>
   policy.systemic.sourceClass === "authoritative_operational_qna" &&
   policy.answerability === "answer_evidence" &&
   policy.question_families[0],
 );
+const retiredPolicyIds = eligiblePolicies
+  .filter((policy) => v4SystemicResolutionPolicyDisposition(
+    benchmarkNeed(policy, policy.question_families[0], true),
+    policy.id,
+  ) === "excluded")
+  .map((policy) => policy.id);
+const retiredPolicyIdSet = new Set(retiredPolicyIds);
+const policies = eligiblePolicies.filter((policy) => !retiredPolicyIdSet.has(policy.id));
 const results = policies.map((policy) => {
   const familyQuestion = policy.question_families[0];
   const sourceQuestion = policy.systemic.sourceIds.map((id) => sourceById.get(id)).find(Boolean) || familyQuestion;
@@ -75,6 +91,7 @@ const report = {
   note: "Development-source replay measures retriever mechanics; it is not promotion evidence.",
   corpusSize: getV4SystemicCorpus().length,
   operationalAnswerPolicies: policies.length,
+  retiredPolicyIds,
   questionFamilyPlain: summary(results.map((item) => item.questionFamilyPlainRank)),
   questionFamilyStructured: summary(results.map((item) => item.questionFamilyStructuredRank)),
   sourceReplayPlain: summary(results.map((item) => item.sourceReplayPlainRank)),
@@ -86,6 +103,7 @@ writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 process.stdout.write(`${JSON.stringify({
   corpusSize: report.corpusSize,
   operationalAnswerPolicies: report.operationalAnswerPolicies,
+  retiredPolicyIds: report.retiredPolicyIds,
   questionFamilyPlain: report.questionFamilyPlain,
   questionFamilyStructured: report.questionFamilyStructured,
   sourceReplayPlain: report.sourceReplayPlain,

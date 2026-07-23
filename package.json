@@ -30,6 +30,7 @@
     "prepare:ask-sales-faq:v4:systemic-source-verification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-source-verification.ts",
     "apply:ask-sales-faq:v4:systemic-verification": "vite-node --config vitest.config.ts scripts/apply-ask-sales-v4-systemic-source-verification.ts",
     "build:ask-sales-faq:v4:systemic-holdout": "vite-node --config vitest.config.ts scripts/build-ask-sales-v4-systemic-holdout-evaluation.ts",
+    "build:ask-sales-faq:v4-1:sealed-holdout": "vite-node --config vitest.config.ts scripts/build-ask-sales-v4-1-sealed-holdout.ts",
     "judge:ask-sales-faq:v4:systemic-three-way": "vite-node --config vitest.config.ts scripts/judge-ask-sales-v4-systemic-three-way.ts",
     "export:ask-sales-faq:v4:launch-log": "vite-node --config vitest.config.ts scripts/export-ask-sales-v4-launch-log.ts"
   },

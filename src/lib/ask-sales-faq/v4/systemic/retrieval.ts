@@ -3,6 +3,13 @@ import {
   getV4SystemicCorpus,
   v4SystemicPolicyText,
 } from "@/lib/ask-sales-faq/v4/systemic/corpus";
+import { matchingV4SystemicAuthorityResolutions } from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
+import {
+  inferV4SystemicPolicyRelations,
+  inferV4SystemicRelation,
+  v4SystemicMaterialQualifierErrors,
+  v4SystemicRelationCompatibility,
+} from "@/lib/ask-sales-faq/v4/systemic/relations";
 import type {
   V4SystemicCandidate,
   V4SystemicNeed,
@@ -145,6 +152,7 @@ const documents = corpus.map((policy) => {
       ...policy.actions,
       ...policy.entities,
     ].flatMap(tokens)),
+    relations: inferV4SystemicPolicyRelations(policy),
   };
 });
 
@@ -190,6 +198,14 @@ function structuredNeedTerms(need: V4SystemicNeed) {
   return [...need.domains, ...need.actions, ...need.entities].flatMap(tokens);
 }
 
+const GENERIC_BLOCKED_MATCH_TERMS = new Set([
+  "a", "after", "already", "an", "and", "are", "be", "before", "do", "does", "did", "for", "from", "had", "has", "have", "if", "in", "into", "is", "it", "need", "needs", "of", "on", "one", "or", "the", "to", "with",
+  "agreement", "allow", "allowed", "applicant", "answer", "ask", "can", "client", "contract", "could", "create", "current", "determine", "eligible", "explain", "general", "handle", "make", "may", "pay", "permitted",
+  "business", "call", "how", "lead", "media", "must", "payment", "policy", "price", "process", "prospect", "qualify", "qualification", "sign", "up",
+  "onboard", "post", "question", "rep", "reps", "request", "required", "rule", "sale", "sales", "send", "should", "show", "status", "tell", "that", "this",
+  "use", "verify", "what", "when", "where", "which", "who", "will", "would",
+].flatMap((term) => [term, stem(term)]));
+
 function qualityScore(candidate: typeof documents[number]) {
   const policy = candidate.policy;
   const quality = policy.quality_tier === "canonical"
@@ -203,23 +219,61 @@ function qualityScore(candidate: typeof documents[number]) {
   return quality + answerability + Math.min(2, policy.authority / 5);
 }
 
-function queryScore(document: typeof documents[number], query: string, need: V4SystemicNeed, turn: V3TurnResolution) {
+type ResolutionPolicySets = { controlling: Set<string>; excluded: Set<string> };
+
+function resolutionPolicySets(need: V4SystemicNeed): ResolutionPolicySets {
+  const matching = matchingV4SystemicAuthorityResolutions(need);
+  return {
+    controlling: new Set(matching.flatMap((resolution) => resolution.controlling_policy_ids)),
+    excluded: new Set(matching.flatMap((resolution) => resolution.excluded_policy_ids)),
+  };
+}
+
+function queryScore(
+  document: typeof documents[number],
+  query: string,
+  need: V4SystemicNeed,
+  turn: V3TurnResolution,
+  resolution: ResolutionPolicySets,
+) {
   const queryTokens = expandedTokens(query);
   const lexicalScore = bm25(queryTokens, document.tokens);
   const familyScore = Math.max(0, ...document.familyTokens.map((family) => overlap(queryTokens, family))) * 10;
   const characterScore = jaccard(trigrams(query), document.trigrams) * 5;
   const structured = structuredNeedTerms(need);
   const structuredScore = overlap(structured, [...document.structured]) * 8;
+  const relationCompatibility = v4SystemicRelationCompatibility(need.relation, document.relations);
+  const resolutionControlsPolicy = resolution.controlling.has(document.policy.id);
+  const relationScore = resolutionControlsPolicy
+    ? 8
+    : relationCompatibility === "exact"
+    ? 8
+    : relationCompatibility === "compatible"
+      ? 3
+      : relationCompatibility === "incompatible"
+        ? -18
+        : 0;
+  const resolutionDisposition = resolution.excluded.has(document.policy.id)
+    ? "excluded"
+    : resolution.controlling.has(document.policy.id)
+      ? "controlling"
+      : "unresolved";
+  const resolutionScore = resolutionDisposition === "controlling" ? 18 : resolutionDisposition === "excluded" ? -100 : 0;
+  const qualifierPenalty = (!resolutionControlsPolicy && relationCompatibility === "incompatible") || v4SystemicMaterialQualifierErrors(need, document.policy).length
+    ? -12
+    : 0;
   const scopeScore = scopeCompatibility(document.policy, need.productScope === "unknown" ? turn.productScope : need.productScope, turn);
-  const total = lexicalScore + familyScore + characterScore + structuredScore + scopeScore + qualityScore(document);
-  return { total, lexicalScore, familyScore, characterScore, structuredScore };
+  const total = lexicalScore + familyScore + characterScore + structuredScore + relationScore + resolutionScore + qualifierPenalty + scopeScore + qualityScore(document);
+  return { total, lexicalScore, familyScore, characterScore, structuredScore, relationScore };
 }
 
 function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   const queries = [...new Set([need.text, ...need.retrievalQueries, turn.standaloneQuestion].map(normalize).filter(Boolean))];
+  const resolution = resolutionPolicySets(need);
   const ranked = documents
+    .filter((document) => !resolution.excluded.has(document.policy.id))
     .map((document) => {
-      const scored = queries.map((query) => ({ query, ...queryScore(document, query, need, turn) }))
+      const scored = queries.map((query) => ({ query, ...queryScore(document, query, need, turn, resolution) }))
         .sort((left, right) => right.total - left.total);
       const best = scored[0];
       return {
@@ -229,6 +283,7 @@ function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
         familyScore: best?.familyScore || 0,
         characterScore: best?.characterScore || 0,
         structuredScore: best?.structuredScore || 0,
+        relationScore: best?.relationScore || 0,
         matchedQueries: scored.filter((item) => item.total >= Math.max(3, (best?.total || 0) * 0.75)).map((item) => item.query),
         matchedTerms: [...new Set(expandedTokens(best?.query || "").filter((token) => document.tokens.includes(token)))],
       };
@@ -248,23 +303,64 @@ function rankForNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   });
 }
 
-function blockedTopicIds(plan: V4SystemicQueryPlan) {
-  const queryTerms = new Set(plan.needs.flatMap((need) => [need.text, ...need.retrievalQueries].flatMap(tokens)));
-  return getV4SystemicBlockedTopics()
-    .map((topic) => {
-      const topicTerms = new Set([
-        topic.resolution || "",
-        ...(topic.question_families || []),
-        ...(topic.domains || []),
-        ...(topic.actions || []),
-        ...(topic.entities || []),
-      ].flatMap(tokens));
-      return { id: topic.id, score: jaccard(queryTerms, topicTerms) };
-    })
-    .filter((topic) => topic.score >= 0.16)
-    .sort((left, right) => right.score - left.score)
-    .slice(0, 8)
-    .map((topic) => topic.id);
+function blockedMatches(plan: V4SystemicQueryPlan) {
+  return plan.needs.flatMap((need) => {
+    // A model-generated retrieval expansion may improve document recall, but it
+    // must never create a governance conflict that the user's actual need did
+    // not ask about. Open-conflict matching therefore uses only the atomic need
+    // text. This keeps a search expansion such as "PIF before Miami filming"
+    // from blocking an unrelated custom-payment-plan decision.
+    const queryTerms = [...new Set(tokens(need.text))];
+    const structured = structuredNeedTerms(need);
+    return getV4SystemicBlockedTopics()
+      .flatMap((topic) => {
+        const families = topic.question_families || [];
+        const topicRelations = [...new Set(families.map(inferV4SystemicRelation).filter((relation) => relation !== "other"))];
+        if (topicRelations.length && need.relation !== "other") {
+          const compatibility = v4SystemicRelationCompatibility(need.relation, topicRelations);
+          if (compatibility !== "exact" && compatibility !== "compatible") return [];
+        }
+        if (
+          need.productScope !== "unknown" &&
+          need.productScope !== "comparison" &&
+          !(topic.product_scopes || []).some((scope) =>
+            scope === need.productScope || scope === "product_agnostic" || scope === "unknown",
+          )
+        ) return [];
+        const familyTokens = families.map((family) => tokens(family));
+        const familyScore = Math.max(0, ...familyTokens.map((family) => Math.max(overlap(queryTerms, family), overlap(family, queryTerms))));
+        const topicStructured = [
+          ...(topic.domains || []),
+          ...(topic.actions || []),
+          ...(topic.entities || []),
+        ].flatMap(tokens);
+        const structuredScore = Math.max(overlap(structured, topicStructured), overlap(topicStructured, structured));
+        const topicTerms = [...new Set([
+          ...families,
+          ...(topic.domains || []),
+          ...(topic.actions || []),
+          ...(topic.entities || []),
+        ].flatMap(tokens))];
+        const matchedTerms = queryTerms.filter((term) => topicTerms.includes(term));
+        const distinctiveMatchedTerms = matchedTerms.filter((term) => !GENERIC_BLOCKED_MATCH_TERMS.has(term));
+        // Open conflicts need a match to the conflict's actual question
+        // signature, not only generic entities/actions copied into its index.
+        // This prevents "social media" from matching "Media Pack review" and
+        // an ACH/sign-up sentence from matching a Mastermind fee conflict.
+        const signatureTerms = [...new Set(families.flatMap(tokens)
+          .filter((term) => !GENERIC_BLOCKED_MATCH_TERMS.has(term)))];
+        const signatureMatchedTerms = queryTerms.filter((term) => signatureTerms.includes(term));
+        const score = familyScore * 0.75 + structuredScore * 0.25;
+        const exactEnough = matchedTerms.length >= 2 && distinctiveMatchedTerms.length >= 1 && (
+          (signatureMatchedTerms.length >= 2 && familyScore >= 0.35) ||
+          (signatureMatchedTerms.length >= 1 && familyScore >= 0.7) ||
+          (familyScore >= 0.92 && structuredScore >= 0.5)
+        );
+        return exactEnough ? [{ needId: need.id, topicId: topic.id, score, matchedTerms }] : [];
+      })
+      .sort((left, right) => right.score - left.score)
+      .slice(0, 4);
+  });
 }
 
 export function retrieveV4SystemicPolicies(
@@ -290,6 +386,7 @@ export function retrieveV4SystemicPolicies(
         characterScore: Math.max(existing?.characterScore || 0, candidate.characterScore),
         structuredScore: Math.max(existing?.structuredScore || 0, candidate.structuredScore),
         authorityScore: Math.min(2, candidate.document.policy.authority / 5),
+        relationScore: Math.max(existing?.relationScore ?? Number.NEGATIVE_INFINITY, candidate.relationScore),
         reciprocal: (existing?.reciprocal || 0) + reciprocal,
       };
       fused.set(id, next);
@@ -311,7 +408,24 @@ export function retrieveV4SystemicPolicies(
     governed_support: Math.ceil(limit / 6),
     operational_support: Math.ceil(limit / 7.5),
   }, limit);
-  const candidates = balanced
+  // A matching claim-scoped authority resolution is an enforced source
+  // contract. Its controlling cards must survive the global source-balance
+  // cap even when a broad topic produces many higher lexical scores. Without
+  // this guarantee, one half of a multi-source decision can disappear before
+  // source adjudication despite the authority register explicitly requiring
+  // it.
+  const controllingPolicyIds = new Set(plan.needs.flatMap((need) =>
+    matchingV4SystemicAuthorityResolutions(need).flatMap((resolution) => resolution.controlling_policy_ids),
+  ));
+  const forcedControlling = deduplicated
+    .filter((candidate) => controllingPolicyIds.has(candidate.policy.id))
+    .sort((left, right) => right.score - left.score || right.policy.authority - left.policy.authority);
+  const forcedIds = new Set(forcedControlling.map((candidate) => candidate.policy.id));
+  const selected = [
+    ...forcedControlling,
+    ...balanced.filter((candidate) => !forcedIds.has(candidate.policy.id)),
+  ].slice(0, Math.max(limit, forcedControlling.length));
+  const candidates = selected
     .map((candidate, index): V4SystemicCandidate => {
       const { reciprocal, ...rankedCandidate } = candidate;
       void reciprocal;
@@ -321,12 +435,14 @@ export function retrieveV4SystemicPolicies(
       };
     });
 
+  const perNeedBlockedMatches = blockedMatches(plan);
   return {
     query: turn.standaloneQuestion,
     turn,
     corpusSize: corpus.length,
     candidates,
-    blockedTopicIds: blockedTopicIds(plan),
+    blockedTopicIds: [...new Set(perNeedBlockedMatches.map((match) => match.topicId))],
+    blockedMatches: perNeedBlockedMatches,
     stageTimings: { systemicRetrievalMs: Date.now() - startedAt },
   };
 }

@@ -2550,6 +2550,7 @@ function structuredAnswer(answer: string, lane: V4Lane, confidence: number, rout
 function deterministicRewrite(question: string, previousAnswer: string) {
   const previous = displayText(previousAnswer, 5000)
     .replace(/Check\s+(#[a-z0-9_-]+)\s+before replying\.\s+Unresolved:\s+(.+?)\.(?=\s|$)/gi, "Please check $1 to confirm $2 before replying.")
+    .replace(/Check\s+(#[a-z0-9_-]+)\s+before replying about\s+(.+?)\.(?=\s|$)/gi, "Please check $1 to confirm $2 before replying.")
     .replace(/[?!]\s+(?=from\s+#[a-z0-9_-]+)/gi, " ")
     .replace(/^(Get the current controlled resource or file) for where can (?:I|we) find\s+(.+?)\s+from\s+(#[a-z0-9_-]+)\.?$/i, "$1 for $2 from $3.");
   const wantsBullets = /\b(?:bullet|bullets|bullet points|checklist|format(?:ted)? (?:as|into) (?:a )?list)\b/i.test(question);
@@ -2584,7 +2585,7 @@ function deterministicRewrite(question: string, previousAnswer: string) {
     if (confirmation) {
       const channel = confirmation[1];
       const subject = confirmation[2];
-      if (/mastermind only once a year|other in-person training and networking programs/i.test(subject)) {
+      if (/mastermind.{0,80}(?:once a year|frequency)|other in-person training and networking programs/i.test(subject)) {
         return `Mastermind frequency and other in-person programs: check ${channel}.`;
       }
       return `Confirm ${subject.replace(/[?.!;:]+$/g, "")} in ${channel}.`;
@@ -2640,6 +2641,13 @@ function deterministicRewrite(question: string, previousAnswer: string) {
       const resource = item.match(/^For\s+(.+?),\s+get the current controlled resource or file from\s+(#[a-z0-9_-]+)[.!]?$/i);
       if (resource) return `${resource[1].charAt(0).toUpperCase()}${resource[1].slice(1)}: get the current file from ${resource[2]}.`;
       return item;
+    });
+    const conciseSeen = new Set<string>();
+    items = items.filter((item) => {
+      const key = item.toLowerCase().replace(/[^a-z0-9#]+/g, " ").trim();
+      if (!key || conciseSeen.has(key)) return false;
+      conciseSeen.add(key);
+      return true;
     });
   }
 

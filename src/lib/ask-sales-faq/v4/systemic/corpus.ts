@@ -10,6 +10,10 @@ import {
   getV4KnowledgeVersion,
   getV4RouteCatalog,
 } from "@/lib/ask-sales-faq/v4/corpus";
+import {
+  getV4SystemicAuthorityResolutionVersion,
+  validateV4SystemicAuthorityResolutions,
+} from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
 import type { V3Policy } from "@/lib/ask-sales-faq/v3/types";
 import type { V4SystemicPolicy } from "@/lib/ask-sales-faq/v4/systemic/types";
 
@@ -86,12 +90,21 @@ const corpus = [...governedPolicies, ...operationalPolicies, ...curatedAuthority
     left.id.localeCompare(right.id),
   );
 
+const authorityResolutionErrors = validateV4SystemicAuthorityResolutions(
+  corpus,
+  getV4BlockedTopics().map((topic) => topic.id),
+);
+if (authorityResolutionErrors.length) {
+  throw new Error(`Invalid V4.1 authority resolution register: ${authorityResolutionErrors.join("; ")}`);
+}
+
 const systemicVersion = createHash("sha256")
   .update(JSON.stringify({
     governedKnowledgeVersion: getV4KnowledgeVersion(),
     operationalSource: operationalBundle.source_sha256,
     operationalClassification: operationalBundle.classification_sha256,
     curatedAuthoritySource: curatedAuthorityBundle.source_sha256,
+    authorityResolutionVersion: getV4SystemicAuthorityResolutionVersion(),
     policies: corpus.map((policy) => ({
       id: policy.id,
       decisionKey: policy.decision_key,
@@ -118,6 +131,10 @@ export function getV4SystemicCuratedAuthorityPolicyCount() {
 
 export function getV4SystemicKnowledgeVersion() {
   return `${getV4KnowledgeVersion()}+${systemicVersion}`;
+}
+
+export function getV4SystemicAuthorityVersion() {
+  return getV4SystemicAuthorityResolutionVersion();
 }
 
 export function getV4SystemicBlockedTopics() {
