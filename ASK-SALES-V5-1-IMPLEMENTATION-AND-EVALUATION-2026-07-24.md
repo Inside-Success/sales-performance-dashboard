@@ -31,6 +31,7 @@ No preview deployment was created because the post-freeze safety gate failed. A 
 - Secret scan and `git diff --check`: passed.
 - Webpack production build: passed.
 - The ordinary Turbopack build was blocked only by this worktree's external `node_modules` symlink boundary; it was not an application compile failure.
+- GitHub's automatic Vercel status is red because deployment `dpl_3LSrXC3ZVmqCZKjAEFU1kjNW5DSr` failed during resource provisioning before any build log existed. It has no Preview or production target and is not evidence of an application compile failure.
 - No local development server was run.
 
 Consumed development diagnostics also completed with zero provider failures:
