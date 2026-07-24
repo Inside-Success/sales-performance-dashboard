@@ -105,6 +105,7 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
       reasoningSummary: "source-reviewed authority resolution",
     });
     expect(retrieval.candidates[0]?.policy.id).toBe("curated_v43_rich_main_reapply_three_months");
+    expect(retrieval.candidates[0]?.needScores?.N1?.matchedDecisionText).toMatch(/three months/i);
 
     const sourcePlan = {
       needs: [{

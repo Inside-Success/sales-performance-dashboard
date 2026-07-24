@@ -448,6 +448,9 @@ export function retrieveV5Policies(
         matchedDecisionId: candidate.document.decision.id,
         matchedDecisionText: candidate.document.decisionText,
       };
+      const existingNeedScore = existing?.needScores?.[entry.need.id];
+      const keepExistingDecision = Boolean(existingNeedScore && existingNeedScore.score >= needScore.score);
+      const selectedNeedScore = keepExistingDecision ? existingNeedScore! : needScore;
       if (!existing) orderedIds.push(policy.id);
       fused.set(policy.id, {
         policy,
@@ -461,9 +464,12 @@ export function retrieveV5Policies(
         authorityScore: Math.min(3, policy.authority / 4),
         relationScore: Math.max(existing?.relationScore || 0, candidate.relationScore),
         semanticVectorScore: Math.max(existing?.semanticVectorScore || 0, candidate.semanticVectorScore),
-        matchedDecisionId: candidate.document.decision.id,
-        matchedDecisionText: candidate.document.decisionText,
-        needScores: { ...(existing?.needScores || {}), [entry.need.id]: needScore },
+        matchedDecisionId: keepExistingDecision ? existing!.matchedDecisionId : candidate.document.decision.id,
+        matchedDecisionText: keepExistingDecision ? existing!.matchedDecisionText : candidate.document.decisionText,
+        // A policy can contribute several atomic decisions. Preserve the
+        // highest-scoring atomic decision for this need instead of allowing a
+        // lower-ranked later fragment to overwrite it during fusion.
+        needScores: { ...(existing?.needScores || {}), [entry.need.id]: selectedNeedScore },
       });
       if (orderedIds.length >= totalLimit) break;
     }
