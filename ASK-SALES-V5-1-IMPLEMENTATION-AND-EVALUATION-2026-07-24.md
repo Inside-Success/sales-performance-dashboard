@@ -24,7 +24,7 @@ No preview deployment was created because the post-freeze safety gate failed. A 
 
 ## Verification before the sealed test
 
-- Ask Sales suite: 43 files, 798 tests passed.
+- Ask Sales suite: 43 files, 798 tests passed in the final sequential run. An earlier resource-contended parallel run hit one 5-second performance timeout; the exact test passed alone and the full sequential rerun was clean.
 - TypeScript: passed with `tsc --noEmit`.
 - Lint: passed.
 - Isolation checks: 15/15 passed.
