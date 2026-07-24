@@ -40,7 +40,7 @@ const CASE_SPECIFIC_GREENLIGHT_SUBJECT = /\b(?:this|that|my|our|the|a|an)\s+(?:c
 const GREENLIGHT_INTERRUPTION = /\b(?:greenlit|green\s*light)\b/i;
 const GREENLIGHT_INTERRUPTION_STATE = /\b(?:internet|connection|disconnect|dropped|congratulations\s+video)\b/i;
 const GREENLIGHT_LIVE_DECISION = /\b(?:should\s+i|now|today|tomorrow|wait|follow[- ]?up)\b/i;
-const CASE_SPECIFIC_SENSITIVE_BACKGROUND = /\b(?:this|that|a|an|the|my|our)\s+(?:specific\s+)?(?:client|lead|prospect|applicant)\b/i;
+const CASE_SPECIFIC_SENSITIVE_BACKGROUND = /\b(?:this|that|a|an|the|my|our)\s+(?:[a-z0-9'-]+\s+){0,3}(?:client|lead|prospect|applicant)\b/i;
 const SENSITIVE_BACKGROUND_FACT = /\b(?:felon(?:y|ies)|criminal|conviction|charges?|lawsuit|sealed\s+record|media\s+coverage|background\s+check)\b/i;
 const SENSITIVE_ELIGIBILITY_DECISION = /\b(?:proceed|move\s+forward|attend\s+call\s*1|eligible|eligibility|approve|approval|greenlight|green\s+light|pass|reject|decide|unsure)\b/i;
 

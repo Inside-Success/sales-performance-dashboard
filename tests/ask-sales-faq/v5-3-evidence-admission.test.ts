@@ -87,7 +87,7 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     expect(deterministicV53ActionOwner("A client's internet dropped after I greenlit him. Should I wait until tomorrow's follow-up?")).toBe("greenlight");
     expect(deterministicV53ActionOwner("What is the general policy after an internet interruption during a greenlight call?")).toBeNull();
     expect(deterministicV53ActionOwner("Should a rep decide whether a prospect with an old sealed felony may attend Call 1?")).toBe("sales_policy");
-    expect(deterministicV53ActionOwner("A prospect has pending felony charges and I am unsure whether to proceed.")).toBe("sales_policy");
+    expect(deterministicV53ActionOwner("What should a rep do when a promising prospect has pending felony charges and the rep is unsure whether to proceed?")).toBe("sales_policy");
     expect(deterministicV53ActionOwner("May I greenlight this prospect with an old fraud conviction?")).toBe("greenlight");
     expect(deterministicV53ActionOwner("What is the general federal-lawsuit eligibility rule?")).toBeNull();
   });
