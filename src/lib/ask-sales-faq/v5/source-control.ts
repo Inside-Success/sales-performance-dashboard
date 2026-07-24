@@ -122,12 +122,29 @@ function routeNeed(sourceNeed: V4SystemicSourceNeedPlan, reason: string): V4Syst
 
 function exactCandidateForNeed(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
   const needScore = candidate.needScores?.[need.id];
-  return evaluateV51DecisionContract(need, candidate.policy).errors.length === 0 &&
+  const explicitlyControlled = matchingV4SystemicAuthorityResolutions(need)
+    .some((resolution) => resolution.controlling_policy_ids.includes(candidate.policy.id));
+  return (explicitlyControlled || evaluateV51DecisionContract(need, candidate.policy).errors.length === 0) &&
     evaluateV52DecisionIdentity(
       need,
       candidate.policy,
       needScore?.matchedDecisionText || candidate.matchedDecisionText || "",
     ).exact;
+}
+
+function canonicalResolutionCandidate(need: V4SystemicNeed, retrieval: V4SystemicRetrieval) {
+  // Controlling IDs are ordered with the reviewed canonical synthesis first.
+  // Prefer that synthesis over older agreeing fragments so the answer retains
+  // the exact current wording (for example "three months", not a legacy
+  // approximation of "90 days"). The resolution's match groups remain the
+  // non-bypassable claim-scope gate.
+  for (const resolution of matchingV4SystemicAuthorityResolutions(need)) {
+    for (const id of resolution.controlling_policy_ids) {
+      const candidate = candidateFor(id, retrieval);
+      if (candidate?.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate)) return candidate;
+    }
+  }
+  return null;
 }
 
 function highConfidenceDeterministicRecovery(
@@ -162,9 +179,23 @@ export function refineV52SourcePlan(
 ): V4SystemicSourcePlan {
   const needs = sourcePlan.needs.map((sourceNeed): V4SystemicSourceNeedPlan => {
     const need = plan.needs.find((candidate) => candidate.id === sourceNeed.needId);
-    if (!need || need.forcedRouteKey || sourceNeed.lane === "route" && !sourceNeed.excludedConflictPolicyIds.length && !sourceNeed.preferredPolicyIds.length) {
+    if (!need || need.forcedRouteKey) {
       return sourceNeed;
     }
+
+    const resolutionPreferred = canonicalResolutionCandidate(need, retrieval);
+    if (sourceNeed.modelDisposition === "answer" && resolutionPreferred) {
+      return {
+        ...sourceNeed,
+        lane: "answer",
+        directPolicyIds: [resolutionPreferred.policy.id],
+        preferredPolicyIds: [resolutionPreferred.policy.id],
+        excludedConflictPolicyIds: sourceNeed.excludedConflictPolicyIds.filter((id) => id !== resolutionPreferred.policy.id),
+        reason: `Applied the matching claim-scoped authority resolution using ${resolutionPreferred.policy.id}.`,
+      };
+    }
+
+    if (sourceNeed.lane === "route" && !sourceNeed.excludedConflictPolicyIds.length && !sourceNeed.preferredPolicyIds.length) return sourceNeed;
 
     if (sourceNeed.lane === "route" && sourceNeed.excludedConflictPolicyIds.length >= 2) {
       const conflictCandidates = sourceNeed.excludedConflictPolicyIds
