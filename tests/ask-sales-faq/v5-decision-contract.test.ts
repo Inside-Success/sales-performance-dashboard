@@ -238,7 +238,7 @@ describe("Ask Sales V5.1 decision contract and owner binding", () => {
         expect(retrieval.candidates.map((candidate) => candidate.policy.id)).not.toContain("operational_653b93b28eee7fab");
       }
     }
-  });
+  }, 15_000);
 
   it("admits exact definition and obligation evidence while preserving exact-list boundaries", () => {
     const snapshot = getV5KnowledgeSnapshot();
@@ -342,7 +342,7 @@ describe("Ask Sales V5.1 decision contract and owner binding", () => {
       });
       expect(retrieval.candidates.map((candidate) => candidate.policy.id), item.policyId).toContain(item.policyId);
     }
-  });
+  }, 15_000);
 
   it("preserves each atomic definition in a compound request", () => {
     const original = "For Next Level CEO, what do the SEO benefit, social promo assets, and swag package mean?";

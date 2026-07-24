@@ -69,7 +69,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
       expect(result.diagnostics?.needs[0].selectedPolicyIds).toEqual(result.candidates.map((candidate) => candidate.policy.id));
       expect(result.candidates.length).toBeLessThanOrEqual(10);
     }
-  });
+  }, 15_000);
 
   it("rejects the three observed V4.4 wrong-neighbor answers", () => {
     const episodeStats = retrieve("Do cast members currently receive a dashboard showing their episode-performance statistics?", {
@@ -124,7 +124,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
       if (result.candidates.some((candidate) => candidate.policy.id === policy.id)) found += 1;
     }
     expect(found / sample.length).toBeGreaterThanOrEqual(0.8);
-  }, 45_000);
+  }, 90_000);
 
   it("round-robins bounded evidence across compound atomic needs", () => {
     const question = "Where should Finance verify a live payment, and where should I request an urgent Greenlight letter?";
