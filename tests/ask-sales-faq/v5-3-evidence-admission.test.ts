@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { V4SystemicNeed } from "@/lib/ask-sales-faq/v4/systemic/types";
-import { v4SystemicPolicyBoundaryErrors } from "@/lib/ask-sales-faq/v4/systemic/runtime";
+import {
+  v4SystemicExactDirectFallbackSentence,
+  v4SystemicPolicyBoundaryErrors,
+} from "@/lib/ask-sales-faq/v4/systemic/runtime";
 import { resolveV4SystemicTurn } from "@/lib/ask-sales-faq/v4/systemic/turn";
 import { v52OperationalEffectErrors } from "@/lib/ask-sales-faq/v5/decision-contract";
 import {
@@ -106,6 +109,12 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     });
     expect(retrieval.candidates[0]?.policy.id).toBe("curated_v43_rich_main_reapply_three_months");
     expect(retrieval.candidates[0]?.needScores?.N1?.matchedDecisionText).toMatch(/three months/i);
+    expect(v4SystemicExactDirectFallbackSentence(
+      planned,
+      { needs: [planned], conversationIntent: "answer", reasoningSummary: "source-reviewed authority resolution" },
+      retrieval,
+      ["curated_v43_rich_main_reapply_three_months"],
+    )?.text).toMatch(/three months/i);
 
     const sourcePlan = {
       needs: [{

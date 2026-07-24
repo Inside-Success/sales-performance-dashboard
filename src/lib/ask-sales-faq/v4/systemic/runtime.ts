@@ -1708,9 +1708,12 @@ function v4SystemicPolicyRelationErrorsForNeed(
   const resolutionAuthorizesRequestedRelation = matchingV4SystemicAuthorityResolutions(need).some((resolution) =>
     resolution.controlling_policy_ids.includes(policy.id) && resolution.relations.includes(need.relation),
   );
-  return resolutionAuthorizesRequestedRelation && v4SystemicMaterialQualifierErrors(need, policy).length === 0
-    ? []
-    : relationErrors;
+  // The resolution matched its own bounded product, relationship, and
+  // material phrase groups before it could select this policy. Re-running the
+  // broader generic qualifier matcher here can reject the exact reviewed
+  // mapping (for example, the registered "passed" wording for Rich's
+  // reapplication rule). The source resolution is the narrower contract.
+  return resolutionAuthorizesRequestedRelation ? [] : relationErrors;
 }
 
 function policyEligibleForNeed(
@@ -2136,7 +2139,6 @@ export function v4SystemicExactControllingEvidenceSupports(
   policy: V4SystemicCandidate["policy"],
 ) {
   if (v4SystemicResolutionPolicyDisposition(need, policy.id) !== "controlling") return false;
-  if (v4SystemicMaterialQualifierErrors(need, policy).length) return false;
   const canonical = (value: string) => normalizedSentence(value)
     .replace(/\b2nd\b/g, "second")
     .replace(/\bpublic or personal\b/g, "public personal");
