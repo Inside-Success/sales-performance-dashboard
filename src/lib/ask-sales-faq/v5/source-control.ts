@@ -215,15 +215,29 @@ export function refineV52SourcePlan(
       };
     }
 
-    const preferred = sourceNeed.preferredPolicyIds
+    const resolution = matchingV4SystemicAuthorityResolutions(need).find((item) =>
+      (sourceNeed.deterministicPolicyIds || []).some((id) => item.controlling_policy_ids.includes(id)),
+    );
+    const resolutionRecovery = sourceNeed.modelDisposition === "route" && resolution
+      ? canonicalResolutionCandidate(need, retrieval)
+      : null;
+    const preferred = [...new Set([
+      ...sourceNeed.preferredPolicyIds,
+      ...(resolutionRecovery ? [resolutionRecovery.policy.id] : []),
+    ])]
       .map((id) => candidateFor(id, retrieval))
       .filter((candidate): candidate is V4SystemicCandidate => Boolean(candidate))
       .filter((candidate) => exactCandidateForNeed(need, candidate));
     const modelDirect = new Set(sourceNeed.modelDirectPolicyIds || []);
-    const deterministic = new Set(sourceNeed.deterministicPolicyIds || []);
+    const deterministic = new Set([
+      ...(sourceNeed.deterministicPolicyIds || []),
+      ...(resolutionRecovery ? [resolutionRecovery.policy.id] : []),
+    ]);
     const safePreferred = preferred.filter((candidate) => {
       if (sourceNeed.modelDisposition !== "route") return true;
       if (modelDirect.has(candidate.policy.id)) return true;
+      if (resolutionRecovery && candidate.policy.id !== resolutionRecovery.policy.id &&
+        resolution?.controlling_policy_ids.includes(candidate.policy.id)) return false;
       return deterministic.has(candidate.policy.id) && highConfidenceDeterministicRecovery(need, candidate, retrieval);
     });
     if (!safePreferred.length) {

@@ -128,6 +128,27 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
       lane: "answer",
       preferredPolicyIds: ["curated_v43_rich_main_reapply_three_months"],
     });
+
+    const abstainingModelWithResolutionSignal = {
+      ...sourcePlan,
+      needs: [{
+        ...sourcePlan.needs[0],
+        lane: "route" as const,
+        directPolicyIds: [],
+        preferredPolicyIds: ["operational_191f3167ff67e26c"],
+        modelDisposition: "route" as const,
+        modelDirectPolicyIds: [],
+        deterministicPolicyIds: ["operational_191f3167ff67e26c"],
+      }],
+    };
+    expect(refineV53SourcePlan(abstainingModelWithResolutionSignal, {
+      needs: [planned],
+      conversationIntent: "answer",
+      reasoningSummary: "source-reviewed authority resolution",
+    }, retrieval).needs[0]).toMatchObject({
+      lane: "answer",
+      preferredPolicyIds: ["curated_v43_rich_main_reapply_three_months"],
+    });
   });
 
   it("corrects script-selection relationship errors before retrieval", () => {
