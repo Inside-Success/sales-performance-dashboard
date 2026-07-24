@@ -1641,7 +1641,12 @@ function technicalMutationErrors(policy: V4SystemicCandidate["policy"], turn: V3
 
 function workflowStageErrors(policy: V4SystemicCandidate["policy"], turn: V3TurnResolution) {
   const request = turn.standaloneQuestion;
-  if (!/\b(?:approval|approve|approved)\b/i.test(request)) return [];
+  // "Approved" is often only an adjective on a governed artifact (approved
+  // script, template, form, etc.). Treating every occurrence as a request for
+  // an approval workflow rejected the exact script-selection evidence. Only
+  // guard requests that actually ask about getting or performing approval.
+  const requestsApprovalWorkflow = /\bapproval\s+(?:process|workflow|stage|status|request)\b|\b(?:get|obtain|request|seek|need|requires?|await(?:ing)?)\s+(?:an?\s+)?approval\b|\b(?:approve|approved)\s+(?:this|that|the|a|an|my|our)\s+(?:lead|prospect|applicant|client|request|submission|case)\b|\bapproved\s+by\b|\bgreen\s*light\b/i.test(request);
+  if (!requestsApprovalWorkflow) return [];
   const evidence = [
     policy.title,
     policy.decision,

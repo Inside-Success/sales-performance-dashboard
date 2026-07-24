@@ -239,8 +239,8 @@ type Ranked = {
 };
 
 export function diagnoseV5PolicyForNeed(policyId: string, need: V4SystemicNeed, turn: V3TurnResolution) {
-  const authoritativeText = need.originalRequestText || need.authorityText || need.text;
-  const directTokens = tokens([need.text, authoritativeText, turn.usedImmediateContext ? turn.standaloneQuestion : ""].filter(Boolean).join(" "), true);
+  const authoritativeText = need.authorityText || need.text || need.originalRequestText || "";
+  const directTokens = tokens([authoritativeText, turn.usedImmediateContext ? turn.standaloneQuestion : ""].filter(Boolean).join(" "), true);
   const resolutions = matchingV4SystemicAuthorityResolutions(need);
   const excluded = resolutions.some((resolution) => resolution.excluded_policy_ids.includes(policyId));
   const controlling = resolutions.some((resolution) => resolution.controlling_policy_ids.includes(policyId));
@@ -270,11 +270,17 @@ export function diagnoseV5PolicyForNeed(policyId: string, need: V4SystemicNeed, 
 }
 
 function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
-  const authoritativeText = need.originalRequestText || need.authorityText || need.text;
-  const directText = [need.text, authoritativeText, turn.usedImmediateContext ? turn.standaloneQuestion : ""].filter(Boolean).join(" ");
+  // The direct lane is anchored to the user's immutable atomic wording. Model
+  // paraphrases and generated search queries may expand recall, but they may
+  // not displace an exact user-to-policy match or redefine its relationship.
+  const authoritativeText = need.authorityText || need.text || need.originalRequestText || "";
+  const directText = [authoritativeText, turn.usedImmediateContext ? turn.standaloneQuestion : ""].filter(Boolean).join(" ");
   const directTokens = tokens(directText, true);
   const structuredTokens = tokens([...need.domains, ...need.actions, ...need.entities].join(" "), true);
-  const expansionQueries = [...new Set(need.retrievalQueries.map(normalize).filter((query) => query && query !== normalize(need.text)))];
+  const expansionQueries = [...new Set([
+    need.text,
+    ...need.retrievalQueries,
+  ].map(normalize).filter((query) => query && query !== normalize(authoritativeText)))];
   const resolution = matchingV4SystemicAuthorityResolutions(need);
   const excluded = new Set(resolution.flatMap((item) => item.excluded_policy_ids));
   const controlling = new Set(resolution.flatMap((item) => item.controlling_policy_ids));

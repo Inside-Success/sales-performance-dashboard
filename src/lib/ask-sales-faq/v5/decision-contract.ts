@@ -64,8 +64,10 @@ function requestText(need: V4SystemicNeed) {
   // Contract each atomic need against its own wording. The full original
   // request may contain several independent decision objects; using it here
   // made every evidence card appear responsible for every object in a
-  // compound question (for example SEO + social assets + swag).
-  return need.text || need.authorityText || need.originalRequestText || "";
+  // compound question (for example SEO + social assets + swag). authorityText
+  // is the planner's immutable atomic slice of the user's wording; need.text
+  // may be a model paraphrase and must not redefine the requested decision.
+  return need.authorityText || need.text || need.originalRequestText || "";
 }
 
 function policyText(policy: V4SystemicPolicy) {
@@ -314,7 +316,7 @@ export function v51OperationalEffectErrors(need: V4SystemicNeed, sentence: strin
   return [...new Set(errors)];
 }
 
-const MATERIAL_CAUTION = /\b(?:not\s+advised|not\s+recommended|should\s+not|do\s+not|don't|must\s+not|only\s+if|unless|except|does\s+not\s+(?:guarantee|authorize|apply)|without\s+(?:approval|permission|confirmation))\b/gi;
+const MATERIAL_CAUTION = /\b(?:not\s+advised|not\s+recommended|should\s+not|do\s+not\s+(?:share|send|offer|provide|book|schedule|use|assume|promise|mention|change|remove|contact|collaborate|arrange|discuss|disclose)|don't\s+(?:share|send|offer|provide|book|schedule|use|assume|promise|mention|change|remove|contact|collaborate|arrange|discuss|disclose)|must\s+not|only\s+if|unless|except|does\s+not\s+(?:guarantee|authorize)|without\s+(?:approval|permission|confirmation))\b/gi;
 
 function materialCautions(value: string) {
   return [...new Set([...value.matchAll(MATERIAL_CAUTION)].map((match) => match[0].toLowerCase()))];

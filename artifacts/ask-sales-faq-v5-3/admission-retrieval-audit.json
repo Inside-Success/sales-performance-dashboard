@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-24T20:26:58.264Z",
+  "generatedAt": "2026-07-24T20:56:45.323Z",
   "status": "consumed_regression_diagnostic_only",
   "promotionEvidence": false,
   "snapshot": {
@@ -19,7 +19,7 @@
   "results": [
     {
       "id": "script-selection",
-      "question": "Should Built for More reps use the Next Level CEO script with the show name changed?",
+      "question": "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?",
       "expectedPolicyId": "operational_909930f8fcb963cf",
       "retrieved": true,
       "rank": 1,
@@ -29,14 +29,13 @@
       "topPolicyIds": [
         "operational_909930f8fcb963cf",
         "operational_0b3fafacf5f22a5e",
-        "claim_170a9cfe81cce514__a8",
         "claim_c6204dfa7e8a8088__a5",
-        "claim_170a9cfe81cce514__a4",
-        "claim_cee6c306061f7432",
         "claim_edd382f8c0607571",
-        "claim_ac9e3a4139d5c255",
-        "operational_3dc47b5bbe3854ca",
-        "claim_3a43cb9eed71cb37"
+        "claim_170a9cfe81cce514__a2",
+        "claim_170a9cfe81cce514__a1",
+        "claim_170a9cfe81cce514__a6",
+        "claim_170a9cfe81cce514__a7",
+        "claim_170a9cfe81cce514__a3"
       ],
       "expectedPolicyGate": [
         {
@@ -50,7 +49,7 @@
           },
           "identity": {
             "exact": true,
-            "score": 20.692307692307693,
+            "score": 15.4,
             "requestTerms": [
               "built",
               "more",
@@ -63,8 +62,10 @@
               "show",
               "name",
               "chang",
-              "sal",
-              "nlceo"
+              "separate",
+              "approv",
+              "compliance",
+              "modify"
             ],
             "matchedTerms": [
               "built",
@@ -72,11 +73,9 @@
               "use",
               "script",
               "show",
-              "name",
-              "sal",
-              "nlceo"
+              "name"
             ],
-            "reason": "Matched the same decision identity (built, more, use, script, show, name, sal, nlceo)."
+            "reason": "Matched the same decision identity (built, more, use, script, show, name)."
           },
           "actionError": null,
           "entityError": null,
@@ -90,15 +89,19 @@
             "episode",
             "name"
           ],
-          "familyCoverage": 0.46153846153846156,
+          "familyCoverage": 0.4,
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "platform-submission-count",
-      "question": "Does the package submit an episode to one Tier 1 platform or all three?",
+      "question": "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?",
       "expectedPolicyId": "operational_3cfb0025a6454374",
       "retrieved": true,
       "rank": 1,
@@ -113,7 +116,10 @@
         "claim_c03cee3ec04cfde4",
         "claim_21b70bbb958defbb",
         "operational_f34e1e8918da61aa",
-        "operational_26dcf59671b33c9c"
+        "operational_26dcf59671b33c9c",
+        "operational_ce674c4a7c6cfb9a",
+        "operational_50cfa1a7d762e721",
+        "operational_366c5051f88a6084"
       ],
       "expectedPolicyGate": [
         {
@@ -129,14 +135,16 @@
           },
           "identity": {
             "exact": true,
-            "score": 10.25,
+            "score": 9.8,
             "requestTerms": [
+              "applicable",
               "package",
               "submit",
               "episode",
               "tier",
               "platform",
               "three",
+              "list",
               "content",
               "distribution"
             ],
@@ -156,11 +164,15 @@
             "all",
             "three"
           ],
-          "familyCoverage": 0.5,
+          "familyCoverage": 0.4,
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "sag-eligibility",
@@ -224,7 +236,11 @@
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "phone-onboarding",
@@ -353,7 +369,11 @@
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "cross-product-movement",
@@ -431,7 +451,11 @@
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "promotional-clause",
@@ -504,7 +528,11 @@
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     },
     {
       "id": "stable-back-to-back",
@@ -577,7 +605,11 @@
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
         }
-      ]
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
     }
   ],
   "activeScopedPolicies": [

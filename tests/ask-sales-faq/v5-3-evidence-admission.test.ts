@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { V4SystemicNeed } from "@/lib/ask-sales-faq/v4/systemic/types";
+import { v4SystemicPolicyBoundaryErrors } from "@/lib/ask-sales-faq/v4/systemic/runtime";
 import { resolveV4SystemicTurn } from "@/lib/ask-sales-faq/v4/systemic/turn";
 import { v52OperationalEffectErrors } from "@/lib/ask-sales-faq/v5/decision-contract";
 import {
@@ -78,6 +79,8 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     expect(deterministicV53ActionOwner("My Keap login is not working. Who can fix it?")).toBe("sales_tech");
     expect(deterministicV53ActionOwner("This lead is not a fit for the current show. Can we move them to another program?")).toBe("sales_policy");
     expect(deterministicV53ActionOwner("May an ISTV applicant be moved to Next Level CEO during the audition process?")).toBeNull();
+    expect(deterministicV53ActionOwner("May a rep honor a same-day discount later if the payment links failed and the prospect provides proof?")).toBeNull();
+    expect(deterministicV53ActionOwner("Can someone trace this prospect's failed card payment?")).toBe("finance");
   });
 
   it("corrects script-selection relationship errors before retrieval", () => {
@@ -89,6 +92,42 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
       requestKind: "knowledge",
       forcedRouteKey: null,
     });
+
+    const scriptPolicy = getV5KnowledgeSnapshot().policies.find((policy) => policy.id === "operational_909930f8fcb963cf");
+    expect(scriptPolicy).toBeDefined();
+    expect(v4SystemicPolicyBoundaryErrors(scriptPolicy!, turn)).not.toContain(
+      "requested approval workflow stage is not established by the evidence",
+    );
+  });
+
+  it("anchors direct retrieval to the user's atomic wording instead of a model paraphrase", () => {
+    const question = "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?";
+    const item = {
+      ...need(question),
+      text: "Determine whether the applicable package submits an episode to one Tier 1 platform or to all three listed platforms.",
+      retrievalQueries: ["content distribution submission count"],
+      domains: ["content distribution"],
+      actions: ["submit"],
+      entities: ["episode", "Tier 1 platform"],
+    };
+    const plan = { needs: [item], conversationIntent: "answer" as const, reasoningSummary: "model paraphrase" };
+    const retrieval = retrieveV5Policies(resolveV4SystemicTurn(question, []), plan);
+    expect(retrieval.candidates[0]?.policy.id).toBe("operational_3cfb0025a6454374");
+  });
+
+  it("does not mistake a condition such as not owning a business for a dropped safety caution", () => {
+    const item = {
+      ...need("If a Call 1 prospect wants acting work and has no business, should the rep end the call and send a rejection?"),
+      relation: "procedure" as const,
+    };
+    const evidence = "If they do not own a business and are only looking for acting work, they are not a fit; record the disqualification and send the rejection letter. Boundaries: This does not apply to prospects who own a business but are not fit for other reasons.";
+    const sentence = "If a Call 1 prospect only wants acting work and has no business, end the call, record the disqualification, and send the rejection letter.";
+    expect(v52OperationalEffectErrors(item, sentence, evidence)).toEqual([]);
+
+    const guardedEvidence = "The rep can send the contract before Call 2, but it is not advised as the default.";
+    expect(v52OperationalEffectErrors(item, "The rep can send the contract before Call 2.", guardedEvidence)).toContain(
+      "the answer omits a material evidence boundary: not advised",
+    );
   });
 
   it("recovers agreeing direct evidence from a false conflict without overriding model abstention", () => {

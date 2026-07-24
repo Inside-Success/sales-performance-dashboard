@@ -2,6 +2,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveV4SystemicTurn } from "@/lib/ask-sales-faq/v4/systemic/turn";
+import { v4SystemicPolicyBoundaryErrors } from "@/lib/ask-sales-faq/v4/systemic/runtime";
+import { v4SystemicNeedPolicyRelationErrors } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import type { V4SystemicNeed, V4SystemicQueryPlan } from "@/lib/ask-sales-faq/v4/systemic/types";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 import { diagnoseV5PolicyForNeed, retrieveV5Policies } from "@/lib/ask-sales-faq/v5/retrieval";
@@ -16,15 +18,15 @@ type Probe = {
 const probes: Probe[] = [
   {
     id: "script-selection",
-    question: "Should Built for More reps use the Next Level CEO script with the show name changed?",
+    question: "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?",
     expectedPolicyId: "operational_909930f8fcb963cf",
-    need: { relation: "requirement", productScope: "dj_nlceo", domains: ["sales scripts"], actions: ["use script"], entities: ["Built for More", "NLCEO script"] },
+    need: { relation: "requirement", productScope: "dj_nlceo", domains: ["scripting", "compliance"], actions: ["use", "modify"], entities: ["Built for More", "Next Level CEO script", "show name", "separate approved script"] },
   },
   {
     id: "platform-submission-count",
-    question: "Does the package submit an episode to one Tier 1 platform or all three?",
+    question: "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?",
     expectedPolicyId: "operational_3cfb0025a6454374",
-    need: { relation: "other", domains: ["content distribution"], actions: ["submit"], entities: ["Tier 1 platform"] },
+    need: { relation: "other", domains: ["content distribution"], actions: ["submit"], entities: ["episode", "Tier 1 platform"] },
   },
   {
     id: "sag-eligibility",
@@ -84,6 +86,8 @@ async function main() {
     const plan: V4SystemicQueryPlan = { needs: [need], conversationIntent: "answer", reasoningSummary: "Consumed diagnostic probe." };
     const retrieval = retrieveV5Policies(resolveV4SystemicTurn(probe.question, []), plan);
     const candidate = retrieval.candidates.find((item) => item.policy.id === probe.expectedPolicyId);
+    const expectedPolicy = snapshot.policies.find((policy) => policy.id === probe.expectedPolicyId);
+    const turn = resolveV4SystemicTurn(probe.question, []);
     return {
       id: probe.id,
       question: probe.question,
@@ -99,6 +103,10 @@ async function main() {
       evidenceState: retrieval.diagnostics?.needs[0]?.evidenceState || null,
       topPolicyIds: retrieval.candidates.slice(0, 16).map((item) => item.policy.id),
       expectedPolicyGate: diagnoseV5PolicyForNeed(probe.expectedPolicyId, need, resolveV4SystemicTurn(probe.question, [])),
+      sourceAdmissionGate: expectedPolicy ? {
+        boundaryErrors: v4SystemicPolicyBoundaryErrors(expectedPolicy, turn),
+        relationErrors: v4SystemicNeedPolicyRelationErrors(need, expectedPolicy),
+      } : null,
     };
   });
   const report = {
