@@ -20,6 +20,8 @@ The safe decision is therefore:
 ## Frozen implementation
 
 - Dashboard branch: `agent/ask-sales-v5-2-controlled-decision-2026-07-24`
+- Draft stacked dashboard PR: [#78](https://github.com/Inside-Success/sales-performance-dashboard/pull/78)
+- Draft stacked documentation PR: [#53](https://github.com/Inside-Success/faq-chatbot/pull/53)
 - Base head before V5.2: `64fa0918036dfb9082e51c514018315e46c70f61`
 - Runtime freeze: `5aff892`
 - Initial source-selection freeze: `fa53da6`
