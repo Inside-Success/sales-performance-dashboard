@@ -2691,6 +2691,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
         evidenceRefs: [exactDirectFallback.policyId],
         answeredNeedIds: [sentence.needId],
         reason: "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+        deterministicErrors: [],
       };
     }
     const unconditionalGeneralProhibition = sentence.evidenceRefs
@@ -2706,6 +2707,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
         evidenceRefs: [unconditionalGeneralProhibition.id],
         answeredNeedIds: [sentence.needId],
         reason: "The preferred source states an unconditional general prohibition for this exact decision object; mentioning the user's call stage does not narrow or invent the rule.",
+        deterministicErrors: [],
       };
     }
     const controllingPolicy = sentence.evidenceRefs
@@ -2724,6 +2726,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       evidenceRefs: [controllingPolicy.id],
       answeredNeedIds: [sentence.needId],
       reason: "An exact or canonically equivalent sentence from a claim-scoped controlling source passed every deterministic qualifier and relation check; the semantic validator's objection was rejected.",
+      deterministicErrors: [],
     };
   });
   stageTimings.validationMs = Date.now() - validationStarted;

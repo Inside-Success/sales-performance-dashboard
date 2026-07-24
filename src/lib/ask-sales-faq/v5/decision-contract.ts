@@ -27,6 +27,7 @@ const PRODUCT_PATTERNS = {
 } as const;
 
 const DECISION_OBJECTS = [
+  ["cross_program_lead_transfer", /\b(?:istv|inside\s+success\s+tv)\b.{0,220}\b(?:move|moved|pass|passed|transfer|transferred)\w*\b.{0,220}\b(?:daymond\s+john|next\s+level\s+ceo|nlceo|dj)\b|\b(?:daymond\s+john|next\s+level\s+ceo|nlceo|dj)\b.{0,220}\b(?:move|moved|pass|passed|transfer|transferred)\w*\b.{0,220}\b(?:istv|inside\s+success\s+tv)\b/i],
   ["program_format", /\b(?:reality[- ]?tv|reality\s+show|documentary[- ]?style|documentary\s+programming)\b/i],
   ["seo_benefit_definition", /\bseo\b.{0,140}\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b|\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b.{0,140}\bseo\b/i],
   ["social_promo_asset_definition", /\bsocial\s+promo(?:tional)?\s+assets?\b/i],
