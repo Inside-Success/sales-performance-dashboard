@@ -1,0 +1,4269 @@
+{
+  "schemaVersion": 1,
+  "status": "complete",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-2-fresh-slack-gold-2026-07-24.json",
+  "datasetSha256": "37984606358077106c99269d235b23d75f201b94c37eb94d73a64c8c2c75a371",
+  "datasetSealedAt": "2026-07-24T23:39:00+05:00",
+  "runtimeFreezeCommit": "d8f3867",
+  "systems": [
+    "v5"
+  ],
+  "startedAt": "2026-07-24T22:22:02.584Z",
+  "completedAt": "2026-07-24T22:24:37.572Z",
+  "items": [
+    {
+      "id": "v52fresh-31",
+      "question": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, only if the prospect can provide proof of the failed same-day payment attempt. Do not carry the discount forward without that evidence.",
+      "requiredConcepts": [
+        "yes",
+        "proof of failed payment",
+        "same-day attempt"
+      ],
+      "forbiddenConcepts": [
+        "always carry the discount forward",
+        "no proof required"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784051697.081759"
+      ],
+      "approvedBy": [
+        "Rich",
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+          "structuredAnswer": {
+            "summary": "This needs a Finance action, so please post it in #sales-finance-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-finance-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-finance-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-finance-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 12006,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+              "standaloneQuestion": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "main_istv",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 11,
+              "candidates": [
+                {
+                  "id": "claim_170a9cfe81cce514__a5",
+                  "rank": 1,
+                  "score": 212.70009652229226,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-4-a5",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2684377460965796,
+                  "matchedDecisionId": "claim_170a9cfe81cce514__a5::a1"
+                },
+                {
+                  "id": "operational_e9196258a2fd12b2",
+                  "rank": 2,
+                  "score": 190.93144266584702,
+                  "decisionKey": "same-day-discount-honoring",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "main_istv"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.34426518632954817,
+                  "matchedDecisionId": "operational_e9196258a2fd12b2::a1"
+                },
+                {
+                  "id": "claim_527d746a2e41c49f__a6",
+                  "rank": 3,
+                  "score": 189.69474231447703,
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a6",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2672612419124244,
+                  "matchedDecisionId": "claim_527d746a2e41c49f__a6::a1"
+                },
+                {
+                  "id": "claim_36b30f2bb7353122__a4",
+                  "rank": 4,
+                  "score": 188.35784179294734,
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-6-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.24748737341529162,
+                  "matchedDecisionId": "claim_36b30f2bb7353122__a4::a1"
+                },
+                {
+                  "id": "claim_bb04a794e0a74ea5__a3",
+                  "rank": 5,
+                  "score": 183.56240769679,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-5-a3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.21105794120443452,
+                  "matchedDecisionId": "claim_bb04a794e0a74ea5__a3::a1"
+                },
+                {
+                  "id": "claim_011c2a2b1fcc2c79__a7",
+                  "rank": 6,
+                  "score": 179.6951272897421,
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a7",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.29019050004400465,
+                  "matchedDecisionId": "claim_011c2a2b1fcc2c79__a7::a1"
+                },
+                {
+                  "id": "claim_0043194d67006434__a6",
+                  "rank": 7,
+                  "score": 171.80424713129582,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-what-reps-must-not-say-1-a6",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.26666666666666666,
+                  "matchedDecisionId": "claim_0043194d67006434__a6::a1"
+                },
+                {
+                  "id": "claim_170a9cfe81cce514__a4",
+                  "rank": 8,
+                  "score": 170.82796149704822,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-4-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.23717082451262844,
+                  "matchedDecisionId": "claim_170a9cfe81cce514__a4::a1"
+                },
+                {
+                  "id": "claim_bb04a794e0a74ea5__a5",
+                  "rank": 9,
+                  "score": 170.7483322659608,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-5-a5",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2727977357881894,
+                  "matchedDecisionId": "claim_bb04a794e0a74ea5__a5::a1"
+                },
+                {
+                  "id": "claim_9ecfb269cce72cbe__a7",
+                  "rank": 10,
+                  "score": 169.9435164554545,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a7",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.29019050004400465,
+                  "matchedDecisionId": "claim_9ecfb269cce72cbe__a7::a2"
+                },
+                {
+                  "id": "claim_9ecfb269cce72cbe__a3",
+                  "rank": 11,
+                  "score": 164.03147869908403,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2300894966542111,
+                  "matchedDecisionId": "claim_9ecfb269cce72cbe__a3::a1"
+                }
+              ],
+              "blockedTopicIds": [
+                "blocked_73a18f753dbb6fe0",
+                "blocked_67afbfba9c7cd399"
+              ],
+              "blockedMatches": [
+                {
+                  "needId": "N1",
+                  "topicId": "blocked_73a18f753dbb6fe0",
+                  "score": 0.609375,
+                  "matchedTerms": [
+                    "is",
+                    "the",
+                    "same",
+                    "day",
+                    "discount",
+                    "and"
+                  ]
+                },
+                {
+                  "needId": "N1",
+                  "topicId": "blocked_67afbfba9c7cd399",
+                  "score": 0.359375,
+                  "matchedTerms": [
+                    "istv",
+                    "discount",
+                    "and",
+                    "prospect"
+                  ]
+                }
+              ],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 61,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_170a9cfe81cce514__a5",
+                      "operational_e9196258a2fd12b2",
+                      "claim_527d746a2e41c49f__a6",
+                      "claim_36b30f2bb7353122__a4",
+                      "claim_bb04a794e0a74ea5__a3",
+                      "claim_011c2a2b1fcc2c79__a7",
+                      "claim_0043194d67006434__a6",
+                      "claim_170a9cfe81cce514__a4",
+                      "claim_bb04a794e0a74ea5__a5",
+                      "claim_9ecfb269cce72cbe__a7",
+                      "claim_9ecfb269cce72cbe__a3"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 3002,
+                      "decision_contract": 2924,
+                      "wrong_product_scope": 427
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine whether a main ISTV rep is permitted to honor the same-day discount after the deadline when payment links failed and the prospect could not reconnect before 11:59 PM.",
+                  "relation": "discount",
+                  "request_kind": "current_lookup",
+                  "product_scope": "main_istv",
+                  "domains": [
+                    "sales",
+                    "discounts",
+                    "payment processing"
+                  ],
+                  "actions": [
+                    "honor discount",
+                    "apply discount",
+                    "extend discount"
+                  ],
+                  "entities": [
+                    "same-day discount",
+                    "payment link failure",
+                    "11:59 PM deadline",
+                    "rep"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "sourcePlan explicitly routes this need to finance; no preferredPolicyIds are provided, and the candidate card C1 is route_or_support and not preferred.",
+                  "route_key": "finance",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 0,
+              "reasoning_summary": "The user asks whether a rep may honor a same-day discount after the deadline due to payment link failure. This is a single atomic policy question about permission under specific conditions. No other independent clauses or compound requests are present. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. sourcePlan mandates routing N1 to finance because it requires live work; no eligible answer evidence exists, and C1 is route_or_support and not preferred. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "This request asks the finance action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+                }
+              ],
+              "reasoningSummary": "C1 states the same-day discount can be honored if the client pays later that same calendar day. C8 requires the initial deposit on the same calendar day as Call 2. No evidence supports an exception for payment link failures or inability to reconnect before 11:59 PM. Therefore, the discount cannot be honored after the deadline. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 4035,
+                "promptChars": 4331,
+                "completionTokens": 296,
+                "totalTokens": 1257,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 3886,
+                "promptChars": 30140,
+                "completionTokens": 241,
+                "totalTokens": 8018,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 2811,
+                "promptChars": 12315,
+                "completionTokens": 152,
+                "totalTokens": 2906,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 9,
+              "queryPlanningMs": 4049,
+              "v5BoundedRetrievalMs": 1218,
+              "sourcePlanningMs": 3910,
+              "evidenceDraftingMs": 2812,
+              "validationMs": 0,
+              "totalMs": 12006
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-32",
+      "question": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The rep may email the applicant as requested. If either recipient says not to contact them, stop and add the relevant information to the opt-out workflow.",
+      "requiredConcepts": [
+        "may email",
+        "honor do not contact",
+        "opt-out"
+      ],
+      "forbiddenConcepts": [
+        "keep contacting after opt-out",
+        "share private information with the family member"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784051382.147089"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 21891,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+              "standaloneQuestion": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 17,
+              "candidates": [
+                {
+                  "id": "operational_966780d3adb359bf",
+                  "rank": 1,
+                  "score": 151.4102472801544,
+                  "decisionKey": "contact-family-member-if-client-aware",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.3102526139970115,
+                  "matchedDecisionId": "operational_966780d3adb359bf::a1"
+                },
+                {
+                  "id": "claim_ffd5629ef022a715",
+                  "rank": 2,
+                  "score": 126.0340404141123,
+                  "decisionKey": "texting-prep-details-when-applicant-cannot-access-email",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.19518001458970666,
+                  "matchedDecisionId": "claim_ffd5629ef022a715::a1"
+                },
+                {
+                  "id": "operational_f6352a10d796dad8",
+                  "rank": 3,
+                  "score": 120.83033089245008,
+                  "decisionKey": "international-phone-follow-up-email",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.2099455524325912,
+                  "matchedDecisionId": "operational_f6352a10d796dad8::a1"
+                },
+                {
+                  "id": "operational_6542fa0913094689",
+                  "rank": 4,
+                  "score": 116.43225271098214,
+                  "decisionKey": "family-members-follow-same-sales-process",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.20225995873897262,
+                  "matchedDecisionId": "operational_6542fa0913094689::a1"
+                },
+                {
+                  "id": "operational_7378c683c1cbb196",
+                  "rank": 5,
+                  "score": 114.51553929815883,
+                  "decisionKey": "add-guest-to-google-calendar-event-for-zoom-invite",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07453559924999299,
+                  "matchedDecisionId": "operational_7378c683c1cbb196::a1"
+                },
+                {
+                  "id": "operational_e0d58d544c5f8a52",
+                  "rank": 6,
+                  "score": 97.83188427045255,
+                  "decisionKey": "non-working-phone-number-email-for-new-number",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.27668578554642986,
+                  "matchedDecisionId": "operational_e0d58d544c5f8a52::a1"
+                },
+                {
+                  "id": "claim_d87bd6a86a4a640c",
+                  "rank": 7,
+                  "score": 88.14349664920833,
+                  "decisionKey": "duplicate-or-already-contacted-leads",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.12171612389003691,
+                  "matchedDecisionId": "claim_d87bd6a86a4a640c::a1"
+                },
+                {
+                  "id": "operational_f29f2a35b24e2437",
+                  "rank": 8,
+                  "score": 90.99148880724502,
+                  "decisionKey": "disqualified-applicant-reapplying-under-different-name",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.13193984914006274,
+                  "matchedDecisionId": "operational_f29f2a35b24e2437::a1"
+                },
+                {
+                  "id": "operational_509955b14a7e5c1e",
+                  "rank": 9,
+                  "score": 84.07092533495137,
+                  "decisionKey": "dnc-request-submission",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.19069251784911848,
+                  "matchedDecisionId": "operational_509955b14a7e5c1e::a1"
+                },
+                {
+                  "id": "operational_06d3462e455b7611",
+                  "rank": 10,
+                  "score": 90.9673087851906,
+                  "decisionKey": "cancel-unresponsive-leads",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.13957263155977062,
+                  "matchedDecisionId": "operational_06d3462e455b7611::a1"
+                },
+                {
+                  "id": "operational_87c857c7f942b5c0",
+                  "rank": 11,
+                  "score": 79.58479835904365,
+                  "decisionKey": "resubscribe-opt-out-contact",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.251259453814803,
+                  "matchedDecisionId": "operational_87c857c7f942b5c0::a1"
+                },
+                {
+                  "id": "claim_0456ca1c5464dfb8",
+                  "rank": 12,
+                  "score": 77.5256676426809,
+                  "decisionKey": "adding-spouse-or-second-decision-maker-to-zoom-invite",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07856742013183861,
+                  "matchedDecisionId": "claim_0456ca1c5464dfb8::a1"
+                },
+                {
+                  "id": "claim_a5c125b11f9d657d",
+                  "rank": 13,
+                  "score": 74.53198258676308,
+                  "decisionKey": "ending-call-1-when-applicant-is-not-a-fit",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.17025130615174972,
+                  "matchedDecisionId": "claim_a5c125b11f9d657d::a1"
+                },
+                {
+                  "id": "claim_aff08484253a7987",
+                  "rank": 14,
+                  "score": 65.92515346505962,
+                  "decisionKey": "mastermind-red-carpet-guest-fee",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_aff08484253a7987::a1"
+                },
+                {
+                  "id": "operational_bcf78bc5f518462a",
+                  "rank": 15,
+                  "score": 65.81020194327584,
+                  "decisionKey": "refund-process-unauthorized-action",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.29814239699997197,
+                  "matchedDecisionId": "operational_bcf78bc5f518462a::a1"
+                },
+                {
+                  "id": "operational_ae2ba3881af6f4fe",
+                  "rank": 16,
+                  "score": 56.089441097908896,
+                  "decisionKey": "inappropriate-contact-removal-process",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.11785113019775793,
+                  "matchedDecisionId": "operational_ae2ba3881af6f4fe::a2"
+                },
+                {
+                  "id": "operational_1d8f77794a691803",
+                  "rank": 17,
+                  "score": 62.09053113184979,
+                  "decisionKey": "calendar-booking-name-correction-tech",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.09534625892455924,
+                  "matchedDecisionId": "operational_1d8f77794a691803::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 28,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 2,
+                    "selectedPolicyIds": [
+                      "operational_966780d3adb359bf",
+                      "claim_ffd5629ef022a715",
+                      "operational_f6352a10d796dad8",
+                      "operational_6542fa0913094689",
+                      "operational_7378c683c1cbb196",
+                      "operational_e0d58d544c5f8a52",
+                      "operational_f29f2a35b24e2437",
+                      "operational_06d3462e455b7611",
+                      "claim_d87bd6a86a4a640c",
+                      "operational_509955b14a7e5c1e",
+                      "operational_87c857c7f942b5c0",
+                      "claim_0456ca1c5464dfb8",
+                      "operational_ae2ba3881af6f4fe",
+                      "operational_1d8f77794a691803"
+                    ],
+                    "rejectionCounts": {
+                      "decision_object": 1893,
+                      "decision_contract": 2463,
+                      "relation": 1521,
+                      "material_condition": 13,
+                      "payment_qualifier": 21,
+                      "other_hard_boundary": 13,
+                      "workflow_stage_or_time": 1
+                    }
+                  },
+                  {
+                    "needId": "N2",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 20,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 1,
+                    "selectedPolicyIds": [
+                      "operational_966780d3adb359bf",
+                      "claim_ffd5629ef022a715",
+                      "operational_f6352a10d796dad8",
+                      "operational_6542fa0913094689",
+                      "operational_7378c683c1cbb196",
+                      "claim_d87bd6a86a4a640c",
+                      "operational_509955b14a7e5c1e",
+                      "operational_87c857c7f942b5c0",
+                      "claim_0456ca1c5464dfb8",
+                      "claim_a5c125b11f9d657d",
+                      "claim_aff08484253a7987",
+                      "operational_bcf78bc5f518462a",
+                      "operational_1d8f77794a691803"
+                    ],
+                    "rejectionCounts": {
+                      "decision_object": 1803,
+                      "decision_contract": 2534,
+                      "relation": 1477,
+                      "material_condition": 159,
+                      "payment_qualifier": 21,
+                      "other_hard_boundary": 9,
+                      "workflow_stage_or_time": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Is it compliant for a rep to email an applicant when a dial-list phone number belongs to a family member who requests the email?",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "compliance",
+                    "outreach"
+                  ],
+                  "actions": [
+                    "email",
+                    "contact"
+                  ],
+                  "entities": [
+                    "applicant",
+                    "family member",
+                    "dial-list phone number"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "No preferred answer card directly addresses compliance of emailing an applicant when a family member at a dial-list number requests it. C1 is route_or_support and not preferred. Other cards are not direct matches. Per sourcePlan, lane=route.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                },
+                {
+                  "id": "N2",
+                  "text": "What procedure should the rep follow when a family member at a dial-list number asks the rep to email the applicant?",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "compliance",
+                    "outreach"
+                  ],
+                  "actions": [
+                    "email",
+                    "contact"
+                  ],
+                  "entities": [
+                    "applicant",
+                    "family member",
+                    "rep"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "No preferred answer card directly provides the procedure for a rep when a family member at a dial-list number asks to email the applicant. C1 is route_or_support and not preferred. Other cards are not direct matches. Per sourcePlan, lane=route.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 0,
+              "reasoning_summary": "The user asks two distinct atomic questions: (1) whether emailing the applicant under these circumstances is compliant, and (2) what steps the rep should take. These are split into separate needs for permission and procedure. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. Both needs are routed per sourcePlan because no preferred answer card directly addresses the compliance or procedure for emailing an applicant when a family member at a dial-list number requests it. C1 is route_or_support and not preferred; other cards are not direct matches. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "No card directly addresses compliance of emailing an applicant when a family member at a dial-list number requests it. Cards C2, C3, C4, C6, C7, C8, C10, C12, C13, C14 are not direct matches; C5, C9, C11 are conflict-review-only and not answer-eligible.",
+                  "modelDisposition": "route",
+                  "modelDirectPolicyIds": [],
+                  "deterministicPolicyIds": []
+                },
+                {
+                  "needId": "N2",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "No card directly provides the procedure for a rep when a family member at a dial-list number asks to email the applicant. Cards C2, C3, C4, C6, C7, C12, C13, C14 are not direct matches; C5, C9, C11 are conflict-review-only and not answer-eligible.",
+                  "modelDisposition": "route",
+                  "modelDirectPolicyIds": [],
+                  "deterministicPolicyIds": []
+                }
+              ],
+              "reasoningSummary": "No card directly answers either need. C2 covers texting prep details when applicant cannot access email, not emailing at family member's request. C3 is about international phone unreachable, not family member request. C4 states family members follow same sales process but does not address emailing at their request. C6 is about non-functional phone number, not family member. C7 is about duplicate leads. C8, C10, C12, C13, C14 are unrelated. C5, C9, C11 are conflict-review-only and not answer-eligible. Therefore, both needs must be routed. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1",
+                "N2"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 4955,
+                "promptChars": 4361,
+                "completionTokens": 398,
+                "totalTokens": 1358,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 5542,
+                "promptChars": 40015,
+                "completionTokens": 382,
+                "totalTokens": 10589,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 4429,
+                "promptChars": 31878,
+                "completionTokens": 331,
+                "totalTokens": 8055,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 9,
+              "queryPlanningMs": 4968,
+              "v5BoundedRetrievalMs": 6815,
+              "sourcePlanningMs": 5666,
+              "evidenceDraftingMs": 4430,
+              "validationMs": 0,
+              "totalMs": 21891
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-33",
+      "question": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No-show rates can vary, and 48.5 percent is not unusual based on the sourced Sales Ops guidance. Do not present it as a guaranteed benchmark or promise a fixed show rate.",
+      "requiredConcepts": [
+        "can vary",
+        "not unusual"
+      ],
+      "forbiddenConcepts": [
+        "guaranteed company average",
+        "fixed benchmark"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784051139.454579"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 12146,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+              "standaloneQuestion": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 6,
+              "candidates": [
+                {
+                  "id": "operational_b862431d3641c013",
+                  "rank": 1,
+                  "score": 106.21320334841718,
+                  "decisionKey": "american-dream-show-not-available",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.22395700438234173,
+                  "matchedDecisionId": "operational_b862431d3641c013::a1"
+                },
+                {
+                  "id": "kr_7ace400fcdf68db9",
+                  "rank": 2,
+                  "score": 103.78368068260416,
+                  "decisionKey": "current-show-source-latest-approved-show-list-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.13867504905630726,
+                  "matchedDecisionId": "kr_7ace400fcdf68db9::a35"
+                },
+                {
+                  "id": "operational_e2032d7f60e3e298",
+                  "rank": 3,
+                  "score": 66.70039307627673,
+                  "decisionKey": "greenlight-applicant-with-indictment",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.05598925109558543,
+                  "matchedDecisionId": "operational_e2032d7f60e3e298::a1"
+                },
+                {
+                  "id": "operational_b8daaf8fecbe455c",
+                  "rank": 4,
+                  "score": 62.10528444332021,
+                  "decisionKey": "20-percent-list-guidance",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.27386127875258304,
+                  "matchedDecisionId": "operational_b8daaf8fecbe455c::a1"
+                },
+                {
+                  "id": "operational_ba36bed09e7506b6",
+                  "rank": 5,
+                  "score": 53.205686826973576,
+                  "decisionKey": "follow-up-calls-post-cohort-auditions",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.07001400420140048,
+                  "matchedDecisionId": "operational_ba36bed09e7506b6::a2"
+                },
+                {
+                  "id": "operational_f2904df9fdcbb536",
+                  "rank": 6,
+                  "score": 51.686553908307786,
+                  "decisionKey": "keap-outbound-dial-training-video",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.06666666666666667,
+                  "matchedDecisionId": "operational_f2904df9fdcbb536::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 40,
+                    "directLaneSelected": 4,
+                    "expansionLaneSelected": 3,
+                    "selectedPolicyIds": [
+                      "operational_b862431d3641c013",
+                      "kr_7ace400fcdf68db9",
+                      "operational_e2032d7f60e3e298",
+                      "operational_b8daaf8fecbe455c",
+                      "operational_ba36bed09e7506b6",
+                      "operational_f2904df9fdcbb536"
+                    ],
+                    "rejectionCounts": {
+                      "decision_object": 77,
+                      "decision_contract": 3289,
+                      "relation": 3370,
+                      "payment_qualifier": 1,
+                      "insufficient_direct_signal": 2
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+                  "relation": "status",
+                  "request_kind": "operational_action",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "sales",
+                    "lead management"
+                  ],
+                  "actions": [
+                    "measure",
+                    "evaluate"
+                  ],
+                  "entities": [
+                    "no-show rate",
+                    "company leads"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "sourcePlan mandates route for N1; no eligible answer evidence exists for no-show rate benchmarks.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 0,
+              "reasoning_summary": "The question asks two atomic decisions: whether the rate is normal and whether it is unusually high. Each is a separate status evaluation requiring benchmark data. Preserved the source-governed workflow as one atomic decision. V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners. sourcePlan explicitly routes N1 to sales_policy because the request asks for live operational verification of a no-show rate, which the knowledge layer cannot perform. All candidate cards are irrelevant or ineligible: C1, C3, C4, C5 are route_or_support; C2 is route_or_support and addresses greenlighting, not no-show rates. No answer_evidence card exists for this need. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "This request asks the sales policy action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+                }
+              ],
+              "reasoningSummary": "All candidate cards are irrelevant to the need. C1, C3, and C4 are not answer-eligible for N1. C2 is answer-eligible but its decision about show catalog membership does not address no-show rates. No direct evidence exists, so disposition is route. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 3953,
+                "promptChars": 4241,
+                "completionTokens": 358,
+                "totalTokens": 1298,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 3328,
+                "promptChars": 13424,
+                "completionTokens": 189,
+                "totalTokens": 3566,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 3672,
+                "promptChars": 18067,
+                "completionTokens": 195,
+                "totalTokens": 4545,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 0,
+              "queryPlanningMs": 3960,
+              "v5BoundedRetrievalMs": 1168,
+              "sourcePlanningMs": 3344,
+              "evidenceDraftingMs": 3673,
+              "validationMs": 0,
+              "totalMs": 12146
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-34",
+      "question": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not pass applicants back and forth between ISTV and the Daymond John sales side. The rep should cast only for the side they are assigned to; the applicant may reapply to the specific other show if appropriate.",
+      "requiredConcepts": [
+        "do not pass between sides",
+        "stay with assigned side",
+        "may reapply"
+      ],
+      "forbiddenConcepts": [
+        "ISTV rep should close Next Level CEO",
+        "transfer the lead directly"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784040443.525329"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to. For the remaining case-specific part, please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to. For the remaining case-specific part, please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Guidance",
+                "items": [
+                  "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to."
+                ],
+                "tone": "good"
+              },
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "High",
+            "confidenceScore": 100,
+            "sourceMode": "evidence"
+          },
+          "lane": "partial",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 19784,
+          "citations": [
+            {
+              "policyId": "operational_f32e012fa97b5b52",
+              "title": "No cross lead flow between ISTV and DJ",
+              "decisionKey": "no-cross-lead-flow-between-istv-and-dj",
+              "lastReviewed": "2026-07-14",
+              "authority": 9.5,
+              "sourceKind": "authoritative_slack_operational_qna",
+              "approvedBy": [
+                "Madeline"
+              ]
+            }
+          ],
+          "selectedPolicyIds": [
+            "operational_f32e012fa97b5b52"
+          ],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+              "standaloneQuestion": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "dj_nlceo",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 7,
+              "candidates": [
+                {
+                  "id": "operational_4e86dda6c7fb91b3",
+                  "rank": 1,
+                  "score": 123.07865806353752,
+                  "decisionKey": "next-level-ceo-casted-lead-handoff",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.28819520885211747,
+                  "matchedDecisionId": "operational_4e86dda6c7fb91b3::a1"
+                },
+                {
+                  "id": "operational_f32e012fa97b5b52",
+                  "rank": 2,
+                  "score": 112.77031222419141,
+                  "decisionKey": "no-cross-lead-flow-between-istv-and-dj",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2253744679276044,
+                  "matchedDecisionId": "operational_f32e012fa97b5b52::a1"
+                },
+                {
+                  "id": "operational_00b1fd90f00c230e",
+                  "rank": 3,
+                  "score": 81.11303268082536,
+                  "decisionKey": "dj-reps-sell-only-daymond-john",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "dj_nlceo",
+                    "main_istv"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.24174688920761409,
+                  "matchedDecisionId": "operational_00b1fd90f00c230e::a1"
+                },
+                {
+                  "id": "claim_b81818e4ae8e0fec__a3",
+                  "rank": 4,
+                  "score": 77.4491185677055,
+                  "decisionKey": "current-show-source-what-reps-can-say-2-a3",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.12777531299998798,
+                  "matchedDecisionId": "claim_b81818e4ae8e0fec__a3::a2"
+                },
+                {
+                  "id": "claim_42f54c07cd6348e3",
+                  "rank": 5,
+                  "score": 56.96980528350583,
+                  "decisionKey": "current-show-source-answer-6",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.14547859349066158,
+                  "matchedDecisionId": "claim_42f54c07cd6348e3::a3"
+                },
+                {
+                  "id": "claim_372a0d7caa170e99",
+                  "rank": 6,
+                  "score": 57.96714686622481,
+                  "decisionKey": "nlceo-lead-in-istv-call",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.08247860988423225,
+                  "matchedDecisionId": "claim_372a0d7caa170e99::a1"
+                },
+                {
+                  "id": "claim_45bcff54b96b9030",
+                  "rank": 7,
+                  "score": 41.49544501448748,
+                  "decisionKey": "background-check-cyber-stalking-charge",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.0890870806374748,
+                  "matchedDecisionId": "claim_45bcff54b96b9030::a2"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 10,
+                    "directLaneSelected": 8,
+                    "expansionLaneSelected": 2,
+                    "selectedPolicyIds": [
+                      "operational_4e86dda6c7fb91b3",
+                      "operational_f32e012fa97b5b52",
+                      "operational_00b1fd90f00c230e",
+                      "claim_b81818e4ae8e0fec__a3",
+                      "claim_42f54c07cd6348e3",
+                      "claim_372a0d7caa170e99",
+                      "claim_45bcff54b96b9030"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 2366,
+                      "decision_contract": 2415,
+                      "wrong_product_scope": 1063,
+                      "payment_qualifier": 5,
+                      "insufficient_direct_signal": 2,
+                      "decision_object": 44
+                    }
+                  },
+                  {
+                    "needId": "N2",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 10,
+                    "directLaneSelected": 8,
+                    "expansionLaneSelected": 2,
+                    "selectedPolicyIds": [
+                      "operational_4e86dda6c7fb91b3",
+                      "operational_f32e012fa97b5b52",
+                      "operational_00b1fd90f00c230e",
+                      "claim_b81818e4ae8e0fec__a3",
+                      "claim_372a0d7caa170e99",
+                      "claim_42f54c07cd6348e3",
+                      "claim_45bcff54b96b9030"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 2366,
+                      "decision_contract": 2415,
+                      "wrong_product_scope": 1063,
+                      "payment_qualifier": 5,
+                      "insufficient_direct_signal": 2,
+                      "decision_object": 44
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Can an ISTV applicant be moved to Next Level CEO during the audition process?",
+                  "relation": "permission",
+                  "request_kind": "knowledge",
+                  "product_scope": "dj_nlceo",
+                  "domains": [
+                    "audition",
+                    "application"
+                  ],
+                  "actions": [
+                    "move",
+                    "transfer"
+                  ],
+                  "entities": [
+                    "ISTV applicant",
+                    "Next Level CEO"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "operational_f32e012fa97b5b52"
+                  ],
+                  "supported_claim": "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to.",
+                  "reason": "C2 is the preferred answer evidence for N1, directly stating that passing clients from ISTV to DJ is not allowed.",
+                  "route_key": null,
+                  "clarification_question": ""
+                },
+                {
+                  "id": "N2",
+                  "text": "What is the ISTV rep's role in the process of moving an applicant to Next Level CEO during audition?",
+                  "relation": "permission",
+                  "request_kind": "knowledge",
+                  "product_scope": "dj_nlceo",
+                  "domains": [
+                    "audition",
+                    "application"
+                  ],
+                  "actions": [
+                    "move",
+                    "transfer"
+                  ],
+                  "entities": [
+                    "ISTV rep",
+                    "applicant",
+                    "Next Level CEO"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "No preferred answer evidence addresses the ISTV rep's role in this specific process; routing to sales_tech as indicated by C1's route_key.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "partial",
+              "confidence_score": 50,
+              "reasoning_summary": "The question asks two distinct things: whether moving an ISTV applicant to Next Level CEO during audition is allowed (permission), and what the ISTV rep's role is in that process (procedure). These are atomic needs requiring separate retrieval. N1 is answered by C2, the preferred answer evidence. N2 has no preferred answer evidence, so it is routed to sales_tech based on C1's route_key. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_f32e012fa97b5b52"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_f32e012fa97b5b52"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "Applied the uniquely dominant exact-family and exact-relationship evidence operational_f32e012fa97b5b52. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_f32e012fa97b5b52"
+                  ],
+                  "deterministicPolicyIds": [
+                    "operational_f32e012fa97b5b52"
+                  ]
+                },
+                {
+                  "needId": "N2",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract.",
+                  "modelDisposition": "route",
+                  "modelDirectPolicyIds": [],
+                  "deterministicPolicyIds": [
+                    "operational_f32e012fa97b5b52"
+                  ]
+                }
+              ],
+              "reasoningSummary": "For N1, C2 is directly applicable and answer-eligible, providing a clear 'no' with no conflicting evidence. For N2, no card directly addresses the ISTV rep's role in this specific process, so routing is required. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "pass",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_f32e012fa97b5b52"
+                  ],
+                  "answeredNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N2"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 4285,
+                "promptChars": 4292,
+                "completionTokens": 415,
+                "totalTokens": 1371,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 3846,
+                "promptChars": 14029,
+                "completionTokens": 239,
+                "totalTokens": 3797,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 4346,
+                "promptChars": 20071,
+                "completionTokens": 353,
+                "totalTokens": 5337,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 1873,
+                "promptChars": 3485,
+                "completionTokens": 123,
+                "totalTokens": 886,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation_recheck",
+                "status": "success",
+                "latencyMs": 2300,
+                "promptChars": 4078,
+                "completionTokens": 123,
+                "totalTokens": 1001,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 0,
+              "queryPlanningMs": 4294,
+              "v5BoundedRetrievalMs": 3037,
+              "sourcePlanningMs": 3891,
+              "evidenceDraftingMs": 4346,
+              "validationMs": 4193,
+              "totalMs": 19784
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-35",
+      "question": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The opportunity is not an acting job, and a prospect with no business is not a fit. End the qualification process and send the approved rejection letter.",
+      "requiredConcepts": [
+        "not an acting job",
+        "no business is not a fit",
+        "rejection letter"
+      ],
+      "forbiddenConcepts": [
+        "payment makes them qualified",
+        "offer an acting role"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784038901.217919"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 18553,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+              "standaloneQuestion": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 11,
+              "candidates": [
+                {
+                  "id": "operational_37ba5d8a6d9ff2e4",
+                  "rank": 1,
+                  "score": 163.0419107430193,
+                  "decisionKey": "post-call1-uncompelling-story",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.34238119163116293,
+                  "matchedDecisionId": "operational_37ba5d8a6d9ff2e4::a2"
+                },
+                {
+                  "id": "claim_a5c125b11f9d657d",
+                  "rank": 2,
+                  "score": 145.01632194477224,
+                  "decisionKey": "ending-call-1-when-applicant-is-not-a-fit",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.37721676807715887,
+                  "matchedDecisionId": "claim_a5c125b11f9d657d::a1"
+                },
+                {
+                  "id": "operational_6319f88d138ba725",
+                  "rank": 3,
+                  "score": 136.34907995103413,
+                  "decisionKey": "rejection-letter-for-non-business-owner",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1315903389919538,
+                  "matchedDecisionId": "operational_6319f88d138ba725::a1"
+                },
+                {
+                  "id": "claim_d2519c5b8045823b",
+                  "rank": 4,
+                  "score": 122.5672503876109,
+                  "decisionKey": "prospect-previously-replied-stop-but-wants-reinstatement",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.10482848367219183,
+                  "matchedDecisionId": "claim_d2519c5b8045823b::a1"
+                },
+                {
+                  "id": "operational_60c9077057f0507c",
+                  "rank": 5,
+                  "score": 120.2793363003378,
+                  "decisionKey": "unqualified-call-1-handling",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.23544080467400555,
+                  "matchedDecisionId": "operational_60c9077057f0507c::a1"
+                },
+                {
+                  "id": "operational_b3d81567d846ebca",
+                  "rank": 6,
+                  "score": 117.95647988226709,
+                  "decisionKey": "client-supplemental-info-submission",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.11605177063713189,
+                  "matchedDecisionId": "operational_b3d81567d846ebca::a1"
+                },
+                {
+                  "id": "operational_fdb99aa921f8cf8f",
+                  "rank": 7,
+                  "score": 115.6407765290546,
+                  "decisionKey": "handle-prospect-rejection-after-greenlight-letter",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.14126448280440332,
+                  "matchedDecisionId": "operational_fdb99aa921f8cf8f::a1"
+                },
+                {
+                  "id": "claim_3362540ba4b5f033",
+                  "rank": 8,
+                  "score": 107.7428101760773,
+                  "decisionKey": "self-defense-death-legal-blowback-concern",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.12309149097933272,
+                  "matchedDecisionId": "claim_3362540ba4b5f033::a1"
+                },
+                {
+                  "id": "operational_26b9360616d8b7fe",
+                  "rank": 9,
+                  "score": 103.36118836372788,
+                  "decisionKey": "contract-sending-method",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1257389226923863,
+                  "matchedDecisionId": "operational_26b9360616d8b7fe::a1"
+                },
+                {
+                  "id": "operational_8b94e9ca32170c04",
+                  "rank": 10,
+                  "score": 72.558483930475,
+                  "decisionKey": "author-fit-without-official-business",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.15152288168283162,
+                  "matchedDecisionId": "operational_8b94e9ca32170c04::a2"
+                },
+                {
+                  "id": "operational_dc30d8c99ef71b34",
+                  "rank": 11,
+                  "score": 71.56109222929015,
+                  "decisionKey": "cast-member-minimum-age",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.10482848367219183,
+                  "matchedDecisionId": "operational_dc30d8c99ef71b34::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 291,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 3,
+                    "selectedPolicyIds": [
+                      "operational_37ba5d8a6d9ff2e4",
+                      "claim_a5c125b11f9d657d",
+                      "operational_6319f88d138ba725",
+                      "claim_d2519c5b8045823b",
+                      "operational_60c9077057f0507c",
+                      "operational_b3d81567d846ebca",
+                      "operational_fdb99aa921f8cf8f",
+                      "claim_3362540ba4b5f033",
+                      "operational_26b9360616d8b7fe",
+                      "operational_8b94e9ca32170c04",
+                      "operational_dc30d8c99ef71b34"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1517,
+                      "decision_contract": 1897,
+                      "decision_object": 1269,
+                      "workflow_stage_or_time": 277,
+                      "other_hard_boundary": 116,
+                      "insufficient_direct_signal": 3,
+                      "payment_qualifier": 16,
+                      "material_condition": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine whether a Call 1 prospect who wants acting work and has no business or entrepreneurial story should be rejected.",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "sales",
+                    "qualification"
+                  ],
+                  "actions": [
+                    "end call",
+                    "send rejection"
+                  ],
+                  "entities": [
+                    "Call 1 prospect",
+                    "acting work",
+                    "business story",
+                    "entrepreneurial story"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [
+                    "operational_6319f88d138ba725"
+                  ],
+                  "supported_claim": "",
+                  "reason": "C2 is the only preferredPolicyId for N1 and directly states to send the rejection letter when the prospect does not own a business or is not an entrepreneur, matching the need's conditions.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 100,
+              "reasoning_summary": "The user asks a single yes/no policy question about whether a specific prospect profile warrants ending the call and sending a rejection. No compound or ambiguous elements are present. sourcePlan for N1 specifies lane=answer with preferredPolicyIds containing only C2 (operational_6319f88d138ba725). C2 is answer_evidence and directly states 'Send the rejection letter' under the condition 'Prospect does not own a business or is not an entrepreneur,' which matches the user's scenario of no business or entrepreneurial story. C1 is not preferred and is route_or_support, so it is excluded. C3 is irrelevant. Therefore, the answer is derived solely from C2. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_6319f88d138ba725"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_6319f88d138ba725"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "C1 and C3 directly state that a prospect with no business should receive a rejection letter, matching the need's conditions (Call 1, no business/entrepreneurial story). C5 provides the procedural step to send the rejection letter and record stats, but C1 and C3 are sufficient to answer the core question. No conflicting positions exist. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_6319f88d138ba725",
+                    "operational_60c9077057f0507c"
+                  ],
+                  "deterministicPolicyIds": []
+                }
+              ],
+              "reasoningSummary": "C1 (operational_37ba5d8a6d9ff2e4) explicitly states: 'If they have no business, send the rejection letter' for leads after Call 1 with uncompelling story. C3 (operational_6319f88d138ba725) states: 'Send the rejection letter' if prospect does not own a business or is not an entrepreneur. Both are directly applicable and answer-eligible. C5 (operational_60c9077057f0507c) adds procedural detail but is not required for the core answer. No conflicts arise as all direct cards align on sending a rejection letter. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "unsupported",
+                  "evidenceRefs": [
+                    "operational_6319f88d138ba725"
+                  ],
+                  "answeredNeedIds": [],
+                  "reason": "The evidence requires the prospect to not own a business or not be an entrepreneur. The request states the prospect wants acting work and has no business/entrepreneurial story, but does not explicitly state they do not own a business. The condition is not fully established.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [
+                "Send the rejection letter."
+              ],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Unsupported or unvalidated sentences were withheld without discarding supported needs."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 3111,
+                "promptChars": 4339,
+                "completionTokens": 231,
+                "totalTokens": 1187,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 4638,
+                "promptChars": 29253,
+                "completionTokens": 288,
+                "totalTokens": 7656,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 3075,
+                "promptChars": 15539,
+                "completionTokens": 279,
+                "totalTokens": 3925,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 1968,
+                "promptChars": 3416,
+                "completionTokens": 124,
+                "totalTokens": 854,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation_recheck",
+                "status": "success",
+                "latencyMs": 1793,
+                "promptChars": 4009,
+                "completionTokens": 117,
+                "totalTokens": 962,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 0,
+              "queryPlanningMs": 3112,
+              "v5BoundedRetrievalMs": 3906,
+              "sourcePlanningMs": 4686,
+              "evidenceDraftingMs": 3076,
+              "validationMs": 3772,
+              "totalMs": 18553
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-36",
+      "question": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Send both the email and SMS reminder again to support the show rate.",
+      "requiredConcepts": [
+        "yes",
+        "email",
+        "SMS reminder"
+      ],
+      "forbiddenConcepts": [
+        "do not resend reminders"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783983251.582899"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "Yes, still send the day-before email and SMS message to help with show rate when the call is rescheduled to a new date.",
+          "structuredAnswer": {
+            "summary": "Yes, still send the day-before email and SMS message to help with show rate when the call is rescheduled to a new date.",
+            "sections": [
+              {
+                "title": "Guidance",
+                "items": [
+                  "Yes, still send the day-before email and SMS message to help with show rate when the call is rescheduled to a new date."
+                ],
+                "tone": "good"
+              }
+            ],
+            "confidenceLabel": "High",
+            "confidenceScore": 100,
+            "sourceMode": "evidence"
+          },
+          "lane": "answer",
+          "needsRoute": false,
+          "routeReason": null,
+          "routeChannels": [],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 14855,
+          "citations": [
+            {
+              "policyId": "operational_a3369401067154cc",
+              "title": "Send day-before email and SMS for rescheduled calls",
+              "decisionKey": "rescheduled-call-reminder-emails",
+              "lastReviewed": "2026-07-13",
+              "authority": 9.5,
+              "sourceKind": "authoritative_slack_operational_qna",
+              "approvedBy": [
+                "Madeline"
+              ]
+            }
+          ],
+          "selectedPolicyIds": [
+            "operational_a3369401067154cc"
+          ],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+              "standaloneQuestion": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 12,
+              "candidates": [
+                {
+                  "id": "operational_a3369401067154cc",
+                  "rank": 1,
+                  "score": 233.98666086810232,
+                  "decisionKey": "rescheduled-call-reminder-emails",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.3985266984930429,
+                  "matchedDecisionId": "operational_a3369401067154cc::a1"
+                },
+                {
+                  "id": "claim_f6b80881b6bda50f",
+                  "rank": 2,
+                  "score": 127.5733440920992,
+                  "decisionKey": "rescheduling-a-call-after-it-already-started",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.41403933560541256,
+                  "matchedDecisionId": "claim_f6b80881b6bda50f::a2"
+                },
+                {
+                  "id": "operational_62cb13c537cd0e6e",
+                  "rank": 3,
+                  "score": 125.5110993678699,
+                  "decisionKey": "no-show-meeting-drop-off-procedure",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.20797258270192576,
+                  "matchedDecisionId": "operational_62cb13c537cd0e6e::a1"
+                },
+                {
+                  "id": "operational_7374c745c3b3d2bf",
+                  "rank": 4,
+                  "score": 120.47705565086369,
+                  "decisionKey": "reschedule-unwanted-call1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.3333333333333333,
+                  "matchedDecisionId": "operational_7374c745c3b3d2bf::a1"
+                },
+                {
+                  "id": "claim_d510866b501935df",
+                  "rank": 5,
+                  "score": 111.0633752093309,
+                  "decisionKey": "call-1-interruption-reschedule-tomorrow",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.3227486121839514,
+                  "matchedDecisionId": "claim_d510866b501935df::a1"
+                },
+                {
+                  "id": "operational_7fc1e91503a5188b",
+                  "rank": 6,
+                  "score": 108.61062237135361,
+                  "decisionKey": "reschedule-call-hospital-discharge",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.23570226039551584,
+                  "matchedDecisionId": "operational_7fc1e91503a5188b::a1"
+                },
+                {
+                  "id": "claim_cc74765efaeeb43a",
+                  "rank": 7,
+                  "score": 105.96612899208944,
+                  "decisionKey": "lead-rescheduled-onto-another-rep-while-original-rep-is-in-communication",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2807449625374386,
+                  "matchedDecisionId": "claim_cc74765efaeeb43a::a1"
+                },
+                {
+                  "id": "operational_5845b03eb51c06c8",
+                  "rank": 8,
+                  "score": 105.0546456519265,
+                  "decisionKey": "rescheduling-casting-calls",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.23606684260939012,
+                  "matchedDecisionId": "operational_5845b03eb51c06c8::a1"
+                },
+                {
+                  "id": "operational_2dc69dc7faa58458",
+                  "rank": 9,
+                  "score": 104.39957161705723,
+                  "decisionKey": "reschedule-sunday-calls-if-calendar-not-blocked",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.3065696697424829,
+                  "matchedDecisionId": "operational_2dc69dc7faa58458::a1"
+                },
+                {
+                  "id": "claim_b2fb537dc8bb391e",
+                  "rank": 10,
+                  "score": 99.13265842140531,
+                  "decisionKey": "second-call-discount-when-no-pitch-happened",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.35233213170882205,
+                  "matchedDecisionId": "claim_b2fb537dc8bb391e::a1"
+                },
+                {
+                  "id": "operational_2aab9fcfe7a75b35",
+                  "rank": 11,
+                  "score": 82.27140281815933,
+                  "decisionKey": "accidental-cancel-rebook",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07142857142857142,
+                  "matchedDecisionId": "operational_2aab9fcfe7a75b35::a1"
+                },
+                {
+                  "id": "claim_f2bddec7b84e1829__a3",
+                  "rank": 12,
+                  "score": 58.0622696999974,
+                  "decisionKey": "payment-plan-and-link-boundaries-route-if-unclear-2-a3",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.0445435403187374,
+                  "matchedDecisionId": "claim_f2bddec7b84e1829__a3::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 86,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 2,
+                    "selectedPolicyIds": [
+                      "operational_a3369401067154cc",
+                      "claim_f6b80881b6bda50f",
+                      "operational_62cb13c537cd0e6e",
+                      "operational_7374c745c3b3d2bf",
+                      "claim_d510866b501935df",
+                      "operational_7fc1e91503a5188b",
+                      "claim_cc74765efaeeb43a",
+                      "operational_5845b03eb51c06c8",
+                      "operational_2dc69dc7faa58458",
+                      "claim_b2fb537dc8bb391e",
+                      "operational_2aab9fcfe7a75b35",
+                      "claim_f2bddec7b84e1829__a3"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1475,
+                      "decision_contract": 2012,
+                      "decision_object": 1290,
+                      "workflow_stage_or_time": 278,
+                      "other_hard_boundary": 199,
+                      "material_condition": 139,
+                      "payment_qualifier": 21,
+                      "insufficient_direct_signal": 2
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine whether, after Call 1 is rescheduled to the next day, the representative is required or permitted to send the day-before email and text reminders again.",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "call scheduling",
+                    "reminders"
+                  ],
+                  "actions": [
+                    "send",
+                    "reschedule"
+                  ],
+                  "entities": [
+                    "day-before email reminder",
+                    "day-before text reminder",
+                    "Call 1"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "operational_a3369401067154cc"
+                  ],
+                  "supported_claim": "Yes, still send the day-before email and SMS message to help with show rate when the call is rescheduled to a new date.",
+                  "reason": "C1 is the only preferred answer card and directly states that day-before email and SMS should be sent for rescheduled calls to a new date.",
+                  "route_key": null,
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "answer",
+              "confidence_score": 100,
+              "reasoning_summary": "The user asks a single yes/no policy question about whether the rep should resend reminders after rescheduling. Decomposed into one atomic need for the permission/requirement rule. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. C1 is the sole preferred policy for N1 and provides a direct answer. No other cards are eligible or conflict. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_a3369401067154cc"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_a3369401067154cc"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "Applied the uniquely dominant exact-family and exact-relationship evidence operational_a3369401067154cc. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_a3369401067154cc"
+                  ],
+                  "deterministicPolicyIds": [
+                    "operational_a3369401067154cc"
+                  ]
+                }
+              ],
+              "reasoningSummary": "C1 is the only card that directly addresses the need, confirming that day-before reminders should be sent for rescheduled calls. Other cards either address different scenarios (C4, C5, C6, C7, C9, C11, C12) or are not directly applicable (C2, C10). No conflicts are present. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "pass",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_a3369401067154cc"
+                  ],
+                  "answeredNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "The evidence explicitly states to send day-before email and SMS for rescheduled calls when the call is rescheduled to a new date, which matches the request scenario of Call 1 being rescheduled to the next day. The sentence directly answers the need by confirming the action is required/permitted.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [],
+              "unresolvedNeedIds": [],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 3393,
+                "promptChars": 4293,
+                "completionTokens": 249,
+                "totalTokens": 1201,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 2695,
+                "promptChars": 27156,
+                "completionTokens": 182,
+                "totalTokens": 7153,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 3057,
+                "promptChars": 22203,
+                "completionTokens": 230,
+                "totalTokens": 5598,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 1896,
+                "promptChars": 3464,
+                "completionTokens": 130,
+                "totalTokens": 879,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 0,
+              "queryPlanningMs": 3398,
+              "v5BoundedRetrievalMs": 3747,
+              "sourcePlanningMs": 2754,
+              "evidenceDraftingMs": 3057,
+              "validationMs": 1896,
+              "totalMs": 14855
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-37",
+      "question": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "Do not invent deferred payment terms. Use the current finance or refund request workflow; that team can review approved retention assets or other options.",
+      "requiredConcepts": [
+        "do not invent terms",
+        "finance or refund workflow",
+        "approved options"
+      ],
+      "forbiddenConcepts": [
+        "create a custom payment plan",
+        "promise a refund"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783982542.350859"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "Route the request to #sales-finance-requests, as refunds and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link are handled there.",
+          "structuredAnswer": {
+            "summary": "Route the request to #sales-finance-requests, as refunds and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link are handled there.",
+            "sections": [
+              {
+                "title": "Guidance",
+                "items": [
+                  "Route the request to #sales-finance-requests, as refunds and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link are handled there."
+                ],
+                "tone": "good"
+              }
+            ],
+            "confidenceLabel": "High",
+            "confidenceScore": 100,
+            "sourceMode": "evidence"
+          },
+          "lane": "answer",
+          "needsRoute": false,
+          "routeReason": null,
+          "routeChannels": [],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 16586,
+          "citations": [
+            {
+              "policyId": "claim_ad0cea88c6c647f0",
+              "title": "Sales-Tech Routing And Support Requests: Answer",
+              "decisionKey": "sales-tech-routing-and-support-requests-answer-3",
+              "lastReviewed": "2026-07-08",
+              "authority": 100,
+              "sourceKind": "approved_article",
+              "approvedBy": [
+                "Syed Moonis Haider"
+              ]
+            }
+          ],
+          "selectedPolicyIds": [
+            "claim_ad0cea88c6c647f0"
+          ],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+              "standaloneQuestion": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 11,
+              "candidates": [
+                {
+                  "id": "claim_ad0cea88c6c647f0",
+                  "rank": 1,
+                  "score": 176.84944323430886,
+                  "decisionKey": "sales-tech-routing-and-support-requests-answer-3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1952172023607576,
+                  "matchedDecisionId": "claim_ad0cea88c6c647f0::a1"
+                },
+                {
+                  "id": "claim_f2bddec7b84e1829__a1",
+                  "rank": 2,
+                  "score": 161.91112055156952,
+                  "decisionKey": "payment-plan-and-link-boundaries-route-if-unclear-2-a1",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.14744195615489714,
+                  "matchedDecisionId": "claim_f2bddec7b84e1829__a1::a1"
+                },
+                {
+                  "id": "operational_2453f0804e59d2c0",
+                  "rank": 3,
+                  "score": 153.6333128241963,
+                  "decisionKey": "deferred-payment-schedule-possibility",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.13258252147247765,
+                  "matchedDecisionId": "operational_2453f0804e59d2c0::a1"
+                },
+                {
+                  "id": "claim_f2bddec7b84e1829__a3",
+                  "rank": 4,
+                  "score": 150.3996196860697,
+                  "decisionKey": "payment-plan-and-link-boundaries-route-if-unclear-2-a3",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1336306209562122,
+                  "matchedDecisionId": "claim_f2bddec7b84e1829__a3::a1"
+                },
+                {
+                  "id": "claim_527d746a2e41c49f__a7",
+                  "rank": 5,
+                  "score": 145.4284992515387,
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a7",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.11058146711617285,
+                  "matchedDecisionId": "claim_527d746a2e41c49f__a7::a2"
+                },
+                {
+                  "id": "claim_f2bddec7b84e1829__a2",
+                  "rank": 6,
+                  "score": 144.60374265061856,
+                  "decisionKey": "payment-plan-and-link-boundaries-route-if-unclear-2-a2",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.12403473458920847,
+                  "matchedDecisionId": "claim_f2bddec7b84e1829__a2::a1"
+                },
+                {
+                  "id": "claim_ed2063d72ae8653d",
+                  "rank": 7,
+                  "score": 143.61813400851082,
+                  "decisionKey": "refund-rules-by-product-route-if-asked-about-exceptions-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1643989873053573,
+                  "matchedDecisionId": "claim_ed2063d72ae8653d::a2"
+                },
+                {
+                  "id": "operational_d050d240b857f9d0",
+                  "rank": 8,
+                  "score": 128.5148695838772,
+                  "decisionKey": "payment-pause-deferred-start",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.10302042296151677,
+                  "matchedDecisionId": "operational_d050d240b857f9d0::a2"
+                },
+                {
+                  "id": "claim_3378257807845c1a",
+                  "rank": 9,
+                  "score": 126.98988040272815,
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.19245008972987526,
+                  "matchedDecisionId": "claim_3378257807845c1a::a1"
+                },
+                {
+                  "id": "operational_b790a0e21dbde21d",
+                  "rank": 10,
+                  "score": 126.39463968112052,
+                  "decisionKey": "cast-member-payment-stop-request",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.11572751247156893,
+                  "matchedDecisionId": "operational_b790a0e21dbde21d::a1"
+                },
+                {
+                  "id": "operational_4c1311906d1d6095",
+                  "rank": 11,
+                  "score": 122.29141177512119,
+                  "decisionKey": "payment-pause-request-routing",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.32128773156099955,
+                  "matchedDecisionId": "operational_4c1311906d1d6095::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 124,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_ad0cea88c6c647f0",
+                      "claim_f2bddec7b84e1829__a1",
+                      "operational_2453f0804e59d2c0",
+                      "claim_f2bddec7b84e1829__a3",
+                      "claim_527d746a2e41c49f__a7",
+                      "claim_f2bddec7b84e1829__a2",
+                      "claim_ed2063d72ae8653d",
+                      "operational_d050d240b857f9d0",
+                      "claim_3378257807845c1a",
+                      "operational_b790a0e21dbde21d",
+                      "operational_4c1311906d1d6095"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1841,
+                      "decision_contract": 1704,
+                      "decision_object": 1347,
+                      "material_condition": 13,
+                      "other_hard_boundary": 143,
+                      "payment_qualifier": 21,
+                      "workflow_stage_or_time": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine whether a sales representative is permitted to propose deferred payment terms to a client considering a refund, or if the request must be routed to another party.",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "refunds",
+                    "payments"
+                  ],
+                  "actions": [
+                    "propose terms",
+                    "route request"
+                  ],
+                  "entities": [
+                    "sales representative",
+                    "client",
+                    "deferred payments"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "claim_ad0cea88c6c647f0"
+                  ],
+                  "supported_claim": "Route the request to #sales-finance-requests, as refunds and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link are handled there.",
+                  "reason": "sourcePlan prefers C1, which directly states to use #sales-finance-requests for refunds and payment-operation exceptions not involving custom plans, splits, amounts, or links. This answers the need to route the request.",
+                  "route_key": "finance",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "answer",
+              "confidence_score": 100,
+              "reasoning_summary": "The user asks whether the rep should propose terms or route the request, which is a single atomic decision about the proper handling of deferred payment refund inquiries. No additional conditions or compound outputs are present. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. sourcePlan for N1 sets lane=answer and prefers only C1. C1 is answer_evidence and directly addresses routing for refund-related payment questions, stating to use #sales-finance-requests. No other preferred cards exist, and C1 fully resolves the need. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "claim_ad0cea88c6c647f0"
+                  ],
+                  "preferredPolicyIds": [
+                    "claim_ad0cea88c6c647f0"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "Applied the uniquely dominant exact-family and exact-relationship evidence claim_ad0cea88c6c647f0. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "claim_ad0cea88c6c647f0",
+                    "claim_ed2063d72ae8653d"
+                  ],
+                  "deterministicPolicyIds": [
+                    "claim_ad0cea88c6c647f0"
+                  ]
+                }
+              ],
+              "reasoningSummary": "C1 and C7 are both answer-eligible and directly address routing for refund-related payment questions. C1 states to use #sales-finance-requests for refunds and payment-operation exceptions, and C7 says to route finance/payment cases in #sales-finance-requests. They are compatible and sufficient. Other cards are either not answer-eligible or not directly applicable (C2, C4, C6 are conflict-review-only and not direct; C3 is not answer-eligible; C5 and C9 are not directly about deferred payment terms for a refund). No conflicts exist. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "pass",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "claim_ad0cea88c6c647f0"
+                  ],
+                  "answeredNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "The evidence states that refunds and payment-operation exceptions (excluding custom payment plans, splits, amounts, or links) are handled via #sales-finance-requests. The sentence correctly routes the request there, directly answering the need.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [],
+              "unresolvedNeedIds": [],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 2974,
+                "promptChars": 4305,
+                "completionTokens": 239,
+                "totalTokens": 1183,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 4620,
+                "promptChars": 25654,
+                "completionTokens": 256,
+                "totalTokens": 6632,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 3588,
+                "promptChars": 29082,
+                "completionTokens": 303,
+                "totalTokens": 7259,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 1759,
+                "promptChars": 3675,
+                "completionTokens": 119,
+                "totalTokens": 897,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 2,
+              "queryPlanningMs": 2975,
+              "v5BoundedRetrievalMs": 3595,
+              "sourcePlanningMs": 4662,
+              "evidenceDraftingMs": 3589,
+              "validationMs": 1760,
+              "totalMs": 16586
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-38",
+      "question": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "A recent Sales Ops reply estimated roughly four to six months and included Mompreneurs, but delivery timing can change. Confirm the current estimate with fulfillment before promising a date.",
+      "requiredConcepts": [
+        "four to six months",
+        "estimate",
+        "confirm with fulfillment"
+      ],
+      "forbiddenConcepts": [
+        "guarantee 90 days",
+        "promise an exact delivery date"
+      ],
+      "sourceState": "fresh_volatile",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783967871.761339"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "Please request the current approved resource from the fulfillment hotline.",
+          "structuredAnswer": {
+            "summary": "Please request the current approved resource from the fulfillment hotline.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use the fulfillment hotline for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "artifact",
+          "needsRoute": true,
+          "routeReason": "Use the fulfillment hotline only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "the fulfillment hotline"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 8570,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+              "standaloneQuestion": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 1,
+              "candidates": [
+                {
+                  "id": "operational_ea661188a275069f",
+                  "rank": 1,
+                  "score": 131.06240773961534,
+                  "decisionKey": "episode-completion-date-estimate",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.35777087639996635,
+                  "matchedDecisionId": "operational_ea661188a275069f::a2"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 3,
+                    "directLaneSelected": 2,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "operational_ea661188a275069f"
+                    ],
+                    "rejectionCounts": {
+                      "other_hard_boundary": 39,
+                      "decision_object": 2666,
+                      "decision_contract": 1969,
+                      "material_condition": 13,
+                      "workflow_stage_or_time": 651,
+                      "payment_qualifier": 39,
+                      "relation": 77,
+                      "insufficient_direct_signal": 2
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+                  "relation": "definition",
+                  "request_kind": "operational_action",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "production",
+                    "delivery",
+                    "controlled artifact"
+                  ],
+                  "actions": [
+                    "filming",
+                    "episode delivery",
+                    "locate current artifact"
+                  ],
+                  "entities": [
+                    "Mompreneurs"
+                  ],
+                  "lane": "artifact",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The exact current controlled artifact requires a current owner lookup.",
+                  "route_key": "fulfillment",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "artifact",
+              "confidence_score": 50,
+              "reasoning_summary": "Single atomic need asking for the duration between filming and episode delivery for the show Mompreneurs. No product scope specified, so set to unknown. No ambiguity as the question is clear. A named current artifact should be located or routed, not converted into an unsupported product clarification. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners. sourcePlan requires routing N1 to fulfillment. The only candidate card C1 is route_or_support and not answer-eligible, and no preferredPolicyIds are provided. Therefore, the need is routed. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "This request asks the fulfillment action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+                }
+              ],
+              "reasoningSummary": "C1 is the sole candidate but is marked conflict_review_only_need_ids for N1 and not answer_eligible_need_ids. It discusses scheduling a Miami filming date and does not give a specific expected time from filming to delivery. No direct evidence exists, so the need must be routed. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 2851,
+                "promptChars": 4237,
+                "completionTokens": 218,
+                "totalTokens": 1150,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 2577,
+                "promptChars": 7630,
+                "completionTokens": 164,
+                "totalTokens": 1853,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 2059,
+                "promptChars": 10411,
+                "completionTokens": 146,
+                "totalTokens": 2394,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 1,
+              "queryPlanningMs": 2852,
+              "v5BoundedRetrievalMs": 1079,
+              "sourcePlanningMs": 2579,
+              "evidenceDraftingMs": 2059,
+              "validationMs": 0,
+              "totalMs": 8570
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-39",
+      "question": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "Post in the fulfillment hotline channel so the onboarding team can assist.",
+      "requiredConcepts": [
+        "fulfillment hotline",
+        "onboarding team"
+      ],
+      "forbiddenConcepts": [
+        "finance request channel"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783966648.920799"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "Please send this fulfillment request to the fulfillment hotline.",
+          "structuredAnswer": {
+            "summary": "Please send this fulfillment request to the fulfillment hotline.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use the fulfillment hotline for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use the fulfillment hotline only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "the fulfillment hotline"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 12284,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+              "standaloneQuestion": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 4,
+              "candidates": [
+                {
+                  "id": "claim_a03620447d3493d7",
+                  "rank": 1,
+                  "score": 116.14059203342548,
+                  "decisionKey": "internal-material-sharing-boundaries-answer-5",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.21213203435596426,
+                  "matchedDecisionId": "claim_a03620447d3493d7::a2"
+                },
+                {
+                  "id": "operational_c09568a1ce8c66d1",
+                  "rank": 2,
+                  "score": 102.39942042334931,
+                  "decisionKey": "majority-owner-involvement-feature",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.20459830184114206,
+                  "matchedDecisionId": "operational_c09568a1ce8c66d1::a2"
+                },
+                {
+                  "id": "claim_8526f02792d1feba",
+                  "rank": 3,
+                  "score": 101.01362900140734,
+                  "decisionKey": "silent-off-camera-applicant-after-joining-zoom",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.07142857142857142,
+                  "matchedDecisionId": "claim_8526f02792d1feba::a2"
+                },
+                {
+                  "id": "claim_9e9233ec03e1f9e4",
+                  "rank": 4,
+                  "score": 87.80890799938896,
+                  "decisionKey": "keap-access-and-thryv-confusion",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.07142857142857142,
+                  "matchedDecisionId": "claim_9e9233ec03e1f9e4::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 5,
+                    "directLaneSelected": 5,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_a03620447d3493d7",
+                      "operational_c09568a1ce8c66d1",
+                      "claim_8526f02792d1feba",
+                      "claim_9e9233ec03e1f9e4"
+                    ],
+                    "rejectionCounts": {
+                      "decision_object": 1777,
+                      "decision_contract": 2495,
+                      "relation": 1393,
+                      "workflow_stage_or_time": 271,
+                      "payment_qualifier": 21,
+                      "other_hard_boundary": 12,
+                      "material_condition": 11
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+                  "relation": "requirement",
+                  "request_kind": "operational_action",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "onboarding",
+                    "support"
+                  ],
+                  "actions": [
+                    "contact"
+                  ],
+                  "entities": [
+                    "VIP client",
+                    "onboarding owner",
+                    "rep"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "sourcePlan mandates route for this need; no eligible answer evidence available.",
+                  "route_key": "fulfillment",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 0,
+              "reasoning_summary": "The rep needs to know the correct routing or escalation path when a VIP client requests to speak with the onboarding owner. This is a single atomic need for the procedure or contact point. V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners. sourcePlan explicitly sets lane=route for N1 with route_key=fulfillment. Candidate cards are either route_or_support or conflict-review-only and cannot be used as answer evidence. No eligible answer card exists, so the need is routed as instructed. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "This request asks the fulfillment action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+                }
+              ],
+              "reasoningSummary": "C1 is conflict-review-only and cannot be used as direct evidence. C2 addresses majority owner involvement, not routing for a VIP client. C3 covers silent Zoom applicants, not onboarding owner requests. C4 is about Keap/Thryv access, not client routing. No answer-eligible card directly answers the need, so disposition is route. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 2995,
+                "promptChars": 4339,
+                "completionTokens": 225,
+                "totalTokens": 1175,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 3597,
+                "promptChars": 14429,
+                "completionTokens": 194,
+                "totalTokens": 3687,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 2335,
+                "promptChars": 10621,
+                "completionTokens": 157,
+                "totalTokens": 2512,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 4,
+              "queryPlanningMs": 2998,
+              "v5BoundedRetrievalMs": 3332,
+              "sourcePlanningMs": 3615,
+              "evidenceDraftingMs": 2335,
+              "validationMs": 0,
+              "totalMs": 12284
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "v52fresh-40",
+      "question": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Explain that the current service and materials are available only in English. Do not promise Spanish materials or translation; if the existing booking or ownership is unclear, verify it through the current sales workflow.",
+      "requiredConcepts": [
+        "English only",
+        "do not promise Spanish materials"
+      ],
+      "forbiddenConcepts": [
+        "translate the controlled materials yourself",
+        "guarantee Spanish service"
+      ],
+      "sourceState": "fresh_source_only",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783965303.365409"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "The company cannot accommodate other languages at this time; English-speaking partners can be auditioned/cast if they are partners.",
+          "structuredAnswer": {
+            "summary": "The company cannot accommodate other languages at this time; English-speaking partners can be auditioned/cast if they are partners.",
+            "sections": [
+              {
+                "title": "Guidance",
+                "items": [
+                  "The company cannot accommodate other languages at this time; English-speaking partners can be auditioned/cast if they are partners."
+                ],
+                "tone": "good"
+              }
+            ],
+            "confidenceLabel": "High",
+            "confidenceScore": 100,
+            "sourceMode": "evidence"
+          },
+          "lane": "answer",
+          "needsRoute": false,
+          "routeReason": null,
+          "routeChannels": [],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 18269,
+          "citations": [
+            {
+              "policyId": "claim_dc0402caeeb95931",
+              "title": "Spanish/non-English lead",
+              "decisionKey": "spanish-non-english-lead",
+              "lastReviewed": "2026-07-10",
+              "authority": 90,
+              "sourceKind": "trusted_slack_summary",
+              "approvedBy": [
+                "Madeline Cary"
+              ]
+            }
+          ],
+          "selectedPolicyIds": [
+            "claim_dc0402caeeb95931"
+          ],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.3-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa+v53_evidence-admission-r3",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+              "standaloneQuestion": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 13,
+              "candidates": [
+                {
+                  "id": "claim_dc0402caeeb95931",
+                  "rank": 1,
+                  "score": 155.7344655120904,
+                  "decisionKey": "spanish-non-english-lead",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.24743582965269675,
+                  "matchedDecisionId": "claim_dc0402caeeb95931::a1"
+                },
+                {
+                  "id": "claim_8526f02792d1feba",
+                  "rank": 2,
+                  "score": 126.52503795825002,
+                  "decisionKey": "silent-off-camera-applicant-after-joining-zoom",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.25,
+                  "matchedDecisionId": "claim_8526f02792d1feba::a1"
+                },
+                {
+                  "id": "operational_70c553dc5f7feb11",
+                  "rank": 3,
+                  "score": 122.72184641864533,
+                  "decisionKey": "non-english-speakers-casting",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.29488391230979427,
+                  "matchedDecisionId": "operational_70c553dc5f7feb11::a2"
+                },
+                {
+                  "id": "operational_148be1aa9aea1a5e",
+                  "rank": 4,
+                  "score": 115.11077523262564,
+                  "decisionKey": "applicant-assignment-first-contact",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.10369516947304253,
+                  "matchedDecisionId": "operational_148be1aa9aea1a5e::a2"
+                },
+                {
+                  "id": "claim_c027855ac8a028a1",
+                  "rank": 5,
+                  "score": 105.05040147523837,
+                  "decisionKey": "20-already-booked-and-no-rep-visible",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.10721125348377948,
+                  "matchedDecisionId": "claim_c027855ac8a028a1::a1"
+                },
+                {
+                  "id": "claim_31d06391852a47c9",
+                  "rank": 6,
+                  "score": 92.26881144568392,
+                  "decisionKey": "no-show-rebooking-lockout",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.09622504486493763,
+                  "matchedDecisionId": "claim_31d06391852a47c9::a1"
+                },
+                {
+                  "id": "operational_cd0b4360a62a4cba",
+                  "rank": 7,
+                  "score": 90.78040528166235,
+                  "decisionKey": "greenlit-applicant-dual-contact-resolution",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.16770509831248423,
+                  "matchedDecisionId": "operational_cd0b4360a62a4cba::a1"
+                },
+                {
+                  "id": "claim_17acf6e3dadd0ff2__a8",
+                  "rank": 8,
+                  "score": 86.32062068433854,
+                  "decisionKey": "current-show-source-what-reps-must-not-say-1-a8",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.09016696346674323,
+                  "matchedDecisionId": "claim_17acf6e3dadd0ff2__a8::a1"
+                },
+                {
+                  "id": "claim_cdefc66a08f0d5cb",
+                  "rank": 9,
+                  "score": 84.28990165181139,
+                  "decisionKey": "newsletter-subscription-request",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.24333213169614382,
+                  "matchedDecisionId": "claim_cdefc66a08f0d5cb::a1"
+                },
+                {
+                  "id": "operational_ec16645de9aef7bd",
+                  "rank": 10,
+                  "score": 55.83150642598913,
+                  "decisionKey": "daily-leads-access-issue-route",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.11785113019775793,
+                  "matchedDecisionId": "operational_ec16645de9aef7bd::a1"
+                },
+                {
+                  "id": "operational_1df9f29a7119d9a9",
+                  "rank": 11,
+                  "score": 54.268342912206805,
+                  "decisionKey": "qualifying-leads-without-active-business",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.09622504486493763,
+                  "matchedDecisionId": "operational_1df9f29a7119d9a9::a1"
+                },
+                {
+                  "id": "operational_bcd766a411262ca1",
+                  "rank": 12,
+                  "score": 50.81049959098196,
+                  "decisionKey": "disqualifying-leads-without-business",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.05812381937190964,
+                  "matchedDecisionId": "operational_bcd766a411262ca1::a1"
+                },
+                {
+                  "id": "operational_7d3a7dd2a32c0d09",
+                  "rank": 13,
+                  "score": 49.65113302650163,
+                  "decisionKey": "introduce-premium-license-after-standard",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.08247860988423225,
+                  "matchedDecisionId": "operational_7d3a7dd2a32c0d09::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_26bace47347a6cfa",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 106,
+                    "directLaneSelected": 12,
+                    "expansionLaneSelected": 4,
+                    "selectedPolicyIds": [
+                      "claim_dc0402caeeb95931",
+                      "claim_8526f02792d1feba",
+                      "operational_70c553dc5f7feb11",
+                      "operational_148be1aa9aea1a5e",
+                      "claim_c027855ac8a028a1",
+                      "claim_31d06391852a47c9",
+                      "operational_cd0b4360a62a4cba",
+                      "claim_17acf6e3dadd0ff2__a8",
+                      "claim_cdefc66a08f0d5cb",
+                      "operational_ec16645de9aef7bd",
+                      "operational_1df9f29a7119d9a9",
+                      "operational_bcd766a411262ca1",
+                      "operational_7d3a7dd2a32c0d09"
+                    ],
+                    "rejectionCounts": {
+                      "decision_object": 1904,
+                      "decision_contract": 2493,
+                      "relation": 1402,
+                      "material_condition": 13,
+                      "insufficient_direct_signal": 43,
+                      "payment_qualifier": 21,
+                      "workflow_stage_or_time": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine the procedure or routing when an applicant requests Spanish casting materials and the assigned representative does not speak Spanish.",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "casting"
+                  ],
+                  "actions": [
+                    "request"
+                  ],
+                  "entities": [
+                    "Spanish casting materials",
+                    "assigned representative"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "claim_dc0402caeeb95931"
+                  ],
+                  "supported_claim": "The company cannot accommodate other languages at this time; English-speaking partners can be auditioned or cast if they are partners.",
+                  "reason": "C1 is the sole preferred evidence per sourcePlan and directly states the company cannot accommodate other languages, so the rep should proceed with English-speaking partners.",
+                  "route_key": null,
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "answer",
+              "confidence_score": 100,
+              "reasoning_summary": "The user asks for the correct action when a language barrier prevents the rep from fulfilling a specific material request. This is a single atomic need for the procedural policy. C1 is the only card that directly addresses the scenario of a Spanish-speaking lead and the company's language accommodation policy. It is answer-eligible and provides a clear decision. Other cards are either unrelated (C2-C12) or conflict-review-only (C8, C9) but do not present a conflicting position on the same material decision. No conflicts exist, so C1 is the sole preferred evidence. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "claim_dc0402caeeb95931"
+                  ],
+                  "preferredPolicyIds": [
+                    "claim_dc0402caeeb95931"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "Applied the uniquely dominant exact-family and exact-relationship evidence claim_dc0402caeeb95931. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "claim_dc0402caeeb95931"
+                  ],
+                  "deterministicPolicyIds": [
+                    "claim_dc0402caeeb95931"
+                  ]
+                }
+              ],
+              "reasoningSummary": "C1 is the only card that directly addresses the scenario of a Spanish-speaking lead and the company's language accommodation policy. It is answer-eligible and provides a clear decision. Other cards are either unrelated (C2-C12) or conflict-review-only (C8, C9) but do not present a conflicting position on the same material decision. No conflicts exist, so C1 is the sole preferred evidence. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "pass",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "claim_dc0402caeeb95931"
+                  ],
+                  "answeredNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [],
+              "unresolvedNeedIds": [],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 3081,
+                "promptChars": 4305,
+                "completionTokens": 229,
+                "totalTokens": 1173,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 3808,
+                "promptChars": 30875,
+                "completionTokens": 189,
+                "totalTokens": 7928,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 3659,
+                "promptChars": 14864,
+                "completionTokens": 281,
+                "totalTokens": 3729,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 1943,
+                "promptChars": 3375,
+                "completionTokens": 148,
+                "totalTokens": 855,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation_recheck",
+                "status": "success",
+                "latencyMs": 2227,
+                "promptChars": 3968,
+                "completionTokens": 161,
+                "totalTokens": 983,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 0,
+              "queryPlanningMs": 3082,
+              "v5BoundedRetrievalMs": 3492,
+              "sourcePlanningMs": 3855,
+              "evidenceDraftingMs": 3660,
+              "validationMs": 4177,
+              "totalMs": 18269
+            }
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "v5": {
+      "completed": 10,
+      "lanes": {
+        "route": 5,
+        "partial": 1,
+        "answer": 3,
+        "artifact": 1
+      },
+      "answersWithSelectedEvidence": 4,
+      "providerFailures": 0,
+      "averageCandidateCount": 9.3
+    }
+  }
+}

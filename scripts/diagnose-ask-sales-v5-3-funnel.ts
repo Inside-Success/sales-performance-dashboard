@@ -160,7 +160,6 @@ async function main() {
   const manualById = new Map(manual.details.map((item) => [item.id, item.v52]));
   const snapshot = getV5KnowledgeSnapshot();
   const policies = snapshot.policies;
-  const policyById = new Map(policies.map((policy) => [policy.id, policy]));
   const cases = datasets.flatMap((dataset) => dataset.cases.map((item) => ({ ...item, dataset: dataset.name })));
   assertUniqueIds("gold datasets", cases.map((item) => item.id));
   assertUniqueIds("runtime artifact", runtime.items.map((item) => item.id));
