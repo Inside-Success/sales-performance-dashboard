@@ -22,6 +22,8 @@ These are consumed diagnostics. The 92% retained result is useful regression evi
 - Branch: `agent/ask-sales-v5-3-evidence-admission-2026-07-25`
 - Runtime freeze: `d8f3867`
 - Base V5.2 evaluation head: `fcb199348116f155db0e03359d6e99756e22090b`
+- Draft stacked dashboard PR: [#79](https://github.com/Inside-Success/sales-performance-dashboard/pull/79)
+- Draft stacked documentation PR: [#54](https://github.com/Inside-Success/faq-chatbot/pull/54)
 - Production selector changed: no
 - Database/history persistence added: no
 - Slack, n8n, Google, Vercel production, and production aliases changed: no
