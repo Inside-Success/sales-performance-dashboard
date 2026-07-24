@@ -86,6 +86,10 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     expect(deterministicV53ActionOwner("Can someone trace this prospect's failed card payment?")).toBe("finance");
     expect(deterministicV53ActionOwner("A client's internet dropped after I greenlit him. Should I wait until tomorrow's follow-up?")).toBe("greenlight");
     expect(deterministicV53ActionOwner("What is the general policy after an internet interruption during a greenlight call?")).toBeNull();
+    expect(deterministicV53ActionOwner("Should a rep decide whether a prospect with an old sealed felony may attend Call 1?")).toBe("sales_policy");
+    expect(deterministicV53ActionOwner("A prospect has pending felony charges and I am unsure whether to proceed.")).toBe("sales_policy");
+    expect(deterministicV53ActionOwner("May I greenlight this prospect with an old fraud conviction?")).toBe("greenlight");
+    expect(deterministicV53ActionOwner("What is the general federal-lawsuit eligibility rule?")).toBeNull();
   });
 
   it("keeps a bank-closure exception request separate from a neighboring Monday rejection-letter schedule", () => {
@@ -97,6 +101,28 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
       reasoningSummary: "deadline exception boundary",
     });
     expect(retrieval.candidates.map((candidate) => candidate.policy.id)).not.toContain("claim_9641a42c26cca91a");
+  });
+
+  it("retrieves the complete source-reviewed Call 2 manual-booking fallback", () => {
+    const text = "How should I book Call 2 tomorrow when only the Master Calendar has availability?";
+    const planned = {
+      ...need(text),
+      relation: "procedure" as const,
+      domains: ["calendar", "call 2"],
+      actions: ["book"],
+      entities: ["Call 2", "Master Calendar"],
+    };
+    const plan = {
+      needs: [planned],
+      conversationIntent: "answer" as const,
+      reasoningSummary: "manual Call 2 booking fallback",
+    };
+    const retrieval = retrieveV5Policies(resolveV4SystemicTurn(text, []), plan);
+
+    expect(retrieval.candidates[0]?.policy.id).toBe("curated_v53_call2_master_calendar_manual_fallback");
+    expect(retrieval.candidates[0]?.policy.decision).toMatch(/Google Calendar/i);
+    expect(retrieval.candidates[0]?.policy.decision).toMatch(/new Zoom meeting/i);
+    expect(retrieval.candidates[0]?.policy.decision).toMatch(/email the prospect/i);
   });
 
   it("lets a matching source-reviewed resolution recover Rich's controlling three-month rule", () => {

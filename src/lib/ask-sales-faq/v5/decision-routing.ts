@@ -40,6 +40,9 @@ const CASE_SPECIFIC_GREENLIGHT_SUBJECT = /\b(?:this|that|my|our|the|a|an)\s+(?:c
 const GREENLIGHT_INTERRUPTION = /\b(?:greenlit|green\s*light)\b/i;
 const GREENLIGHT_INTERRUPTION_STATE = /\b(?:internet|connection|disconnect|dropped|congratulations\s+video)\b/i;
 const GREENLIGHT_LIVE_DECISION = /\b(?:should\s+i|now|today|tomorrow|wait|follow[- ]?up)\b/i;
+const CASE_SPECIFIC_SENSITIVE_BACKGROUND = /\b(?:this|that|a|an|the|my|our)\s+(?:specific\s+)?(?:client|lead|prospect|applicant)\b/i;
+const SENSITIVE_BACKGROUND_FACT = /\b(?:felon(?:y|ies)|criminal|conviction|charges?|lawsuit|sealed\s+record|media\s+coverage|background\s+check)\b/i;
+const SENSITIVE_ELIGIBILITY_DECISION = /\b(?:proceed|move\s+forward|attend\s+call\s*1|eligible|eligibility|approve|approval|greenlight|green\s+light|pass|reject|decide|unsure)\b/i;
 
 function isMissingReferencedContext(value: string) {
   if (!REFERENCED_CONTEXT_REVIEW.test(value)) return false;
@@ -109,6 +112,9 @@ export function deterministicV52ActionOwner(text: string): RouteKey | null {
  * signal makes a live owner necessary. */
 export function deterministicV53ActionOwner(text: string): RouteKey | null {
   if (CURRENT_CROSS_PRODUCT_REVIEW.test(text) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if (CASE_SPECIFIC_SENSITIVE_BACKGROUND.test(text) && SENSITIVE_BACKGROUND_FACT.test(text) && SENSITIVE_ELIGIBILITY_DECISION.test(text)) {
+    return /\b(?:greenlight|green\s+light)\b/i.test(text) ? "greenlight" : "sales_policy";
+  }
   if (CASE_SPECIFIC_GREENLIGHT_SUBJECT.test(text) && GREENLIGHT_INTERRUPTION.test(text) &&
     GREENLIGHT_INTERRUPTION_STATE.test(text) && GREENLIGHT_LIVE_DECISION.test(text)) return "greenlight";
   if (FINANCE_TIMING_LOOKUP.test(text)) return "finance";
