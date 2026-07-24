@@ -30,7 +30,7 @@ const DECISION_OBJECTS = [
   ["program_format", /\b(?:reality[- ]?tv|reality\s+show|documentary[- ]?style|documentary\s+programming)\b/i],
   ["seo_benefit_definition", /\bseo\b.{0,140}\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b|\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b.{0,140}\bseo\b/i],
   ["social_promo_asset_definition", /\bsocial\s+promo(?:tional)?\s+assets?\b/i],
-  ["swag_package_definition", /\bswag(?:\s+package)?\b.{0,120}\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b|\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b.{0,120}\bswag(?:\s+package)?\b/i],
+  ["swag_package_definition", /\bswag(?:\s+package)?\b.{0,120}\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b|\b(?:what\s+is|mean|meaning|merchandise|souvenir|promotional\s+material)\b.{0,120}\bswag(?:\s+package)?\b/i],
   ["promotional_activity_obligation", /\bpromotional\s+activities\b.{0,180}\b(?:cooperat|share|post|trailers?|social)\w*\b|\b(?:cooperat|share|post)\w*\b.{0,180}\b(?:promotional\s+activities|trailers?|social\s+posts?)\b/i],
   ["emergency_payment_link_exception", /\bemergency\s+payment\s+links?\b/i],
   ["multi_episode_starting_recommendation", /\b(?:multi[- ]?episode|docu[- ]?series|docuseries|\d+[- ]episode|one[- ]episode|single[- ]episode|larger\s+project)\b/i],
@@ -45,15 +45,17 @@ const DECISION_OBJECTS = [
   ["live_card_failure", /\b(?:amex|american\s+express|card|payment\s+method)\b.{0,120}\b(?:fail|declin|reject|not\s+work|error)\w*\b|\b(?:fail|declin|reject|not\s+work|error)\w*\b.{0,120}\b(?:amex|american\s+express|card|payment\s+method)\b/i],
   ["greenlight_contract_dispatch", /\b(?:greenlight|green\s+light)\b.{0,160}\b(?:contract|agreement)\b.{0,100}\b(?:sent|send|dispatch|deliver|receive|status|confirm)\w*\b|\b(?:contract|agreement)\b.{0,160}\b(?:greenlight|green\s+light)\b.{0,100}\b(?:sent|send|dispatch|deliver|receive|status|confirm)\w*\b/i],
   ["contract_dispatch_status", /\b(?:contract|agreement)\b.{0,140}\b(?:sent|send|dispatch|deliver|receive|received|arrive|status)\w*\b|\b(?:sent|send|dispatch|deliver|receive|received|arrive|status)\w*\b.{0,140}\b(?:contract|agreement)\b/i],
+  ["bank_closure_deadline_exception", /\b(?:bank\s+(?:is\s+)?closed|bank\s+closure)\b.{0,180}\b(?:deadline|cutoff|exception|monday|pay(?:ment)?)\b|\b(?:deadline|cutoff|exception|monday|pay(?:ment)?)\b.{0,180}\b(?:bank\s+(?:is\s+)?closed|bank\s+closure)\b/i],
 ] as const;
 
 const ACTION_FACETS = [
+  ["transfer", /\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b).{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b)/i],
   ["share", /\b(?:share|send|provide|give|forward)\w*\b/i],
-  ["submit", /\b(?:submit|post|upload|attach|tag)\w*\b/i],
+  ["submit", /\b(?:submit|upload|attach|tag)\w*\b|\bpost(?![- ]?sale)\w*\b/i],
   ["locate", /\b(?:where|find|locate|access|download|get)\w*\b/i],
   ["verify", /\b(?:verify|check|confirm|trace|investigate)\w*\b/i],
   ["modify", /\b(?:change|edit|update|correct|replace|fix|repair)\w*\b/i],
-  ["reschedule", /\b(?:reschedule|rebook|move)\w*\b/i],
+  ["reschedule", /\b(?:reschedule|rebook)\w*\b|\bmove\w*\b.{0,70}\b(?:call|meeting|appointment|booking|schedule|date|time)\b|\b(?:call|meeting|appointment|booking|schedule|date|time)\b.{0,70}\bmove\w*\b/i],
   ["cancel", /\b(?:cancel|void|reverse|refund|pause|stop)\w*\b/i],
   ["interview", /\binterview\w*\b/i],
   ["create", /\b(?:create|generate|prepare|produce)\w*\b/i],
@@ -63,8 +65,10 @@ function requestText(need: V4SystemicNeed) {
   // Contract each atomic need against its own wording. The full original
   // request may contain several independent decision objects; using it here
   // made every evidence card appear responsible for every object in a
-  // compound question (for example SEO + social assets + swag).
-  return need.text || need.authorityText || need.originalRequestText || "";
+  // compound question (for example SEO + social assets + swag). authorityText
+  // is the planner's immutable atomic slice of the user's wording; need.text
+  // may be a model paraphrase and must not redefine the requested decision.
+  return need.authorityText || need.text || need.originalRequestText || "";
 }
 
 function policyText(policy: V4SystemicPolicy) {
@@ -79,7 +83,13 @@ function policyText(policy: V4SystemicPolicy) {
 }
 
 function objectFacets(value: string) {
-  return new Set(DECISION_OBJECTS.filter(([, pattern]) => pattern.test(value)).map(([name]) => name));
+  const facets = new Set<string>(DECISION_OBJECTS.filter(([, pattern]) => pattern.test(value)).map(([name]) => name));
+  const crossProgramTransfer = /\b(?:istv|inside\s+success\s+tv)\b/i.test(value) &&
+    /\b(?:daymond\s+john|next\s+level\s+ceo|nlceo|dj)\b/i.test(value) &&
+    /\b(?:client|lead|prospect|applicant)\b/i.test(value) &&
+    /\b(?:move|moved|pass|passed|transfer|transferred)\w*\b/i.test(value);
+  if (crossProgramTransfer) facets.add("cross_program_lead_transfer");
+  return facets;
 }
 
 function actionFacets(value: string) {
@@ -87,7 +97,7 @@ function actionFacets(value: string) {
 }
 
 const IDENTITY_STOP = new Set([
-  "about", "after", "again", "also", "answer", "appointment", "before", "best", "call", "can", "client", "company", "could", "does", "from", "give", "help", "keep", "need", "person", "policy", "prospect", "question", "rep", "representative", "rule", "sales", "should", "someone", "tell", "their", "there", "they", "this", "what", "when", "where", "which", "with", "would",
+  "about", "after", "again", "all", "also", "answer", "appointment", "before", "best", "call", "can", "client", "company", "could", "determine", "does", "for", "from", "give", "help", "keep", "need", "one", "person", "policy", "prospect", "question", "rep", "representative", "rule", "sales", "should", "someone", "tell", "the", "their", "there", "they", "this", "what", "when", "where", "whether", "which", "with", "would",
 ]);
 
 const IDENTITY_EQUIVALENTS: Record<string, string[]> = {
@@ -98,9 +108,11 @@ const IDENTITY_EQUIVALENTS: Record<string, string[]> = {
   customer: ["client", "prospect"],
   lead: ["applicant", "prospect"],
   meeting: ["appointment", "call"],
+  move: ["transfer", "pass", "reschedule"],
   overrun: ["schedule", "time", "wrap"],
   parent: ["family", "mother", "father"],
   prospect: ["applicant", "lead", "client"],
+  transfer: ["move", "pass"],
   rebook: ["reschedule"],
   reschedule: ["rebook", "move"],
 };
@@ -114,6 +126,7 @@ function identityStem(value: string) {
 
 function identityTerms(value: string) {
   const base = value.toLowerCase()
+    .replace(/\bmove\w*\s+forward\b/g, "advance")
     .replace(/\bcall\s+(?:1|one|first)\b/g, "call-one")
     .replace(/\bcall\s+(?:2|two|second)\b/g, "call-two")
     .replace(/[^a-z0-9%]+/g, " ")
@@ -174,6 +187,12 @@ export function evaluateV52DecisionIdentity(
     matchedTerms.length >= 2 &&
     coverage >= 0.28 &&
     score >= 6
+  ) || (
+    need.relation === "other" &&
+    exactAction &&
+    matchedTerms.length >= 3 &&
+    coverage >= 0.3 &&
+    score >= 8
   );
   return {
     exact,
@@ -190,6 +209,7 @@ function actorActionError(request: string, evidence: string) {
   if (/\bdoes\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\s+need\s+to\b/i.test(request)) return null;
   const match = request.match(/\bdoes\s+([a-z][a-z .'-]{1,55}?)\s+(?:personally\s+)?(interview|create|record|host|meet|call|approve|review|send|provide)\w*\b/i);
   if (!match) return null;
+  if (/\b(?:appearing|appearance|participating|participation|show|program|package|episode|offer|service)\b/i.test(match[1])) return null;
   const actorTokens = match[1].toLowerCase().split(/\s+/).filter((token) => token.length >= 3 && !["the", "our", "any"].includes(token));
   const evidenceLower = evidence.toLowerCase();
   if (actorTokens.length && !actorTokens.every((token) => evidenceLower.includes(token))) return "the evidence governs a different actor";
@@ -239,6 +259,9 @@ export function evaluateV51DecisionContract(
   for (const object of requestedObjects) {
     if (!evidenceObjects.has(object)) errors.push(`the evidence does not govern the requested ${object.replace(/_/g, " ")} decision object`);
   }
+  if (requestedActions.has("transfer") && !evidenceActions.has("transfer")) {
+    errors.push("the evidence does not establish the requested transfer action");
+  }
   const actorError = actorActionError(request, evidence);
   if (actorError) errors.push(actorError);
 
@@ -262,7 +285,7 @@ const ROUTE_DESTINATIONS = [
 ] as const;
 
 function polarity(value: string) {
-  if (/\b(?:do not|don't|does not|doesn't|must not|cannot|can't|may not|not allowed|not permitted|prohibited|never|no[,.;:]?)\b/i.test(value)) return "negative";
+  if (/\b(?:do not|don't|does not|doesn't|should not|must not|cannot|can't|may not|not allowed|not permitted|prohibited|never|no[,.;:]?)\b/i.test(value)) return "negative";
   if (/\b(?:may|can|allowed|permitted|must|should|required|yes[,.;:]?)\b/i.test(value)) return "positive";
   return "neutral";
 }
@@ -285,7 +308,10 @@ export function v51OperationalEffectErrors(need: V4SystemicNeed, sentence: strin
   if (need.relation === "permission") {
     const sentencePolarity = polarity(sentence);
     if (sentencePolarity === "neutral") errors.push("a permission answer must state an explicit allowed or prohibited outcome");
-    const evidencePolarity = polarity(evidence);
+    // Conditions and boundaries often contain a secondary "does not address"
+    // sentence whose polarity is unrelated to the primary decision. Compare
+    // the answer with the primary decision clause only.
+    const evidencePolarity = polarity(evidence.split(/\b(?:Conditions?|Boundaries):/i)[0]);
     if (sentencePolarity !== "neutral" && evidencePolarity !== "neutral" && sentencePolarity !== evidencePolarity) {
       errors.push("the answer reverses the permission polarity in the evidence");
     }
@@ -306,7 +332,7 @@ export function v51OperationalEffectErrors(need: V4SystemicNeed, sentence: strin
   return [...new Set(errors)];
 }
 
-const MATERIAL_CAUTION = /\b(?:not\s+advised|not\s+recommended|should\s+not|do\s+not|don't|must\s+not|only\s+if|unless|except|does\s+not\s+(?:guarantee|authorize|apply)|without\s+(?:approval|permission|confirmation))\b/gi;
+const MATERIAL_CAUTION = /\b(?:not\s+advised|not\s+recommended|should\s+not|do\s+not\s+(?:share|send|offer|provide|book|schedule|use|assume|promise|mention|change|remove|contact|collaborate|arrange|discuss|disclose)|don't\s+(?:share|send|offer|provide|book|schedule|use|assume|promise|mention|change|remove|contact|collaborate|arrange|discuss|disclose)|must\s+not|only\s+if|unless|except|does\s+not\s+(?:guarantee|authorize)|without\s+(?:approval|permission|confirmation))\b/gi;
 
 function materialCautions(value: string) {
   return [...new Set([...value.matchAll(MATERIAL_CAUTION)].map((match) => match[0].toLowerCase()))];
@@ -324,6 +350,10 @@ function preservesCaution(sentence: string, caution: string) {
 /** Prevents a fluent paraphrase from dropping a safety-changing exception. */
 export function v52OperationalEffectErrors(need: V4SystemicNeed, sentence: string, evidence: string) {
   const errors = v51OperationalEffectErrors(need, sentence, evidence);
+  const datedScope = evidence.match(/\bAs of (\d{4}-\d{2}-\d{2})\b/i)?.[1];
+  if (datedScope && !new RegExp(`\\bas of\\s+${datedScope.replace(/-/g, "[-/]")}\\b`, "i").test(sentence)) {
+    errors.push(`the answer omits the scoped rule's effective date: ${datedScope}`);
+  }
   const cautions = materialCautions(evidence);
   const assertsPermissionOrInstruction = /\b(?:can|may|allowed|should|must|use|send|share|offer|provide|book|schedule|route)\b/i.test(sentence);
   if (assertsPermissionOrInstruction && cautions.length) {

@@ -123,6 +123,13 @@
       "note": "Madeline later confirmed that sending the direct Zoom link is acceptable for the immediate booking case."
     },
     {
+      "source_id": "slack:C0AUQKNR8CF:1784858333.344189",
+      "file": "read-only-authority-thread-corpus",
+      "sha256": "5d4ed6db0223b8ff1ffc0b19d9b5b5e4cc56cd16b23f4054e2c2e82c65886919",
+      "disposition": "curated_complete_call2_manual_booking_fallback",
+      "note": "Madeline supplied the complete Call 2 fallback when only the inbound Master Calendar has availability: create the appointment in Google Calendar, create a new Zoom meeting, and email the Zoom link."
+    },
+    {
       "source_id": "slack:C0AUQKNR8CF:1784814786.469689",
       "file": "read-only-authority-thread-corpus",
       "sha256": "35f793e20d71d88fd37c46460ebd0f00a72a4881d435e39be16e5c60732a6830",
@@ -877,6 +884,33 @@
       "specificity_priority": 100,
       "blocked_for_decision_keys": [],
       "systemic": {"temporalRisk": "stable", "scopeRisk": "scoped", "sourceClass": "authoritative_operational_qna", "ownerReviewRequired": false, "sourceIds": ["slack:C0AUQKNR8CF:1784761955.078429"]}
+    },
+    {
+      "id": "curated_v53_call2_master_calendar_manual_fallback",
+      "decision_key": "call2-master-calendar-manual-booking-fallback",
+      "policy_key": "v5-systemic-curated-call2-master-calendar-manual-booking-fallback",
+      "title": "Book Call 2 manually without editing the inbound Master Calendar",
+      "question_families": ["How should a rep book Call 2 when only the Master Calendar shows availability?", "What is the manual Call 2 booking fallback for tomorrow morning?"],
+      "decision": "When a Call 2 needs to be booked and only the inbound Master Calendar shows availability, do not edit or use the Master Calendar. Create the appointment in Google Calendar, create a new Zoom meeting, and email the prospect the Zoom link.",
+      "product_scopes": ["product_agnostic"],
+      "domains": ["Call 2 scheduling", "Google Calendar", "Zoom"],
+      "actions": ["book Call 2", "create Google Calendar appointment", "create Zoom meeting", "email Zoom link"],
+      "entities": ["Call 2", "Master Calendar", "Google Calendar", "Zoom link"],
+      "risk_level": "medium",
+      "answerability": "answer_evidence",
+      "quality_tier": "trusted_evidence",
+      "quality_flags": ["curated_direct_authority", "complete-procedure", "master-calendar-boundary-preserved"],
+      "route_key": null,
+      "route_channel": null,
+      "route_reason": "",
+      "authority": 9.5,
+      "effective_at": "2026-07-24T01:58:53.344Z",
+      "last_reviewed": "2026-07-24",
+      "source": {"kind": "authoritative_slack_operational_qna", "article_id": null, "ids": ["slack:C0AUQKNR8CF:1784858333.344189"], "approved_by": ["Madeline"]},
+      "search_text": "Call 2 tomorrow only Master Calendar availability manual booking Google Calendar create new Zoom meeting email prospect Zoom link do not edit inbound master",
+      "specificity_priority": 108,
+      "blocked_for_decision_keys": [],
+      "systemic": {"temporalRisk": "stable", "scopeRisk": "scoped", "sourceClass": "authoritative_operational_qna", "ownerReviewRequired": false, "sourceIds": ["slack:C0AUQKNR8CF:1784858333.344189"]}
     },
     {
       "id": "curated_v43_oncehub_first_no_answer_text",

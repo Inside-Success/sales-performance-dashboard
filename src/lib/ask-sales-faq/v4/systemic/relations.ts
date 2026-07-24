@@ -187,7 +187,7 @@ function durationRoleCompatible(left: DurationMeasurement["role"], right: Durati
 
 export function v4SystemicDecisionObjectErrors(request: string, evidence: string) {
   const errors: string[] = [];
-  const asksForContractClauseMeaning = /\bwhat\s+does\s+(?:the\s+)?(?:contract|agreement)\s+mean\b|\b(?:contract|agreement)\b.{0,80}\b(?:mean|meaning|define|definition)\b/i.test(request);
+  const asksForContractClauseMeaning = /\bwhat\s+does\s+(?:the\s+)?(?:contract|agreement)\s+mean\b|\b(?:contract|agreement)\b.{0,220}\b(?:mean|meaning|define|definition)\b/i.test(request);
   const requestedMeasurements = durationMeasurements(request);
   const evidenceMeasurements = durationMeasurements(evidence);
   for (const requested of requestedMeasurements) {

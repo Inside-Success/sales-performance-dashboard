@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": "ask-sales-v5-3-human-source-review-v1",
+  "reviewedAt": "2026-07-24T22:31:26.362Z",
+  "runtimeFreezeCommit": "d8f3867",
+  "diagnosticOnly": true,
+  "promotionEvidence": false,
+  "aiJudgePromotionAuthority": false,
+  "grading": {
+    "pass": "Correct and useful answer, or correct safe route to the required owner.",
+    "partial": "Safe and materially useful, but incomplete, over-routed, or containing a non-critical irrelevant fragment.",
+    "fail": "Safe but unhelpful abstention, wrong owner, or answer that does not resolve the question.",
+    "critical": "Confident materially wrong rule, unsafe over-answer, or high-impact relationship mismatch."
+  },
+  "consumedSourceGold40": {
+    "revealedBeforeThisRun": true,
+    "runFiles": [
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/consumed40-v53-d8f3867-chunk1.json",
+        "sha256": "d513923ce9dcbaccf897fe8e2b8449be67f75913fc9c563826d241e77eb96b3c"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/consumed40-v53-d8f3867-chunk2.json",
+        "sha256": "12a7d82186932631db22bfa81ee837408819a6b5319f26ddf4641de3555d0fc7"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/consumed40-v53-d8f3867-chunk3.json",
+        "sha256": "c99e6631c524e463b3477b5d2a1e28b3e8bd00e87286795efb94d4a18958b832"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/consumed40-v53-d8f3867-chunk4.json",
+        "sha256": "d81ace564080921de355a77620db097a21d0a29d00f206619ea78a15a178bdbd"
+      }
+    ],
+    "rawLanes": {
+      "partial": 3,
+      "route": 22,
+      "answer": 14,
+      "artifact": 1
+    },
+    "providerFailures": 0,
+    "summary": {
+      "counts": {
+        "pass": 21,
+        "partial": 7,
+        "fail": 12,
+        "critical": 0
+      },
+      "weightedUtility": 24.5,
+      "weightedUtilityRate": 0.6125
+    },
+    "historicalComparison": {
+      "v3": {
+        "counts": {
+          "pass": 13,
+          "partial": 9,
+          "fail": 9,
+          "critical": 9
+        },
+        "weightedUtility": 17.5,
+        "weightedUtilityRate": 0.4375
+      },
+      "v52": {
+        "counts": {
+          "pass": 10,
+          "partial": 8,
+          "fail": 19,
+          "critical": 3
+        },
+        "weightedUtility": 14,
+        "weightedUtilityRate": 0.35
+      }
+    },
+    "details": [
+      {
+        "id": "v52fresh-01",
+        "grade": "fail",
+        "note": "Does not answer the sourced 20-percent outreach procedure.",
+        "question": "For unassigned leads on the 20 percent list, may reps email them, and when should they leave voicemails?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Yes. Reps may call and email a lead on the 20 percent list regardless of assignment when no future appointment is booked. The confirmed practice is two back-to-back calls, then a voicemail and email on the second attempt, repeated for up to three days with notes updated.",
+        "lane": "partial",
+        "answer": "Do not hoard leads or work more leads than can be kept updated properly. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": [
+          "claim_44284fbaae3d3309__a5"
+        ]
+      },
+      {
+        "id": "v52fresh-02",
+        "grade": "fail",
+        "note": "Safely avoids the stale Keap rule but does not answer the current HubSpot requirement.",
+        "question": "Is HubSpot the required CRM, or may reps use their own system to track outreach?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Use the company CRM. The company is moving from Keap to HubSpot; reps should not substitute a personal tracking system for the required CRM.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-03",
+        "grade": "partial",
+        "note": "Uses Finance, but dilutes the correct owner with unnecessary Sales Questions and Fulfillment routes.",
+        "question": "For a Daymond John wire payment, what proof and post-payment steps are required, including onboarding and the welcome email?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "finance",
+        "goldAnswer": "Use the current finance workflow for a live wire. The sourced procedure requires the contract to be signed, proof of the wire, and confirmation that the wire was received before posting the sale; do not provide bank details or improvise payment steps from memory. Continue welcome and onboarding steps only under the current confirmed workflow.",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests. I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests. Please send this fulfillment request to the fulfillment hotline.",
+        "routeChannels": [
+          "#sales-finance-requests",
+          "#sales-questions-requests",
+          "the fulfillment hotline"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-04",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "Is Love Experts a current show, and may a DJ rep move a lead who is not a fit for Next Level CEO into it?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "A recent Sales Ops reply described Love Experts as a potential subcategory if enough people purchase, but did not confirm that a DJ rep may close it. Confirm the current offer and rep assignment in the sales questions request channel; do not transfer or promise the show from this historical reply.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-05",
+        "grade": "partial",
+        "note": "Routes the case safely but omits Rich's controlling three-month minimum.",
+        "question": "A previously passed main ISTV lead is still within the three-month reapplication period and has another meeting booked. What should the rep do?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "Confirm the prior outcome with the previous rep and do not independently reopen eligibility. The controlling main ISTV minimum is three months; route any exception or disputed prior decision to Rich or the current sales-policy owner.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-06",
+        "grade": "partial",
+        "note": "Protects private contact details but does not clearly answer whether anonymized examples may be discussed.",
+        "question": "May reps describe previously signed cast members to prospects without names or personal details?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Yes. Reps may discuss a cast member's situation without identifying them, but must not provide personal contact information or arrange direct contact.",
+        "lane": "answer",
+        "answer": "Use the approved cast-member testimonials landing page at https://www.legacymakerstv.com/reviews1. Do not promise private introductions to past cast members.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "v3src_testimonials_landing_page"
+        ]
+      },
+      {
+        "id": "v52fresh-07",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "May a Next Level CEO cast member travel to Miami at another time to meet Daymond John while he records the episode intro?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No. That meeting is not offered.",
+        "lane": "answer",
+        "answer": "It is not possible to fly to Miami to meet Daymond John at a time different from the filming of the episode; this is not a service offered.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_ff12d9def719ebd8"
+        ]
+      },
+      {
+        "id": "v52fresh-08",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "What does the contract requirement to cooperate with promotional activities and share trailers or social posts mean?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Clients are encouraged to share the social assets supplied through onboarding on their social media or website to announce and promote their feature. It does not authorize inventing new obligations or promising a collaboration with a celebrity team.",
+        "lane": "answer",
+        "answer": "Clients are encouraged to post the social assets provided in the onboarding email on their social media to announce their feature and spread buzz about ISTV.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_70c95085c7e192fb"
+        ]
+      },
+      {
+        "id": "v52fresh-09",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "May a rep conduct Call 1 while the prospect is a passenger in a moving car, or should it be rescheduled?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Reschedule the call.",
+        "lane": "answer",
+        "answer": "The prospect should reschedule Call 1 if they will be a passenger in a moving car.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_d368b2c2e3b8d835"
+        ]
+      },
+      {
+        "id": "v52fresh-10",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "May reps guarantee Spanish-language targeting, filming, subtitles, or translation for an episode?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No. The current confirmed delivery is English only. Do not promise Spanish filming, targeting, subtitles, translation, or a future availability date.",
+        "lane": "answer",
+        "answer": "Reps cannot promise a Spanish-language episode or translation support right now.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "claim_c4d5b6e53d0ee393__a3"
+        ]
+      },
+      {
+        "id": "v52fresh-11",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "May a Daymond John or Built for More prospect whose business is relaunching after illness proceed to Call 2?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "The reusable boundary is that the prospect must be financially qualified and moving forward must not put them in a bad financial situation. Do not make a case-specific eligibility decision from the chatbot; confirm the actual prospect with the current sales-policy owner.",
+        "lane": "partial",
+        "answer": "The client can move forward if they have the funds and it would not put them in a bad financial situation. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": [
+          "operational_66093f511cc17902"
+        ]
+      },
+      {
+        "id": "v52fresh-12",
+        "grade": "pass",
+        "note": "Answers the complete reviewed manual-booking procedure and preserves the Master Calendar prohibition.",
+        "question": "A prospect needs a Call 2 tomorrow morning and only the Master Calendar has availability. How should the rep book it?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Create the appointment in Google Calendar, create a new Zoom meeting, and email the prospect the Zoom link.",
+        "lane": "answer",
+        "answer": "Do not edit or use the Master Calendar; instead, manually create a Google Calendar appointment and Zoom meeting, then email the Zoom link to the prospect.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v53_call2_master_calendar_manual_fallback"
+        ]
+      },
+      {
+        "id": "v52fresh-13",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "What should a rep do when a specific prospect believes the company is a scam after reading Reddit reviews and will respond only by text?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "Use only approved, verifiable company proof and objection-handling material and ask the current sales-policy owner for the compliant response. Do not repeat unverified allegations about reviewers or former employees, disclose private claims, or guarantee that every review is false.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-14",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "Which strong non-celebrity episodes may a rep recommend to a prospect?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "Use the current approved episode catalog or ask in the sales questions request channel. Do not repeat episode titles that cannot be verified in the network catalog and do not invent recommendations.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-15",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "A reassigned American Founders applicant has no business or entrepreneurial story but wants to pay to be on TV. Should a DJ rep pass, reject, or transfer the applicant?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Do not transfer the applicant across sales sides. Have the applicant reapply to the correct TV show so the system assigns the appropriate rep.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-16",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "If an existing client upgrades to VIP on an approved six-month payment arrangement, how should the changed contract be handled?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Use the current package upgrade form and only an offered payment option. Do not edit contract terms or create a custom six-month arrangement merely because it was requested.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-17",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Use the same script. Built for More and Next Level CEO use the same approved script.",
+        "lane": "answer",
+        "answer": "Built for More reps should use the Next Level CEO script and swap out the show name; the script is exactly the same.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_909930f8fcb963cf"
+        ]
+      },
+      {
+        "id": "v52fresh-18",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "A main ISTV prospect missed the Sunday cohort deadline because their banker was unavailable. Can the rep still close them on Monday?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No, not on that explanation alone. They missed the main ISTV cohort deadline. A documented qualifying exception must be approved through the proper owner; the rep may not grant it independently.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-19",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "The goal is placement on one Tier 1 platform, and the client does not choose the platform. If one platform declines, the episode may be submitted to the other listed platforms; do not promise acceptance on all three.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-20",
+        "grade": "partial",
+        "note": "Allows telephone onboarding but omits the material requirement to keep Zoom running and recorded.",
+        "question": "May a rep take payment and complete post-sale onboarding steps by telephone when a client cannot connect to Zoom?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Keep the company Zoom session running and recorded if at all possible. The rep may call the client by phone alongside the Zoom session, but should not move the entire process off the recorded company call.",
+        "lane": "answer",
+        "answer": "When a client cannot connect to Zoom because internet is unavailable, a rep may complete post-sale onboarding steps by phone.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_phone_onboarding_zoom_recording"
+        ]
+      },
+      {
+        "id": "v52fresh-21",
+        "grade": "partial",
+        "note": "Correctly denies an automatic bank-closure exception but omits the three-month and Rich-approval boundaries.",
+        "question": "A prospect missed the main ISTV cohort payment deadline because the bank was closed. May the rep grant a Monday exception?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No. A closed bank without approved evidence does not let the rep grant an exception. The controlling main ISTV reapplication minimum is three months; a genuine documented exception must go to Rich for approval.",
+        "lane": "answer",
+        "answer": "A bank closure does not authorize a Monday exception after the prospect misses the applicable payment deadline.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_bank_closed_deadline_no_exception"
+        ]
+      },
+      {
+        "id": "v52fresh-22",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "What is the minimum reapplication period after a prospect misses the main ISTV deadline?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Three months. Serious documented exceptions must be routed to Rich; the chatbot or rep cannot approve an exception.",
+        "lane": "answer",
+        "answer": "The minimum waiting period is three months.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_rich_main_reapply_three_months"
+        ]
+      },
+      {
+        "id": "v52fresh-23",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "Does appearing on the show provide SAG eligibility or SAG acting credits?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No. Do not promise SAG eligibility or SAG acting credits.",
+        "lane": "answer",
+        "answer": "The show does not provide SAG eligibility or credits.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_4d32bf76e113569c"
+        ]
+      },
+      {
+        "id": "v52fresh-24",
+        "grade": "pass",
+        "note": "Correctly routes a sensitive case-specific eligibility decision without leaking an unrelated rule.",
+        "question": "Should a rep decide whether a prospect with an old sealed felony and disputed media coverage may attend Call 1?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "Do not make or generalize a sensitive case-specific eligibility decision from the chatbot. Route the prospect's documented background facts to the current sales-policy or compliance owner and do not disclose private allegations to the prospect.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-25",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "May a rep personally greenlight a prospect with an old securities-fraud conviction, or where must the case be reviewed?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "greenlight",
+        "goldAnswer": "Do not personally approve the case. Send the case-specific background and approval question through the current greenlight review workflow; the chatbot should not decide eligibility.",
+        "lane": "route",
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "routeChannels": [
+          "#greenlight-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-26",
+        "grade": "pass",
+        "note": "Correctly pauses and routes a pending-felony case instead of generalizing from a loose red-flags policy.",
+        "question": "What should a rep do when a promising prospect has pending felony charges and the rep is unsure whether to proceed?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "goldAnswer": "Pause before approval and route the case to the current sales-policy or compliance owner. Do not let the chatbot make a final eligibility decision from a generic criminal-record rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-27",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "How should a rep determine a lead's time zone before calling a 20 percent dial-list lead during business hours?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Ask the applicant directly when the time zone is not confirmed. A phone-number location or AI guess is not reliable enough for compliance; otherwise call only in a window that is safely within business hours across the possible US time zones.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-28",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "Does net 30 on a commission invoice guarantee payment exactly 30 days after submission, or can payment arrive sooner?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "finance",
+        "goldAnswer": "The sourced reply said net 30 for now, which is a current payroll rule rather than a durable guarantee. Confirm the current payment schedule with finance and do not promise an exact pay date from an old Slack reply.",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-29",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "A VIP client paid a smaller amount through the Standard link and signed the Standard agreement. What is the approved correction process?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_tech",
+        "goldAnswer": "Use the current package upgrade or downgrade workflow found by searching that phrase in Slack. Do not manually calculate a catch-up charge, invent a payment link, or rewrite the contract outside the controlled workflow.",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-30",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "Can a main ISTV Call 2 be moved to the next cohort because the prospect works emergency overnight shifts, and may the prospect pitch a documentary series?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No next-cohort exception should be suggested for that scheduling reason. The prospect should reapply under the controlling three-month main ISTV rule. A documentary-series idea starts with one episode rather than a promised multi-episode series.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-31",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Yes, only if the prospect can provide proof of the failed same-day payment attempt. Do not carry the discount forward without that evidence.",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-32",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "The rep may email the applicant as requested. If either recipient says not to contact them, stop and add the relevant information to the opt-out workflow.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-33",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "No-show rates can vary, and 48.5 percent is not unusual based on the sourced Sales Ops guidance. Do not present it as a guaranteed benchmark or promise a fixed show rate.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-34",
+        "grade": "partial",
+        "note": "Correctly prohibits cross-side transfer but omits the sourced reapplication-to-the-correct-show step.",
+        "question": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Do not pass applicants back and forth between ISTV and the Daymond John sales side. The rep should cast only for the side they are assigned to; the applicant may reapply to the specific other show if appropriate.",
+        "lane": "partial",
+        "answer": "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": [
+          "operational_f32e012fa97b5b52"
+        ]
+      },
+      {
+        "id": "v52fresh-35",
+        "grade": "fail",
+        "note": "Safe but avoidably unhelpful on an answerable question.",
+        "question": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Yes. The opportunity is not an acting job, and a prospect with no business is not a fit. End the qualification process and send the approved rejection letter.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-36",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Yes. Send both the email and SMS reminder again to support the show rate.",
+        "lane": "answer",
+        "answer": "Yes, still send the day-before email and SMS message to help with show rate when the call is rescheduled to a new date.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_a3369401067154cc"
+        ]
+      },
+      {
+        "id": "v52fresh-37",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "finance",
+        "goldAnswer": "Do not invent deferred payment terms. Use the current finance or refund request workflow; that team can review approved retention assets or other options.",
+        "lane": "answer",
+        "answer": "Route the request to #sales-finance-requests, as refunds and payment-operation exceptions that are not requests for a custom payment plan, custom split, custom amount, or custom link are handled there.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "claim_ad0cea88c6c647f0"
+        ]
+      },
+      {
+        "id": "v52fresh-38",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "fulfillment",
+        "goldAnswer": "A recent Sales Ops reply estimated roughly four to six months and included Mompreneurs, but delivery timing can change. Confirm the current estimate with fulfillment before promising a date.",
+        "lane": "artifact",
+        "answer": "Please request the current approved resource from the fulfillment hotline.",
+        "routeChannels": [
+          "the fulfillment hotline"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-39",
+        "grade": "pass",
+        "note": "Matches the source-only gold answer or required live owner.",
+        "question": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "fulfillment",
+        "goldAnswer": "Post in the fulfillment hotline channel so the onboarding team can assist.",
+        "lane": "route",
+        "answer": "Please send this fulfillment request to the fulfillment hotline.",
+        "routeChannels": [
+          "the fulfillment hotline"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "v52fresh-40",
+        "grade": "partial",
+        "note": "Correctly gives the English-only boundary but adds an unnecessary partner caveat.",
+        "question": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "goldAnswer": "Explain that the current service and materials are available only in English. Do not promise Spanish materials or translation; if the existing booking or ownership is unclear, verify it through the current sales workflow.",
+        "lane": "answer",
+        "answer": "The company cannot accommodate other languages at this time; English-speaking partners can be auditioned/cast if they are partners.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "claim_dc0402caeeb95931"
+        ]
+      }
+    ]
+  },
+  "retainedReviewed50": {
+    "revealedBeforeThisRun": true,
+    "containsSupersededGold": true,
+    "supersededGoldNotes": [
+      "fresh-slack-v42-a12: Rich's reviewed three-month minimum supersedes the retained six-month label.",
+      "fresh-slack-v42-r12 and r14: later source review established safe reusable answers instead of route-only handling."
+    ],
+    "runFiles": [
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/retained50-v53-d8f3867-chunk1.json",
+        "sha256": "d178e49ae2d3d56b5636967b419be337aaf629b5f8b9a634fc27173e0063247d"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/retained50-v53-d8f3867-chunk2.json",
+        "sha256": "b2032edfc02e4717b58cb6623b048d336bbc5bf56c551d9cc990bb9fa6345f51"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/retained50-v53-d8f3867-chunk3.json",
+        "sha256": "2b3212e22cefaa64851b2873c5f12e09a88951e09e86b4aa91279f66517c86e8"
+      },
+      {
+        "file": "artifacts/ask-sales-faq-v5-3/retained50-v53-d8f3867-chunk4.json",
+        "sha256": "16e2fd3a2034c6a872e84cbef7f67d27789498f5707f77440c004edf7bc4d7f4"
+      }
+    ],
+    "rawLanes": {
+      "answer": 32,
+      "route": 16,
+      "artifact": 2
+    },
+    "providerFailures": 0,
+    "summary": {
+      "counts": {
+        "pass": 44,
+        "partial": 4,
+        "fail": 2,
+        "critical": 0
+      },
+      "weightedUtility": 46,
+      "weightedUtilityRate": 0.92
+    },
+    "details": [
+      {
+        "id": "fresh-slack-v42-a01",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "My client wants his mother on the onboarding call. Can he just share the same onboarding link with her?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "An additional attendee may join the onboarding call using the same onboarding link as the client.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_same_onboarding_link"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a02",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What is the current process when a client has paid and wants to upgrade their package?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_af3fa1d5bbe01125"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a03",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "For a wire payment, can I send the contract on Zoom, have it signed, get proof of the wire, and then verify receipt before posting the sale?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "For a wire payment, send the current contract on Zoom and have the client sign it. Obtain a screenshot or other proof of the wire as soon as possible, then check with Alex in 24 to 48 hours to confirm the wire was received. Do not post the sale in the PayMe channel until receipt is confirmed.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_wire_close_sequence"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a04",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What does the SEO benefit from PR exposure mean for a Next Level CEO client?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "SEO is intended to help the client or the client's business rank higher on Google for affiliated keywords.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_seo_definition"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a05",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What are the social promo assets included for a Next Level CEO client?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Social promotional assets are content created for the client's social media or website to announce the client's feature on the network.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_social_promo_assets_definition"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a06",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What is the swag package in the Next Level CEO offer?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Swag means merchandise, a souvenir, or promotional material.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_swag_definition"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a07",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Where can a client's compliance officer verify Inside Success TV's company registration?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "As of 2026-07-22, Inside Success TV's company registration can be verified on Sunbiz under Inside Success TV.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_7cb29943abba8782",
+          "owner-istv-app-download-devices"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a08",
+        "grade": "fail",
+        "note": "Avoidable abstention on the source-reviewed Love Experts availability question.",
+        "question": "Is Love Experts an available ISTV show, and what happens if enough people purchase it?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-a09",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "How should second calls be classified in end-of-day stats?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Second calls should be classified as follow-ups in daily stats.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_daily_stats_workflow"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a10",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "If I submitted my daily stats incorrectly, where should I post the correction?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Post the corrected stats in the thread of the original daily-stats submission.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_daily_stats_workflow"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a11",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Where do I send documents or links a Call 1 lead provides to support greenlight approval?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Send documents or links supplied by a Call 1 lead to support greenlight approval to the fulfillment hotline.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_greenlight_supporting_documents"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a12",
+        "grade": "pass",
+        "note": "Correctly uses Rich's later controlling three-month minimum; the retained dataset's six-month gold is superseded.",
+        "question": "A prospect was passed last week and is booked again. How long is the normal reapplication wait?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "The minimum waiting period is three months.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_rich_main_reapply_three_months"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a13",
+        "grade": "partial",
+        "note": "Protects private introductions but does not clearly state the allowed anonymized-example boundary.",
+        "question": "Can reps discuss examples of other cast members with future prospects without sharing personal contact details?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Representatives must not promise private introductions to past cast members.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "v3src_testimonials_landing_page"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a14",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can we follow up with a lead who canceled before the call to try to reschedule?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Yes. A rep may make a reasonable follow-up attempt after a lead cancels before the call to ask why and try to reschedule, as long as the lead has not said do not contact.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_precall_cancel_followup"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a15",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can a Next Level CEO cast member fly to Miami at a different time from their filming to meet Daymond John while he records their intro?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "It is not possible to fly to Miami to meet Daymond John at a time different from the filming of the episode; this is not a service offered.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_ff12d9def719ebd8"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a16",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can a Next Level CEO cast member collaborate with Daymond John's team on a social-media post?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Collaboration with Daymond John's team on social media posts is not available.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_2d14d2bb68314b96"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a17",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What should I tell a client who paid but has not signed the contract or continued with the project?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Use the point that the client will lose the initial investment if they do not sign to open the conversation and encourage them to get involved again.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_8122b3e25149ec69"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a18",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What does the contract mean by cooperating with promotional activities and sharing trailers or social posts?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Cooperating with promotional activities means posting the social assets provided in the onboarding email on your social media to announce your feature and spread buzz about ISTV.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_70c95085c7e192fb"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a19",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can I conduct Call 1 while the prospect is a passenger in a moving car?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "The prospect should reschedule the Call 1 if they will be a passenger in a car during the call.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_d368b2c2e3b8d835"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a20",
+        "grade": "fail",
+        "note": "Avoidable abstention on the documented one-Tier-1-platform package rule.",
+        "question": "Does a cast member receive placement on all three Tier 1 platforms or one of them?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-a21",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "If a client has no internet, can I collect payment and onboard by phone only?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "When a client has no internet, payment and onboarding may be completed by phone, but keep the interaction on Zoom video when possible because that is company policy. An approved workaround is to keep Zoom running on the computer while calling the client by phone so Zoom records the conversation.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_phone_onboarding_zoom_recording"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a22",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "If a prospect cannot complete payment because the bank is closed and misses the deadline, can we make an exception for Monday?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "A bank closure does not authorize a Monday exception after the prospect misses the applicable payment deadline.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_bank_closed_deadline_no_exception"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a23",
+        "grade": "partial",
+        "note": "Correctly denies SAG eligibility but omits the explicit no-SAG-credits part.",
+        "question": "Will being cast on the show make someone SAG eligible or provide SAG credits?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Being cast on the show does not make someone eligible for SAG membership.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_4d32bf76e113569c"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a24",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can three partners from the same business appear together in one episode, or do they need separate episodes?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Multiple partners from the same business may appear together in one episode.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_multiple_partners_one_episode"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a25",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can I call the same outbound lead twice in one day?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "A rep may call the same outbound lead twice in one day.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_outbound_same_lead_twice"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a26",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "How do I show on the outbound sheet that a lead is already taken and being contacted?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Put your name on the outbound sheet to indicate that the lead is taken and is already being contacted.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_outbound_sheet_name_marker"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a27",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "If Keap says a lead is taken by Rudy Mawer, can I still call the lead?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "A rep may call an outbound lead whose Keap assignment displays Rudy Mawer.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_rudy_assigned_outbound_lead"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a28",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What does Daymond John personally create for a Next Level CEO client's episode?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Daymond John personally creates a custom intro for a Next Level CEO client's episode.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_daymond_intro_interview_boundary"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a29",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Do we offer reality-TV casting opportunities for real-estate professionals?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "ISTV does not offer reality TV casting; only documentary-style shows are available.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_069443a39ac68bb6"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-a30",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Does Daymond John personally interview Next Level CEO clients in the studio?",
+        "expectedDisposition": "answer",
+        "expectedRouteKey": null,
+        "lane": "answer",
+        "answer": "Daymond does not personally interview Next Level CEO clients in the studio. He creates a small custom intro, and the exact intro depends on the license the client purchases.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_daymond_intro_interview_boundary"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-r01",
+        "grade": "partial",
+        "note": "Provides useful recovery steps but does not make the current Sales Tech handoff explicit enough.",
+        "question": "My booking only says TV Show Application and no show name. Which offer should I pitch?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "sales_tech",
+        "lane": "answer",
+        "answer": "Ask the client which show they applied for, then add it to the application in the back end if you have approved access, or request sales tech to update it.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "owner-keap-missing-show-name-recovery"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-r02",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Where can I confirm whether a specific greenlight sent the client's contract?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "greenlight",
+        "lane": "route",
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "routeChannels": [
+          "#greenlight-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r03",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "What is the exact date of the next DJ Mastermind after the August event?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "sales_policy",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r04",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "For a self-generated or client referral, do we enter them directly or make them apply before submitting greenlight?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "sales_tech",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r05",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can you give me the current package upgrade link?",
+        "expectedDisposition": "artifact",
+        "expectedRouteKey": "sales_tech",
+        "lane": "artifact",
+        "answer": "Please request the current approved resource from #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r06",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Please send me the current approved DJ slide deck.",
+        "expectedDisposition": "artifact",
+        "expectedRouteKey": "sales_tech",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r07",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Where can I find the current upgrade sheet?",
+        "expectedDisposition": "artifact",
+        "expectedRouteKey": "sales_tech",
+        "lane": "answer",
+        "answer": "Type 'upgrade' in the Slack search bar to find the upgrade form.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "operational_924d1e28f055e435"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-r08",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "A client's internet dropped after I greenlit him before the congratulations video. Should I greenlight now or wait for tomorrow's follow-up?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "greenlight",
+        "lane": "route",
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "routeChannels": [
+          "#greenlight-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r09",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "A client's Amex is failing right now. Can you confirm whether that card should be accepted or why it failed?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "finance",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r10",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Which show should we choose for a nurse practitioner who leads healthcare in a correctional facility?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r11",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Are the six-week cast-member trainings being removed, and what replaces them as marketing support?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r12",
+        "grade": "pass",
+        "note": "Correctly answers from the later reviewed direct-Zoom-link authority; the older route-only label is superseded.",
+        "question": "For an immediate outbound booking that cannot use my public calendar, should I send the Zoom link directly?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_tech",
+        "lane": "answer",
+        "answer": "For an immediate outbound booking that cannot use your public calendar, you are allowed to send the direct Zoom link.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_direct_zoom_immediate_booking"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-r13",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can the current Greenlight Letter be changed to remove language that clients perceive as high pressure?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "greenlight",
+        "lane": "artifact",
+        "answer": "Please request the current approved resource from #greenlight-requests.",
+        "routeChannels": [
+          "#greenlight-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r14",
+        "grade": "pass",
+        "note": "Correctly answers from the later reviewed OnceHub first-text authority; the older route-only label is superseded.",
+        "question": "In the current no-answer protocol, may I include my public OnceHub calendar link in the first text?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "lane": "answer",
+        "answer": "A rep may include the rep's public OnceHub calendar link in the first text sent under the no-answer protocol.",
+        "routeChannels": [],
+        "selectedPolicyIds": [
+          "curated_v43_oncehub_first_no_answer_text"
+        ]
+      },
+      {
+        "id": "fresh-slack-v42-r15",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Can someone review this prospect's message and tell me whether to reject him or offer another package?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r16",
+        "grade": "partial",
+        "note": "Safely abstains, but the generic Sales Questions owner is not established as the exact document owner.",
+        "question": "Who can provide the exact current corporate documents requested by a client's compliance officer beyond the public registration lookup?",
+        "expectedDisposition": "artifact",
+        "expectedRouteKey": null,
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r17",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "A client switched from wire to an initial payment and signed a second agreement. Can you void the first signed contract?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "finance",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r18",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "Which current non-celebrity episodes should I recommend to a specific prospect based on his personality and business?",
+        "expectedDisposition": "route",
+        "expectedRouteKey": "sales_policy",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r19",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "A completed payment did not redirect to the contract. Can someone fix the payment-to-contract automation for this client?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "sales_tech",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      },
+      {
+        "id": "fresh-slack-v42-r20",
+        "grade": "pass",
+        "note": "Matches the reviewed answer or required owner.",
+        "question": "My leaderboard call totals are wrong after an EOD mistake. Can someone correct my RPC and RPCT percentages?",
+        "expectedDisposition": "live_lookup",
+        "expectedRouteKey": "sales_tech",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ],
+        "selectedPolicyIds": []
+      }
+    ]
+  }
+}

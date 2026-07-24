@@ -1,0 +1,1270 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-24T21:48:03.196Z",
+  "status": "consumed_regression_diagnostic_only",
+  "promotionEvidence": false,
+  "snapshot": {
+    "knowledgeVersion": "8c8c677c1209f2d7+v5_15b8634f02bcd400",
+    "hash": "15b8634f02bcd40009acd65b860a5b080c96d3fc2a122041992fad4df68cf367",
+    "policies": 2624,
+    "stablePromotions": 91,
+    "activeScopedPromotions": 17,
+    "activeScopedCollisions": 0,
+    "referenceReviewDate": "2026-07-24"
+  },
+  "summary": {
+    "probes": 10,
+    "retrieved": 10
+  },
+  "results": [
+    {
+      "id": "script-selection",
+      "question": "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?",
+      "expectedPolicyId": "operational_909930f8fcb963cf",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "operational_909930f8fcb963cf",
+        "operational_0b3fafacf5f22a5e",
+        "claim_c6204dfa7e8a8088__a5",
+        "claim_edd382f8c0607571",
+        "claim_170a9cfe81cce514__a2",
+        "claim_170a9cfe81cce514__a1",
+        "claim_170a9cfe81cce514__a6",
+        "claim_170a9cfe81cce514__a7",
+        "claim_170a9cfe81cce514__a3"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_909930f8fcb963cf::a1",
+          "matchedDecisionText": "Use the NLCEO script and swap out the show name; the script is exactly the same. Conditions: Rep is handling DJ Built for More calls. Boundaries: Does not indicate any script differences for other DJ shows.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 15.4,
+            "requestTerms": [
+              "built",
+              "more",
+              "reps",
+              "use",
+              "next",
+              "level",
+              "ceo",
+              "script",
+              "show",
+              "name",
+              "chang",
+              "separate",
+              "approv",
+              "compliance",
+              "modify"
+            ],
+            "matchedTerms": [
+              "built",
+              "more",
+              "use",
+              "script",
+              "show",
+              "name"
+            ],
+            "reason": "Matched the same decision identity (built, more, use, script, show, name)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "built",
+            "more",
+            "use",
+            "script",
+            "show",
+            "program",
+            "episode",
+            "name"
+          ],
+          "familyCoverage": 0.4,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "platform-submission-count",
+      "question": "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?",
+      "expectedPolicyId": "operational_3cfb0025a6454374",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "operational_3cfb0025a6454374",
+        "claim_aa79cd74bf3778b7",
+        "operational_0ab653b8ce7393a8",
+        "claim_a67cbc990c0e81d9__a4",
+        "claim_c03cee3ec04cfde4",
+        "claim_21b70bbb958defbb",
+        "operational_f34e1e8918da61aa",
+        "operational_26dcf59671b33c9c",
+        "operational_ce674c4a7c6cfb9a",
+        "operational_50cfa1a7d762e721",
+        "operational_366c5051f88a6084"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_3cfb0025a6454374::a1",
+          "matchedDecisionText": "The goal is to get them on one platform, but we would submit to all three if they are turned down by the first; clients do not get to choose the platform. Conditions: Submission is to one platform initially.; If rejected, submission to all three may occur. Boundaries: Clients cannot select which platform they are submitted to.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "action:submit"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 9.8,
+            "requestTerms": [
+              "applicable",
+              "package",
+              "submit",
+              "episode",
+              "tier",
+              "platform",
+              "three",
+              "list",
+              "content",
+              "distribution"
+            ],
+            "matchedTerms": [
+              "submit",
+              "platform",
+              "three"
+            ],
+            "reason": "Matched the same decision identity (submit, platform, three)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "submit",
+            "one",
+            "platform",
+            "all",
+            "three"
+          ],
+          "familyCoverage": 0.4,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "sag-eligibility",
+      "question": "Does appearing on the show provide SAG eligibility or acting credits?",
+      "expectedPolicyId": "operational_4d32bf76e113569c",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "operational_4d32bf76e113569c"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_4d32bf76e113569c::a1",
+          "matchedDecisionText": "The show does not provide SAG eligibility or credits. Boundaries: Does not address IMDB credits or other guild affiliations.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "action:share"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 19.5,
+            "requestTerms": [
+              "appear",
+              "show",
+              "provide",
+              "sag",
+              "eligibility",
+              "act",
+              "credit",
+              "talent"
+            ],
+            "matchedTerms": [
+              "show",
+              "provide",
+              "sag",
+              "eligibility",
+              "credit",
+              "talent"
+            ],
+            "reason": "Matched the same decision identity (show, provide, sag, eligibility, credit, talent)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "show",
+            "program",
+            "episode",
+            "provide",
+            "sag",
+            "eligibility",
+            "credit"
+          ],
+          "familyCoverage": 0.6666666666666666,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "phone-onboarding",
+      "question": "May a rep take payment and complete post-sale onboarding by telephone when Zoom is unavailable?",
+      "expectedPolicyId": "curated_v43_phone_onboarding_zoom_recording",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_phone_onboarding_zoom_recording",
+        "operational_4e94452ae30fb103",
+        "claim_00511e4e86668762__a4",
+        "claim_00511e4e86668762__a1",
+        "claim_00511e4e86668762__a2",
+        "claim_00511e4e86668762__a5",
+        "claim_00511e4e86668762__a3",
+        "operational_0e5b1524ad7fea36",
+        "claim_f76ab6e62d1b1a36",
+        "owner-zoom-phone-payment-link-email-only"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_phone_onboarding_zoom_recording::a1",
+          "matchedDecisionText": "When a client has no internet, payment and onboarding may be completed by phone, but keep the interaction on Zoom video when possible because that is company policy. Conditions: The client cannot join Zoom because internet is unavailable. Boundaries: This does not make phone-only handling the preferred default.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 21.363636363636363,
+            "requestTerms": [
+              "may",
+              "take",
+              "payment",
+              "and",
+              "complete",
+              "post",
+              "sale",
+              "onboard",
+              "telephone",
+              "zoom",
+              "unavailable"
+            ],
+            "matchedTerms": [
+              "may",
+              "take",
+              "payment",
+              "and",
+              "onboard",
+              "telephone",
+              "zoom",
+              "unavailable"
+            ],
+            "reason": "Matched the same decision identity (may, take, payment, and, onboard, telephone, zoom, unavailable)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "take",
+            "payment",
+            "pay",
+            "bill",
+            "onboard",
+            "telephone",
+            "zoom",
+            "unavailable"
+          ],
+          "familyCoverage": 0.4166666666666667,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        },
+        {
+          "atomicDecisionId": "curated_v43_phone_onboarding_zoom_recording::a2",
+          "matchedDecisionText": "An approved workaround is to keep Zoom running on the computer while calling the client by phone so Zoom records the conversation. Conditions: The client cannot join Zoom because internet is unavailable. Boundaries: This does not make phone-only handling the preferred default.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 18.81818181818182,
+            "requestTerms": [
+              "may",
+              "take",
+              "payment",
+              "and",
+              "complete",
+              "post",
+              "sale",
+              "onboard",
+              "telephone",
+              "zoom",
+              "unavailable"
+            ],
+            "matchedTerms": [
+              "take",
+              "payment",
+              "and",
+              "onboard",
+              "telephone",
+              "zoom",
+              "unavailable"
+            ],
+            "reason": "Matched the same decision identity (take, payment, and, onboard, telephone, zoom, unavailable)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "take",
+            "payment",
+            "pay",
+            "bill",
+            "onboard",
+            "telephone",
+            "zoom",
+            "unavailable"
+          ],
+          "familyCoverage": 0.4166666666666667,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "cross-product-movement",
+      "question": "May an ISTV applicant be moved to Next Level CEO during the audition process?",
+      "expectedPolicyId": "operational_f32e012fa97b5b52",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "operational_4e86dda6c7fb91b3",
+        "operational_f32e012fa97b5b52",
+        "operational_00b1fd90f00c230e",
+        "claim_b81818e4ae8e0fec__a3",
+        "claim_42f54c07cd6348e3",
+        "claim_45bcff54b96b9030"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_f32e012fa97b5b52::a1",
+          "matchedDecisionText": "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to. Conditions: You are an ISTV closer. Boundaries: Does not address exceptions or manager approvals.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "cross_program_lead_transfer",
+              "action:transfer"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 29.176470588235293,
+            "requestTerms": [
+              "may",
+              "istv",
+              "applicant",
+              "lead",
+              "prospect",
+              "mov",
+              "next",
+              "level",
+              "ceo",
+              "dur",
+              "audition",
+              "proces",
+              "sal",
+              "move",
+              "transf",
+              "pass",
+              "reschedule"
+            ],
+            "matchedTerms": [
+              "istv",
+              "applicant",
+              "lead",
+              "prospect",
+              "dur",
+              "audition",
+              "proces",
+              "sal",
+              "pass"
+            ],
+            "reason": "Matched the same decision identity (istv, applicant, lead, prospect, dur, audition, proces, sal, pass)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "istv",
+            "dur",
+            "audition",
+            "proces"
+          ],
+          "familyCoverage": 0.4444444444444444,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "promotional-clause",
+      "question": "What does the contract requirement to cooperate with promotional activities and share trailers mean?",
+      "expectedPolicyId": "operational_70c95085c7e192fb",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "operational_70c95085c7e192fb",
+        "claim_c03cee3ec04cfde4",
+        "operational_ec934713914a1bc3"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_70c95085c7e192fb::a1",
+          "matchedDecisionText": "Clients are encouraged to post the social assets provided in the onboarding email on their social media to announce their feature and spread buzz about ISTV. Conditions: Client has signed the contract; Client receives onboarding email with social assets. Boundaries: Does not mandate specific posting frequency or platforms; Does not guarantee increased reach or marketing results.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "promotional_activity_obligation",
+              "action:share"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 27.363636363636363,
+            "requestTerms": [
+              "contract",
+              "agreement",
+              "requirement",
+              "cooperate",
+              "promotional",
+              "activity",
+              "and",
+              "share",
+              "trail",
+              "mean",
+              "promotion"
+            ],
+            "matchedTerms": [
+              "contract",
+              "agreement",
+              "cooperate",
+              "promotional",
+              "activity",
+              "and",
+              "share",
+              "trail"
+            ],
+            "reason": "Matched the same decision identity (contract, agreement, cooperate, promotional, activity, and, share, trail)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "contract",
+            "agreement",
+            "license",
+            "cooperate",
+            "promotional",
+            "activity",
+            "share",
+            "trail"
+          ],
+          "familyCoverage": 0.5,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "stable-back-to-back",
+      "question": "How should a rep keep the first of two back-to-back Call 1 appointments from overrunning?",
+      "expectedPolicyId": "operational_df5148bacd51d4c2",
+      "retrieved": true,
+      "rank": 3,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "claim_662ca1f66e1306e4",
+        "operational_df5148bacd51d4c2",
+        "operational_e038f1eb57ea8db6",
+        "claim_55c460c7f88e3de1",
+        "claim_21fd1ab0849ac2d9",
+        "operational_d4c701f4e0230b55",
+        "operational_bc9bc70f9ba6f452",
+        "claim_f93a28d2cd86049f",
+        "operational_941811560f35aa76",
+        "claim_b59dc0cf60cab094"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "operational_df5148bacd51d4c2::a1",
+          "matchedDecisionText": "Control the time, maintain authority, prequalify quickly, and wrap up on time for the next call.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 16,
+            "requestTerms": [
+              "how",
+              "first",
+              "two",
+              "back",
+              "overrunn",
+              "schedul",
+              "management",
+              "prevent",
+              "overrun",
+              "schedule",
+              "time",
+              "wrap"
+            ],
+            "matchedTerms": [
+              "how",
+              "back",
+              "management",
+              "schedule",
+              "time",
+              "wrap"
+            ],
+            "reason": "Matched the same decision identity (how, back, management, schedule, time, wrap)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "keep",
+            "back",
+            "call",
+            "meet",
+            "appointment"
+          ],
+          "familyCoverage": 0.4444444444444444,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "swag-definition",
+      "question": "What is the swag package in the Next Level CEO offer?",
+      "expectedPolicyId": "curated_v43_swag_definition",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_swag_definition"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_swag_definition::a1",
+          "matchedDecisionText": "Swag means merchandise, a souvenir, or promotional material.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "swag_package_definition"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 11.5,
+            "requestTerms": [
+              "swag",
+              "package",
+              "next",
+              "level",
+              "ceo",
+              "off",
+              "product",
+              "describe"
+            ],
+            "matchedTerms": [
+              "swag",
+              "package"
+            ],
+            "reason": "Matched the same decision identity (swag, package)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "swag",
+            "package"
+          ],
+          "familyCoverage": 0.3333333333333333,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "rich-reapplication-minimum",
+      "question": "A prospect was passed last week and is booked again. How long is the normal reapplication wait?",
+      "expectedPolicyId": "curated_v43_rich_main_reapply_three_months",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_rich_main_reapply_three_months",
+        "operational_191f3167ff67e26c",
+        "operational_b216451e36dc26c0",
+        "owner-main-istv-cross-show-reapply-wait",
+        "operational_60aac92e69e089ba",
+        "claim_0de0110a15158df9__a4",
+        "operational_8a2a2c1b8b5b9a3d"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_rich_main_reapply_three_months::a1",
+          "matchedDecisionText": "For main ISTV, a prospect who no-shows, misses the applicable Call 2 payment or signature deadline, or is rejected or found not fit may be told they can reapply in the future. Boundaries: This normal waiting-period rule does not replace a separately approved documented exception or the repeated-abuse blocking process.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "rejected",
+            "errors": [
+              "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)",
+              "a product-specific policy cannot answer an unnamed product without an exact decision object match",
+              "the evidence does not establish the requested transfer action"
+            ],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "was",
+              "pass",
+              "last",
+              "week",
+              "and",
+              "book",
+              "how",
+              "long",
+              "normal",
+              "reapplication",
+              "wait"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": "requested_transfer_not_modify",
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "long",
+            "normal",
+            "reapplication",
+            "wait"
+          ],
+          "familyCoverage": 0.5384615384615384,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        },
+        {
+          "atomicDecisionId": "curated_v43_rich_main_reapply_three_months::a2",
+          "matchedDecisionText": "The minimum waiting period is three months. Boundaries: This normal waiting-period rule does not replace a separately approved documented exception or the repeated-abuse blocking process.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "rejected",
+            "errors": [
+              "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)",
+              "a product-specific policy cannot answer an unnamed product without an exact decision object match",
+              "the evidence does not establish the requested transfer action"
+            ],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "was",
+              "pass",
+              "last",
+              "week",
+              "and",
+              "book",
+              "how",
+              "long",
+              "normal",
+              "reapplication",
+              "wait"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": "requested_transfer_not_modify",
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "long",
+            "normal",
+            "reapplication",
+            "wait"
+          ],
+          "familyCoverage": 0.5384615384615384,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": [
+          "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)"
+        ]
+      }
+    },
+    {
+      "id": "bank-closure-deadline-exception",
+      "question": "If a prospect cannot complete payment because the bank is closed and misses the deadline, can we make an exception for Monday?",
+      "expectedPolicyId": "curated_v43_bank_closed_deadline_no_exception",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_bank_closed_deadline_no_exception",
+        "claim_b45363b2ec0ba08d",
+        "operational_05722e05b6762cc3",
+        "operational_200e1748ebbbbc04",
+        "operational_91510489bd1367d0"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_bank_closed_deadline_no_exception::a1",
+          "matchedDecisionText": "A bank closure does not authorize a Monday exception after the prospect misses the applicable payment deadline. Boundaries: A separately approved documented exception is a different decision and is not inferred from bank closure alone.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "bank_closure_deadline_exception"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "cannot",
+              "complete",
+              "payment",
+              "because",
+              "bank",
+              "clos",
+              "and",
+              "miss",
+              "deadline",
+              "make",
+              "exception",
+              "monday"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "payment",
+            "pay",
+            "bill",
+            "bank",
+            "clos",
+            "miss",
+            "deadline",
+            "exception",
+            "monday"
+          ],
+          "familyCoverage": 0.7058823529411765,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        },
+        {
+          "atomicDecisionId": "curated_v43_bank_closed_deadline_no_exception::a2",
+          "matchedDecisionText": "Under Rich's controlling normal main ISTV reapplication rule, the minimum wait is three months. Boundaries: A separately approved documented exception is a different decision and is not inferred from bank closure alone.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "bank_closure_deadline_exception"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "cannot",
+              "complete",
+              "payment",
+              "because",
+              "bank",
+              "clos",
+              "and",
+              "miss",
+              "deadline",
+              "make",
+              "exception",
+              "monday"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "payment",
+            "pay",
+            "bill",
+            "bank",
+            "clos",
+            "miss",
+            "deadline",
+            "exception",
+            "monday"
+          ],
+          "familyCoverage": 0.7058823529411765,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    }
+  ],
+  "activeScopedPolicies": [
+    {
+      "id": "operational_6517e43d782f8e40",
+      "decisionKey": "client-reviews-resource-website",
+      "title": "Client reviews available on main website",
+      "decision": "As of 2026-06-18, check the one on our main website.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "medium",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "effectiveAt": "2026-06-18T22:52:21.243Z",
+      "lastReviewed": "2026-06-18",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781823141.243819"
+      ]
+    },
+    {
+      "id": "operational_f6f8facb8dc13152",
+      "decisionKey": "approvals-daily-stats-channel-requirement",
+      "title": "Approvals must be posted in daily stats channel",
+      "decision": "As of 2026-05-28, approvals must be posted in the accurate channels (daily stats), not in the current channel; posts here will be deleted or not seen.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "effectiveAt": "2026-05-28T02:04:59.611Z",
+      "lastReviewed": "2026-05-28",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779933899.611269"
+      ]
+    },
+    {
+      "id": "operational_adf5e79eeb942d4d",
+      "decisionKey": "cohort-enrollment-no-exceptions",
+      "title": "Cohort enrollment exceptions are not permitted",
+      "decision": "As of 2026-06-28, no exceptions are allowed for cohort enrollment. The cohort closes strictly at Sunday 11:59 PM. Conditions: Prospect must complete enrollment by Sunday 11:59 PM of the current cohort week. Boundaries: This does not guarantee reapplication acceptance or specify when reapplication is allowed.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich",
+        "Rudy"
+      ],
+      "effectiveAt": "2026-06-28T14:31:28.058Z",
+      "lastReviewed": "2026-06-28",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782657088.058229"
+      ]
+    },
+    {
+      "id": "operational_7cb29943abba8782",
+      "decisionKey": "company-registration-docs-request",
+      "title": "Company registration documents can be found on Sunbiz",
+      "decision": "As of 2026-07-22, iSTV's company registration can be found on Sunbiz under Inside Success TV. Boundaries: This does not provide physical copies or additional corporate documentation beyond what is publicly available.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "medium",
+      "approvedBy": [
+        "Mike"
+      ],
+      "effectiveAt": "2026-07-22T13:38:56.012Z",
+      "lastReviewed": "2026-07-22",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784727536.012199"
+      ]
+    },
+    {
+      "id": "operational_edb70f8a0644cbfe",
+      "decisionKey": "handling-reddit-negative-reviews",
+      "title": "Handling negative Reddit reviews from leads",
+      "decision": "As of 2026-06-12, reps should not engage in discussions about Reddit reviews. Tell leads not to believe everything online and that investment is required to grow a business. Redirect to official client reviews (Google, 4.9 stars). Conditions: Lead references negative Reddit posts. Boundaries: Does not authorize reps to discuss internal details about the Reddit posts; Does not guarantee removal of the posts.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "medium",
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "effectiveAt": "2026-06-12T16:00:52.612Z",
+      "lastReviewed": "2026-06-12",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781280052.612349"
+      ]
+    },
+    {
+      "id": "operational_ae8cdc6c6c3ac54a",
+      "decisionKey": "social-promo-assets-not-social-media-package",
+      "title": "Social Promo Assets Are Not a Social Media Package",
+      "decision": "As of 2026-07-03, the 10K DJ package includes some social promo assets, but it is not a social media package. Control the call and move on to the next topic. Conditions: Client is asking for further detail on social promo assets in the 10K DJ package. Boundaries: Does not define the exact assets included.",
+      "productScopes": [
+        "dj_nlceo"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "effectiveAt": "2026-07-03T21:06:47.622Z",
+      "lastReviewed": "2026-07-03",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783112807.622749"
+      ]
+    },
+    {
+      "id": "operational_9d65e2a4ee596115",
+      "decisionKey": "americas-top-lawyers-new-rep-restriction",
+      "title": "New reps should avoid America's Top Lawyers calls unless assigned",
+      "decision": "As of 2026-06-01, new reps should avoid America's Top Lawyers calls unless specifically assigned. If taken from the pass-off channel, do not play the end of video 2 that mentions lawyers. Conditions: The rep is new (e.g., 1 month on the calendar).; The call is for America's Top Lawyers. Boundaries: This does not apply to reps who are assigned these calls.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "scoped",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-01T19:08:42.353Z",
+      "lastReviewed": "2026-06-01",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780340922.353539"
+      ]
+    },
+    {
+      "id": "operational_8c6a83935ffce175",
+      "decisionKey": "federal-lawsuit-policy",
+      "title": "Federal Lawsuit Policy",
+      "decision": "As of 2026-06-19, a federal lawsuit is not acceptable; the applicant must wait until the case is resolved. Conditions: Applicant is currently involved in a federal lawsuit. Boundaries: Does not apply to non-federal lawsuits.; Does not consider the merit of the lawsuit.",
+      "productScopes": [
+        "dj_nlceo"
+      ],
+      "scopeRisk": "scoped",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-19T15:30:27.590Z",
+      "lastReviewed": "2026-06-19",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781883027.590809"
+      ]
+    },
+    {
+      "id": "operational_e4c373a3d0fa857b",
+      "decisionKey": "20-percent-dial-out-channel-contact-assigned-leads",
+      "title": "Contacting Assigned Leads via 20% Dial-Out Channel",
+      "decision": "As of 2026-06-24, yes, you can contact leads assigned to Rudy through the 20% dial-out channel, with Rich's approval. Conditions: Leads are assigned to Rudy; Rich approves the contact. Boundaries: Does not apply to leads assigned to others without similar approval; Does not override any other contact restrictions.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-24T19:19:25.846Z",
+      "lastReviewed": "2026-06-24",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782328765.846029"
+      ]
+    },
+    {
+      "id": "operational_5fa965523c7c31c9",
+      "decisionKey": "calendar-management-self-adjustment",
+      "title": "Self-Adjustment of Public and Personal Calendars",
+      "decision": "As of 2026-06-26, you can adjust your public calendar (1-2 days ahead) and personal calendar (3-30 days ahead) yourself. Never touch the Master calendar; changes to it require tech team approval from Rich. Conditions: Adjustments are for public or personal calendars only.; Master calendar changes require Rich's approval. Boundaries: Does not permit self-adjustment of the Master calendar.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-26T16:16:13.840Z",
+      "lastReviewed": "2026-06-26",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782490573.840249"
+      ]
+    },
+    {
+      "id": "operational_9d3d43bf9999414b",
+      "decisionKey": "cohort-deadline-miss-policy",
+      "title": "Missing Cohort Deadline Policy",
+      "decision": "As of 2026-07-10, they miss out; be very clear to clients about this policy. Conditions: Candidate cannot schedule a call within the required cohort deadline window. Boundaries: No exceptions for good candidates; policy is strict.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich"
+      ],
+      "effectiveAt": "2026-07-10T20:48:30.025Z",
+      "lastReviewed": "2026-07-10",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783716510.025849"
+      ]
+    },
+    {
+      "id": "operational_8281a60ad5e5a60f",
+      "decisionKey": "deposit-hold-bypass-cohort-deadline-not-allowed",
+      "title": "Small deposits to hold a spot and bypass cohort deadline are not allowed",
+      "decision": "As of 2026-06-20, no, small deposits to hold a spot and bypass the cohort deadline are not allowed. Conditions: The request is for a small deposit (e.g., $1500) to hold a spot and bypass the cohort deadline. Boundaries: Does not address standard payment plans or minimum requirements for moving forward.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-20T15:45:40.419Z",
+      "lastReviewed": "2026-06-20",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781970340.419139"
+      ]
+    },
+    {
+      "id": "operational_13a17126f8833d97",
+      "decisionKey": "dial-out-channel-call-booking",
+      "title": "Booking calls from dial-out channel",
+      "decision": "As of 2026-06-16, yes, you can book calls from the dial-out channel unless another representative has already claimed them with an emoji. Conditions: Call has not been emoji'd by another rep. Boundaries: Calls already claimed by another rep are not available.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-16T21:17:32.804Z",
+      "lastReviewed": "2026-06-16",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781644652.804199"
+      ]
+    },
+    {
+      "id": "operational_973340bd7392a8a9",
+      "decisionKey": "guaranteed-views-measurement-method",
+      "title": "100k Guaranteed Views Are Delivered via Facebook Ad Through ISTV Instagram",
+      "decision": "As of 2026-07-03, the 100k guaranteed views are delivered through a Facebook ad run via the official ISTV Instagram page. Clients can track the promotion through a dashboard. Conditions: The promotion is a Facebook ad.; The ad is run through ISTV's Instagram account. Boundaries: Does not guarantee views on other platforms.; Does not specify exact tracking metrics beyond the dashboard.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "effectiveAt": "2026-07-03T13:00:37.578Z",
+      "lastReviewed": "2026-07-03",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783083637.578129"
+      ]
+    },
+    {
+      "id": "operational_44708cc2e9d74405",
+      "decisionKey": "schedule-outside-master-calendar",
+      "title": "Schedule 2nd calls and reschedules on personal/public calendar without overlapping master",
+      "decision": "As of 2026-06-01, for scheduling 2nd calls and rescheduling, use your personal/public calendar and set your own hours, but do not overlap or modify the master calendar. Conditions: The scheduling is for 2nd calls or rescheduling.; The personal/public calendar does not overlap the master calendar. Boundaries: This does not apply to initial call scheduling on the master calendar.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich"
+      ],
+      "effectiveAt": "2026-06-01T21:00:54.965Z",
+      "lastReviewed": "2026-06-01",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780347654.965099"
+      ]
+    },
+    {
+      "id": "operational_83a14d8e125a069a",
+      "decisionKey": "upgrade-deadline-before-filming",
+      "title": "Upgrade Deadline Before Filming",
+      "decision": "As of 2026-05-27, clients can upgrade their package up until filming begins. After filming starts, editing begins and upgrades are no longer possible. Conditions: Upgrade must occur before filming starts. Boundaries: No upgrades after filming begins.",
+      "productScopes": [
+        "unknown"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich"
+      ],
+      "effectiveAt": "2026-05-27T16:26:57.599Z",
+      "lastReviewed": "2026-05-27",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779899217.599919"
+      ]
+    },
+    {
+      "id": "operational_f71ab703a9e563ed",
+      "decisionKey": "weekend-call-scheduling-flexibility",
+      "title": "Weekend call scheduling is optional",
+      "decision": "As of 2026-07-10, you may work Saturday or Sunday if you choose. If you do not conduct a call on the weekend, you can schedule it for Monday. Conditions: Calls are related to cohort scheduling. Boundaries: Does not mandate weekend work.",
+      "productScopes": [
+        "main_istv"
+      ],
+      "scopeRisk": "general",
+      "riskLevel": "high",
+      "approvedBy": [
+        "Rich"
+      ],
+      "effectiveAt": "2026-07-10T20:52:40.296Z",
+      "lastReviewed": "2026-07-10",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783716760.296289"
+      ]
+    }
+  ],
+  "collisionReport": []
+}

@@ -122,12 +122,29 @@ function routeNeed(sourceNeed: V4SystemicSourceNeedPlan, reason: string): V4Syst
 
 function exactCandidateForNeed(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
   const needScore = candidate.needScores?.[need.id];
-  return evaluateV51DecisionContract(need, candidate.policy).errors.length === 0 &&
+  const explicitlyControlled = matchingV4SystemicAuthorityResolutions(need)
+    .some((resolution) => resolution.controlling_policy_ids.includes(candidate.policy.id));
+  return (explicitlyControlled || evaluateV51DecisionContract(need, candidate.policy).errors.length === 0) &&
     evaluateV52DecisionIdentity(
       need,
       candidate.policy,
       needScore?.matchedDecisionText || candidate.matchedDecisionText || "",
     ).exact;
+}
+
+function canonicalResolutionCandidate(need: V4SystemicNeed, retrieval: V4SystemicRetrieval) {
+  // Controlling IDs are ordered with the reviewed canonical synthesis first.
+  // Prefer that synthesis over older agreeing fragments so the answer retains
+  // the exact current wording (for example "three months", not a legacy
+  // approximation of "90 days"). The resolution's match groups remain the
+  // non-bypassable claim-scope gate.
+  for (const resolution of matchingV4SystemicAuthorityResolutions(need)) {
+    for (const id of resolution.controlling_policy_ids) {
+      const candidate = candidateFor(id, retrieval);
+      if (candidate?.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate)) return candidate;
+    }
+  }
+  return null;
 }
 
 function highConfidenceDeterministicRecovery(
@@ -162,9 +179,23 @@ export function refineV52SourcePlan(
 ): V4SystemicSourcePlan {
   const needs = sourcePlan.needs.map((sourceNeed): V4SystemicSourceNeedPlan => {
     const need = plan.needs.find((candidate) => candidate.id === sourceNeed.needId);
-    if (!need || need.forcedRouteKey || sourceNeed.lane === "route" && !sourceNeed.excludedConflictPolicyIds.length && !sourceNeed.preferredPolicyIds.length) {
+    if (!need || need.forcedRouteKey) {
       return sourceNeed;
     }
+
+    const resolutionPreferred = canonicalResolutionCandidate(need, retrieval);
+    if (sourceNeed.modelDisposition === "answer" && resolutionPreferred) {
+      return {
+        ...sourceNeed,
+        lane: "answer",
+        directPolicyIds: [resolutionPreferred.policy.id],
+        preferredPolicyIds: [resolutionPreferred.policy.id],
+        excludedConflictPolicyIds: sourceNeed.excludedConflictPolicyIds.filter((id) => id !== resolutionPreferred.policy.id),
+        reason: `Applied the matching claim-scoped authority resolution using ${resolutionPreferred.policy.id}.`,
+      };
+    }
+
+    if (sourceNeed.lane === "route" && !sourceNeed.excludedConflictPolicyIds.length && !sourceNeed.preferredPolicyIds.length) return sourceNeed;
 
     if (sourceNeed.lane === "route" && sourceNeed.excludedConflictPolicyIds.length >= 2) {
       const conflictCandidates = sourceNeed.excludedConflictPolicyIds
@@ -184,15 +215,29 @@ export function refineV52SourcePlan(
       };
     }
 
-    const preferred = sourceNeed.preferredPolicyIds
+    const resolution = matchingV4SystemicAuthorityResolutions(need).find((item) =>
+      (sourceNeed.deterministicPolicyIds || []).some((id) => item.controlling_policy_ids.includes(id)),
+    );
+    const resolutionRecovery = sourceNeed.modelDisposition === "route" && resolution
+      ? canonicalResolutionCandidate(need, retrieval)
+      : null;
+    const preferred = [...new Set([
+      ...sourceNeed.preferredPolicyIds,
+      ...(resolutionRecovery ? [resolutionRecovery.policy.id] : []),
+    ])]
       .map((id) => candidateFor(id, retrieval))
       .filter((candidate): candidate is V4SystemicCandidate => Boolean(candidate))
       .filter((candidate) => exactCandidateForNeed(need, candidate));
     const modelDirect = new Set(sourceNeed.modelDirectPolicyIds || []);
-    const deterministic = new Set(sourceNeed.deterministicPolicyIds || []);
+    const deterministic = new Set([
+      ...(sourceNeed.deterministicPolicyIds || []),
+      ...(resolutionRecovery ? [resolutionRecovery.policy.id] : []),
+    ]);
     const safePreferred = preferred.filter((candidate) => {
       if (sourceNeed.modelDisposition !== "route") return true;
       if (modelDirect.has(candidate.policy.id)) return true;
+      if (resolutionRecovery && candidate.policy.id !== resolutionRecovery.policy.id &&
+        resolution?.controlling_policy_ids.includes(candidate.policy.id)) return false;
       return deterministic.has(candidate.policy.id) && highConfidenceDeterministicRecovery(need, candidate, retrieval);
     });
     if (!safePreferred.length) {
@@ -214,5 +259,101 @@ export function refineV52SourcePlan(
     ...sourcePlan,
     needs,
     reasoningSummary: `${sourcePlan.reasoningSummary} V5.2 applied the non-bypassable decision contract and contextual authority gate.`,
+  };
+}
+
+const COMPATIBILITY_STOP = new Set([
+  "after", "answer", "applicant", "before", "boundaries", "business", "call", "conditions", "client", "does", "lead", "only", "policy", "prospect", "representative", "sales", "should", "their", "this", "when", "with",
+]);
+
+function primaryDecision(value: string) {
+  return value.split(/\b(?:Conditions?|Boundaries):/i)[0].replace(/\s+/g, " ").trim();
+}
+
+function compatibilityTerms(value: string) {
+  return new Set(value.toLowerCase().replace(/[^a-z0-9%$]+/g, " ").split(/\s+/)
+    .map((term) => term.length > 4 ? term.replace(/(?:ing|ied|ed|es|s)$/i, (suffix) => suffix === "ied" ? "y" : "") : term)
+    .filter((term) => term.length >= 3 && !COMPATIBILITY_STOP.has(term)));
+}
+
+function materialPolarity(value: string) {
+  if (/\b(?:do\s+not|don't|does\s+not|must\s+not|cannot|can't|may\s+not|not\s+allowed|not\s+permitted|prohibited|never|no[,.;:]?)\b/i.test(value)) return "negative";
+  if (/\b(?:may|can|allowed|permitted|must|should|required|yes[,.;:]?)\b/i.test(value)) return "positive";
+  return "neutral";
+}
+
+function materialNumbers(value: string) {
+  return [...new Set(value.match(/(?:[$£€]\s*)?\d+(?:\.\d+)?(?:\s*%|\s*(?:minutes?|hours?|days?|weeks?|months?|years?|payments?|installments?))?/gi) || [])]
+    .map((number) => number.toLowerCase().replace(/\s+/g, ""));
+}
+
+function decisionsAgree(candidates: V4SystemicCandidate[]) {
+  for (let leftIndex = 0; leftIndex < candidates.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < candidates.length; rightIndex += 1) {
+      const left = primaryDecision(candidates[leftIndex].policy.decision);
+      const right = primaryDecision(candidates[rightIndex].policy.decision);
+      const polarities = new Set([materialPolarity(left), materialPolarity(right)]);
+      if (polarities.has("positive") && polarities.has("negative")) return false;
+      const leftNumbers = materialNumbers(left);
+      const rightNumbers = materialNumbers(right);
+      if (leftNumbers.length && rightNumbers.length && !leftNumbers.some((number) => rightNumbers.includes(number))) return false;
+      const leftTerms = compatibilityTerms(left);
+      const rightTerms = compatibilityTerms(right);
+      if ([...leftTerms].filter((term) => rightTerms.has(term)).length < 2) return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Recovers only a model-confirmed, mutually compatible answer set after V5.2's
+ * source-plan gate. This addresses false conflict groupings without allowing a
+ * deterministic similarity match to overrule a model abstention, live owner,
+ * blocked topic, material ambiguity, or genuinely incompatible source.
+ */
+export function refineV53SourcePlan(
+  sourcePlan: V4SystemicSourcePlan,
+  plan: V4SystemicQueryPlan,
+  retrieval: V4SystemicRetrieval,
+): V4SystemicSourcePlan {
+  const v52 = refineV52SourcePlan(sourcePlan, plan, retrieval);
+  const needs = v52.needs.map((sourceNeed): V4SystemicSourceNeedPlan => {
+    if (sourceNeed.lane !== "route" || sourceNeed.modelDisposition !== "answer") return sourceNeed;
+    const need = plan.needs.find((candidate) => candidate.id === sourceNeed.needId);
+    if (!need || need.forcedRouteKey || need.ambiguity === "material" || need.requestKind !== "knowledge") return sourceNeed;
+
+    const exactModelDirect = [...new Set(sourceNeed.modelDirectPolicyIds || [])]
+      .map((id) => candidateFor(id, retrieval))
+      .filter((candidate): candidate is V4SystemicCandidate => Boolean(
+        candidate &&
+        candidate.policy.answerability === "answer_evidence" &&
+        exactCandidateForNeed(need, candidate),
+      ))
+      .sort((left, right) =>
+        (left.needScores?.[need.id]?.rank || left.rank) - (right.needScores?.[need.id]?.rank || right.rank),
+      );
+    if (!exactModelDirect.length || !decisionsAgree(exactModelDirect)) return sourceNeed;
+
+    const excludedAnswerEvidence = sourceNeed.excludedConflictPolicyIds
+      .map((id) => candidateFor(id, retrieval))
+      .filter((candidate): candidate is V4SystemicCandidate => Boolean(
+        candidate && candidate.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate),
+      ));
+    if (!decisionsAgree([...exactModelDirect, ...excludedAnswerEvidence])) return sourceNeed;
+
+    const preferredPolicyIds = exactModelDirect.slice(0, 2).map((candidate) => candidate.policy.id);
+    return {
+      ...sourceNeed,
+      lane: "answer",
+      directPolicyIds: [...new Set([...sourceNeed.directPolicyIds, ...preferredPolicyIds])],
+      preferredPolicyIds,
+      excludedConflictPolicyIds: sourceNeed.excludedConflictPolicyIds.filter((id) => !preferredPolicyIds.includes(id)),
+      reason: "V5.3 recovered mutually compatible, exact, model-confirmed answer evidence after rejecting a false conflict grouping.",
+    };
+  });
+  return {
+    ...v52,
+    needs,
+    reasoningSummary: `${v52.reasoningSummary} V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks.`,
   };
 }

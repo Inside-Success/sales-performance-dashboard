@@ -42,7 +42,7 @@ function retrieve(question: string, overrides: Partial<V4SystemicNeed> = {}) {
 describe("Ask Sales V5 bounded evidence retrieval", () => {
   it("builds one immutable snapshot from the governed effective corpus", () => {
     const snapshot = getV5KnowledgeSnapshot();
-    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v2");
+    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v3");
     expect(snapshot.knowledgeVersion).toMatch(/^[a-f0-9]{16}\+v5_[a-f0-9]{16}$/);
     expect(snapshot.policies.length).toBeGreaterThan(1_000);
     expect(Object.isFrozen(snapshot)).toBe(true);
@@ -68,7 +68,10 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
         expect(v4SystemicNeedPolicyRelationErrors(plannedNeed, candidate.policy), `${question}: ${candidate.policy.id}`).toEqual([]);
       }
       expect(result.diagnostics?.needs[0].selectedPolicyIds).toEqual(result.candidates.map((candidate) => candidate.policy.id));
-      expect(result.candidates.length).toBeLessThanOrEqual(10);
+      // V5.3 keeps a bounded 12-direct + 4-expansion evidence window so the
+      // source controller can compare exact authority without admitting an
+      // unbounded semantic neighborhood.
+      expect(result.candidates.length).toBeLessThanOrEqual(16);
     }
   }, 15_000);
 
@@ -112,7 +115,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
     ];
     const plan: V4SystemicQueryPlan = { needs, conversationIntent: "answer", reasoningSummary: "compound" };
     const result = retrieveV5Policies(resolveV4SystemicTurn(question, []), plan);
-    expect(result.candidates.length).toBeLessThanOrEqual(20);
+    expect(result.candidates.length).toBeLessThanOrEqual(24);
     expect(result.candidates.some((candidate) => candidate.needScores?.N1)).toBe(true);
     expect(result.candidates.some((candidate) => candidate.needScores?.N2)).toBe(true);
     expect(result.diagnostics?.needs).toHaveLength(2);

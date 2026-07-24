@@ -26,9 +26,23 @@ const CURRENT_FAILURE_OR_STATUS = /\b(?:right\s+now|currently|specific|this\s+cl
 const PERMISSION_TO_USE_EXISTING_RESOURCE = /\b(?:can|could|may|should|is|are)\s+(?:i|we|a|an|the|my|our|their|his|her|client|prospect|cast\s+member|family\s+member|mother|father|spouse|guest|attendee|they|he|she)\b.{0,160}\b(?:share|use|include|forward|give|join)\w*\b.{0,120}\b(?:same|existing|current|the)\b.{0,80}\b(?:link|url|form|document|recording|call)\b/i;
 const PERSONAL_ACTOR_DECISION = /\bdoes\s+[a-z][a-z .'-]{1,55}?\s+personally\s+(?:interview|create|record|host|meet|call|approve|review|send|provide)\w*\b/i;
 const GENERIC_ACTOR_REQUIREMENT = /\b(?:does|do)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\s+need\s+to\b|\b(?:must|should)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\b/i;
-const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|promotional\s+activities)\b/i;
+const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|swag(?:\s+package)?|promotional\s+activities)\b/i;
 const REFERENCED_CONTEXT_REVIEW = /\b(?:review|assess|analy[sz]e|look\s+at|read)\w*\b.{0,120}\b(?:this|the|attached|following)\b.{0,50}\b(?:message|email|text|screenshot|attachment|recording|document)\b/i;
 const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i;
+const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
+const CURRENT_CROSS_PRODUCT_REVIEW = /\b(?:current|currently|still|active|available)\b.{0,180}\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b|\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b.{0,180}\b(?:current|currently|still|active|available)\b|\bnot\s+a\s+fit\b.{0,220}\b(?:move|transfer|pass)\b|\b(?:move|transfer|pass)\b.{0,220}\bnot\s+a\s+fit\b/i;
+const QUALIFICATION_EXCEPTION_REVIEW = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,180}\b(?:approve|approval|eligible|greenlight|green\s+light)\b|\b(?:approve|approval|eligible|greenlight|green\s+light)\b.{0,180}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const QUALIFICATION_CASE_REVIEW_OVERLAY = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,220}\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b|\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b.{0,220}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
+const FULFILLMENT_TIMING_LOOKUP = /\b(?:filming|production|episode)\b.{0,180}\b(?:current|expected|how\s+long|timeline|timing)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b|\b(?:current|expected|how\s+long|timeline|timing)\b.{0,180}\b(?:filming|production|episode)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b/i;
+const FULFILLMENT_OWNER_HELP = /\b(?:client|cast\s+member)\b.{0,180}\b(?:after|post)\s+onboard\w*\b.{0,160}\b(?:confused|help|speak|talk|contact|owner)\b|\b(?:speak|talk|contact)\b.{0,120}\b(?:onboarding|fulfillment|studio\s+executive)\b/i;
+const CASE_SPECIFIC_GREENLIGHT_SUBJECT = /\b(?:this|that|my|our|the|a|an)\s+(?:client|lead|prospect|applicant)\b/i;
+const GREENLIGHT_INTERRUPTION = /\b(?:greenlit|green\s*light)\b/i;
+const GREENLIGHT_INTERRUPTION_STATE = /\b(?:internet|connection|disconnect|dropped|congratulations\s+video)\b/i;
+const GREENLIGHT_LIVE_DECISION = /\b(?:should\s+i|now|today|tomorrow|wait|follow[- ]?up)\b/i;
+const CASE_SPECIFIC_SENSITIVE_BACKGROUND = /\b(?:this|that|a|an|the|my|our)\s+(?:[a-z0-9'-]+\s+){0,3}(?:client|lead|prospect|applicant)\b/i;
+const SENSITIVE_BACKGROUND_FACT = /\b(?:felon(?:y|ies)|criminal|conviction|charges?|lawsuit|sealed\s+record|media\s+coverage|background\s+check)\b/i;
+const SENSITIVE_ELIGIBILITY_DECISION = /\b(?:proceed|move\s+forward|attend\s+call\s*1|eligible|eligibility|approve|approval|greenlight|green\s+light|pass|reject|decide|unsure)\b/i;
 
 function isMissingReferencedContext(value: string) {
   if (!REFERENCED_CONTEXT_REVIEW.test(value)) return false;
@@ -76,10 +90,12 @@ function deterministicRouteOwner(text: string, requestKind: V4SystemicNeed["requ
 const LIVE_HELP_REQUEST = /\b(?:not\s+working|isn't\s+working|can't\s+(?:log\s*in|access|open|find)|cannot\s+(?:log\s*in|access|open|find)|failed|failing|missing|stuck|urgent|right\s+now|today|who\s+(?:can|should)\s+(?:help|handle|fix)|where\s+(?:do|should)\s+i\s+(?:ask|report)|need\s+(?:help|someone|support)|team\s+is\s+(?:away|unavailable|on\s+vacation))\b/i;
 const LIVE_OWNER_ACTION = /\b(?:please|can\s+someone|could\s+someone|would\s+someone|need\s+someone\s+to)\b.{0,140}\b(?:fix|check|confirm|trace|send|issue|process|change|update|correct|restore|rerun|reprocess|void|cancel|expedite|approve|review|schedule|reschedule)\w*\b/i;
 const STABLE_POLICY_SHAPE = /\b(?:what\s+is\s+the\s+(?:policy|rule|process)|are\s+reps?\s+allowed|can\s+reps?\s+generally|should\s+reps?\s+generally|where\s+should\s+reps?\s+(?:normally|generally)|how\s+should\s+reps?\s+generally)\b/i;
+const DEONTIC_REP_POLICY_SHAPE = /\b(?:may|can|should|must)\s+(?:a|the|our)?\s*(?:rep|representative|closer|salesperson)s?\s+(?:honor|offer|share|use|book|schedule|send|discuss|mention|move|transfer|reapply|continue|close|proceed)\b/i;
 
 /** Classifies clear live ownership before model request-kind inference. */
 export function deterministicV52ActionOwner(text: string): RouteKey | null {
   if (STABLE_POLICY_SHAPE.test(text) && !LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text)) return null;
+  if (DEONTIC_REP_POLICY_SHAPE.test(text) && !LIVE_OWNER_ACTION.test(text) && !LIVE_MUTATION_REQUEST.test(text)) return null;
   if (!LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text) && !LIVE_MUTATION_REQUEST.test(text)) return null;
 
   if (/\b(?:keap|hubspot|oncehub|zoom|crm|calendar|dashboard|leaderboard|login|log\s*in|password|automation|integration|redirect|technical|tech)\b/i.test(text)) {
@@ -89,6 +105,21 @@ export function deterministicV52ActionOwner(text: string): RouteKey | null {
   if (/\b(?:payment|transaction|invoice|billing|charge|refund|commission|wire|ach|card|amex|american\s+express)\b/i.test(text)) return "finance";
   if (/\b(?:filming|production|fulfillment|delivery|onboarding|scriptwriter|trailer|studio\s+executive)\b/i.test(text)) return "fulfillment";
   return deterministicRouteOwner(text, "operational_action");
+}
+
+/** Five-owner classifier for explicit live/current work. Stable FAQ wording is
+ * deliberately left to evidence retrieval unless a current-state or exception
+ * signal makes a live owner necessary. */
+export function deterministicV53ActionOwner(text: string): RouteKey | null {
+  if (CURRENT_CROSS_PRODUCT_REVIEW.test(text) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if (CASE_SPECIFIC_SENSITIVE_BACKGROUND.test(text) && SENSITIVE_BACKGROUND_FACT.test(text) && SENSITIVE_ELIGIBILITY_DECISION.test(text)) {
+    return /\b(?:greenlight|green\s+light)\b/i.test(text) ? "greenlight" : "sales_policy";
+  }
+  if (CASE_SPECIFIC_GREENLIGHT_SUBJECT.test(text) && GREENLIGHT_INTERRUPTION.test(text) &&
+    GREENLIGHT_INTERRUPTION_STATE.test(text) && GREENLIGHT_LIVE_DECISION.test(text)) return "greenlight";
+  if (FINANCE_TIMING_LOOKUP.test(text)) return "finance";
+  if (FULFILLMENT_TIMING_LOOKUP.test(text) || FULFILLMENT_OWNER_HELP.test(text)) return "fulfillment";
+  return deterministicV52ActionOwner(text);
 }
 
 function refineNeed(need: V4SystemicNeed): V4SystemicNeed {
@@ -210,6 +241,51 @@ export function refineV52QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolu
   };
 }
 
+export function refineV53QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v52 = refineV52QueryPlan(plan, turn);
+  const needs = v52.needs.flatMap((need) => {
+    const text = completeText(need);
+    let refined = need;
+    if (SCRIPT_SELECTION_REQUIREMENT.test(text)) {
+      refined = { ...need, relation: "requirement" as const, requestKind: "knowledge" as const, forcedRouteKey: null };
+    } else {
+      const owner = deterministicV53ActionOwner(text);
+      if (owner) refined = { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner };
+    }
+
+    // A reusable qualification rule may answer the policy part, but facts such
+    // as illness/relaunch still require a human decision for the actual lead.
+    // Represent that as a separate route-only need so the useful boundary is
+    // retained without the chatbot approving the case.
+    if (!QUALIFICATION_CASE_REVIEW_OVERLAY.test(text) || refined.forcedRouteKey) return [refined];
+    return [
+      refined,
+      {
+        ...refined,
+        id: `${refined.id}__case_review`,
+        text: "Confirm the specific prospect's case-specific eligibility with the current sales-policy owner.",
+        retrievalQueries: [],
+        relation: "owner" as const,
+        requestKind: "operational_action" as const,
+        forcedRouteKey: "sales_policy" as const,
+        ambiguity: "none" as const,
+        clarificationQuestion: "",
+      },
+    ];
+  });
+  const changed = needs.length !== v52.needs.length || needs.some((need, index) => {
+    const prior = v52.needs[index];
+    return !prior || need.relation !== prior.relation || need.requestKind !== prior.requestKind || need.forcedRouteKey !== prior.forcedRouteKey;
+  });
+  return {
+    ...v52,
+    needs,
+    reasoningSummary: changed
+      ? `${v52.reasoningSummary} V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners.`
+      : v52.reasoningSummary,
+  };
+}
+
 export function resolveV51RouteKey(
   need: V4SystemicNeed,
   decision: V4SystemicNeedDecision,
@@ -240,4 +316,14 @@ export function resolveV52RouteKey(
   const preModelOwner = deterministicV52ActionOwner(completeText(need));
   if (preModelOwner) return preModelOwner;
   return resolveV51RouteKey(need, decision, retrieval);
+}
+
+export function resolveV53RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const preModelOwner = deterministicV53ActionOwner(completeText(need));
+  if (preModelOwner) return preModelOwner;
+  return resolveV52RouteKey(need, decision, retrieval);
 }

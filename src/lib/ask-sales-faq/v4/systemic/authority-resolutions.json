@@ -1,6 +1,6 @@
 {
-  "schema_version": "ask-sales-v5.1-claim-authority-resolutions-v20",
-  "generated_at": "2026-07-24T12:00:00.000Z",
+  "schema_version": "ask-sales-v5.1-claim-authority-resolutions-v21",
+  "generated_at": "2026-07-25T00:00:00.000Z",
   "resolutions": [
     {
       "id": "abd-practice-ownership",
@@ -827,6 +827,27 @@
         "slack:#sales-questions-requests:1780435242.218859",
         "slack:#sales-questions-requests:1780347654.965099"
       ]
+    },
+    {
+      "id": "call2-master-calendar-manual-booking-fallback",
+      "title": "Use the complete manual Call 2 booking fallback without editing the Master Calendar",
+      "status": "source_resolved",
+      "effective_at": "2026-07-24T01:58:53.344Z",
+      "product_scopes": ["product_agnostic", "unknown", "main_istv", "dj_nlceo"],
+      "relations": ["procedure", "permission", "requirement"],
+      "match_groups": [
+        ["call 2", "second call"],
+        ["master calendar"],
+        ["only has availability", "only the master calendar", "tomorrow morning", "manual booking", "how should the rep book", "how to book"]
+      ],
+      "controlling_policy_ids": ["curated_v53_call2_master_calendar_manual_fallback"],
+      "excluded_policy_ids": [
+        "operational_0aa9da614685bd75",
+        "operational_5fa965523c7c31c9"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline's direct reply supplies the complete Call 2 manual-booking fallback and preserves the existing prohibition against editing the inbound Master Calendar. General availability-management rules do not answer the requested booking steps.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784858333.344189"]
     },
     {
       "id": "repeated-disqualified-applicant-cancel-block",
