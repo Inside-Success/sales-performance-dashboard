@@ -45,6 +45,8 @@ Those consumed sets were useful for development only. They are not promotion evi
 
 Candidate freeze: `45fc2ac`
 
+Draft dashboard PR: [#77](https://github.com/Inside-Success/sales-performance-dashboard/pull/77), stacked on the isolated V5 branch and intentionally unmerged.
+
 Dataset SHA-256: `47c17252e611c819153d62842e602d7b7a958d8358a8795bd6a87180063644dd`
 
 Both systems completed all 20 cases with zero provider failures.
