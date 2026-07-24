@@ -12,7 +12,11 @@ import {
 import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthorized } from "@/lib/ask-sales-faq/v4/isolation";
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
-import { runAskSalesFaqV5 } from "@/lib/ask-sales-faq/v5/runtime";
+import {
+  ASK_SALES_V51_PIPELINE_VERSION,
+  getV51KnowledgeVersion,
+  runAskSalesFaqV5,
+} from "@/lib/ask-sales-faq/v5/runtime";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -57,7 +61,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", "v5-isolated");
+  response.headers.set("x-ask-sales-runtime", ASK_SALES_V51_PIPELINE_VERSION);
   return response;
 }
 
@@ -71,10 +75,10 @@ export async function GET() {
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: "v5-isolated",
+    runtime: ASK_SALES_V51_PIPELINE_VERSION,
     persistence: false,
     productionSelectorChanged: false,
-    knowledgeVersion: snapshot.knowledgeVersion,
+    knowledgeVersion: getV51KnowledgeVersion(),
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
     operationalPolicyCount: snapshot.operationalPolicyCount,
@@ -107,7 +111,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV5KnowledgeSnapshot().knowledgeVersion;
+    const knowledgeVersion = getV51KnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v5_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {

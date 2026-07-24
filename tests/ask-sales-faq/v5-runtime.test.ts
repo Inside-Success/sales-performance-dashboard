@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { V3Provider } from "@/lib/ask-sales-faq/v3/types";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
-import { runAskSalesFaqV5 } from "@/lib/ask-sales-faq/v5/runtime";
+import { getV51KnowledgeVersion, runAskSalesFaqV5 } from "@/lib/ask-sales-faq/v5/runtime";
 
 function providerFor(handler: (purpose: string, payload: Record<string, unknown>) => Record<string, unknown>): V3Provider {
   return async <T>(input: Parameters<V3Provider>[0]) => ({
@@ -131,9 +131,9 @@ describe("Ask Sales V5 bounded runtime", () => {
     expect(result.answer).toMatch(/should not suggest, create, or promise|only the approved listed/i);
     expect(result.selectedPolicyIds).toContain(policy!.id);
     expect(result.runtimeMetadata).toMatchObject({
-      pipelineVersion: "v5-isolated",
+      pipelineVersion: "v5.1-isolated",
       isolation: { productionSelectorChanged: false, databaseWrites: false, historyPersistence: false },
-      knowledgeVersion: getV5KnowledgeSnapshot().knowledgeVersion,
+      knowledgeVersion: getV51KnowledgeVersion(),
     });
     expect(result.runtimeMetadata.retrieval.candidateCount).toBeLessThanOrEqual(10);
     expect(result.runtimeMetadata.retrieval.diagnostics?.needs[0].hardCompatible).toBeGreaterThan(0);
@@ -246,7 +246,7 @@ describe("Ask Sales V5 bounded runtime", () => {
     }], { provider, validatorProvider: provider });
     expect(result.lane).toBe("route");
     expect(result.selectedPolicyIds).toEqual([]);
-    expect(result.runtimeMetadata.pipelineVersion).toBe("v5-isolated");
+    expect(result.runtimeMetadata.pipelineVersion).toBe("v5.1-isolated");
     expect(result.runtimeMetadata.sourcePlan?.reasoningSummary).toContain("failed closed");
     expect(purposes).toEqual(["v4_systemic_query_plan", "v4_systemic_source_plan", "v4_systemic_evidence_answer"]);
   });

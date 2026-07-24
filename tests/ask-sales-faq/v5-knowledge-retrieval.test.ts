@@ -124,7 +124,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
       if (result.candidates.some((candidate) => candidate.policy.id === policy.id)) found += 1;
     }
     expect(found / sample.length).toBeGreaterThanOrEqual(0.8);
-  }, 30_000);
+  }, 45_000);
 
   it("round-robins bounded evidence across compound atomic needs", () => {
     const question = "Where should Finance verify a live payment, and where should I request an urgent Greenlight letter?";

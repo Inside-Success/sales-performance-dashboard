@@ -1,6 +1,6 @@
 {
-  "schema_version": "ask-sales-v4.3-claim-authority-resolutions-v19",
-  "generated_at": "2026-07-23T12:00:00.000Z",
+  "schema_version": "ask-sales-v5.1-claim-authority-resolutions-v20",
+  "generated_at": "2026-07-24T12:00:00.000Z",
   "resolutions": [
     {
       "id": "abd-practice-ownership",
@@ -197,10 +197,10 @@
         ["one episode", "same episode", "separate episodes", "appear together"]
       ],
       "controlling_policy_ids": [
-        "curated_v43_multiple_partners_one_episode",
-        "operational_653b93b28eee7fab"
+        "curated_v43_multiple_partners_one_episode"
       ],
       "excluded_policy_ids": [
+        "operational_653b93b28eee7fab",
         "claim_2583836171d98405",
         "operational_dbab2efe84483fc0"
       ],
@@ -234,7 +234,7 @@
       "relations": ["definition", "procedure", "location", "routing"],
       "match_groups": [
         ["daily stats", "eod stats", "end of day stats", "second calls", "call 2"],
-        ["classify", "follow ups", "correction", "corrected", "incorrect", "where post"]
+        ["classify", "count", "counted", "report", "follow ups", "correction", "corrected", "incorrect", "where post"]
       ],
       "controlling_policy_ids": ["curated_v43_daily_stats_workflow"],
       "excluded_policy_ids": [],
@@ -891,6 +891,85 @@
       "resolved_blocked_topic_ids": [],
       "authority_basis": "The later owner-approved override explicitly discontinues the former six-month weekly program and instructs reps not to promise it; this is an approved claim replacement, not a recency inference.",
       "source_ids": ["slack:C0AUQKNR8CF:1783606666.740729"]
+    },
+    {
+      "id": "listed-emergency-payment-link-exception",
+      "title": "Listed emergency payment links are allowed when the standard Whop link is bank-flagged",
+      "status": "source_resolved",
+      "effective_at": "2026-07-24T01:42:11+05:00",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["permission", "exception", "procedure"],
+      "match_groups": [
+        ["emergency payment link", "emergency links"],
+        ["bank flag", "red flag list", "whop link", "standard link", "approved spreadsheet"],
+        ["use", "allowed", "permitted", "may", "can"]
+      ],
+      "controlling_policy_ids": ["curated_v51_emergency_payment_link_exception"],
+      "excluded_policy_ids": [
+        "claim_e30857cfce9af5e5",
+        "operational_b05d76eccb38468b",
+        "claim_527d746a2e41c49f__a3",
+        "claim_527d746a2e41c49f__a4",
+        "operational_3ad000e48af528b2",
+        "claim_9d9fb471d6e00227",
+        "operational_2807618fd2f2eef9"
+      ],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline explicitly approved the emergency links already listed in the spreadsheet for the exact bank-flagged standard-Whop scenario. The generic ban on creating custom links remains in force and does not prohibit this listed exception.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784839254.159649", "slack:C0AUQKNR8CF:1784839331.349689"]
+    },
+    {
+      "id": "payment-arrangement-change-new-contract",
+      "title": "A payment-arrangement change requires a new contract",
+      "status": "source_resolved",
+      "effective_at": "2026-07-24T01:06:14+05:00",
+      "product_scopes": ["product_agnostic", "unknown"],
+      "relations": ["requirement", "procedure", "permission"],
+      "match_groups": [
+        ["payment arrangement", "payment plan", "payment split", "payment structure", "payment terms"],
+        ["change", "changes", "changed", "different"],
+        ["new contract", "another contract", "replacement contract", "send contract"]
+      ],
+      "controlling_policy_ids": ["curated_v51_payment_change_new_contract"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline answered yes to the exact requirement question. The source does not approve the requested custom split, so the resolution controls only whether an approved changed arrangement requires a new contract.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784836671.425839", "slack:C0AUQKNR8CF:1784837174.500719"]
+    },
+    {
+      "id": "docuseries-one-episode-first",
+      "title": "A new docuseries client starts with a one-episode license before a larger project",
+      "status": "source_resolved",
+      "effective_at": "2026-07-24T01:07:44+05:00",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["procedure", "requirement", "inclusion", "permission"],
+      "match_groups": [
+        ["docuseries", "docu series", "multi episode", "nine episode", "9 episode", "larger project"],
+        ["one episode", "single episode", "start", "recommend first", "working relationship"]
+      ],
+      "controlling_policy_ids": ["curated_v51_docuseries_one_episode_first"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline set the general starting recommendation for new docuseries interest: one episode first, then assess the working relationship before deciding on a larger project.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784836729.280629", "slack:C0AUQKNR8CF:1784837264.011379"]
+    },
+    {
+      "id": "nlceo-six-month-filming-window",
+      "title": "Next Level CEO clients film within six months and production owns exact studio availability",
+      "status": "source_resolved",
+      "effective_at": "2026-07-23T19:57:12+05:00",
+      "product_scopes": ["dj_nlceo"],
+      "relations": ["deadline", "duration", "routing", "procedure"],
+      "match_groups": [
+        ["next level ceo", "nlceo", "daymond john", "dj client"],
+        ["film", "filming", "studio"],
+        ["six months", "6 months", "delay", "availability", "how long"]
+      ],
+      "controlling_policy_ids": ["curated_v51_nlceo_filming_window"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Madeline confirmed the six-month product-specific filming window and directed exact date availability to production in sales-fulfilment-hotline. This is distinct from any reapplication wait.",
+      "source_ids": ["slack:C0AUQKNR8CF:1784758022.370399", "slack:C0AUQKNR8CF:1784818632.523199"]
     }
   ]
 }

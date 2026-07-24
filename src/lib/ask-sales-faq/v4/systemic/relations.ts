@@ -187,6 +187,7 @@ function durationRoleCompatible(left: DurationMeasurement["role"], right: Durati
 
 export function v4SystemicDecisionObjectErrors(request: string, evidence: string) {
   const errors: string[] = [];
+  const asksForContractClauseMeaning = /\bwhat\s+does\s+(?:the\s+)?(?:contract|agreement)\s+mean\b|\b(?:contract|agreement)\b.{0,80}\b(?:mean|meaning|define|definition)\b/i.test(request);
   const requestedMeasurements = durationMeasurements(request);
   const evidenceMeasurements = durationMeasurements(evidence);
   for (const requested of requestedMeasurements) {
@@ -201,7 +202,7 @@ export function v4SystemicDecisionObjectErrors(request: string, evidence: string
 
   const requestedArtifacts = artifactKinds(request);
   const evidenceArtifacts = artifactKinds(evidence);
-  if (ARTIFACT.test(request) && requestedArtifacts.size && evidenceArtifacts.size &&
+  if (!asksForContractClauseMeaning && ARTIFACT.test(request) && requestedArtifacts.size && evidenceArtifacts.size &&
       ![...requestedArtifacts].some((kind) => evidenceArtifacts.has(kind))) {
     errors.push("the evidence refers to a different artifact kind or lifecycle stage than the requested artifact");
   }
@@ -212,13 +213,16 @@ export function v4SystemicDecisionObjectErrors(request: string, evidence: string
   const requestedExclusive = [...requestedFacets].filter((facet) => exclusiveFacets.has(facet));
   const evidenceExclusive = [...evidenceFacets].filter((facet) => exclusiveFacets.has(facet));
   const genericStorageFacets = new Set(["crm_record"]);
-  const requestedSpecific = requestedExclusive.filter((facet) => !genericStorageFacets.has(facet));
+  const relevantRequestedExclusive = requestedExclusive.filter((facet) =>
+    !(asksForContractClauseMeaning && facet === "contract"),
+  );
+  const requestedSpecific = relevantRequestedExclusive.filter((facet) => !genericStorageFacets.has(facet));
   const evidenceSpecific = evidenceExclusive.filter((facet) => !genericStorageFacets.has(facet));
   const incompatibleSpecificObjects = requestedSpecific.length && evidenceSpecific.length &&
     !requestedSpecific.some((facet) => evidenceSpecific.includes(facet));
   if (incompatibleSpecificObjects || (
-    requestedExclusive.length && evidenceExclusive.length &&
-    !requestedExclusive.some((facet) => evidenceExclusive.includes(facet))
+    relevantRequestedExclusive.length && evidenceExclusive.length &&
+    !relevantRequestedExclusive.some((facet) => evidenceExclusive.includes(facet))
   )) {
     errors.push("the evidence governs a different decision object than the request");
   }

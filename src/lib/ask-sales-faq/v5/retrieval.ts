@@ -7,7 +7,6 @@ import {
 import {
   inferV4SystemicPolicyRelations,
   v4SystemicDecisionObjectScore,
-  v4SystemicNeedPolicyRelationErrors,
   v4SystemicRelationCompatibility,
 } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import { retrieveV4SystemicBlockedMatches } from "@/lib/ask-sales-faq/v4/systemic/retrieval";
@@ -18,6 +17,7 @@ import type {
   V4SystemicRetrieval,
 } from "@/lib/ask-sales-faq/v4/systemic/types";
 import type { V3ProductScope, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+import { evaluateV51DecisionContract } from "@/lib/ask-sales-faq/v5/decision-contract";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 
 const snapshot = getV5KnowledgeSnapshot();
@@ -48,6 +48,14 @@ const EQUIVALENTS: Record<string, string[]> = {
   current: ["latest", "active"],
   latest: ["current", "active"],
   include: ["included", "cover", "benefit"],
+  mother: ["family", "parent", "relative", "attendee", "guest"],
+  father: ["family", "parent", "relative", "attendee", "guest"],
+  parent: ["family", "mother", "father", "relative", "attendee"],
+  spouse: ["family", "relative", "attendee", "guest"],
+  relative: ["family", "attendee", "guest"],
+  family: ["relative", "attendee", "guest"],
+  guest: ["attendee", "family"],
+  attendee: ["guest", "family"],
 };
 
 const GENERIC_ENTITY_TERMS = new Set([
@@ -55,7 +63,11 @@ const GENERIC_ENTITY_TERMS = new Set([
 ].map(stem));
 
 function normalize(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9$%]+/g, " ").replace(/\s+/g, " ").trim();
+  return value.toLowerCase()
+    .replace(/[^a-z0-9$%]+/g, " ")
+    .replace(/\bcall\s+(?:2|two|second)\b/g, "second call")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function stem(value: string) {
@@ -155,7 +167,7 @@ function scopeError(policy: V4SystemicCandidate["policy"], need: V4SystemicNeed,
 }
 
 const ACTION_FACETS = [
-  ["submit", /\b(?:submit|upload|attach|post|tag|link)\w*\b/i],
+  ["submit", /\b(?:submit|upload|attach|post|tag)\w*\b/i],
   ["record", /\b(?:record|capture|film)\w*\b|\bkeep\s+zoom\s+running\b/i],
   ["locate", /\b(?:where|find|locate|access|download|get\s+(?:the\s+)?(?:link|form|file|recording|document))\b/i],
   ["verify", /\b(?:verify|check|confirm|investigate|went\s+through|captured|cleared)\w*\b/i],
@@ -220,6 +232,7 @@ type Ranked = {
   matchedTerms: string[];
   matchedQueries: string[];
   lane: "direct" | "expansion";
+  contractDisposition: "exact" | "compatible";
 };
 
 function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
@@ -233,6 +246,7 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   const controlling = new Set(resolution.flatMap((item) => item.controlling_policy_ids));
   const rejectionCounts: Record<string, number> = {};
   const compatible: Ranked[] = [];
+  let exactContractRejected = 0;
 
   for (const document of documents) {
     if (excluded.has(document.policy.id)) {
@@ -244,14 +258,24 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
       rejectionCounts[scope] = (rejectionCounts[scope] || 0) + 1;
       continue;
     }
-    const hardErrors = v4SystemicNeedPolicyRelationErrors(need, document.policy);
+    const contract = evaluateV51DecisionContract(need, document.policy);
+    const hardErrors = [...contract.errors];
     const actionError = actionFacetError(authoritativeText, document.text);
     if (actionError) hardErrors.push(actionError);
-    const entityError = entityIdentityError(need, document.expandedTokens);
+    // Once both sides match the same explicit decision object, broad entity
+    // identity is no longer a safer discriminator: it rejected parent/family
+    // and SEO/PR paraphrases even though the governing object was exact. Actor,
+    // product, condition, stage, and action boundaries remain enforced by the
+    // decision contract above.
+    const exactDecisionObject = contract.disposition === "exact" &&
+      contract.matchedFacets.some((facet) => !facet.startsWith("action:"));
+    const entityError = exactDecisionObject ? null : entityIdentityError(need, document.expandedTokens);
     if (entityError) hardErrors.push(entityError);
     if (hardErrors.length) {
+      if (contract.errors.length && contract.matchedFacets.length) exactContractRejected += 1;
       const key = rejectionKey(hardErrors);
       rejectionCounts[key] = (rejectionCounts[key] || 0) + 1;
+      if (contract.errors.length) rejectionCounts.decision_contract = (rejectionCounts.decision_contract || 0) + 1;
       continue;
     }
 
@@ -296,10 +320,12 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
       matchedTerms,
       matchedQueries: [need.text, ...(bestExpansion ? [bestExpansion.query] : [])],
       lane,
+      contractDisposition: contract.disposition === "exact" ? "exact" : "compatible",
     });
   }
 
   compatible.sort((left, right) =>
+    Number(controlling.has(right.document.policy.id)) - Number(controlling.has(left.document.policy.id)) ||
     (left.lane === right.lane ? 0 : left.lane === "direct" ? -1 : 1) ||
     right.score - left.score ||
     right.document.policy.authority - left.document.policy.authority ||
@@ -318,10 +344,18 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
     if (direct.length >= 8 && expansion.length >= 2) break;
   }
   const selected = [...direct, ...expansion].sort((left, right) => right.score - left.score);
+  const selectedExact = selected.some((candidate) => candidate.contractDisposition === "exact");
   return {
     selected,
     diagnostic: {
       needId: need.id,
+      evidenceState: selectedExact
+        ? "exact_evidence_found" as const
+        : exactContractRejected > 0
+          ? "exact_evidence_rejected" as const
+          : selected.length
+            ? "neighbor_only" as const
+            : "knowledge_absent" as const,
       documentsConsidered: documents.length,
       hardCompatible: compatible.length,
       directLaneSelected: direct.length,
