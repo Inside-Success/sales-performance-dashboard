@@ -13,6 +13,14 @@ export type V51DecisionContractResult = {
   matchedFacets: string[];
 };
 
+export type V52DecisionIdentityResult = {
+  exact: boolean;
+  score: number;
+  requestTerms: string[];
+  matchedTerms: string[];
+  reason: string;
+};
+
 const PRODUCT_PATTERNS = {
   main_istv: /\b(?:main\s+istv|inside\s+success\s+tv|istv)\b/i,
   dj_nlceo: /\b(?:daymond\s+john|next\s+level\s+ceo|nlceo|dj)\b/i,
@@ -76,6 +84,106 @@ function objectFacets(value: string) {
 
 function actionFacets(value: string) {
   return new Set(ACTION_FACETS.filter(([, pattern]) => pattern.test(value)).map(([name]) => name));
+}
+
+const IDENTITY_STOP = new Set([
+  "about", "after", "again", "also", "answer", "appointment", "before", "best", "call", "can", "client", "company", "could", "does", "from", "give", "help", "keep", "need", "person", "policy", "prospect", "question", "rep", "representative", "rule", "sales", "should", "someone", "tell", "their", "there", "they", "this", "what", "when", "where", "which", "with", "would",
+]);
+
+const IDENTITY_EQUIVALENTS: Record<string, string[]> = {
+  agreement: ["contract"],
+  applicant: ["lead", "prospect"],
+  booking: ["appointment", "schedule"],
+  contract: ["agreement"],
+  customer: ["client", "prospect"],
+  lead: ["applicant", "prospect"],
+  meeting: ["appointment", "call"],
+  overrun: ["schedule", "time", "wrap"],
+  parent: ["family", "mother", "father"],
+  prospect: ["applicant", "lead", "client"],
+  rebook: ["reschedule"],
+  reschedule: ["rebook", "move"],
+};
+
+function identityStem(value: string) {
+  if (value.length <= 4) return value;
+  return value
+    .replace(/(?:ies)$/i, "y")
+    .replace(/(?:ing|ers|er|ed|es|s)$/i, "");
+}
+
+function identityTerms(value: string) {
+  const base = value.toLowerCase()
+    .replace(/\bcall\s+(?:1|one|first)\b/g, "call-one")
+    .replace(/\bcall\s+(?:2|two|second)\b/g, "call-two")
+    .replace(/[^a-z0-9%]+/g, " ")
+    .split(/\s+/)
+    .map(identityStem)
+    .filter((term) => term.length >= 3 && !IDENTITY_STOP.has(term));
+  return [...new Set(base.flatMap((term) => [term, ...(IDENTITY_EQUIVALENTS[term] || []).map(identityStem)]))];
+}
+
+/**
+ * Requires shared decision identity, not merely a generic relationship such as
+ * "procedure" or "permission". It is used at the recovery boundary where a
+ * deterministic fallback would otherwise be able to replace an abstention.
+ */
+export function evaluateV52DecisionIdentity(
+  need: V4SystemicNeed,
+  policy: V4SystemicPolicy,
+  matchedDecisionText = "",
+): V52DecisionIdentityResult {
+  const request = requestText(need);
+  const evidence = [
+    policy.title,
+    ...policy.question_families,
+    matchedDecisionText || policy.decision,
+    ...policy.domains,
+    ...policy.actions,
+    ...policy.entities,
+  ].join(" ");
+  const explicitlyControlled = matchingV4SystemicAuthorityResolutions(need).some((resolution) =>
+    resolution.controlling_policy_ids.includes(policy.id) && resolution.relations.includes(need.relation),
+  );
+  if (explicitlyControlled) return {
+    exact: true,
+    score: 100,
+    requestTerms: identityTerms(request),
+    matchedTerms: ["claim-scoped-authority-resolution"],
+    reason: "A claim-scoped authority resolution explicitly controls this decision.",
+  };
+  const requestTerms = identityTerms([
+    request,
+    ...need.domains,
+    ...need.actions,
+    ...need.entities,
+  ].join(" "));
+  const evidenceTerms = new Set(identityTerms(evidence));
+  const matchedTerms = requestTerms.filter((term) => evidenceTerms.has(term));
+  const coverage = requestTerms.length ? matchedTerms.length / requestTerms.length : 0;
+  const requestedObjects = objectFacets(request);
+  const evidenceObjects = objectFacets(evidence);
+  const exactObject = requestedObjects.size > 0 && [...requestedObjects].every((object) => evidenceObjects.has(object));
+  const requestedActions = actionFacets(request);
+  const evidenceActions = actionFacets(evidence);
+  const exactAction = requestedActions.size > 0 && [...requestedActions].some((action) => evidenceActions.has(action));
+  const relation = v4SystemicRelationCompatibility(need.relation, inferV4SystemicPolicyRelations(policy));
+  const score = matchedTerms.length * 2 + coverage * 6 + (exactObject ? 5 : 0) + (exactAction ? 2 : 0) + (relation === "exact" ? 1 : 0);
+  const exact = exactObject || (
+    relation !== "unknown" &&
+    matchedTerms.length >= 2 &&
+    coverage >= 0.28 &&
+    score >= 6
+  );
+  return {
+    exact,
+    score,
+    requestTerms,
+    matchedTerms,
+    reason: exact
+      ? `Matched the same decision identity (${matchedTerms.join(", ") || "explicit object"}).`
+      : `Only ${matchedTerms.length} distinctive decision terms matched; generic relationship overlap is insufficient.`,
+  };
 }
 
 function actorActionError(request: string, evidence: string) {
@@ -194,6 +302,36 @@ export function v51OperationalEffectErrors(need: V4SystemicNeed, sentence: strin
   const assertsOperationalEffect = /\b(?:may|can|must|should|required|do not|don't|cannot|can't|never)\b/i.test(sentence);
   if (assertsOperationalEffect && sentenceActions.size && ![...sentenceActions].some((facet) => evidenceActions.has(facet))) {
     errors.push("the answer asserts an operational action that is not supported by the cited evidence");
+  }
+  return [...new Set(errors)];
+}
+
+const MATERIAL_CAUTION = /\b(?:not\s+advised|not\s+recommended|should\s+not|do\s+not|don't|must\s+not|only\s+if|unless|except|does\s+not\s+(?:guarantee|authorize|apply)|without\s+(?:approval|permission|confirmation))\b/gi;
+
+function materialCautions(value: string) {
+  return [...new Set([...value.matchAll(MATERIAL_CAUTION)].map((match) => match[0].toLowerCase()))];
+}
+
+function preservesCaution(sentence: string, caution: string) {
+  if (/not\s+(?:advised|recommended)/.test(caution)) return /\b(?:not\s+advised|not\s+recommended|not\s+ideal|avoid)\b/i.test(sentence);
+  if (/^(?:should|do|must)\s+not|^don't$/.test(caution)) return /\b(?:should\s+not|do\s+not|don't|must\s+not|cannot|can't|never)\b/i.test(sentence);
+  if (/^(?:only\s+if|unless|except)$/.test(caution)) return /\b(?:only\s+if|unless|except|provided\s+that|as\s+long\s+as)\b/i.test(sentence);
+  if (/does\s+not\s+(?:guarantee|authorize|apply)/.test(caution)) return /\b(?:does\s+not|doesn't|not\s+guaranteed|not\s+authorized|do\s+not\s+assume)\b/i.test(sentence);
+  if (/without\s+(?:approval|permission|confirmation)/.test(caution)) return /\b(?:approval|permission|confirmation)\b/i.test(sentence) && /\b(?:need|require|must|cannot|can't|do\s+not|don't|without)\b/i.test(sentence);
+  return sentence.toLowerCase().includes(caution);
+}
+
+/** Prevents a fluent paraphrase from dropping a safety-changing exception. */
+export function v52OperationalEffectErrors(need: V4SystemicNeed, sentence: string, evidence: string) {
+  const errors = v51OperationalEffectErrors(need, sentence, evidence);
+  const cautions = materialCautions(evidence);
+  const assertsPermissionOrInstruction = /\b(?:can|may|allowed|should|must|use|send|share|offer|provide|book|schedule|route)\b/i.test(sentence);
+  if (assertsPermissionOrInstruction && cautions.length) {
+    for (const caution of cautions) {
+      if (!preservesCaution(sentence, caution)) {
+        errors.push(`the answer omits a material evidence boundary: ${caution}`);
+      }
+    }
   }
   return [...new Set(errors)];
 }

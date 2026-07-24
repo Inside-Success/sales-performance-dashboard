@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "ask-sales-v5-2-pre-registered-slack-holdout-replacements-v1",
+  "createdAt": "2026-07-24T23:08:00+05:00",
+  "channelId": "C0AUQKNR8CF",
+  "runtimeFreezeCommit": "5aff892",
+  "initialSelectionCommit": "fa53da6",
+  "threadRepliesOpenedBeforeReplacementSelection": false,
+  "reason": "Eighteen initial candidates overlapped earlier V5 evaluation fixtures. Overlaps remain regression-only and are replaced here before any replacement thread replies or V3/V5.2 outputs are opened.",
+  "selectionRules": {
+    "include": [
+      "The parent is a self-contained sales-rep question or a deliberately testable live-action request.",
+      "The parent has at least one thread reply.",
+      "The parent timestamp does not occur in any pre-existing Ask Sales evaluation JSON fixture.",
+      "The question tests reusable policy, current-artifact boundaries, action ownership, relationship matching, compound decomposition, or safe omission.",
+      "The normalized question can be evaluated without personal contact details or an attachment."
+    ],
+    "excludeAfterThreadReview": [
+      "No reply from Rich, Mike, Rudy, Raul, or Madeline resolves the question.",
+      "The authoritative reply is only an acknowledgment, a request for missing context, or another unresolved question.",
+      "The gold answer requires a private attachment, personal data, or a live value that cannot be safely retained.",
+      "The parent duplicates another selected decision without adding a distinct relationship, qualifier, or route test."
+    ],
+    "antiCherryPicking": "Thread-based exclusions are applied before V3 or V5.2 outputs are generated. Model performance cannot be used to add, remove, or rewrite a case."
+  },
+  "candidates": [
+    { "id": "v52-repl-01", "parentTs": "1784574313.834809", "stratum": "safe_omission_or_case_specific", "question": "A reassigned American Founders applicant has no business or entrepreneurial story but wants to pay to be on TV. Should a DJ rep pass, reject, or transfer the applicant?" },
+    { "id": "v52-repl-02", "parentTs": "1784568504.075709", "stratum": "compound_or_follow_up", "question": "If an existing client upgrades to VIP on an approved six-month payment arrangement, how should the changed contract be handled?" },
+    { "id": "v52-repl-03", "parentTs": "1784563797.149729", "stratum": "live_action_owner", "question": "If a rep is late joining a booked call, does the lead automatically enter the pass-off workflow, and who should handle access questions?" },
+    { "id": "v52-repl-04", "parentTs": "1784555076.088309", "stratum": "stable_policy_or_procedure", "question": "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?" },
+    { "id": "v52-repl-05", "parentTs": "1784554986.979739", "stratum": "safe_omission_or_case_specific", "question": "A main ISTV prospect missed the Sunday cohort deadline because their banker was unavailable. Can the rep still close them on Monday?" },
+    { "id": "v52-repl-06", "parentTs": "1784543628.924579", "stratum": "current_artifact_or_status", "question": "Where should a rep find the current commission SOP and confirm the 11 or 12 percent commission rules?" },
+    { "id": "v52-repl-07", "parentTs": "1784488828.139569", "stratum": "stable_policy_or_procedure", "question": "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?" },
+    { "id": "v52-repl-08", "parentTs": "1784465945.328319", "stratum": "live_action_owner", "question": "A DJ rep is assigned an American Founders applicant. Should the rep take, cancel, or transfer the call?" },
+    { "id": "v52-repl-09", "parentTs": "1784440460.500479", "stratum": "stable_policy_or_procedure", "question": "May a rep take payment and complete post-sale onboarding steps by telephone when a client cannot connect to Zoom?" },
+    { "id": "v52-repl-10", "parentTs": "1784410332.914089", "stratum": "safe_omission_or_case_specific", "question": "A prospect missed the cohort payment deadline because the bank was closed. May the rep grant a Monday exception?" },
+    { "id": "v52-repl-11", "parentTs": "1784378724.454899", "stratum": "relationship_matching", "question": "Is a nurse practitioner who directs addiction treatment at a correctional facility a fit for America's Best Doctors, or should another show be considered?" },
+    { "id": "v52-repl-12", "parentTs": "1784330669.006419", "stratum": "live_action_owner", "question": "What should a late-shift rep do when two booked calls overlap, pass-off operations is offline, and no rep accepts the handoff?" },
+    { "id": "v52-repl-13", "parentTs": "1784317690.133569", "stratum": "authority_conflict", "question": "What is the minimum reapplication period after a prospect misses the main ISTV deadline?" },
+    { "id": "v52-repl-14", "parentTs": "1784317297.681119", "stratum": "stable_policy_or_procedure", "question": "Does appearing on the show provide SAG eligibility or SAG acting credits?" },
+    { "id": "v52-repl-15", "parentTs": "1784308582.727039", "stratum": "safe_omission_or_case_specific", "question": "Should a rep decide whether a prospect with an old sealed felony and disputed media coverage may attend Call 1?" },
+    { "id": "v52-repl-16", "parentTs": "1784305409.773439", "stratum": "live_action_owner", "question": "May a rep personally greenlight a prospect with an old securities-fraud conviction, or where must the case be reviewed?" },
+    { "id": "v52-repl-17", "parentTs": "1784297791.044859", "stratum": "live_action_owner", "question": "What should a rep do when a promising prospect has pending felony charges and the rep is unsure whether to proceed?" },
+    { "id": "v52-repl-18", "parentTs": "1784294396.837219", "stratum": "live_action_owner", "question": "The current ISTV PDF loads and then its content disappears. Where should the rep report the issue?" },
+    { "id": "v52-repl-19", "parentTs": "1784131046.152829", "stratum": "stable_policy_or_procedure", "question": "How should a rep determine a lead's time zone before calling a 20 percent dial-list lead during business hours?" },
+    { "id": "v52-repl-20", "parentTs": "1784123612.436919", "stratum": "current_artifact_or_status", "question": "Does net 30 on a commission invoice guarantee payment exactly 30 days after submission, or can payment arrive sooner?" },
+    { "id": "v52-repl-21", "parentTs": "1784112495.699029", "stratum": "current_artifact_or_status", "question": "Where can a rep find the current best-practice example for a combined Call 2 and onboarding submission?" },
+    { "id": "v52-repl-22", "parentTs": "1784111616.168579", "stratum": "compound_or_follow_up", "question": "A VIP client paid a smaller amount through the Standard link and signed the Standard agreement. What is the approved correction process?" },
+    { "id": "v52-repl-23", "parentTs": "1784058385.650979", "stratum": "compound_or_follow_up", "question": "Can a main ISTV Call 2 be moved to the next cohort because the prospect works emergency overnight shifts, and may the prospect pitch a documentary series?" },
+    { "id": "v52-repl-24", "parentTs": "1784051697.081759", "stratum": "authority_conflict", "question": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?" },
+    { "id": "v52-repl-25", "parentTs": "1784051382.147089", "stratum": "stable_policy_or_procedure", "question": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?" },
+    { "id": "v52-repl-26", "parentTs": "1784051139.454579", "stratum": "current_artifact_or_status", "question": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?" },
+    { "id": "v52-repl-27", "parentTs": "1784043249.380059", "stratum": "stable_policy_or_procedure", "question": "What does it mean when a contacted lead texts HELP, and how should the rep record or handle it?" },
+    { "id": "v52-repl-28", "parentTs": "1784043171.170869", "stratum": "current_artifact_or_status", "question": "Is Kingdom Creators currently an active show?" },
+    { "id": "v52-repl-29", "parentTs": "1784040443.525329", "stratum": "relationship_matching", "question": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?" },
+    { "id": "v52-repl-30", "parentTs": "1784038901.217919", "stratum": "stable_policy_or_procedure", "question": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?" },
+    { "id": "v52-repl-31", "parentTs": "1783983251.582899", "stratum": "stable_policy_or_procedure", "question": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?" },
+    { "id": "v52-repl-32", "parentTs": "1783982542.350859", "stratum": "live_action_owner", "question": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?" },
+    { "id": "v52-repl-33", "parentTs": "1783976341.585179", "stratum": "current_artifact_or_status", "question": "What is the current theme of the TV Show HQ offer?" },
+    { "id": "v52-repl-34", "parentTs": "1783967871.761339", "stratum": "current_artifact_or_status", "question": "What is the current expected time from filming to episode delivery for Mompreneurs?" },
+    { "id": "v52-repl-35", "parentTs": "1783966648.920799", "stratum": "live_action_owner", "question": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?" },
+    { "id": "v52-repl-36", "parentTs": "1783965303.365409", "stratum": "stable_policy_or_procedure", "question": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?" }
+  ]
+}

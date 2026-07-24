@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "ask-sales-v5-2-pre-registered-slack-holdout-v1",
+  "createdAt": "2026-07-24T22:16:00+05:00",
+  "channelId": "C0AUQKNR8CF",
+  "runtimeFreezeCommit": "5aff892",
+  "threadRepliesOpenedBeforeSelection": false,
+  "selectionRules": {
+    "include": [
+      "The parent is a self-contained sales-rep question or a deliberately testable live-action request.",
+      "The parent has at least one thread reply.",
+      "The question tests reusable policy, current-artifact boundaries, action ownership, compound decomposition, or a safe omission.",
+      "The normalized question can be evaluated without personal contact details or an attachment."
+    ],
+    "excludeAfterThreadReview": [
+      "No reply from Rich, Mike, Rudy, Raul, or Madeline resolves the question.",
+      "The authoritative reply is only an acknowledgment, a request for missing context, or another unresolved question.",
+      "The gold answer requires a private attachment, personal data, or a live value that cannot be safely retained.",
+      "The parent duplicates another selected decision without adding a distinct relationship or route test."
+    ],
+    "antiCherryPicking": "Thread-based exclusions are applied before V3 or V5.2 outputs are generated. Model performance cannot be used to add, remove, or rewrite a case.",
+    "targetStrata": {
+      "stable_policy_or_procedure": 16,
+      "live_action_owner": 8,
+      "current_artifact_or_status": 6,
+      "compound_or_follow_up": 5,
+      "safe_omission_or_case_specific": 5
+    }
+  },
+  "candidates": [
+    { "id": "v52-slack-01", "parentTs": "1784906775.349029", "stratum": "stable_policy_or_procedure", "question": "For unassigned leads on the 20 percent list, may reps email them, and when should they leave voicemails?" },
+    { "id": "v52-slack-02", "parentTs": "1784859135.980459", "stratum": "stable_policy_or_procedure", "question": "Is HubSpot the required CRM, or may reps use their own system to track outreach?" },
+    { "id": "v52-slack-03", "parentTs": "1784842951.166419", "stratum": "live_action_owner", "question": "A rep has an urgent Greenlight request but cannot access the Greenlight channel. What should they do?" },
+    { "id": "v52-slack-04", "parentTs": "1784839254.159649", "stratum": "stable_policy_or_procedure", "question": "If a bank flags the standard Whop payment link, may a rep use the emergency payment link listed in the spreadsheet?" },
+    { "id": "v52-slack-05", "parentTs": "1784836671.425839", "stratum": "compound_or_follow_up", "question": "If an existing client changes the payment arrangement after a failed installment and has not signed, does the rep need to send a new contract?" },
+    { "id": "v52-slack-06", "parentTs": "1784814786.469689", "stratum": "stable_policy_or_procedure", "question": "After an outbound call is unanswered, may the initial casting text include the rep's public OnceHub calendar link?" },
+    { "id": "v52-slack-07", "parentTs": "1784761955.078429", "stratum": "stable_policy_or_procedure", "question": "For an outbound lead who wants to meet immediately, may the rep send the Zoom link directly when the public calendar cannot be used?" },
+    { "id": "v52-slack-08", "parentTs": "1784758022.370399", "stratum": "compound_or_follow_up", "question": "How long may a Next Level CEO client delay filming before re-auditioning should be considered?" },
+    { "id": "v52-slack-09", "parentTs": "1784757428.033849", "stratum": "compound_or_follow_up", "question": "If a client's internet drops after Greenlight but before the congratulations video, should the rep finish Call 1 and schedule Call 2 separately, or merge them at the follow-up?" },
+    { "id": "v52-slack-10", "parentTs": "1784755449.938079", "stratum": "current_artifact_or_status", "question": "The event page has no visible RSVP control. Where should a rep direct a client to RSVP?" },
+    { "id": "v52-slack-11", "parentTs": "1784747023.078829", "stratum": "stable_policy_or_procedure", "question": "May a client's mother use the same onboarding link, or must the rep contact the onboarding owner first?" },
+    { "id": "v52-slack-12", "parentTs": "1784742185.568689", "stratum": "compound_or_follow_up", "question": "For a Daymond John wire payment, what proof and post-payment steps are required, including onboarding and the welcome email?" },
+    { "id": "v52-slack-13", "parentTs": "1784740348.331429", "stratum": "live_action_owner", "question": "Where should a rep confirm whether a specific Greenlight contract was sent?" },
+    { "id": "v52-slack-14", "parentTs": "1784738661.915609", "stratum": "compound_or_follow_up", "question": "For Next Level CEO, what do the SEO benefit, social promotional assets, and swag package mean?" },
+    { "id": "v52-slack-15", "parentTs": "1784735503.466409", "stratum": "stable_policy_or_procedure", "question": "What is the SOP when an existing client pays to upgrade the package?" },
+    { "id": "v52-slack-16", "parentTs": "1784734388.883789", "stratum": "current_artifact_or_status", "question": "If a booking says only 'TV show application' and gives no show name, should the rep pitch a recommended show or take another action?" },
+    { "id": "v52-slack-17", "parentTs": "1784732467.271399", "stratum": "current_artifact_or_status", "question": "How many full episodes and participating business owners are available, and where can a prospect watch complete episodes rather than trailers?" },
+    { "id": "v52-slack-18", "parentTs": "1784727536.012199", "stratum": "live_action_owner", "question": "Who should handle a prospect's request for company registration and corporate documents before Call 2?" },
+    { "id": "v52-slack-19", "parentTs": "1784727035.276009", "stratum": "current_artifact_or_status", "question": "Is Love Experts a current show, and may a lead who is not a fit for Next Level CEO be considered for it?" },
+    { "id": "v52-slack-20", "parentTs": "1784679446.772399", "stratum": "compound_or_follow_up", "question": "For a self-generated or client referral, how is Greenlight submitted, must the lead apply first, and is commission doubled?" },
+    { "id": "v52-slack-21", "parentTs": "1784677042.055679", "stratum": "stable_policy_or_procedure", "question": "How should Call 2 appointments be counted in end-of-day stats: only as sales, or also in total appointments?" },
+    { "id": "v52-slack-22", "parentTs": "1784672218.223119", "stratum": "stable_policy_or_procedure", "question": "Where should reps send documents or links supplied by a lead to support Greenlight approval?" },
+    { "id": "v52-slack-23", "parentTs": "1784657910.455209", "stratum": "safe_omission_or_case_specific", "question": "A previously passed lead is still within the three-month reapplication period and has another meeting booked. What should the rep do?" },
+    { "id": "v52-slack-24", "parentTs": "1784655953.617479", "stratum": "stable_policy_or_procedure", "question": "May reps describe previously signed cast members to prospects without names or personal details?" },
+    { "id": "v52-slack-25", "parentTs": "1784650564.750089", "stratum": "stable_policy_or_procedure", "question": "May a Next Level CEO cast member travel to Miami at another time to meet Daymond John while he records the episode intro?" },
+    { "id": "v52-slack-26", "parentTs": "1784639519.121099", "stratum": "stable_policy_or_procedure", "question": "What does the contract requirement to cooperate with promotional activities and share trailers or social posts mean?" },
+    { "id": "v52-slack-27", "parentTs": "1784636075.363209", "stratum": "safe_omission_or_case_specific", "question": "May a rep conduct Call 1 while the prospect is a passenger in a moving car, or should it be rescheduled?" },
+    { "id": "v52-slack-28", "parentTs": "1784634174.996639", "stratum": "stable_policy_or_procedure", "question": "May reps guarantee Spanish-language targeting, filming, subtitles, or translation for an episode?" },
+    { "id": "v52-slack-29", "parentTs": "1784592669.914139", "stratum": "stable_policy_or_procedure", "question": "How should reps let clients reschedule without exposing public-calendar slots reserved for Call 2?" },
+    { "id": "v52-slack-30", "parentTs": "1784583339.081669", "stratum": "stable_policy_or_procedure", "question": "If a lead cancels the day before Call 1, may the rep delete the appointment to reopen the calendar slot?" },
+    { "id": "v52-slack-31", "parentTs": "1784581187.510579", "stratum": "safe_omission_or_case_specific", "question": "May a Daymond John or Built for More prospect whose business is relaunching after illness proceed to Call 2?" },
+    { "id": "v52-slack-32", "parentTs": "1784575191.727629", "stratum": "current_artifact_or_status", "question": "Is the chatbot's long list of currently available ISTV shows accurate?" },
+    { "id": "v52-slack-33", "parentTs": "1784858333.344189", "stratum": "live_action_owner", "question": "A prospect needs a Call 2 tomorrow morning and only the Master Calendar has availability. Who should help book it?" },
+    { "id": "v52-slack-34", "parentTs": "1784836729.280629", "stratum": "safe_omission_or_case_specific", "question": "Should a rep proceed with a proposed nine-episode series centered on a murder in the prospect's family?" },
+    { "id": "v52-slack-35", "parentTs": "1784766475.065059", "stratum": "live_action_owner", "question": "May a rep or the chatbot approve changing the wording of the Greenlight letter because prospects find it high pressure?" },
+    { "id": "v52-slack-36", "parentTs": "1784907369.368509", "stratum": "safe_omission_or_case_specific", "question": "What should a rep do when a specific prospect believes the company is a scam after reading Reddit reviews and will respond only by text?" },
+    { "id": "v52-slack-37", "parentTs": "1784805742.121699", "stratum": "current_artifact_or_status", "question": "Are there current America's Authors success stories, live episodes, or pages that a rep may share?" },
+    { "id": "v52-slack-38", "parentTs": "1784811122.868829", "stratum": "current_artifact_or_status", "question": "Which strong non-celebrity episodes may a rep recommend to a prospect?" },
+    { "id": "v52-slack-39", "parentTs": "1784862634.507829", "stratum": "safe_omission_or_case_specific", "question": "Can the sales chatbot recommend Miami restaurants for a visiting client?" },
+    { "id": "v52-slack-40", "parentTs": "1784643490.220829", "stratum": "current_artifact_or_status", "question": "May the chatbot provide the current package-upgrade link?" }
+  ]
+}

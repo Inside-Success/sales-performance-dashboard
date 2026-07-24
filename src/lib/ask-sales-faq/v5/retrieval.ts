@@ -17,7 +17,7 @@ import type {
   V4SystemicRetrieval,
 } from "@/lib/ask-sales-faq/v4/systemic/types";
 import type { V3ProductScope, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
-import { evaluateV51DecisionContract } from "@/lib/ask-sales-faq/v5/decision-contract";
+import { evaluateV51DecisionContract, evaluateV52DecisionIdentity } from "@/lib/ask-sales-faq/v5/decision-contract";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 
 const snapshot = getV5KnowledgeSnapshot();
@@ -260,6 +260,10 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
     }
     const contract = evaluateV51DecisionContract(need, document.policy);
     const hardErrors = [...contract.errors];
+    const decisionIdentity = evaluateV52DecisionIdentity(need, document.policy, document.decisionText);
+    if (contract.disposition === "exact" && !contract.matchedFacets.length && !decisionIdentity.exact && !controlling.has(document.policy.id)) {
+      hardErrors.push("exact relationship label without exact decision identity");
+    }
     const actionError = actionFacetError(authoritativeText, document.text);
     if (actionError) hardErrors.push(actionError);
     // Once both sides match the same explicit decision object, broad entity

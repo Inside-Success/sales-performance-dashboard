@@ -102,7 +102,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated" | "v5.1-isolated";
+  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
