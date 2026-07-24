@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales V5.1 post-freeze Slack holdout 2026-07-24",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-24T17:19:23+05:00",
+  "sourceChannelId": "C0AUQKNR8CF",
+  "sourceChannelName": "sales-questions-requests",
+  "candidateFreezeCommit": "45fc2ac",
+  "governance": {
+    "readOnlyCollection": true,
+    "productionWrites": false,
+    "candidateTuningAfterAnswerInspection": false,
+    "priorFixtureOverlapChecked": true,
+    "manualSourceReviewPrimary": true,
+    "aiJudgePromotionAuthority": false,
+    "authorityOrder": ["Rich", "Rudy", "Mike", "Raul", "Madeline"],
+    "notes": [
+      "The V5.1 runtime was committed and frozen before these thread replies were read.",
+      "Every case is derived from a previously unused Slack question with a reliable threaded reply.",
+      "The frozen candidate may be evaluated against this file but may not be tuned to it.",
+      "Evaluation remains isolated from V3 production."
+    ]
+  },
+  "cases": [
+    {
+      "id": "v51sealed-01",
+      "question": "Where should a rep start the current process for upgrading or downgrading an existing client's package?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Use the new package upgrade or downgrade form. It can be found in Slack by searching for 'package upgrade - downgrade' or the same keywords.",
+      "requiredConcepts": ["new upgrade or downgrade form", "search Slack"],
+      "forbiddenConcepts": ["invent a form URL", "create a custom process"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784735503.466409", "slack:C0AUQKNR8CF:1784736303.498849"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-02",
+      "question": "How long should a rep stay in the Zoom room when an applicant may be a no-show?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Wait five minutes.",
+      "requiredConcepts": ["five minutes"],
+      "forbiddenConcepts": ["fifteen minutes", "leave immediately"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784556399.606219", "slack:C0AUQKNR8CF:1784556936.586619"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-03",
+      "question": "A client wants to pause and asks for a refund because of financial hardship. Where should the rep send this request?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "Send the refund request to the finance request channel and tag Luke for review.",
+      "requiredConcepts": ["finance request channel", "tag Luke"],
+      "forbiddenConcepts": ["promise the refund", "process it personally"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784552103.124699", "slack:C0AUQKNR8CF:1784556430.681829"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-04",
+      "question": "A payment succeeded, but the contract page returned a 404 and the order is missing in Keap. What should the rep do?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Treat this as a live payment and contract-system issue and route it to the sales tech or all-payments support workflow rather than guessing or retrying the charge.",
+      "requiredConcepts": ["sales tech", "do not retry the charge"],
+      "forbiddenConcepts": ["charge the client again", "the payment definitely failed"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784400512.565299", "slack:C0AUQKNR8CF:1784562949.070939"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-05",
+      "question": "HubSpot shows a lead owner, but Keap has no appointment. How should a rep verify whether the lead was already contacted?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Check the notes in Keap and contact the rep who left them. If there are no notes, call the applicant and ask whether anyone from Inside Success TV already contacted them or held an audition.",
+      "requiredConcepts": ["check Keap notes", "ask the applicant if already contacted"],
+      "forbiddenConcepts": ["assume the HubSpot owner completed the call"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784396519.062379", "slack:C0AUQKNR8CF:1784562715.870349"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-06",
+      "question": "A client cannot book onboarding because they will be on vacation. Where should the rep ask for help?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "Ask in the sales fulfillment hotline.",
+      "requiredConcepts": ["sales fulfillment hotline"],
+      "forbiddenConcepts": ["finance request channel"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784393307.682079", "slack:C0AUQKNR8CF:1784562603.234709"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-07",
+      "question": "A past client asks about the six-month weekly social-media support offer. What should the rep tell them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The marketing emails contain the details and sign-up process, so the client should watch their inbox. The rep may also share the Money Mondays information link.",
+      "requiredConcepts": ["marketing emails", "watch their inbox", "Money Mondays"],
+      "forbiddenConcepts": ["guarantee enrollment", "invent pricing"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784322578.793099", "slack:C0AUQKNR8CF:1784323317.552109", "slack:C0AUQKNR8CF:1784323339.455649"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-08",
+      "question": "What should a rep do when a lead may be a duplicate under the dial-list SOP?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Ask the applicant whether Inside Success TV has contacted them before continuing, and record the result in Keap notes.",
+      "requiredConcepts": ["ask whether previously contacted", "record it in Keap notes"],
+      "forbiddenConcepts": ["ignore possible duplication"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784304975.279779", "slack:C0AUQKNR8CF:1784305207.775339", "slack:C0AUQKNR8CF:1784305248.683809"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-09",
+      "question": "The Daymond John greenlight approval PDFs are missing. Where should the rep request access?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "Use the greenlight approval-letter or greenlight request channel for the current PDFs or access.",
+      "requiredConcepts": ["greenlight", "approval letter"],
+      "forbiddenConcepts": ["invent a PDF link"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784294288.957649", "slack:C0AUQKNR8CF:1784304080.466459", "slack:C0AUQKNR8CF:1784304841.343269"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-10",
+      "question": "A rep's Keap login is not working. Where should they report it?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Report the access problem in the sales tech channel.",
+      "requiredConcepts": ["sales tech"],
+      "forbiddenConcepts": ["share login credentials"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784245627.667539", "slack:C0AUQKNR8CF:1784258818.880479"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-11",
+      "question": "Where can a rep get the approved 15-second Daymond John introduction sample?",
+      "expectedDisposition": "artifact",
+      "goldAnswer": "Use the approved Slack video file supplied by Sales Ops. Do not invent a public URL if the controlled file is not available in the answer context.",
+      "requiredConcepts": ["approved Slack video file"],
+      "forbiddenConcepts": ["invent a URL", "claim Daymond will personally record a new intro"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784232096.479649", "slack:C0AUQKNR8CF:1784234427.115999", "slack-file:F0B7Z11P58U"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-12",
+      "question": "May a rep call the same lead twice in one day, and what does putting a rep name on the lead indicate?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, a rep may call twice in one day. Putting the rep's name on the lead indicates that the lead is taken and being contacted.",
+      "requiredConcepts": ["yes", "lead is taken", "being contacted"],
+      "forbiddenConcepts": ["unlimited calls", "the name means the lead was sold"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784214516.671009", "slack:C0AUQKNR8CF:1784216112.857239"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-13",
+      "question": "After three calls and voicemails with no reply, should a rep mark the lead as no answer or no interest?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Mark it as no answer. Use no interest only when the person explicitly says they are not interested or asks the company to stop contacting them.",
+      "requiredConcepts": ["no answer", "no interest only when explicit"],
+      "forbiddenConcepts": ["three missed calls automatically means no interest"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784137988.420349", "slack:C0AUQKNR8CF:1784138063.048709", "slack:C0AUQKNR8CF:1784138100.126979"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-14",
+      "question": "May a client use footage from their business grand opening in their episode?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. That footage can be used as B-roll in the episode.",
+      "requiredConcepts": ["yes", "B-roll"],
+      "forbiddenConcepts": ["grand-opening footage is prohibited"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784065712.921629", "slack:C0AUQKNR8CF:1784066114.448829"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v51sealed-15",
+      "question": "May a rep send the contract before taking payment if a client asks to review it first?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, but it is not advised.",
+      "requiredConcepts": ["yes", "not advised"],
+      "forbiddenConcepts": ["strictly prohibited", "payment is never required"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1783731990.774069", "slack:C0AUQKNR8CF:1783952969.723319"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-16",
+      "question": "A Call 1 was rescheduled from a previous day. Should it count in today's Total Scheduled Calls?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Total Scheduled Calls means new inbound calls booked that day; record this appointment under the rescheduled statistic.",
+      "requiredConcepts": ["no", "new inbound calls", "rescheduled statistic"],
+      "forbiddenConcepts": ["count it as a new scheduled call"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1783725328.411289", "slack:C0AUQKNR8CF:1783952940.152849"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-17",
+      "question": "How late can a Standard client upgrade to VIP?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "They may upgrade any time before filming.",
+      "requiredConcepts": ["any time before filming"],
+      "forbiddenConcepts": ["only within 24 hours", "after filming"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1783718217.860269", "slack:C0AUQKNR8CF:1783718454.863039"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-18",
+      "question": "Should reps enter notes in the lead's notes section, and can the lead see those internal notes?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, enter the notes there. No, the lead cannot see those internal notes.",
+      "requiredConcepts": ["enter notes there", "lead cannot see them"],
+      "forbiddenConcepts": ["the lead can read internal notes"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784129863.755479", "slack:C0AUQKNR8CF:1784129931.722739"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v51sealed-19",
+      "question": "From a compliance perspective, may a rep ask a prospect how they market their business?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. It is a good question, but do not ask how much they spend unless the rep is restating an amount the prospect already put in the application.",
+      "requiredConcepts": ["yes", "do not ask how much they spend", "unless already in the application"],
+      "forbiddenConcepts": ["ask for any marketing spend amount"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1783972176.274849", "slack:C0AUQKNR8CF:1783972638.088079"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v51sealed-20",
+      "question": "How should a rep keep the first of two back-to-back Call 1 appointments from overrunning?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Control the time and maintain authority, prequalify quickly, soft-disqualify a non-fit promptly, and wrap up in time to join the next appointment.",
+      "requiredConcepts": ["control the time", "prequalify quickly", "wrap up for the next call"],
+      "forbiddenConcepts": ["skip the next call", "promise unlimited time"],
+      "sourceState": "unused_evaluation_source",
+      "sourceIds": ["slack:C0AUQKNR8CF:1784124766.458379", "slack:C0AUQKNR8CF:1784127099.867659"],
+      "approvedBy": ["Madeline"]
+    }
+  ]
+}
