@@ -32,6 +32,7 @@ const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|
 const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
 const CURRENT_CROSS_PRODUCT_REVIEW = /\b(?:current|currently|still|active|available)\b.{0,180}\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b|\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b.{0,180}\b(?:current|currently|still|active|available)\b|\bnot\s+a\s+fit\b.{0,220}\b(?:move|transfer|pass)\b|\b(?:move|transfer|pass)\b.{0,220}\bnot\s+a\s+fit\b/i;
 const QUALIFICATION_EXCEPTION_REVIEW = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,180}\b(?:approve|approval|eligible|greenlight|green\s+light)\b|\b(?:approve|approval|eligible|greenlight|green\s+light)\b.{0,180}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const QUALIFICATION_CASE_REVIEW_OVERLAY = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,220}\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b|\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b.{0,220}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
 const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
 const FULFILLMENT_TIMING_LOOKUP = /\b(?:filming|production|episode)\b.{0,180}\b(?:current|expected|how\s+long|timeline|timing)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b|\b(?:current|expected|how\s+long|timeline|timing)\b.{0,180}\b(?:filming|production|episode)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b/i;
 const FULFILLMENT_OWNER_HELP = /\b(?:client|cast\s+member)\b.{0,180}\b(?:after|post)\s+onboard\w*\b.{0,160}\b(?:confused|help|speak|talk|contact|owner)\b|\b(?:speak|talk|contact)\b.{0,120}\b(?:onboarding|fulfillment|studio\s+executive)\b/i;
@@ -230,21 +231,40 @@ export function refineV52QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolu
 
 export function refineV53QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
   const v52 = refineV52QueryPlan(plan, turn);
-  const needs = v52.needs.map((need) => {
+  const needs = v52.needs.flatMap((need) => {
     const text = completeText(need);
+    let refined = need;
     if (SCRIPT_SELECTION_REQUIREMENT.test(text)) {
-      return { ...need, relation: "requirement" as const, requestKind: "knowledge" as const, forcedRouteKey: null };
+      refined = { ...need, relation: "requirement" as const, requestKind: "knowledge" as const, forcedRouteKey: null };
+    } else {
+      const owner = deterministicV53ActionOwner(text);
+      if (owner) refined = { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner };
     }
-    const owner = deterministicV53ActionOwner(text);
-    return owner
-      ? { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner }
-      : need;
+
+    // A reusable qualification rule may answer the policy part, but facts such
+    // as illness/relaunch still require a human decision for the actual lead.
+    // Represent that as a separate route-only need so the useful boundary is
+    // retained without the chatbot approving the case.
+    if (!QUALIFICATION_CASE_REVIEW_OVERLAY.test(text) || refined.forcedRouteKey) return [refined];
+    return [
+      refined,
+      {
+        ...refined,
+        id: `${refined.id}__case_review`,
+        text: "Confirm the specific prospect's case-specific eligibility with the current sales-policy owner.",
+        retrievalQueries: [],
+        relation: "owner" as const,
+        requestKind: "operational_action" as const,
+        forcedRouteKey: "sales_policy" as const,
+        ambiguity: "none" as const,
+        clarificationQuestion: "",
+      },
+    ];
   });
-  const changed = needs.some((need, index) =>
-    need.relation !== v52.needs[index].relation ||
-    need.requestKind !== v52.needs[index].requestKind ||
-    need.forcedRouteKey !== v52.needs[index].forcedRouteKey,
-  );
+  const changed = needs.length !== v52.needs.length || needs.some((need, index) => {
+    const prior = v52.needs[index];
+    return !prior || need.relation !== prior.relation || need.requestKind !== prior.requestKind || need.forcedRouteKey !== prior.forcedRouteKey;
+  });
   return {
     ...v52,
     needs,

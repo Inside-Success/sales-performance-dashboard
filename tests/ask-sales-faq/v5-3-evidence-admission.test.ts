@@ -100,6 +100,20 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     );
   });
 
+  it("keeps a reusable qualification answer separate from case-specific approval", () => {
+    const text = "May a Daymond John prospect whose business is relaunching after illness proceed to Call 2?";
+    const plan = { needs: [{ ...need(text), relation: "permission" as const }], conversationIntent: "answer" as const, reasoningSummary: "model plan" };
+    const refined = refineV53QueryPlan(plan, resolveV4SystemicTurn(text, []));
+    expect(refined.needs).toHaveLength(2);
+    expect(refined.needs[0]).toMatchObject({ requestKind: "knowledge", forcedRouteKey: null });
+    expect(refined.needs[1]).toMatchObject({
+      id: "N1__case_review",
+      relation: "owner",
+      requestKind: "operational_action",
+      forcedRouteKey: "sales_policy",
+    });
+  });
+
   it("anchors direct retrieval to the user's atomic wording instead of a model paraphrase", () => {
     const question = "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?";
     const item = {
@@ -113,6 +127,34 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     const plan = { needs: [item], conversationIntent: "answer" as const, reasoningSummary: "model paraphrase" };
     const retrieval = retrieveV5Policies(resolveV4SystemicTurn(question, []), plan);
     expect(retrieval.candidates[0]?.policy.id).toBe("operational_3cfb0025a6454374");
+  });
+
+  it("does not confuse moving a lead between programs with moving a deal forward", () => {
+    const question = "Can an ISTV applicant be moved to Next Level CEO during the audition process?";
+    const item = {
+      ...need(question),
+      domains: ["audition", "application"],
+      actions: ["move", "transfer"],
+      entities: ["ISTV applicant", "Next Level CEO"],
+      relation: "permission" as const,
+      productScope: "dj_nlceo" as const,
+    };
+    const retrieval = retrieveV5Policies(resolveV4SystemicTurn(question, []), {
+      needs: [item],
+      conversationIntent: "answer" as const,
+      reasoningSummary: "cross-program transfer",
+    });
+    const ids = retrieval.candidates.map((candidate) => candidate.policy.id);
+    expect(ids).toContain("operational_f32e012fa97b5b52");
+    expect(ids).not.toContain("claim_028cf371215a8cc5__a6");
+
+    const policy = getV5KnowledgeSnapshot().policies.find((candidate) => candidate.id === "operational_f32e012fa97b5b52");
+    expect(policy).toBeDefined();
+    expect(v52OperationalEffectErrors(
+      item,
+      "Reps should not pass clients back and forth from ISTV to DJ; cast only for the side you are assigned to.",
+      policy!.decision,
+    )).not.toContain("the answer reverses the permission polarity in the evidence");
   });
 
   it("does not mistake a condition such as not owning a business for a dropped safety caution", () => {

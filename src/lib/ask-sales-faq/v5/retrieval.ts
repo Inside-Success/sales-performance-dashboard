@@ -167,7 +167,7 @@ function scopeError(policy: V4SystemicCandidate["policy"], need: V4SystemicNeed,
 }
 
 const ACTION_FACETS = [
-  ["transfer", /\b(?:move|pass|transfer)\w*\b.{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move|pass|transfer)\w*\b/i],
+  ["transfer", /\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b).{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b)/i],
   ["submit", /\b(?:submit|upload|attach|tag)\w*\b|\bpost(?![- ]?sale)\w*\b/i],
   ["record", /\b(?:record|capture|film)\w*\b|\bkeep\s+zoom\s+running\b/i],
   ["locate", /\b(?:where|find|locate|access|download|get\s+(?:the\s+)?(?:link|form|file|recording|document))\b/i],

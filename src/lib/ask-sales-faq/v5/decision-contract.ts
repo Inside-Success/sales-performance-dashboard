@@ -48,7 +48,7 @@ const DECISION_OBJECTS = [
 ] as const;
 
 const ACTION_FACETS = [
-  ["transfer", /\b(?:move|pass|transfer)\w*\b.{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move|pass|transfer)\w*\b/i],
+  ["transfer", /\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b).{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move\w*\b(?!\s+(?:(?:the|them|him|her|it)\s+)?forward\b)|pass\w*\b|transfer\w*\b)/i],
   ["share", /\b(?:share|send|provide|give|forward)\w*\b/i],
   ["submit", /\b(?:submit|upload|attach|tag)\w*\b|\bpost(?![- ]?sale)\w*\b/i],
   ["locate", /\b(?:where|find|locate|access|download|get)\w*\b/i],
@@ -101,9 +101,11 @@ const IDENTITY_EQUIVALENTS: Record<string, string[]> = {
   customer: ["client", "prospect"],
   lead: ["applicant", "prospect"],
   meeting: ["appointment", "call"],
+  move: ["transfer", "pass", "reschedule"],
   overrun: ["schedule", "time", "wrap"],
   parent: ["family", "mother", "father"],
   prospect: ["applicant", "lead", "client"],
+  transfer: ["move", "pass"],
   rebook: ["reschedule"],
   reschedule: ["rebook", "move"],
 };
@@ -117,6 +119,7 @@ function identityStem(value: string) {
 
 function identityTerms(value: string) {
   const base = value.toLowerCase()
+    .replace(/\bmove\w*\s+forward\b/g, "advance")
     .replace(/\bcall\s+(?:1|one|first)\b/g, "call-one")
     .replace(/\bcall\s+(?:2|two|second)\b/g, "call-two")
     .replace(/[^a-z0-9%]+/g, " ")
@@ -249,6 +252,9 @@ export function evaluateV51DecisionContract(
   for (const object of requestedObjects) {
     if (!evidenceObjects.has(object)) errors.push(`the evidence does not govern the requested ${object.replace(/_/g, " ")} decision object`);
   }
+  if (requestedActions.has("transfer") && !evidenceActions.has("transfer")) {
+    errors.push("the evidence does not establish the requested transfer action");
+  }
   const actorError = actorActionError(request, evidence);
   if (actorError) errors.push(actorError);
 
@@ -272,7 +278,7 @@ const ROUTE_DESTINATIONS = [
 ] as const;
 
 function polarity(value: string) {
-  if (/\b(?:do not|don't|does not|doesn't|must not|cannot|can't|may not|not allowed|not permitted|prohibited|never|no[,.;:]?)\b/i.test(value)) return "negative";
+  if (/\b(?:do not|don't|does not|doesn't|should not|must not|cannot|can't|may not|not allowed|not permitted|prohibited|never|no[,.;:]?)\b/i.test(value)) return "negative";
   if (/\b(?:may|can|allowed|permitted|must|should|required|yes[,.;:]?)\b/i.test(value)) return "positive";
   return "neutral";
 }
@@ -295,7 +301,10 @@ export function v51OperationalEffectErrors(need: V4SystemicNeed, sentence: strin
   if (need.relation === "permission") {
     const sentencePolarity = polarity(sentence);
     if (sentencePolarity === "neutral") errors.push("a permission answer must state an explicit allowed or prohibited outcome");
-    const evidencePolarity = polarity(evidence);
+    // Conditions and boundaries often contain a secondary "does not address"
+    // sentence whose polarity is unrelated to the primary decision. Compare
+    // the answer with the primary decision clause only.
+    const evidencePolarity = polarity(evidence.split(/\b(?:Conditions?|Boundaries):/i)[0]);
     if (sentencePolarity !== "neutral" && evidencePolarity !== "neutral" && sentencePolarity !== evidencePolarity) {
       errors.push("the answer reverses the permission polarity in the evidence");
     }
