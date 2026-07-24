@@ -59,10 +59,18 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
+  refineQueryPlan?: (plan: V4SystemicQueryPlan, turn: V3TurnResolution) => V4SystemicQueryPlan;
+  resolveRouteKey?: (
+    need: V4SystemicNeed,
+    decision: V4SystemicNeedDecision,
+    retrieval: V4SystemicRetrieval,
+  ) => NonNullable<V4SystemicNeedDecision["routeKey"]>;
+  sentenceBoundaryErrors?: (need: V4SystemicNeed, sentence: string, evidence: string) => string[];
+  appendRouteForAnsweredSupport?: boolean;
   fallbackLabel: string;
   fallbackOnEmptyRetrieval: boolean;
   fallbackOnStageFailure: boolean;
@@ -404,7 +412,10 @@ export function applyV4SystemicDeterministicQueryGuards(
     const originalAuthorityClause = originalMaterialClauses
       .map((clause) => ({ clause, coverage: v4SystemicClauseCoverage(clause, [need]) }))
       .sort((left, right) => right.coverage - left.coverage)[0];
-    const authorityText = originalAuthorityClause && (originalAuthorityClause.coverage >= 0.55 || originalMaterialClauses.length === 1)
+    const authorityText = originalAuthorityClause && (
+      originalAuthorityClause.coverage >= 0.55 ||
+      (originalMaterialClauses.length === 1 && plan.needs.length === 1)
+    )
       ? originalAuthorityClause.clause
       : guardedText;
     const originalRelation = inferV4SystemicRelation(authorityText);
@@ -1881,7 +1892,12 @@ export function v4SystemicNeedRelationErrors(needText: string, sentence: string)
   return errors;
 }
 
-function sentencesForValidation(draft: V4SystemicDraft, retrieval: V4SystemicRetrieval, plan: V4SystemicQueryPlan) {
+function sentencesForValidation(
+  draft: V4SystemicDraft,
+  retrieval: V4SystemicRetrieval,
+  plan: V4SystemicQueryPlan,
+  profile: V4SystemicCandidateRuntimeProfile,
+) {
   let index = 0;
   return draft.needs.flatMap((need) => need.answerSentences.map((sentence): SentenceForValidation => {
     index += 1;
@@ -1903,6 +1919,9 @@ function sentencesForValidation(draft: V4SystemicDraft, retrieval: V4SystemicRet
           const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
           return policy ? v4SystemicPolicyRelationErrorsForNeed(policy, plannedNeed) : ["cited policy is unavailable"];
         }) : []),
+        ...(plannedNeed && profile.sentenceBoundaryErrors
+          ? profile.sentenceBoundaryErrors(plannedNeed, sentence.text, evidence)
+          : []),
       ],
     };
   }));
@@ -2020,10 +2039,14 @@ export function v4SystemicExactDirectFallbackSentence(
   if (!policyEligibleForNeed(policy, need, retrieval.turn)) return null;
   const fullDecisionWithoutMetadata = evidenceDecision(policy).split(/\b(?:Conditions?|Boundaries):/i)[0].trim();
   const atomicDecision = bestV4AtomicDecisionForNeed(policy, need);
+  const atomicStatement = atomicDecision?.statement || "";
+  const safeAtomicStatement = /\b(?:Policy context|Decision evidence|knowledge base|retrieval)\b/i.test(atomicStatement)
+    ? ""
+    : atomicStatement;
   const decisionWithoutMetadata = (
     (directlyBoundedOwnerOverride || explicitlyControlling) && fullDecisionWithoutMetadata.length <= 360
       ? fullDecisionWithoutMetadata
-      : atomicDecision?.statement || fullDecisionWithoutMetadata
+      : safeAtomicStatement || fullDecisionWithoutMetadata
   ).trim();
   const decisionSentences = decisionWithoutMetadata.split(/(?<=[.!?])\s+/).map((candidate) => candidate.trim()).filter(Boolean);
   const firstSentence = decisionSentences[0]?.length >= 20
@@ -2361,12 +2384,14 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       parse: (content) => parseQueryPlan(content, turn),
     });
     queryPlan = applyV4SystemicDeterministicQueryGuards(result.output, turn);
+    queryPlan = profile.refineQueryPlan ? profile.refineQueryPlan(queryPlan, turn) : queryPlan;
     attempts.push(...result.attempts);
     providerName = result.provider;
     model = result.model;
   } catch (error) {
     attempts.push(...providerAttemptsFromV4Error(error));
     queryPlan = applyV4SystemicDeterministicQueryGuards(fallbackQueryPlan(turn), turn);
+    queryPlan = profile.refineQueryPlan ? profile.refineQueryPlan(queryPlan, turn) : queryPlan;
     planningMode = "hybrid_fallback";
   }
   stageTimings.queryPlanningMs = Date.now() - queryPlanningStarted;
@@ -2525,7 +2550,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   };
   stageTimings.evidenceDraftingMs = Date.now() - draftingStarted;
 
-  const sentences = sentencesForValidation(draft, adjudicatedRetrieval, queryPlan);
+  const sentences = sentencesForValidation(draft, adjudicatedRetrieval, queryPlan, profile);
   let sentenceChecks: V4SentenceCheck[] = [];
   const validationStarted = Date.now();
   if (sentences.length) {
@@ -2680,6 +2705,16 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
     reason: removedSentences.length ? "Unsupported or unvalidated sentences were withheld without discarding supported needs." : "Every retained sentence passed deterministic and semantic validation.",
   };
 
+  if (profile.resolveRouteKey) {
+    draft = {
+      ...draft,
+      needs: draft.needs.map((decision) => {
+        if (!validation.unresolvedNeedIds.includes(decision.needId)) return decision;
+        const need = queryPlan.needs.find((candidate) => candidate.id === decision.needId);
+        return need ? { ...decision, routeKey: profile.resolveRouteKey!(need, decision, adjudicatedRetrieval) } : decision;
+      }),
+    };
+  }
   const metadataPlan = planMetadata(queryPlan, draft, validation);
   const completeSourceAnswers = queryPlan.needs.flatMap((need) => {
     if (!answeredNeedIds.has(need.id)) return [];
@@ -2714,7 +2749,9 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       unresolvedInstructions.push(decision.clarificationQuestion);
       continue;
     }
-    const key = v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
+    const key = profile.resolveRouteKey
+      ? profile.resolveRouteKey(need, decision, adjudicatedRetrieval)
+      : v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
     const route = routeCatalog[key] || routeCatalog.sales_policy;
     routeChannels.push(route.channel);
     unresolvedInstructions.push(naturalRouteInstruction(route.channel, decision.lane, answeredText.length > 0));
@@ -2730,7 +2767,12 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
     if (!selectedSupportPolicies.length) continue;
     const decision = draft.needs.find((item) => item.needId === need.id)!;
     const requiresEligibilityApproval = need.relation === "eligibility" && selectedSupportPolicies.some((policy) => policy.systemic.ownerReviewRequired);
-    const key = requiresEligibilityApproval ? "greenlight" : v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
+    if (profile.appendRouteForAnsweredSupport === false && !requiresEligibilityApproval) continue;
+    const key = requiresEligibilityApproval
+      ? "greenlight"
+      : profile.resolveRouteKey
+        ? profile.resolveRouteKey(need, decision, adjudicatedRetrieval)
+        : v4SystemicGenericRouteKey(need, decision, adjudicatedRetrieval);
     const route = routeCatalog[key] || routeCatalog.sales_policy;
     routeChannels.push(route.channel);
     unresolvedInstructions.push(naturalRouteInstruction(route.channel, "route", true));

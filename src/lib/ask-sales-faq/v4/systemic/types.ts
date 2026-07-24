@@ -84,6 +84,7 @@ export type V4SystemicRetrieval = {
     snapshotVersion: string;
     needs: Array<{
       needId: string;
+      evidenceState?: "exact_evidence_found" | "exact_evidence_rejected" | "neighbor_only" | "knowledge_absent";
       documentsConsidered: number;
       hardCompatible: number;
       directLaneSelected: number;

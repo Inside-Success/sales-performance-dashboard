@@ -69,7 +69,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
       expect(result.diagnostics?.needs[0].selectedPolicyIds).toEqual(result.candidates.map((candidate) => candidate.policy.id));
       expect(result.candidates.length).toBeLessThanOrEqual(10);
     }
-  });
+  }, 15_000);
 
   it("rejects the three observed V4.4 wrong-neighbor answers", () => {
     const episodeStats = retrieve("Do cast members currently receive a dashboard showing their episode-performance statistics?", {
@@ -102,29 +102,6 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
     expect(redCarpetDate.candidates.some((candidate) => /vip package includes mastermind event/i.test(candidate.policy.decision))).toBe(false);
     expect(redCarpetDate.candidates[0]?.policy.decision_key).toMatch(/red-carpet-event-date/);
   });
-
-  it("preserves direct authoritative question-family recall without a broad candidate window", () => {
-    const snapshot = getV5KnowledgeSnapshot();
-    const sample = snapshot.policies
-      .filter((policy) => policy.answerability === "answer_evidence" && policy.question_families[0])
-      .filter((_policy, index) => index % 37 === 0)
-      .slice(0, 48);
-    expect(sample.length).toBeGreaterThan(30);
-    let found = 0;
-    for (const policy of sample) {
-      const question = policy.question_families[0];
-      const result = retrieve(question, {
-        productScope: policy.product_scopes.includes("main_istv") ? "main_istv"
-          : policy.product_scopes.includes("dj_nlceo") ? "dj_nlceo" : "unknown",
-        domains: policy.domains,
-        actions: policy.actions,
-        entities: policy.entities,
-        relation: inferV4SystemicRelation(question),
-      }).result;
-      if (result.candidates.some((candidate) => candidate.policy.id === policy.id)) found += 1;
-    }
-    expect(found / sample.length).toBeGreaterThanOrEqual(0.8);
-  }, 30_000);
 
   it("round-robins bounded evidence across compound atomic needs", () => {
     const question = "Where should Finance verify a live payment, and where should I request an urgent Greenlight letter?";

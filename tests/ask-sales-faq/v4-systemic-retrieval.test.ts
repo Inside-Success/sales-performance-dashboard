@@ -131,8 +131,8 @@ describe("V4 systemic generalized retrieval", () => {
   });
 
   it("accounts for every supplied meeting and screenshot source before curating decisions", () => {
-    expect(curatedAuthority.evidence_register).toHaveLength(26);
-    expect(new Set(curatedAuthority.evidence_register.map((record) => record.source_id)).size).toBe(26);
+    expect(curatedAuthority.evidence_register).toHaveLength(30);
+    expect(new Set(curatedAuthority.evidence_register.map((record) => record.source_id)).size).toBe(30);
     expect(curatedAuthority.evidence_register.every((record) => record.sha256.length === 64)).toBe(true);
     expect(curatedAuthority.evidence_register.every((record) => record.disposition && record.note)).toBe(true);
   });

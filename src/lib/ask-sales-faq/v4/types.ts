@@ -102,7 +102,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated";
+  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated" | "v5.1-isolated";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
@@ -139,6 +139,7 @@ export type V4RuntimeMetadata = {
       snapshotVersion: string;
       needs: Array<{
         needId: string;
+        evidenceState?: "exact_evidence_found" | "exact_evidence_rejected" | "neighbor_only" | "knowledge_absent";
         documentsConsidered: number;
         hardCompatible: number;
         directLaneSelected: number;
