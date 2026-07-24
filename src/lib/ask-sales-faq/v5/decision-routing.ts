@@ -73,6 +73,24 @@ function deterministicRouteOwner(text: string, requestKind: V4SystemicNeed["requ
   return null;
 }
 
+const LIVE_HELP_REQUEST = /\b(?:not\s+working|isn't\s+working|can't\s+(?:log\s*in|access|open|find)|cannot\s+(?:log\s*in|access|open|find)|failed|failing|missing|stuck|urgent|right\s+now|today|who\s+(?:can|should)\s+(?:help|handle|fix)|where\s+(?:do|should)\s+i\s+(?:ask|report)|need\s+(?:help|someone|support)|team\s+is\s+(?:away|unavailable|on\s+vacation))\b/i;
+const LIVE_OWNER_ACTION = /\b(?:please|can\s+someone|could\s+someone|would\s+someone|need\s+someone\s+to)\b.{0,140}\b(?:fix|check|confirm|trace|send|issue|process|change|update|correct|restore|rerun|reprocess|void|cancel|expedite|approve|review|schedule|reschedule)\w*\b/i;
+const STABLE_POLICY_SHAPE = /\b(?:what\s+is\s+the\s+(?:policy|rule|process)|are\s+reps?\s+allowed|can\s+reps?\s+generally|should\s+reps?\s+generally|where\s+should\s+reps?\s+(?:normally|generally)|how\s+should\s+reps?\s+generally)\b/i;
+
+/** Classifies clear live ownership before model request-kind inference. */
+export function deterministicV52ActionOwner(text: string): RouteKey | null {
+  if (STABLE_POLICY_SHAPE.test(text) && !LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text)) return null;
+  if (!LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text) && !LIVE_MUTATION_REQUEST.test(text)) return null;
+
+  if (/\b(?:keap|hubspot|oncehub|zoom|crm|calendar|dashboard|leaderboard|login|log\s*in|password|automation|integration|redirect|technical|tech)\b/i.test(text)) {
+    return "sales_tech";
+  }
+  if (/\b(?:greenlight|green\s+light|greenlit|approval\s+letter)\b/i.test(text)) return "greenlight";
+  if (/\b(?:payment|transaction|invoice|billing|charge|refund|commission|wire|ach|card|amex|american\s+express)\b/i.test(text)) return "finance";
+  if (/\b(?:filming|production|fulfillment|delivery|onboarding|scriptwriter|trailer|studio\s+executive)\b/i.test(text)) return "fulfillment";
+  return deterministicRouteOwner(text, "operational_action");
+}
+
 function refineNeed(need: V4SystemicNeed): V4SystemicNeed {
   const text = completeText(need);
   const atomicRequest = need.authorityText || need.text || need.originalRequestText || "";
@@ -172,6 +190,26 @@ export function refineV51QueryPlan(plan: V4SystemicQueryPlan, _turn: V3TurnResol
   };
 }
 
+export function refineV52QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v51 = refineV51QueryPlan(plan, turn);
+  const needs = v51.needs.map((need) => {
+    const owner = deterministicV52ActionOwner(completeText(need));
+    return owner
+      ? { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner }
+      : need;
+  });
+  const changed = needs.some((need, index) =>
+    need.requestKind !== v51.needs[index].requestKind || need.forcedRouteKey !== v51.needs[index].forcedRouteKey,
+  );
+  return {
+    ...v51,
+    needs,
+    reasoningSummary: changed
+      ? `${v51.reasoningSummary} V5.2 classified explicit live ownership from the original request before model knowledge labels could suppress routing.`
+      : v51.reasoningSummary,
+  };
+}
+
 export function resolveV51RouteKey(
   need: V4SystemicNeed,
   decision: V4SystemicNeedDecision,
@@ -192,4 +230,14 @@ export function resolveV51RouteKey(
     ...decision.evidenceRefs.map((id) => retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy.route_key || null),
   ].find((key): key is RouteKey => Boolean(key && ["sales_policy", "sales_tech", "finance", "fulfillment", "greenlight"].includes(key)));
   return hinted || "sales_policy";
+}
+
+export function resolveV52RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const preModelOwner = deterministicV52ActionOwner(completeText(need));
+  if (preModelOwner) return preModelOwner;
+  return resolveV51RouteKey(need, decision, retrieval);
 }
