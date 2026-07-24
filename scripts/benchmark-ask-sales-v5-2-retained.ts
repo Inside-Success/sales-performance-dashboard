@@ -67,6 +67,13 @@ async function main() {
   if (!Array.isArray(dataset.conversations) || dataset.conversations.some((item) => !Array.isArray(item.prompts))) {
     throw new Error("The retained dataset must contain conversations with prompts");
   }
+  const requestedConversationIds = new Set(argument("conversation-ids").split(",").map((value) => value.trim()).filter(Boolean));
+  const selectedConversations = requestedConversationIds.size
+    ? dataset.conversations.filter((conversation) => requestedConversationIds.has(conversation.id))
+    : dataset.conversations;
+  if (requestedConversationIds.size && selectedConversations.length !== requestedConversationIds.size) {
+    throw new Error("One or more requested conversation IDs were not found");
+  }
   const systems = requestedSystems();
   const report = {
     schemaVersion: 1,
@@ -80,7 +87,7 @@ async function main() {
     systems,
     startedAt: new Date().toISOString(),
     completedAt: null as string | null,
-    conversations: dataset.conversations.map((conversation) => ({
+    conversations: selectedConversations.map((conversation) => ({
       id: conversation.id,
       title: conversation.title || "",
       prompts: conversation.prompts.map((prompt) => ({ ...prompt, systems: {} as Partial<Record<SystemName, RuntimeResult>> })),
