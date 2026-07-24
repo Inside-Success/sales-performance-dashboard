@@ -81,6 +81,30 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
     expect(deterministicV53ActionOwner("May an ISTV applicant be moved to Next Level CEO during the audition process?")).toBeNull();
     expect(deterministicV53ActionOwner("May a rep honor a same-day discount later if the payment links failed and the prospect provides proof?")).toBeNull();
     expect(deterministicV53ActionOwner("Can someone trace this prospect's failed card payment?")).toBe("finance");
+    expect(deterministicV53ActionOwner("A client's internet dropped after I greenlit him. Should I wait until tomorrow's follow-up?")).toBe("greenlight");
+    expect(deterministicV53ActionOwner("What is the general policy after an internet interruption during a greenlight call?")).toBeNull();
+  });
+
+  it("keeps a bank-closure exception request separate from a neighboring Monday rejection-letter schedule", () => {
+    const text = "If a prospect cannot complete payment because the bank is closed and misses the deadline, can we make an exception for Monday?";
+    const planned = { ...need(text), relation: "deadline" as const, domains: ["payment"], actions: ["make exception"], entities: ["payment deadline", "bank closure", "Monday"] };
+    const retrieval = retrieveV5Policies(resolveV4SystemicTurn(text, []), {
+      needs: [planned],
+      conversationIntent: "answer",
+      reasoningSummary: "deadline exception boundary",
+    });
+    expect(retrieval.candidates.map((candidate) => candidate.policy.id)).not.toContain("claim_9641a42c26cca91a");
+  });
+
+  it("lets a matching source-reviewed resolution recover Rich's controlling three-month rule", () => {
+    const text = "A prospect was passed last week and is booked again. How long is the normal reapplication wait?";
+    const planned = { ...need(text), relation: "duration" as const, domains: ["reapplication"], actions: ["waiting period"], entities: ["prospect"] };
+    const retrieval = retrieveV5Policies(resolveV4SystemicTurn(text, []), {
+      needs: [planned],
+      conversationIntent: "answer",
+      reasoningSummary: "source-reviewed authority resolution",
+    });
+    expect(retrieval.candidates[0]?.policy.id).toBe("curated_v43_rich_main_reapply_three_months");
   });
 
   it("corrects script-selection relationship errors before retrieval", () => {

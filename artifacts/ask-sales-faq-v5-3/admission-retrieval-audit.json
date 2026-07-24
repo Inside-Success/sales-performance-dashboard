@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-24T20:56:45.323Z",
+  "generatedAt": "2026-07-24T21:48:03.196Z",
   "status": "consumed_regression_diagnostic_only",
   "promotionEvidence": false,
   "snapshot": {
@@ -13,8 +13,8 @@
     "referenceReviewDate": "2026-07-24"
   },
   "summary": {
-    "probes": 7,
-    "retrieved": 7
+    "probes": 10,
+    "retrieved": 10
   },
   "results": [
     {
@@ -380,20 +380,17 @@
       "question": "May an ISTV applicant be moved to Next Level CEO during the audition process?",
       "expectedPolicyId": "operational_f32e012fa97b5b52",
       "retrieved": true,
-      "rank": 6,
+      "rank": 2,
       "answerability": "answer_evidence",
       "admissionTier": "stable_answer",
       "evidenceState": "exact_evidence_found",
       "topPolicyIds": [
-        "claim_028cf371215a8cc5__a6",
-        "operational_4c039778343a69ab",
-        "claim_0de0110a15158df9__a5",
-        "operational_ed3e6b228bf1b2cc",
+        "operational_4e86dda6c7fb91b3",
         "operational_f32e012fa97b5b52",
-        "operational_7d7232bc7d71f7c3",
-        "claim_356f242110e7d56a",
-        "operational_28d2a05cc6356925",
-        "claim_170a9cfe81cce514__a6"
+        "operational_00b1fd90f00c230e",
+        "claim_b81818e4ae8e0fec__a3",
+        "claim_42f54c07cd6348e3",
+        "claim_45bcff54b96b9030"
       ],
       "expectedPolicyGate": [
         {
@@ -404,12 +401,13 @@
             "disposition": "exact",
             "errors": [],
             "matchedFacets": [
+              "cross_program_lead_transfer",
               "action:transfer"
             ]
           },
           "identity": {
             "exact": true,
-            "score": 22.2,
+            "score": 29.176470588235293,
             "requestTerms": [
               "may",
               "istv",
@@ -425,7 +423,9 @@
               "proces",
               "sal",
               "move",
-              "transf"
+              "transf",
+              "pass",
+              "reschedule"
             ],
             "matchedTerms": [
               "istv",
@@ -435,9 +435,10 @@
               "dur",
               "audition",
               "proces",
-              "sal"
+              "sal",
+              "pass"
             ],
-            "reason": "Matched the same decision identity (istv, applicant, lead, prospect, dur, audition, proces, sal)."
+            "reason": "Matched the same decision identity (istv, applicant, lead, prospect, dur, audition, proces, sal, pass)."
           },
           "actionError": null,
           "entityError": null,
@@ -604,6 +605,323 @@
           "familyCoverage": 0.4444444444444444,
           "authorityResolutionExcluded": false,
           "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "swag-definition",
+      "question": "What is the swag package in the Next Level CEO offer?",
+      "expectedPolicyId": "curated_v43_swag_definition",
+      "retrieved": true,
+      "rank": 1,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_swag_definition"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_swag_definition::a1",
+          "matchedDecisionText": "Swag means merchandise, a souvenir, or promotional material.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "swag_package_definition"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 11.5,
+            "requestTerms": [
+              "swag",
+              "package",
+              "next",
+              "level",
+              "ceo",
+              "off",
+              "product",
+              "describe"
+            ],
+            "matchedTerms": [
+              "swag",
+              "package"
+            ],
+            "reason": "Matched the same decision identity (swag, package)."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "swag",
+            "package"
+          ],
+          "familyCoverage": 0.3333333333333333,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": false
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": []
+      }
+    },
+    {
+      "id": "rich-reapplication-minimum",
+      "question": "A prospect was passed last week and is booked again. How long is the normal reapplication wait?",
+      "expectedPolicyId": "curated_v43_rich_main_reapply_three_months",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_rich_main_reapply_three_months",
+        "operational_191f3167ff67e26c",
+        "operational_b216451e36dc26c0",
+        "owner-main-istv-cross-show-reapply-wait",
+        "operational_60aac92e69e089ba",
+        "claim_0de0110a15158df9__a4",
+        "operational_8a2a2c1b8b5b9a3d"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_rich_main_reapply_three_months::a1",
+          "matchedDecisionText": "For main ISTV, a prospect who no-shows, misses the applicable Call 2 payment or signature deadline, or is rejected or found not fit may be told they can reapply in the future. Boundaries: This normal waiting-period rule does not replace a separately approved documented exception or the repeated-abuse blocking process.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "rejected",
+            "errors": [
+              "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)",
+              "a product-specific policy cannot answer an unnamed product without an exact decision object match",
+              "the evidence does not establish the requested transfer action"
+            ],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "was",
+              "pass",
+              "last",
+              "week",
+              "and",
+              "book",
+              "how",
+              "long",
+              "normal",
+              "reapplication",
+              "wait"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": "requested_transfer_not_modify",
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "long",
+            "normal",
+            "reapplication",
+            "wait"
+          ],
+          "familyCoverage": 0.5384615384615384,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        },
+        {
+          "atomicDecisionId": "curated_v43_rich_main_reapply_three_months::a2",
+          "matchedDecisionText": "The minimum waiting period is three months. Boundaries: This normal waiting-period rule does not replace a separately approved documented exception or the repeated-abuse blocking process.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "rejected",
+            "errors": [
+              "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)",
+              "a product-specific policy cannot answer an unnamed product without an exact decision object match",
+              "the evidence does not establish the requested transfer action"
+            ],
+            "matchedFacets": []
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "was",
+              "pass",
+              "last",
+              "week",
+              "and",
+              "book",
+              "how",
+              "long",
+              "normal",
+              "reapplication",
+              "wait"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": "requested_transfer_not_modify",
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "long",
+            "normal",
+            "reapplication",
+            "wait"
+          ],
+          "familyCoverage": 0.5384615384615384,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        }
+      ],
+      "sourceAdmissionGate": {
+        "boundaryErrors": [],
+        "relationErrors": [
+          "the reapplication rule requires an unstated trigger (a no-show; a missed payment or signature deadline; a rejection or not-fit decision)"
+        ]
+      }
+    },
+    {
+      "id": "bank-closure-deadline-exception",
+      "question": "If a prospect cannot complete payment because the bank is closed and misses the deadline, can we make an exception for Monday?",
+      "expectedPolicyId": "curated_v43_bank_closed_deadline_no_exception",
+      "retrieved": true,
+      "rank": 2,
+      "answerability": "answer_evidence",
+      "admissionTier": "stable_answer",
+      "evidenceState": "exact_evidence_found",
+      "topPolicyIds": [
+        "curated_v43_bank_closed_deadline_no_exception",
+        "claim_b45363b2ec0ba08d",
+        "operational_05722e05b6762cc3",
+        "operational_200e1748ebbbbc04",
+        "operational_91510489bd1367d0"
+      ],
+      "expectedPolicyGate": [
+        {
+          "atomicDecisionId": "curated_v43_bank_closed_deadline_no_exception::a1",
+          "matchedDecisionText": "A bank closure does not authorize a Monday exception after the prospect misses the applicable payment deadline. Boundaries: A separately approved documented exception is a different decision and is not inferred from bank closure alone.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "bank_closure_deadline_exception"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "cannot",
+              "complete",
+              "payment",
+              "because",
+              "bank",
+              "clos",
+              "and",
+              "miss",
+              "deadline",
+              "make",
+              "exception",
+              "monday"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "payment",
+            "pay",
+            "bill",
+            "bank",
+            "clos",
+            "miss",
+            "deadline",
+            "exception",
+            "monday"
+          ],
+          "familyCoverage": 0.7058823529411765,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
+        },
+        {
+          "atomicDecisionId": "curated_v43_bank_closed_deadline_no_exception::a2",
+          "matchedDecisionText": "Under Rich's controlling normal main ISTV reapplication rule, the minimum wait is three months. Boundaries: A separately approved documented exception is a different decision and is not inferred from bank closure alone.",
+          "scopeError": null,
+          "contract": {
+            "disposition": "exact",
+            "errors": [],
+            "matchedFacets": [
+              "bank_closure_deadline_exception"
+            ]
+          },
+          "identity": {
+            "exact": true,
+            "score": 100,
+            "requestTerms": [
+              "cannot",
+              "complete",
+              "payment",
+              "because",
+              "bank",
+              "clos",
+              "and",
+              "miss",
+              "deadline",
+              "make",
+              "exception",
+              "monday"
+            ],
+            "matchedTerms": [
+              "claim-scoped-authority-resolution"
+            ],
+            "reason": "A claim-scoped authority resolution explicitly controls this decision."
+          },
+          "actionError": null,
+          "entityError": null,
+          "matchedTerms": [
+            "prospect",
+            "client",
+            "applicant",
+            "lead",
+            "payment",
+            "pay",
+            "bill",
+            "bank",
+            "clos",
+            "miss",
+            "deadline",
+            "exception",
+            "monday"
+          ],
+          "familyCoverage": 0.7058823529411765,
+          "authorityResolutionExcluded": false,
+          "authorityResolutionControlling": true
         }
       ],
       "sourceAdmissionGate": {

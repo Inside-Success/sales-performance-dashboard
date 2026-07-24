@@ -58,6 +58,24 @@ const probes: Probe[] = [
     expectedPolicyId: "operational_df5148bacd51d4c2",
     need: { relation: "procedure", domains: ["scheduling", "call management"], actions: ["prevent overrun"], entities: ["Call 1 appointment", "back-to-back appointments"] },
   },
+  {
+    id: "swag-definition",
+    question: "What is the swag package in the Next Level CEO offer?",
+    expectedPolicyId: "curated_v43_swag_definition",
+    need: { relation: "definition", productScope: "dj_nlceo", domains: ["product", "offer"], actions: ["describe"], entities: ["swag package"] },
+  },
+  {
+    id: "rich-reapplication-minimum",
+    question: "A prospect was passed last week and is booked again. How long is the normal reapplication wait?",
+    expectedPolicyId: "curated_v43_rich_main_reapply_three_months",
+    need: { relation: "duration", domains: ["reapplication"], actions: ["waiting period"], entities: ["prospect"] },
+  },
+  {
+    id: "bank-closure-deadline-exception",
+    question: "If a prospect cannot complete payment because the bank is closed and misses the deadline, can we make an exception for Monday?",
+    expectedPolicyId: "curated_v43_bank_closed_deadline_no_exception",
+    need: { relation: "deadline", domains: ["payment"], actions: ["make exception"], entities: ["payment deadline", "bank closure", "Monday"] },
+  },
 ];
 
 function fullNeed(probe: Probe): V4SystemicNeed {

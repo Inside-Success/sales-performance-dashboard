@@ -299,12 +299,20 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
       continue;
     }
     const contract = evaluateV51DecisionContract(need, document.policy);
-    const hardErrors = [...contract.errors];
+    const resolutionControlsPolicy = controlling.has(document.policy.id);
+    // A source-reviewed authority resolution is itself the narrow material-
+    // condition and scope contract for this exact claim. Once all of its
+    // product, relationship, and phrase groups match, reapplying the generic
+    // contract can paradoxically reject the policy the resolution explicitly
+    // selected (for example "passed last week" -> Rich's three-month rule).
+    // This never promotes an unregistered policy: only a controlling ID in the
+    // matching resolution receives the override.
+    const hardErrors = resolutionControlsPolicy ? [] : [...contract.errors];
     const decisionIdentity = evaluateV52DecisionIdentity(need, document.policy, document.decisionText);
     if (contract.disposition === "exact" && !contract.matchedFacets.length && !decisionIdentity.exact && !controlling.has(document.policy.id)) {
       hardErrors.push("exact relationship label without exact decision identity");
     }
-    const actionError = actionFacetError(authoritativeText, document.text);
+    const actionError = resolutionControlsPolicy ? null : actionFacetError(authoritativeText, document.text);
     if (actionError) hardErrors.push(actionError);
     // Once both sides match the same explicit decision object, broad entity
     // identity is no longer a safer discriminator: it rejected parent/family

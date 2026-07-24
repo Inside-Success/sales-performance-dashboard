@@ -26,7 +26,7 @@ const CURRENT_FAILURE_OR_STATUS = /\b(?:right\s+now|currently|specific|this\s+cl
 const PERMISSION_TO_USE_EXISTING_RESOURCE = /\b(?:can|could|may|should|is|are)\s+(?:i|we|a|an|the|my|our|their|his|her|client|prospect|cast\s+member|family\s+member|mother|father|spouse|guest|attendee|they|he|she)\b.{0,160}\b(?:share|use|include|forward|give|join)\w*\b.{0,120}\b(?:same|existing|current|the)\b.{0,80}\b(?:link|url|form|document|recording|call)\b/i;
 const PERSONAL_ACTOR_DECISION = /\bdoes\s+[a-z][a-z .'-]{1,55}?\s+personally\s+(?:interview|create|record|host|meet|call|approve|review|send|provide)\w*\b/i;
 const GENERIC_ACTOR_REQUIREMENT = /\b(?:does|do)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\s+need\s+to\b|\b(?:must|should)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\b/i;
-const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|promotional\s+activities)\b/i;
+const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|swag(?:\s+package)?|promotional\s+activities)\b/i;
 const REFERENCED_CONTEXT_REVIEW = /\b(?:review|assess|analy[sz]e|look\s+at|read)\w*\b.{0,120}\b(?:this|the|attached|following)\b.{0,50}\b(?:message|email|text|screenshot|attachment|recording|document)\b/i;
 const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i;
 const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
@@ -36,6 +36,10 @@ const QUALIFICATION_CASE_REVIEW_OVERLAY = /\b(?:illness|injury|relaunch|exceptio
 const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
 const FULFILLMENT_TIMING_LOOKUP = /\b(?:filming|production|episode)\b.{0,180}\b(?:current|expected|how\s+long|timeline|timing)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b|\b(?:current|expected|how\s+long|timeline|timing)\b.{0,180}\b(?:filming|production|episode)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b/i;
 const FULFILLMENT_OWNER_HELP = /\b(?:client|cast\s+member)\b.{0,180}\b(?:after|post)\s+onboard\w*\b.{0,160}\b(?:confused|help|speak|talk|contact|owner)\b|\b(?:speak|talk|contact)\b.{0,120}\b(?:onboarding|fulfillment|studio\s+executive)\b/i;
+const CASE_SPECIFIC_GREENLIGHT_SUBJECT = /\b(?:this|that|my|our|the|a|an)\s+(?:client|lead|prospect|applicant)\b/i;
+const GREENLIGHT_INTERRUPTION = /\b(?:greenlit|green\s*light)\b/i;
+const GREENLIGHT_INTERRUPTION_STATE = /\b(?:internet|connection|disconnect|dropped|congratulations\s+video)\b/i;
+const GREENLIGHT_LIVE_DECISION = /\b(?:should\s+i|now|today|tomorrow|wait|follow[- ]?up)\b/i;
 
 function isMissingReferencedContext(value: string) {
   if (!REFERENCED_CONTEXT_REVIEW.test(value)) return false;
@@ -105,6 +109,8 @@ export function deterministicV52ActionOwner(text: string): RouteKey | null {
  * signal makes a live owner necessary. */
 export function deterministicV53ActionOwner(text: string): RouteKey | null {
   if (CURRENT_CROSS_PRODUCT_REVIEW.test(text) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if (CASE_SPECIFIC_GREENLIGHT_SUBJECT.test(text) && GREENLIGHT_INTERRUPTION.test(text) &&
+    GREENLIGHT_INTERRUPTION_STATE.test(text) && GREENLIGHT_LIVE_DECISION.test(text)) return "greenlight";
   if (FINANCE_TIMING_LOOKUP.test(text)) return "finance";
   if (FULFILLMENT_TIMING_LOOKUP.test(text) || FULFILLMENT_OWNER_HELP.test(text)) return "fulfillment";
   return deterministicV52ActionOwner(text);

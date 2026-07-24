@@ -30,7 +30,7 @@ const DECISION_OBJECTS = [
   ["program_format", /\b(?:reality[- ]?tv|reality\s+show|documentary[- ]?style|documentary\s+programming)\b/i],
   ["seo_benefit_definition", /\bseo\b.{0,140}\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b|\b(?:benefit|mean|meaning|rank|ranking|google|keywords?)\b.{0,140}\bseo\b/i],
   ["social_promo_asset_definition", /\bsocial\s+promo(?:tional)?\s+assets?\b/i],
-  ["swag_package_definition", /\bswag(?:\s+package)?\b.{0,120}\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b|\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b.{0,120}\bswag(?:\s+package)?\b/i],
+  ["swag_package_definition", /\bswag(?:\s+package)?\b.{0,120}\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b|\b(?:what\s+is|mean|meaning|merchandise|souvenir|promotional\s+material)\b.{0,120}\bswag(?:\s+package)?\b/i],
   ["promotional_activity_obligation", /\bpromotional\s+activities\b.{0,180}\b(?:cooperat|share|post|trailers?|social)\w*\b|\b(?:cooperat|share|post)\w*\b.{0,180}\b(?:promotional\s+activities|trailers?|social\s+posts?)\b/i],
   ["emergency_payment_link_exception", /\bemergency\s+payment\s+links?\b/i],
   ["multi_episode_starting_recommendation", /\b(?:multi[- ]?episode|docu[- ]?series|docuseries|\d+[- ]episode|one[- ]episode|single[- ]episode|larger\s+project)\b/i],
@@ -45,6 +45,7 @@ const DECISION_OBJECTS = [
   ["live_card_failure", /\b(?:amex|american\s+express|card|payment\s+method)\b.{0,120}\b(?:fail|declin|reject|not\s+work|error)\w*\b|\b(?:fail|declin|reject|not\s+work|error)\w*\b.{0,120}\b(?:amex|american\s+express|card|payment\s+method)\b/i],
   ["greenlight_contract_dispatch", /\b(?:greenlight|green\s+light)\b.{0,160}\b(?:contract|agreement)\b.{0,100}\b(?:sent|send|dispatch|deliver|receive|status|confirm)\w*\b|\b(?:contract|agreement)\b.{0,160}\b(?:greenlight|green\s+light)\b.{0,100}\b(?:sent|send|dispatch|deliver|receive|status|confirm)\w*\b/i],
   ["contract_dispatch_status", /\b(?:contract|agreement)\b.{0,140}\b(?:sent|send|dispatch|deliver|receive|received|arrive|status)\w*\b|\b(?:sent|send|dispatch|deliver|receive|received|arrive|status)\w*\b.{0,140}\b(?:contract|agreement)\b/i],
+  ["bank_closure_deadline_exception", /\b(?:bank\s+(?:is\s+)?closed|bank\s+closure)\b.{0,180}\b(?:deadline|cutoff|exception|monday|pay(?:ment)?)\b|\b(?:deadline|cutoff|exception|monday|pay(?:ment)?)\b.{0,180}\b(?:bank\s+(?:is\s+)?closed|bank\s+closure)\b/i],
 ] as const;
 
 const ACTION_FACETS = [
