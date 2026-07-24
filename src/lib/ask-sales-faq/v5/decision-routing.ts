@@ -29,6 +29,12 @@ const GENERIC_ACTOR_REQUIREMENT = /\b(?:does|do)\s+(?:the\s+)?(?:rep|representat
 const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|promotional\s+activities)\b/i;
 const REFERENCED_CONTEXT_REVIEW = /\b(?:review|assess|analy[sz]e|look\s+at|read)\w*\b.{0,120}\b(?:this|the|attached|following)\b.{0,50}\b(?:message|email|text|screenshot|attachment|recording|document)\b/i;
 const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i;
+const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
+const CURRENT_CROSS_PRODUCT_REVIEW = /\b(?:current|currently|still|active|available)\b.{0,180}\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b|\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b.{0,180}\b(?:current|currently|still|active|available)\b|\bnot\s+a\s+fit\b.{0,220}\b(?:move|transfer|pass)\b|\b(?:move|transfer|pass)\b.{0,220}\bnot\s+a\s+fit\b/i;
+const QUALIFICATION_EXCEPTION_REVIEW = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,180}\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light)\b|\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light)\b.{0,180}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
+const FULFILLMENT_TIMING_LOOKUP = /\b(?:filming|production|episode)\b.{0,180}\b(?:current|expected|how\s+long|timeline|timing)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b|\b(?:current|expected|how\s+long|timeline|timing)\b.{0,180}\b(?:filming|production|episode)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b/i;
+const FULFILLMENT_OWNER_HELP = /\b(?:client|cast\s+member)\b.{0,180}\b(?:after|post)\s+onboard\w*\b.{0,160}\b(?:confused|help|speak|talk|contact|owner)\b|\b(?:speak|talk|contact)\b.{0,120}\b(?:onboarding|fulfillment|studio\s+executive)\b/i;
 
 function isMissingReferencedContext(value: string) {
   if (!REFERENCED_CONTEXT_REVIEW.test(value)) return false;
@@ -89,6 +95,16 @@ export function deterministicV52ActionOwner(text: string): RouteKey | null {
   if (/\b(?:payment|transaction|invoice|billing|charge|refund|commission|wire|ach|card|amex|american\s+express)\b/i.test(text)) return "finance";
   if (/\b(?:filming|production|fulfillment|delivery|onboarding|scriptwriter|trailer|studio\s+executive)\b/i.test(text)) return "fulfillment";
   return deterministicRouteOwner(text, "operational_action");
+}
+
+/** Five-owner classifier for explicit live/current work. Stable FAQ wording is
+ * deliberately left to evidence retrieval unless a current-state or exception
+ * signal makes a live owner necessary. */
+export function deterministicV53ActionOwner(text: string): RouteKey | null {
+  if (CURRENT_CROSS_PRODUCT_REVIEW.test(text) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if (FINANCE_TIMING_LOOKUP.test(text)) return "finance";
+  if (FULFILLMENT_TIMING_LOOKUP.test(text) || FULFILLMENT_OWNER_HELP.test(text)) return "fulfillment";
+  return deterministicV52ActionOwner(text);
 }
 
 function refineNeed(need: V4SystemicNeed): V4SystemicNeed {
@@ -210,6 +226,32 @@ export function refineV52QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolu
   };
 }
 
+export function refineV53QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v52 = refineV52QueryPlan(plan, turn);
+  const needs = v52.needs.map((need) => {
+    const text = completeText(need);
+    if (SCRIPT_SELECTION_REQUIREMENT.test(text)) {
+      return { ...need, relation: "requirement" as const, requestKind: "knowledge" as const, forcedRouteKey: null };
+    }
+    const owner = deterministicV53ActionOwner(text);
+    return owner
+      ? { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner }
+      : need;
+  });
+  const changed = needs.some((need, index) =>
+    need.relation !== v52.needs[index].relation ||
+    need.requestKind !== v52.needs[index].requestKind ||
+    need.forcedRouteKey !== v52.needs[index].forcedRouteKey,
+  );
+  return {
+    ...v52,
+    needs,
+    reasoningSummary: changed
+      ? `${v52.reasoningSummary} V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners.`
+      : v52.reasoningSummary,
+  };
+}
+
 export function resolveV51RouteKey(
   need: V4SystemicNeed,
   decision: V4SystemicNeedDecision,
@@ -240,4 +282,14 @@ export function resolveV52RouteKey(
   const preModelOwner = deterministicV52ActionOwner(completeText(need));
   if (preModelOwner) return preModelOwner;
   return resolveV51RouteKey(need, decision, retrieval);
+}
+
+export function resolveV53RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const preModelOwner = deterministicV53ActionOwner(completeText(need));
+  if (preModelOwner) return preModelOwner;
+  return resolveV52RouteKey(need, decision, retrieval);
 }

@@ -48,12 +48,13 @@ const DECISION_OBJECTS = [
 ] as const;
 
 const ACTION_FACETS = [
+  ["transfer", /\b(?:move|pass|transfer)\w*\b.{0,100}\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b|\b(?:client|lead|prospect|applicant|show|program|istv|daymond|nlceo)\b.{0,100}\b(?:move|pass|transfer)\w*\b/i],
   ["share", /\b(?:share|send|provide|give|forward)\w*\b/i],
-  ["submit", /\b(?:submit|post|upload|attach|tag)\w*\b/i],
+  ["submit", /\b(?:submit|upload|attach|tag)\w*\b|\bpost(?![- ]?sale)\w*\b/i],
   ["locate", /\b(?:where|find|locate|access|download|get)\w*\b/i],
   ["verify", /\b(?:verify|check|confirm|trace|investigate)\w*\b/i],
   ["modify", /\b(?:change|edit|update|correct|replace|fix|repair)\w*\b/i],
-  ["reschedule", /\b(?:reschedule|rebook|move)\w*\b/i],
+  ["reschedule", /\b(?:reschedule|rebook)\w*\b|\bmove\w*\b.{0,70}\b(?:call|meeting|appointment|booking|schedule|date|time)\b|\b(?:call|meeting|appointment|booking|schedule|date|time)\b.{0,70}\bmove\w*\b/i],
   ["cancel", /\b(?:cancel|void|reverse|refund|pause|stop)\w*\b/i],
   ["interview", /\binterview\w*\b/i],
   ["create", /\b(?:create|generate|prepare|produce)\w*\b/i],
@@ -87,7 +88,7 @@ function actionFacets(value: string) {
 }
 
 const IDENTITY_STOP = new Set([
-  "about", "after", "again", "also", "answer", "appointment", "before", "best", "call", "can", "client", "company", "could", "does", "from", "give", "help", "keep", "need", "person", "policy", "prospect", "question", "rep", "representative", "rule", "sales", "should", "someone", "tell", "their", "there", "they", "this", "what", "when", "where", "which", "with", "would",
+  "about", "after", "again", "all", "also", "answer", "appointment", "before", "best", "call", "can", "client", "company", "could", "determine", "does", "for", "from", "give", "help", "keep", "need", "one", "person", "policy", "prospect", "question", "rep", "representative", "rule", "sales", "should", "someone", "tell", "the", "their", "there", "they", "this", "what", "when", "where", "whether", "which", "with", "would",
 ]);
 
 const IDENTITY_EQUIVALENTS: Record<string, string[]> = {
@@ -174,6 +175,12 @@ export function evaluateV52DecisionIdentity(
     matchedTerms.length >= 2 &&
     coverage >= 0.28 &&
     score >= 6
+  ) || (
+    need.relation === "other" &&
+    exactAction &&
+    matchedTerms.length >= 3 &&
+    coverage >= 0.3 &&
+    score >= 8
   );
   return {
     exact,
@@ -190,6 +197,7 @@ function actorActionError(request: string, evidence: string) {
   if (/\bdoes\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\s+need\s+to\b/i.test(request)) return null;
   const match = request.match(/\bdoes\s+([a-z][a-z .'-]{1,55}?)\s+(?:personally\s+)?(interview|create|record|host|meet|call|approve|review|send|provide)\w*\b/i);
   if (!match) return null;
+  if (/\b(?:appearing|appearance|participating|participation|show|program|package|episode|offer|service)\b/i.test(match[1])) return null;
   const actorTokens = match[1].toLowerCase().split(/\s+/).filter((token) => token.length >= 3 && !["the", "our", "any"].includes(token));
   const evidenceLower = evidence.toLowerCase();
   if (actorTokens.length && !actorTokens.every((token) => evidenceLower.includes(token))) return "the evidence governs a different actor";
@@ -324,6 +332,10 @@ function preservesCaution(sentence: string, caution: string) {
 /** Prevents a fluent paraphrase from dropping a safety-changing exception. */
 export function v52OperationalEffectErrors(need: V4SystemicNeed, sentence: string, evidence: string) {
   const errors = v51OperationalEffectErrors(need, sentence, evidence);
+  const datedScope = evidence.match(/\bAs of (\d{4}-\d{2}-\d{2})\b/i)?.[1];
+  if (datedScope && !new RegExp(`\\bas of\\s+${datedScope.replace(/-/g, "[-/]")}\\b`, "i").test(sentence)) {
+    errors.push(`the answer omits the scoped rule's effective date: ${datedScope}`);
+  }
   const cautions = materialCautions(evidence);
   const assertsPermissionOrInstruction = /\b(?:can|may|allowed|should|must|use|send|share|offer|provide|book|schedule|route)\b/i.test(sentence);
   if (assertsPermissionOrInstruction && cautions.length) {

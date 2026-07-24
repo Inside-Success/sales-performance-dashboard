@@ -130,7 +130,7 @@ describe("Ask Sales V5.2 controlled decision architecture", () => {
       preferredPolicyIds: [],
     });
 
-    const safe: V4SystemicSourcePlan = {
+    const widenedCorpusAbstention: V4SystemicSourcePlan = {
       ...unsafe,
       needs: [{
         ...unsafe.needs[0],
@@ -139,7 +139,20 @@ describe("Ask Sales V5.2 controlled decision architecture", () => {
         deterministicPolicyIds: [correctId],
       }],
     };
-    expect(refineV52SourcePlan(safe, queryPlan, retrieval).needs[0]).toMatchObject({
+    expect(refineV52SourcePlan(widenedCorpusAbstention, queryPlan, retrieval).needs[0]).toMatchObject({
+      lane: "route",
+      preferredPolicyIds: [],
+    });
+
+    const sourceConfirmed: V4SystemicSourcePlan = {
+      ...widenedCorpusAbstention,
+      needs: [{
+        ...widenedCorpusAbstention.needs[0],
+        modelDisposition: "answer",
+        modelDirectPolicyIds: [correctId],
+      }],
+    };
+    expect(refineV52SourcePlan(sourceConfirmed, queryPlan, retrieval).needs[0]).toMatchObject({
       lane: "answer",
       preferredPolicyIds: [correctId],
     });

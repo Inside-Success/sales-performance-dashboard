@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
@@ -797,7 +797,9 @@ function candidateCards(retrieval: V4SystemicRetrieval, candidates = retrieval.c
     id: candidate.policy.id,
     title: candidate.policy.title,
     question_families: candidate.policy.question_families.slice(0, 6),
-    decision: candidate.matchedDecisionText || evidenceDecision(candidate.policy),
+    decision: candidate.policy.quality_flags.includes("v53_active_scoped_rule_compiled")
+      ? evidenceDecision(candidate.policy)
+      : candidate.matchedDecisionText || evidenceDecision(candidate.policy),
     atomic_decision_id: candidate.matchedDecisionId || null,
     product_scopes: productApplicability(candidate.policy) === "all_products_unless_stated"
       ? ["all_products_unless_stated"]
@@ -808,6 +810,13 @@ function candidateCards(retrieval: V4SystemicRetrieval, candidates = retrieval.c
     relationship_facets: inferV4SystemicPolicyRelations(candidate.policy),
     answerability: candidate.policy.answerability,
     quality_tier: candidate.policy.quality_tier,
+    admission_tier: candidate.policy.quality_flags.includes("v53_active_scoped_rule_compiled")
+      ? "active_scoped_answer"
+      : candidate.policy.answerability === "answer_evidence"
+        ? "stable_answer"
+        : candidate.policy.systemic.temporalRisk === "live_only"
+          ? "live_route_only"
+          : "historical_support",
     source_class: candidate.policy.systemic.sourceClass,
     temporal_risk: candidate.policy.systemic.temporalRisk,
     scope_risk: candidate.policy.systemic.scopeRisk,
@@ -1519,7 +1528,7 @@ Evidence rules:
 - For a sourcePlan need with lane=route, do not answer even if another answer card appears in the shared candidate window.
 - An answer sentence requires a directly applicable answer_evidence card, or an exact card explicitly promoted in preferredPolicyIds by the claim-scoped authority register, with exact evidence refs, matching product scope, and all material conditions.
 - When a preferred card has a material condition the request does not establish, it may answer only by preserving that condition explicitly (for example, "This can qualify if X is confirmed"). Do not state that the outcome already applies. A transparent conditional answer is preferable to routing the entire need when the stable rule itself resolves what must be checked.
-- Never answer from route_or_support, discovery_only, owner-review-required, live_only, or time_sensitive evidence unless the exact card is explicitly promoted in preferredPolicyIds by the claim-scoped authority register. A time-sensitive answer_evidence card may also supply a stable navigation procedure when sourcePlan marks it preferred; it must not be used to assert the current record state. Discovery-only cards are never eligible.
+- Never answer from route_or_support, discovery_only, owner-review-required, or live_only evidence. A time_sensitive card is usable only when answerability=answer_evidence, admission_tier=active_scoped_answer, and sourcePlan explicitly prefers it. In that case, preserve its exact "As of YYYY-MM-DD" effective-date frame and every stated scope, condition, and boundary. A time-sensitive navigation card may also supply only its stable navigation procedure when sourcePlan marks it preferred; it must not assert the current record state. Discovery-only cards are never eligible.
 - The authority classes are comparable trust labels. Never infer that governed_approved outranks direct_company_authority merely because it is governed; raw authority scores from the two source pipelines are intentionally not supplied because their numeric scales are different.
 - product_applicability=all_products_unless_stated is an applicable company-wide rule, not an unknown-scope record. Apply it to a named product when the decision language and every material condition match, unless the card itself states an exclusion. Do not reject it merely because the originating question did not name a product.
 - The runtime has already applied exact relationship, scope, material-condition, open-conflict, and explicit claim-resolution controls. Never replace its preferredPolicyIds using recency or source label.
@@ -1677,8 +1686,10 @@ export function v4SystemicPolicyBoundaryErrors(policy: V4SystemicCandidate["poli
 }
 
 function policyEligibleForAnswer(policy: V3Policy & { systemic?: { temporalRisk?: string; ownerReviewRequired?: boolean } }, turn: V3TurnResolution) {
+  const activeScopedV53 = policy.quality_flags.includes("v53_active_scoped_rule_compiled") &&
+    policy.systemic?.temporalRisk === "time_sensitive";
   return policy.answerability === "answer_evidence" &&
-    policy.systemic?.temporalRisk === "stable" &&
+    (policy.systemic?.temporalRisk === "stable" || activeScopedV53) &&
     policy.systemic?.ownerReviewRequired !== true &&
     v4SystemicPolicyBoundaryErrors(policy as V4SystemicCandidate["policy"], turn).length === 0;
 }
