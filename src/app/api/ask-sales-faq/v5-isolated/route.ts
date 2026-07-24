@@ -82,6 +82,7 @@ export async function GET() {
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
     operationalPolicyCount: snapshot.operationalPolicyCount,
+    stableOperationalPromotionCount: snapshot.stableOperationalPromotionCount,
     accessTokenConfigured,
     historySigningConfigured,
     modelAccessConfirmed,
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest) {
       reservation.release();
     }
   } catch (error) {
-    console.error("Ask Sales V5 isolated request failed", error instanceof Error ? error.message : "unknown error");
-    return json({ ok: false, error: "The isolated V5 runtime failed safely. No production request or database write was attempted." }, 503);
+    console.error("Ask Sales V5.2 isolated request failed", error instanceof Error ? error.message : "unknown error");
+    return json({ ok: false, error: "The isolated V5.2 runtime failed safely. No production request or database write was attempted." }, 503);
   }
 }

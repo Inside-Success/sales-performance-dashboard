@@ -42,7 +42,7 @@ function retrieve(question: string, overrides: Partial<V4SystemicNeed> = {}) {
 describe("Ask Sales V5 bounded evidence retrieval", () => {
   it("builds one immutable snapshot from the governed effective corpus", () => {
     const snapshot = getV5KnowledgeSnapshot();
-    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v1");
+    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v2");
     expect(snapshot.knowledgeVersion).toMatch(/^[a-f0-9]{16}\+v5_[a-f0-9]{16}$/);
     expect(snapshot.policies.length).toBeGreaterThan(1_000);
     expect(Object.isFrozen(snapshot)).toBe(true);
@@ -51,6 +51,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
     expect(new Set(snapshot.policies.map((policy) => policy.id)).size).toBe(snapshot.policies.length);
     expect(snapshot.policies.every((policy) => policy.source.ids.length > 0)).toBe(true);
     expect(snapshot.policies.every((policy) => policy.answerability !== "discovery_only")).toBe(true);
+    expect(snapshot.stableOperationalPromotionCount).toBeGreaterThan(0);
   });
 
   it("never admits a candidate that fails the hard relation or material-condition boundary", () => {

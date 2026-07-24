@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
@@ -70,6 +70,12 @@ export type V4SystemicCandidateRuntimeProfile = {
     retrieval: V4SystemicRetrieval,
   ) => NonNullable<V4SystemicNeedDecision["routeKey"]>;
   sentenceBoundaryErrors?: (need: V4SystemicNeed, sentence: string, evidence: string) => string[];
+  allowGenericRichAuthority?: boolean;
+  refineSourcePlan?: (
+    sourcePlan: V4SystemicSourcePlan,
+    plan: V4SystemicQueryPlan,
+    retrieval: V4SystemicRetrieval,
+  ) => V4SystemicSourcePlan;
   appendRouteForAnsweredSupport?: boolean;
   fallbackLabel: string;
   fallbackOnEmptyRetrieval: boolean;
@@ -829,16 +835,19 @@ function blockedCards(retrieval: V4SystemicRetrieval) {
   }));
 }
 
-type V4SystemicSourceNeedPlan = {
+export type V4SystemicSourceNeedPlan = {
   needId: string;
   lane: "answer" | "route";
   directPolicyIds: string[];
   preferredPolicyIds: string[];
   excludedConflictPolicyIds: string[];
   reason: string;
+  modelDisposition?: "answer" | "route";
+  modelDirectPolicyIds?: string[];
+  deterministicPolicyIds?: string[];
 };
 
-type V4SystemicSourcePlan = {
+export type V4SystemicSourcePlan = {
   needs: V4SystemicSourceNeedPlan[];
   reasoningSummary: string;
 };
@@ -1147,7 +1156,12 @@ function deterministicDirectPolicyIdsForNeed(
   return [strongest.policy.id];
 }
 
-export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQueryPlan, retrieval: V4SystemicRetrieval): V4SystemicSourcePlan {
+export function parseV4SystemicSourcePlan(
+  content: string,
+  plan: V4SystemicQueryPlan,
+  retrieval: V4SystemicRetrieval,
+  options: { allowGenericRichAuthority?: boolean } = {},
+): V4SystemicSourcePlan {
   const parsed = parseV3Json<Record<string, unknown>>(content);
   const rawNeeds = Array.isArray(parsed.needs) ? parsed.needs : [];
   const byNeed = new Map<string, Record<string, unknown>>();
@@ -1332,7 +1346,7 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
           const policy = retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
           return Boolean(policy && policyIsRichAuthority(policy));
         }));
-      const richAuthorityWinner = richPositions.length === 1 && positions
+      const richAuthorityWinner = options.allowGenericRichAuthority !== false && richPositions.length === 1 && positions
         .filter((position) => position !== richPositions[0])
         .flatMap((position) => position.ids)
         .every((id) => {
@@ -1438,6 +1452,13 @@ export function parseV4SystemicSourcePlan(content: string, plan: V4SystemicQuery
             : boundedDirectSupportApplied
               ? `Preserved the exact stable boundary from ${boundedDirectSupportIds[0]} while leaving its required owner action explicit.`
         : clean(item.reason, 700) || "Applied exact relationship, scope, and claim-scoped authority controls.",
+      modelDisposition,
+      modelDirectPolicyIds: resolveRefs(item.direct_refs).filter((id) => eligiblePolicyIds.has(id) && !resolutionExcludedIds.has(id)),
+      deterministicPolicyIds: [...new Set([
+        ...controllingPolicyIds,
+        ...ownerApprovedPolicyIds,
+        ...deterministicDirectPolicyIds,
+      ])],
     };
   });
   return {
@@ -2424,7 +2445,9 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
         system: prompt.system,
         user: prompt.user,
         maxTokens: 2600,
-        parse: (content) => parseV4SystemicSourcePlan(content, queryPlan, retrieval),
+        parse: (content) => parseV4SystemicSourcePlan(content, queryPlan, retrieval, {
+          allowGenericRichAuthority: profile.allowGenericRichAuthority,
+        }),
       });
       sourcePlan = result.output;
       attempts.push(...result.attempts);
@@ -2448,6 +2471,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       };
     }
   }
+  sourcePlan = profile.refineSourcePlan ? profile.refineSourcePlan(sourcePlan, queryPlan, retrieval) : sourcePlan;
   stageTimings.sourcePlanningMs = Date.now() - sourcePlanningStarted;
   const adjudicatedRetrieval = retrievalAfterSourcePlan(retrieval, sourcePlan);
 
