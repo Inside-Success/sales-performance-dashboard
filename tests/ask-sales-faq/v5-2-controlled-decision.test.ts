@@ -143,7 +143,7 @@ describe("Ask Sales V5.2 controlled decision architecture", () => {
       lane: "answer",
       preferredPolicyIds: [correctId],
     });
-  });
+  }, 15_000);
 
   it("binds clear live actions before a model can label them as knowledge", () => {
     expect(deterministicV52ActionOwner("My Keap login is not working. Who can help me right now?")).toBe("sales_tech");

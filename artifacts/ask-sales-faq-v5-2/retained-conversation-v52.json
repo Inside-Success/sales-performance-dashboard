@@ -1,0 +1,1906 @@
+{
+  "schemaVersion": 1,
+  "status": "complete",
+  "diagnosticOnly": true,
+  "promotionEvidence": false,
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v4-1-focused-post-fix-development.json",
+  "datasetSha256": "ab068fe3b9d0e1dc3d930ff9d97e9524a92a9b00fd048c3197adbcbc8e91fb0d",
+  "runtimeFreezeCommit": "5aff892",
+  "systems": [
+    "v5"
+  ],
+  "startedAt": "2026-07-24T18:13:01.316Z",
+  "completedAt": "2026-07-24T18:14:12.747Z",
+  "conversations": [
+    {
+      "id": "v4-1-focused-routes",
+      "title": "",
+      "prompts": [
+        {
+          "question": "What is the earliest time I can send the day-of SMS reminder?",
+          "independent": true,
+          "evaluationStrata": [
+            "relation_boundary",
+            "route_ownership"
+          ],
+          "goldNeeds": [
+            {
+              "expectedDisposition": "route",
+              "expectedRouteKey": "sales_policy",
+              "claim": "Do not substitute the 9 PM cutoff or route a policy gap to tech."
+            }
+          ],
+          "systems": {
+            "v5": {
+              "ok": true,
+              "answer": "The earliest recommended time is 6 AM; do not send before 5 AM.",
+              "structuredAnswer": {
+                "summary": "The earliest recommended time is 6 AM; do not send before 5 AM.",
+                "sections": [
+                  {
+                    "title": "Guidance",
+                    "items": [
+                      "The earliest recommended time is 6 AM; do not send before 5 AM."
+                    ],
+                    "tone": "good"
+                  }
+                ],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "evidence"
+              },
+              "lane": "answer",
+              "needsRoute": false,
+              "routeReason": null,
+              "routeChannels": [],
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "latencyMs": 13663,
+              "citations": [
+                {
+                  "policyId": "operational_a514edb15b035383",
+                  "title": "Earliest time for day-of SMS reminder",
+                  "decisionKey": "earliest-day-of-sms-reminder-time",
+                  "lastReviewed": "2026-06-23",
+                  "authority": 9.5,
+                  "sourceKind": "authoritative_slack_operational_qna",
+                  "approvedBy": [
+                    "Madeline"
+                  ]
+                }
+              ],
+              "selectedPolicyIds": [
+                "operational_a514edb15b035383"
+              ],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.2-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6+v52_controlled-decision-r2",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v20:7bb08f4347bd30c5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "What is the earliest time I can send the day-of SMS reminder?",
+                  "standaloneQuestion": "What is the earliest time I can send the day-of SMS reminder?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "What is the earliest time I can send the day-of SMS reminder?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2624,
+                  "candidateCount": 1,
+                  "candidates": [
+                    {
+                      "id": "operational_a514edb15b035383",
+                      "rank": 1,
+                      "score": 264.7436304661459,
+                      "decisionKey": "earliest-day-of-sms-reminder-time",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.5940885257860046,
+                      "matchedDecisionId": "operational_a514edb15b035383::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3488,
+                        "hardCompatible": 1,
+                        "directLaneSelected": 1,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "operational_a514edb15b035383"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 3295,
+                          "decision_contract": 3485,
+                          "workflow_stage_or_time": 189,
+                          "decision_object": 3
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "What is the earliest time I can send the day-of SMS reminder?",
+                      "relation": "timing_start",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [
+                        "SMS reminders"
+                      ],
+                      "actions": [
+                        "send"
+                      ],
+                      "entities": [
+                        "day-of SMS reminder"
+                      ],
+                      "lane": "answer",
+                      "evidence_refs": [
+                        "operational_a514edb15b035383"
+                      ],
+                      "supported_claim": "The earliest recommended time to send a day-of SMS reminder is 6 AM, and it must not be sent before 5 AM.",
+                      "reason": "C1 directly states the earliest recommended time is 6 AM and the hard boundary is 5 AM for day-of reminders.",
+                      "route_key": null,
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "answer",
+                  "confidence_score": 100,
+                  "reasoning_summary": "The user asks for the earliest permissible time to send a day-of SMS reminder. This is a single atomic request for a timing_start policy. No product scope is specified, so it remains unknown. No material ambiguity is present. Only one candidate card (C1) is provided, and it is the preferred policy for N1 with lane=answer. It contains the exact timing rule for day-of SMS reminders, so it is used directly. Operational overlay policies available: 1750."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "answer",
+                      "directPolicyIds": [
+                        "operational_a514edb15b035383"
+                      ],
+                      "preferredPolicyIds": [
+                        "operational_a514edb15b035383"
+                      ],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "Applied the uniquely dominant exact-family and exact-relationship evidence operational_a514edb15b035383. V5.2 verified exact decision identity before allowing answer recovery.",
+                      "modelDisposition": "answer",
+                      "modelDirectPolicyIds": [
+                        "operational_a514edb15b035383"
+                      ],
+                      "deterministicPolicyIds": [
+                        "operational_a514edb15b035383"
+                      ]
+                    }
+                  ],
+                  "reasoningSummary": "Only one card (C1) is provided, and it directly addresses the need with an exact timing rule. No conflicts exist. V5.2 applied the non-bypassable decision contract and contextual authority gate."
+                },
+                "executionMode": {
+                  "planning": "hybrid_model",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "pass",
+                  "sentenceChecks": [
+                    {
+                      "sentenceId": "S1",
+                      "status": "supported",
+                      "evidenceRefs": [
+                        "operational_a514edb15b035383"
+                      ],
+                      "answeredNeedIds": [
+                        "N1"
+                      ],
+                      "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                      "deterministicErrors": [
+                        "the answer omits a material evidence boundary: does not apply"
+                      ]
+                    }
+                  ],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_query_plan",
+                    "status": "success",
+                    "latencyMs": 3787,
+                    "promptChars": 4193,
+                    "completionTokens": 217,
+                    "totalTokens": 1145,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_source_plan",
+                    "status": "success",
+                    "latencyMs": 2720,
+                    "promptChars": 7183,
+                    "completionTokens": 131,
+                    "totalTokens": 1776,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_evidence_answer",
+                    "status": "success",
+                    "latencyMs": 3778,
+                    "promptChars": 9796,
+                    "completionTokens": 242,
+                    "totalTokens": 2431,
+                    "reasoningMode": "disabled",
+                    "temperature": 0.1
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_sentence_validation",
+                    "status": "success",
+                    "latencyMs": 2263,
+                    "promptChars": 3284,
+                    "completionTokens": 138,
+                    "totalTokens": 855,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  }
+                ],
+                "stageTimings": {
+                  "turnResolutionMs": 4,
+                  "queryPlanningMs": 3806,
+                  "v5BoundedRetrievalMs": 1056,
+                  "sourcePlanningMs": 2727,
+                  "evidenceDraftingMs": 3779,
+                  "validationMs": 2271,
+                  "totalMs": 13663
+                }
+              }
+            }
+          }
+        },
+        {
+          "question": "Can you confirm whether this client's ACH payment cleared?",
+          "independent": true,
+          "evaluationStrata": [
+            "current_lookup",
+            "route_ownership"
+          ],
+          "goldNeeds": [
+            {
+              "expectedDisposition": "route",
+              "expectedRouteKey": "finance",
+              "claim": "Stable policy cannot establish a live payment state."
+            }
+          ],
+          "systems": {
+            "v5": {
+              "ok": true,
+              "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+              "structuredAnswer": {
+                "summary": "This needs a Finance action, so please post it in #sales-finance-requests.",
+                "sections": [
+                  {
+                    "title": "Next step",
+                    "body": "Use #sales-finance-requests for the part that still needs confirmation.",
+                    "tone": "route"
+                  }
+                ],
+                "confidenceLabel": "Low",
+                "confidenceScore": 35,
+                "sourceMode": "fallback"
+              },
+              "lane": "route",
+              "needsRoute": true,
+              "routeReason": "Use #sales-finance-requests only for the remaining owner action or confirmation.",
+              "routeChannels": [
+                "#sales-finance-requests"
+              ],
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "latencyMs": 11839,
+              "citations": [],
+              "selectedPolicyIds": [],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.2-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6+v52_controlled-decision-r2",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v20:7bb08f4347bd30c5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "Can you confirm whether this client's ACH payment cleared?",
+                  "standaloneQuestion": "Can you confirm whether this client's ACH payment cleared?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "Can you confirm whether this client's ACH payment cleared?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2624,
+                  "candidateCount": 7,
+                  "candidates": [
+                    {
+                      "id": "v3src_bank_payment_verification",
+                      "rank": 1,
+                      "score": 119.364537982231,
+                      "decisionKey": "bank-ach-payment-verification-and-channel",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.4472135954999579,
+                      "matchedDecisionId": "v3src_bank_payment_verification::a2"
+                    },
+                    {
+                      "id": "claim_36b30f2bb7353122__a5",
+                      "rank": 2,
+                      "score": 119.07189384222852,
+                      "decisionKey": "payment-plan-and-link-boundaries-answer-6-a5",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.282842712474619,
+                      "matchedDecisionId": "claim_36b30f2bb7353122__a5::a1"
+                    },
+                    {
+                      "id": "claim_00511e4e86668762__a3",
+                      "rank": 3,
+                      "score": 114.34284303244283,
+                      "decisionKey": "post-sale-handoff-after-close-what-reps-can-say-1-a3",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.2581988897471611,
+                      "matchedDecisionId": "claim_00511e4e86668762__a3::a1"
+                    },
+                    {
+                      "id": "transcript-payme-after-confirmed-payment",
+                      "rank": 4,
+                      "score": 112.10366723545579,
+                      "decisionKey": "post-sale-payme-after-payment-confirmed",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.33541019662496846,
+                      "matchedDecisionId": "transcript-payme-after-confirmed-payment::a3"
+                    },
+                    {
+                      "id": "operational_6de8ce93e1513063",
+                      "rank": 5,
+                      "score": 103.85770955146941,
+                      "decisionKey": "ach-payment-not-available",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.22360679774997896,
+                      "matchedDecisionId": "operational_6de8ce93e1513063::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a6",
+                      "rank": 6,
+                      "score": 100.70619975056307,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a6",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.15339299776947407,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a6::a1"
+                    },
+                    {
+                      "id": "claim_0d687aaee6ce547e__a4",
+                      "rank": 7,
+                      "score": 96.2461710963833,
+                      "decisionKey": "post-sale-handoff-after-close-what-reps-must-not-say-1-a4",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.14509525002200233,
+                      "matchedDecisionId": "claim_0d687aaee6ce547e__a4::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3488,
+                        "hardCompatible": 35,
+                        "directLaneSelected": 8,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "v3src_bank_payment_verification",
+                          "claim_36b30f2bb7353122__a5",
+                          "claim_00511e4e86668762__a3",
+                          "transcript-payme-after-confirmed-payment",
+                          "operational_6de8ce93e1513063",
+                          "claim_011c2a2b1fcc2c79__a6",
+                          "claim_0d687aaee6ce547e__a4"
+                        ],
+                        "rejectionCounts": {
+                          "decision_object": 158,
+                          "decision_contract": 3287,
+                          "relation": 3290,
+                          "other_hard_boundary": 4,
+                          "payment_qualifier": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Confirm whether the client's ACH payment cleared.",
+                      "relation": "status",
+                      "request_kind": "current_lookup",
+                      "product_scope": "unknown",
+                      "domains": [
+                        "payments"
+                      ],
+                      "actions": [
+                        "confirm"
+                      ],
+                      "entities": [
+                        "ACH payment",
+                        "client"
+                      ],
+                      "lane": "route",
+                      "evidence_refs": [],
+                      "supported_claim": "",
+                      "reason": "sourcePlan mandates route for N1; forcedRouteKey is finance.",
+                      "route_key": "finance",
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "route",
+                  "confidence_score": 0,
+                  "reasoning_summary": "The user asks to confirm a specific payment's clearance status, which is a current lookup of the payment status. sourcePlan requires routing N1 to finance; no answer evidence is used. Operational overlay policies available: 1750."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "route",
+                      "directPolicyIds": [],
+                      "preferredPolicyIds": [],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "This request asks the finance action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+                    }
+                  ],
+                  "reasoningSummary": "C1 is the most direct answer, instructing to route to finance for verification. C2, C3, C4, and C6 reinforce that ACH should not be treated as confirmed until cleared, but they are not necessary for the answer. C5 claims ACH is unavailable, conflicting with the other cards, but it is not answer-eligible and is less authoritative. The preferred answer is C1 alone. V5.2 applied the non-bypassable decision contract and contextual authority gate."
+                },
+                "executionMode": {
+                  "planning": "hybrid_model",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "route",
+                  "sentenceChecks": [],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_query_plan",
+                    "status": "success",
+                    "latencyMs": 2667,
+                    "promptChars": 4187,
+                    "completionTokens": 173,
+                    "totalTokens": 1097,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_source_plan",
+                    "status": "success",
+                    "latencyMs": 5853,
+                    "promptChars": 18426,
+                    "completionTokens": 373,
+                    "totalTokens": 5182,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_evidence_answer",
+                    "status": "success",
+                    "latencyMs": 2376,
+                    "promptChars": 9653,
+                    "completionTokens": 118,
+                    "totalTokens": 2248,
+                    "reasoningMode": "disabled",
+                    "temperature": 0.1
+                  }
+                ],
+                "stageTimings": {
+                  "turnResolutionMs": 6,
+                  "queryPlanningMs": 2678,
+                  "v5BoundedRetrievalMs": 916,
+                  "sourcePlanningMs": 5860,
+                  "evidenceDraftingMs": 2376,
+                  "validationMs": 0,
+                  "totalMs": 11839
+                }
+              }
+            }
+          }
+        },
+        {
+          "question": "Can I email the contract link if the client wants to review it and is paying by wire?",
+          "independent": true,
+          "evaluationStrata": [
+            "source_fidelity",
+            "permission"
+          ],
+          "goldNeeds": [
+            {
+              "expectedDisposition": "answer",
+              "claim": "A requested contract may be sent; screen-sharing remains best practice. The source never said do not send."
+            }
+          ],
+          "systems": {
+            "v5": {
+              "ok": true,
+              "answer": "Yes, you are allowed to share the contract via email before the client signs.",
+              "structuredAnswer": {
+                "summary": "Yes, you are allowed to share the contract via email before the client signs.",
+                "sections": [
+                  {
+                    "title": "Guidance",
+                    "items": [
+                      "Yes, you are allowed to share the contract via email before the client signs."
+                    ],
+                    "tone": "good"
+                  }
+                ],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "evidence"
+              },
+              "lane": "answer",
+              "needsRoute": false,
+              "routeReason": null,
+              "routeChannels": [],
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "latencyMs": 15578,
+              "citations": [
+                {
+                  "policyId": "operational_95ddcec72a090d31",
+                  "title": "Sharing Contract via Email Before Signing",
+                  "decisionKey": "sharing-contract-via-email-before-signing",
+                  "lastReviewed": "2026-05-28",
+                  "authority": 9.5,
+                  "sourceKind": "authoritative_slack_operational_qna",
+                  "approvedBy": [
+                    "Madeline"
+                  ]
+                }
+              ],
+              "selectedPolicyIds": [
+                "operational_95ddcec72a090d31"
+              ],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.2-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6+v52_controlled-decision-r2",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v20:7bb08f4347bd30c5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "Can I email the contract link if the client wants to review it and is paying by wire?",
+                  "standaloneQuestion": "Can I email the contract link if the client wants to review it and is paying by wire?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "Can I email the contract link if the client wants to review it and is paying by wire?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2624,
+                  "candidateCount": 7,
+                  "candidates": [
+                    {
+                      "id": "operational_366edb08dd9615f4",
+                      "rank": 1,
+                      "score": 157.35480860008187,
+                      "decisionKey": "send-contract-by-email-for-lawyer-review",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.4351941398892446,
+                      "matchedDecisionId": "operational_366edb08dd9615f4::a1"
+                    },
+                    {
+                      "id": "operational_95ddcec72a090d31",
+                      "rank": 2,
+                      "score": 151.87907478505076,
+                      "decisionKey": "sharing-contract-via-email-before-signing",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.3086066999241838,
+                      "matchedDecisionId": "operational_95ddcec72a090d31::a1"
+                    },
+                    {
+                      "id": "claim_e71b4c1ff47ef993",
+                      "rank": 3,
+                      "score": 138.27102086756202,
+                      "decisionKey": "payment-completed-but-agreement-not-signed",
+                      "answerability": "route_or_support",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.15118578920369088,
+                      "matchedDecisionId": "claim_e71b4c1ff47ef993::a1"
+                    },
+                    {
+                      "id": "claim_c388458bcb9558a7",
+                      "rank": 4,
+                      "score": 133.33015759496635,
+                      "decisionKey": "paid-in-full-split-across-two-cards",
+                      "answerability": "route_or_support",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.19446111706564934,
+                      "matchedDecisionId": "claim_c388458bcb9558a7::a1"
+                    },
+                    {
+                      "id": "claim_582e2ccc60704621",
+                      "rank": 5,
+                      "score": 132.47779012265653,
+                      "decisionKey": "contract-before-down-payment",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.3849001794597505,
+                      "matchedDecisionId": "claim_582e2ccc60704621::a1"
+                    },
+                    {
+                      "id": "operational_fa1e771002ae15b3",
+                      "rank": 6,
+                      "score": 131.47170660478866,
+                      "decisionKey": "email-follow-up-without-contract",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.1786474002526241,
+                      "matchedDecisionId": "operational_fa1e771002ae15b3::a1"
+                    },
+                    {
+                      "id": "operational_ce1428290a640745",
+                      "rank": 7,
+                      "score": 131.20298375888282,
+                      "decisionKey": "contract-review-before-payment",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.26013299085723596,
+                      "matchedDecisionId": "operational_ce1428290a640745::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3488,
+                        "hardCompatible": 142,
+                        "directLaneSelected": 8,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "operational_366edb08dd9615f4",
+                          "operational_95ddcec72a090d31",
+                          "claim_e71b4c1ff47ef993",
+                          "claim_c388458bcb9558a7",
+                          "claim_582e2ccc60704621",
+                          "operational_fa1e771002ae15b3",
+                          "operational_ce1428290a640745"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 1894,
+                          "decision_contract": 2625,
+                          "workflow_stage_or_time": 415,
+                          "decision_object": 858,
+                          "material_condition": 69,
+                          "payment_qualifier": 27,
+                          "other_hard_boundary": 82,
+                          "authority_excluded": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Is emailing the contract link permitted when the client wants to review it and is paying by wire?",
+                      "relation": "permission",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [
+                        "contract",
+                        "payment"
+                      ],
+                      "actions": [
+                        "email",
+                        "review",
+                        "pay"
+                      ],
+                      "entities": [
+                        "contract link",
+                        "wire payment"
+                      ],
+                      "lane": "answer",
+                      "evidence_refs": [
+                        "operational_95ddcec72a090d31"
+                      ],
+                      "supported_claim": "Yes, you are allowed to share the contract via email before the client signs.",
+                      "reason": "C2 is the preferred answer_evidence card and explicitly permits sharing the contract via email before signing with no conditions, fully covering the request.",
+                      "route_key": null,
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "answer",
+                  "confidence_score": 100,
+                  "reasoning_summary": "The user asks whether emailing the contract link is allowed under the conditions that the client wants to review it and is paying by wire. This is a single atomic decision about permission, so one need is sufficient. sourcePlan designates C2 as the sole preferred answer_evidence card for N1. C2's decision directly permits emailing the contract before signing without conditions, satisfying the request. Other cards are either route_or_support or address different scenarios and are not preferred. Operational overlay policies available: 1750."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "answer",
+                      "directPolicyIds": [
+                        "operational_95ddcec72a090d31"
+                      ],
+                      "preferredPolicyIds": [
+                        "operational_95ddcec72a090d31"
+                      ],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "Applied the matching claim-scoped authority resolution using operational_95ddcec72a090d31. V5.2 verified exact decision identity before allowing answer recovery.",
+                      "modelDisposition": "answer",
+                      "modelDirectPolicyIds": [
+                        "operational_95ddcec72a090d31",
+                        "claim_582e2ccc60704621",
+                        "operational_ce1428290a640745"
+                      ],
+                      "deterministicPolicyIds": [
+                        "operational_95ddcec72a090d31"
+                      ]
+                    }
+                  ],
+                  "reasoningSummary": "C2 (direct_company_authority, 2026-05-28) explicitly allows sharing the contract via email before signing with no stated conditions, covering the request. C5 (governed_approved, 2026-06-03) and C7 (direct_company_authority, 2026-04-30) also permit sending before payment but are not needed as C2 fully answers. No conflicts exist among these permissive cards. C3 and C4 are not answer-eligible and address different scenarios. V5.2 applied the non-bypassable decision contract and contextual authority gate."
+                },
+                "executionMode": {
+                  "planning": "hybrid_model",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "pass",
+                  "sentenceChecks": [
+                    {
+                      "sentenceId": "S1",
+                      "status": "supported",
+                      "evidenceRefs": [
+                        "operational_95ddcec72a090d31"
+                      ],
+                      "answeredNeedIds": [
+                        "N1"
+                      ],
+                      "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                      "deterministicErrors": [
+                        "the answer reverses the permission polarity in the evidence"
+                      ]
+                    }
+                  ],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_query_plan",
+                    "status": "success",
+                    "latencyMs": 3615,
+                    "promptChars": 4241,
+                    "completionTokens": 222,
+                    "totalTokens": 1160,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_source_plan",
+                    "status": "success",
+                    "latencyMs": 4541,
+                    "promptChars": 15179,
+                    "completionTokens": 237,
+                    "totalTokens": 3993,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_evidence_answer",
+                    "status": "success",
+                    "latencyMs": 3564,
+                    "promptChars": 18680,
+                    "completionTokens": 234,
+                    "totalTokens": 4721,
+                    "reasoningMode": "disabled",
+                    "temperature": 0.1
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_sentence_validation",
+                    "status": "success",
+                    "latencyMs": 1578,
+                    "promptChars": 3339,
+                    "completionTokens": 87,
+                    "totalTokens": 799,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  }
+                ],
+                "stageTimings": {
+                  "turnResolutionMs": 2,
+                  "queryPlanningMs": 3617,
+                  "v5BoundedRetrievalMs": 2240,
+                  "sourcePlanningMs": 4558,
+                  "evidenceDraftingMs": 3566,
+                  "validationMs": 1590,
+                  "totalMs": 15578
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "v4-1-focused-follow-up",
+      "title": "",
+      "prompts": [
+        {
+          "question": "Can reps create a custom payment plan for a client?",
+          "evaluationStrata": [
+            "follow_up",
+            "payment_option"
+          ],
+          "goldNeeds": [
+            {
+              "expectedDisposition": "answer",
+              "claim": "Only approved listed plans may be used."
+            }
+          ],
+          "systems": {
+            "v5": {
+              "ok": true,
+              "answer": "Reps must not create, suggest, or promise custom payment terms.",
+              "structuredAnswer": {
+                "summary": "Reps must not create, suggest, or promise custom payment terms.",
+                "sections": [
+                  {
+                    "title": "Guidance",
+                    "items": [
+                      "Reps must not create, suggest, or promise custom payment terms."
+                    ],
+                    "tone": "good"
+                  }
+                ],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "evidence"
+              },
+              "lane": "answer",
+              "needsRoute": false,
+              "routeReason": null,
+              "routeChannels": [],
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "latencyMs": 12732,
+              "citations": [
+                {
+                  "policyId": "claim_011c2a2b1fcc2c79__a1",
+                  "title": "Payment Plan And Link Boundaries: What Reps Must Not Do",
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a1",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                },
+                {
+                  "policyId": "claim_011c2a2b1fcc2c79__a2",
+                  "title": "Payment Plan And Link Boundaries: What Reps Must Not Do",
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a2",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                },
+                {
+                  "policyId": "claim_e30857cfce9af5e5",
+                  "title": "Payment Plan And Link Boundaries: Answer",
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-2",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                }
+              ],
+              "selectedPolicyIds": [
+                "claim_011c2a2b1fcc2c79__a1",
+                "claim_011c2a2b1fcc2c79__a2",
+                "claim_e30857cfce9af5e5"
+              ],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.2-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6+v52_controlled-decision-r2",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v20:7bb08f4347bd30c5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "Can reps create a custom payment plan for a client?",
+                  "standaloneQuestion": "Can reps create a custom payment plan for a client?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "Can reps create a custom payment plan for a client?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2624,
+                  "candidateCount": 8,
+                  "candidates": [
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a1",
+                      "rank": 1,
+                      "score": 192.41158257571772,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.32025630761017426,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a1::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a2",
+                      "rank": 2,
+                      "score": 185.3239654448115,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.26490647141300877,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a2::a1"
+                    },
+                    {
+                      "id": "claim_e30857cfce9af5e5",
+                      "rank": 3,
+                      "score": 183.35952241722984,
+                      "decisionKey": "payment-plan-and-link-boundaries-answer-2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.45643546458763845,
+                      "matchedDecisionId": "claim_e30857cfce9af5e5::a2"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a3",
+                      "rank": 4,
+                      "score": 148.97166896311313,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a3",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.31426968052735443,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a3::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a5",
+                      "rank": 5,
+                      "score": 148.10227092161003,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a5",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.3450327796711771,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a5::a1"
+                    },
+                    {
+                      "id": "claim_527d746a2e41c49f__a3",
+                      "rank": 6,
+                      "score": 144.50258011634907,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a3",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.2581988897471611,
+                      "matchedDecisionId": "claim_527d746a2e41c49f__a3::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a4",
+                      "rank": 7,
+                      "score": 144.27854788756787,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a4",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.2581988897471611,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a4::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a6",
+                      "rank": 8,
+                      "score": 139.13977975171952,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a6",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.28005601680560194,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a6::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3488,
+                        "hardCompatible": 28,
+                        "directLaneSelected": 8,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "claim_011c2a2b1fcc2c79__a1",
+                          "claim_011c2a2b1fcc2c79__a2",
+                          "claim_e30857cfce9af5e5",
+                          "claim_011c2a2b1fcc2c79__a3",
+                          "claim_011c2a2b1fcc2c79__a5",
+                          "claim_527d746a2e41c49f__a3",
+                          "claim_011c2a2b1fcc2c79__a4",
+                          "claim_011c2a2b1fcc2c79__a6"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 3351,
+                          "decision_contract": 3381,
+                          "other_hard_boundary": 69,
+                          "decision_object": 35,
+                          "payment_qualifier": 2,
+                          "authority_excluded": 3
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Can reps create a custom payment plan for a client?",
+                      "relation": "payment_option",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [
+                        "payment"
+                      ],
+                      "actions": [
+                        "create"
+                      ],
+                      "entities": [
+                        "custom payment plan",
+                        "rep",
+                        "client"
+                      ],
+                      "lane": "answer",
+                      "evidence_refs": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5"
+                      ],
+                      "supported_claim": "Reps must not create, suggest, or promise custom payment terms.",
+                      "reason": "C1 directly states the prohibition against creating custom payment plans, matching the need exactly.",
+                      "route_key": null,
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "answer",
+                  "confidence_score": 100,
+                  "reasoning_summary": "The user asks whether reps have permission to create a custom payment plan. This is a single atomic decision about permission, so one need is sufficient. C1 is the highest-ranked answer card and explicitly prohibits reps from creating custom payment plans. It is sufficient and directly applicable. C2 and C3 reinforce the same rule but are not needed for a concise answer. Operational overlay policies available: 1750."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "answer",
+                      "directPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5"
+                      ],
+                      "preferredPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5"
+                      ],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "Applied the matching claim-scoped authority resolution using claim_e30857cfce9af5e5, claim_011c2a2b1fcc2c79__a1, claim_011c2a2b1fcc2c79__a2. V5.2 verified exact decision identity before allowing answer recovery.",
+                      "modelDisposition": "answer",
+                      "modelDirectPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5",
+                        "claim_011c2a2b1fcc2c79__a3",
+                        "claim_011c2a2b1fcc2c79__a5",
+                        "claim_527d746a2e41c49f__a3"
+                      ],
+                      "deterministicPolicyIds": [
+                        "claim_e30857cfce9af5e5",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2"
+                      ]
+                    }
+                  ],
+                  "reasoningSummary": "All answer-eligible cards (C1-C6) consistently prohibit reps from creating custom payment plans. C1 is the most direct and sufficient, so it is preferred. No conflicts are present. V5.2 applied the non-bypassable decision contract and contextual authority gate."
+                },
+                "executionMode": {
+                  "planning": "hybrid_model",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "pass",
+                  "sentenceChecks": [
+                    {
+                      "sentenceId": "S1",
+                      "status": "supported",
+                      "evidenceRefs": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5"
+                      ],
+                      "answeredNeedIds": [
+                        "N1"
+                      ],
+                      "reason": "The sentence directly states that reps must not create, suggest, or promise custom payment terms, which is explicitly supported by the evidence: 'Do not create, suggest, or promise custom payment terms' and 'Custom payment plans... are not allowed. Reps should not suggest, create, or promise them.' This fully answers the need 'Can reps create a custom payment plan for a client?' with a clear prohibition.",
+                      "deterministicErrors": []
+                    }
+                  ],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_query_plan",
+                    "status": "success",
+                    "latencyMs": 2790,
+                    "promptChars": 4173,
+                    "completionTokens": 195,
+                    "totalTokens": 1117,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_source_plan",
+                    "status": "success",
+                    "latencyMs": 2779,
+                    "promptChars": 20920,
+                    "completionTokens": 165,
+                    "totalTokens": 5672,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_evidence_answer",
+                    "status": "success",
+                    "latencyMs": 3465,
+                    "promptChars": 13877,
+                    "completionTokens": 219,
+                    "totalTokens": 3684,
+                    "reasoningMode": "disabled",
+                    "temperature": 0.1
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_sentence_validation",
+                    "status": "success",
+                    "latencyMs": 2789,
+                    "promptChars": 3632,
+                    "completionTokens": 196,
+                    "totalTokens": 1002,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  }
+                ],
+                "stageTimings": {
+                  "turnResolutionMs": 0,
+                  "queryPlanningMs": 2792,
+                  "v5BoundedRetrievalMs": 894,
+                  "sourcePlanningMs": 2787,
+                  "evidenceDraftingMs": 3465,
+                  "validationMs": 2789,
+                  "totalMs": 12732
+                }
+              }
+            }
+          }
+        },
+        {
+          "question": "What if the client keeps insisting?",
+          "evaluationStrata": [
+            "follow_up",
+            "intent_fidelity"
+          ],
+          "goldNeeds": [
+            {
+              "expectedDisposition": "answer",
+              "claim": "Restate the approved-plan boundary without inventing an escalation or exception request."
+            }
+          ],
+          "systems": {
+            "v5": {
+              "ok": true,
+              "answer": "Reps cannot create, suggest, or promise custom payment terms; they must use only the approved listed plans. If the client keeps insisting, do not route the request as if finance may approve a new plan; the answer remains to use only the approved listed plans.",
+              "structuredAnswer": {
+                "summary": "Reps cannot create, suggest, or promise custom payment terms; they must use only the approved listed plans. If the client keeps insisting, do not route the request as if finance may approve a new plan; the answer remains to use only the approved listed plans.",
+                "sections": [
+                  {
+                    "title": "Answer",
+                    "items": [
+                      "Reps cannot create, suggest, or promise custom payment terms; they must use only the approved listed plans.",
+                      "If the client keeps insisting, do not route the request as if finance may approve a new plan; the answer remains to use only the approved listed plans."
+                    ],
+                    "tone": "good"
+                  }
+                ],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "evidence"
+              },
+              "lane": "answer",
+              "needsRoute": false,
+              "routeReason": null,
+              "routeChannels": [],
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "latencyMs": 17602,
+              "citations": [
+                {
+                  "policyId": "claim_011c2a2b1fcc2c79__a1",
+                  "title": "Payment Plan And Link Boundaries: What Reps Must Not Do",
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a1",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                },
+                {
+                  "policyId": "claim_011c2a2b1fcc2c79__a2",
+                  "title": "Payment Plan And Link Boundaries: What Reps Must Not Do",
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a2",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                },
+                {
+                  "policyId": "claim_e30857cfce9af5e5",
+                  "title": "Payment Plan And Link Boundaries: Answer",
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-2",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                },
+                {
+                  "policyId": "claim_527d746a2e41c49f__a2",
+                  "title": "Payment Plan And Link Boundaries: What Reps Can Say",
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a2",
+                  "lastReviewed": "2026-07-08",
+                  "authority": 100,
+                  "sourceKind": "approved_article",
+                  "approvedBy": [
+                    "Syed Moonis Haider"
+                  ]
+                }
+              ],
+              "selectedPolicyIds": [
+                "claim_011c2a2b1fcc2c79__a1",
+                "claim_011c2a2b1fcc2c79__a2",
+                "claim_e30857cfce9af5e5",
+                "claim_527d746a2e41c49f__a2"
+              ],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.2-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6+v52_controlled-decision-r2",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v20:7bb08f4347bd30c5",
+                "turn": {
+                  "kind": "follow_up",
+                  "currentQuestion": "What if the client keeps insisting?",
+                  "standaloneQuestion": "Immediate prior subject: Can reps create a custom payment plan for a client?\nCurrent request about that subject: What if the client keeps insisting?",
+                  "immediatePreviousUserQuestion": "Can reps create a custom payment plan for a client?",
+                  "immediatePreviousAssistantAnswer": "Reps must not create, suggest, or promise custom payment terms.",
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": true,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [
+                    {
+                      "role": "user",
+                      "content": "Can reps create a custom payment plan for a client?"
+                    },
+                    {
+                      "role": "assistant",
+                      "content": "Reps must not create, suggest, or promise custom payment terms."
+                    }
+                  ],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+                  "actionableQuestion": "What if the client keeps insisting?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2624,
+                  "candidateCount": 6,
+                  "candidates": [
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a2",
+                      "rank": 1,
+                      "score": 183.8392907259608,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.2176428750330035,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a2::a1"
+                    },
+                    {
+                      "id": "claim_011c2a2b1fcc2c79__a1",
+                      "rank": 2,
+                      "score": 180.53158257571772,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-must-not-do-1-a1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.2631174057921088,
+                      "matchedDecisionId": "claim_011c2a2b1fcc2c79__a1::a1"
+                    },
+                    {
+                      "id": "claim_e30857cfce9af5e5",
+                      "rank": 3,
+                      "score": 172.55952241722986,
+                      "decisionKey": "payment-plan-and-link-boundaries-answer-2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.3,
+                      "matchedDecisionId": "claim_e30857cfce9af5e5::a3"
+                    },
+                    {
+                      "id": "claim_527d746a2e41c49f__a2",
+                      "rank": 4,
+                      "score": 162.45268548585707,
+                      "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.26148818018424536,
+                      "matchedDecisionId": "claim_527d746a2e41c49f__a2::a2"
+                    },
+                    {
+                      "id": "owner-unlisted-payment-split-boundary",
+                      "rank": 5,
+                      "score": 155.25510702184266,
+                      "decisionKey": "payments-unlisted-split-and-amounts",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.23354968324845687,
+                      "matchedDecisionId": "owner-unlisted-payment-split-boundary::a1"
+                    },
+                    {
+                      "id": "claim_49bd9449c5bfb1a7",
+                      "rank": 6,
+                      "score": 143.8955822576647,
+                      "decisionKey": "payment-plan-and-link-boundaries-answer-1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0.23094010767585027,
+                      "matchedDecisionId": "claim_49bd9449c5bfb1a7::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_8ff5d8280eee8ff6",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3488,
+                        "hardCompatible": 92,
+                        "directLaneSelected": 8,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "claim_011c2a2b1fcc2c79__a2",
+                          "claim_011c2a2b1fcc2c79__a1",
+                          "claim_e30857cfce9af5e5",
+                          "claim_527d746a2e41c49f__a2",
+                          "owner-unlisted-payment-split-boundary",
+                          "claim_49bd9449c5bfb1a7"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 3356,
+                          "decision_contract": 3381,
+                          "decision_object": 35,
+                          "payment_qualifier": 2,
+                          "authority_excluded": 3
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Can reps create a custom payment plan for a client? What if the client keeps insisting?",
+                      "relation": "payment_option",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [
+                        "payment",
+                        "customer service"
+                      ],
+                      "actions": [
+                        "handle"
+                      ],
+                      "entities": [
+                        "client",
+                        "custom payment plan"
+                      ],
+                      "lane": "answer",
+                      "evidence_refs": [
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2"
+                      ],
+                      "supported_claim": "Reps cannot create, suggest, or promise custom payment terms; they must use only the approved listed plans. If the client keeps insisting, do not route the request as if finance may approve a new plan; the answer remains to use only the approved listed plans.",
+                      "reason": "C2 explicitly prohibits creating, suggesting, or promising custom payment terms. C1 directly addresses the insistence scenario, stating not to route as if finance may approve a new plan and to use only approved listed plans. Both are preferred evidence and fully answer the need.",
+                      "route_key": null,
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "answer",
+                  "confidence_score": 100,
+                  "reasoning_summary": "The user asks what to do when a client keeps insisting on a custom payment plan, given the prior context that reps cannot create one. This is a single atomic need for the procedure or escalation path in such a situation. All preferred cards uniformly prohibit custom payment plans. C2 provides the core prohibition, and C1 explicitly handles the insistence scenario, making them sufficient and authoritative. Operational overlay policies available: 1750."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "answer",
+                      "directPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2"
+                      ],
+                      "preferredPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2"
+                      ],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "Applied the matching claim-scoped authority resolution using owner-unlisted-payment-split-boundary, claim_e30857cfce9af5e5, claim_49bd9449c5bfb1a7, claim_527d746a2e41c49f__a2, claim_011c2a2b1fcc2c79__a1, claim_011c2a2b1fcc2c79__a2. V5.2 verified exact decision identity before allowing answer recovery.",
+                      "modelDisposition": "answer",
+                      "modelDirectPolicyIds": [
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2",
+                        "owner-unlisted-payment-split-boundary",
+                        "claim_49bd9449c5bfb1a7"
+                      ],
+                      "deterministicPolicyIds": [
+                        "owner-unlisted-payment-split-boundary",
+                        "claim_e30857cfce9af5e5",
+                        "claim_49bd9449c5bfb1a7",
+                        "claim_527d746a2e41c49f__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2"
+                      ]
+                    }
+                  ],
+                  "reasoningSummary": "All retrieved cards are answer-eligible for N1 and uniformly prohibit custom payment plans, directing reps to use only approved listed plans. No conflicting positions exist. C1 and C2 are preferred as they explicitly address the insistence scenario, while the others reinforce the same rule. V5.2 applied the non-bypassable decision contract and contextual authority gate."
+                },
+                "executionMode": {
+                  "planning": "hybrid_model",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "pass",
+                  "sentenceChecks": [
+                    {
+                      "sentenceId": "S1",
+                      "status": "supported",
+                      "evidenceRefs": [
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2"
+                      ],
+                      "answeredNeedIds": [
+                        "N1"
+                      ],
+                      "reason": "The sentence directly states that reps cannot create, suggest, or promise custom payment terms and must use only approved listed plans. Evidence explicitly says 'Do not create, suggest, or promise custom payment terms' and 'the answer is to use only the approved listed plans'. This fully answers the need 'Can reps create a custom payment plan for a client?' and addresses the insistence scenario by establishing the rule.",
+                      "deterministicErrors": []
+                    },
+                    {
+                      "sentenceId": "S2",
+                      "status": "supported",
+                      "evidenceRefs": [
+                        "claim_011c2a2b1fcc2c79__a2",
+                        "claim_011c2a2b1fcc2c79__a1",
+                        "claim_e30857cfce9af5e5",
+                        "claim_527d746a2e41c49f__a2"
+                      ],
+                      "answeredNeedIds": [
+                        "N1"
+                      ],
+                      "reason": "The sentence addresses the 'if the client keeps insisting' scenario by stating not to route the request as if finance may approve a new plan and that the answer remains to use only approved listed plans. Evidence explicitly says 'Do not route a custom payment plan request as if finance may approve a new plan; the answer is to use only the approved listed plans.' This directly answers the second part of the need.",
+                      "deterministicErrors": []
+                    }
+                  ],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_query_plan",
+                    "status": "success",
+                    "latencyMs": 3314,
+                    "promptChars": 4541,
+                    "completionTokens": 237,
+                    "totalTokens": 1237,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_source_plan",
+                    "status": "success",
+                    "latencyMs": 3347,
+                    "promptChars": 17045,
+                    "completionTokens": 201,
+                    "totalTokens": 4554,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_evidence_answer",
+                    "status": "success",
+                    "latencyMs": 4877,
+                    "promptChars": 16524,
+                    "completionTokens": 343,
+                    "totalTokens": 4536,
+                    "reasoningMode": "disabled",
+                    "temperature": 0.1
+                  },
+                  {
+                    "provider": "deepseek",
+                    "model": "deepseek-v4-pro",
+                    "purpose": "v4_systemic_sentence_validation",
+                    "status": "success",
+                    "latencyMs": 5143,
+                    "promptChars": 5003,
+                    "completionTokens": 414,
+                    "totalTokens": 1567,
+                    "reasoningMode": "disabled",
+                    "temperature": 0
+                  }
+                ],
+                "stageTimings": {
+                  "turnResolutionMs": 6,
+                  "queryPlanningMs": 3316,
+                  "v5BoundedRetrievalMs": 900,
+                  "sourcePlanningMs": 3354,
+                  "evidenceDraftingMs": 4878,
+                  "validationMs": 5143,
+                  "totalMs": 17602
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "v5": {
+      "completed": 5,
+      "lanes": {
+        "answer": 4,
+        "route": 1
+      },
+      "providerFailures": 0
+    }
+  }
+}

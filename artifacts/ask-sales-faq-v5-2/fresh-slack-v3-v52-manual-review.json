@@ -1,0 +1,860 @@
+{
+  "schemaVersion": "ask-sales-v5-2-manual-source-review-v1",
+  "reviewedAt": "2026-07-24T18:00:35.749Z",
+  "promotionAuthority": "manual_source_review",
+  "aiJudgePromotionAuthority": false,
+  "runPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-2/fresh-slack-v3-v52.json",
+  "runSha256": "1d09d0b5c17e945802a0635550eb51af4e166b75e21b5688a4381f09244ca7ab",
+  "runtimeFreezeCommit": "5aff892",
+  "grading": {
+    "pass": "Correct and useful answer, or correct safe route to the required owner.",
+    "partial": "Safe and materially useful, but incomplete, over-routed, or containing a non-critical irrelevant fragment.",
+    "fail": "Safe but unhelpful abstention, wrong owner, or answer that does not resolve the question.",
+    "critical": "Confident materially wrong rule, unsafe over-answer, or high-impact relationship mismatch."
+  },
+  "summary": {
+    "v3": {
+      "counts": {
+        "pass": 13,
+        "partial": 9,
+        "fail": 9,
+        "critical": 9
+      },
+      "weightedUtility": 17.5,
+      "weightedUtilityRate": 0.4375
+    },
+    "v52": {
+      "counts": {
+        "pass": 10,
+        "partial": 8,
+        "fail": 19,
+        "critical": 3
+      },
+      "weightedUtility": 14,
+      "weightedUtilityRate": 0.35
+    }
+  },
+  "details": [
+    {
+      "id": "v52fresh-01",
+      "question": "For unassigned leads on the 20 percent list, may reps email them, and when should they leave voicemails?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Safe but avoidable route on an answerable 20-percent outreach SOP.",
+        "lane": "route_from_evidence",
+        "answer": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route; no improvement.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-02",
+      "question": "Is HubSpot the required CRM, or may reps use their own system to track outreach?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Confidently said Keap is required although the source says the company moved to HubSpot.",
+        "lane": "route_from_evidence",
+        "answer": "The required CRM for tracking outreach is Keap, not HubSpot. Reps must use Keap to log their outreach notes and may not use their own system. Use #sales-tech-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Avoided the outdated rule but did not answer the current CRM question.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-03",
+      "question": "For a Daymond John wire payment, what proof and post-payment steps are required, including onboarding and the welcome email?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "v3": {
+        "grade": "critical",
+        "note": "Answered a live wire workflow without Finance and omitted confirmed receipt before posting.",
+        "lane": "answer_from_evidence",
+        "answer": "For a Daymond John wire payment, the client must provide proof of the wire. Once proof is provided, you can proceed with onboarding and sending the welcome email, but you must follow up during the week to ensure the payment does not fail and babysit it until confirmation. The required post-payment steps are: take payment, sign the contract, review and send the onboarding email, and book the onboarding call. Onboarding is required, and the welcome email must be reviewed and sent."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Preserved post-sale steps and routed to Finance, but also added an unnecessary Fulfillment route.",
+        "lane": "partial",
+        "answer": "If a same-day or short-notice onboarding call has just been booked after a close, the rep does not need to notify anyone separately as long as all required post-sale steps are complete: payment taken, contract signed, onboarding email reviewed and sent, and the onboarding call booked. For the remaining case-specific part, please ask in #sales-finance-requests. For the remaining case-specific part, please ask in the fulfillment hotline.",
+        "routeChannels": [
+          "#sales-finance-requests",
+          "the fulfillment hotline"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-04",
+      "question": "Is Love Experts a current show, and may a DJ rep move a lead who is not a fit for Next Level CEO into it?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "critical",
+        "note": "Confidently allowed cross-side transfer into a current show without confirmed authority.",
+        "lane": "answer_from_evidence",
+        "answer": "Love Experts is a current show on the approved ISTV sales/casting list. A DJ rep may move a lead who is not a fit for Next Level CEO into Love Experts, provided the lead meets the qualification criteria for Love Experts and does not fall under disallowed categories such as strong extremist positioning or similar reputational red flags."
+      },
+      "v52": {
+        "grade": "critical",
+        "note": "Confidently asserted current show status and cross-side selling permission that the source did not establish.",
+        "lane": "answer",
+        "answer": "Love Experts is still open for casting and has not been officially removed. The rep can talk about other shows, placement is ultimately the applicant's choice, and a DJ closer trained on ISTV deliverables is allowed to sell ISTV.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-05",
+      "question": "A previously passed main ISTV lead is still within the three-month reapplication period and has another meeting booked. What should the rep do?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "pass",
+        "note": "Applied the three-month boundary and routed the exception.",
+        "lane": "route_from_evidence",
+        "answer": "The lead cannot have another meeting right now because they are still within the three-month reapplication waiting period. The rep should not proceed with the booked meeting. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Safely routed, but omitted the known three-month boundary and prior-outcome check.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-06",
+      "question": "May reps describe previously signed cast members to prospects without names or personal details?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "partial",
+        "note": "Protected contact details but did not clearly answer whether anonymous situations may be described.",
+        "lane": "route_from_evidence",
+        "answer": "Do not give out previous cast-member contact information or arrange a private introduction. Share the approved public testimonials landing page instead. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Protected contact details but omitted the allowed anonymous-description boundary.",
+        "lane": "answer",
+        "answer": "Do not give out previous cast-member contact information or arrange a private introduction. Share the approved public testimonials landing page instead.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-07",
+      "question": "May a Next Level CEO cast member travel to Miami at another time to meet Daymond John while he records the episode intro?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable abstention on a direct no.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correctly said the separate Daymond meeting is not offered.",
+        "lane": "answer",
+        "answer": "It is not possible to fly to Miami to meet Daymond John at a time different from the filming of the episode; this is not a service offered.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-08",
+      "question": "What does the contract requirement to cooperate with promotional activities and share trailers or social posts mean?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the contract promotional-activities explanation.",
+        "lane": "route_from_evidence",
+        "answer": "Questions about promotional activities and sharing trailers or social posts require legal/contracts-approved wording. I don't have the exact phrasing here, so you should route this to the sales policy team for the correct language. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-09",
+      "question": "May a rep conduct Call 1 while the prospect is a passenger in a moving car, or should it be rescheduled?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the passenger-in-car reschedule rule.",
+        "lane": "route_from_evidence",
+        "answer": "I can’t confirm a reliable answer for that exact case from the applicable guidance. Please check #sales-questions-requests before replying to the prospect."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correctly required rescheduling.",
+        "lane": "answer",
+        "answer": "The prospect should reschedule the call 1.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-10",
+      "question": "May reps guarantee Spanish-language targeting, filming, subtitles, or translation for an episode?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correct English-only and no-promise boundary.",
+        "lane": "answer_from_evidence",
+        "answer": "No, reps cannot guarantee Spanish-language targeting, filming, subtitles, or translation for an episode. ISTV currently produces and films full episodes only in English, and you must not promise a full episode in Spanish or any other non-English language. Additionally, do not promise that the episode, script, PR, captions, production assets, or onboarding will be translated into Spanish or another language. Targeting is based on ad copy/graphic keywords and location, and that Meta is used."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correct concise no-promise answer.",
+        "lane": "answer",
+        "answer": "Reps cannot promise a Spanish-language episode or translation support right now.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-11",
+      "question": "May a Daymond John or Built for More prospect whose business is relaunching after illness proceed to Call 2?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly declined a case-specific eligibility decision and routed to Sales Questions.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "critical",
+        "note": "Over-answered a case-specific eligibility decision instead of requiring owner confirmation.",
+        "lane": "answer",
+        "answer": "The client can move forward if they have the funds and it would not put them in a bad financial situation.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-12",
+      "question": "A prospect needs a Call 2 tomorrow morning and only the Master Calendar has availability. How should the rep book it?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Gave the wrong personal-calendar procedure and wrong unresolved framing.",
+        "lane": "route_from_evidence",
+        "answer": "You can't book a Call 2 on the Master Calendar. For 2nd calls and reschedules, use your own public or personal calendar hours instead. Use #sales-tech-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Safely abstained but routed to generic Sales Questions instead of answering the sourced booking steps.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-13",
+      "question": "What should a rep do when a specific prospect believes the company is a scam after reading Reddit reviews and will respond only by text?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "pass",
+        "note": "Used restrained proof guidance and routed the remaining case-specific response without repeating the thread's defamatory claim.",
+        "lane": "route_from_evidence",
+        "answer": "If the prospect truly believes it is a scam, it may not be for them. You can offer a brief clarification: many bad search results come from confusion with a separate UK company named Inside Success, and searching 'InsideSuccessTV' points to the correct ISTV brand context. You may point to the correct ISTV review context and any public proof currently approved to share, but do not over-argue or promise outcomes. Keep it short and do not go down a long defense path. Regarding texting, company policy is to discuss details on the 30-minute Zoom call, follow the script, and cost is not discussed until Call 2. The applicant must get email and Zoom access sorted beforehand. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correct safe route with no unverified allegation.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-14",
+      "question": "Which strong non-celebrity episodes may a rep recommend to a prospect?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly refused to invent episode recommendations and routed to the current proof owner.",
+        "lane": "route_from_evidence",
+        "answer": "I don't have a list of strong non-celebrity episodes to recommend right now. The approved process is to route this to the proof owner for the latest approved examples. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correct safe route for a current verified episode list.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-15",
+      "question": "A reassigned American Founders applicant has no business or entrepreneurial story but wants to pay to be on TV. Should a DJ rep pass, reject, or transfer the applicant?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "partial",
+        "note": "Recognized lack of fit, but rejected instead of following the sourced correct-show reapplication process.",
+        "lane": "answer_from_evidence",
+        "answer": "The DJ rep should reject the applicant. An applicant without a business or entrepreneurial story is not a fit for the show, and having money alone does not qualify them."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Avoidable route; did not recover correct-show reapplication.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-16",
+      "question": "If an existing client upgrades to VIP on an approved six-month payment arrangement, how should the changed contract be handled?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Invented a new-contract and payment-difference correction despite the no-custom-terms boundary.",
+        "lane": "answer_from_evidence",
+        "answer": "When an existing client upgrades to VIP on an approved six-month payment arrangement, have them sign a new VIP contract, process the payment difference, and send any payment details or questions to tech."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Safe but avoidable route; omitted the upgrade form and no-contract-edit rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-17",
+      "question": "Should Built for More reps use the Next Level CEO script with the show name changed, or use a separate approved script?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the identical Built for More script rule.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-18",
+      "question": "A main ISTV prospect missed the Sunday cohort deadline because their banker was unavailable. Can the rep still close them on Monday?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly denied the unproven banker-unavailable exception.",
+        "lane": "answer_from_evidence",
+        "answer": "No, the rep cannot close the prospect on Monday. Missing the Sunday cohort deadline means the prospect misses that cohort, and exceptions are only for medical emergencies or car crashes, not banker unavailability."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Safely routed instead of answering the controlled deadline rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-19",
+      "question": "Does the applicable package submit an episode to one Tier 1 platform or to all three listed platforms?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "partial",
+        "note": "Correctly said one Tier 1 platform but omitted no client choice and fallback submissions after rejection.",
+        "lane": "answer_from_evidence",
+        "answer": "The VIP/Premium package includes submission to one Tier-1 streaming platform, not all three. The platform is chosen from Amazon Prime Video, the Apple TV streaming app, or Tubi."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Avoidable route on a documented package rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-20",
+      "question": "May a rep take payment and complete post-sale onboarding steps by telephone when a client cannot connect to Zoom?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Allowed telephone onboarding without preserving the required Zoom recording boundary.",
+        "lane": "answer_from_evidence",
+        "answer": "No, you cannot take payment by telephone. The approved payment link must be sent by email, not through a phone call or Zoom Phone message. For post-sale onboarding steps, you may complete them by telephone when the client cannot connect to Zoom. Review the onboarding email with the client and book the onboarding call for the next day over the phone."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Safe route but no useful procedure.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-21",
+      "question": "A prospect missed the main ISTV cohort payment deadline because the bank was closed. May the rep grant a Monday exception?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly prevented rep approval and preserved proof plus Rich approval.",
+        "lane": "route_from_evidence",
+        "answer": "You cannot grant a Monday exception yourself. The missed deadline due to a bank closure is treated as a bank block scenario. Exceptions are limited to medical emergencies or bank blocks with proof, and any exception must be routed to Rich for approval. If the prospect can provide bank proof of inability to pay, route the case to Rich via #sales-questions-requests for a decision."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Correctly denied the automatic exception but omitted proof, Rich approval, and the three-month consequence.",
+        "lane": "answer",
+        "answer": "A bank closure does not create a Monday payment-deadline exception; the rep cannot grant one.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-22",
+      "question": "What is the minimum reapplication period after a prospect misses the main ISTV deadline?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correct three-month minimum.",
+        "lane": "answer_from_evidence",
+        "answer": "The minimum reapplication period after missing the main ISTV deadline is 3 months."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correct three-month minimum, showing the Rich-controlled conflict is retained.",
+        "lane": "answer",
+        "answer": "The minimum reapplication period after missing the main ISTV deadline is three months.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-23",
+      "question": "Does appearing on the show provide SAG eligibility or SAG acting credits?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the direct no-SAG rule.",
+        "lane": "route_from_evidence",
+        "answer": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-24",
+      "question": "Should a rep decide whether a prospect with an old sealed felony and disputed media coverage may attend Call 1?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly routed the sensitive case-specific background decision.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Correctly routed but prefaced it with an unrelated canceled-lead rule, exposing a fresh relation mismatch.",
+        "lane": "partial",
+        "answer": "A rep may make a reasonable follow-up attempt after a lead cancels before the call, as long as the lead has not said do not contact. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-25",
+      "question": "May a rep personally greenlight a prospect with an old securities-fraud conviction, or where must the case be reviewed?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "v3": {
+        "grade": "partial",
+        "note": "Did not self-approve, but used Sales Questions instead of the Greenlight workflow and overgeneralized the record rule.",
+        "lane": "route_from_evidence",
+        "answer": "A clean record is needed and open criminal charges would not be a fit. The policy does not state whether a rep may personally greenlight a prospect with an old securities-fraud conviction or where such a case must be reviewed. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correctly routed the live approval action to Greenlight.",
+        "lane": "route",
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "routeChannels": [
+          "#greenlight-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-26",
+      "question": "What should a rep do when a promising prospect has pending felony charges and the rep is unsure whether to proceed?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "v3": {
+        "grade": "partial",
+        "note": "Paused and routed correctly, but stated a generic disqualification as settled.",
+        "lane": "route_from_evidence",
+        "answer": "When a promising prospect has pending felony charges and you're unsure whether to proceed, do not promise fit or move forward. Open criminal charges mean the prospect is not a fit. For background issues, route it before promising fit. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correctly kept the pending-charge decision case-specific and routed to Sales Questions.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-27",
+      "question": "How should a rep determine a lead's time zone before calling a 20 percent dial-list lead during business hours?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on asking the lead directly for their time zone.",
+        "lane": "route_from_evidence",
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-28",
+      "question": "Does net 30 on a commission invoice guarantee payment exactly 30 days after submission, or can payment arrive sooner?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "v3": {
+        "grade": "partial",
+        "note": "Used the correct Finance owner but added speculative timing from an old example.",
+        "lane": "route_from_evidence",
+        "answer": "Net 30 on a commission invoice does not guarantee payment exactly 30 days after submission. Payment timing depends on invoicing accuracy and timing. For example, a rep who invoiced on June 16 was told not to expect payment until the next month, indicating it can take longer than 30 days. Use #sales-finance-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Used the wrong owner, Sales Questions, for a current commission-payment action.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-29",
+      "question": "A VIP client paid a smaller amount through the Standard link and signed the Standard agreement. What is the approved correction process?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "v3": {
+        "grade": "critical",
+        "note": "Invented a contract/payment correction and routed to the wrong owner.",
+        "lane": "route_from_evidence",
+        "answer": "The client should sign the upgraded contract and pay the difference. No payment cancellation is needed; licenses are non-refundable, so canceling the payment is not an option. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Correctly chose Sales Tech but omitted the controlled upgrade workflow guidance.",
+        "lane": "route",
+        "answer": "This needs a system or record action, so please post it in #sales-tech-requests.",
+        "routeChannels": [
+          "#sales-tech-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-30",
+      "question": "Can a main ISTV Call 2 be moved to the next cohort because the prospect works emergency overnight shifts, and may the prospect pitch a documentary series?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly denied the shift-based next-cohort exception and kept documentary scope to one episode first.",
+        "lane": "answer_from_evidence",
+        "answer": "Moving a main ISTV Call 2 to the next cohort is only allowed for a medical emergency with proof or a bank block with proof. Emergency overnight shifts do not qualify, so this request cannot be granted under current policy. For the documentary series, the prospect may pitch it, but you should start with a single episode and not promise the full series during the initial sale. This allows the working relationship to be established first."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Correctly denied the exception but routed instead of answering the one-episode documentary boundary.",
+        "lane": "partial",
+        "answer": "Exceptions for moving a main ISTV Call 2 to the next cohort are limited to a medical emergency with proof or a bank block/inability to pay with bank proof; working emergency overnight shifts is not an allowed exception. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-31",
+      "question": "If payment links failed and a main ISTV prospect cannot reconnect before 11:59 PM, may the rep honor the same-day discount later?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Incorrectly denied the explicit failed-payment-proof exception.",
+        "lane": "route_from_evidence",
+        "answer": "No, you cannot honor the same-day discount after the 11:59 PM deadline for a main ISTV prospect when payment links failed. Exceptions are only for medical emergencies or car crashes, and breaking the deadline would create legal risk. Use #sales-finance-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "partial",
+        "note": "Safely routed to Finance but failed to answer the approved proof-qualified exception.",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-32",
+      "question": "If a dial-list phone number belongs to a family member who asks the rep to email the applicant, is that compliant and how should the rep proceed?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "partial",
+        "note": "Correctly allowed email contact but omitted the do-not-contact and opt-out condition.",
+        "lane": "answer_from_evidence",
+        "answer": "Yes, it is compliant to email the applicant when the dial-list phone number belongs to a family member, as this indicates the number is incorrect for the applicant. The rep should email the applicant but keep the message focused only on the phone-number issue, rather than sending the full Call 1 preparation email again."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Avoidable route on a direct compliance rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-33",
+      "question": "Is a 48.5 percent no-show rate currently normal for company leads, or unusually high?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the sourced variable/not-unusual answer.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-34",
+      "question": "Can an ISTV applicant be moved to Next Level CEO during the audition process, and what is the ISTV rep's role?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "critical",
+        "note": "Incorrectly allowed cross-side movement for a double-booked applicant.",
+        "lane": "answer_from_evidence",
+        "answer": "Yes, an ISTV applicant can be moved to Next Level CEO during the audition process if they are double-booked for both shows. As the ISTV rep, your role is to stick strictly to the ISTV script and offer. Do not cross-sell or discuss any Next Level CEO deliverables. If the applicant brings up Daymond John or Next Level CEO, direct those questions to the assigned DJ/NLCEO rep."
+      },
+      "v52": {
+        "grade": "critical",
+        "note": "Answered an unrelated DJ Call 2 delay rule, a fresh high-confidence relationship failure.",
+        "lane": "answer",
+        "answer": "For Daymond John / Next Level CEO, a few-week Call 2 booking delay can be okay for DJ/NLCEO applicants only, but keep pushing to move them forward as soon as possible.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-35",
+      "question": "If a Call 1 prospect wants acting work and has no business or entrepreneurial story, should the rep end the call and send a rejection?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correct rejection for an acting-only prospect with no business.",
+        "lane": "answer_from_evidence",
+        "answer": "Yes, you should end the call and send the rejection email."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Avoidable route on a basic qualification rule.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-36",
+      "question": "After Call 1 is rescheduled to the next day, should the rep send the day-before email and text reminders again?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly required both reminders after rescheduling.",
+        "lane": "answer_from_evidence",
+        "answer": "Yes, after Call 1 is rescheduled to the next day, the rep should send the day-before email and text reminders again. The confirmation email and text are sent on the calendar day before the call."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correctly required both reminders.",
+        "lane": "answer",
+        "answer": "Yes, still send the day-before email reminder when a call is rescheduled to a new date. Yes, still send the day-before text reminder when a call is rescheduled to a new date.",
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v52fresh-37",
+      "question": "A client is considering a refund and asks about deferred payments. Should the rep propose terms or route the request?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "v3": {
+        "grade": "pass",
+        "note": "Correctly refused custom terms and routed to Finance.",
+        "lane": "answer_from_evidence",
+        "answer": "You should not propose deferred payment terms. Instead, route the request to #sales-finance-requests without promising any outcome."
+      },
+      "v52": {
+        "grade": "pass",
+        "note": "Correct Finance action route.",
+        "lane": "route",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "routeChannels": [
+          "#sales-finance-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-38",
+      "question": "What is the current expected time from filming to episode delivery for Mompreneurs?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "v3": {
+        "grade": "partial",
+        "note": "Recovered the four-to-six-month estimate but presented it directly without current Fulfillment confirmation.",
+        "lane": "answer_from_evidence",
+        "answer": "For Mompreneurs, the expected time from filming to episode delivery is 4-6 months for editing."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Used the wrong owner and omitted both the estimate and Fulfillment confirmation.",
+        "lane": "artifact",
+        "answer": "Please request the current approved resource from #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-39",
+      "question": "A VIP client is confused immediately after onboarding and wants to speak with the onboarding owner. Where should the rep ask for help?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "v3": {
+        "grade": "partial",
+        "note": "Recognized the onboarding owner but routed to generic Sales Questions instead of Fulfillment.",
+        "lane": "route_from_evidence",
+        "answer": "Route to the current onboarding owner if the client asks detailed fulfillment questions. Use #sales-questions-requests for the unresolved part."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Wrong owner: Sales Questions instead of Fulfillment.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v52fresh-40",
+      "question": "An applicant requests Spanish casting materials, but the assigned rep does not speak Spanish. What should the rep do?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "v3": {
+        "grade": "fail",
+        "note": "Avoidable route on the English-only service boundary.",
+        "lane": "route_from_evidence",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying."
+      },
+      "v52": {
+        "grade": "fail",
+        "note": "Same avoidable route.",
+        "lane": "route",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    }
+  ]
+}
