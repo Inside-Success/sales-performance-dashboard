@@ -54,4 +54,4 @@ it("preserves direct authoritative question-family recall without a broad candid
     if (result.candidates.some((candidate) => candidate.policy.id === policy.id)) found += 1;
   }
   expect(found / sample.length).toBeGreaterThanOrEqual(0.8);
-}, 45_000);
+}, 90_000);

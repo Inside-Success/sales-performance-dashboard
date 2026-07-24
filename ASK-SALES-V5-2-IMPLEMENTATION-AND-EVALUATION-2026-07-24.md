@@ -157,7 +157,7 @@ Conversation handling is functional, but retrieval and qualifier grounding remai
 - The full Ask Sales suite passed 808/808 tests across 47 files.
 - No local development server was started.
 
-One retrieval test took about four seconds alone and crossed Vitest's default five-second limit only under full-suite worker contention. Its test timeout was raised to 15 seconds without changing the assertion or runtime behavior; it passed independently before that harness-only adjustment.
+Three retrieval-safety tests were slower under full-suite or GitHub worker contention. Their test-only ceilings were raised to 15 seconds for the two focused tests and 90 seconds for the 24-record recall chunk. Product code, samples, recall threshold, and assertions were not changed; the focused tests passed with the original behavior.
 
 ## Honest architecture conclusion
 

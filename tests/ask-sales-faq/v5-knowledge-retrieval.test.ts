@@ -102,7 +102,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
     }), exactRedCarpet!)).toEqual([]);
     expect(redCarpetDate.candidates.some((candidate) => /vip package includes mastermind event/i.test(candidate.policy.decision))).toBe(false);
     expect(redCarpetDate.candidates[0]?.policy.decision_key).toMatch(/red-carpet-event-date/);
-  });
+  }, 15_000);
 
   it("round-robins bounded evidence across compound atomic needs", () => {
     const question = "Where should Finance verify a live payment, and where should I request an urgent Greenlight letter?";
