@@ -35,6 +35,13 @@ No candidate runtime or knowledge was changed. The implementation was an indepen
 
 The pre-output seal is commit `72b71dc6dbcbd8a43127aebfe8a973569499c98c`. The dataset hash is `3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63`.
 
+Publication is isolated and unmerged:
+
+- dashboard evidence head: `090a6ed06afccb5bd089c0fe7e4a9f48a02e147d`;
+- draft stacked dashboard PR: [#80](https://github.com/Inside-Success/sales-performance-dashboard/pull/80), based on draft V5.3 PR #79;
+- documentation head: `5ae0938d0140c943386bcf0a71a7be070544f7e7`;
+- draft stacked documentation PR: [#55](https://github.com/Inside-Success/faq-chatbot/pull/55), based on draft V5.3 documentation PR #54.
+
 ## Independent dataset
 
 The set contains:
