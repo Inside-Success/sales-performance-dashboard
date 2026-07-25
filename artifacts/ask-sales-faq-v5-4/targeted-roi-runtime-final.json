@@ -1,0 +1,895 @@
+{
+  "schemaVersion": "ask-sales-v5-4-revealed-regression-runtime-v1",
+  "status": "complete",
+  "mode": "primary",
+  "promotionEvidence": false,
+  "diagnosticOnly": true,
+  "datasetName": "ask-sales-v5-3-independent-post-freeze-slack-gold-2026-07-25",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json",
+  "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+  "datasetSealedAt": "2026-07-25T11:09:46Z",
+  "runtimeFreezeCommit": "d8f38678e85023ade37e9f4bf61d582f6cbbb2c8",
+  "evaluationToolCommit": null,
+  "candidateTunedAfterSeal": true,
+  "systems": [
+    "v5"
+  ],
+  "pairing": "deterministically alternated per standalone case or complete conversation",
+  "reverseOrder": false,
+  "startedAt": "2026-07-25T18:39:09.841Z",
+  "completedAt": "2026-07-25T18:39:45.352Z",
+  "expectedPromptsPerSystem": 1,
+  "executionOrder": [
+    {
+      "key": "v53gate-08",
+      "systems": [
+        "v5"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "v53gate-08",
+      "question": "What should a rep say when a prospect demands exact episode views, ROI, or performance case-study numbers?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not share or imply episode-level ROI or performance figures. Results vary by person and subject. Official reviews and approved materials may be used; guaranteed trailer views are a separate paid social promotion, not episode viewing figures.",
+      "requiredConcepts": [
+        "do not share ROI or episode metrics",
+        "results vary",
+        "trailer views are separate"
+      ],
+      "forbiddenConcepts": [
+        "guarantee episode ROI",
+        "invent case-study metrics"
+      ],
+      "evaluationStrata": [
+        "compliance",
+        "claims",
+        "high-risk"
+      ],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782244659.969279",
+        "slack:C0AUQKNR8CF:1782245344.349529",
+        "slack:C0AUQKNR8CF:1782247169.840119"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. Do not discuss specific numbers or case studies; state that such information is not provided and is not part of the sales role.",
+          "structuredAnswer": {
+            "summary": "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. Do not discuss specific numbers or case studies; state that such information is not provided and is not part of the sales role.",
+            "sections": [
+              {
+                "title": "Answer",
+                "items": [
+                  "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed.",
+                  "Do not discuss specific numbers or case studies; state that such information is not provided and is not part of the sales role."
+                ],
+                "tone": "good"
+              }
+            ],
+            "confidenceLabel": "High",
+            "confidenceScore": 95,
+            "sourceMode": "evidence"
+          },
+          "lane": "answer",
+          "needsRoute": false,
+          "routeReason": null,
+          "routeChannels": [],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 35508,
+          "citations": [
+            {
+              "policyId": "operational_79a0b7756a0faf31",
+              "title": "Do not share episode-level stats; use analogy and founder credibility",
+              "decisionKey": "handling-requests-for-specific-stats",
+              "lastReviewed": "2026-06-23",
+              "authority": 9.5,
+              "sourceKind": "authoritative_slack_operational_qna",
+              "approvedBy": [
+                "Madeline",
+                "Rich"
+              ]
+            },
+            {
+              "policyId": "operational_91ebea851bc83e58",
+              "title": "Avoid discussing case study numbers with applicants",
+              "decisionKey": "avoid-discussing-case-study-numbers",
+              "lastReviewed": "2026-06-17",
+              "authority": 9.5,
+              "sourceKind": "authoritative_slack_operational_qna",
+              "approvedBy": [
+                "Madeline"
+              ]
+            }
+          ],
+          "selectedPolicyIds": [
+            "operational_79a0b7756a0faf31",
+            "operational_91ebea851bc83e58"
+          ],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "What should a rep say when a prospect demands exact episode views, ROI, or performance case-study numbers?",
+              "standaloneQuestion": "What should a rep say when a prospect demands exact episode views, ROI, or performance case-study numbers?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "What should a rep say when a prospect demands exact episode views, ROI, or performance case-study numbers?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 22,
+              "candidates": [
+                {
+                  "id": "operational_79a0b7756a0faf31",
+                  "rank": 1,
+                  "score": 220.6882841078321,
+                  "decisionKey": "handling-requests-for-specific-stats",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.4026936331284146,
+                  "matchedDecisionId": "operational_79a0b7756a0faf31::a3"
+                },
+                {
+                  "id": "claim_b954da823d293469",
+                  "rank": 2,
+                  "score": 167.09295734141608,
+                  "decisionKey": "roi-claims-lead-generation-framing",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.27386127875258304,
+                  "matchedDecisionId": "claim_b954da823d293469::a2"
+                },
+                {
+                  "id": "operational_91ebea851bc83e58",
+                  "rank": 3,
+                  "score": 175.89387242148197,
+                  "decisionKey": "avoid-discussing-case-study-numbers",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.21320071635561044,
+                  "matchedDecisionId": "operational_91ebea851bc83e58::a1"
+                },
+                {
+                  "id": "operational_ed71cb7aad76c9c7",
+                  "rank": 4,
+                  "score": 134.76931520699537,
+                  "decisionKey": "roi-objection-framing-guidance",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.24494897427831783,
+                  "matchedDecisionId": "operational_ed71cb7aad76c9c7::a2"
+                },
+                {
+                  "id": "operational_aa8f52d2798bbbb0",
+                  "rank": 5,
+                  "score": 94.0313970378009,
+                  "decisionKey": "episode-stats-dashboard-availability",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.1690308509457033,
+                  "matchedDecisionId": "operational_aa8f52d2798bbbb0::a2"
+                },
+                {
+                  "id": "claim_18b3fb7dc7489947",
+                  "rank": 6,
+                  "score": 94.66215902554511,
+                  "decisionKey": "roi-questions",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.11180339887498948,
+                  "matchedDecisionId": "claim_18b3fb7dc7489947::a1"
+                },
+                {
+                  "id": "claim_d87bd6a86a4a640c",
+                  "rank": 7,
+                  "score": 80.41304654810624,
+                  "decisionKey": "duplicate-or-already-contacted-leads",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.08606629658238704,
+                  "matchedDecisionId": "claim_d87bd6a86a4a640c::a1"
+                },
+                {
+                  "id": "operational_e0d58d544c5f8a52",
+                  "rank": 8,
+                  "score": 72.06353210488822,
+                  "decisionKey": "non-working-phone-number-email-for-new-number",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.10259783520851541,
+                  "matchedDecisionId": "operational_e0d58d544c5f8a52::a1"
+                },
+                {
+                  "id": "operational_9fef8941c57d3ea3",
+                  "rank": 9,
+                  "score": 62.791204162652285,
+                  "decisionKey": "call-2-brief-overview-approach",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.14509525002200233,
+                  "matchedDecisionId": "operational_9fef8941c57d3ea3::a1"
+                },
+                {
+                  "id": "operational_f6352a10d796dad8",
+                  "rank": 10,
+                  "score": 62.94621325440151,
+                  "decisionKey": "international-phone-follow-up-email",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07106690545187015,
+                  "matchedDecisionId": "operational_f6352a10d796dad8::a1"
+                },
+                {
+                  "id": "claim_d42e16d44c52f3b0",
+                  "rank": 11,
+                  "score": 72.59530536524015,
+                  "decisionKey": "platform-proof-and-claims-boundaries-route-if-asked-for-proof-links-or-claims-1",
+                  "answerability": "route_or_support",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.19611613513818402,
+                  "matchedDecisionId": "claim_d42e16d44c52f3b0::a1"
+                },
+                {
+                  "id": "operational_5e1d4f63230f50c7",
+                  "rank": 12,
+                  "score": 63.26021599450564,
+                  "decisionKey": "correcting-misinformation-about-episode-availability",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07559289460184544,
+                  "matchedDecisionId": "operational_5e1d4f63230f50c7::a1"
+                },
+                {
+                  "id": "claim_8a9e7f02b57680c2",
+                  "rank": 13,
+                  "score": 57.86624170077241,
+                  "decisionKey": "documentary-producer-competitor-concern",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.08451542547285165,
+                  "matchedDecisionId": "claim_8a9e7f02b57680c2::a1"
+                },
+                {
+                  "id": "operational_4058a4e46b79d00f",
+                  "rank": 14,
+                  "score": 57.637753314756935,
+                  "decisionKey": "disqualified-applicant-call-1-drop",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_4058a4e46b79d00f::a1"
+                },
+                {
+                  "id": "operational_090298ad9338b596",
+                  "rank": 15,
+                  "score": 52.48658145098939,
+                  "decisionKey": "lead-vetting-approval-discretion",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_090298ad9338b596::a1"
+                },
+                {
+                  "id": "claim_70baa6ddc112bd58",
+                  "rank": 16,
+                  "score": 61.321499945518866,
+                  "decisionKey": "episode-release-tracking",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.16064386578049977,
+                  "matchedDecisionId": "claim_70baa6ddc112bd58::a2"
+                },
+                {
+                  "id": "operational_d4c701f4e0230b55",
+                  "rank": 17,
+                  "score": 50.63998624040681,
+                  "decisionKey": "prospect-on-multiple-calendars-resolution",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.07559289460184544,
+                  "matchedDecisionId": "operational_d4c701f4e0230b55::a1"
+                },
+                {
+                  "id": "operational_f29f2a35b24e2437",
+                  "rank": 18,
+                  "score": 52.84510066746857,
+                  "decisionKey": "disqualified-applicant-reapplying-under-different-name",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.05954913341754137,
+                  "matchedDecisionId": "operational_f29f2a35b24e2437::a1"
+                },
+                {
+                  "id": "claim_3c2e38fb0d7a1eb6",
+                  "rank": 19,
+                  "score": 49.0981270533073,
+                  "decisionKey": "opt-out-dnc-and-security-escalation-answer-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.08944271909999159,
+                  "matchedDecisionId": "claim_3c2e38fb0d7a1eb6::a1"
+                },
+                {
+                  "id": "operational_06d3462e455b7611",
+                  "rank": 20,
+                  "score": 50.4164784007205,
+                  "decisionKey": "cancel-unresponsive-leads",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0.11664236870396086,
+                  "matchedDecisionId": "operational_06d3462e455b7611::a1"
+                },
+                {
+                  "id": "owner-podcast-purpose-and-current-format",
+                  "rank": 21,
+                  "score": 52.61503245280595,
+                  "decisionKey": "podcast-purpose-and-format",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.08032193289024989,
+                  "matchedDecisionId": "owner-podcast-purpose-and-current-format::a3"
+                },
+                {
+                  "id": "claim_0a686adda1d0ac45",
+                  "rank": 22,
+                  "score": 47.18252314434638,
+                  "decisionKey": "marking-a-lead-confirmed-on-calendar",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_0a686adda1d0ac45::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 83,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "operational_79a0b7756a0faf31",
+                      "claim_b954da823d293469",
+                      "operational_91ebea851bc83e58",
+                      "operational_ed71cb7aad76c9c7",
+                      "operational_aa8f52d2798bbbb0",
+                      "claim_18b3fb7dc7489947",
+                      "claim_d87bd6a86a4a640c",
+                      "claim_d42e16d44c52f3b0",
+                      "operational_e0d58d544c5f8a52",
+                      "operational_5e1d4f63230f50c7",
+                      "operational_9fef8941c57d3ea3",
+                      "claim_70baa6ddc112bd58",
+                      "claim_8a9e7f02b57680c2",
+                      "operational_4058a4e46b79d00f",
+                      "owner-podcast-purpose-and-current-format"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1550,
+                      "decision_contract": 2447,
+                      "decision_object": 1320,
+                      "material_condition": 11,
+                      "workflow_stage_or_time": 505,
+                      "payment_qualifier": 21
+                    }
+                  },
+                  {
+                    "needId": "N2",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 67,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "operational_79a0b7756a0faf31",
+                      "operational_91ebea851bc83e58",
+                      "claim_b954da823d293469",
+                      "operational_ed71cb7aad76c9c7",
+                      "claim_18b3fb7dc7489947",
+                      "claim_d87bd6a86a4a640c",
+                      "operational_e0d58d544c5f8a52",
+                      "operational_9fef8941c57d3ea3",
+                      "operational_5e1d4f63230f50c7",
+                      "claim_8a9e7f02b57680c2",
+                      "operational_4058a4e46b79d00f",
+                      "operational_090298ad9338b596",
+                      "operational_d4c701f4e0230b55",
+                      "claim_3c2e38fb0d7a1eb6",
+                      "claim_0a686adda1d0ac45"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1550,
+                      "decision_contract": 2447,
+                      "decision_object": 1336,
+                      "material_condition": 11,
+                      "workflow_stage_or_time": 505,
+                      "payment_qualifier": 21
+                    }
+                  },
+                  {
+                    "needId": "N3",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 70,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "operational_79a0b7756a0faf31",
+                      "operational_91ebea851bc83e58",
+                      "claim_b954da823d293469",
+                      "operational_ed71cb7aad76c9c7",
+                      "claim_18b3fb7dc7489947",
+                      "claim_d87bd6a86a4a640c",
+                      "operational_e0d58d544c5f8a52",
+                      "operational_f6352a10d796dad8",
+                      "operational_5e1d4f63230f50c7",
+                      "operational_9fef8941c57d3ea3",
+                      "claim_8a9e7f02b57680c2",
+                      "operational_4058a4e46b79d00f",
+                      "operational_f29f2a35b24e2437",
+                      "operational_090298ad9338b596",
+                      "operational_06d3462e455b7611",
+                      "operational_d4c701f4e0230b55"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1550,
+                      "decision_contract": 2447,
+                      "decision_object": 1333,
+                      "material_condition": 11,
+                      "workflow_stage_or_time": 505,
+                      "payment_qualifier": 21
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "What should a rep say when a prospect demands exact episode views?",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "sales",
+                    "communication"
+                  ],
+                  "actions": [
+                    "respond",
+                    "handle objection"
+                  ],
+                  "entities": [
+                    "prospect",
+                    "episode views"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "supported_claim": "Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed.",
+                  "reason": "C1 is the only preferred answer card for N1 and directly provides the approved response script.",
+                  "route_key": null,
+                  "clarification_question": ""
+                },
+                {
+                  "id": "N2",
+                  "text": "What should a rep say when a prospect demands exact ROI numbers?",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "sales",
+                    "communication"
+                  ],
+                  "actions": [
+                    "respond",
+                    "handle objection"
+                  ],
+                  "entities": [
+                    "prospect",
+                    "ROI"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "supported_claim": "Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed.",
+                  "reason": "C1 is the preferred answer card for N2 and its decision covers ROI requests by stating not to share ROI data.",
+                  "route_key": null,
+                  "clarification_question": ""
+                },
+                {
+                  "id": "N3",
+                  "text": "What should a rep say when a prospect demands performance case-study numbers?",
+                  "relation": "requirement",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "sales",
+                    "communication"
+                  ],
+                  "actions": [
+                    "respond",
+                    "handle objection"
+                  ],
+                  "entities": [
+                    "prospect",
+                    "case study numbers"
+                  ],
+                  "lane": "answer",
+                  "evidence_refs": [
+                    "operational_79a0b7756a0faf31",
+                    "operational_91ebea851bc83e58"
+                  ],
+                  "supported_claim": "Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. Do not discuss specific numbers or case studies; state that such information is not provided and is not part of the sales role.",
+                  "reason": "C1 and C3 are both preferred answer cards for N3 and together provide the complete response: C1 gives the general script, C3 explicitly forbids discussing case study numbers.",
+                  "route_key": null,
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "answer",
+              "confidence_score": 95,
+              "reasoning_summary": "The user asks for the approved rep response when a prospect demands three distinct types of performance data: exact episode views, ROI, and case-study numbers. Each is a separate atomic need for the procedure/script to follow. No product scope is specified, so it remains unknown. The request is for knowledge of the policy/procedure, not an operational action. For N1 and N2, C1 is the sole preferred answer card and directly addresses the need. For N3, both C1 and C3 are preferred and complementary: C1 provides the general response script, and C3 explicitly prohibits discussing case study numbers. No conflicts exist among the preferred cards. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "V5.4 established exact same-decision source consensus before contextual authority and conflict adjudication. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "deterministicPolicyIds": []
+                },
+                {
+                  "needId": "N2",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "V5.4 established exact same-decision source consensus before contextual authority and conflict adjudication. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_79a0b7756a0faf31",
+                    "claim_18b3fb7dc7489947"
+                  ],
+                  "deterministicPolicyIds": []
+                },
+                {
+                  "needId": "N3",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "operational_79a0b7756a0faf31",
+                    "operational_91ebea851bc83e58"
+                  ],
+                  "preferredPolicyIds": [
+                    "operational_79a0b7756a0faf31",
+                    "operational_91ebea851bc83e58"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "C1 and C3 both directly address the need for performance case-study numbers. C1 provides a response script, and C3 states not to discuss specific numbers. They are complementary and non-conflicting. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "operational_79a0b7756a0faf31",
+                    "operational_91ebea851bc83e58"
+                  ],
+                  "deterministicPolicyIds": []
+                }
+              ],
+              "reasoningSummary": "For N1, C1 is the only directly applicable card. For N2, C1 and C6 both apply and are complementary. For N3, C1 and C3 both apply and are complementary. No conflicts exist among the direct refs for any need. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "pass",
+              "sentenceChecks": [
+                {
+                  "sentenceId": "S1",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "answeredNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                },
+                {
+                  "sentenceId": "S2",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "answeredNeedIds": [
+                    "N2"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                },
+                {
+                  "sentenceId": "S3",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_79a0b7756a0faf31"
+                  ],
+                  "answeredNeedIds": [
+                    "N3"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                },
+                {
+                  "sentenceId": "S4",
+                  "status": "supported",
+                  "evidenceRefs": [
+                    "operational_91ebea851bc83e58"
+                  ],
+                  "answeredNeedIds": [
+                    "N3"
+                  ],
+                  "reason": "The model's rejected paraphrase was replaced with the exact decision sentence from the uniquely dominant relationship-matched source; the replacement passed every deterministic boundary.",
+                  "deterministicErrors": []
+                }
+              ],
+              "removedSentences": [],
+              "unresolvedNeedIds": [],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 6979,
+                "promptChars": 4283,
+                "completionTokens": 523,
+                "totalTokens": 1465,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 5463,
+                "promptChars": 52802,
+                "completionTokens": 362,
+                "totalTokens": 14057,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 7001,
+                "promptChars": 36406,
+                "completionTokens": 599,
+                "totalTokens": 9505,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_sentence_validation",
+                "status": "success",
+                "latencyMs": 6372,
+                "promptChars": 6904,
+                "completionTokens": 541,
+                "totalTokens": 2080,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 6,
+              "queryPlanningMs": 7017,
+              "v5BoundedRetrievalMs": 9387,
+              "sourcePlanningMs": 5661,
+              "evidenceDraftingMs": 7001,
+              "validationMs": 6405,
+              "totalMs": 35508
+            }
+          }
+        }
+      }
+    }
+  ],
+  "conversations": [],
+  "summary": {
+    "v5": {
+      "completed": 1,
+      "lanes": {
+        "answer": 1
+      },
+      "providerAttempts": 4,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0
+    }
+  }
+}

@@ -122,6 +122,33 @@ export function deterministicV53ActionOwner(text: string): RouteKey | null {
   return deterministicV52ActionOwner(text);
 }
 
+const EXPLICIT_DESTINATION_REQUEST = /\b(?:where|which\s+channel|who)\b.{0,90}\b(?:send|post|submit|report|request|handle|fix|update|reschedule|register|process|ask|trace|verify|confirm)\w*\b|\b(?:send|post|submit|report|request|trace|verify|confirm)\w*\b.{0,90}\b(?:where|which\s+channel|who)\b/i;
+const SALES_TECH_WORK_OBJECT = /\b(?:payment\s+links?|contract\s+links?|contract\s+automation|crm|keap|oncehub|hubspot|zoom|calendar|dashboard|leaderboard|automation|integration|20[-\s]*(?:%|percent)|twenty[-\s]+percent|dial[- ]?out\s+(?:list|sheet)|tracking\s+(?:list|sheet)|custom\s+(?:payment|split)\s+links?)\b/i;
+const SALES_TECH_WORK_STATE = /\b(?:broken|missing|failed|failing|not\s+(?:working|prompting|generating|populating|syncing)|did\s+not|didn't|does\s+not|doesn't|update|change|correct|fix|repair|rerun|reprocess|generate|create|add|remove|merge|sync|access)\w*\b/i;
+const FULFILLMENT_STAGE_OBJECT = /\b(?:paid|post[- ]sale|after\s+(?:the\s+)?sale|closed|signed)\b.{0,150}\b(?:onboarding|mastermind|event\s+registration|filming|production|delivery|scriptwriter|trailer)\b|\b(?:onboarding|mastermind|event\s+registration|filming|production|delivery|scriptwriter|trailer)\b.{0,150}\b(?:paid|post[- ]sale|after\s+(?:the\s+)?sale|closed|signed)\b/i;
+const FULFILLMENT_WORK_STATE = /\b(?:schedule|reschedule|register|registration|book|move|change|support|help|status|missing|deliver|request)\w*\b/i;
+const FINANCE_TRANSACTION_WORK = /\b(?:ach|wire|refund|commission|transaction|charge|invoice|payment)\b.{0,140}\b(?:clear|arrive|receive|trace|refund|reverse|void|declin|fail|pending|process|status|verify|confirm)\w*\b|\b(?:clear|arrive|receive|trace|refund|reverse|void|declin|fail|pending|process|status|verify|confirm)\w*\b.{0,140}\b(?:ach|wire|refund|commission|transaction|charge|invoice|payment)\b/i;
+const GREENLIGHT_WORK = /\b(?:greenlight|green\s+light|approval\s+letter)\b.{0,140}\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b|\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b.{0,140}\b(?:greenlight|green\s+light|approval\s+letter)\b/i;
+const SENSITIVE_POLICY_DECISION = /\b(?:criminal|felon|conviction|lawsuit|background\s+check|exception|not\s+a\s+fit|transfer\s+(?:the\s+)?prospect|switch\s+(?:the\s+)?prospect)\b.{0,150}\b(?:approve|proceed|eligible|move\s+forward|reject|transfer|switch|decide)\w*\b/i;
+const STABLE_REFUND_WINDOW_POLICY = /\b(?:refund|cooling[- ]?off)\s+window\b|\bthree[- ]day\b.{0,60}\brefund\b|\brefund\b.{0,60}\bthree[- ]day\b/i;
+
+/**
+ * Classifies live work from the complete immutable request, using the work
+ * object and lifecycle stage before broad topic words. Stable policy questions
+ * deliberately remain in retrieval even when they mention payments or forms.
+ */
+export function deterministicV54ActionOwner(text: string): RouteKey | null {
+  const explicitlyOperational = EXPLICIT_DESTINATION_REQUEST.test(text) || LIVE_HELP_REQUEST.test(text) || LIVE_OWNER_ACTION.test(text) || LIVE_MUTATION_REQUEST.test(text);
+  if (SENSITIVE_POLICY_DECISION.test(text)) return "sales_policy";
+  if (!explicitlyOperational && (STABLE_POLICY_SHAPE.test(text) || DEONTIC_REP_POLICY_SHAPE.test(text))) return null;
+
+  if (SALES_TECH_WORK_OBJECT.test(text) && (SALES_TECH_WORK_STATE.test(text) || explicitlyOperational)) return "sales_tech";
+  if (FULFILLMENT_STAGE_OBJECT.test(text) && (FULFILLMENT_WORK_STATE.test(text) || explicitlyOperational)) return "fulfillment";
+  if (GREENLIGHT_WORK.test(text) && (explicitlyOperational || /\b(?:same[- ]day|today|this|specific|chatbot)\b/i.test(text))) return "greenlight";
+  if (FINANCE_TRANSACTION_WORK.test(text) && explicitlyOperational) return "finance";
+  return deterministicV53ActionOwner(text);
+}
+
 function refineNeed(need: V4SystemicNeed): V4SystemicNeed {
   const text = completeText(need);
   const atomicRequest = need.authorityText || need.text || need.originalRequestText || "";
@@ -286,6 +313,30 @@ export function refineV53QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolu
   };
 }
 
+export function refineV54QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v53 = refineV53QueryPlan(plan, turn);
+  const immutableRequest = [turn.currentQuestion, turn.standaloneQuestion].filter(Boolean).join(" ");
+  if (STABLE_REFUND_WINDOW_POLICY.test(immutableRequest) && !LIVE_OWNER_ACTION.test(immutableRequest) && !LIVE_MUTATION_REQUEST.test(immutableRequest)) {
+    return {
+      ...v53,
+      needs: v53.needs.map((need) => ({ ...need, requestKind: "knowledge" as const, forcedRouteKey: null })),
+      reasoningSummary: `${v53.reasoningSummary} V5.4 preserved a general refund-window question as policy knowledge rather than a live Finance action.`,
+    };
+  }
+  const owner = deterministicV54ActionOwner(immutableRequest);
+  if (!owner) return v53;
+  const needs = v53.needs.map((need) => ({
+    ...need,
+    requestKind: "operational_action" as const,
+    forcedRouteKey: owner,
+  }));
+  return {
+    ...v53,
+    needs,
+    reasoningSummary: `${v53.reasoningSummary} V5.4 bound the original live work object and lifecycle stage to ${owner} before retrieval could obscure ownership.`,
+  };
+}
+
 export function resolveV51RouteKey(
   need: V4SystemicNeed,
   decision: V4SystemicNeedDecision,
@@ -326,4 +377,19 @@ export function resolveV53RouteKey(
   const preModelOwner = deterministicV53ActionOwner(completeText(need));
   if (preModelOwner) return preModelOwner;
   return resolveV52RouteKey(need, decision, retrieval);
+}
+
+export function resolveV54RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const immutableRequest = [need.originalRequestText, completeText(need)].filter(Boolean).join(" ");
+  if (/\bself[- ]sourced\b/i.test(immutableRequest) && /\b(?:flow|process|procedure|booking|stays?\s+with|ownership)\b/i.test(immutableRequest)) {
+    return "sales_policy";
+  }
+  if (STABLE_REFUND_WINDOW_POLICY.test(immutableRequest) && need.requestKind === "knowledge") return "sales_policy";
+  const preModelOwner = deterministicV54ActionOwner(immutableRequest);
+  if (preModelOwner) return preModelOwner;
+  return resolveV53RouteKey(need, decision, retrieval);
 }

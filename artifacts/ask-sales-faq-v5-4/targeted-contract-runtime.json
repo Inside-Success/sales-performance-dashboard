@@ -1,0 +1,501 @@
+{
+  "schemaVersion": "ask-sales-v5-4-revealed-regression-runtime-v1",
+  "status": "complete",
+  "mode": "primary",
+  "promotionEvidence": false,
+  "diagnosticOnly": true,
+  "datasetName": "ask-sales-v5-3-independent-post-freeze-slack-gold-2026-07-25",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json",
+  "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+  "datasetSealedAt": "2026-07-25T11:09:46Z",
+  "runtimeFreezeCommit": "d8f38678e85023ade37e9f4bf61d582f6cbbb2c8",
+  "evaluationToolCommit": null,
+  "candidateTunedAfterSeal": true,
+  "systems": [
+    "v5"
+  ],
+  "pairing": "deterministically alternated per standalone case or complete conversation",
+  "reverseOrder": false,
+  "startedAt": "2026-07-25T18:33:13.947Z",
+  "completedAt": "2026-07-25T18:33:34.597Z",
+  "expectedPromptsPerSystem": 1,
+  "executionOrder": [
+    {
+      "key": "v53gate-01",
+      "systems": [
+        "v5"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "v53gate-01",
+      "question": "Can a rep agree to change the standard contract when a prospect asks for several custom clauses?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The standard contract is a prerequisite and reps must not promise or negotiate custom amendments.",
+      "requiredConcepts": [
+        "no custom amendments",
+        "standard contract"
+      ],
+      "forbiddenConcepts": [
+        "the rep can approve edits",
+        "promise a legal change"
+      ],
+      "evaluationStrata": [
+        "contract",
+        "high-risk",
+        "recent-authority"
+      ],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784915468.547709",
+        "slack:C0AUQKNR8CF:1784918605.352599"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "systems": {
+        "v5": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "latencyMs": 20646,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Can a rep agree to change the standard contract when a prospect asks for several custom clauses?",
+              "standaloneQuestion": "Can a rep agree to change the standard contract when a prospect asks for several custom clauses?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Can a rep agree to change the standard contract when a prospect asks for several custom clauses?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 12,
+              "candidates": [
+                {
+                  "id": "transcript-contract-link-no-edits",
+                  "rank": 1,
+                  "score": 183.98416827005792,
+                  "decisionKey": "contracts-send-link-no-edits",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.3144854510165755,
+                  "matchedDecisionId": "transcript-contract-link-no-edits::a1"
+                },
+                {
+                  "id": "claim_63be35f9e8f670e2",
+                  "rank": 2,
+                  "score": 142.93052872765398,
+                  "decisionKey": "prospect-requests-contract-redlines",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.23904572186687872,
+                  "matchedDecisionId": "claim_63be35f9e8f670e2::a1"
+                },
+                {
+                  "id": "operational_656574ee5e2e4a0a",
+                  "rank": 3,
+                  "score": 142.12222781519216,
+                  "decisionKey": "custom-contract-terms-rejection",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2727723627949905,
+                  "matchedDecisionId": "operational_656574ee5e2e4a0a::a2"
+                },
+                {
+                  "id": "operational_dc6a6804e527ab7d",
+                  "rank": 4,
+                  "score": 139.70877923677133,
+                  "decisionKey": "contract-no-changes-policy",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.23328473740792172,
+                  "matchedDecisionId": "operational_dc6a6804e527ab7d::a2"
+                },
+                {
+                  "id": "operational_06edfa5a21bc1f10",
+                  "rank": 5,
+                  "score": 119.15246436032152,
+                  "decisionKey": "no-contract-redlining",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.2525381361380527,
+                  "matchedDecisionId": "operational_06edfa5a21bc1f10::a2"
+                },
+                {
+                  "id": "operational_aea0ef95d79bbb97",
+                  "rank": 6,
+                  "score": 94.09662103451116,
+                  "decisionKey": "contract-edits-not-allowed",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.25717224993681986,
+                  "matchedDecisionId": "operational_aea0ef95d79bbb97::a1"
+                },
+                {
+                  "id": "claim_407005bb8ba3ef2b",
+                  "rank": 7,
+                  "score": 86.56171508478977,
+                  "decisionKey": "standard-license-video-refund-term-update",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.16329931618554522,
+                  "matchedDecisionId": "claim_407005bb8ba3ef2b::a1"
+                },
+                {
+                  "id": "claim_6883cdf82eb38f4f",
+                  "rank": 8,
+                  "score": 83.83826188082753,
+                  "decisionKey": "refund-rules-by-product-route-if-asked-about-exceptions-2",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0.14824986333222023,
+                  "matchedDecisionId": "claim_6883cdf82eb38f4f::a1"
+                },
+                {
+                  "id": "claim_6b3311cee0cd4b18__a4",
+                  "rank": 9,
+                  "score": 83.05186181374268,
+                  "decisionKey": "contracts-edits-and-signature-process-what-reps-can-say-1-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.17213259316477408,
+                  "matchedDecisionId": "claim_6b3311cee0cd4b18__a4::a1"
+                },
+                {
+                  "id": "operational_53cb567ae15c8546",
+                  "rank": 10,
+                  "score": 82.19051632768448,
+                  "decisionKey": "contract-name-change-to-llc",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.1336306209562122,
+                  "matchedDecisionId": "operational_53cb567ae15c8546::a1"
+                },
+                {
+                  "id": "operational_42f9457cf26cec61",
+                  "rank": 11,
+                  "score": 80.92945299677889,
+                  "decisionKey": "contract-amendment-refund-terms",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.18257418583505539,
+                  "matchedDecisionId": "operational_42f9457cf26cec61::a2"
+                },
+                {
+                  "id": "operational_f03229e0a7a3af2b",
+                  "rank": 12,
+                  "score": 80.62923745816022,
+                  "decisionKey": "contract-redlining-after-payment",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0.18650096164806276,
+                  "matchedDecisionId": "operational_f03229e0a7a3af2b::a2"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 71,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "transcript-contract-link-no-edits",
+                      "claim_63be35f9e8f670e2",
+                      "operational_656574ee5e2e4a0a",
+                      "operational_dc6a6804e527ab7d",
+                      "operational_06edfa5a21bc1f10",
+                      "operational_aea0ef95d79bbb97",
+                      "claim_407005bb8ba3ef2b",
+                      "claim_6883cdf82eb38f4f",
+                      "claim_6b3311cee0cd4b18__a4",
+                      "operational_53cb567ae15c8546",
+                      "operational_42f9457cf26cec61",
+                      "operational_f03229e0a7a3af2b"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 1974,
+                      "decision_contract": 2583,
+                      "workflow_stage_or_time": 416,
+                      "decision_object": 957,
+                      "material_condition": 6,
+                      "payment_qualifier": 27,
+                      "other_hard_boundary": 39
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Determine whether a sales representative has the authority to agree to modify the standard contract when a prospect requests multiple custom clauses.",
+                  "relation": "permission",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [
+                    "contracts",
+                    "sales"
+                  ],
+                  "actions": [
+                    "agree",
+                    "change",
+                    "request"
+                  ],
+                  "entities": [
+                    "rep",
+                    "standard contract",
+                    "prospect",
+                    "custom clauses"
+                  ],
+                  "lane": "route",
+                  "evidence_refs": [
+                    "transcript-contract-link-no-edits"
+                  ],
+                  "supported_claim": "",
+                  "reason": "sourcePlan prefers C1 as the only answer_evidence card for N1, and its decision directly addresses the rep's authority regarding the standard contract.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 100,
+              "reasoning_summary": "The user asks whether a rep can agree to change the standard contract when a prospect asks for custom clauses. This is a single atomic decision about permission. No other independent clauses or compound requests are present. The need is for knowledge of the policy, not an operational action. No material ambiguity exists that would change the answer. sourcePlan for N1 specifies lane=answer with preferredPolicyIds containing only C1. C1 is answer_evidence and its decision 'A rep may send the current standard contract link to a prospect' is the sole authorized answer. No other cards are preferred or eligible to answer. Focused retry recovered source-resolved false abstentions. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "answer",
+                  "directPolicyIds": [
+                    "transcript-contract-link-no-edits"
+                  ],
+                  "preferredPolicyIds": [
+                    "transcript-contract-link-no-edits"
+                  ],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "V5.4 recovered one uniquely dominant exact answer source after the model abstained on structural admission metadata. V5.2 verified exact decision identity before allowing answer recovery.",
+                  "modelDisposition": "answer",
+                  "modelDirectPolicyIds": [
+                    "transcript-contract-link-no-edits"
+                  ],
+                  "deterministicPolicyIds": [
+                    "transcript-contract-link-no-edits"
+                  ]
+                }
+              ],
+              "reasoningSummary": "Only C6, C7, and C8 are answer-eligible for N1. C6 is conditional on a VIP upgrade and payment plan, not matching the general request. C7 is about updating a video, not contract modification authority. C8 is a routing instruction, not a direct answer. No direct evidence exists, so disposition is route. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_model",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_query_plan",
+                "status": "success",
+                "latencyMs": 4545,
+                "promptChars": 4263,
+                "completionTokens": 274,
+                "totalTokens": 1210,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_source_plan",
+                "status": "success",
+                "latencyMs": 4035,
+                "promptChars": 19975,
+                "completionTokens": 205,
+                "totalTokens": 5170,
+                "reasoningMode": "disabled",
+                "temperature": 0
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer",
+                "status": "success",
+                "latencyMs": 4104,
+                "promptChars": 23207,
+                "completionTokens": 233,
+                "totalTokens": 5717,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              },
+              {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "purpose": "v4_systemic_evidence_answer_retry",
+                "status": "success",
+                "latencyMs": 5220,
+                "promptChars": 23813,
+                "completionTokens": 327,
+                "totalTokens": 5936,
+                "reasoningMode": "disabled",
+                "temperature": 0.1
+              }
+            ],
+            "stageTimings": {
+              "turnResolutionMs": 6,
+              "queryPlanningMs": 4575,
+              "v5BoundedRetrievalMs": 2628,
+              "sourcePlanningMs": 4080,
+              "evidenceDraftRetryMs": 5222,
+              "evidenceDraftingMs": 9347,
+              "validationMs": 0,
+              "totalMs": 20646
+            }
+          }
+        }
+      }
+    }
+  ],
+  "conversations": [],
+  "summary": {
+    "v5": {
+      "completed": 1,
+      "lanes": {
+        "route": 1
+      },
+      "providerAttempts": 4,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0
+    }
+  }
+}

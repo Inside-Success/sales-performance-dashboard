@@ -9,6 +9,10 @@ import {
 } from "@/lib/ask-sales-faq/v4/systemic/corpus";
 import { getV4AtomicDecisionLedgerVersion } from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
 import type { V4SystemicPolicy } from "@/lib/ask-sales-faq/v4/systemic/types";
+import {
+  v54DecisionsFormConsensus,
+  v54MaterialEffectsConflict,
+} from "@/lib/ask-sales-faq/v5/consensus";
 
 function deepFreeze<T>(value: T): T {
   if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
@@ -29,10 +33,12 @@ const SENSITIVE_CASE_DECISION = /\b(?:criminal|prison|disqualif|reject(?:ion)?|c
 const DEICTIC_OR_PERSONAL_ROUTE = /\b(?:not\s+here|in\s+here|dm\s+(?:madeline|rudy|rich|raul|mike|zubair)|contact\s+(?:madeline|rudy|rich|raul|mike|zubair))\b/i;
 const SENIOR_OPERATIONAL_APPROVER = /\b(?:rich|mike|rudy)\b/i;
 const HARD_LIVE_OR_VOLATILE = /https?:\/\/|\bwww\.|\b(?:current|latest|today|tomorrow|right\s+now|at\s+the\s+moment|this\s+(?:week|month|cohort))\b.{0,90}\b(?:status|availability|capacity|cap|quota|inventory|slots?|rate|percentage|metric|date|time|link|url|form|sheet|schedule|price|pricing|discount|offer|casting)\b|\b(?:status|availability|capacity|cap|quota|inventory|slots?|rate|percentage|metric|date|time|link|url|form|sheet|schedule|price|pricing|discount|offer|casting)\b.{0,90}\b(?:current|latest|today|tomorrow|right\s+now|at\s+the\s+moment|this\s+(?:week|month|cohort))\b/i;
-const UNRESOLVED_OR_NONFINAL = /\b(?:no\s+clear\s+(?:answer|decision|resolution|directive|policy)|not\s+(?:confirmed|finalized|resolved)|unclear|unknown|conflicting\s+(?:guidance|information|views)|further\s+(?:discussion|review)\s+(?:is\s+)?(?:needed|required)|does\s+not\s+(?:definitively\s+)?(?:answer|confirm|establish|resolve))\b/i;
+const UNRESOLVED_OR_NONFINAL = /\b(?:no\s+clear\s+(?:answer|decision|resolution|directive|policy)|not\s+(?:confirmed|finalized|resolved)|unclear|unknown|conflicting\s+(?:guidance|information|views)|(?:further\s+(?:discussion|review)\s+(?:is\s+)?(?:needed|required)|needs?\s+further\s+(?:discussion|review))|does\s+not\s+(?:definitively\s+)?(?:answer|confirm|establish|resolve))\b/i;
 const CONTEXT_BOUND_OR_ONE_OFF = /\b(?:one[- ]off\s+exception|as\s+an?\s+exception|email\s+is\s+(?:well[- ]crafted|approved)|shorten(?:ed)?\s+(?:the|this)\s+email|you\s+should\s+not\s+be\s+on\b|not\s+yet\s+assigned|ask\s+the\s+specified\s+person|ask\s+tech\s+for\s+assistance)\b/i;
-const LIVE_LIFECYCLE_OR_FUTURE_STATE = /\b(?:currently\s+paused|production\s+is\s+(?:currently\s+)?paused|new\s+crm\s+should|next\s+event|occasionally\s+announced|once\s+or\s+twice\s+a\s+year)\b/i;
+const LIVE_LIFECYCLE_OR_FUTURE_STATE = /\b(?:currently\s+paused|not\s+currently\s+offered|early\s+beta|production\s+is\s+(?:currently\s+)?paused|new\s+crm\s+should|next\s+event|upcoming\s+sunday|season\s+is\s+now\s+full|being\s+redone|in\s+the\s+meantime|current\s+budget|occasionally\s+announced|once\s+or\s+twice\s+a\s+year|for\s+now)\b/i;
 const HIGH_VOLATILITY_OFFER = /\b(?:one[- ]on[- ]one\s+meeting\s+with\s+daymond\s+john|vip\s+ticket|oscars?|major\s+premieres?)\b/i;
+const LIVE_OR_ONE_OFF_OUTCOME = /\b(?:our\s+attorney\s+is\s+already|we\s+tried\s+it|season\s+is\s+now\s+full|cancel\s+the\s+audition|as\s+a\s+top\s+closer|your\s+weekly\s+(?:approval\s+)?limit|once\s+the\s+\$?\d|the\s+(?:lead|client|cast\s+member|prospect)\s+(?:has|had|already|is\s+supposed\s+to)|contract\s+(?:needs\s+to\s+be|is\s+being)\s+(?:updated|changed|redone))\b/i;
+const STABLE_OWNER_ROUTE = /\b(?:post|route|direct|submit|send)\b.{0,100}\b(?:channel|hotline|team|tech|sales\s+tech|finance|fulfill?ment|greenlight|sales\s+questions?)\b/i;
 const ACTIVE_SCOPED_WINDOW_DAYS = 60;
 
 function hasControlledNumericValue(value: string) {
@@ -54,6 +60,8 @@ export type V53ActiveScopedOperationalClassification = {
   tier: V53OperationalTier;
   reasons: string[];
 };
+
+export type V54GovernedOperationalClassification = V53ActiveScopedOperationalClassification;
 
 /**
  * Compiles only reusable, source-attributed Slack decisions into answer evidence.
@@ -159,6 +167,53 @@ export function classifyV53ActiveScopedOperationalRule(
   };
 }
 
+/** V5.4 removes the release-relative 60-day recall cutoff while preserving
+ * every content, provenance, volatility, case-safety, and senior-approval
+ * gate. Old records are eligible for adjudication, not automatically current. */
+export function classifyV54GovernedOperationalRule(
+  policy: V4SystemicPolicy,
+  referenceReviewDate: string,
+): V54GovernedOperationalClassification {
+  const v53 = classifyV53ActiveScopedOperationalRule(policy, referenceReviewDate);
+  const text = [policy.title, ...policy.question_families, policy.decision].join(" ");
+  const hasAuthorizedApprover = policy.source.approved_by.some((name) => AUTHORIZED_OPERATIONAL_APPROVERS.test(name));
+  const hasSeniorApprover = policy.source.approved_by.some((name) => SENIOR_OPERATIONAL_APPROVER.test(name));
+  const recentlyReviewedNonSenior = daysBetween(referenceReviewDate, policy.last_reviewed) <= 30;
+  const stableOwnerRoute = hasAuthorizedApprover && (hasSeniorApprover || recentlyReviewedNonSenior) &&
+    STABLE_OWNER_ROUTE.test(policy.decision) &&
+    !SENSITIVE_CASE_DECISION.test(text) &&
+    !VOLATILE_DECISION.test(text) &&
+    !LIVE_LIFECYCLE_OR_FUTURE_STATE.test(text) &&
+    !LIVE_OR_ONE_OFF_OUTCOME.test(text);
+  const safelyAttributed = hasAuthorizedApprover && (hasSeniorApprover || recentlyReviewedNonSenior) &&
+    !UNRESOLVED_OR_NONFINAL.test(policy.decision) &&
+    !UNCERTAIN_LANGUAGE.test(policy.decision) &&
+    !SENSITIVE_CASE_DECISION.test(text) &&
+    !/\b(?:compliance|dial[- ]out regulations?|legal advice|customer timezone)\b/i.test(text) &&
+    !VOLATILE_DECISION.test(text) &&
+    !LIVE_LIFECYCLE_OR_FUTURE_STATE.test(text) &&
+    !LIVE_OR_ONE_OFF_OUTCOME.test(text) &&
+    policy.systemic.scopeRisk !== "case_specific";
+  const seniorGoverned = safelyAttributed && hasSeniorApprover;
+  const reusableArtifactRule = !/https?:\/\/|\bwww\.|\b(?:current|latest|exact|download|find|locate|access|login|password)\b/i.test(text);
+  const generalRatherThanLiveCase = policy.systemic.scopeRisk !== "case_specific" &&
+    !/\b(?:this|that|specific|my|our)\s+(?:client|lead|prospect|cast\s+member|application|transaction|payment|contract|record|booking|appointment)\b/i.test(text);
+  const reasons = v53.reasons.filter((reason) => {
+    if (reason === "outside_active_review_window" && safelyAttributed) return false;
+    if (reason === "not_reusable_rule_shaped" && safelyAttributed && /^(?:yes|no)\b/i.test(policy.decision.trim())) return false;
+    if (reason === "owner_review_required" && (seniorGoverned || stableOwnerRoute)) return false;
+    if (reason === "changeable_artifact_or_access" && (stableOwnerRoute || reusableArtifactRule)) return false;
+    if (reason === "live_case_shaped" && generalRatherThanLiveCase) return false;
+    if (reason === "senior_approval_required" && stableOwnerRoute) return false;
+    return true;
+  });
+  return {
+    eligible: reasons.length === 0,
+    tier: reasons.length ? v53.tier : policy.answerability === "answer_evidence" ? "stable_answer" : "active_scoped_answer",
+    reasons,
+  };
+}
+
 function compileV52Policies(policies: V4SystemicPolicy[]) {
   const promotedPolicyIds: string[] = [];
   const compiled = policies.map((policy): V4SystemicPolicy => {
@@ -259,12 +314,119 @@ function compileV53ActiveScopedPolicies(policies: V4SystemicPolicy[]) {
   return { policies: compiledPolicies, promotedPolicyIds, collisionReport, referenceReviewDate };
 }
 
+function approverRoleScore(policy: V4SystemicPolicy) {
+  const names = policy.source.approved_by.join(" ");
+  if (/\brich\b/i.test(names)) return 3;
+  if (/\b(?:mike|rudy)\b/i.test(names)) return 2.6;
+  if (/\b(?:madeline|raul)\b/i.test(names)) return 2;
+  return 0;
+}
+
+function governedAuthorityScore(policy: V4SystemicPolicy, newestTimestamp: number) {
+  const reviewed = dateTimestamp(policy.effective_at || policy.last_reviewed);
+  const daysBehind = newestTimestamp && reviewed ? Math.max(0, (newestTimestamp - reviewed) / 86_400_000) : 365;
+  return approverRoleScore(policy) * 2 + Math.max(0, 3 - daysBehind / 180) + policy.specificity_priority / 100;
+}
+
+function compileV54GovernedPolicies(policies: V4SystemicPolicy[], referenceReviewDate: string) {
+  const eligible = policies.filter((policy) =>
+    policy.answerability !== "answer_evidence" && classifyV54GovernedOperationalRule(policy, referenceReviewDate).eligible,
+  );
+  const byDecision = new Map<string, V4SystemicPolicy[]>();
+  for (const policy of eligible) byDecision.set(policy.decision_key, [...(byDecision.get(policy.decision_key) || []), policy]);
+  const existingAnswers = new Map<string, V4SystemicPolicy[]>();
+  for (const policy of policies.filter((candidate) => candidate.answerability === "answer_evidence")) {
+    existingAnswers.set(policy.decision_key, [...(existingAnswers.get(policy.decision_key) || []), policy]);
+  }
+
+  const selected = new Map<string, { consensusSize: number; disposition: string }>();
+  const auditReport: Array<{
+    decisionKey: string;
+    candidateIds: string[];
+    existingAnswerIds: string[];
+    selectedPolicyId: string | null;
+    disposition: string;
+  }> = [];
+  for (const [decisionKey, candidates] of byDecision) {
+    const existing = existingAnswers.get(decisionKey) || [];
+    const combined = [...existing, ...candidates];
+    const decisions = combined.map((policy) => primaryDecision(policy.decision));
+    const hasMaterialConflict = combined.some((left, leftIndex) => combined.some((right, rightIndex) =>
+      rightIndex > leftIndex && v54MaterialEffectsConflict(primaryDecision(left.decision), primaryDecision(right.decision)),
+    ));
+    if (existing.length && !hasMaterialConflict && v54DecisionsFormConsensus(decisions)) {
+      auditReport.push({
+        decisionKey,
+        candidateIds: candidates.map((policy) => policy.id),
+        existingAnswerIds: existing.map((policy) => policy.id),
+        selectedPolicyId: null,
+        disposition: "covered_by_aligned_existing_answer",
+      });
+      continue;
+    }
+
+    const newest = Math.max(...combined.map((policy) => dateTimestamp(policy.effective_at || policy.last_reviewed)));
+    const ranked = [...combined].sort((left, right) =>
+      governedAuthorityScore(right, newest) - governedAuthorityScore(left, newest) ||
+      dateTimestamp(right.effective_at || right.last_reviewed) - dateTimestamp(left.effective_at || left.last_reviewed) ||
+      left.id.localeCompare(right.id),
+    );
+    const margin = governedAuthorityScore(ranked[0], newest) - governedAuthorityScore(ranked[1] || ranked[0], newest);
+    const winner = ranked[0];
+    const unopposed = !hasMaterialConflict && v54DecisionsFormConsensus(decisions);
+    const decisivelyAdjudicated = hasMaterialConflict && margin >= 1.75;
+    if ((!unopposed && !decisivelyAdjudicated) || existing.some((policy) => policy.id === winner.id)) {
+      auditReport.push({
+        decisionKey,
+        candidateIds: candidates.map((policy) => policy.id),
+        existingAnswerIds: existing.map((policy) => policy.id),
+        selectedPolicyId: null,
+        disposition: !unopposed && !decisivelyAdjudicated ? "withheld_unresolved_material_conflict" : "covered_by_controlling_existing_answer",
+      });
+      continue;
+    }
+    selected.set(winner.id, {
+      consensusSize: combined.length,
+      disposition: decisivelyAdjudicated ? "contextual_authority_selected" : "governed_consensus_selected",
+    });
+    auditReport.push({
+      decisionKey,
+      candidateIds: candidates.map((policy) => policy.id),
+      existingAnswerIds: existing.map((policy) => policy.id),
+      selectedPolicyId: winner.id,
+      disposition: selected.get(winner.id)!.disposition,
+    });
+  }
+
+  const promotedPolicyIds: string[] = [];
+  const compiledPolicies = policies.map((policy): V4SystemicPolicy => {
+    const selection = selected.get(policy.id);
+    if (!selection) return policy;
+    promotedPolicyIds.push(policy.id);
+    return {
+      ...policy,
+      decision: datedDecision(policy),
+      answerability: "answer_evidence",
+      quality_tier: "trusted_evidence",
+      quality_flags: [...new Set([
+        ...policy.quality_flags.filter((flag) => !flag.startsWith("answer_withheld:")),
+        "v54_governed_consensus_rule",
+        `v54_consensus_size:${selection.consensusSize}`,
+        `v54_effective_date:${policy.effective_at || policy.last_reviewed}`,
+      ])],
+      route_reason: "",
+    };
+  });
+  return { policies: compiledPolicies, promotedPolicyIds, auditReport };
+}
+
 // Clone before compiling and freezing so V5.2 cannot mutate V4 or V5.1's
 // cached corpus. The resulting object is one process-local, versioned view.
 const source = structuredClone(getV4SystemicEffectiveCorpusSnapshot());
 const compiledV52 = compileV52Policies(source.policies);
 const compiledV53 = compileV53ActiveScopedPolicies(compiledV52.policies);
-const effective = deepFreeze({ ...source, policies: compiledV53.policies });
+const compiledV54 = compileV54GovernedPolicies(compiledV53.policies, compiledV53.referenceReviewDate);
+const effective = deepFreeze({ ...source, policies: compiledV54.policies });
 
 function stableHash(value: unknown) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -293,7 +455,7 @@ validateSnapshot();
 
 const atomicDecisionVersion = getV4AtomicDecisionLedgerVersion();
 const snapshotHash = stableHash({
-  schemaVersion: "ask-sales-v5-knowledge-snapshot-v3",
+  schemaVersion: "ask-sales-v5-knowledge-snapshot-v4",
   sourceKnowledgeVersion: effective.sourceKnowledgeVersion,
   systemicKnowledgeVersion: effective.systemicKnowledgeVersion,
   atomicDecisionVersion,
@@ -316,10 +478,12 @@ const snapshotHash = stableHash({
   stablePromotedPolicyIds: compiledV52.promotedPolicyIds,
   activeScopedPromotedPolicyIds: compiledV53.promotedPolicyIds,
   activeScopedCollisionReport: compiledV53.collisionReport,
+  governedPromotedPolicyIds: compiledV54.promotedPolicyIds,
+  governedAuditReport: compiledV54.auditReport,
 });
 
 const snapshot = Object.freeze({
-  schemaVersion: "ask-sales-v5-knowledge-snapshot-v3" as const,
+  schemaVersion: "ask-sales-v5-knowledge-snapshot-v4" as const,
   sourceKnowledgeVersion: effective.sourceKnowledgeVersion,
   systemicKnowledgeVersion: effective.systemicKnowledgeVersion,
   atomicDecisionVersion,
@@ -334,6 +498,9 @@ const snapshot = Object.freeze({
   activeScopedOperationalPromotionCount: compiledV53.promotedPolicyIds.length,
   activeScopedOperationalPromotedPolicyIds: Object.freeze([...compiledV53.promotedPolicyIds]),
   activeScopedCollisionReport: deepFreeze([...compiledV53.collisionReport]),
+  governedOperationalPromotionCount: compiledV54.promotedPolicyIds.length,
+  governedOperationalPromotedPolicyIds: Object.freeze([...compiledV54.promotedPolicyIds]),
+  governedOperationalAuditReport: deepFreeze([...compiledV54.auditReport]),
   referenceReviewDate: compiledV53.referenceReviewDate,
   operationalPolicyCount: getV4SystemicOperationalPolicyCount(),
 });

@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
@@ -76,6 +76,13 @@ export type V4SystemicCandidateRuntimeProfile = {
     plan: V4SystemicQueryPlan,
     retrieval: V4SystemicRetrieval,
   ) => V4SystemicSourcePlan;
+  exactSourceFallbackSentence?: (
+    need: V4SystemicNeed,
+    plan: V4SystemicQueryPlan,
+    retrieval: V4SystemicRetrieval,
+    preferredPolicyIds: string[],
+    rejectedDeterministicErrors?: string[],
+  ) => { text: string; policyId: string; evidence: string } | null;
   appendRouteForAnsweredSupport?: boolean;
   fallbackLabel: string;
   fallbackOnEmptyRetrieval: boolean;
@@ -2568,7 +2575,12 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       const need = queryPlan.needs.find((candidate) => candidate.id === decision.needId);
       const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === decision.needId);
       if (!need || sourceDecision?.lane !== "answer") return decision;
-      const fallback = v4SystemicExactDirectFallbackSentence(
+      const fallback = profile.exactSourceFallbackSentence?.(
+        need,
+        queryPlan,
+        adjudicatedRetrieval,
+        sourceDecision.preferredPolicyIds,
+      ) || v4SystemicExactDirectFallbackSentence(
         need,
         queryPlan,
         adjudicatedRetrieval,
@@ -2670,7 +2682,13 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       ? sourceDecision.preferredPolicyIds
       : sourceDecision.preferredPolicyIds.filter((id) => sentence.evidenceRefs.includes(id));
     const exactDirectFallback = fallbackPolicyIds
-      .map((id) => v4SystemicExactDirectFallbackSentence(
+      .map((id) => profile.exactSourceFallbackSentence?.(
+        need,
+        queryPlan,
+        adjudicatedRetrieval,
+        [id],
+        sentence.deterministicErrors,
+      ) || v4SystemicExactDirectFallbackSentence(
         need,
         queryPlan,
         adjudicatedRetrieval,

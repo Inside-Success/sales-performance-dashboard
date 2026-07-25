@@ -2658,6 +2658,10 @@ function deterministicRewrite(question: string, previousAnswer: string) {
 function deterministicConversation(turn: V3TurnResolution) {
   if (turn.kind === "memory") return turn.memoryAnswer || "This is the first question I can see in this isolated chat.";
   if (turn.kind === "rewrite" && turn.immediatePreviousAssistantAnswer) return deterministicRewrite(turn.currentQuestion, turn.immediatePreviousAssistantAnswer);
+  if (turn.immediatePreviousAssistantAnswer &&
+    /\b(?:automatically|automatic)\s+(?:approved|accepted|greenlit)|\bapproved\s+automatically\b/i.test(turn.currentQuestion)) {
+    return "Not automatically. The earlier answer means the prospect may be considered, but the normal qualification and approval process still applies.";
+  }
   if (turn.kind === "clarification") {
     const context = `${turn.standaloneQuestion} ${turn.immediatePreviousUserQuestion || ""}`;
     const thirdPartyPaymentAndMissingContract = /\b(?:business partner|partner|third[- ]party|payer)\b/i.test(context) &&
@@ -2679,7 +2683,13 @@ function deterministicConversation(turn: V3TurnResolution) {
   if (/^(?:hi|hello|hey|good (?:morning|afternoon|evening)|how are you)\b/i.test(turn.currentQuestion)) {
     return "Hi! I’m ready whenever you are.";
   }
+  if (/^(?:got it|understood|okay|ok)[,!?.\s-]*(?:thanks|thank you)?[!.?\s]*$/i.test(turn.currentQuestion)) {
+    return "You’re welcome!";
+  }
   if (turn.kind === "topic_intro") {
+    if (/\b(?:recommend|suggest|find)\b.{0,70}\b(?:restaurant|hotel|flight|vacation|movie|music|recipe|weather)\b|\b(?:restaurant|hotel|flight|vacation|movie|music|recipe|weather)\s+recommendation\b/i.test(turn.currentQuestion)) {
+      return "I’m focused on Inside Success sales guidance, so I don’t have a governed recommendation for that.";
+    }
     const topics: Array<[string, RegExp]> = [
       ["qualification", /\b(?:qualification|eligibility|applicant|greenlight)\b/i],
       ["offers and pricing", /\b(?:offer|pricing|package|discount)\b/i],
@@ -2746,7 +2756,9 @@ export async function runAskSalesFaqV4(
   stageTimings.turnResolutionMs = Date.now() - turnStarted;
 
   const perspectiveOnlyCorrection = isVerifiedSlidePhotoPerspectiveCorrection(turn);
-  if (["social", "topic_intro", "memory", "rewrite", "clarification"].includes(turn.kind) || perspectiveOnlyCorrection) {
+  const automaticApprovalConfirmation = turn.kind === "follow_up" && Boolean(turn.immediatePreviousAssistantAnswer) &&
+    /\b(?:automatically|automatic)\s+(?:approved|accepted|greenlit)|\bapproved\s+automatically\b/i.test(turn.currentQuestion);
+  if (["social", "topic_intro", "memory", "rewrite", "clarification"].includes(turn.kind) || perspectiveOnlyCorrection || automaticApprovalConfirmation) {
     const previousAnswer = displayText(turn.immediatePreviousAssistantAnswer || "", 5000);
     const answer = perspectiveOnlyCorrection
       ? `Those are the rep’s actions: ${previousAnswer.replace(/^[A-Z]/, (letter) => letter.toLowerCase())}`

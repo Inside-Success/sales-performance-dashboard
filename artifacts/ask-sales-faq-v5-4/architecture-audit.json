@@ -1,0 +1,1886 @@
+{
+  "runtime": "v5.4-isolated",
+  "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+  "schemaVersion": "ask-sales-v5-knowledge-snapshot-v4",
+  "policyCount": 2625,
+  "stableOperationalPromotionCount": 91,
+  "activeScopedOperationalPromotionCount": 17,
+  "governedOperationalPromotionCount": 92,
+  "governedAuditDispositionCounts": {
+    "governed_consensus_selected": 92
+  },
+  "governedPromotionApproverCounts": {
+    "Madeline + Rich + Rudy": 4,
+    "Madeline + Rudy": 23,
+    "Rudy": 14,
+    "Madeline + Raul + Rudy": 1,
+    "Madeline": 30,
+    "Madeline + Rich": 15,
+    "Madeline + Raul": 1,
+    "Rich": 3,
+    "Madeline + Raul + Rich": 1
+  },
+  "governedPromotions": [
+    {
+      "id": "operational_8bb7e5ea440145be",
+      "decisionKey": "bank-draft-payment-weekend-greenlight",
+      "decision": "As of 2026-05-22, bank draft (ACH or wire) can be initiated via online banking on weekends. Greenlight can proceed; the letter can be sent after payment if necessary. Conditions: Client can initiate bank draft via online banking on weekends.",
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779451716.017199"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_e7a8335708e49704",
+      "decisionKey": "contract-requirement-for-joint-episode",
+      "decision": "As of 2026-05-08, only the paying client needs to sign a contract; a single contract is acceptable for two clients in one episode. Conditions: One client is paying for the episode. Boundaries: Does not address scenarios where both clients pay separately.; Does not specify contract language for joint episodes.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778262416.721399"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_92a168f7cd16a317",
+      "decisionKey": "extended-casting-approval-request",
+      "decision": "As of 2026-05-11, have the client write a note requesting the extension, which will be passed to head management for possible approval to stay FTC compliant. Conditions: Client must provide a written note requesting the extension. Boundaries: Extension is not guaranteed; it requires head management approval.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778473839.850219"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_429573fe0ccb2ad5",
+      "decisionKey": "green-light-discretion-for-artist-clients",
+      "decision": "As of 2026-05-18, use your best discretion; if the client is a legitimate artist with social proof or an inspiring story, you may green light them. Conditions: Client must be a legitimate artist (e.g., DJ, host).; Social proof or website should be verified.; An inspiring story supports the decision. Boundaries: Does not override standard green light process for non-artist clients.; Does not guarantee approval for all artists.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779142271.447979"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_28cd9823247f0c0c",
+      "decisionKey": "greenlight-extension-emergency",
+      "decision": "As of 2026-05-22, an extension can be granted for emergency situations like a medical issue or car accident. Conditions: Client was already greenlit; Emergency situation (e.g., ER visit, car accident). Boundaries: Does not guarantee extension for non-emergency reasons.",
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779479768.520359"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_8ac4fa24ec5beb59",
+      "decisionKey": "istv-daily-stats-channel-rename-request",
+      "decision": "As of 2026-05-21, to rename the channel, post in the tech channel and check with Tyler/Alex to ensure it won't break automations. Conditions: The channel rename is for ISTV daily stats. Boundaries: Does not guarantee the rename will be approved or provide the final name.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779403350.777389"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_d8c5b39e260efad5",
+      "decisionKey": "mlm-advertising-during-episode",
+      "decision": "As of 2026-05-22, a client can briefly mention or wear a t-shirt advertising their MLM business for a minute or two during the episode, but cannot make the whole episode about it. Conditions: The advertising is limited to a short mention or wearing a t-shirt; The advertising does not dominate the entire episode. Boundaries: Does not permit making the whole episode an advertisement for the MLM; Does not address whether the client owns the business or is sponsoring another's business.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779483451.885239"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_d7491c6399ba940d",
+      "decisionKey": "refund-after-full-payment-lands",
+      "decision": "As of 2026-06-11, once the $20k lands, a refund will be issued. Conditions: Lead paid $5k on Friday; Lead is supposed to complete the rest of the $20k to be a PIF; The full $20k payment must land first. Boundaries: Does not specify refund amount or method; Does not address refunds before full payment lands.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781196341.065349"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_b6314e50f3b1e2b3",
+      "decisionKey": "reschedule-call-2-after-emergency",
+      "decision": "As of 2026-05-23, a client who had to reschedule Call #2 due to an emergency (e.g., pet surgery) can reschedule for the following week, pay to lock in their spot, and provide the release form within 3–6 months before filming. Conditions: The rescheduling is due to a genuine emergency.; The client pays to secure their spot.; The release form can be provided later, up to 3–6 months before filming. Boundaries: This does not apply to non-emergency rescheduling requests.; It does not waive the payment requirement.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779569776.451009"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_3bd55704aef9517f",
+      "decisionKey": "third-party-contract-clearance-payment-first",
+      "decision": "As of 2026-06-07, the cast member can pay now and sort out the third-party clearance later once the situation is mapped out. Conditions: The cast member has a contract with a third party requiring clearance for media work. Boundaries: Does not guarantee that the third party will approve the clearance.; Does not address liability if clearance is denied.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780846641.383049"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_e829b88e737dee7a",
+      "decisionKey": "ach-payment-follow-up",
+      "decision": "As of 2026-06-06, follow up over the week to ensure the ACH does not fail and babysit it until confirmation. Conditions: Client has provided proof of ACH payment. Boundaries: Does not specify exact follow-up actions or timeline beyond 'over the week'.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780757599.335809"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_ee4160969a182198",
+      "decisionKey": "booked-leads-on-did-not-book-list",
+      "decision": "As of 2026-06-06, this is explained in the SOP; leads may book later after being added to the list. Conditions: The SOP explains the process. Boundaries: Does not provide the specific SOP details or link.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780789001.648169"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_4009e632df76e78e",
+      "decisionKey": "client-logo-usage-approval",
+      "decision": "As of 2026-06-19, needs sign-off or proof of use. Repost in the fulfilment channel. Conditions: The client must provide proof of rights or obtain sign-off. Boundaries: Does not specify who provides sign-off.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781879967.928529"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_502eb635d6d9ad8b",
+      "decisionKey": "cohort-closing-no-exception",
+      "decision": "As of 2026-06-27, tell them the cohort closes today so that won't be an option and wish them luck. Conditions: Cohort closing deadline is today; Client requires external regulatory approval. Boundaries: Does not address future cohorts or reapplication.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782595839.556459"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_b274354dc0aed786",
+      "decisionKey": "contract-after-payment-legality",
+      "decision": "As of 2026-05-14, it is not illegal to sign a contract after payment. The customer agrees to terms and conditions at checkout, and most products do not require a separate legal contract. Boundaries: Exceptions may exist in medical fields and similar regulated areas.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778785867.468889"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_94a51913d8573878",
+      "decisionKey": "contract-email-blast-size-update",
+      "decision": "As of 2026-05-22, yes, update the contract to say email blast to over 250,000 instead of 100K. Conditions: The license states 250K while the contract states 100K.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779454609.494859"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "not_reusable_rule_shaped",
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_03589db3ba2e3613",
+      "decisionKey": "do-not-share-call-recording-externally",
+      "decision": "As of 2026-05-21, no, call recordings and videos are confidential and must not be shared externally. Applicants must be present on the call to view them. Conditions: Applicant requests a copy of the recording or video. Boundaries: Does not address internal sharing or exceptions.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779388976.390299"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "changeable_artifact_or_access",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_b7f904972359844e",
+      "decisionKey": "double-casting-expectation-setting",
+      "decision": "As of 2026-05-18, yes, setting expectations up front is a good idea. Conditions: Applies to double casting calls. Boundaries: Does not prescribe specific wording.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779119995.293229"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "not_reusable_rule_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_71d679ffa0520656",
+      "decisionKey": "full-episode-hosting-on-client-streaming-platform",
+      "decision": "As of 2026-05-08, no, the full episode cannot be hosted on the client's own streaming platform until the 2-year guaranteed term on our network ends. Daymond-related content cannot be placed anywhere else. Conditions: The episode is under the 2-year agreement.; The content involves Daymond. Boundaries: Does not address clips, trailers, or BTS usage, which are allowed publicly.",
+      "approvedBy": [
+        "Madeline",
+        "Raul",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778250667.437059"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_cc9c3ee0e61331d0",
+      "decisionKey": "hair-makeup-liability-disclaimer",
+      "decision": "As of 2026-04-30, when mentioning hair and makeup, you must disclaim that the company is not liable for any issues, as clients have requested refunds due to makeup problems. Conditions: The recommendation is made to a client. Boundaries: Does not provide the exact wording of the disclaimer.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1777556178.627089"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_82887a60aae3a2cd",
+      "decisionKey": "increase-call-volume-daily-dial-list",
+      "decision": "As of 2026-05-18, use the daily dial list to book 5-10 calls a day at 20% commission. A Loom video explains the process. Conditions: Rep is not yet approved for NLCEO calls. Boundaries: Does not guarantee call volume; depends on performance.; NLCEO calls require Rich's approval.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779132464.903139"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_b3f0b2fe29e4bd79",
+      "decisionKey": "istv-second-call-deadline-extension",
+      "decision": "As of 2026-05-05, extensions are not standard; if the client cannot make time, skip and move on. Exceptions may be requested through Rich. Conditions: The client must demonstrate a genuine scheduling conflict. Boundaries: Does not guarantee an extension will be granted.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778001624.603149"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_238bd4ffde2108d3",
+      "decisionKey": "lead-assignment-20-percent-channel",
+      "decision": "As of 2026-06-03, to protect a lead in the 20% channel, comment on the lead as you dial them and check Keap for existing assignments. Leads are not permanently assigned unless a call is booked; the next day other reps may dial if no contact was made. The system excludes leads that booked a call from the next day's list. Conditions: Rep must comment on the lead in the 20% channel while dialing.; Rep must check Keap for existing closer assignments before reaching out.; Lead is only protected for the current day; next day other reps may dial if no contact was made.; System automatically excludes leads that booked a call from the next day's 9am list. Boundaries: Does not guarantee permanent assignment unless a call is booked.; Does not prevent other reps from dialing the next day if no contact was made.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780522596.191769"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_122880d20821445d",
+      "decisionKey": "legal-applicants-restricted-to-senior-reps",
+      "decision": "As of 2026-05-21, only a few senior reps should take legal applicants. If you end up with one, cut off after the price part of the video. Conditions: Applicant is a lawyer or legal professional. Boundaries: Does not list which senior reps are authorized.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779387724.539179"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_48c095bdfc806ef4",
+      "decisionKey": "love-experts-niche-acceptance",
+      "decision": "As of 2026-05-18, yes, as long as the episode is kept clean and presents opinions in an unbiased, educational way. Conditions: Content remains clean and unbiased.; Fits within a season on the topic. Boundaries: Does not guarantee acceptance; final say may rest with others.",
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779133091.672949"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "not_reusable_rule_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_68580d1a4fcd3141",
+      "decisionKey": "master-mind-event-info-access",
+      "decision": "As of 2026-05-26, clients can ask fulfillment for Master Mind event information after they have paid. Conditions: The client has already paid. Boundaries: Does not provide information to prospects or unpaid clients; Does not specify what the event entails.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779818537.968959"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_388dc02793621c9d",
+      "decisionKey": "mastermind-additional-ticket-fee",
+      "decision": "As of 2026-05-13, every attendee must pay a $200 food and beverage fee for MasterMind. The license covers one ticket; additional attendees pay $200 each. Conditions: Policy effective as of February 9th.; Fee covers 5 meals. Boundaries: Does not exempt any attendee from the fee, including couples or co-owners.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778700369.011489"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_cd54dacc460b91f5",
+      "decisionKey": "mastermind-event-attendance-limit",
+      "decision": "As of 2026-05-14, attendance is limited to one time only. Boundaries: Does not address exceptions or special circumstances.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778781799.648149"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_498d085e1dfda892",
+      "decisionKey": "multiple-contact-anomaly",
+      "decision": "As of 2026-07-01, multiple contacts are anomalies affecting less than 1% of leads. The process is not broken; reps should clarify if the lead has an appointment and, if so, confirm the Zoom link and hang up. Conditions: The lead reports being contacted by multiple reps. Boundaries: Does not guarantee no process improvements are needed.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782920150.880119"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_e1de2fd63b66fb0a",
+      "decisionKey": "no-upgrade-during-60-day-hustle",
+      "decision": "As of 2026-06-03, upgrades and price presentations are not allowed for participants in the 60-day Hustle program; such calls must be cancelled immediately. Conditions: The cast member is in the 60-day Hustle program. Boundaries: This does not address upgrades outside the 60-day Hustle program.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780489436.700639"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_e23505ea67b8fd21",
+      "decisionKey": "onboarding-call-no-show",
+      "decision": "As of 2026-05-27, inform the client that the meeting was running with multiple attendees, ask them to confirm the time and link used, and provide the calendar to rebook using the correct group link that shows one spot per day. Conditions: Client reports no one on onboarding call. Boundaries: Does not guarantee the call actually occurred.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779884525.778579"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_547316d7c7fc9adb",
+      "decisionKey": "opt-out-removal-from-calendar",
+      "decision": "As of 2026-05-14, yes, remove them from your calendar. Any opt-out means no contact ever, as people may try to trick you and send a demand letter. Conditions: The person has sent an opt-out message (e.g., STOP). Boundaries: Does not address email opt-out separately; assumes text opt-out implies no contact.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778718600.225829"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_2a903db3ef4ce4cf",
+      "decisionKey": "refund-request-handling-by-casting-team",
+      "decision": "As of 2026-06-13, casting team members are not responsible for refunds. Inform the client the program is non-refundable, but forward the request to finance and senior team on Monday. Make it clear you are not saying a refund is impossible, only that you are not the decision-maker. Conditions: Refund request occurs on a weekend. Boundaries: Does not guarantee a refund will be issued.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781387198.293689"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_2dc69dc7faa58458",
+      "decisionKey": "reschedule-sunday-calls-if-calendar-not-blocked",
+      "decision": "As of 2026-05-15, yes, you can reschedule the Sunday calls, but you must ensure your calendar is blocked for times you cannot take calls, as some reps work Sundays. Conditions: The calls were booked on a Sunday when the rep did not block their calendar.; The rep must block their calendar for future unavailability. Boundaries: Repeated rescheduling due to unblocked calendars is not acceptable.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778855252.027979"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_7d7232bc7d71f7c3",
+      "decisionKey": "same-week-commitment-required-after-call1",
+      "decision": "As of 2026-05-15, anyone who has a first call must greenlight and sign up in the same week. They cannot be pushed to the next week; if they do not commit, they must wait 90 days to reapply. Conditions: The applicant had a first call during a cohort week.; The cohort deadline is Sunday at 11:59 PM. Boundaries: This applies even if no greenlight letter was sent; the 90-day wait is triggered by the audition itself.",
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778862599.088209"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_db057807c8ae0de5",
+      "decisionKey": "scam-incident-response",
+      "decision": "As of 2026-05-07, iSTV cannot help guests or +1s; individuals must do their own due diligence. Such incidents happen at marketing events. Conditions: The person involved was a guest or +1, not an ISTV cast member.; The scam occurred at a marketing event. Boundaries: ISTV does not take responsibility for third-party actions at events.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778186166.906719"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_c9f5da55089d443b",
+      "decisionKey": "second-call-booking-policy",
+      "decision": "As of 2026-05-13, second calls are only allowed for illness or injury with written proof, per company policy. Clients must find time within the standard week. Conditions: Request to book a second call outside standard scheduling. Boundaries: Does not apply to medical emergencies with proof.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778695966.058429"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_4dc26a1beb22f984",
+      "decisionKey": "select-call2-video-based-on-applicant",
+      "decision": "As of 2026-05-21, choose the video that best suits the applicant's needs based on their annual revenue, marketing budget, and business stage, which can be found in their application or during discovery on call 1. Conditions: Applicant is a lawyer or other professional. Boundaries: Does not specify which exact video to use for lawyers.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779387724.539179"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_f668017481998059",
+      "decisionKey": "self-sourced-client-flow",
+      "decision": "As of 2026-07-01, self-sourced clients should complete the application and then book on your personal calendar. Conditions: The client is self-sourced, not from the lead list. Boundaries: Does not address attribution or how to prevent routing to the general pool.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782922416.961759"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_b5bd8cf6dba8d1c5",
+      "decisionKey": "sensitive-content-lead-handling",
+      "decision": "As of 2026-05-06, for leads with potentially inappropriate content, run the first call as usual and then the green light team can decide not to approve; if already past call 1, inform the lead that the green light team did not approve due to the severity of applicants. Conditions: The lead's content is in a grey area (e.g., suggestive but not explicit).; The decision is ultimately Rudy's or the green light team's. Boundaries: Does not provide a clear definition of disqualifying content.; Does not guarantee approval or denial.",
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778084191.797309"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_3d30e9b86b69c37b",
+      "decisionKey": "use-article-to-address-legitimacy-concerns",
+      "decision": "As of 2026-06-09, share the article Rudy provided to address concerns about legitimacy and pricing. Conditions: Prospect raises concerns about legitimacy or 'pay to play'. Boundaries: Does not replace other objection handling techniques.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781030328.777439"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_218f15b0a75fa20f",
+      "decisionKey": "welcome-email-after-ach-proof",
+      "decision": "As of 2026-06-06, send the welcome email and book onboarding as soon as the client provides proof of ACH payment. Conditions: Client provides proof of ACH payment (e.g., screenshot). Boundaries: Does not require waiting for the ACH to fully clear before sending the email.",
+      "approvedBy": [
+        "Rudy"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780757599.335809"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_e0d9338d38f9b8fd",
+      "decisionKey": "americas-authors-fit",
+      "decision": "As of 2026-07-01, if the lead has a published book and applied for Americas Authors, they could be a fit. Conditions: The lead has a published book.; The lead applied for Americas Authors. Boundaries: Does not guarantee acceptance; final fit determined on the call.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782920329.210989"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_954f584a84e06146",
+      "decisionKey": "audition-schedule-slower-ads",
+      "decision": "As of 2026-05-31, yes, auditions are slower next week according to Madeline. Rich adds that the person's calendar was opened up more. Conditions: Applies to the specific rep asking and the upcoming week. Boundaries: Does not guarantee the same for all reps or future weeks.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780250915.607739"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "not_reusable_rule_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_108e9b88233658fc",
+      "decisionKey": "cohort-extension-exception-policy",
+      "decision": "As of 2026-07-14, no, extensions are not granted; the prospect should reapply in 6 months, and if accepted, it would be for a single episode. Conditions: Prospect cannot meet the current cohort timeline. Boundaries: Does not allow for a documentary series; only a single episode upon reapplication.; Does not guarantee acceptance upon reapplication.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784058385.650979"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_973c337478d208bb",
+      "decisionKey": "contract-update-needed-for-coaching-removal",
+      "decision": "As of 2026-06-30, the reuse license and contract must be edited to remove the ongoing coaching deliverable if it is still stated. Conditions: Coaching is still listed as a deliverable in the reuse license or contract. Boundaries: Does not specify who is responsible for making the edits.; Does not provide a timeline for the update.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782821302.247789"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_5b926dbc5e1ca5ba",
+      "decisionKey": "medical-emergency-call2-reschedule",
+      "decision": "As of 2026-06-21, if the lead is comfortable providing proof of a medical emergency in the family and wants to continue, you should be okay to push their call2 to next week. Conditions: The lead provides proof of the medical emergency.; The lead wants to continue with the opportunity. Boundaries: Does not guarantee rescheduling without proof.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782085425.144539"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_bc9bc70f9ba6f452",
+      "decisionKey": "schedule-call1-in-future-if-not-done",
+      "decision": "As of 2026-07-10, you can schedule his call 1 in August if it has not been conducted already; that is okay. Conditions: The client has not yet had call 1; The client requests a later date. Boundaries: Does not apply if call 1 has already occurred.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783717447.601849"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_de0a679ae2751e8b",
+      "decisionKey": "vip-istv-second-episode-filming",
+      "decision": "As of 2026-05-29, they don't do double the filming; we just put their episode on another show. Conditions: The client purchases a second VIP ISTV episode at half off. Boundaries: Does not address non-VIP episodes.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780065630.518179"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_dcfdbd9f810f0296",
+      "decisionKey": "voicemail-follow-up-retention",
+      "decision": "As of 2026-06-02, it is a good practice to retain promising voicemail leads for follow-up the next day. Conditions: The lead appears promising based on lead quality.; A voicemail was left. Boundaries: Does not mandate retention of all voicemail leads.",
+      "approvedBy": [
+        "Madeline",
+        "Raul"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780432667.763469"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_23ba0dd96af9fdee",
+      "decisionKey": "ach-payment-in-progress-process",
+      "decision": "As of 2026-06-24, have the client sign the contract and DM Michael Kumov in finance to monitor the transaction. Once payment confirmation is received from our end, it is considered a sale and you can post in the PayMe channel. Conditions: ACH payment is in progress.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782314069.789469"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_daf4d87c304d753c",
+      "decisionKey": "ad-targeting-based-on-ad-copy",
+      "decision": "As of 2026-07-03, the ad targeting is configured based on the words in the ad copy and graphics. For example, keywords like 'pet spa' and location 'Palm Beach FL' will target relevant demographics. Conditions: Targeting is derived from the ad's text and visual content.; Location targeting is included based on the business location mentioned. Boundaries: Clients cannot manually select demographics; it is based on ad content.; Does not cover all possible targeting parameters.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783083637.578129"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_496342d9ab21ff03",
+      "decisionKey": "alternative-applicant-option",
+      "decision": "As of 2026-05-28, if a co-owner (e.g., daughter) has a clean record and is a part owner, they can apply and do the interview to promote the business. Schedule an audition using your OnceHub link. Conditions: The alternative applicant is a part owner with a clean record.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780004120.519989"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_28607ab5fadfe394",
+      "decisionKey": "amazon-apple-google-youtube-tv-submission-guarantee",
+      "decision": "As of 2026-07-01, we cannot guarantee placement; Amazon has its own approval process, but all episodes submitted so far have been accepted without issue. Google placement is not provided except via our website search. Streaming on Roku, Apple, and Fire TV through the Inside Success TV app is guaranteed. Conditions: The client is purchasing a license that includes submission to these platforms. Boundaries: Does not guarantee acceptance by Amazon or other third-party platforms.; Google TV distribution is not included.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782929577.003229"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_c6d9c53dffd41e95",
+      "decisionKey": "applicant-budget-keap-lookup",
+      "decision": "As of 2026-07-10, check the applicant's profile in Keap for the 'marketing budget' section, which shows the willing to spend range. Conditions: Applicant has a profile in Keap. Boundaries: Does not guarantee the application is in Keap; if missing, post in tech channel.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783644640.009949"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_5783244dee1498be",
+      "decisionKey": "avoid-roi-claims",
+      "decision": "As of 2026-05-20, do not provide case studies or examples showing return on investment, as it is dangerous. Conditions: Prospect asks for proof of capital raised or ROI. Boundaries: Does not prohibit discussing the platform's features or general benefits.",
+      "approvedBy": [
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779311681.439519"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_87297887641ef436",
+      "decisionKey": "call1-commitment-same-week-rule",
+      "decision": "As of 2026-07-10, if the client already had their call 1, they will have to commit the same week as the call 1; otherwise they will have to reapply in 6 months. Conditions: Client has already completed call 1. Boundaries: If call 1 has not been conducted, it can be scheduled later (e.g., in August).",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783717447.601849"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_daf98cab34b7be73",
+      "decisionKey": "canceled-call-due-to-double-booking",
+      "decision": "As of 2026-06-26, a call canceled because the lead already auditioned with another rep should be treated as a technical error and not count as a scheduled call. Conditions: Lead was double-booked on multiple reps' calendars; Lead already auditioned with another rep. Boundaries: Does not apply to cancellations for other reasons.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782498374.458489"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_733af196efc157a4",
+      "decisionKey": "cast-switch-between-shows-allowed",
+      "decision": "As of 2026-07-03, yes, a cast member can switch from Mompreneurs to America's Top Doctors. Conditions: The client is currently cast for a show. Boundaries: Does not address any fees or process for switching.; Does not guarantee availability on the desired show.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783083637.578129"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_fc31b42b1c18108b",
+      "decisionKey": "client-upgrade-to-vip-process",
+      "decision": "As of 2026-07-03, to upgrade a client to VIP, have them pay the difference and sign the upgraded contract. Communicate with the fulfillment team and, if payment help is needed, post in the tech channel and tag Gohar. Conditions: Client agrees to the upgrade.; Payment difference is collected. Boundaries: Does not specify where to find the upgraded contract or payment link.; Does not detail fulfillment team communication steps beyond tagging Gohar.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783093693.517499"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_8915dcab33b143bb",
+      "decisionKey": "commission-tier-rates",
+      "decision": "As of 2026-05-12, commission tiers are: 10% for 0-100k, 11% for 100k-200k, 12% for 200k-300k, 13% for 300k-400k. These may be adjusted the following month. Conditions: Tiers are based on cash collected in that month only. Boundaries: Rates may change after the month.",
+      "approvedBy": [
+        "Madeline",
+        "Raul",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778600184.698999"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_e7079ddfa2e37826",
+      "decisionKey": "confirm-appointment-in-keap",
+      "decision": "As of 2026-06-03, check the client's profile in Keap under appointments to see scheduled meetings, though it may not always reflect correctly. Conditions: Original rep may not have made a note in Keap; Appointments may not always display properly even when booked. Boundaries: Does not guarantee appointment visibility; Does not provide an alternative confirmation method.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780528733.246709"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_0f2809438d7d82e1",
+      "decisionKey": "cross-show-selling-allowed",
+      "decision": "As of 2026-06-12, you can talk to the client about other shows; it is their choice. If you are trained on ISTV deliverables, you are allowed to sell ISTV. Conditions: You are trained on the deliverables of the other show.; The client is a good fit for the other show. Boundaries: Does not override any show-specific restrictions not mentioned.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781297861.438909"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_055ee97c95f46a7e",
+      "decisionKey": "daymond-john-intro-video-example",
+      "decision": "As of 2026-07-13, a Daymond John intro video example was provided by Madeline. Conditions: Video file shared in thread. Boundaries: Not a guaranteed client deliverable; example only.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783965674.592769"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_f7ffe30528561fc2",
+      "decisionKey": "dial-out-leads-no-show-assigned-ask-applicant",
+      "decision": "As of 2026-06-24, contact the lead and ask which show they applied for, then add it to the sheet and Keap. Conditions: Lead is from the dial out program and has no show assigned. Boundaries: Does not cover leads from other channels.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782325741.583929"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_a16cf43006f58d72",
+      "decisionKey": "dj-greenlight-approvals-location",
+      "decision": "As of 2026-07-17, post in the greenlight approval letter channel for DJ Greenlight approvals. Conditions: The user is a member of the greenlight approval letter channel. Boundaries: Does not provide the exact channel name or direct link to PDFs.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784294288.957649"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_c81af81bd9679394",
+      "decisionKey": "do-not-cancel-meeting-on-stop-reply",
+      "decision": "As of 2026-05-28, do not cancel the meeting just because the client replies STOP; it may be an auto-response, and many clients still attend.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779973016.920369"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_002f4a0766bfd646",
+      "decisionKey": "duplicate-lead-handling-procedure",
+      "decision": "As of 2026-07-17, mark the lead as 'do not contact' on the spreadsheet and follow the SOP for duplicate contacts. Conditions: The lead is a duplicate by phone number.; The lead has requested no contact or is already claimed. Boundaries: Does not override the SOP requirement to ask if they've been contacted before.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784304975.279779"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_0dbc2d1def04543b",
+      "decisionKey": "eod-greenlight-submission-channel",
+      "decision": "As of 2026-07-08, for ISTV, submit EOD stats and greenlight approvals in #istv-sales-closers-daily-stats. For DJ, use a different channel. Conditions: User is on ISTV side. Boundaries: DJ side uses a different channel.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783525457.514109"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_1447a388da7cc33b",
+      "decisionKey": "follow-up-after-cancellation-before-call1",
+      "decision": "As of 2026-07-21, you can try to follow up; the standard practice is to make two follow-up calls for no-shows. It is acceptable as long as the lead has not requested no contact. Conditions: Lead canceled before call 1; Lead has not explicitly said 'do not contact'. Boundaries: Does not guarantee the lead will re-engage; Does not override any explicit opt-out requests.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784652173.603419"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_c7805462852d313b",
+      "decisionKey": "handle-attorney-contract-review-request",
+      "decision": "As of 2026-06-17, try to walk them through the contract on the call; if unavoidable, send the contract PDF and schedule another call. Conditions: Client requests attorney review before payment. Boundaries: Does not guarantee attorney approval or payment.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781724244.202269"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_79a0b7756a0faf31",
+      "decisionKey": "handling-requests-for-specific-stats",
+      "decision": "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. Conditions: The prospect is asking for specific metrics or proof of results. Boundaries: Does not provide actual stats or case studies.; Does not override the policy of not sharing ROI data.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782244659.969279"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_ae2ba3881af6f4fe",
+      "decisionKey": "inappropriate-contact-removal-process",
+      "decision": "As of 2026-06-03, post in the tech channel to opt out and block the contact. They can unsubscribe from future emails. In Zoom, block the user via the info icon. Forward any further inappropriate messages directly to Rich. Conditions: Contact is sending inappropriate messages; Contact has not opted out. Boundaries: Does not cover legal escalation beyond forwarding to Rich.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780511036.323599"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_ebab615df54ab74e",
+      "decisionKey": "keap-taken-by-rudy-mawer-call-ok",
+      "decision": "As of 2026-07-16, you should be okay to call them. Conditions: Lead status in Keap shows 'taken by Rudy Mawer'. Boundaries: Does not guarantee the lead is uncontacted or available; only that calling is permitted.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784214015.775119"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_a83d5a26c0ee7e4b",
+      "decisionKey": "lead-call-frequency-and-outbound-dial-sheet",
+      "decision": "As of 2026-07-16, yes, you can call the same lead twice in a day. Putting your name on the outbound dial sheet indicates the lead is taken and being contacted, which is acceptable. Conditions: The lead has not requested to be placed on the Do Not Call list.; The calls are within the same day. Boundaries: This does not override any Do Not Call requests.; This does not specify a maximum number of calls beyond two.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784214516.671009"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_cf13408e4b83c4bc",
+      "decisionKey": "lead-notes-update-location",
+      "decision": "As of 2026-06-17, yes, lead notes can be updated in Keap.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781732640.737389"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_0ae58969589ddd29",
+      "decisionKey": "mastermind-registration-process",
+      "decision": "As of 2026-07-14, marketing sends outreach emails with the registration link; sales should not send the link directly. Conditions: Marketing team is responsible for mastermind registration outreach. Boundaries: Sales team does not provide the registration link.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784051644.465759"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_4e86dda6c7fb91b3",
+      "decisionKey": "next-level-ceo-casted-lead-handoff",
+      "decision": "As of 2026-07-07, the lead should continue working with the original Next Level CEO contact; DM the recording to Alex and post in the tech channel tagging Alex. Conditions: Lead was casted for Next Level CEO; You conducted an ISTV call with the lead. Boundaries: Does not specify acceptance letter process.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783440877.292939"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_06edfa5a21bc1f10",
+      "decisionKey": "no-contract-redlining",
+      "decision": "As of 2026-06-15, we will not make changes to the contract. Tell the client this to save yourself the headache. Conditions: The client or their lawyer has requested changes to the standard contract. Boundaries: Does not address legal review or escalation; simply states the policy.",
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781562971.026649"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "owner_review_required",
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_262d67194a7f217e",
+      "decisionKey": "notify-production-team-contract-backout",
+      "decision": "As of 2026-07-08, post in the fulfilment hotline channel to notify the production team. Conditions: The contract was signed, but the client backed out and ACH failed.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783529076.862539"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_2eeb7815debb5b0d",
+      "decisionKey": "post-onboarding-client-connection-process",
+      "decision": "As of 2026-07-13, post in the fulfilment hotline channel for assistance connecting the client. Conditions: Client has completed onboarding and needs further help. Boundaries: Does not guarantee direct connection to Crystal.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783966648.920799"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_df959e2a5f1316aa",
+      "decisionKey": "post-sale-casting-agent-information",
+      "decision": "As of 2026-07-16, after closing, the client works with production; there are no more casting agents. The salesperson is the only casting agent. Conditions: The prospect asks about post-sale casting agents. Boundaries: This does not detail the production team members.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784223853.911689"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_efe47bda29668849",
+      "decisionKey": "post-sale-fulfillment-route",
+      "decision": "As of 2026-06-01, post-sale and fulfillment questions should be directed to the production team and discussed during the client's onboarding call. Conditions: Client has already purchased a license. Boundaries: Does not provide specific production team contact details.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780322972.997809"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_62cdfb91fb659718",
+      "decisionKey": "pre-audition-video-not-resendable",
+      "decision": "As of 2026-07-08, the video before the audition cannot be sent out. Conditions: The client is asking for the video they received before their audition. Boundaries: If the video is not the pre-audition video, the client should search their email inbox.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783535789.596819"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped"
+        ]
+      }
+    },
+    {
+      "id": "operational_eb210d429efba752",
+      "decisionKey": "recurring-payment-method-after-bank-transfer-deposit",
+      "decision": "As of 2026-07-07, it is advisable to collect a card for recurring payments if possible; otherwise, the same bank details can be used for future charges. For specific guidance, post in the tech channel and tag billing contacts. Conditions: Deposit was paid via bank transfer. Boundaries: Does not mandate card collection.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783444450.497289"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_24a3a6a5aa1201c4",
+      "decisionKey": "red-carpet-event-access-all-license-levels",
+      "decision": "As of 2026-05-12, yes, all license levels have access to the Red Carpet event at $200 per ticket. Conditions: Ticket purchase of $200 per person. Boundaries: Does not specify if tickets are limited or event dates.",
+      "approvedBy": [
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778624868.201569"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "not_reusable_rule_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_917c52562d079421",
+      "decisionKey": "self-call-review-posting-channel",
+      "decision": "As of 2026-06-26, post self-call reviews in the #2026-main-all-sales-reps-no-questions channel when Rudy requests them. Conditions: Rudy must initiate the request for self-call reviews in the channel. Boundaries: Do not post self-call reviews unprompted or in other channels.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782439530.103099"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_6272f1f648d49935",
+      "decisionKey": "sending-contract-pdf-to-client",
+      "decision": "As of 2026-05-05, yes, you can email the contract PDF, but the client must close before the deadline with no extensions. Conditions: Client must close before the deadline. Boundaries: No extensions are allowed.",
+      "approvedBy": [
+        "Rich"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778017124.293019"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "outside_active_review_window"
+        ]
+      }
+    },
+    {
+      "id": "operational_99c259c37a3816ff",
+      "decisionKey": "short-notice-onboarding-notification",
+      "decision": "As of 2026-07-08, post in the fulfillment hotline channel with the client's name and email address to inform the production team. Conditions: Onboarding is booked with short notice (e.g., same day). Boundaries: Does not require notification for standard notice onboardings; Does not specify other channels.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783521623.735469"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_d40140155e13fc0a",
+      "decisionKey": "tier-1-pr-article-example",
+      "decision": "As of 2026-07-13, a fictional example of a Legacy Makers PR article was provided. Conditions: Example is fictional and for reference only. Boundaries: Not a real client article; labeled as fictional.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "medium",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783965674.592769"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "changeable_artifact_or_access"
+        ]
+      }
+    },
+    {
+      "id": "operational_0ec71f2201ac88d4",
+      "decisionKey": "unqualified-lead-opt-out-keap",
+      "decision": "As of 2026-07-01, add notes to the client profile in Keap and post their name, email, and phone number in the opt-out channel to stop further communications. Conditions: The lead is unqualified and should not receive further communications. Boundaries: Does not guarantee the lead won't book calls through other means.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782934167.931689"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "live_route_only",
+        "reasons": [
+          "live_case_shaped",
+          "senior_approval_required"
+        ]
+      }
+    },
+    {
+      "id": "operational_0c0f71135777c4f1",
+      "decisionKey": "us-bank-account-payment-verification",
+      "decision": "As of 2026-07-10, uS bank account payments are treated as wires and may take a few days to reflect. Post in the finance requests channel for ACH payment verification. Conditions: Client paid via US bank account option. Boundaries: Does not guarantee instant payment confirmation.",
+      "approvedBy": [
+        "Madeline"
+      ],
+      "riskLevel": "high",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783713365.859179"
+      ],
+      "priorClassification": {
+        "eligible": false,
+        "tier": "historical_support",
+        "reasons": [
+          "owner_review_required",
+          "senior_approval_required"
+        ]
+      }
+    }
+  ],
+  "provider": {
+    "modelConfigured": false,
+    "provider": null,
+    "model": null,
+    "maxModelCallSeconds": 35,
+    "maxRequestSeconds": 105,
+    "deepSeekRetries": 1,
+    "transport": null
+  }
+}

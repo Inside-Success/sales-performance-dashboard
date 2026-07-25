@@ -135,11 +135,11 @@ describe("Ask Sales V5 bounded runtime", () => {
       "owner-unlisted-payment-split-boundary",
     ].includes(id))).toBe(true);
     expect(result.runtimeMetadata).toMatchObject({
-      pipelineVersion: "v5.3-isolated",
+      pipelineVersion: "v5.4-isolated",
       isolation: { productionSelectorChanged: false, databaseWrites: false, historyPersistence: false },
       knowledgeVersion: getV51KnowledgeVersion(),
     });
-    expect(result.runtimeMetadata.retrieval.candidateCount).toBeLessThanOrEqual(12);
+    expect(result.runtimeMetadata.retrieval.candidateCount).toBeLessThanOrEqual(32);
     expect(result.runtimeMetadata.retrieval.diagnostics?.needs[0].hardCompatible).toBeGreaterThan(0);
   });
 
@@ -250,7 +250,7 @@ describe("Ask Sales V5 bounded runtime", () => {
     }], { provider, validatorProvider: provider });
     expect(result.lane).toBe("route");
     expect(result.selectedPolicyIds).toEqual([]);
-    expect(result.runtimeMetadata.pipelineVersion).toBe("v5.3-isolated");
+    expect(result.runtimeMetadata.pipelineVersion).toBe("v5.4-isolated");
     expect(result.runtimeMetadata.sourcePlan?.reasoningSummary).toContain("failed closed");
     expect(purposes).toEqual(["v4_systemic_query_plan", "v4_systemic_source_plan", "v4_systemic_evidence_answer"]);
   });

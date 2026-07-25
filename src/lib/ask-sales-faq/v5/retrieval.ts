@@ -17,6 +17,7 @@ import type {
   V4SystemicRetrieval,
 } from "@/lib/ask-sales-faq/v4/systemic/types";
 import type { V3ProductScope, V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+import { retrieveV3Policies } from "@/lib/ask-sales-faq/v3/retrieval";
 import { evaluateV51DecisionContract, evaluateV52DecisionIdentity } from "@/lib/ask-sales-faq/v5/decision-contract";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 
@@ -276,6 +277,18 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   const authoritativeText = need.authorityText || need.text || need.originalRequestText || "";
   const directText = [authoritativeText, turn.usedImmediateContext ? turn.standaloneQuestion : ""].filter(Boolean).join(" ");
   const directTokens = tokens(directText, true);
+  // V3 remains a recall signal only. Its candidates must still pass V5's
+  // product scope, relation, action, entity, authority-resolution, and exact
+  // decision-identity gates before they can enter the bounded candidate set.
+  const recallTurn: V3TurnResolution = {
+    ...turn,
+    kind: "new",
+    currentQuestion: authoritativeText,
+    standaloneQuestion: directText || authoritativeText,
+    productScope: need.productScope === "unknown" ? turn.productScope : need.productScope,
+    usedImmediateContext: false,
+  };
+  const v3Recall = new Map(retrieveV3Policies(recallTurn, 32).candidates.map((candidate) => [candidate.policy.id, candidate.score]));
   const structuredTokens = tokens([...need.domains, ...need.actions, ...need.entities].join(" "), true);
   const expansionQueries = [...new Set([
     need.text,
@@ -351,7 +364,9 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
     })).sort((left, right) => right.score - left.score);
     const bestExpansion = expansionScores[0];
     const expansionScore = bestExpansion?.score || 0;
-    const directAdmission = matchedTerms.length >= 2 || rareMatches.length >= 1 || family >= 0.45 || controlling.has(document.policy.id);
+    const recallScore = v3Recall.get(document.policy.id) || 0;
+    const recallAdmission = recallScore > 0 && matchedTerms.length >= 1 && relationCompatibility !== "unknown";
+    const directAdmission = matchedTerms.length >= 2 || rareMatches.length >= 1 || family >= 0.45 || controlling.has(document.policy.id) || recallAdmission;
     const expansionAdmission = matchedTerms.length >= 1 && expansionScore >= 5 && relationCompatibility !== "unknown";
     if (!directAdmission && !expansionAdmission) {
       rejectionCounts.insufficient_direct_signal = (rejectionCounts.insufficient_direct_signal || 0) + 1;
@@ -362,7 +377,7 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
     const authorityResolutionScore = controlling.has(document.policy.id) ? 40 : 0;
     compatible.push({
       document,
-      score: directSignal + boundedExpansion + qualityScore(document.policy) + authorityResolutionScore,
+      score: directSignal + boundedExpansion + qualityScore(document.policy) + authorityResolutionScore + Math.min(12, recallScore / 5),
       directScore: directSignal,
       expansionScore,
       lexicalScore: lexical,
@@ -390,11 +405,11 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
   for (const candidate of compatible) {
     const count = perDecision.get(candidate.document.policy.decision_key) || 0;
     if (count >= 2) continue;
-    if (candidate.lane === "direct" && direct.length < 12) direct.push(candidate);
-    else if (candidate.lane === "expansion" && expansion.length < 4) expansion.push(candidate);
+    if (candidate.lane === "direct" && direct.length < 18) direct.push(candidate);
+    else if (candidate.lane === "expansion" && expansion.length < 6) expansion.push(candidate);
     else continue;
     perDecision.set(candidate.document.policy.decision_key, count + 1);
-    if (direct.length >= 12 && expansion.length >= 4) break;
+    if (direct.length >= 18 && expansion.length >= 6) break;
   }
   const selected = [...direct, ...expansion].sort((left, right) => right.score - left.score);
   const selectedExact = selected.some((candidate) => candidate.contractDisposition === "exact");
@@ -422,7 +437,7 @@ function rankNeed(need: V4SystemicNeed, turn: V3TurnResolution) {
 export function retrieveV5Policies(
   turn: V3TurnResolution,
   plan: V4SystemicQueryPlan,
-  totalLimit = 24,
+  totalLimit = 32,
 ): V4SystemicRetrieval {
   const startedAt = Date.now();
   const byNeed = plan.needs.map((need) => ({ need, ...rankNeed(need, turn) }));
