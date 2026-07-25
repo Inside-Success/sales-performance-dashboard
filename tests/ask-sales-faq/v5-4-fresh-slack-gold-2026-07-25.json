@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "name": "ask-sales-v5-4-post-freeze-fresh-slack-gold-2026-07-25",
   "status": "sealed_before_runtime_evaluation",
-  "sealedAt": "2026-07-25T19:20:00Z",
+  "sealedAt": "2026-07-25T18:53:06Z",
   "runtimeFreezeCommit": "d4e426c3c816a48faa85226c3295ddd63a5e0ec5",
   "promotionGate": {
     "minimumWeightedUtilityLeadOverV3": 0.1,
