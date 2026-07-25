@@ -13,6 +13,8 @@ Production V3 remains live and unchanged. V5.4 remains isolated, unmerged, and d
 ## Frozen scope
 
 - Implementation branch: `agent/ask-sales-v5-4-coverage-consensus-2026-07-25`
+- Dashboard draft PR: [#81](https://github.com/Inside-Success/sales-performance-dashboard/pull/81)
+- Documentation draft PR: [#56](https://github.com/Inside-Success/faq-chatbot/pull/56)
 - Runtime freeze commit: `d4e426c3c816a48faa85226c3295ddd63a5e0ec5`
 - Holdout selection commit: `9c8747125feecfd254e603a17a639c5fd18e4659`
 - Timestamp correction commit: `924070e`
