@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "ask-sales-v5-3-unblind-key-v1",
+  "runtimeInput": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-3-independent-gate/primary-runtime.json",
+  "runtimeInputSha256": "abd13285cc08b11b34e696aaac334aff451912517076ef4808172a57201dc944",
+  "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+  "mappingByItem": {
+    "v53gate-01": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-02": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-03": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-04": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-05": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-06": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-07": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-08": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-09": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-10": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-11": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-12": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-13": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-14": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-15": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-16": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-17": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-18": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-19": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-20": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-21": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-22": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-23": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-24": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-25": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-26": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-27": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-28": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-29": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-30": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-31": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-32": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-33": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-34": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-35": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-36": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-37": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-38": {
+      "A": "v3",
+      "B": "v5"
+    },
+    "v53gate-39": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-40": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-41": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-42": {
+      "A": "v5",
+      "B": "v3"
+    },
+    "v53gate-43": {
+      "A": "v3",
+      "B": "v5"
+    }
+  }
+}

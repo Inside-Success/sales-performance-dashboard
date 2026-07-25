@@ -1,0 +1,570 @@
+{
+  "schemaVersion": "ask-sales-v5-3-blinded-human-review-v1",
+  "reviewedAt": "2026-07-25T11:58:32.310Z",
+  "reviewer": "Codex manual source review",
+  "packetSha256": "3f550f2c185b7a181aaa207d0d40d4f692b00137f227c1efcfbd8e0a46053e29",
+  "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+  "systemsStillBlindedDuringReview": true,
+  "aiJudgePromotionAuthority": false,
+  "items": [
+    {
+      "id": "v53gate-01",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Directly preserves the standard-contract and no-custom-amendment boundary."
+      }
+    },
+    {
+      "id": "v53gate-02",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-03",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-04",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Uses the newer five-year rule and correctly rejects the older two-year wording."
+      }
+    },
+    {
+      "id": "v53gate-05",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-06",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly limits the split to two cards but omits the controlled Sales Tech link and paid-in-full agreement."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-07",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-08",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Preserves the no-ROI/no-metrics boundary but adds unnecessary framing and an avoidable route."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-09",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly avoids an external Tier 1 guarantee but omits the guaranteed ISTV app placement."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly rejects client-selected external placement but omits the guaranteed ISTV app placement."
+      }
+    },
+    {
+      "id": "v53gate-10",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Indicates that the video is still played but does not give the simple controlling yes answer."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-11",
+      "outputA": {
+        "grade": "critical",
+        "wrongActionOwner": false,
+        "note": "Confidently replaces first-booked-call ownership with a rep-negotiated conflict rule."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-12",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Tells the second rep to contact the original rep and not automatically take over the lead."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Safe and materially useful, but incomplete or unnecessarily routed against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-13",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-14",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Allows nonprofits but adds a narrower social-proof condition instead of the normal qualification boundary."
+      }
+    },
+    {
+      "id": "v53gate-15",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-16",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Answers the DJ-versus-ISTV refund distinction correctly but adds an avoidable Finance route."
+      }
+    },
+    {
+      "id": "v53gate-17",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-18",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-19",
+      "outputA": {
+        "grade": "critical",
+        "wrongActionOwner": false,
+        "note": "Confidently replaces first-contact ownership with a negotiate-between-reps rule."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly requires the CRM notes check but does not identify the first closer as the owner."
+      }
+    },
+    {
+      "id": "v53gate-20",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-21",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a post-sale onboarding action to Sales Questions instead of Fulfillment."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a post-sale onboarding action to Sales Questions instead of Fulfillment."
+      }
+    },
+    {
+      "id": "v53gate-22",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-23",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a live payment-link defect to Finance instead of Sales Tech."
+      }
+    },
+    {
+      "id": "v53gate-24",
+      "outputA": {
+        "grade": "critical",
+        "wrongActionOwner": false,
+        "note": "Unsafe over-answer: suggests that a rep could approve a serious criminal-history case instead of requiring Rich's case-by-case decision."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-25",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a post-sale Mastermind registration request to Sales Questions instead of Fulfillment."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a post-sale Mastermind registration request to Sales Questions instead of Fulfillment."
+      }
+    },
+    {
+      "id": "v53gate-26",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-27",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-28",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-29",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-30",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a live 20-percent-list update to Sales Questions instead of Sales Tech."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Sends a live 20-percent-list update to Sales Questions instead of Sales Tech."
+      }
+    },
+    {
+      "id": "v53gate-31",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Responds politely but routes a greeting instead of simply inviting the sales question."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-32",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Shows that the video is used but does not state the controlling must-still-play rule clearly."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-33",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Natural acknowledgment with no repeated policy or unnecessary route."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-34",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Safe and materially useful, but incomplete or unnecessarily routed against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-35",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Produces a concise safe sentence but omits the sourced results-vary qualification."
+      }
+    },
+    {
+      "id": "v53gate-36",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-37",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-38",
+      "outputA": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      }
+    },
+    {
+      "id": "v53gate-39",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": true,
+        "note": "Routes the controlled payment-link action to Sales Questions instead of Sales Tech."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-40",
+      "outputA": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly says the rep must not create the link but omits the controlled Sales Tech owner."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Correctly blocks rep-created links, but overstates that all custom links are disallowed despite the controlled Sales Tech path."
+      }
+    },
+    {
+      "id": "v53gate-41",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "partial",
+        "wrongActionOwner": false,
+        "note": "Combines international and nonprofit eligibility, but omits the normal qualification boundary until the next turn."
+      }
+    },
+    {
+      "id": "v53gate-42",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Does not resolve an answerable source-backed question, or does not provide the required natural conversation behavior."
+      },
+      "outputB": {
+        "grade": "pass",
+        "wrongActionOwner": false,
+        "note": "Correct, safe, and sufficiently useful against the prewritten source-only gold."
+      }
+    },
+    {
+      "id": "v53gate-43",
+      "outputA": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Routes a restaurant request to a company policy channel instead of giving a natural scope limitation."
+      },
+      "outputB": {
+        "grade": "fail",
+        "wrongActionOwner": false,
+        "note": "Routes a restaurant request to a company policy channel instead of giving a natural scope limitation."
+      }
+    }
+  ]
+}

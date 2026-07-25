@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 2,
+  "name": "ask-sales-v5-3-independent-post-freeze-slack-gold-2026-07-25",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-25T11:09:46Z",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "d8f38678e85023ade37e9f4bf61d582f6cbbb2c8",
+  "codeHeadAtSeal": "6672a999ec6283fd1797523b8bf290ccd567d2f0",
+  "priorEvaluationSourceIdsSha256": "ee873c85fdff51f45b9a05794236e4ba6ed90b9dd3370b3166af5b1f24a5a4ca",
+  "promotionGate": {
+    "minimumWeightedUtilityLeadOverV3": 0.1,
+    "maximumV5CriticalErrors": 0,
+    "maximumV5WrongActionOwners": 0,
+    "minimumV5ConversationWeightedUtility": 0.75,
+    "requireCompleteRuntimeOutputs": true,
+    "requireRepeatabilitySafety": true,
+    "requireStakeholderApprovalBeforeProduction": true,
+    "notes": [
+      "Weighted utility is pass=1, partial=0.5, fail=0, critical=0.",
+      "The utility lead is measured on the complete 43-prompt primary run, not on a tuned or replay-only subset.",
+      "A critical error is a confident materially wrong rule, unsafe over-answer, or high-impact relationship mismatch.",
+      "An action route fails the owner gate if it sends the rep to the wrong workflow owner or claims an action was completed.",
+      "Passing this technical gate is necessary but does not itself authorize a production cutover."
+    ]
+  },
+  "repeatability": {
+    "independentCaseIds": [
+      "v53gate-01",
+      "v53gate-04",
+      "v53gate-06",
+      "v53gate-08",
+      "v53gate-09",
+      "v53gate-11",
+      "v53gate-16"
+    ],
+    "conversationIds": [
+      "v53gate-conv-01",
+      "v53gate-conv-02",
+      "v53gate-conv-03",
+      "v53gate-conv-04",
+      "v53gate-conv-05",
+      "v53gate-conv-06"
+    ],
+    "notes": [
+      "The subset was preregistered before runtime output generation.",
+      "It spans high-risk rules, supersession, action ownership, unsupported metrics, external-platform scope, relationship matching, greetings, rewrites, topic switches, referents, corrections, and out-of-scope conversation."
+    ]
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorFixtureOverlapChecked": true,
+    "sourceGoldWrittenBeforeRuntimeOutputs": true,
+    "manualSourceReviewPrimary": true,
+    "aiJudgePromotionAuthority": false,
+    "authorityPolicy": "Exact decision, scope, conditions, finality, recency, and role control. Rich normally outranks Madeline, but not through a blind name override.",
+    "notes": [
+      "All Slack source IDs were absent from prior evaluation fixtures and artifacts at seal time.",
+      "Every independent case has a reliable threaded reply; action cases also use the frozen current route-owner catalog.",
+      "The set includes answer, route, artifact, sensitive-case, relationship, scope, and natural multi-turn strata.",
+      "Neither V3 nor V5.3 may be changed in response to this set before the promotion decision is recorded."
+    ]
+  },
+  "cases": [
+    {
+      "id": "v53gate-01",
+      "question": "Can a rep agree to change the standard contract when a prospect asks for several custom clauses?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The standard contract is a prerequisite and reps must not promise or negotiate custom amendments.",
+      "requiredConcepts": ["no custom amendments", "standard contract"],
+      "forbiddenConcepts": ["the rep can approve edits", "promise a legal change"],
+      "evaluationStrata": ["contract", "high-risk", "recent-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784915468.547709", "slack:C0AUQKNR8CF:1784918605.352599"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-02",
+      "question": "Do cast members have to live in the United States to qualify?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The opportunity is international, not limited to people in the United States, although normal qualification still applies.",
+      "requiredConcepts": ["international", "not limited to the US"],
+      "forbiddenConcepts": ["US residents only", "automatic approval"],
+      "evaluationStrata": ["qualification", "scope", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781296400.688929", "slack:C0AUQKNR8CF:1781296436.095229"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-03",
+      "question": "If a prospect already called and told me their story, can I skip Call 1 and go straight to the Call 2 licensing video?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Run Call 1 as the normal audition with the Call 1 script. If the prospect is ready by the end, the rep may close then, but should not skip straight to Call 2.",
+      "requiredConcepts": ["run Call 1", "Call 1 script", "do not skip straight to Call 2"],
+      "forbiddenConcepts": ["skip the audition", "start with licensing"],
+      "evaluationStrata": ["sales-process", "relationship", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781301608.816919", "slack:C0AUQKNR8CF:1781303526.845209"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-04",
+      "question": "Is the guaranteed minimum episode placement on the network two years or five years?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Five years is the newer minimum guaranteed placement. The two-year wording was the older language and was being removed from the contracts.",
+      "requiredConcepts": ["five years", "two years is old wording"],
+      "forbiddenConcepts": ["two years is current", "lifetime guarantee"],
+      "evaluationStrata": ["contract", "supersession", "numeric"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781319376.008439", "slack:C0AUQKNR8CF:1781320390.386719"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-05",
+      "question": "A prospect is bringing an attorney to Call 2. Should the rep change the sales call or withhold the contract walkthrough?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Run the sales call normally, including the contract review, and confirm that both attendees are okay with the call being recorded.",
+      "requiredConcepts": ["run the call normally", "contract review", "recording consent"],
+      "forbiddenConcepts": ["cancel because an attorney attends", "hide the contract"],
+      "evaluationStrata": ["contract", "call-process", "conditional"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781130060.173149", "slack:C0AUQKNR8CF:1781130615.854879"],
+      "approvedBy": ["Raul"]
+    },
+    {
+      "id": "v53gate-06",
+      "question": "A client wants to pay in full using half credit card and half debit card. Can the rep arrange that?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Two cards can be used, but the rep should request the controlled custom payment link from Sales Tech and use the correct paid-in-full agreement rather than making a link or split themselves.",
+      "requiredConcepts": ["two cards are allowed", "Sales Tech", "custom payment link"],
+      "forbiddenConcepts": ["make the link yourself", "change the contract amount"],
+      "evaluationStrata": ["payment", "action-route", "sales-tech"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781190795.374109", "slack:C0AUQKNR8CF:1781192660.655589"],
+      "approvedBy": ["Raul"]
+    },
+    {
+      "id": "v53gate-07",
+      "question": "What is the proper flow for a rep's self-sourced prospect so the booking stays with that rep?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Have the prospect complete the application and then book them on the rep's personal calendar.",
+      "requiredConcepts": ["complete the application", "personal calendar"],
+      "forbiddenConcepts": ["skip the application", "use the Master Calendar"],
+      "evaluationStrata": ["booking", "ownership", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782922416.961759", "slack:C0AUQKNR8CF:1782922536.644389"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "v53gate-08",
+      "question": "What should a rep say when a prospect demands exact episode views, ROI, or performance case-study numbers?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not share or imply episode-level ROI or performance figures. Results vary by person and subject. Official reviews and approved materials may be used; guaranteed trailer views are a separate paid social promotion, not episode viewing figures.",
+      "requiredConcepts": ["do not share ROI or episode metrics", "results vary", "trailer views are separate"],
+      "forbiddenConcepts": ["guarantee episode ROI", "invent case-study metrics"],
+      "evaluationStrata": ["compliance", "claims", "high-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782244659.969279", "slack:C0AUQKNR8CF:1782245344.349529", "slack:C0AUQKNR8CF:1782247169.840119"],
+      "approvedBy": ["Madeline", "Rich"]
+    },
+    {
+      "id": "v53gate-09",
+      "question": "Can a client choose a Tier 1 streaming platform, and what placement is actually guaranteed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The client does not choose the Tier 1 platform. What is guaranteed is launch on ISTV, whose app is available on Roku, Apple TV, and Fire TV devices. Do not turn submission to another platform into a guarantee.",
+      "requiredConcepts": ["client does not choose", "ISTV launch is guaranteed", "Roku", "Apple TV", "Fire TV devices"],
+      "forbiddenConcepts": ["guaranteed Amazon approval", "client chooses the platform"],
+      "evaluationStrata": ["deliverables", "relationship", "claims"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782942709.251779", "slack:C0AUQKNR8CF:1782944156.869429", "slack:C0AUQKNR8CF:1782949268.672949"],
+      "approvedBy": ["Madeline", "Rudy"]
+    },
+    {
+      "id": "v53gate-10",
+      "question": "Is it okay to skip the congratulations video now?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The congratulations video must still be played.",
+      "requiredConcepts": ["no", "still play the congratulations video"],
+      "forbiddenConcepts": ["optional", "skip it"],
+      "evaluationStrata": ["call-process", "stable-answer", "simple"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783083607.908929", "slack:C0AUQKNR8CF:1783087562.189029"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-11",
+      "question": "A prospect appears on several reps' calendars for different shows. Which rep and show should own the audition?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The rep with the first booked call conducts the audition, and that original booking determines the show. Do not switch the prospect between ISTV and DJ during calls or have an untrained rep sell the other company's offer.",
+      "requiredConcepts": ["first booked call", "original show", "do not switch between ISTV and DJ"],
+      "forbiddenConcepts": ["pick whichever package pays more", "split the client between shows"],
+      "evaluationStrata": ["ownership", "cross-program", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783351769.333969", "slack:C0AUQKNR8CF:1783353526.777729", "slack:C0AUQKNR8CF:1783362371.538499"],
+      "approvedBy": ["Madeline", "Rich"]
+    },
+    {
+      "id": "v53gate-12",
+      "question": "A dial-out lead no-showed Call 1 with another rep. May I simply rebook the lead onto my own calendar?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not take the lead over automatically. Inform the original rep who had the missed Call 1.",
+      "requiredConcepts": ["inform the original rep", "do not automatically take over"],
+      "forbiddenConcepts": ["rebook to yourself without notice"],
+      "evaluationStrata": ["ownership", "dial-out", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782944605.143859", "slack:C0AUQKNR8CF:1782950445.887279"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-13",
+      "question": "Does a prospect's prior appearance on The Voice automatically create an FTC or network conflict for ISTV?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No, that prior appearance does not automatically create a conflict.",
+      "requiredConcepts": ["no automatic conflict"],
+      "forbiddenConcepts": ["automatically disqualified", "The Voice is an ISTV show"],
+      "evaluationStrata": ["eligibility", "scope", "relation"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781040641.277659", "slack:C0AUQKNR8CF:1781041452.206819"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-14",
+      "question": "Can a nonprofit organization be a good fit, or do we only consider for-profit businesses?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "A nonprofit can be a good fit. It still needs to go through the normal qualification process; nonprofit status alone is not automatic approval.",
+      "requiredConcepts": ["nonprofit can be a fit", "normal qualification still applies"],
+      "forbiddenConcepts": ["for-profit only", "all nonprofits are approved"],
+      "evaluationStrata": ["qualification", "scope", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781052006.862739", "slack:C0AUQKNR8CF:1781057364.502879"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-15",
+      "question": "Does Section 9 stop a client from creating future personal-brand content, YouTube content, or appearing in other interviews and documentaries?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Section 9 does not prevent those future personal-brand, YouTube, interview, or documentary activities.",
+      "requiredConcepts": ["no", "future personal content is allowed"],
+      "forbiddenConcepts": ["exclusive ban on future media", "cannot use YouTube"],
+      "evaluationStrata": ["contract", "rights", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779557078.315329", "slack:C0AUQKNR8CF:1779557217.507179"],
+      "approvedBy": ["Raul"]
+    },
+    {
+      "id": "v53gate-16",
+      "question": "Is the three-day cooling-off refund window the same for DJ and main ISTV?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. DJ still has a three-day refund window; main ISTV does not.",
+      "requiredConcepts": ["DJ has three days", "ISTV does not"],
+      "forbiddenConcepts": ["same rule for both", "ISTV has three days"],
+      "evaluationStrata": ["refund", "cross-program", "high-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781901397.251419", "slack:C0AUQKNR8CF:1781904652.572949", "slack:C0AUQKNR8CF:1781904665.952949"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-17",
+      "question": "May a rep send the controlled vanity-link contract to a prospect who insists on legal review before paying?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, the controlled vanity-link contract may be sent for legal review. This does not authorize editing the standard contract.",
+      "requiredConcepts": ["yes", "controlled contract may be sent", "no custom edits"],
+      "forbiddenConcepts": ["must pay before seeing any contract", "rep may amend it"],
+      "evaluationStrata": ["contract", "permission", "relation"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781041140.152479", "slack:C0AUQKNR8CF:1781041464.807169"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-18",
+      "question": "Is the 20-percent sheet cutoff 8 PM in each rep's local time or 8 PM Eastern?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The cutoff is 8 PM Eastern Time.",
+      "requiredConcepts": ["8 PM Eastern"],
+      "forbiddenConcepts": ["8 PM local time", "midnight"],
+      "evaluationStrata": ["dial-out", "time", "numeric"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781048821.223289", "slack:C0AUQKNR8CF:1781057389.038779"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-19",
+      "question": "Two closers contacted the same prospect for ISTV and DJ. Who should take over, and what should be checked first?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The first closer who had contact takes over. Check the CRM notes first before proceeding, and do not use the overlap to cross-sell the other program.",
+      "requiredConcepts": ["first closer with contact", "check CRM notes first"],
+      "forbiddenConcepts": ["split commission by default", "latest closer owns it"],
+      "evaluationStrata": ["ownership", "cross-program", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782401389.705109", "slack:C0AUQKNR8CF:1782407167.235269", "slack:C0AUQKNR8CF:1782407182.442049"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-20",
+      "question": "A client paid from a US bank account and only has a debit confirmation. Where should the rep ask someone to confirm whether the ACH or wire arrived?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "Use #sales-finance-requests for the Finance team to check the pending ACH or wire. Do not treat the client's debit confirmation as proof that ISTV received cleared funds.",
+      "requiredConcepts": ["#sales-finance-requests", "Finance checks receipt", "do not assume cleared"],
+      "forbiddenConcepts": ["mark it paid immediately", "Sales Tech owns bank receipt"],
+      "evaluationStrata": ["finance", "action-route", "payment"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783713365.859179", "slack:C0AUQKNR8CF:1783713490.822759"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-21",
+      "question": "A paid client needs to reschedule onboarding and cannot find the invite. Where should the rep send the request?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "Send the post-sale onboarding request to the fulfillment hotline. The rep should not personally manage the post-sale reschedule.",
+      "requiredConcepts": ["fulfillment hotline", "post-sale"],
+      "forbiddenConcepts": ["finance channel", "rep changes production schedule directly"],
+      "evaluationStrata": ["fulfillment", "action-route", "post-sale"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782829606.563879", "slack:C0AUQKNR8CF:1782836859.383579"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-22",
+      "question": "I have an urgent Greenlight request but do not have access to the Greenlight channel. Where does this action belong?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The action belongs in #greenlight-requests. Access or the urgent request should be handled through that Greenlight workflow; the chatbot must not approve the applicant itself.",
+      "requiredConcepts": ["#greenlight-requests", "do not approve in the chatbot"],
+      "forbiddenConcepts": ["finance", "chatbot approves the Greenlight"],
+      "evaluationStrata": ["greenlight", "action-route", "access"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784842951.166419", "slack:C0AUQKNR8CF:1784850377.683049"],
+      "approvedBy": ["Taabish"]
+    },
+    {
+      "id": "v53gate-23",
+      "question": "The payment links are no longer prompting clients to sign the contract. Where should this live system issue be reported?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Report the live payment-link and contract-system issue in #sales-tech-requests. Do not invent a workaround or tell the client to pay again.",
+      "requiredConcepts": ["#sales-tech-requests", "live system issue"],
+      "forbiddenConcepts": ["retry the charge", "edit the payment page yourself"],
+      "evaluationStrata": ["sales-tech", "action-route", "system"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784146338.321289", "slack:C0AUQKNR8CF:1784146417.742939"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-24",
+      "question": "A specific applicant has a serious old criminal history but says they turned their life around. Can the rep approve them based on that story?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "goldAnswer": "No automatic approval or rejection should be issued by the chatbot or rep. Rich said these cases are always case by case, so send the exact case to #sales-questions-requests for an authoritative decision.",
+      "requiredConcepts": ["case by case", "#sales-questions-requests", "no automatic approval"],
+      "forbiddenConcepts": ["definitely approved", "definitely disqualified from a generic rule"],
+      "evaluationStrata": ["sensitive", "sales-policy", "action-route"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780773507.901829", "slack:C0AUQKNR8CF:1782416567.968569"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-25",
+      "question": "A paid client wants to attend the Mastermind event but cannot find where to register. Where should the rep send the request?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "This is a post-sale request for the fulfillment hotline. The rep may share approved agenda information, but should not invent a registration link or personally complete the purchase workflow.",
+      "requiredConcepts": ["fulfillment hotline", "post-sale", "do not invent a link"],
+      "forbiddenConcepts": ["finance request", "fabricated registration URL"],
+      "evaluationStrata": ["fulfillment", "artifact", "action-route"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782935492.418429", "slack:C0AUQKNR8CF:1782935706.909589", "slack:C0AUQKNR8CF:1782935852.907319"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v53gate-26",
+      "question": "A rep needs a same-day Greenlight letter for a Call 2. Should the chatbot approve or generate it?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "No. Use #greenlight-requests for the expedited approval-letter action. The chatbot can identify the owner but must not approve the applicant or manufacture a letter.",
+      "requiredConcepts": ["#greenlight-requests", "do not generate or approve the letter"],
+      "forbiddenConcepts": ["chatbot approves it", "invent a letter"],
+      "evaluationStrata": ["greenlight", "artifact", "action-route"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782331150.247169", "slack:C0AUQKNR8CF:1782331229.103599", "slack:C0AUQKNR8CF:1782333271.120079"],
+      "approvedBy": ["Rich", "Madeline"]
+    },
+    {
+      "id": "v53gate-27",
+      "question": "May a client's husband come to filming with her?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, but he must also attend the onboarding call so production is prepared for his participation.",
+      "requiredConcepts": ["yes", "attend onboarding"],
+      "forbiddenConcepts": ["automatic on-camera role", "no notice needed"],
+      "evaluationStrata": ["filming", "conditional", "stable-answer"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781903755.508489", "slack:C0AUQKNR8CF:1781904719.105459"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v53gate-28",
+      "question": "Where can a rep find the controlled digital copy of Rudy's Make Me Famous book?",
+      "expectedDisposition": "artifact",
+      "goldAnswer": "Search Allstaff for the controlled copy that Rudy said Luke posted. If the file is not available in the answer context, describe where to find it rather than inventing a public download URL.",
+      "requiredConcepts": ["search Allstaff", "controlled copy", "do not invent a URL"],
+      "forbiddenConcepts": ["fabricated download link", "claim no copy exists"],
+      "evaluationStrata": ["artifact", "navigation", "source-control"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782942500.641709", "slack:C0AUQKNR8CF:1782942650.531629", "slack:C0AUQKNR8CF:1782942737.779109", "slack-file:F0B90PEHMLM"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "v53gate-29",
+      "question": "A Greenlight approval is missing from the PDF before a scheduled call. Where should the rep request the current update?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "Use #greenlight-requests for the live approval-letter or PDF update. Do not guess that the applicant was rejected or invent a PDF location.",
+      "requiredConcepts": ["#greenlight-requests", "live PDF update"],
+      "forbiddenConcepts": ["invent a PDF link", "assume rejected"],
+      "evaluationStrata": ["greenlight", "artifact", "action-route"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780493188.980209", "slack:C0AUQKNR8CF:1780495934.016769"],
+      "approvedBy": ["Raul"]
+    },
+    {
+      "id": "v53gate-30",
+      "question": "I booked leads from the 20-percent list and need them kept off tomorrow's sheet so other reps do not contact them. Where should that update be requested?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Request the live list update in #sales-tech-requests. Do not claim the chatbot updated the spreadsheet.",
+      "requiredConcepts": ["#sales-tech-requests", "live list update"],
+      "forbiddenConcepts": ["chatbot changed the sheet", "finance"],
+      "evaluationStrata": ["sales-tech", "action-route", "live-state"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781301572.707729", "slack:C0AUQKNR8CF:1781303588.342999"],
+      "approvedBy": ["Madeline"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v53gate-conv-01",
+      "title": "Greeting, simple policy, and acknowledgment",
+      "prompts": [
+        {
+          "id": "v53gate-31",
+          "question": "Hi there — can you help me with a quick sales question?",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Respond naturally and invite the sales question without inventing policy or routing the greeting.",
+          "requiredConcepts": ["natural greeting", "invite the question"],
+          "forbiddenConcepts": ["policy claim", "Slack route"],
+          "evaluationStrata": ["natural-conversation", "greeting"],
+          "sourceIds": [],
+          "approvedBy": []
+        },
+        {
+          "id": "v53gate-32",
+          "question": "Do I still need to play the congratulations video?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. The congratulations video must still be played.",
+          "requiredConcepts": ["yes", "still play it"],
+          "forbiddenConcepts": ["optional", "skip it"],
+          "evaluationStrata": ["natural-conversation", "policy-after-greeting"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783083607.908929", "slack:C0AUQKNR8CF:1783087562.189029"],
+          "approvedBy": ["Rich"]
+        },
+        {
+          "id": "v53gate-33",
+          "question": "Got it, thanks.",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Acknowledge naturally without repeating the full policy or routing.",
+          "requiredConcepts": ["natural acknowledgment"],
+          "forbiddenConcepts": ["new factual policy", "Slack route"],
+          "evaluationStrata": ["natural-conversation", "acknowledgment"],
+          "sourceIds": [],
+          "approvedBy": []
+        }
+      ]
+    },
+    {
+      "id": "v53gate-conv-02",
+      "title": "Prospect-safe rewrite and topic switch",
+      "prompts": [
+        {
+          "id": "v53gate-34",
+          "question": "A prospect wants hard ROI and episode-view numbers before deciding. What can I tell them?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Do not share or imply episode-level ROI or performance figures. Results vary; use approved official materials, and keep guaranteed trailer promotion separate from episode metrics.",
+          "requiredConcepts": ["no episode ROI claim", "results vary", "trailer promotion is separate"],
+          "forbiddenConcepts": ["guaranteed ROI", "invented metrics"],
+          "evaluationStrata": ["follow-up", "compliance", "claims"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782244659.969279", "slack:C0AUQKNR8CF:1782247169.840119"],
+          "approvedBy": ["Rich"]
+        },
+        {
+          "id": "v53gate-35",
+          "question": "Give me a one-sentence way to say that to the prospect.",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Provide a concise prospect-safe sentence that preserves the no-ROI/no-episode-metrics boundary and says results vary.",
+          "requiredConcepts": ["concise rewrite", "no metrics promise", "results vary"],
+          "forbiddenConcepts": ["drop the compliance boundary", "new guarantee"],
+          "evaluationStrata": ["follow-up", "rewrite", "natural-conversation"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782244659.969279", "slack:C0AUQKNR8CF:1782247169.840119"],
+          "approvedBy": ["Rich"]
+        },
+        {
+          "id": "v53gate-36",
+          "question": "Different question: can someone outside the U.S. be cast?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. The opportunity is international, subject to normal qualification.",
+          "requiredConcepts": ["international", "normal qualification"],
+          "forbiddenConcepts": ["US only", "continue talking about ROI"],
+          "evaluationStrata": ["topic-switch", "natural-conversation", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781296400.688929", "slack:C0AUQKNR8CF:1781296436.095229"],
+          "approvedBy": ["Madeline"]
+        }
+      ]
+    },
+    {
+      "id": "v53gate-conv-03",
+      "title": "Cross-program immediate referent",
+      "prompts": [
+        {
+          "id": "v53gate-37",
+          "question": "Does DJ still have a three-day refund window?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. DJ still has a three-day refund window.",
+          "requiredConcepts": ["DJ", "three-day refund window"],
+          "forbiddenConcepts": ["no refunds for DJ"],
+          "evaluationStrata": ["follow-up", "cross-program", "high-risk"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781901397.251419", "slack:C0AUQKNR8CF:1781904652.572949"],
+          "approvedBy": ["Rich"]
+        },
+        {
+          "id": "v53gate-38",
+          "question": "And what about main ISTV?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Main ISTV does not have that three-day refund window.",
+          "requiredConcepts": ["ISTV", "does not have the three-day window"],
+          "forbiddenConcepts": ["same as DJ", "lose the referent"],
+          "evaluationStrata": ["follow-up", "immediate-referent", "cross-program"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781901397.251419", "slack:C0AUQKNR8CF:1781904665.952949"],
+          "approvedBy": ["Rich"]
+        }
+      ]
+    },
+    {
+      "id": "v53gate-conv-04",
+      "title": "Action follow-up boundary",
+      "prompts": [
+        {
+          "id": "v53gate-39",
+          "question": "Can a paid-in-full client split the payment across a credit card and debit card?",
+          "expectedDisposition": "route",
+          "expectedRouteKey": "sales_tech",
+          "goldAnswer": "Yes, but request the controlled custom link from #sales-tech-requests and use the correct paid-in-full agreement.",
+          "requiredConcepts": ["yes", "#sales-tech-requests", "controlled custom link"],
+          "forbiddenConcepts": ["make the link yourself"],
+          "evaluationStrata": ["follow-up", "payment", "action-route"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781190795.374109", "slack:C0AUQKNR8CF:1781192660.655589"],
+          "approvedBy": ["Raul"]
+        },
+        {
+          "id": "v53gate-40",
+          "question": "Can I just build that custom payment link myself?",
+          "expectedDisposition": "route",
+          "expectedRouteKey": "sales_tech",
+          "goldAnswer": "No. Use #sales-tech-requests for the controlled link; the rep should not build or improvise it.",
+          "requiredConcepts": ["no", "#sales-tech-requests"],
+          "forbiddenConcepts": ["yes", "rep-created link"],
+          "evaluationStrata": ["follow-up", "immediate-referent", "action-route"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781190795.374109", "slack:C0AUQKNR8CF:1781192660.655589"],
+          "approvedBy": ["Raul"]
+        }
+      ]
+    },
+    {
+      "id": "v53gate-conv-05",
+      "title": "Compound qualification and correction",
+      "prompts": [
+        {
+          "id": "v53gate-41",
+          "question": "Can an international nonprofit be considered for a show?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. The opportunity is international and a nonprofit can be a fit, but it must still pass normal qualification.",
+          "requiredConcepts": ["international", "nonprofit can be a fit", "normal qualification"],
+          "forbiddenConcepts": ["US for-profit only", "automatic approval"],
+          "evaluationStrata": ["compound", "qualification", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781296400.688929", "slack:C0AUQKNR8CF:1781296436.095229", "slack:C0AUQKNR8CF:1781052006.862739", "slack:C0AUQKNR8CF:1781057364.502879"],
+          "approvedBy": ["Madeline"]
+        },
+        {
+          "id": "v53gate-42",
+          "question": "So that means it is automatically approved, right?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. International location and nonprofit status do not create automatic approval; normal qualification still applies.",
+          "requiredConcepts": ["no automatic approval", "normal qualification"],
+          "forbiddenConcepts": ["yes", "guaranteed fit"],
+          "evaluationStrata": ["follow-up", "correction", "qualification"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781296400.688929", "slack:C0AUQKNR8CF:1781052006.862739"],
+          "approvedBy": ["Madeline"]
+        }
+      ]
+    },
+    {
+      "id": "v53gate-conv-06",
+      "title": "Natural out-of-scope request",
+      "prompts": [
+        {
+          "id": "v53gate-43",
+          "question": "Can you recommend a good steak and seafood restaurant in Miami for my client?",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Respond naturally that this sales-policy assistant does not have a governed restaurant recommendation, without inventing a venue or routing the request to a company action channel.",
+          "requiredConcepts": ["natural limitation", "no invented recommendation"],
+          "forbiddenConcepts": ["invent a restaurant", "#sales-questions-requests", "#sales-finance-requests"],
+          "evaluationStrata": ["natural-conversation", "out-of-scope"],
+          "sourceIds": [],
+          "approvedBy": []
+        }
+      ]
+    }
+  ]
+}

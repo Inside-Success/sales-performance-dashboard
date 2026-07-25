@@ -1,0 +1,571 @@
+{
+  "schemaVersion": "ask-sales-v5-3-independent-knowledge-access-diagnostic-v1",
+  "createdAt": "2026-07-25T12:01:46.339Z",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json",
+  "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+  "runtimePath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-3-independent-gate/primary-runtime.json",
+  "runtimeSha256": "abd13285cc08b11b34e696aaac334aff451912517076ef4808172a57201dc944",
+  "scorePath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-3-independent-gate/primary-unblinded-score.json",
+  "scoreSha256": "ad6e68a5ca82a7b778cefadcee48c02ea56d1eff18fc5553952641c4f19d3a82",
+  "runtimeFreezeCommit": "d8f38678e85023ade37e9f4bf61d582f6cbbb2c8",
+  "sourceCoverage": {
+    "sourceBackedItems": 40,
+    "exactSourcePresent": 15,
+    "exactSourceAbsent": 25,
+    "exactSourcePresentRate": 0.375,
+    "byStratum": {
+      "exact_source_present": {
+        "items": 15,
+        "v3": {
+          "total": 15,
+          "weightedUtility": 7,
+          "weightedUtilityRate": 0.4667
+        },
+        "v5": {
+          "total": 15,
+          "weightedUtility": 5,
+          "weightedUtilityRate": 0.3333
+        }
+      },
+      "exact_source_absent": {
+        "items": 25,
+        "v3": {
+          "total": 25,
+          "weightedUtility": 17,
+          "weightedUtilityRate": 0.68
+        },
+        "v5": {
+          "total": 25,
+          "weightedUtility": 8.5,
+          "weightedUtilityRate": 0.34
+        }
+      },
+      "natural_no_source": {
+        "items": 3,
+        "v3": {
+          "total": 3,
+          "weightedUtility": 1.5,
+          "weightedUtilityRate": 0.5
+        },
+        "v5": {
+          "total": 3,
+          "weightedUtility": 0,
+          "weightedUtilityRate": 0
+        }
+      }
+    }
+  },
+  "v5NonPassDiagnostics": {
+    "total": 33,
+    "categoryCounts": {
+      "conflict_or_authority_resolution": 14,
+      "evidence_admission": 6,
+      "missing_or_unretrieved_knowledge": 18,
+      "other_incomplete_answer": 3,
+      "wrong_action_owner": 5,
+      "conversation_handling": 6
+    },
+    "details": [
+      {
+        "id": "v53gate-01",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 8,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution"
+        ],
+        "sourcePlanReasons": [
+          "Directly applicable source positions conflict and no claim-scoped authority resolution applies. Fewer than two exact conflicting authority positions were available."
+        ]
+      },
+      {
+        "id": "v53gate-02",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 12,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "evidence_admission"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract."
+        ]
+      },
+      {
+        "id": "v53gate-04",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 1,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No stable, boundary-compatible answer evidence was retrieved."
+        ]
+      },
+      {
+        "id": "v53gate-05",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 10,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "other_incomplete_answer"
+        ],
+        "sourcePlanReasons": [
+          "C1 directly addresses attorney presence in a sales call context, advising to proceed with the call and review the agreement together. C8 and C10 provide complementary guidance on not making contract changes and keeping the normal flow, but C1 alone sufficiently answers the need. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-06",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "partial",
+        "candidateCount": 21,
+        "selectedPolicyCount": 1,
+        "categories": [
+          "evidence_admission"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract.",
+          "Applied the uniquely dominant exact-family and exact-relationship evidence operational_acc1b93e407d9873. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-07",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 9,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "evidence_admission"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract."
+        ]
+      },
+      {
+        "id": "v53gate-08",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "answer",
+        "candidateCount": 9,
+        "selectedPolicyCount": 3,
+        "categories": [
+          "conflict_or_authority_resolution"
+        ],
+        "sourcePlanReasons": [
+          "Multiple cards directly address the need: C2 says do not discuss specific numbers or case studies; C3 says reps should not mention numbers in a 'million-dollar access' framing; C4 says frame as access, not views, and does not permit ROI claims or specific numbers; C6 says reps cannot talk about ROI. All are compatible and collectively provide the response: avoid sharing exact numbers, emphasize access over metrics, and do not discuss ROI. C1 is conflict-review-only and not answer-eligible, so it is excluded from direct_refs. No conflicts exist among the direct cards. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-09",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_present",
+        "lane": "answer",
+        "candidateCount": 19,
+        "selectedPolicyCount": 2,
+        "categories": [
+          "other_incomplete_answer"
+        ],
+        "sourcePlanReasons": [
+          "Applied the uniquely dominant exact-family and exact-relationship evidence claim_a0511589517176d3__a2. V5.2 verified exact decision identity before allowing answer recovery.",
+          "Multiple sources consistently state that no placement is guaranteed. C2 says no guaranteed placement for Amazon Prime; C4 prohibits promising platform placement; C6 says Tier-1 placement is not guaranteed; C8 says placement is not guaranteed because the platform decides. All are compatible and directly address the question. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-10",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 0,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No stable, boundary-compatible answer evidence was retrieved."
+        ]
+      },
+      {
+        "id": "v53gate-11",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 8,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution"
+        ],
+        "sourcePlanReasons": [
+          "Directly applicable source positions conflict and no claim-scoped authority resolution applies. Authority evidence was too close to resolve safely (margin 0.10)."
+        ]
+      },
+      {
+        "id": "v53gate-13",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 11,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No card directly addresses whether a prior appearance on The Voice automatically creates an FTC or network conflict for ISTV. All retrieved cards are about unrelated topics (cast member info, production documents, Call 2 booking, social media qualification, language, ChatGPT, series purchase, extension requests)."
+        ]
+      },
+      {
+        "id": "v53gate-15",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 6,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "evidence_admission"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract.",
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract.",
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract."
+        ]
+      },
+      {
+        "id": "v53gate-16",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "partial",
+        "candidateCount": 13,
+        "selectedPolicyCount": 1,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No answer-eligible card directly states the cooling-off refund window duration for main ISTV. C5 is conflict-review-only and does not provide the requested duration.",
+          "No answer-eligible card directly states the cooling-off refund window duration for DJ. C5 is conflict-review-only and does not provide the requested duration.",
+          "Applied the uniquely dominant exact-family and exact-relationship evidence claim_0190aab30b354ddf. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-18",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 3,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No answer-eligible card directly addresses the time zone for the 20-percent sheet cutoff. C2 routes general cutoff questions to #greenlight-requests without specifying the time zone, and C3 is a conflict-review-only card about rescheduling that does not provide the requested time zone information."
+        ]
+      },
+      {
+        "id": "v53gate-19",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_present",
+        "lane": "partial",
+        "candidateCount": 23,
+        "selectedPolicyCount": 3,
+        "categories": [
+          "conflict_or_authority_resolution"
+        ],
+        "sourcePlanReasons": [
+          "Directly applicable source positions conflict and no claim-scoped authority resolution applies. Authority evidence was too close to resolve safely (margin 0.28).",
+          "Multiple cards directly specify initial checks: C2 (DNC/opt-out), C3 (Keap appointments), C12 (Keap ownership), C20 (Keap notes). They are complementary and non-conflicting. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-21",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 5,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge",
+          "wrong_action_owner"
+        ],
+        "sourcePlanReasons": [
+          "No answer-eligible card directly addresses where to send a reschedule request for a paid client who lost the invite. C1 is conflict-review-only and cannot be used as direct evidence. C2, C3, C4, and C5 are not directly applicable."
+        ]
+      },
+      {
+        "id": "v53gate-23",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "artifact",
+        "candidateCount": 11,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "wrong_action_owner"
+        ],
+        "sourcePlanReasons": [
+          "This request asks the finance action owner to perform or verify live work; the knowledge layer must not pretend to complete it."
+        ]
+      },
+      {
+        "id": "v53gate-25",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 5,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge",
+          "wrong_action_owner"
+        ],
+        "sourcePlanReasons": [
+          "No card directly answers where to send the registration request. All cards are prohibitions on what reps must not say or do, not a procedure or destination for registration."
+        ]
+      },
+      {
+        "id": "v53gate-28",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 2,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No answer-eligible card directly addresses the location of the controlled digital copy of Rudy's Make Me Famous book. C1 and C2 are conflict-review-only and refer to a video, not the book."
+        ]
+      },
+      {
+        "id": "v53gate-30",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 10,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge",
+          "wrong_action_owner"
+        ],
+        "sourcePlanReasons": [
+          "No card directly answers where to request removal of booked leads from tomorrow's sheet. C1 and C2 are conflict-review-only and address different scenarios (outbound dial sheet marking, DNC requests). C3, C4, C5, C7, C8, C10 are answer-eligible but do not provide the requested routing information. C6 and C9 are not answer-eligible. No direct evidence found."
+        ]
+      },
+      {
+        "id": "v53gate-31",
+        "grade": "fail",
+        "sourceCoverage": "natural_no_source",
+        "lane": "route",
+        "candidateCount": 11,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "The request is a generic greeting with no specific sales question, so no card directly answers it. All cards are either unrelated or require specific conditions not met."
+        ]
+      },
+      {
+        "id": "v53gate-32",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 15,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "C8 directly states a workflow that includes playing the congrats video first, which implies it is still required. No conflicting cards directly address the requirement to play the congratulations video. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-33",
+        "grade": "fail",
+        "sourceCoverage": "natural_no_source",
+        "lane": "route",
+        "candidateCount": 3,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "No answer-eligible card directly addresses the congratulations video requirement. All retrieved cards are conflict-review-only and unrelated to the need."
+        ]
+      },
+      {
+        "id": "v53gate-34",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "partial",
+        "candidateCount": 20,
+        "selectedPolicyCount": 1,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "Applied the uniquely dominant exact-family and exact-relationship evidence operational_ed71cb7aad76c9c7. V5.2 verified exact decision identity before allowing answer recovery.",
+          "No answer-eligible card directly provides episode-view numbers or a method to share them. C4 is conflict-review-only and does not supply the requested numbers. Other cards are not directly applicable."
+        ]
+      },
+      {
+        "id": "v53gate-35",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 8,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "evidence_admission",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract."
+        ]
+      },
+      {
+        "id": "v53gate-36",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 10,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "No card directly addresses whether someone outside the U.S. can be cast. All retrieved cards are about different topics (payment proof, show changes, rescheduling, etc.) and do not provide the requested permission."
+        ]
+      },
+      {
+        "id": "v53gate-37",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 0,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No stable, boundary-compatible answer evidence was retrieved."
+        ]
+      },
+      {
+        "id": "v53gate-38",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 9,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No card directly addresses a three-day refund window for main ISTV. All retrieved cards discuss upgrade windows, cross-show discounts, or platform hosting/license durations, none of which match the refund window question."
+        ]
+      },
+      {
+        "id": "v53gate-39",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "route",
+        "candidateCount": 9,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "evidence_admission",
+          "wrong_action_owner"
+        ],
+        "sourcePlanReasons": [
+          "V5.2 withheld the answer because no preferred source passed the exact decision-identity and non-bypassable recovery contract."
+        ]
+      },
+      {
+        "id": "v53gate-40",
+        "grade": "partial",
+        "sourceCoverage": "exact_source_absent",
+        "lane": "answer",
+        "candidateCount": 13,
+        "selectedPolicyCount": 1,
+        "categories": [
+          "other_incomplete_answer"
+        ],
+        "sourcePlanReasons": [
+          "Applied the uniquely dominant exact-family and exact-relationship evidence claim_e30857cfce9af5e5. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-41",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 10,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "conflict_or_authority_resolution",
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "C1 directly addresses eligibility of a nonprofit for a show, though it involves a real estate agent with a nonprofit side project. It is the only card that directly matches the need for nonprofit eligibility. Other cards are not directly applicable: C2 is about international clients generally, not nonprofits; C3 is about freelancers; C4 is about cannabis businesses; C5 is about Physician's Assistants; C6, C8, C9, C10 are unrelated. No conflicts exist among direct refs. V5.2 verified exact decision identity before allowing answer recovery."
+        ]
+      },
+      {
+        "id": "v53gate-42",
+        "grade": "fail",
+        "sourceCoverage": "exact_source_present",
+        "lane": "route",
+        "candidateCount": 8,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge"
+        ],
+        "sourcePlanReasons": [
+          "No card directly answers whether an international nonprofit is automatically approved for a show. C6 addresses nonprofit eligibility but requires financial means and legitimacy, not automatic approval. C1, C2, C3, C4, C5, C7, C8 are off-topic or address different conditions. No direct evidence found."
+        ]
+      },
+      {
+        "id": "v53gate-43",
+        "grade": "fail",
+        "sourceCoverage": "natural_no_source",
+        "lane": "route",
+        "candidateCount": 1,
+        "selectedPolicyCount": 0,
+        "categories": [
+          "missing_or_unretrieved_knowledge",
+          "conversation_handling"
+        ],
+        "sourcePlanReasons": [
+          "No card directly answers the request for a restaurant recommendation. The only card (C1) is about a follow-up call regarding a Miami studio, which is unrelated to dining recommendations."
+        ]
+      }
+    ]
+  },
+  "repeatabilityRun": {
+    "status": "not_run",
+    "reason": "The preregistered primary promotion gate failed decisively; repeatability cannot reverse that decision and was stopped to avoid unnecessary provider work."
+  },
+  "conclusions": [
+    "V5.3 is safer than V3 on this gate because it produced zero critical policy errors while V3 produced three.",
+    "V5.3 is not useful enough to replace V3: its weighted utility, conversation behavior, and action-owner accuracy all failed the preregistered thresholds.",
+    "Knowledge freshness is a real problem: only 15 of 40 source-backed prompts contain an exact source already admitted as V5 answer evidence.",
+    "Knowledge freshness is not the whole problem: V5 utility remains low even in the exact-source-present stratum, and natural conversation scored zero.",
+    "The next candidate must fix claim-level conflict/admission, route-owner precedence, natural-turn handling, and governed refresh coverage together; a threshold-only relaxation would reintroduce V3-style critical mismatches."
+  ]
+}
