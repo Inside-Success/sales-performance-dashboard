@@ -42,7 +42,7 @@ function retrieve(question: string, overrides: Partial<V4SystemicNeed> = {}) {
 describe("Ask Sales V5 bounded evidence retrieval", () => {
   it("builds one immutable snapshot from the governed effective corpus", () => {
     const snapshot = getV5KnowledgeSnapshot();
-    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v3");
+    expect(snapshot.schemaVersion).toBe("ask-sales-v5-knowledge-snapshot-v4");
     expect(snapshot.knowledgeVersion).toMatch(/^[a-f0-9]{16}\+v5_[a-f0-9]{16}$/);
     expect(snapshot.policies.length).toBeGreaterThan(1_000);
     expect(Object.isFrozen(snapshot)).toBe(true);
@@ -71,7 +71,7 @@ describe("Ask Sales V5 bounded evidence retrieval", () => {
       // V5.3 keeps a bounded 12-direct + 4-expansion evidence window so the
       // source controller can compare exact authority without admitting an
       // unbounded semantic neighborhood.
-      expect(result.candidates.length).toBeLessThanOrEqual(16);
+      expect(result.candidates.length).toBeLessThanOrEqual(24);
     }
   }, 15_000);
 

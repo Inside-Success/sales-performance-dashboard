@@ -1,0 +1,1109 @@
+{
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json",
+  "sourceBackedItems": 40,
+  "exactSourcePresent": 38,
+  "answerEvidencePresent": 20,
+  "details": [
+    {
+      "id": "v53gate-01",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784915468.547709",
+        "slack:C0AUQKNR8CF:1784918605.352599"
+      ],
+      "policies": []
+    },
+    {
+      "id": "v53gate-02",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781296400.688929",
+        "slack:C0AUQKNR8CF:1781296436.095229"
+      ],
+      "policies": [
+        {
+          "id": "operational_d5ba32a6d0936b0b",
+          "decisionKey": "international-clients-accepted",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-03",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781301608.816919",
+        "slack:C0AUQKNR8CF:1781303526.845209"
+      ],
+      "policies": [
+        {
+          "id": "operational_496e5d9eff18fcbc",
+          "decisionKey": "call-1-script-requirement",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-04",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781319376.008439",
+        "slack:C0AUQKNR8CF:1781320390.386719"
+      ],
+      "policies": [
+        {
+          "id": "operational_a38966296c6cdca5",
+          "decisionKey": "contract-minimum-published-years",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-13",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "not_reusable_rule_shaped",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-05",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781130060.173149",
+        "slack:C0AUQKNR8CF:1781130615.854879"
+      ],
+      "policies": [
+        {
+          "id": "operational_ccf371fa1e450015",
+          "decisionKey": "attorney-on-call-run-sales-call-as-normal",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-06-10",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-06",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781190795.374109",
+        "slack:C0AUQKNR8CF:1781192660.655589"
+      ],
+      "policies": [
+        {
+          "id": "operational_900445e46bb3d277",
+          "decisionKey": "split-payment-custom-link-request-sales-tech",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-06-11",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "live_or_volatile_value",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-07",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782922416.961759",
+        "slack:C0AUQKNR8CF:1782922536.644389"
+      ],
+      "policies": [
+        {
+          "id": "operational_f668017481998059",
+          "decisionKey": "self-sourced-client-flow",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Rudy"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-08",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782244659.969279",
+        "slack:C0AUQKNR8CF:1782245344.349529",
+        "slack:C0AUQKNR8CF:1782247169.840119"
+      ],
+      "policies": [
+        {
+          "id": "operational_79a0b7756a0faf31",
+          "decisionKey": "handling-requests-for-specific-stats",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-23",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-09",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782942709.251779",
+        "slack:C0AUQKNR8CF:1782944156.869429",
+        "slack:C0AUQKNR8CF:1782949268.672949"
+      ],
+      "policies": [
+        {
+          "id": "operational_56eb2c8181d936c9",
+          "decisionKey": "tier-1-streaming-platform-choice",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rudy"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-10",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783083607.908929",
+        "slack:C0AUQKNR8CF:1783087562.189029"
+      ],
+      "policies": [
+        {
+          "id": "operational_fffe73c93095a115",
+          "decisionKey": "congrats-video-required",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Rich"
+          ],
+          "lastReviewed": "2026-07-03",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-11",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783351769.333969",
+        "slack:C0AUQKNR8CF:1783353526.777729",
+        "slack:C0AUQKNR8CF:1783362371.538499"
+      ],
+      "policies": [
+        {
+          "id": "operational_73e36ae00420b064",
+          "decisionKey": "lead-ownership-first-scheduled-booking",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-07-06",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        },
+        {
+          "id": "operational_b1e1ddf026ee7fa3",
+          "decisionKey": "no-cross-selling-between-dj-and-istv",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-07-06",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-12",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782944605.143859",
+        "slack:C0AUQKNR8CF:1782950445.887279"
+      ],
+      "policies": [
+        {
+          "id": "operational_49a3fe2589bb8c18",
+          "decisionKey": "rebook-no-show-lead",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Rich"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-13",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781040641.277659",
+        "slack:C0AUQKNR8CF:1781041452.206819"
+      ],
+      "policies": [
+        {
+          "id": "operational_ec3c61f817651dc4",
+          "decisionKey": "voice-contestant-no-ftc-issues",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-09",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "owner_review_required",
+              "not_reusable_rule_shaped",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-14",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781052006.862739",
+        "slack:C0AUQKNR8CF:1781057364.502879"
+      ],
+      "policies": [
+        {
+          "id": "operational_8b8b1811abc9aadc",
+          "decisionKey": "nonprofit-organization-fit",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-10",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-15",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779557078.315329",
+        "slack:C0AUQKNR8CF:1779557217.507179"
+      ],
+      "policies": [
+        {
+          "id": "operational_5a56ac50eb2233fc",
+          "decisionKey": "section-9-personal-content-restriction",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-05-23",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "not_reusable_rule_shaped",
+              "outside_active_review_window",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-16",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781901397.251419",
+        "slack:C0AUQKNR8CF:1781904652.572949",
+        "slack:C0AUQKNR8CF:1781904665.952949"
+      ],
+      "policies": [
+        {
+          "id": "operational_fafbc8f0edd3ae04",
+          "decisionKey": "dj-refund-policy",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-19",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "not_reusable_rule_shaped"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-17",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781041140.152479",
+        "slack:C0AUQKNR8CF:1781041464.807169"
+      ],
+      "policies": [
+        {
+          "id": "operational_c9d98b1c08b7244b",
+          "decisionKey": "vanity-link-contracts-for-legal-review",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-09",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "live_or_volatile_value",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-18",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781048821.223289",
+        "slack:C0AUQKNR8CF:1781057389.038779"
+      ],
+      "policies": [
+        {
+          "id": "operational_c66d33f545686d3d",
+          "decisionKey": "20-percent-sheet-cutoff-time",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-09",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-19",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782401389.705109",
+        "slack:C0AUQKNR8CF:1782407167.235269",
+        "slack:C0AUQKNR8CF:1782407182.442049"
+      ],
+      "policies": [
+        {
+          "id": "operational_53ef4e4b0f7547aa",
+          "decisionKey": "closer-assignment-first-contact",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-25",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        },
+        {
+          "id": "operational_616ca01a19f5a636",
+          "decisionKey": "keap-check-requirement",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-25",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-20",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783713365.859179",
+        "slack:C0AUQKNR8CF:1783713490.822759"
+      ],
+      "policies": [
+        {
+          "id": "operational_0c0f71135777c4f1",
+          "decisionKey": "us-bank-account-payment-verification",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-07-10",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-21",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782829606.563879",
+        "slack:C0AUQKNR8CF:1782836859.383579"
+      ],
+      "policies": [
+        {
+          "id": "operational_2d7ea888c84e9c79",
+          "decisionKey": "post-sale-inquiries-to-fulfillment-hotline",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-30",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-22",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784842951.166419",
+        "slack:C0AUQKNR8CF:1784850377.683049"
+      ],
+      "policies": []
+    },
+    {
+      "id": "v53gate-23",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1784146338.321289",
+        "slack:C0AUQKNR8CF:1784146417.742939"
+      ],
+      "policies": [
+        {
+          "id": "operational_c176b2d05114471b",
+          "decisionKey": "payment-link-contract-issue-route",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-07-15",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "live_or_volatile_value",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-24",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780773507.901829",
+        "slack:C0AUQKNR8CF:1782416567.968569"
+      ],
+      "policies": [
+        {
+          "id": "operational_51700650a6668bd3",
+          "decisionKey": "criminal-history-approval-email",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Rich",
+            "Rudy"
+          ],
+          "lastReviewed": "2026-06-06",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "owner_review_required",
+              "unresolved_or_nonfinal",
+              "sensitive_case_decision"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-25",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782935492.418429",
+        "slack:C0AUQKNR8CF:1782935706.909589",
+        "slack:C0AUQKNR8CF:1782935852.907319"
+      ],
+      "policies": [
+        {
+          "id": "operational_f12a04a1ef363b74",
+          "decisionKey": "send-mastermind-agenda-link",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        },
+        {
+          "id": "operational_f3bb7d78c71f2306",
+          "decisionKey": "mastermind-ticket-purchase-post-sale-fulfillment",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-26",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782331150.247169",
+        "slack:C0AUQKNR8CF:1782331229.103599",
+        "slack:C0AUQKNR8CF:1782333271.120079"
+      ],
+      "policies": [
+        {
+          "id": "operational_6b11a6e77a6454a7",
+          "decisionKey": "expedited-greenlight-approval-one-off",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-24",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "context_bound_or_one_off"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-27",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781903755.508489",
+        "slack:C0AUQKNR8CF:1781904719.105459"
+      ],
+      "policies": [
+        {
+          "id": "operational_26819a23b9b2912b",
+          "decisionKey": "spouse-attend-filming",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-19",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-28",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782942500.641709",
+        "slack:C0AUQKNR8CF:1782942650.531629",
+        "slack:C0AUQKNR8CF:1782942737.779109",
+        "slack-file:F0B90PEHMLM"
+      ],
+      "policies": [
+        {
+          "id": "operational_b763ee8c5b4f21c2",
+          "decisionKey": "make-me-famous-book-pdf-location",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rudy"
+          ],
+          "lastReviewed": "2026-07-01",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "changeable_artifact_or_access"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-29",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780493188.980209",
+        "slack:C0AUQKNR8CF:1780495934.016769"
+      ],
+      "policies": [
+        {
+          "id": "operational_eea47eab31a701e0",
+          "decisionKey": "green-light-pdf-update-request",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-06-03",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "case_specific",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-30",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781301572.707729",
+        "slack:C0AUQKNR8CF:1781303588.342999"
+      ],
+      "policies": [
+        {
+          "id": "operational_41c09ebd52139703",
+          "decisionKey": "lead-exclusion-from-spreadsheet",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-31",
+      "sourceIds": [],
+      "policies": []
+    },
+    {
+      "id": "v53gate-32",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783083607.908929",
+        "slack:C0AUQKNR8CF:1783087562.189029"
+      ],
+      "policies": [
+        {
+          "id": "operational_fffe73c93095a115",
+          "decisionKey": "congrats-video-required",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Rich"
+          ],
+          "lastReviewed": "2026-07-03",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-33",
+      "sourceIds": [],
+      "policies": []
+    },
+    {
+      "id": "v53gate-34",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782244659.969279",
+        "slack:C0AUQKNR8CF:1782247169.840119"
+      ],
+      "policies": [
+        {
+          "id": "operational_79a0b7756a0faf31",
+          "decisionKey": "handling-requests-for-specific-stats",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-23",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-35",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782244659.969279",
+        "slack:C0AUQKNR8CF:1782247169.840119"
+      ],
+      "policies": [
+        {
+          "id": "operational_79a0b7756a0faf31",
+          "decisionKey": "handling-requests-for-specific-stats",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-23",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-36",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781296400.688929",
+        "slack:C0AUQKNR8CF:1781296436.095229"
+      ],
+      "policies": [
+        {
+          "id": "operational_d5ba32a6d0936b0b",
+          "decisionKey": "international-clients-accepted",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-37",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781901397.251419",
+        "slack:C0AUQKNR8CF:1781904652.572949"
+      ],
+      "policies": [
+        {
+          "id": "operational_fafbc8f0edd3ae04",
+          "decisionKey": "dj-refund-policy",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-19",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "not_reusable_rule_shaped"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-38",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781901397.251419",
+        "slack:C0AUQKNR8CF:1781904665.952949"
+      ],
+      "policies": [
+        {
+          "id": "operational_fafbc8f0edd3ae04",
+          "decisionKey": "dj-refund-policy",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Madeline",
+            "Rich"
+          ],
+          "lastReviewed": "2026-06-19",
+          "classification": {
+            "eligible": false,
+            "tier": "historical_support",
+            "reasons": [
+              "not_reusable_rule_shaped"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-39",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781190795.374109",
+        "slack:C0AUQKNR8CF:1781192660.655589"
+      ],
+      "policies": [
+        {
+          "id": "operational_900445e46bb3d277",
+          "decisionKey": "split-payment-custom-link-request-sales-tech",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-06-11",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "live_or_volatile_value",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-40",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781190795.374109",
+        "slack:C0AUQKNR8CF:1781192660.655589"
+      ],
+      "policies": [
+        {
+          "id": "operational_900445e46bb3d277",
+          "decisionKey": "split-payment-custom-link-request-sales-tech",
+          "answerability": "route_or_support",
+          "qualityTier": "contextual_evidence",
+          "approvedBy": [
+            "Raul"
+          ],
+          "lastReviewed": "2026-06-11",
+          "classification": {
+            "eligible": false,
+            "tier": "live_route_only",
+            "reasons": [
+              "owner_review_required",
+              "live_or_volatile_value",
+              "senior_approval_required"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-41",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781296400.688929",
+        "slack:C0AUQKNR8CF:1781296436.095229",
+        "slack:C0AUQKNR8CF:1781052006.862739",
+        "slack:C0AUQKNR8CF:1781057364.502879"
+      ],
+      "policies": [
+        {
+          "id": "operational_d5ba32a6d0936b0b",
+          "decisionKey": "international-clients-accepted",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        },
+        {
+          "id": "operational_8b8b1811abc9aadc",
+          "decisionKey": "nonprofit-organization-fit",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-10",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-42",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781296400.688929",
+        "slack:C0AUQKNR8CF:1781052006.862739"
+      ],
+      "policies": [
+        {
+          "id": "operational_d5ba32a6d0936b0b",
+          "decisionKey": "international-clients-accepted",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-12",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        },
+        {
+          "id": "operational_8b8b1811abc9aadc",
+          "decisionKey": "nonprofit-organization-fit",
+          "answerability": "answer_evidence",
+          "qualityTier": "trusted_evidence",
+          "approvedBy": [
+            "Madeline"
+          ],
+          "lastReviewed": "2026-06-10",
+          "classification": {
+            "eligible": true,
+            "tier": "stable_answer",
+            "reasons": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "v53gate-43",
+      "sourceIds": [],
+      "policies": []
+    }
+  ]
+}

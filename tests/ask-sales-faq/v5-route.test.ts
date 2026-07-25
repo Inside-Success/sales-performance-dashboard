@@ -68,7 +68,7 @@ describe("Ask Sales V5 isolated route", () => {
     await expect(response.json()).resolves.toMatchObject({
       ok: true,
       ready: true,
-      runtime: "v5.3-isolated",
+      runtime: "v5.4-isolated",
       persistence: false,
       productionSelectorChanged: false,
       knowledgeVersion: getV51KnowledgeVersion(),
@@ -79,7 +79,7 @@ describe("Ask Sales V5 isolated route", () => {
       activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
       referenceReviewDate: snapshot.referenceReviewDate,
     });
-    expect(response.headers.get("x-ask-sales-runtime")).toBe("v5.3-isolated");
+    expect(response.headers.get("x-ask-sales-runtime")).toBe("v5.4-isolated");
   });
 
   it("calls only V5 and binds encrypted history to the exact snapshot", async () => {

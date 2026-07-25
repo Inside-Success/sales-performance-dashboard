@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 2,
+  "name": "ask-sales-v5-4-post-freeze-fresh-slack-gold-2026-07-25",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-25T18:53:06Z",
+  "runtimeFreezeCommit": "d4e426c3c816a48faa85226c3295ddd63a5e0ec5",
+  "promotionGate": {
+    "minimumWeightedUtilityLeadOverV3": 0.1,
+    "maximumV5CriticalErrors": 0,
+    "maximumV5WrongActionOwners": 0,
+    "requireCompleteRuntimeOutputs": true,
+    "requireIndependentHumanReviewBeforeProduction": true,
+    "requireStakeholderApprovalBeforeProduction": true,
+    "notes": [
+      "The runtime implementation was committed before these questions and gold answers were selected.",
+      "Only previously unevaluated Slack threads with a reliable Rich or Madeline resolution were admitted.",
+      "The set was not used to tune V5.4 and no code changes are permitted after runtime outputs are revealed.",
+      "This internal source-grounded gate is informative but does not replace independent blind stakeholder review."
+    ]
+  },
+  "repeatability": {
+    "independentCaseIds": [],
+    "conversationIds": [],
+    "notes": [
+      "No repeatability subset is preregistered for this small fresh Slack slice."
+    ]
+  },
+  "cases": [
+    {
+      "id": "v54fresh-01",
+      "question": "If a prospective cast member says they have been in prison, should I disqualify them before the call, and what should I tell them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Disqualify and send the rejection letter. You do not need to volunteer the reason; if they ask why, explaining it is optional.",
+      "requiredConcepts": ["disqualify", "rejection letter", "reason is optional unless asked"],
+      "forbiddenConcepts": ["continue the call and automatically approve", "must disclose the reason"],
+      "evaluationStrata": ["qualification", "rejection", "recent-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784921916.034179", "slack:C0AUQKNR8CF:1784922005.656529", "slack:C0AUQKNR8CF:1784922115.044719", "slack:C0AUQKNR8CF:1784922130.057229"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-02",
+      "question": "Can I get a link to an example of Cast Member HQ to show prospects?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "There is not a shareable example yet. Rich and Raul recently had sharing accounts created, and access should be available to reps soon.",
+      "requiredConcepts": ["not available yet", "sharing access is being prepared"],
+      "forbiddenConcepts": ["invented link", "already publicly available"],
+      "evaluationStrata": ["artifact-availability", "time-sensitive", "recent-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784656415.817099", "slack:C0AUQKNR8CF:1784656725.858379"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-03",
+      "question": "A Next Level CEO applicant is in a divorce and cannot use the lowest approved payment option right now. Can I create a cheaper custom plan, or can the applicant reschedule?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not create a custom plan or tell them how to move money. The listed option is the lowest approved option. Because this is a Daymond John applicant, the ISTV cohort deadline does not apply and they can reschedule for the next few weeks.",
+      "requiredConcepts": ["no custom plan", "DJ cohort does not apply", "reschedule in the next few weeks"],
+      "forbiddenConcepts": ["six-month DJ wait", "advise how to move money", "invent a lower plan"],
+      "evaluationStrata": ["payments", "program-scope", "relationship-matching", "high-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784578173.954219", "slack:C0AUQKNR8CF:1784578435.276779", "slack:C0AUQKNR8CF:1784578627.263989", "slack:C0AUQKNR8CF:1784578649.582859", "slack:C0AUQKNR8CF:1784578672.148449", "slack:C0AUQKNR8CF:1784578691.794879", "slack:C0AUQKNR8CF:1784578698.288619", "slack:C0AUQKNR8CF:1784578730.137259", "slack:C0AUQKNR8CF:1784578748.911239"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-04",
+      "question": "Can I follow up with old no-show, cancelled, or ghosted Next Level CEO leads and invite them to recast for Built For More?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Rich approved following up with those old Daymond John leads for Built For More.",
+      "requiredConcepts": ["yes", "follow up", "Built For More"],
+      "forbiddenConcepts": ["never contact old DJ leads", "route without answering"],
+      "evaluationStrata": ["outbound", "DJ", "Rich-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784576841.046689", "slack:C0AUQKNR8CF:1784576848.163269", "slack:C0AUQKNR8CF:1784582373.443679"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v54fresh-05",
+      "question": "Does an ISTV cast member get distribution on all three Tier 1 platforms, or only one?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The goal is placement on one Tier 1 platform. The cast member does not choose the platform; the episode may be submitted to the other platforms if a submission is turned down.",
+      "requiredConcepts": ["goal is one platform", "cast member does not choose", "submit to another if turned down"],
+      "forbiddenConcepts": ["guaranteed on all three", "cast member chooses"],
+      "evaluationStrata": ["distribution", "contract", "Rich-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784488828.139569", "slack:C0AUQKNR8CF:1784563333.194929"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v54fresh-06",
+      "question": "Should a DJ rep use a different script for Built For More, or the Next Level CEO script?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Use the same script as Next Level CEO for Built For More.",
+      "requiredConcepts": ["same script", "Next Level CEO"],
+      "forbiddenConcepts": ["invent a separate script", "cancel the call"],
+      "evaluationStrata": ["script", "DJ", "program-scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784465945.328319", "slack:C0AUQKNR8CF:1784563787.059539"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-07",
+      "question": "Can a prospect record our sales call on Zoom?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A prospect cannot record the sales call on Zoom.",
+      "requiredConcepts": ["no", "cannot record"],
+      "forbiddenConcepts": ["recording is allowed", "record with consent"],
+      "evaluationStrata": ["call-policy", "privacy"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784465945.328319", "slack:C0AUQKNR8CF:1784570545.472539"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-08",
+      "question": "Three business partners want to appear together, but only one auditioned. Do they need separate episodes?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "They can be in one episode. Put the details in the onboarding form and cover them during onboarding, with all partners involved in the decisions.",
+      "requiredConcepts": ["one episode", "onboarding", "all partners involved"],
+      "forbiddenConcepts": ["separate episodes are required", "only the applicant may appear"],
+      "evaluationStrata": ["episode-participants", "onboarding", "relationship-matching"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784229718.493559", "slack:C0AUQKNR8CF:1784230524.875009", "slack:C0AUQKNR8CF:1784230553.758429", "slack:C0AUQKNR8CF:1784230613.533069"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-09",
+      "question": "Who works with a cast member after I close them: another casting agent or the production team?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "After the sale they move into onboarding and work with production. The closer remains the casting agent; they are not handed to another casting agent.",
+      "requiredConcepts": ["production after onboarding", "not another casting agent"],
+      "forbiddenConcepts": ["a new casting agent is assigned", "sales manages production"],
+      "evaluationStrata": ["post-sale", "ownership", "relationship-matching"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784223853.911689", "slack:C0AUQKNR8CF:1784224885.490459", "slack:C0AUQKNR8CF:1784224931.008859"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-10",
+      "question": "Can we sell the webpage and social rebrand separately as a bolt-on to a lower package?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Those deliverables are included in the VIP offer and are not an approved bolt-on to another offer.",
+      "requiredConcepts": ["VIP offer", "not an approved bolt-on"],
+      "forbiddenConcepts": ["yes, add it to any package", "invent a price"],
+      "evaluationStrata": ["offer-boundary", "upsell", "recent-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784211258.965449", "slack:C0AUQKNR8CF:1784212160.456399"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-11",
+      "question": "How many subscribers does Inside Success TV have, and can I share that number with a prospect?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not share a subscriber count. It is internal information and the sales team does not have or disclose that number.",
+      "requiredConcepts": ["do not share", "internal information"],
+      "forbiddenConcepts": ["invented subscriber number", "public metric"],
+      "evaluationStrata": ["confidentiality", "unsupported-metric", "safety"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784147069.683469", "slack:C0AUQKNR8CF:1784147383.627099"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-12",
+      "question": "Are Money Mondays still active, what do they cover, and where should I send a client for more details?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Money Mondays are active and can start after the applicant joins the network. They cover using the reuse license and marketing guidance. They are live group sessions; recordings provide background. For current logistics or the live link, use Fulfillment or Marketing because Sales does not control that access.",
+      "requiredConcepts": ["active", "marketing guidance", "live group sessions", "Fulfillment or Marketing for current access"],
+      "forbiddenConcepts": ["Money Mondays are cancelled", "sales owns the live link"],
+      "evaluationStrata": ["fulfillment", "marketing", "current-logistics", "compound"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784146217.265749", "slack:C0AUQKNR8CF:1784146306.385669", "slack:C0AUQKNR8CF:1784146383.404429", "slack:C0AUQKNR8CF:1784169552.848079", "slack:C0AUQKNR8CF:1784169600.402249", "slack:C0AUQKNR8CF:1784219549.807949", "slack:C0AUQKNR8CF:1784223094.081279"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v54fresh-13",
+      "question": "A prospect wants the standard contract emailed before deciding. Should I email it or review it with them on the call?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Review and screen-share the contract on the call; do not promise to email it for offline review.",
+      "requiredConcepts": ["screen-share", "review on the call"],
+      "forbiddenConcepts": ["email the contract", "promise amendments"],
+      "evaluationStrata": ["contract", "sales-process", "high-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784223853.911689", "slack:C0AUQKNR8CF:1784225745.489539"],
+      "approvedBy": ["Madeline"]
+    }
+  ],
+  "conversations": []
+}

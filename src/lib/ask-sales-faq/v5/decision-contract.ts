@@ -33,6 +33,7 @@ const DECISION_OBJECTS = [
   ["swag_package_definition", /\bswag(?:\s+package)?\b.{0,120}\b(?:mean|meaning|merchandise|souvenir|promotional\s+material)\b|\b(?:what\s+is|mean|meaning|merchandise|souvenir|promotional\s+material)\b.{0,120}\bswag(?:\s+package)?\b/i],
   ["promotional_activity_obligation", /\bpromotional\s+activities\b.{0,180}\b(?:cooperat|share|post|trailers?|social)\w*\b|\b(?:cooperat|share|post)\w*\b.{0,180}\b(?:promotional\s+activities|trailers?|social\s+posts?)\b/i],
   ["emergency_payment_link_exception", /\bemergency\s+payment\s+links?\b/i],
+  ["two_card_split", /\b(?:split|across|using)\b.{0,100}\b(?:credit|debit|cards?)\b|\b(?:credit|debit|cards?)\b.{0,100}\b(?:split|across|using)\b/i],
   ["multi_episode_starting_recommendation", /\b(?:multi[- ]?episode|docu[- ]?series|docuseries|\d+[- ]episode|one[- ]episode|single[- ]episode|larger\s+project)\b/i],
   ["payment_change_new_contract", /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i],
   ["filming_completion_window", /\b(?:film|filming)\b.{0,140}\b(?:within|deadline|window|months?|delay|availability|studio)\b|\b(?:within|deadline|window|months?|delay|availability|studio)\b.{0,140}\b(?:film|filming)\b/i],
@@ -340,7 +341,7 @@ function materialCautions(value: string) {
 
 function preservesCaution(sentence: string, caution: string) {
   if (/not\s+(?:advised|recommended)/.test(caution)) return /\b(?:not\s+advised|not\s+recommended|not\s+ideal|avoid)\b/i.test(sentence);
-  if (/^(?:should|do|must)\s+not|^don't$/.test(caution)) return /\b(?:should\s+not|do\s+not|don't|must\s+not|cannot|can't|never)\b/i.test(sentence);
+  if (/^(?:should|do|must)\s+not|^don't$/.test(caution)) return /\b(?:should\s+not|do\s+not|don't|must\s+not|cannot|can't|never|not\s+(?:be\s+)?shared)\b/i.test(sentence);
   if (/^(?:only\s+if|unless|except)$/.test(caution)) return /\b(?:only\s+if|unless|except|provided\s+that|as\s+long\s+as)\b/i.test(sentence);
   if (/does\s+not\s+(?:guarantee|authorize|apply)/.test(caution)) return /\b(?:does\s+not|doesn't|not\s+guaranteed|not\s+authorized|do\s+not\s+assume)\b/i.test(sentence);
   if (/without\s+(?:approval|permission|confirmation)/.test(caution)) return /\b(?:approval|permission|confirmation)\b/i.test(sentence) && /\b(?:need|require|must|cannot|can't|do\s+not|don't|without)\b/i.test(sentence);

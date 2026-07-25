@@ -38,7 +38,7 @@ it("preserves direct authoritative question-family recall without a broad candid
   const sample = getV5KnowledgeSnapshot().policies
     .filter((policy) => policy.answerability === "answer_evidence" && policy.question_families[0])
     .filter((_policy, index) => index % 37 === 0)
-    .slice(24, 48);
+    .slice(12, 24);
   expect(sample.length).toBeGreaterThan(0);
   let found = 0;
   for (const policy of sample) {

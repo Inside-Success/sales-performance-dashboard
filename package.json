@@ -34,6 +34,8 @@
     "review:ask-sales-faq:v5-3:independent-gate": "vite-node --config vitest.config.ts scripts/review-ask-sales-v5-3-independent-gate.ts",
     "score:ask-sales-faq:v5-3:independent-gate": "vite-node --config vitest.config.ts scripts/score-ask-sales-v5-3-independent-gate.ts",
     "diagnose:ask-sales-faq:v5-3:independent-gate": "vite-node --config vitest.config.ts scripts/diagnose-ask-sales-v5-3-independent-gate.ts",
+    "audit:ask-sales-faq:v5-4:architecture": "vite-node --config vitest.config.ts scripts/audit-ask-sales-v5-4-architecture.ts",
+    "diagnose:ask-sales-faq:v5-4:source-coverage": "vite-node --config vitest.config.ts scripts/diagnose-ask-sales-v5-4-source-coverage.ts",
     "compile:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/compile-ask-sales-v4-systemic-operational-knowledge.ts",
     "prepare:ask-sales-faq:v4:systemic-enriched-classification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-enriched-classification.ts",
     "prepare:ask-sales-faq:v4:systemic-authority-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-authority-grounding-reclassification.ts",

@@ -14,6 +14,7 @@ const META_PREFACE = /^(?:(?:for\s+(?:main\s+istv|inside success tv|daymond john
 const TERSE_ACTION_OBJECT = /\b(?:prices?|pricing|payments?|plans?|offers?|packages?|contracts?|eligibility|eligible|qualification|discounts?|platforms?|shows?|episodes?|devices?|deadlines?|timelines?)\b/i;
 const STYLE_ONLY_REQUEST = /^(?:(?:i have|i(?:['’]ve| have) got)\s+(?:another|a few|some|several)?\s*(?:unrelated\s+)?(?:sales\s+)?questions?[.!?]\s*)?(?:(?:can|could|would) you (?:please )?|please )?(?:keep|make)\s+(?:your\s+|the\s+)?(?:answers?|replies|responses?)\s+(?:short|brief|concise|practical|simple)(?:\s+and\s+(?:short|brief|concise|practical|simple))*[.!?]*$/i;
 const CLOSING_ONLY = /^(?:(?:perfect|great|awesome|okay|ok)[,!?.\s-]*)?(?:thanks|thank you|appreciate it)(?:[,!.\s-]+(?:that(?:['’]s| is) (?:everything|all)|i(?:['’]m| am) (?:done|finished)|all (?:done|set))\s*(?:for now)?)?[!.?\s]*$/i;
+const CLEAR_OUT_OF_SCOPE = /\b(?:recommend|suggest|find)\b.{0,70}\b(?:restaurant|hotel|flight|vacation|movie|music|recipe|weather)\b|\b(?:restaurant|hotel|flight|vacation|movie|music|recipe|weather)\s+recommendation\b/i;
 
 function clean(value: string) {
   return value.replace(/\s+/g, " ").trim();
@@ -112,6 +113,16 @@ function withoutCurrentMessage(messages: AskSalesFaqChatMessage[], currentQuesti
 export function resolveV4Turn(question: string, messages: AskSalesFaqChatMessage[] = []): V4TurnResolution {
   const originalQuestion = clean(question);
   const base = resolveV3Turn(originalQuestion, messages);
+  if (base.immediatePreviousAssistantAnswer &&
+    /\b(?:automatically|automatic)\s+(?:approved|accepted|greenlit)|\bapproved\s+automatically\b/i.test(originalQuestion)) {
+    return {
+      ...base,
+      kind: "clarification",
+      actionableQuestion: null,
+      conversationalPreface: originalQuestion,
+      intentResolutionReason: "Resolved as a conversational confirmation of the immediately preceding qualification answer.",
+    };
+  }
   if (CLOSING_ONLY.test(originalQuestion)) {
     return {
       ...base,
@@ -128,6 +139,15 @@ export function resolveV4Turn(question: string, messages: AskSalesFaqChatMessage
       actionableQuestion: null,
       conversationalPreface: originalQuestion,
       intentResolutionReason: "Resolved as a response-style preference without a substantive policy request.",
+    };
+  }
+  if (CLEAR_OUT_OF_SCOPE.test(originalQuestion) && !/\b(?:sales\s+(?:policy|process|question)|prospect\s+(?:qualification|payment|contract)|lead\s+(?:ownership|booking)|istv|daymond|nlceo|greenlight)\b/i.test(originalQuestion)) {
+    return {
+      ...base,
+      kind: "topic_intro",
+      actionableQuestion: null,
+      conversationalPreface: originalQuestion,
+      intentResolutionReason: "Resolved as a clear request outside the governed Ask Sales scope.",
     };
   }
   const extracted = extractV4ActionableQuestion(originalQuestion);

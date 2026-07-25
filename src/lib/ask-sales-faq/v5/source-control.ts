@@ -1,4 +1,5 @@
 import { matchingV4SystemicAuthorityResolutions } from "@/lib/ask-sales-faq/v4/systemic/authority-resolutions";
+import { getV4AtomicDecisionsForPolicy, v4AtomicTerms } from "@/lib/ask-sales-faq/v4/systemic/decision-ledger";
 import type {
   V4SystemicSourcePlan,
   V4SystemicSourceNeedPlan,
@@ -12,7 +13,13 @@ import type {
 import {
   evaluateV51DecisionContract,
   evaluateV52DecisionIdentity,
+  v52OperationalEffectErrors,
 } from "@/lib/ask-sales-faq/v5/decision-contract";
+import {
+  v54DecisionsFormConsensus,
+  v54MaterialEffectsConflict,
+  v54MaterialEffectsSupport,
+} from "@/lib/ask-sales-faq/v5/consensus";
 
 const DAY_MS = 86_400_000;
 
@@ -355,5 +362,196 @@ export function refineV53SourcePlan(
     ...v52,
     needs,
     reasoningSummary: `${v52.reasoningSummary} V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks.`,
+  };
+}
+
+function candidateDecisionForNeed(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
+  return candidate.needScores?.[need.id]?.matchedDecisionText || candidate.matchedDecisionText || candidate.policy.decision;
+}
+
+export function v54ExactSourceFallbackSentence(
+  need: V4SystemicNeed,
+  _plan: V4SystemicQueryPlan,
+  retrieval: V4SystemicRetrieval,
+  preferredPolicyIds: string[],
+) {
+  void _plan;
+  const preferred = preferredPolicyIds
+    .map((id) => candidateFor(id, retrieval))
+    .filter((candidate): candidate is V4SystemicCandidate => Boolean(
+      candidate && candidate.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate),
+    ))
+    .sort((left, right) =>
+      (left.needScores?.[need.id]?.rank || left.rank) - (right.needScores?.[need.id]?.rank || right.rank),
+    );
+  for (const candidate of preferred) {
+    const evidence = `${candidate.policy.title}: ${candidate.policy.decision}`;
+    const queryTerms = new Set(v4AtomicTerms([
+      need.authorityText || need.originalRequestText || need.text,
+      ...need.retrievalQueries,
+      ...need.actions,
+      ...need.entities,
+    ].join(" ")));
+    const effectiveDate = candidate.policy.decision.match(/^As of (\d{4}-\d{2}-\d{2}),/i)?.[1] || "";
+    const statements = [...new Set([
+      candidateDecisionForNeed(need, candidate),
+      candidate.policy.decision.split(/\b(?:Conditions?|Boundaries):/i)[0].trim(),
+      ...getV4AtomicDecisionsForPolicy(candidate.policy.id).map((atom) => atom.statement),
+    ])].map((value) => value.split(/\b(?:Conditions?|Boundaries):/i)[0].replace(/^['"]|['"]$/g, "").trim());
+    const asksPermission = need.relation === "permission" ||
+      /\b(?:can|could|may|allowed|permitted)\s+(?:a|the|our)?\s*(?:reps?|representatives?|closers?|salespersons?|we|i)\b/i.test(need.text);
+    const ranked = statements.flatMap((raw) => {
+      const statement = effectiveDate && !/^As of \d{4}-\d{2}-\d{2},/i.test(raw)
+        ? `As of ${effectiveDate}, ${raw.charAt(0).toLowerCase()}${raw.slice(1)}`
+        : raw;
+      if (statement.length < 20 || statement.length > 500) return [];
+      const effectComplete = asksPermission
+        ? /\b(?:can|cannot|can't|may|allowed|not\s+allowed|permitted|do\s+not|don't|must\s+not|should\s+not|only)\b/i.test(statement)
+        : need.relation === "requirement"
+          ? /\b(?:must|should|required|need(?:s)?\s+to|do\s+not|don't|cannot|can't|only)\b/i.test(statement)
+          : true;
+      if (!effectComplete || v52OperationalEffectErrors(need, statement, evidence).length) return [];
+      const identity = evaluateV52DecisionIdentity(need, candidate.policy, statement);
+      if (!identity.exact) return [];
+      const sharedTerms = v4AtomicTerms(statement).filter((term) => queryTerms.has(term)).length;
+      return [{ statement, score: identity.score + sharedTerms }];
+    }).sort((left, right) => right.score - left.score || left.statement.localeCompare(right.statement));
+    if (ranked[0]) return { text: ranked[0].statement, policyId: candidate.policy.id, evidence };
+  }
+  return null;
+}
+
+function largestSafeConsensusCluster(need: V4SystemicNeed, candidates: V4SystemicCandidate[]) {
+  const ordered = [...candidates].sort((left, right) =>
+    (left.needScores?.[need.id]?.rank || left.rank) - (right.needScores?.[need.id]?.rank || right.rank),
+  );
+  const clusters = ordered.map((seed) => ordered.reduce<V4SystemicCandidate[]>((cluster, candidate) => {
+    if (cluster.some((member) => member.policy.id === candidate.policy.id)) return cluster;
+    return cluster.every((member) => v54MaterialEffectsSupport(
+      candidateDecisionForNeed(need, member),
+      candidateDecisionForNeed(need, candidate),
+    )) ? [...cluster, candidate] : cluster;
+  }, [seed])).sort((left, right) => right.length - left.length ||
+    (left[0]?.needScores?.[need.id]?.rank || left[0]?.rank || 999) -
+    (right[0]?.needScores?.[need.id]?.rank || right[0]?.rank || 999));
+  const winner = clusters[0] || [];
+  if (winner.length < 2) return [];
+  const outside = ordered.filter((candidate) => !winner.some((member) => member.policy.id === candidate.policy.id));
+  const materialOpposition = outside.some((candidate) => winner.some((member) => v54MaterialEffectsConflict(
+    candidateDecisionForNeed(need, member),
+    candidateDecisionForNeed(need, candidate),
+  )));
+  return materialOpposition ? [] : winner;
+}
+
+export function chooseV54DominantExactAnswer(
+  need: V4SystemicNeed,
+  retrieval: V4SystemicRetrieval,
+) {
+  const candidates = retrieval.candidates
+    .filter((candidate) => candidate.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate))
+    .sort((left, right) =>
+      (right.needScores?.[need.id]?.score || right.score) - (left.needScores?.[need.id]?.score || left.score),
+    );
+  const winner = candidates[0] || null;
+  const winnerScore = winner?.needScores?.[need.id]?.score || winner?.score || 0;
+  const runnerUpScore = candidates[1]?.needScores?.[need.id]?.score || candidates[1]?.score || 0;
+  const rank = winner?.needScores?.[need.id]?.rank || winner?.rank || 999;
+  return {
+    winner: winner && rank <= 2 && winnerScore - runnerUpScore >= 14 &&
+      ["canonical", "trusted_evidence"].includes(winner.policy.quality_tier)
+      ? winner
+      : null,
+    rank,
+    margin: winnerScore - runnerUpScore,
+    candidateIds: candidates.map((candidate) => candidate.policy.id),
+  };
+}
+
+/**
+ * Establishes support before conflict adjudication. Candidate identity still
+ * has to pass the existing non-bypassable scope and exact-decision contract;
+ * this layer only prevents mutually supporting records from being mistaken
+ * for opposing policies because they arrived in an excluded-conflict bucket.
+ */
+export function refineV54SourcePlan(
+  sourcePlan: V4SystemicSourcePlan,
+  plan: V4SystemicQueryPlan,
+  retrieval: V4SystemicRetrieval,
+): V4SystemicSourcePlan {
+  const preprocessedNeeds = sourcePlan.needs.map((sourceNeed): V4SystemicSourceNeedPlan => {
+    const need = plan.needs.find((candidate) => candidate.id === sourceNeed.needId);
+    if (!need || need.forcedRouteKey || need.ambiguity === "material" || need.requestKind !== "knowledge") return sourceNeed;
+
+    if (sourceNeed.modelDisposition === "route") {
+      const excludedExactAnswers = [...new Set(sourceNeed.excludedConflictPolicyIds)]
+        .map((id) => candidateFor(id, retrieval))
+        .filter((candidate): candidate is V4SystemicCandidate => Boolean(
+          candidate && candidate.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate),
+        ))
+        .sort((left, right) =>
+          (left.needScores?.[need.id]?.rank || left.rank) - (right.needScores?.[need.id]?.rank || right.rank),
+        );
+      const consensusCluster = largestSafeConsensusCluster(need, excludedExactAnswers);
+      const consensus = consensusCluster.length >= 2;
+      const dominant = excludedExactAnswers.length < 2
+        ? chooseV54DominantExactAnswer(need, retrieval).winner
+        : null;
+      const recovered = consensus ? consensusCluster.slice(0, 3) : dominant ? [dominant] : [];
+      const recoveredIds = recovered.map((candidate) => candidate.policy.id);
+      if (recoveredIds.length) {
+        return {
+          ...sourceNeed,
+          lane: "answer",
+          directPolicyIds: recoveredIds,
+          preferredPolicyIds: recoveredIds,
+          excludedConflictPolicyIds: sourceNeed.excludedConflictPolicyIds.filter((id) => !recoveredIds.includes(id)),
+          modelDisposition: "answer",
+          modelDirectPolicyIds: recoveredIds,
+          deterministicPolicyIds: recoveredIds,
+          reason: consensus
+            ? "V5.4 recovered multiple exact answer sources only after establishing that their material decisions agree."
+            : "V5.4 recovered one uniquely dominant exact answer source after the model abstained on structural admission metadata.",
+        };
+      }
+    }
+    if (sourceNeed.modelDisposition !== "answer") return sourceNeed;
+
+    const modelDirect = new Set(sourceNeed.modelDirectPolicyIds || []);
+    const ids = [...new Set([
+      ...modelDirect,
+      ...sourceNeed.directPolicyIds,
+      ...sourceNeed.preferredPolicyIds,
+      ...sourceNeed.excludedConflictPolicyIds,
+    ])];
+    const exact = ids
+      .map((id) => candidateFor(id, retrieval))
+      .filter((candidate): candidate is V4SystemicCandidate => Boolean(
+        candidate && candidate.policy.answerability === "answer_evidence" && exactCandidateForNeed(need, candidate),
+      ))
+      .sort((left, right) =>
+        Number(modelDirect.has(right.policy.id)) - Number(modelDirect.has(left.policy.id)) ||
+        (left.needScores?.[need.id]?.rank || left.rank) - (right.needScores?.[need.id]?.rank || right.rank),
+      );
+    const exactModelConfirmed = exact.filter((candidate) => modelDirect.has(candidate.policy.id));
+    if (!exactModelConfirmed.length || !v54DecisionsFormConsensus(exact.map((candidate) => candidateDecisionForNeed(need, candidate)))) {
+      return sourceNeed;
+    }
+
+    const preferredPolicyIds = exact.slice(0, 3).map((candidate) => candidate.policy.id);
+    const exactIds = new Set(exact.map((candidate) => candidate.policy.id));
+    return {
+      ...sourceNeed,
+      lane: "answer",
+      directPolicyIds: [...new Set([...sourceNeed.directPolicyIds, ...preferredPolicyIds])],
+      preferredPolicyIds,
+      excludedConflictPolicyIds: sourceNeed.excludedConflictPolicyIds.filter((id) => !exactIds.has(id)),
+      reason: "V5.4 established exact same-decision source consensus before contextual authority and conflict adjudication.",
+    };
+  });
+  const refined = refineV53SourcePlan({ ...sourcePlan, needs: preprocessedNeeds }, plan, retrieval);
+  return {
+    ...refined,
+    reasoningSummary: `${refined.reasoningSummary} V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts.`,
   };
 }

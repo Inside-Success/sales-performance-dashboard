@@ -94,6 +94,7 @@ async function main() {
   const datasetPath = path.resolve(argument("dataset", "tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json"));
   const outputPath = path.resolve(argument("output", "artifacts/ask-sales-faq-v5-3-independent-gate/primary-runtime.json"));
   const mode = argument("mode", "primary");
+  const diagnosticOnly = argument("diagnostic-only") === "true";
   if (!new Set(["primary", "repeatability"]).has(mode)) throw new Error("--mode must be primary or repeatability");
   const reverseOrder = argument("reverse-order", mode === "repeatability" ? "true" : "false") === "true";
   const datasetRaw = await readFile(datasetPath, "utf8");
@@ -103,34 +104,44 @@ async function main() {
   }
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
-  const systems = ["v3", "v5"] as SystemName[];
+  const systems = argument("systems", "v3,v5").split(",").map((value) => value.trim()).filter(Boolean) as SystemName[];
+  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v5"]).has(system))) {
+    throw new Error("--systems must be a comma-separated subset of v3,v5");
+  }
   const selectedCaseIds = mode === "repeatability" ? new Set(dataset.repeatability.independentCaseIds) : null;
   const selectedConversationIds = mode === "repeatability" ? new Set(dataset.repeatability.conversationIds) : null;
+  const diagnosticIds = diagnosticOnly && argument("ids")
+    ? new Set(argument("ids").split(",").map((value) => value.trim()).filter(Boolean))
+    : null;
   const cases = dataset.cases
-    .filter((item) => !selectedCaseIds || selectedCaseIds.has(item.id))
+    .filter((item) => (!selectedCaseIds || selectedCaseIds.has(item.id)) && (!diagnosticIds || diagnosticIds.has(item.id)))
     .map((item): EvaluatedItem => ({ ...item, systems: {} }));
   const conversations = dataset.conversations
-    .filter((item) => !selectedConversationIds || selectedConversationIds.has(item.id))
+    .filter((item) => (!selectedConversationIds || selectedConversationIds.has(item.id)) &&
+      (!diagnosticIds || diagnosticIds.has(item.id) || item.prompts.some((prompt) => diagnosticIds.has(prompt.id))))
     .map((conversation): EvaluatedConversation => ({
       ...conversation,
-      prompts: conversation.prompts.map((prompt) => ({ ...prompt, systems: {} })),
+      prompts: conversation.prompts
+        .filter((prompt) => !diagnosticIds || diagnosticIds.has(conversation.id) || diagnosticIds.has(prompt.id))
+        .map((prompt) => ({ ...prompt, systems: {} })),
     }));
   if (mode === "repeatability" && (cases.length !== 7 || conversations.length !== 6)) {
     throw new Error("Repeatability selection no longer matches the preregistered subset");
   }
   const totalPrompts = cases.length + conversations.reduce((total, conversation) => total + conversation.prompts.length, 0);
   const report = {
-    schemaVersion: "ask-sales-v5-3-independent-runtime-v1",
+    schemaVersion: diagnosticOnly ? "ask-sales-v5-4-revealed-regression-runtime-v1" : "ask-sales-v5-3-independent-runtime-v1",
     status: "running",
     mode,
-    promotionEvidence: mode === "primary",
+    promotionEvidence: mode === "primary" && !diagnosticOnly,
+    diagnosticOnly,
     datasetName: dataset.name,
     datasetPath,
     datasetSha256: sha256(datasetRaw),
     datasetSealedAt: dataset.sealedAt,
     runtimeFreezeCommit: dataset.runtimeFreezeCommit,
     evaluationToolCommit: argument("evaluation-commit") || null,
-    candidateTunedAfterSeal: false,
+    candidateTunedAfterSeal: diagnosticOnly,
     systems,
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,
@@ -145,7 +156,7 @@ async function main() {
   await mkdir(path.dirname(outputPath), { recursive: true });
 
   for (const item of report.cases) {
-    const order = systemOrder(item.id, reverseOrder);
+    const order = systemOrder(item.id, reverseOrder).filter((system) => systems.includes(system));
     report.executionOrder.push({ key: item.id, systems: order });
     for (const system of order) {
       const history: AskSalesFaqChatMessage[] = [{ role: "user", content: item.question }];
@@ -157,7 +168,7 @@ async function main() {
   }
 
   for (const conversation of report.conversations) {
-    const order = systemOrder(conversation.id, reverseOrder);
+    const order = systemOrder(conversation.id, reverseOrder).filter((system) => systems.includes(system));
     report.executionOrder.push({ key: conversation.id, systems: order });
     for (const system of order) {
       const history: AskSalesFaqChatMessage[] = [];
