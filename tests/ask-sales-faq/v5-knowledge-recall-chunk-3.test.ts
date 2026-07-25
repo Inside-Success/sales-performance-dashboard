@@ -34,11 +34,11 @@ function retrieve(question: string, overrides: Partial<V4SystemicNeed> = {}) {
   return retrieveV5Policies(resolveV4SystemicTurn(question, []), plan);
 }
 
-it("preserves direct authoritative question-family recall without a broad candidate window (chunk 0)", () => {
+it("preserves direct authoritative question-family recall without a broad candidate window (chunk 3)", () => {
   const sample = getV5KnowledgeSnapshot().policies
     .filter((policy) => policy.answerability === "answer_evidence" && policy.question_families[0])
     .filter((_policy, index) => index % 37 === 0)
-    .slice(0, 12);
+    .slice(36, 48);
   expect(sample.length).toBeGreaterThan(0);
   let found = 0;
   for (const policy of sample) {

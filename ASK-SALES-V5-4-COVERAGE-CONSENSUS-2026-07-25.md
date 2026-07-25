@@ -146,7 +146,7 @@ If that narrow repair cannot eliminate relation contamination without losing the
 
 ## Verification
 
-- 827/827 Ask Sales tests across 49 files passed.
+- 829/829 Ask Sales tests across 51 files passed.
 - 38/38 focused V5.2/V5.3/V5.4 tests passed before freeze.
 - 15/15 isolation checks passed.
 - TypeScript passed.
@@ -155,6 +155,7 @@ If that narrow repair cannot eliminate relation contamination without losing the
 - All 43 prior-gate, 50 retained, and 13 fresh prompts completed; no terminal provider failure occurred.
 - Fresh 13 had zero provider failures; retained 50 had zero provider failures. Prior 43 had one unsuccessful intermediate provider attempt and zero terminal failures.
 - Architecture audit and source-coverage audit run through checked-in package scripts.
+- The first governed GitHub run completed all 827 tests but Vitest reported a worker RPC timeout after one 60.8-second recall file. That unchanged coverage was split into four smaller files; the runtime was not modified.
 - No local development server ran.
 
 ## Safety and production isolation
