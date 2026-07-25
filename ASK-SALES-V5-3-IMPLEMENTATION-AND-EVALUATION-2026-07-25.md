@@ -4,6 +4,8 @@ Date: 2026-07-25
 
 Status: implemented and verified in the isolated V5 branch. V5.3 is materially safer and more useful than V5.2 on the source-reviewed 40-case diagnostic, and it performs strongly on the user's previously reviewed 50. It is not promotion-ready because every evaluated case is now revealed and 12 of the 40 source-answerable cases still receive avoidable non-resolving responses. Production V3 remains live and unchanged.
 
+> Superseding evidence: the later independent gate in `ASK-SALES-V5-3-INDEPENDENT-PROMOTION-GATE-2026-07-25.md` failed. On 43 newly sealed prompts, V5.3 scored 31.4% weighted utility versus V3 at 59.3%. This older record remains valid as revealed development evidence, but its positive direction is not promotion evidence. Do not promote V5.3.
+
 ## Outcome in plain language
 
 V5.3 fixed the most important failure class: it no longer treats broad topical similarity as permission to answer a different decision. It also makes a carefully bounded set of recent authoritative Slack rules available as dated answer evidence, while current state, mutable artifacts, live work, sensitive eligibility decisions, and close conflicts continue to route.
