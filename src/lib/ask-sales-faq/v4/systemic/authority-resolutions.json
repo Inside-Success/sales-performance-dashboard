@@ -34,21 +34,25 @@
       "status": "source_resolved",
       "effective_at": "2026-07-03T00:31:00.000Z",
       "product_scopes": ["product_agnostic", "unknown"],
-      "relations": ["permission", "exception", "requirement"],
+      "relations": ["permission", "exception", "requirement", "limit", "definition"],
       "match_groups": [
         ["call 1", "call one"],
-        ["price", "pricing", "investment", "budget"],
+        ["price", "pricing", "cost", "investment", "budget"],
         ["mention", "discuss", "disclose", "tell", "talk", "bring up", "share"]
       ],
       "controlling_policy_ids": [
         "claim_33cdaf41e66bed31__a1",
         "claim_bc6feb1c60e8c90d__a1",
         "claim_bc6feb1c60e8c90d__a2",
-        "curated_32981b3dcba667da"
+        "curated_32981b3dcba667da",
+        "operational_26cbaa1fba2967de",
+        "operational_356b780d8ba129be",
+        "operational_fa65ec318eacfff9",
+        "operational_0fc4659b490e0d95"
       ],
       "excluded_policy_ids": [],
       "resolved_blocked_topic_ids": ["blocked_5bd0a1e1f41418c9"],
-      "authority_basis": "Rich supplied the exact default and the narrow two-prerequisite disqualification exception; the governed Call 1 article preserves both parts.",
+      "authority_basis": "Rich supplied the exact default and the narrow two-prerequisite disqualification exception; the governed Call 1 article preserves both parts. The companion approved operational records supply the non-conflicting Call 2 deferral and persistent-question response without adding any permission to disclose figures.",
       "source_ids": ["screenshot:2026-07-03-and-2026-07-08:rich-policy-replies"]
     },
     {
@@ -486,6 +490,10 @@
         "claim_9ecfb269cce72cbe__a1",
         "claim_9ecfb269cce72cbe__a2",
         "claim_9ecfb269cce72cbe__a7"
+      ],
+      "required_policy_ids": [
+        "curated_af3fa1d5bbe01125",
+        "claim_d4765c6b8aa3730e"
       ],
       "excluded_policy_ids": [],
       "resolved_blocked_topic_ids": [],
@@ -991,6 +999,70 @@
       "resolved_blocked_topic_ids": [],
       "authority_basis": "Madeline confirmed the six-month product-specific filming window and directed exact date availability to production in sales-fulfilment-hotline. This is distinct from any reapplication wait.",
       "source_ids": ["slack:C0AUQKNR8CF:1784758022.370399", "slack:C0AUQKNR8CF:1784818632.523199"]
+    },
+    {
+      "id": "contracted-payment-link-after-bank-decline",
+      "title": "An official payment link may be sent for the unchanged signed plan after a bank decline",
+      "status": "source_resolved",
+      "effective_at": "2026-06-08T22:51:35.247Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["permission", "procedure", "requirement"],
+      "match_groups": [
+        ["payment link", "official link"],
+        ["bank transfer failed", "bank transfer failure", "bank transfer decline", "bank transfer declined"],
+        ["signed contract", "already signed", "contracted amount", "contracted plan", "same plan"]
+      ],
+      "controlling_policy_ids": ["operational_80661b66e0a464b5"],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rudy approved the exact unchanged-contract scenario: after the bank transfer declines, the rep may send the official link only when its amount and plan match the signed contract. This does not authorize a new or custom payment arrangement.",
+      "source_ids": ["slack:C0AUQKNR8CF:1780959095.247439", "slack:C0AUQKNR8CF:1780961882.705619"]
+    },
+    {
+      "id": "episode-editing-timeline-after-filming",
+      "title": "The current episode editing expectation is four to six months after filming",
+      "status": "source_resolved",
+      "effective_at": "2026-05-27T20:06:45.761Z",
+      "product_scopes": ["main_istv", "unknown"],
+      "relations": ["duration", "timing_start", "deadline", "procedure"],
+      "match_groups": [
+        ["episode", "editing", "episode ready", "episode delivery"],
+        ["after filming", "once filmed", "filming"],
+        ["how long", "timeline", "take", "ready", "delivery"]
+      ],
+      "controlling_policy_ids": ["operational_23c63c3fb61fe96d"],
+      "excluded_policy_ids": ["operational_fffb1b838f94f059"],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "The later exact thread, independently approved by Madeline, Rich, and Rudy, sets the current four-to-six-month editing expectation and a possible non-guaranteed two-to-three-month rush. The older three-to-six-month record was already flagged as conflicting and is superseded only for this claim scope.",
+      "source_ids": [
+        "slack:C0AUQKNR8CF:1779912405.761239",
+        "slack:C0AUQKNR8CF:1779913050.780999",
+        "slack:C0AUQKNR8CF:1779916197.540319",
+        "slack:C0AUQKNR8CF:1779929897.328199",
+        "slack:C0AUQKNR8CF:1777715525.754259"
+      ]
+    },
+    {
+      "id": "episode-roi-promise-prohibition",
+      "title": "Sales reps must not promise or imply episode ROI",
+      "status": "source_resolved",
+      "effective_at": "2026-05-09T23:33:23.541Z",
+      "product_scopes": ["product_agnostic", "main_istv", "unknown"],
+      "relations": ["permission", "requirement", "limit", "procedure"],
+      "match_groups": [
+        ["roi", "return on investment"],
+        ["promise", "discuss", "explain", "generate", "imply"],
+        ["episode", "show", "tv"]
+      ],
+      "controlling_policy_ids": [
+        "claim_a0511589517176d3__a4",
+        "operational_e78173ca2150b433",
+        "operational_7e1fb71ed0f9ac0f"
+      ],
+      "excluded_policy_ids": [],
+      "resolved_blocked_topic_ids": [],
+      "authority_basis": "Rudy's exact ROI thread prohibits discussing or promising return on investment. Compatible approved guidance may explain the no-results boundary, but a broader purpose or exposure description cannot replace the direct prohibition for this decision.",
+      "source_ids": ["slack:C0AUQKNR8CF:1778369603.541469", "slack:C0AUQKNR8CF:1778373737.206909"]
     }
   ]
 }

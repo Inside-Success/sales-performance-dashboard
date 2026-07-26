@@ -49,7 +49,7 @@ function publishableDecision(decision: string) {
   return (match?.[1] || decision).replace(/\s+/g, " ").trim();
 }
 
-function preferredExactEvidenceSentence(
+export function preferredV55ExactEvidenceSentence(
   need: V4SystemicNeed,
   _plan: V4SystemicQueryPlan,
   retrieval: V4SystemicRetrieval,
@@ -101,7 +101,7 @@ const profile: V4SystemicCandidateRuntimeProfile = {
   skipLegacySourcePlanner: true,
   refineSourcePlanWithModel: refineV55SourcePlanWithRawEntailment,
   exactSourceFallbackSentence: v54ExactSourceFallbackSentence,
-  preferredExactEvidenceSentence,
+  preferredExactEvidenceSentence: preferredV55ExactEvidenceSentence,
   trustPreferredExactEvidence: true,
   trustPreferredCollectiveEvidence: true,
   precomposePreferredEvidence: true,

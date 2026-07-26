@@ -59,9 +59,10 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated" | "v5.6-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
+  resolveTurn?: (question: string, messages: AskSalesFaqChatMessage[]) => V3TurnResolution;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
   refineQueryPlan?: (plan: V4SystemicQueryPlan, turn: V3TurnResolution) => V4SystemicQueryPlan;
   resolveRouteKey?: (
@@ -2460,7 +2461,9 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   const safeMessages = redactedMessages.map(({ role, content }) => ({ role, content }));
   const redactions = [...new Set([...redactedQuestion.redactions, ...redactedMessages.flatMap((message) => message.redactions)])];
   const turnStarted = Date.now();
-  const turn = resolveV4SystemicTurn(redactedQuestion.text, safeMessages);
+  const turn = profile.resolveTurn
+    ? profile.resolveTurn(redactedQuestion.text, safeMessages)
+    : resolveV4SystemicTurn(redactedQuestion.text, safeMessages);
   stageTimings.turnResolutionMs = Date.now() - turnStarted;
 
   if (CONVERSATION_KINDS.has(turn.kind)) {

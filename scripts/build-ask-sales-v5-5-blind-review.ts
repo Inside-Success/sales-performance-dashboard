@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type JsonRecord = Record<string, unknown>;
-type SystemName = "v3" | "v55";
+type SystemName = "v3" | "v55" | "v56";
 
 function argument(name: string, fallback = "") {
   const prefix = `--${name}=`;
@@ -31,13 +31,13 @@ function output(result: JsonRecord) {
   };
 }
 
-function groupMappings(datasetSha256: string, groupIds: string[]) {
+function groupMappings(datasetSha256: string, groupIds: string[], challenger: "v55" | "v56") {
   const ordered = [...groupIds].sort((left, right) =>
     sha256(`${datasetSha256}:${left}`).localeCompare(sha256(`${datasetSha256}:${right}`)),
   );
   return new Map(ordered.map((groupId, index): [string, { A: SystemName; B: SystemName }] => [
     groupId,
-    index % 2 === 0 ? { A: "v3", B: "v55" } : { A: "v55", B: "v3" },
+    index % 2 === 0 ? { A: "v3", B: challenger } : { A: challenger, B: "v3" },
   ]));
 }
 
@@ -189,6 +189,8 @@ function htmlDocument(packet: JsonRecord) {
 async function main() {
   const inputPath = path.resolve(argument("input", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected/primary-runtime.json"));
   const outputDirectory = path.resolve(argument("output-dir", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected"));
+  const challenger = argument("challenger", "v55");
+  if (challenger !== "v55" && challenger !== "v56") throw new Error("--challenger must be v55 or v56");
   const raw = await readFile(inputPath, "utf8");
   const report = object(JSON.parse(raw));
   if (text(report.status) !== "complete") throw new Error("Only a complete runtime report can be blinded");
@@ -202,7 +204,7 @@ async function main() {
     for (const item of Array.isArray(conversation.prompts) ? conversation.prompts.map(object) : []) rows.push({ groupId: conversationId, conversationId, item });
   }
   if (rows.length !== 20) throw new Error(`Expected 20 review rows, received ${rows.length}`);
-  const mappings = groupMappings(datasetSha256, [...new Set(rows.map((row) => row.groupId))]);
+  const mappings = groupMappings(datasetSha256, [...new Set(rows.map((row) => row.groupId))], challenger);
   const items = rows.map(({ groupId, conversationId, item }, index) => {
     const mapping = mappings.get(groupId)!;
     const systems = object(item.systems);
@@ -220,8 +222,8 @@ async function main() {
     };
   });
   const packetBase = {
-    schemaVersion: "ask-sales-v5-5-blinded-review-packet-v2",
-    packetId: `v55-blind-${datasetSha256.slice(0, 12)}`,
+    schemaVersion: `ask-sales-${challenger}-blinded-review-packet-v2`,
+    packetId: `${challenger}-blind-${datasetSha256.slice(0, 12)}`,
     createdAt: new Date().toISOString(),
     runtimeInputSha256: sha256(raw),
     datasetSha256,
@@ -238,7 +240,7 @@ async function main() {
   const packetRaw = `${JSON.stringify(packet, null, 2)}\n`;
   const mappingByItem = Object.fromEntries(rows.map((row) => [row.item.id, mappings.get(row.groupId)]));
   const key = {
-    schemaVersion: "ask-sales-v5-5-unblind-key-v2",
+    schemaVersion: `ask-sales-${challenger}-unblind-key-v2`,
     packetId: packet.packetId,
     packetContentSha256: packet.packetSha256,
     packetFileSha256: sha256(packetRaw),
@@ -255,7 +257,7 @@ async function main() {
     systemsStillBlindedDuringReview: true,
     items: items.map((item) => ({ id: item.id, preference: "", materialError: "", note: "" })),
   };
-  const guide = `# Ask Sales blind answer review\n\nThis is the corrected provider-backed diagnostic packet. The root-level packet is invalid and superseded. Read \`TECHNICAL-READOUT.md\` for the verified comparison and evidence limits before drawing a production conclusion.\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the verified rule.\n2. Choose Answer A, Answer B, both usable, or neither usable.\n3. Mark an answer only if it says something materially wrong or sends the rep to the wrong place.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.\n\nReturn the completed JSON and score it from the repository root with:\n\n\`\`\`bash\npnpm score:ask-sales-faq:v5-5:blind-review -- --dir=artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json\n\`\`\`\n\nThe scorer rejects incomplete or mismatched feedback, unblinds only after review, checks the fixed thresholds, independently enforces the current repeatability hold, and always leaves production promotion unauthorized until a separate approved release decision. These questions were exposed during the invalid first review, so the human result is diagnostic rather than fresh unseen promotion evidence.\n`;
+  const guide = `# Ask Sales blind answer review\n\nThis provider-backed packet compares V3 with ${challenger.toUpperCase()}. It is diagnostic because these questions and verified rules were already reviewed.\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the verified rule.\n2. Choose Answer A, Answer B, both usable, or neither usable.\n3. Mark an answer only if it says something materially wrong or sends the rep to the wrong place.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON and return it for scoring. Do not open the unblind key until the review is complete. This packet never authorizes production promotion by itself.\n`;
   await mkdir(outputDirectory, { recursive: true });
   await Promise.all([
     writeFile(path.join(outputDirectory, "blinded-review-packet.json"), packetRaw, "utf8"),
