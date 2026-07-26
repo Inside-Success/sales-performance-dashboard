@@ -1,0 +1,699 @@
+{
+  "schemaVersion": "ask-sales-v5-6-repeatability-analysis-v1",
+  "status": "complete",
+  "generatedAt": "2026-07-26T19:28:11.502Z",
+  "inputs": [
+    {
+      "path": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-6-causal-correction/artifacts/ask-sales-faq-v5-6-causal/release-candidate-1.json",
+      "sha256": "348bee6f23e58213126778d3ea4eb6627a7e26664ddf511eaa0f5a37418d6fc4"
+    },
+    {
+      "path": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-6-causal-correction/artifacts/ask-sales-faq-v5-6-causal/release-candidate-2.json",
+      "sha256": "f43369e9b412e689f033cbe77505e9eb8fe947ab98eaa664271bf64e566fdbcc"
+    },
+    {
+      "path": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-6-causal-correction/artifacts/ask-sales-faq-v5-6-causal/release-candidate-3.json",
+      "sha256": "32fee227b08726b6d82593bd5a522110ee4ecec7e16d21e5b18a2be83562d4ba"
+    },
+    {
+      "path": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-6-causal-correction/artifacts/ask-sales-faq-v5-6-causal/release-candidate-4.json",
+      "sha256": "f9ac1174f6cbec42479c3966520750c4b2ea1d69181ed2a924a59b90e92ff598"
+    },
+    {
+      "path": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-6-causal-correction/artifacts/ask-sales-faq-v5-6-causal/release-candidate-5.json",
+      "sha256": "602e461d4a060bf6211f93e91e0fe58b5bc9e3d470769d05379bd207a0e7ecfd"
+    }
+  ],
+  "methodology": {
+    "baseline": "Every run is compared with run 1 on the exact same prompt ID.",
+    "potentialMaterialBoundary": "Lane, routing, numeric tokens, and permission/prohibition modality.",
+    "caution": "Exact-answer and source variation is surfaced for human inspection; it is not automatically labeled material.",
+    "promotionEvidence": false
+  },
+  "aggregate": {
+    "runs": 5,
+    "prompts": 20,
+    "executions": 100,
+    "comparisonOpportunities": 80,
+    "laneFlipComparisons": 0,
+    "laneFlipRate": 0,
+    "decisionBoundaryFlipComparisons": 0,
+    "decisionBoundaryFlipRate": 0,
+    "sourceFlipComparisons": 0,
+    "sourceFlipRate": 0,
+    "exactAnswerFlipComparisons": 0,
+    "exactAnswerFlipRate": 0,
+    "casesRequiringManualReview": 0
+  },
+  "caseVariants": [
+    {
+      "id": "dj-cohort-deadline",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "no"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "claim_49d7d7b8c2c45c22__a1"
+        ]
+      ],
+      "exactAnswers": [
+        "There is no cohort rule for Daymond John / Next Level CEO."
+      ]
+    },
+    {
+      "id": "istv-placement-duration",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "5years"
+          ],
+          "modalities": [
+            "only",
+            "only",
+            "only"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_cf86bc297dd546ea"
+        ]
+      ],
+      "exactAnswers": [
+        "Episodes on ISTV are guaranteed for 5 years. The only reasons for removal are selling the company, closing the company, or the client doing something bad. Conditions: Applies to ISTV only.; Removal only under three specific conditions: company sale, company closure, or client misconduct. Boundaries: Does not apply to other products like Diamond.; Does not guarantee the episode will not be removed for other reasons not listed."
+      ]
+    },
+    {
+      "id": "call2-baseline-quote-sequence",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "$12,000",
+            "$20,000",
+            "$30,000",
+            "2,"
+          ],
+          "modalities": [
+            "do not",
+            "do not",
+            "only",
+            "only"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "owner-call2-baseline-package-sequence"
+        ]
+      ],
+      "exactAnswers": [
+        "On main ISTV Call 2, start with the $20,000 Standard package price. Based on the prospect's needs and financial position, move only to the approved $30,000 VIP option or down to the approved $12,000 Lite option, using only the listed installment plans. Do not present all three package price options at once, and do not invent a custom payment split."
+      ]
+    },
+    {
+      "id": "new-business-eligibility",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        [
+          "claim_6e636dc287b976f5"
+        ]
+      ],
+      "exactAnswers": [
+        "If it has the means and is legitimate; qualification depends on story, mission, business, and ability."
+      ]
+    },
+    {
+      "id": "contracted-payment-link-after-decline",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "can"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_80661b66e0a464b5"
+        ]
+      ],
+      "exactAnswers": [
+        "Yes, you can send the payment link for the contracted amount. Conditions: Contract is already signed; Payment amount matches the contract. Boundaries: Does not address changes to the payment plan or amount."
+      ]
+    },
+    {
+      "id": "roi-discussion-boundary",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "do not",
+            "without"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_e78173ca2150b433"
+        ]
+      ],
+      "exactAnswers": [
+        "Do not share results, metrics, or imply ROI/success from episodes. Conditions: Applies to all sales conversations. Boundaries: Does not prohibit sharing the episode itself without metrics."
+      ]
+    },
+    {
+      "id": "call2-same-week",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "1",
+            "2"
+          ],
+          "modalities": [
+            "must",
+            "only"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "claim_e48b234c260720af"
+        ]
+      ],
+      "exactAnswers": [
+        "That once Call 1 is conducted, Call 2 must be scheduled the same week. She listed only real emergencies such as car accident, death in family, or illness as exceptions."
+      ]
+    },
+    {
+      "id": "oncehub-applicant-cancellation",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "without"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_65778cf4b6ff9a93"
+        ]
+      ],
+      "exactAnswers": [
+        "Yes, you can cancel the booking from your end using the OnceHub link inside the booking. Enter 'applicant requested to cancel' as the reason. Conditions: Applicant has requested cancellation but not cancelled the booking themselves. Boundaries: Does not cover cancellations without applicant request."
+      ]
+    },
+    {
+      "id": "cast-member-contact-privacy",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "do not"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "v3src_past_cast_contact_boundary"
+        ]
+      ],
+      "exactAnswers": [
+        "Do not give out previous cast-member contact information or arrange a private introduction. Share the approved public testimonials landing page instead."
+      ]
+    },
+    {
+      "id": "minor-cast-member-eligibility",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "18"
+          ],
+          "modalities": [
+            "can"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_dc30d8c99ef71b34"
+        ]
+      ],
+      "exactAnswers": [
+        "Cast members can be younger than 18 if they have a successful business and are accompanied by an adult. Conditions: Minor has a successful business; Minor is accompanied by an adult. Boundaries: Does not specify a lower age limit or define 'successful business'."
+      ]
+    },
+    {
+      "id": "authors-business-owner-exception",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "must",
+            "required"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_b59c9b8eaf2ef231"
+        ]
+      ],
+      "exactAnswers": [
+        "Yes, a published author with a personal brand is eligible for the Authors show; business ownership is not required. Conditions: The individual must be a published author with a personal brand. Boundaries: Does not address eligibility for other shows or non-published individuals."
+      ]
+    },
+    {
+      "id": "best-doctors-own-practice",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "do not"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "claim_54e4d8f4163f0486__a1"
+        ]
+      ],
+      "exactAnswers": [
+        "A doctor can qualify even if they work in a hospital and do not own the practice."
+      ]
+    },
+    {
+      "id": "route-finance-action",
+      "expectedDisposition": "route",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "route"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-finance-requests"
+          ],
+          "numbers": [],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        []
+      ],
+      "exactAnswers": [
+        "This needs a Finance action, so please post it in #sales-finance-requests."
+      ]
+    },
+    {
+      "id": "route-greenlight-action",
+      "expectedDisposition": "route",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "route"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#greenlight-requests"
+          ],
+          "numbers": [],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        []
+      ],
+      "exactAnswers": [
+        "Please submit this greenlight request in #greenlight-requests."
+      ]
+    },
+    {
+      "id": "call1-pricing-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "1.",
+            "2"
+          ],
+          "modalities": [
+            "do not",
+            "may",
+            "no",
+            "only"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "owner-call1-pricing-complete-boundary"
+        ]
+      ],
+      "exactAnswers": [
+        "Normally, do not discuss fees or quote a minimum on Call 1. Explain that pricing is covered on Call 2 after greenlight. The narrow exception is when the rep is sure both that the prospect has no business and is not financially qualified; price may then be mentioned only to disqualify the prospect, not to pitch or sell an offer."
+      ]
+    },
+    {
+      "id": "call1-pricing-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "may"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_fa65ec318eacfff9"
+        ]
+      ],
+      "exactAnswers": [
+        "If a prospect persists, emphasize that cost varies, they are not yet cast, and if cost is their main concern, the opportunity may not be for them. Avoid breaking down line items. Conditions: Prospect continues to press for cost after initial deferral. Boundaries: Does not provide a specific cost range.; Does not guarantee the prospect will stop asking."
+      ]
+    },
+    {
+      "id": "editing-onboarding-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "2",
+            "3months",
+            "4",
+            "6months"
+          ],
+          "modalities": [
+            "can"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_23c63c3fb61fe96d"
+        ]
+      ],
+      "exactAnswers": [
+        "Editing typically takes 4-6 months, and the overall timeline depends on how quickly the client gets to Miami. Rush options can deliver in 2-3 months once filmed. Conditions: Client has filmed their episode. Boundaries: Does not guarantee exact delivery date."
+      ]
+    },
+    {
+      "id": "editing-onboarding-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "may",
+            "must"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_5890caefa3ac5996"
+        ]
+      ],
+      "exactAnswers": [
+        "Clients must attend the onboarding call live. Reps may attend live or watch a recording if available. Conditions: Client is scheduled for onboarding. Boundaries: Does not guarantee recording availability for reps."
+      ]
+    },
+    {
+      "id": "content-rights-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "only",
+            "permitted"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_ec934713914a1bc3"
+        ]
+      ],
+      "exactAnswers": [
+        "Cast members are only permitted to post the trailer on YouTube, not the full episode. Conditions: The content is related to their episode on the network. Boundaries: Does not address posting on other platforms.; Does not address posting reels or clips."
+      ]
+    },
+    {
+      "id": "content-rights-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "allowed"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_2af848428b606ff5"
+        ]
+      ],
+      "exactAnswers": [
+        "Cast members are allowed to post reels of the episode that have been chopped up. Conditions: The content is derived from their episode. Boundaries: Does not specify length or format of reels.; Does not address full episode posting."
+      ]
+    }
+  ]
+}

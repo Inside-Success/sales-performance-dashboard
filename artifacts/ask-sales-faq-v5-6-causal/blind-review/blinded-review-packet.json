@@ -1,0 +1,586 @@
+{
+  "schemaVersion": "ask-sales-v56-blinded-review-packet-v2",
+  "packetId": "v56-blind-32cb80bf99b6",
+  "createdAt": "2026-07-26T19:44:57.966Z",
+  "runtimeInputSha256": "cb267bde689f5732161cc8c73f0fa9fb61bcdc443d2404c91c1c1f258f0fb490",
+  "datasetSha256": "32cb80bf99b6def87aa2715347aa32a4d5b5aebdc9d59a6569e24722bb63605f",
+  "systemsHidden": true,
+  "instructions": {
+    "preference": "Choose A, B, both acceptable, or neither.",
+    "materialError": "Mark a response only when it states a materially wrong rule, gives unsafe guidance, or sends the rep to the wrong place.",
+    "note": "Optional and short."
+  },
+  "items": [
+    {
+      "id": "dj-cohort-deadline",
+      "order": 1,
+      "batch": 1,
+      "conversationId": null,
+      "question": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+      "goldAnswer": "No. Daymond John / Next Level CEO leads are not subject to the main ISTV Sunday cohort deadline, and their acceptance letters should not include that deadline.",
+      "evaluationStrata": [
+        "product-scope",
+        "deadline",
+        "relationship-matching"
+      ],
+      "approvedBy": [
+        "Rudy",
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "There is no cohort rule for Daymond John / Next Level CEO.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, the Sunday cohort deadline rules do not apply to Daymond John / Next Level CEO leads.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "istv-placement-duration",
+      "order": 2,
+      "batch": 1,
+      "conversationId": null,
+      "question": "For how long is an episode guaranteed to stay on ISTV?",
+      "goldAnswer": "The approved ISTV guarantee is five years. Rudy limited that statement to ISTV and identified company sale, company closure, or serious client misconduct as removal boundaries.",
+      "evaluationStrata": [
+        "rights",
+        "duration",
+        "scope-boundary"
+      ],
+      "approvedBy": [
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "An episode is guaranteed to stay on ISTV for 5 years.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Episodes on ISTV are guaranteed for 5 years. The only reasons for removal are selling the company, closing the company, or the client doing something bad. Conditions: Applies to ISTV only.; Removal only under three specific conditions: company sale, company closure, or client misconduct. Boundaries: Does not apply to other products like Diamond.; Does not guarantee the episode will not be removed for other reasons not listed.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "call2-baseline-quote-sequence",
+      "order": 3,
+      "batch": 1,
+      "conversationId": null,
+      "question": "On Call 2, should I show the prospect all three main ISTV package prices and ask them to choose?",
+      "goldAnswer": "No. On Call 2, start with the main $20,000 Standard package. Based on the prospect’s needs and financial position, move only to the approved $30,000 VIP or $12,000 Lite option and the listed installment plans. Do not present all three prices at once or invent a custom split.",
+      "evaluationStrata": [
+        "pricing",
+        "call-2",
+        "conditional-sales-procedure"
+      ],
+      "approvedBy": [
+        "Rudy",
+        "Project owner"
+      ],
+      "outputA": {
+        "answer": "No, you should not present all three main ISTV package prices at once and ask the prospect to choose. Instead, present the higher applicable package first, then move down to a lower package like Lite only when the prospect's needs or budget call for it.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "On main ISTV Call 2, start with the $20,000 Standard package price. Based on the prospect's needs and financial position, move only to the approved $30,000 VIP option or down to the approved $12,000 Lite option, using only the listed installment plans. Do not present all three package price options at once, and do not invent a custom payment split.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "new-business-eligibility",
+      "order": 4,
+      "batch": 1,
+      "conversationId": null,
+      "question": "Is there a minimum time a business must have been operating before it can qualify?",
+      "goldAnswer": "No fixed minimum time in business was set. A new business can still be approved when it is legitimate, has the means, and otherwise qualifies.",
+      "evaluationStrata": [
+        "qualification",
+        "conditional-rule"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "There is no fixed minimum time a business must have been operating to qualify. Qualification depends on the business's means, legitimacy, story, mission, and ability.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "If it has the means and is legitimate; qualification depends on story, mission, business, and ability.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "contracted-payment-link-after-decline",
+      "order": 5,
+      "batch": 1,
+      "conversationId": null,
+      "question": "A bank transfer failed, but the client already signed for four $2,500 payments. Can I send the official link for that same contracted plan?",
+      "goldAnswer": "Yes. The official link can be sent when it matches the amount and payment plan already in the signed contract. This does not authorize changing the plan or creating a custom link.",
+      "evaluationStrata": [
+        "payment",
+        "contract",
+        "condition-preservation"
+      ],
+      "approvedBy": [
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "Reps should use only current official payment links and listed payment plans. The client's signed plan with four $2,500 payments is a listed plan, so you can send the current official payment link for that plan. Use #sales-finance-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, you can send the payment link for the contracted amount. Conditions: Contract is already signed; Payment amount matches the contract. Boundaries: Does not address changes to the payment plan or amount.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "roi-discussion-boundary",
+      "order": 6,
+      "batch": 2,
+      "conversationId": null,
+      "question": "A prospect wants me to explain what ROI the episode will generate. What can I promise?",
+      "goldAnswer": "Do not promise or discuss ROI. The rep must not claim that the episode will generate a particular return.",
+      "evaluationStrata": [
+        "compliance",
+        "prohibited-claim"
+      ],
+      "approvedBy": [
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "Do not share results, metrics, or imply ROI/success from episodes. Conditions: Applies to all sales conversations. Boundaries: Does not prohibit sharing the episode itself without metrics.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "You cannot promise any ROI, revenue, leads, or business outcomes. Company policy prohibits reps from making ROI claims, and you should tell the prospect that it is against policy to do so.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "call2-same-week",
+      "order": 7,
+      "batch": 2,
+      "conversationId": null,
+      "question": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+      "goldAnswer": "No. Call 2 must be scheduled in the same week as Call 1. The stated exceptions are genuine emergencies such as serious illness, a car accident, or a death in the family; investor availability is not one of them.",
+      "evaluationStrata": [
+        "deadline",
+        "exception",
+        "conditional-rule"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "That once Call 1 is conducted, Call 2 must be scheduled the same week. She listed only real emergencies such as car accident, death in family, or illness as exceptions.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, Call 2 cannot be scheduled two weeks after Call 1. Policy requires Call 2 to be scheduled the same week as Call 1, with exceptions only for real emergencies like a car accident, death in the family, or illness. Investors traveling does not qualify as an emergency, so the two-week delay is not allowed.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "oncehub-applicant-cancellation",
+      "order": 8,
+      "batch": 2,
+      "conversationId": null,
+      "question": "The applicant asked to cancel but did not cancel their booking. Can I remove it from my side, and what reason should I enter?",
+      "goldAnswer": "Yes. Use the OnceHub link inside the booking to cancel it and enter ‘applicant requested to cancel’ as the reason.",
+      "evaluationStrata": [
+        "sop",
+        "calendar",
+        "exact-action"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Yes, you can remove the booking from your side. Use the OnceHub link inside the booking to cancel it. For the reason, enter 'applicant-requested cancellation'.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, you can cancel the booking from your end using the OnceHub link inside the booking. Enter 'applicant requested to cancel' as the reason. Conditions: Applicant has requested cancellation but not cancelled the booking themselves. Boundaries: Does not cover cancellations without applicant request.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "cast-member-contact-privacy",
+      "order": 9,
+      "batch": 2,
+      "conversationId": null,
+      "question": "A prospect wants to speak directly with a previous cast member before deciding. Can I share someone’s contact details?",
+      "goldAnswer": "No. Do not provide a cast member’s contact information or arrange direct contact. Use only approved public testimonials or examples.",
+      "evaluationStrata": [
+        "privacy",
+        "testimonial-boundary"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "No, you cannot share a previous cast member's contact details or arrange a private introduction. The company does not provide cast member information. Instead, direct the prospect to the approved public testimonials landing page.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Do not give out previous cast-member contact information or arrange a private introduction. Share the approved public testimonials landing page instead.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "minor-cast-member-eligibility",
+      "order": 10,
+      "batch": 2,
+      "conversationId": null,
+      "question": "Must every cast member be at least 18?",
+      "goldAnswer": "No. A younger cast member can be considered if they have a successful business and an adult accompanies them. This is not automatic approval.",
+      "evaluationStrata": [
+        "qualification",
+        "age",
+        "conditions"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "No, not every cast member must be at least 18. While 18 is acceptable for those with a real, successful business and a compelling reason, teenagers can also participate with parent sign-off. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Cast members can be younger than 18 if they have a successful business and are accompanied by an adult. Conditions: Minor has a successful business; Minor is accompanied by an adult. Boundaries: Does not specify a lower age limit or define 'successful business'.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "authors-business-owner-exception",
+      "order": 11,
+      "batch": 3,
+      "conversationId": null,
+      "question": "For America’s Authors, does a published author with a personal brand also need to own a separate business?",
+      "goldAnswer": "No. For America’s Authors, a published author with a personal brand can qualify without separately owning a business.",
+      "evaluationStrata": [
+        "show-scope",
+        "qualification",
+        "exception"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "For America’s Authors, a published author with a personal brand does not need to own a separate business. A legitimate author can qualify without a separate unrelated company because selling their books is the business. Confirm that they are a real author and that their books are genuinely available for sale online or in stores.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, a published author with a personal brand is eligible for the Authors show; business ownership is not required. Conditions: The individual must be a published author with a personal brand. Boundaries: Does not address eligibility for other shows or non-published individuals.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "best-doctors-own-practice",
+      "order": 12,
+      "batch": 3,
+      "conversationId": null,
+      "question": "Is a doctor who works for a hospital but does not own a practice a fit for America’s Best Doctors?",
+      "goldAnswer": "Yes. A doctor can be considered for America’s Best Doctors even if they work for a hospital or another practice and do not own it. Do not disqualify them for employment or lack of ownership alone. A nurse does not qualify as a doctor under this rule; physical therapists and other borderline roles require confirmation.",
+      "evaluationStrata": [
+        "show-scope",
+        "qualification",
+        "relationship-matching"
+      ],
+      "approvedBy": [
+        "Mike",
+        "Rich",
+        "Project owner"
+      ],
+      "outputA": {
+        "answer": "A doctor can qualify even if they work in a hospital and do not own the practice.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, a doctor who works for a hospital and does not own a practice can be a fit for America’s Best Doctors. Hospital employment alone does not disqualify them, and practice ownership is not required.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "route-finance-action",
+      "order": 13,
+      "batch": 3,
+      "conversationId": null,
+      "question": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+      "goldAnswer": "The chatbot must not claim it completed or approved a refund. Route the duplicate-charge and refund operation to #sales-finance-requests and avoid sharing sensitive payment details.",
+      "evaluationStrata": [
+        "action-routing",
+        "finance",
+        "safety-control"
+      ],
+      "approvedBy": [
+        "Project owner approved current route catalog"
+      ],
+      "outputA": {
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-finance-requests"
+        ]
+      },
+      "outputB": {
+        "answer": "I can't process a refund directly, and I can't promise one will be issued. For duplicate charge issues, the right next step is to post the details in #sales-finance-requests.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "route-greenlight-action",
+      "order": 14,
+      "batch": 3,
+      "conversationId": null,
+      "question": "Please send my client’s greenlight letter before our call today.",
+      "goldAnswer": "The chatbot cannot send the letter. Direct the rep to #greenlight-requests for the request or urgent status follow-up, without promising timing or outcome.",
+      "evaluationStrata": [
+        "action-routing",
+        "greenlight",
+        "safety-control"
+      ],
+      "approvedBy": [
+        "Project owner approved current route catalog"
+      ],
+      "outputA": {
+        "answer": "To send your client's greenlight letter, post the request in #greenlight-requests. The greenlight team can send letters on weekends, and while 10 AM is the typical send time, Sunday coverage may send earlier. You can also ask in the channel after Call 1 if the team is available to prepare and email the document that evening. However, I can't guarantee the letter will go out before your specific call time today—you'll need to confirm availability with the team in #greenlight-requests.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#greenlight-requests"
+        ]
+      }
+    },
+    {
+      "id": "call1-pricing-turn-1",
+      "order": 15,
+      "batch": 3,
+      "conversationId": "conversation-call1-pricing",
+      "question": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+      "goldAnswer": "Normally, no. Do not discuss fees or quote the minimum on Call 1; explain that pricing is covered on Call 2 after greenlight. The narrow exception is when the prospect clearly has no business and is not financially qualified, and price is used only to disqualify rather than to pitch an offer.",
+      "evaluationStrata": [
+        "conversation",
+        "pricing",
+        "turn-one"
+      ],
+      "approvedBy": [
+        "Rich",
+        "Madeline",
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "Normally, do not discuss fees or quote a minimum on Call 1. Explain that pricing is covered on Call 2 after greenlight. The narrow exception is when the rep is sure both that the prospect has no business and is not financially qualified; price may then be mentioned only to disqualify the prospect, not to pitch or sell an offer.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, you should not discuss the $10K minimum or any pricing details during Call 1. Pricing and payment mechanics are saved for Call 2. The only exception is if the prospect clearly does not have a business and is not financially qualified—then you may mention the investment solely to disqualify them.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "call1-pricing-turn-2",
+      "order": 16,
+      "batch": 4,
+      "conversationId": "conversation-call1-pricing",
+      "question": "What if they keep pushing me for an exact breakdown?",
+      "goldAnswer": "Do not invent or break down line items. Reiterate that pricing varies and the person is not yet cast; if cost is their only concern and they will not accept the process, the opportunity may not be a fit.",
+      "evaluationStrata": [
+        "conversation",
+        "pricing",
+        "follow-up"
+      ],
+      "approvedBy": [
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "If a prospect persists, emphasize that cost varies, they are not yet cast, and if cost is their main concern, the opportunity may not be for them. Avoid breaking down line items. Conditions: Prospect continues to press for cost after initial deferral. Boundaries: Does not provide a specific cost range.; Does not guarantee the prospect will stop asking.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "If a prospect keeps pushing for an exact cost breakdown during Call 1, you can explain that the service is not free and the cost relates to assets, licensing rights, staff time, production, and editing. Then, redirect them to book the call if they want to learn more. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "editing-onboarding-turn-1",
+      "order": 17,
+      "batch": 4,
+      "conversationId": "conversation-editing-onboarding",
+      "question": "After filming, how long does it usually take for a client’s episode to be ready?",
+      "goldAnswer": "A useful expectation is roughly four to six months for editing, often around five months depending on how quickly the client gets to Miami. A rush may sometimes be possible in two to three months after filming, but it is not guaranteed.",
+      "evaluationStrata": [
+        "conversation",
+        "timeline",
+        "turn-one"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich",
+        "Rudy"
+      ],
+      "outputA": {
+        "answer": "Editing typically takes 4-6 months, and the overall timeline depends on how quickly the client gets to Miami. Rush options can deliver in 2-3 months once filmed. Conditions: Client has filmed their episode. Boundaries: Does not guarantee exact delivery date.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "After filming, editing typically takes 4 to 6 months, with most episodes ready in about 5 months. In some cases, the team can rush delivery in 2 to 3 months once filming is complete.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "editing-onboarding-turn-2",
+      "order": 18,
+      "batch": 4,
+      "conversationId": "conversation-editing-onboarding",
+      "question": "And can the client just watch a recording of onboarding instead of attending live?",
+      "goldAnswer": "No. The client must attend onboarding live. A rep may attend live or watch a recording if one is available.",
+      "evaluationStrata": [
+        "conversation",
+        "onboarding",
+        "follow-up"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Clients must attend the onboarding call live. Reps may attend live or watch a recording if available. Conditions: Client is scheduled for onboarding. Boundaries: Does not guarantee recording availability for reps.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, clients cannot watch a recording instead of attending onboarding live. They are required to attend the live session.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "content-rights-turn-1",
+      "order": 19,
+      "batch": 4,
+      "conversationId": "conversation-content-rights",
+      "question": "Can a cast member upload their full episode to YouTube?",
+      "goldAnswer": "No. They may post the trailer, but not the full episode on YouTube.",
+      "evaluationStrata": [
+        "conversation",
+        "rights",
+        "turn-one"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Cast members are only permitted to post the trailer on YouTube, not the full episode. Conditions: The content is related to their episode on the network. Boundaries: Does not address posting on other platforms.; Does not address posting reels or clips.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, a cast member cannot upload their full episode to YouTube without written permission during the 5-year network placement period. They are only allowed to upload clips or social assets. After the 5-year period ends and the episode is off the network, they can do what they want with it.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "content-rights-turn-2",
+      "order": 20,
+      "batch": 4,
+      "conversationId": "conversation-content-rights",
+      "question": "What about shorter reels chopped from the episode?",
+      "goldAnswer": "Yes. Chopped reels from the episode may be posted.",
+      "evaluationStrata": [
+        "conversation",
+        "rights",
+        "follow-up"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Cast members are allowed to post reels of the episode that have been chopped up. Conditions: The content is derived from their episode. Boundaries: Does not specify length or format of reels.; Does not address full episode posting.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "No, a cast member cannot upload shorter reels chopped from the episode to YouTube without written permission during the 5-year network placement period. They are only allowed to upload clips or social assets. After the 5-year period ends and the episode is off the network, they can do what they want with it.",
+        "disposition": "conversation_reply",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    }
+  ],
+  "packetSha256": "3ca10b73356fc41aa2dad6fbc8faa08cce4d5207ab7e9bea1574fa5d7d29765c"
+}

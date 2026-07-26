@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "ask-sales-blind-human-review-v2",
+  "packetId": "v56-blind-32cb80bf99b6",
+  "packetSha256": "3ca10b73356fc41aa2dad6fbc8faa08cce4d5207ab7e9bea1574fa5d7d29765c",
+  "reviewedAt": null,
+  "reviewer": "",
+  "systemsStillBlindedDuringReview": true,
+  "items": [
+    {
+      "id": "dj-cohort-deadline",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "istv-placement-duration",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "call2-baseline-quote-sequence",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "new-business-eligibility",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "contracted-payment-link-after-decline",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "roi-discussion-boundary",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "call2-same-week",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "oncehub-applicant-cancellation",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "cast-member-contact-privacy",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "minor-cast-member-eligibility",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "authors-business-owner-exception",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "best-doctors-own-practice",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "route-finance-action",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "route-greenlight-action",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "call1-pricing-turn-1",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "call1-pricing-turn-2",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "editing-onboarding-turn-1",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "editing-onboarding-turn-2",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "content-rights-turn-1",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    },
+    {
+      "id": "content-rights-turn-2",
+      "preference": "",
+      "materialError": "",
+      "note": ""
+    }
+  ]
+}

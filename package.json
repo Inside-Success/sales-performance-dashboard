@@ -50,6 +50,7 @@
     "build:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/build-ask-sales-v5-5-blind-review.ts",
     "build:ask-sales-faq:v5-6:blind-review": "vite-node --config vitest.config.ts scripts/build-ask-sales-v5-5-blind-review.ts --challenger=v56 --input=artifacts/ask-sales-faq-v5-6-causal/comparison-runtime.json --output-dir=artifacts/ask-sales-faq-v5-6-causal/blind-review",
     "verify:ask-sales-faq:v5-6:evaluation": "vite-node --config vitest.config.ts scripts/verify-ask-sales-v5-6-evaluation.ts",
+    "score:ask-sales-faq:v5-6:blind-review": "vite-node --config vitest.config.ts scripts/score-ask-sales-v5-6-blind-review.ts",
     "verify:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/verify-ask-sales-v5-5-blind-review.ts",
     "score:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/score-ask-sales-v5-5-blind-review.ts",
     "compile:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/compile-ask-sales-v4-systemic-operational-knowledge.ts",
