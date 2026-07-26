@@ -27,7 +27,7 @@ The corrected blind review is useful for direct human answer preferences. It is 
 - No Slack message, reaction, edit, deletion, or workflow write occurred.
 - No database, n8n, Google, Vercel configuration, subscription, authentication, knowledge release, or production write occurred.
 - No local development server ran.
-- Existing Vercel Preview configuration was read only to check provider availability, and the temporary local environment file was deleted. GitHub publication automatically created Preview record `dpl_HRtikv25vgJhWqEH2uf1bFMNBTuM`; it is Preview-targeted, failed before an application build at 0 ms, has no production alias, and was not retried. Production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remains READY on `sales-performance-dashboard-rose.vercel.app`.
+- Existing Vercel Preview configuration was read only to check provider availability, and the temporary local environment file was deleted. Git publication creates isolated Preview-targeted error records for this contained branch; inspected records stop before an application build at 0 ms, have no production alias, and are not retried. Production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remains READY on `sales-performance-dashboard-rose.vercel.app`.
 - The saved production V3 policy-matching replacement remains separately pending and was not implemented or superseded.
 
 ## Corrected evidence identity
