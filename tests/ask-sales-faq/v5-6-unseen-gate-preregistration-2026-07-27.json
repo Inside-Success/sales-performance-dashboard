@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "name": "ask-sales-v5-6-unseen-promotion-gate-preregistration-2026-07-27",
+  "status": "preregistered_before_source_reply_read",
+  "preregisteredAt": "2026-07-27T04:57:30+05:00",
+  "runtimeFreezeCommit": "1ba4f756357c0afe7ca4a3b4ac2fba84853c348a",
+  "slackChannelId": "C0AUQKNR8CF",
+  "primarySet": {
+    "standalonePrompts": 22,
+    "conversations": 4,
+    "conversationPrompts": 8,
+    "totalPrompts": 30,
+    "minimumActionOrUnsupportedControls": 4,
+    "minimumRelationshipQualifierScopeChallenges": 6,
+    "minimumHighImpactDecisions": 6,
+    "maximumPriorSourceIdOverlap": 0
+  },
+  "productionLogDiagnostic": {
+    "maximumPrompts": 5,
+    "promotionEvidence": false
+  },
+  "knowledgePresenceValues": [
+    "present_exact",
+    "present_compatible",
+    "missing_from_snapshot",
+    "governance_conflict"
+  ],
+  "promotionGate": {
+    "requireCompleteProviderBackedOutputs": true,
+    "maximumV56MaterialErrors": 0,
+    "maximumV56WrongActionOwners": 0,
+    "minimumV56AcceptableRate": 0.85,
+    "minimumPairwiseNetWinsOverV3": 4,
+    "requirePositiveLeadAcrossMultipleStrata": true,
+    "requireNoMaterialStratumRegression": true,
+    "repeatabilityExecutions": 3,
+    "requiresExplicitOwnerApproval": true
+  },
+  "productionPromotionAuthorized": false
+}
