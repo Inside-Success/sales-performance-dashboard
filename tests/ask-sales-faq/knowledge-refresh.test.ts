@@ -203,6 +203,18 @@ describe("Ask Sales knowledge-refresh governance", () => {
     expect(result.conflictingPolicyIds).toContain(current.id);
   });
 
+  it("blocks an explicitly supplied active decision key unless the collision is linked for supersession or scoped coexistence", () => {
+    const result = assessKnowledgeRefreshReleaseReadiness(releaseReadinessFixture({
+      decision_key: "existing.explicit.key",
+      conflict_level: "none",
+      conflicting_policy_ids: [],
+    }), {
+      activeDecisionKeys: ["existing.explicit.key"],
+    });
+    expect(result.ready).toBe(false);
+    expect(result.reasons).toContain("This policy identity already exists and must be reviewed as an update to the current rule.");
+  });
+
   it("still requires human review when no close policy is found", () => {
     const result = compareKnowledgeRefreshCandidate({
       title: "Zyxqv qplmn trvwx",

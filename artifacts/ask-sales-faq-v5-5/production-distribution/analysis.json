@@ -1,0 +1,2843 @@
+{
+  "schemaVersion": "ask-sales-v5-5-production-distribution-analysis-v1",
+  "createdAt": "2026-07-25T21:12:08.054Z",
+  "sourcePath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-5/production-distribution/production-distribution-2026-07-13-to-2026-07-25T21-03-19-000Z.json",
+  "sourceSha256": "ffb64f3be8a559a6623cdbe1cd578a8a5e77e5e699ee8e9394f0e4406f2f513b",
+  "period": {
+    "from": "2026-07-13T13:00:00.000Z",
+    "to": "2026-07-25T21:03:19.000Z"
+  },
+  "population": {
+    "responses": 125,
+    "conversations": 82,
+    "uniqueNormalizedQuestions": 114,
+    "repeatedQuestionGroups": 4,
+    "multiTurnConversations": 25,
+    "maximumConversationTurns": 4
+  },
+  "productionV3": {
+    "outcomes": [
+      {
+        "value": "route_from_evidence",
+        "count": 66
+      },
+      {
+        "value": "answer_from_evidence",
+        "count": 58
+      },
+      {
+        "value": "conversation_reply",
+        "count": 1
+      }
+    ],
+    "routes": [
+      {
+        "value": "none",
+        "count": 57
+      },
+      {
+        "value": "sales_policy",
+        "count": 56
+      },
+      {
+        "value": "finance",
+        "count": 7
+      },
+      {
+        "value": "greenlight",
+        "count": 3
+      },
+      {
+        "value": "sales_tech",
+        "count": 2
+      }
+    ],
+    "feedback": [
+      {
+        "value": "none",
+        "count": 110
+      },
+      {
+        "value": "down",
+        "count": 8
+      },
+      {
+        "value": "up",
+        "count": 7
+      }
+    ],
+    "errorClasses": [
+      {
+        "value": "none",
+        "count": 98
+      },
+      {
+        "value": "v3_grounding_rejected",
+        "count": 27
+      }
+    ],
+    "latencyMs": {
+      "measured": 125,
+      "mean": 18561,
+      "p50": 17188,
+      "p90": 26352,
+      "max": 36301
+    }
+  },
+  "evaluationProtocol": {
+    "selection": "complete privacy-reduced non-admin production population available in the requested launch window",
+    "paddedWithCuratedCases": false,
+    "promotionEvidence": false,
+    "reason": "The available population is below 150 and lacks independent SME gold; it is a shadow diagnostic and curation queue, not a promotion gate."
+  },
+  "curationQueue": [
+    {
+      "representativeId": "production-001",
+      "question": "What are the current ISTV prices and payment plans?",
+      "frequency": 6,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 6
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 6
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 5
+        },
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 16:03:43.453502+00"
+    },
+    {
+      "representativeId": "production-030",
+      "question": "Where do I check the current active show list?",
+      "frequency": 4,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 2
+        },
+        {
+          "value": "answer_from_evidence",
+          "count": 2
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 2
+        },
+        {
+          "value": "none",
+          "count": 2
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 4
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:24:50.12794+00"
+    },
+    {
+      "representativeId": "production-011",
+      "question": "Can I say Apple TV or Tier-1 placement is guaranteed?",
+      "frequency": 3,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 3
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 3
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 3
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:33:41.354149+00"
+    },
+    {
+      "representativeId": "production-012",
+      "question": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+      "frequency": 2,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 2
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 2
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 2
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 14:30:49.687597+00"
+    },
+    {
+      "representativeId": "production-125",
+      "question": "if someone is rude or all over the place or we can see they are not a good fit can we just drop the call and say thank you and move on or still continue the call",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-25 19:55:31.291729+00"
+    },
+    {
+      "representativeId": "production-124",
+      "question": "if someone went to prison 20 yeas ago can he still do daymond john",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-25 18:21:25.781176+00"
+    },
+    {
+      "representativeId": "production-123",
+      "question": "How do I approve the greenlight PDF in the spreadsheet?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "greenlight",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-25 09:45:34.715464+00"
+    },
+    {
+      "representativeId": "production-122",
+      "question": "What is the approved guidance for Greenlight PDFs And Cohort Deadlines?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "greenlight",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-25 09:44:58.420331+00"
+    },
+    {
+      "representativeId": "production-121",
+      "question": "What can you tell me about the show America's Authors",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 17:55:28.021043+00"
+    },
+    {
+      "representativeId": "production-120",
+      "question": "right but let them lnow right away",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 17:45:37.548818+00"
+    },
+    {
+      "representativeId": "production-119",
+      "question": "day md jihn offer has a background check and said no felons. i know w=someone shared he was in prison and he would be disqualified. do we tell them on call 1 or cut the call short and send rejection letter",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 17:45:04.037904+00"
+    },
+    {
+      "representativeId": "production-118",
+      "question": "Can I have a note taker joining the meetings?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 14:27:59.884987+00"
+    },
+    {
+      "representativeId": "production-117",
+      "question": "Is it worth rescheduling if they were that unserious about showing up to the first meeting in the first place?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 14:08:20.308318+00"
+    },
+    {
+      "representativeId": "production-116",
+      "question": "What I mean is, what if they respond a few hours after the meeting has ended",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 14:07:25.403572+00"
+    },
+    {
+      "representativeId": "production-115",
+      "question": "When a lead ghosts when it's time for a meeting and then says they were in another meeting and try to reschedule what's the SOP?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 14:06:37.977396+00"
+    },
+    {
+      "representativeId": "production-114",
+      "question": "If a person makes a wire payment on the friday, when should i onboard them if it'll only show up in the next week?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 13:49:47.724764+00"
+    },
+    {
+      "representativeId": "production-113",
+      "question": "can i get links to the amazon prime episodes",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 12:01:44.417108+00"
+    },
+    {
+      "representativeId": "production-112",
+      "question": "What do all the licenses options have in common and whats different?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-24 01:25:27.896505+00"
+    },
+    {
+      "representativeId": "production-111",
+      "question": "What is the SOP when I want a lead greenlit and the meeting is before 9:30 the next day?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "greenlight",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 21:35:48.935637+00"
+    },
+    {
+      "representativeId": "production-110",
+      "question": "how long does it take until my episode is live on amazon prime?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 20:28:54.594897+00"
+    },
+    {
+      "representativeId": "production-109",
+      "question": "If I just passed my mock call and are not yet on the calendars and are working of the 20% list, should i be filling in the end of day report?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 19:11:16.634053+00"
+    },
+    {
+      "representativeId": "production-108",
+      "question": "how long has ISTV been around for",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 18:06:37.239304+00"
+    },
+    {
+      "representativeId": "production-107",
+      "question": "what are the communications I have to send if someone books a call from outbound dialing?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 16:48:15.078745+00"
+    },
+    {
+      "representativeId": "production-106",
+      "question": "How can I get more leads to work on besides the \"DAILY DIAL OUT LIST 20% COMMS - DJ LEADS!\" Like lost opportunities or so",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 16:04:30.646468+00"
+    },
+    {
+      "representativeId": "production-104",
+      "question": "I am not planning on. Rudy says it in his video we have to play on the first call",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 13:51:07.655753+00"
+    },
+    {
+      "representativeId": "production-103",
+      "question": "he mentions someone who got on the TEDX stage and loads of views in the video during call 1",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 13:50:21.293997+00"
+    },
+    {
+      "representativeId": "production-102",
+      "question": "Who is the person who bwas featured on TedX that Rudy talks about in the video",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 13:49:13.641367+00"
+    },
+    {
+      "representativeId": "production-101",
+      "question": "client responded with this email after she told me she needed to think about it Good morning, Here’s my concern with paying to be on tv- I don’t think it’s a show I’ve ever heard anyone say they’ve watched. Which is similar to my Blox tv experience. I watched a couple episodes and “eh” was the feeling. I don’t want to be called out in my niche for paying to self promote when I have so many industry speaking events I’m invited to that truly teach clients what I do. That feels like reputation suicide. I don’t know that the mastermind event would have the value I’d be looking for as it seems like it attracts newbies to business. The goal is not to be on tv, so red carpet events aren’t my jam. I need to stick to my current path and pass my green light and the glitz and glam to a Hollywood hopeful. Thank you for the conversations and helping me understand the process.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-23 12:18:13.630759+00"
+    },
+    {
+      "representativeId": "production-100",
+      "question": "how much Inside Success would actively promote LITE license versus leaving distribution entirely toprospects",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 19:55:51.057449+00"
+    },
+    {
+      "representativeId": "production-099",
+      "question": "Is there a template for a text to send during this period?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 18:18:13.540756+00"
+    },
+    {
+      "representativeId": "production-098",
+      "question": "What is the SOP when you jump onto a call 1 and the client is not on there yet",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 18:17:14.306543+00"
+    },
+    {
+      "representativeId": "production-097",
+      "question": "is it ok to send welcome email",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:53:53.090203+00"
+    },
+    {
+      "representativeId": "production-096",
+      "question": "what is the sop for wire tranfers do i get a screensjhot and book onboarding",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:51:30.882934+00"
+    },
+    {
+      "representativeId": "production-095",
+      "question": "What is the placement with Prime video and why are there no episodes on Prime",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:34:39.067433+00"
+    },
+    {
+      "representativeId": "production-093",
+      "question": "what are some good reason for a food truck owner to buy the license and make a documentary",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:32:51.068895+00"
+    },
+    {
+      "representativeId": "production-092",
+      "question": "walk me through what to do on call just closed 20K VIP license and he is doing a wire with 2 payments of 10K",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:31:12.327059+00"
+    },
+    {
+      "representativeId": "production-091",
+      "question": "do i need to do anything different with a wire",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:30:16.862114+00"
+    },
+    {
+      "representativeId": "production-090",
+      "question": "if its a wire, do i book the onboarding call",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 17:29:44.833901+00"
+    },
+    {
+      "representativeId": "production-089",
+      "question": "who is the ted x guy that reached one million views",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 15:08:45.785148+00"
+    },
+    {
+      "representativeId": "production-088",
+      "question": "is it a 1 time entry, and what if they miss it",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 08:40:26.400236+00"
+    },
+    {
+      "representativeId": "production-087",
+      "question": "is it networking or is it to learn marketing",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 08:36:09.52086+00"
+    },
+    {
+      "representativeId": "production-086",
+      "question": "what is it and what's included",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 08:35:34.05434+00"
+    },
+    {
+      "representativeId": "production-085",
+      "question": "for next level ceo, what is the mastermind event access",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 08:34:31.794015+00"
+    },
+    {
+      "representativeId": "production-084",
+      "question": "What is the process of approval with a self generated referral? Or client referral that has not applied through formal channels",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-22 00:14:08.891867+00"
+    },
+    {
+      "representativeId": "production-083",
+      "question": "Hey I have a meeting with Lina Garcia-Duck ([redacted email]) tomorrow, but I saw that she had a call with a casting manager last week and it was a pass at that time. She's still within the 3 month reapplication period. What should I do?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 18:17:52.549281+00"
+    },
+    {
+      "representativeId": "production-082",
+      "question": "client says he doesnt have a clear answer right now on leveraging the material. how do i handle. on call now",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 18:08:18.161853+00"
+    },
+    {
+      "representativeId": "production-081",
+      "question": "what is ISTV revenue goal for this year?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 16:04:09.20286+00"
+    },
+    {
+      "representativeId": "production-080",
+      "question": "send me a preview video of the new studio",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 14:55:18.289708+00"
+    },
+    {
+      "representativeId": "production-078",
+      "question": "following up on when I'll actually get paid. My first 2 sales (June 19th and June 25th) were invoiced on July 1st, so based on Net 30 that should be due July 31st. Can you confirm that date and let me know once it's processed? I want to make sure I'm on track to actually see that payment land.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 12:51:28.380793+00"
+    },
+    {
+      "representativeId": "production-077",
+      "question": "is there a cohort for DJ?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-21 02:57:04.382802+00"
+    },
+    {
+      "representativeId": "production-076",
+      "question": "Can they pay extra to go on all 3 tier 1 platforms?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:49:58.90379+00"
+    },
+    {
+      "representativeId": "production-075",
+      "question": "Can the client choose the platform the vip license gets submitted to?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:48:53.270129+00"
+    },
+    {
+      "representativeId": "production-074",
+      "question": "Is the vip license the highest package?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:47:29.490187+00"
+    },
+    {
+      "representativeId": "production-073",
+      "question": "How long does it take to get an episode to get aired on istv",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:45:38.864478+00"
+    },
+    {
+      "representativeId": "production-072",
+      "question": "format this properly",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "conversation_reply",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 20:25:18.266346+00"
+    },
+    {
+      "representativeId": "production-070",
+      "question": "What shows are we currently casting for?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 19:18:35.705627+00"
+    },
+    {
+      "representativeId": "production-069",
+      "question": "What is the approved guidance for Production Language And Translation Boundary?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 19:06:37.078082+00"
+    },
+    {
+      "representativeId": "production-068",
+      "question": "can the client record our call",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 18:01:14.787618+00"
+    },
+    {
+      "representativeId": "production-067",
+      "question": "What is the approved guidance for Post-Sale Handoff After Close?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 17:19:49.970735+00"
+    },
+    {
+      "representativeId": "production-066",
+      "question": "and how many seasons?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 16:44:46.172114+00"
+    },
+    {
+      "representativeId": "production-065",
+      "question": "How many episodes do we normally do for a show?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 16:44:20.799434+00"
+    },
+    {
+      "representativeId": "production-063",
+      "question": "if im doing only the 20% dialing list, as i was taken off calendars, do i still post the daily stats?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 16:28:59.849462+00"
+    },
+    {
+      "representativeId": "production-062",
+      "question": "when you search a lead on hubspot, and in the section with contact owner someones written, but in the associated sales reps no, is that lead taken?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_tech",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 16:24:18.223811+00"
+    },
+    {
+      "representativeId": "production-061",
+      "question": "with the VIP license, do we only submit to 1 platform of the tier 1 or all 3 platforms?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 15:44:07.047291+00"
+    },
+    {
+      "representativeId": "production-060",
+      "question": "show me the 2026 DJ Overview slide deck",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 15:36:02.213224+00"
+    },
+    {
+      "representativeId": "production-059",
+      "question": "if a person that texted stop replied now after 6 days to my email, saying she is up for her casting call, can i proceed to contact back and book her in?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_tech",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 14:53:34.413127+00"
+    },
+    {
+      "representativeId": "production-058",
+      "question": "What is the approved guidance for Call 1 Flow?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 14:14:33.509265+00"
+    },
+    {
+      "representativeId": "production-055",
+      "question": "script for Built for more",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 13:40:57.815673+00"
+    },
+    {
+      "representativeId": "production-054",
+      "question": "what are the list of shows we have",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-20 01:48:25.102691+00"
+    },
+    {
+      "representativeId": "production-053",
+      "question": "What would you reply to heather? : Heather, were you able to pull together the first payment? ([redacted phone]:46 PM Crap. I totally forget. I did not; lost power last night, nurse came this morning for my pop, work, grocery shop. Totally forgot. I am going to have to go to the bank. It's going to have to be Monday. Crap I want to use a different card too You 12:49 PM No worries at all, Heather, sounds like a lot to juggle. Monday works fine on my end. Using a different card is no problem, just have it ready when we connect. I'll follow up Monday to get it locked in. Hope your dad is doing okay. ([redacted phone]:54 PM Caretaking my 93 year old pop, my grandmother passed away Memorial Day. It's a lot and I do not have a supportive husband",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-17 16:59:06.252123+00"
+    },
+    {
+      "representativeId": "production-052",
+      "question": "Am I able to send a copy of the license contract for their legal team to review before call 2?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-17 16:43:24.372583+00"
+    },
+    {
+      "representativeId": "production-051",
+      "question": "what do cast members get for marketing support",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-16 21:11:56.119635+00"
+    },
+    {
+      "representativeId": "production-050",
+      "question": "discrimination policy",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-16 17:48:51.438197+00"
+    },
+    {
+      "representativeId": "production-049",
+      "question": "can we sell the webpage and social brand as a bolt on?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-16 14:10:56.910484+00"
+    },
+    {
+      "representativeId": "production-048",
+      "question": "what offer for what buyer type?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-16 14:10:47.798225+00"
+    },
+    {
+      "representativeId": "production-047",
+      "question": "I'm looking at the Call 2 video. It does include it. i have checked with the team: it is still active. It is called Money Mondays.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 20:19:50.253148+00"
+    },
+    {
+      "representativeId": "production-046",
+      "question": "The Call 2 videos still include them.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 20:12:48.297357+00"
+    },
+    {
+      "representativeId": "production-045",
+      "question": "The 6 months of weekly social media support calls: when do they start and what are the logistics around them? What exactly happens on the calls and what kind of support can they expect?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 20:11:05.272982+00"
+    },
+    {
+      "representativeId": "production-044",
+      "question": "what is the name of the casting person in Rudy's video congratulations on call 1 that the cast members get connected with if they join",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 19:16:11.566855+00"
+    },
+    {
+      "representativeId": "production-043",
+      "question": "How long can clients use their content and where is it hosted?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 14:25:14.752018+00"
+    },
+    {
+      "representativeId": "production-042",
+      "question": "What internal materials should reps not share externally?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 14:24:30.168189+00"
+    },
+    {
+      "representativeId": "production-041",
+      "question": "ROI",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 14:23:43.117158+00"
+    },
+    {
+      "representativeId": "production-040",
+      "question": "what's the roe",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 14:23:25.511609+00"
+    },
+    {
+      "representativeId": "production-039",
+      "question": "where is the new studio located",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-15 11:02:36.828018+00"
+    },
+    {
+      "representativeId": "production-038",
+      "question": "OK, if 1 business owner pays but the other signs the contract, is that aloud",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 20:19:30.380642+00"
+    },
+    {
+      "representativeId": "production-037",
+      "question": "client I am on call with doesn't have the money but she says the business partner can pay instead and he is willing to sponsor that, is that aloud?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 20:18:15.802592+00"
+    },
+    {
+      "representativeId": "production-036",
+      "question": "which major streaming plaforms are we on?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 19:00:35.598609+00"
+    },
+    {
+      "representativeId": "production-035",
+      "question": "price objection",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 18:38:27.973684+00"
+    },
+    {
+      "representativeId": "production-033",
+      "question": "do i send the payment link or contract link first or both at the same time?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "finance",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 15:03:12.443185+00"
+    },
+    {
+      "representativeId": "production-032",
+      "question": "do i have to send it or does it pop up when they pay",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 15:02:34.846912+00"
+    },
+    {
+      "representativeId": "production-031",
+      "question": "do we need to send them the contract or does it come up automatically?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 15:01:43.376869+00"
+    },
+    {
+      "representativeId": "production-029",
+      "question": "how to upgrade from lite license with 2.5k down to vip license",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "down",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 10:24:52.013966+00"
+    },
+    {
+      "representativeId": "production-028",
+      "question": "What exact awards has Inside Success won, and what is the current average number of viewers per episode?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:45:50.545269+00"
+    },
+    {
+      "representativeId": "production-027",
+      "question": "When can I offer the 20% discount, and what process do I need to follow?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:45:08.061867+00"
+    },
+    {
+      "representativeId": "production-025",
+      "question": "Can you fact-check this customer email before I send it? Hi Sarah, your $15,000 package includes a TV interview, guaranteed Amazon visibility, and you can pay extra to guarantee Apple TV placement. Thanks.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:43:40.199295+00"
+    },
+    {
+      "representativeId": "production-024",
+      "question": "What are the current Daymond John or Next Level CEO offers and prices?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:42:52.121098+00"
+    },
+    {
+      "representativeId": "production-023",
+      "question": "So being on the approved show list does not mean it is currently watchable, right?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:42:19.917381+00"
+    },
+    {
+      "representativeId": "production-022",
+      "question": "Is Mompreneurs currently on air and where can a customer watch it?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:41:31.506356+00"
+    },
+    {
+      "representativeId": "production-021",
+      "question": "Can a client pay extra to guarantee Apple TV placement or another Tier-1 platform?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:40:46.892486+00"
+    },
+    {
+      "representativeId": "production-020",
+      "question": "Where can customers download the ISTV app?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-14 09:39:46.553078+00"
+    },
+    {
+      "representativeId": "production-019",
+      "question": "I am responding via email to a client yesterday who was not happy with the way we were featured on amazon prime. He wanted the vip license however was not able to find us as easily as he wanted, not able to search episodes initially. My big push for him is to really see the value in collaborating with us and all we have to offer. How can I better write this email and sell the advantages of being on istv?...Here is the email i'm writing so far - Hey Balto, I chatted with leadership and have a few answers that should help explain why you were having search issues yesterday. Regarding the search on Amazon, not all episodes are available there, it only includes some Legacy Makers episodes. I do not believe Tim Storey's is even listed, which is why it did not pull up when searched. We also have no control over the appearance on Amazon. On our TV app, did you actually download Inside Success TV? You must download it from Roku, Firestick, or an Apple TV device, as it's not always pre-installed. Following our conversations, my main point is that you would need to see the value in having your own docuseries produced by us, which includes all the PR/Marketing support and networking that come along with being a cast member on ISTV. You have strong social media presence. We are growing rapidly. This feature is best utilized when promoted on your end as well as ours.",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 20:31:44.405099+00"
+    },
+    {
+      "representativeId": "production-018",
+      "question": "where can I download ISTV?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 19:14:51.406326+00"
+    },
+    {
+      "representativeId": "production-017",
+      "question": "so they can watch mompreneurs",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 18:34:35.87831+00"
+    },
+    {
+      "representativeId": "production-016",
+      "question": "is mompreneurs on air",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 18:33:27.569131+00"
+    },
+    {
+      "representativeId": "production-015",
+      "question": "how long does a client have to upgrade in package?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 18:18:20.814988+00"
+    },
+    {
+      "representativeId": "production-014",
+      "question": "How do episodes appear on amazon prime and what are all the major streaming platforms they appear on with the vip?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 18:17:01.684741+00"
+    },
+    {
+      "representativeId": "production-010",
+      "question": "What is the approved guidance for 20 Percent Dial-Out SOP?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 17:01:39.801578+00"
+    },
+    {
+      "representativeId": "production-009",
+      "question": "Can I start them with the 20k license and then if they say it's too expensive ask what they expected it to cost, work the price objection, isolate the price objection, and then show them the lite license?",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 16:41:43.142955+00"
+    },
+    {
+      "representativeId": "production-008",
+      "question": "What else does it include",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 16:40:50.992058+00"
+    },
+    {
+      "representativeId": "production-007",
+      "question": "VIP is submitted to just Amazon or all 3",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 16:39:59.930318+00"
+    },
+    {
+      "representativeId": "production-006",
+      "question": "Average viewership on episodes on istv",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 16:39:20.349059+00"
+    },
+    {
+      "representativeId": "production-005",
+      "question": "What awards are at the award show",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 16:38:45.219087+00"
+    },
+    {
+      "representativeId": "production-004",
+      "question": "dj offers",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "route_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "sales_policy",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "up",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 15:08:05.029946+00"
+    },
+    {
+      "representativeId": "production-003",
+      "question": "Hey team, fit check on 2 leads for America's Best Doctors. Jennifer, retired MD, strong story (patient with a 93lb cyst who survived, featured on Today Show), but no business or commercial goal behind the exposure, purely awareness. Hans, RN 25yrs, decent story (grew up poor in Brooklyn, overcame street life), also not a business owner, problem he flagged belongs to his employer not him. Neither has a clear commercial angle, would love your read on fit",
+      "frequency": 1,
+      "productionOutcomes": [
+        {
+          "value": "answer_from_evidence",
+          "count": 1
+        }
+      ],
+      "productionRoutes": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "feedback": [
+        {
+          "value": "none",
+          "count": 1
+        }
+      ],
+      "latestCapturedAt": "2026-07-13 14:36:48.501658+00"
+    }
+  ]
+}

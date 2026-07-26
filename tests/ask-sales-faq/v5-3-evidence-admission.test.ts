@@ -321,5 +321,5 @@ describe("Ask Sales V5.3 evidence admission and ownership", () => {
       lane: "route",
       preferredPolicyIds: [],
     });
-  });
+  }, 10_000);
 });

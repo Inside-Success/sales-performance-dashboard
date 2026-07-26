@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   retrieve: (turn: V3TurnResolution, plan: V4SystemicQueryPlan) => V4SystemicRetrieval;
@@ -76,6 +76,20 @@ export type V4SystemicCandidateRuntimeProfile = {
     plan: V4SystemicQueryPlan,
     retrieval: V4SystemicRetrieval,
   ) => V4SystemicSourcePlan;
+  skipLegacySourcePlanner?: boolean;
+  refineSourcePlanWithModel?: (input: {
+    turn: V3TurnResolution;
+    plan: V4SystemicQueryPlan;
+    retrieval: V4SystemicRetrieval;
+    sourcePlan: V4SystemicSourcePlan;
+    provider: V3Provider;
+  }) => Promise<{
+    sourcePlan: V4SystemicSourcePlan;
+    attempts: V3ProviderAttempt[];
+    provider: "deepseek" | "anthropic" | null;
+    model: string | null;
+    metadata: Record<string, unknown>;
+  }>;
   exactSourceFallbackSentence?: (
     need: V4SystemicNeed,
     plan: V4SystemicQueryPlan,
@@ -83,6 +97,16 @@ export type V4SystemicCandidateRuntimeProfile = {
     preferredPolicyIds: string[],
     rejectedDeterministicErrors?: string[],
   ) => { text: string; policyId: string; evidence: string } | null;
+  preferredExactEvidenceSentence?: (
+    need: V4SystemicNeed,
+    plan: V4SystemicQueryPlan,
+    retrieval: V4SystemicRetrieval,
+    preferredPolicyIds: string[],
+    evidenceEntailmentMetadata?: Record<string, unknown>,
+  ) => { text: string; policyId: string; evidence: string } | null;
+  trustPreferredExactEvidence?: boolean;
+  trustPreferredCollectiveEvidence?: boolean;
+  precomposePreferredEvidence?: boolean;
   appendRouteForAnsweredSupport?: boolean;
   fallbackLabel: string;
   fallbackOnEmptyRetrieval: boolean;
@@ -2056,6 +2080,34 @@ function exactEvidenceSentence(sentence: SentenceForValidation) {
   });
 }
 
+function verifiedEntailmentQuote(
+  metadata: Record<string, unknown> | undefined,
+  needId: string,
+  policyId: string,
+  rawDecision: string,
+  title = "",
+) {
+  const needs = Array.isArray(metadata?.needs) ? metadata.needs : [];
+  const need = needs.find((value): value is Record<string, unknown> =>
+    Boolean(value && typeof value === "object" && (value as Record<string, unknown>).needId === needId));
+  const records = Array.isArray(need?.records) ? need.records : [];
+  const record = records.find((value): value is Record<string, unknown> =>
+    Boolean(value && typeof value === "object" && (value as Record<string, unknown>).policyId === policyId));
+  const quote = typeof record?.supportingQuote === "string" &&
+    record.supportingQuoteVerified === true &&
+    record.supportingQuoteShapeVerified === true
+    ? record.supportingQuote.replace(/\s+/g, " ").trim()
+    : "";
+  const normalizedDecision = rawDecision.toLowerCase().replace(/\s+/g, " ").trim();
+  const normalizedQuote = quote.toLowerCase().replace(/\s+/g, " ").trim();
+  if (!(quote.length >= 12 && quote.length <= 900 && normalizedDecision.includes(normalizedQuote))) return "";
+  const unwrapped = quote.replace(/^["'“‘]+|["'”’]+$/g, "").replace(/[;,:]+$/g, "").trim();
+  if (/^(?:yes|no)[,.;:]|^(?:those|these|it|they|this|that)\b/i.test(unwrapped) && title) {
+    return `${title.replace(/[?.:]+$/g, "")}: ${unwrapped}`;
+  }
+  return unwrapped;
+}
+
 export function v4SystemicExactDirectFallbackSentence(
   need: V4SystemicNeed,
   plan: V4SystemicQueryPlan,
@@ -2449,8 +2501,21 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   }
 
   let sourcePlan: V4SystemicSourcePlan;
+  let evidenceEntailmentMetadata: Record<string, unknown> | undefined;
   const sourcePlanningStarted = Date.now();
-  if (!sourcePlanCards(retrieval, queryPlan).length) {
+  if (profile.skipLegacySourcePlanner) {
+    sourcePlan = {
+      needs: queryPlan.needs.map((need) => ({
+        needId: need.id,
+        lane: "route",
+        directPolicyIds: [],
+        preferredPolicyIds: [],
+        excludedConflictPolicyIds: [],
+        reason: "V5.5 deferred source selection to raw question-to-record entailment.",
+      })),
+      reasoningSummary: "Legacy runtime conflict adjudication was bypassed; raw record entailment owns source selection.",
+    };
+  } else if (!sourcePlanCards(retrieval, queryPlan).length) {
     sourcePlan = {
       needs: queryPlan.needs.map((need) => ({
         needId: need.id,
@@ -2497,12 +2562,109 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
     }
   }
   sourcePlan = profile.refineSourcePlan ? profile.refineSourcePlan(sourcePlan, queryPlan, retrieval) : sourcePlan;
+  if (profile.refineSourcePlanWithModel) {
+    const entailmentStarted = Date.now();
+    try {
+      const refined = await profile.refineSourcePlanWithModel({ turn, plan: queryPlan, retrieval, sourcePlan, provider });
+      sourcePlan = refined.sourcePlan;
+      attempts.push(...refined.attempts);
+      if (refined.provider) providerName = refined.provider;
+      if (refined.model) model = refined.model;
+      evidenceEntailmentMetadata = refined.metadata;
+    } catch (error) {
+      const failedAttempts = providerAttemptsFromV4Error(error);
+      attempts.push(...failedAttempts);
+      sourcePlan = {
+        needs: sourcePlan.needs.map((need) => ({
+          ...need,
+          lane: "route",
+          directPolicyIds: [],
+          preferredPolicyIds: [],
+          reason: "Raw question-to-record entailment was unavailable, so V5.5 withheld the answer.",
+        })),
+        reasoningSummary: "V5.5 failed closed because its final raw-record entailment stage was unavailable.",
+      };
+      evidenceEntailmentMetadata = {
+        status: "failed_closed",
+        unsuccessfulAttempts: failedAttempts.length,
+      };
+    }
+    stageTimings.evidenceEntailmentMs = Date.now() - entailmentStarted;
+  }
   stageTimings.sourcePlanningMs = Date.now() - sourcePlanningStarted;
   const adjudicatedRetrieval = retrievalAfterSourcePlan(retrieval, sourcePlan);
 
+  const exactEvidenceLocks: string[] = [];
   let draft: V4SystemicDraft;
   const draftingStarted = Date.now();
-  try {
+  const precomposedNeeds = profile.precomposePreferredEvidence
+    ? queryPlan.needs.map((need) => {
+      const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === need.id);
+      if (sourceDecision?.lane !== "answer") return {
+        needId: need.id,
+        lane: "route" as const,
+        evidenceRefs: [],
+        answerSentences: [],
+        routeKey: null,
+        clarificationQuestion: "",
+        confidence: 0.9,
+        reason: sourceDecision?.reason || "The raw-record entailment gate did not select publishable answer evidence.",
+      };
+      if (sourceDecision.preferredPolicyIds.length >= 2 && sourceDecision.preferredPolicyIds.length <= 20 && profile.trustPreferredCollectiveEvidence) {
+        const answerSentences = sourceDecision.preferredPolicyIds.flatMap((id) => {
+          const policy = adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+          const text = policy ? verifiedEntailmentQuote(
+            evidenceEntailmentMetadata,
+            need.id,
+            policy.id,
+            policy.decision,
+            policy.title,
+          ) || evidenceDecision(policy).replace(/\s+/g, " ").trim() : "";
+          return policy && text.length >= 12 && text.length <= 900 ? [{ text, evidenceRefs: [policy.id] }] : [];
+        });
+        if (answerSentences.length === sourceDecision.preferredPolicyIds.length && answerSentences.reduce((total, sentence) => total + sentence.text.length, 0) <= 6000) {
+          exactEvidenceLocks.push(need.id);
+          return {
+            needId: need.id,
+            lane: "answer" as const,
+            evidenceRefs: sourceDecision.preferredPolicyIds,
+            answerSentences,
+            routeKey: null,
+            clarificationQuestion: "",
+            confidence: 0.95,
+            reason: "V5.5 composed the bounded collective answer directly from quote-verified approved records.",
+          };
+        }
+      }
+      const exact = profile.preferredExactEvidenceSentence?.(
+        need,
+        queryPlan,
+        adjudicatedRetrieval,
+        sourceDecision.preferredPolicyIds,
+        evidenceEntailmentMetadata,
+      );
+      if (!exact) return null;
+      exactEvidenceLocks.push(need.id);
+      return {
+        needId: need.id,
+        lane: "answer" as const,
+        evidenceRefs: [exact.policyId],
+        answerSentences: [{ text: exact.text, evidenceRefs: [exact.policyId] }],
+        routeKey: null,
+        clarificationQuestion: "",
+        confidence: 0.95,
+        reason: "V5.5 composed the answer directly from one quote-verified high-impact approved record.",
+      };
+    })
+    : [];
+  const canPrecompose = Boolean(profile.precomposePreferredEvidence && precomposedNeeds.length === queryPlan.needs.length && precomposedNeeds.every(Boolean));
+  if (canPrecompose) {
+    draft = {
+      needs: precomposedNeeds as V4SystemicDraft["needs"],
+      naturalAnswer: "",
+      reasoningSummary: "V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate.",
+    };
+  } else try {
     const prompt = evidenceAnswerPrompt(turn, queryPlan, adjudicatedRetrieval, sourcePlan);
     const result = await provider({
       purpose: "v4_systemic_evidence_answer",
@@ -2535,7 +2697,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       reasoningSummary: "V5 failed closed because evidence selection was unavailable.",
     };
   }
-  const missedSourceAnswerNeedIds = sourcePlan.needs
+  const missedSourceAnswerNeedIds = canPrecompose ? [] : sourcePlan.needs
     .filter((need) => need.lane === "answer" && draft.needs.find((candidate) => candidate.needId === need.needId)?.lane !== "answer")
     .map((need) => need.needId);
   if (missedSourceAnswerNeedIds.length) {
@@ -2566,6 +2728,71 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       attempts.push(...providerAttemptsFromV4Error(error));
     }
     stageTimings.evidenceDraftRetryMs = Date.now() - retryStarted;
+  }
+  if (profile.preferredExactEvidenceSentence) {
+    draft = {
+      ...draft,
+      needs: draft.needs.map((decision) => {
+        const need = queryPlan.needs.find((candidate) => candidate.id === decision.needId);
+        const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === decision.needId);
+        if (!need || sourceDecision?.lane !== "answer") return decision;
+        const exact = profile.preferredExactEvidenceSentence!(
+          need,
+          queryPlan,
+          adjudicatedRetrieval,
+          sourceDecision.preferredPolicyIds,
+          evidenceEntailmentMetadata,
+        );
+        if (!exact) return decision;
+        exactEvidenceLocks.push(decision.needId);
+        return {
+          ...decision,
+          lane: "answer" as const,
+          evidenceRefs: [exact.policyId],
+          answerSentences: [{ text: exact.text, evidenceRefs: [exact.policyId] }],
+          routeKey: null,
+          confidence: Math.max(decision.confidence, 0.95),
+          reason: "V5.5 preserved the selected high-impact approved record wording instead of paraphrasing it.",
+        };
+      }),
+      reasoningSummary: exactEvidenceLocks.length
+        ? `${draft.reasoningSummary} V5.5 locked high-impact exact evidence for ${exactEvidenceLocks.join(", ")}.`
+        : draft.reasoningSummary,
+    };
+  }
+  if (profile.trustPreferredCollectiveEvidence) {
+    draft = {
+      ...draft,
+      needs: draft.needs.map((decision) => {
+        const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === decision.needId);
+        if (sourceDecision?.lane !== "answer" || sourceDecision.preferredPolicyIds.length < 2 || sourceDecision.preferredPolicyIds.length > 16) return decision;
+        const exactSentences = sourceDecision.preferredPolicyIds.flatMap((id) => {
+          const policy = adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
+          const text = policy ? verifiedEntailmentQuote(
+            evidenceEntailmentMetadata,
+            decision.needId,
+            policy.id,
+            policy.decision,
+            policy.title,
+          ) || evidenceDecision(policy).replace(/\s+/g, " ").trim() : "";
+          return policy && text.length >= 12 && text.length <= 900
+            ? [{ text, evidenceRefs: [policy.id] }]
+            : [];
+        });
+        if (exactSentences.length !== sourceDecision.preferredPolicyIds.length || exactSentences.reduce((total, sentence) => total + sentence.text.length, 0) > 6000) return decision;
+        if (!exactEvidenceLocks.includes(decision.needId)) exactEvidenceLocks.push(decision.needId);
+        return {
+          ...decision,
+          lane: "answer" as const,
+          evidenceRefs: sourceDecision.preferredPolicyIds,
+          answerSentences: exactSentences,
+          routeKey: null,
+          confidence: Math.max(decision.confidence, 0.95),
+          reason: "V5.5 preserved every bounded collective approved decision instead of allowing answer composition to omit part of the selected guidance.",
+        };
+      }),
+      reasoningSummary: `${draft.reasoningSummary} V5.5 preserved bounded collective evidence without lossy summarization.`,
+    };
   }
   const exactSourceRecoveries: string[] = [];
   draft = {
@@ -2605,49 +2832,68 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   stageTimings.evidenceDraftingMs = Date.now() - draftingStarted;
 
   const sentences = sentencesForValidation(draft, adjudicatedRetrieval, queryPlan, profile);
+  const trustedExactSentenceIds = new Set(profile.trustPreferredExactEvidence
+    ? sentences
+      .filter((sentence) => exactEvidenceLocks.includes(sentence.needId) && (exactEvidenceSentence(sentence) || profile.precomposePreferredEvidence))
+      .map((sentence) => sentence.id)
+    : []);
+  const sentencesRequiringModelValidation = sentences.filter((sentence) => !trustedExactSentenceIds.has(sentence.id));
   let sentenceChecks: V4SentenceCheck[] = [];
   const validationStarted = Date.now();
-  if (sentences.length) {
-    if (options.skipModelValidation) {
-      sentenceChecks = sentences.map((sentence) => ({
+  if (trustedExactSentenceIds.size) {
+    sentenceChecks.push(...sentences
+      .filter((sentence) => trustedExactSentenceIds.has(sentence.id))
+      .map((sentence) => ({
         sentenceId: sentence.id,
-        status: sentence.deterministicErrors.length ? "unsupported" : "supported",
+        status: "supported" as const,
+        evidenceRefs: sentence.evidenceRefs,
+        reason: "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+        deterministicErrors: [],
+        answeredNeedIds: [sentence.needId],
+      })));
+  }
+  if (sentencesRequiringModelValidation.length) {
+    if (options.skipModelValidation) {
+      sentenceChecks.push(...sentencesRequiringModelValidation.map((sentence) => ({
+        sentenceId: sentence.id,
+        status: (sentence.deterministicErrors.length ? "unsupported" : "supported") as V4SentenceCheck["status"],
         evidenceRefs: sentence.evidenceRefs,
         reason: sentence.deterministicErrors.join("; ") || "Deterministic validation passed in explicit test mode.",
         deterministicErrors: sentence.deterministicErrors,
         answeredNeedIds: sentence.deterministicErrors.length ? [] : [sentence.needId],
-      }));
+      })));
     } else {
       try {
-        const prompt = validationPrompt(turn, queryPlan, sentences);
+        const prompt = validationPrompt(turn, queryPlan, sentencesRequiringModelValidation);
         const result = await validatorProvider({
           purpose: "v4_systemic_sentence_validation",
           system: prompt.system,
           user: prompt.user,
           maxTokens: 2200,
-          parse: (content) => parseValidation(content, sentences, queryPlan),
+          parse: (content) => parseValidation(content, sentencesRequiringModelValidation, queryPlan),
         });
-        sentenceChecks = result.output;
+        sentenceChecks.push(...result.output);
         attempts.push(...result.attempts);
         providerName = result.provider;
         model = result.model;
       } catch (error) {
         attempts.push(...providerAttemptsFromV4Error(error));
-        sentenceChecks = sentences.map((sentence) => ({
+        sentenceChecks.push(...sentencesRequiringModelValidation.map((sentence) => ({
           sentenceId: sentence.id,
-          status: !sentence.deterministicErrors.length && exactEvidenceSentence(sentence) ? "supported" : "unsupported",
+          status: (!sentence.deterministicErrors.length && exactEvidenceSentence(sentence) ? "supported" : "unsupported") as V4SentenceCheck["status"],
           evidenceRefs: sentence.evidenceRefs,
           reason: !sentence.deterministicErrors.length && exactEvidenceSentence(sentence)
             ? "Exact source sentence retained after validator failure."
             : "Semantic validator unavailable; non-exact wording was withheld.",
           deterministicErrors: sentence.deterministicErrors,
           answeredNeedIds: !sentence.deterministicErrors.length && exactEvidenceSentence(sentence) ? [sentence.needId] : [],
-        }));
+        })));
       }
     }
   }
   if (!options.skipModelValidation) {
     const disputed = sentences.filter((sentence) => {
+      if (trustedExactSentenceIds.has(sentence.id)) return false;
       const check = sentenceChecks.find((candidate) => candidate.sentenceId === sentence.id);
       return check?.status !== "supported" && !sentence.deterministicErrors.length;
     });
@@ -2781,6 +3027,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   const metadataPlan = planMetadata(queryPlan, draft, validation);
   const completeSourceAnswers = queryPlan.needs.flatMap((need) => {
     if (!answeredNeedIds.has(need.id)) return [];
+    if (profile.trustPreferredExactEvidence && exactEvidenceLocks.includes(need.id)) return [];
     const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === need.id);
     const completePolicies = (sourceDecision?.preferredPolicyIds || []).flatMap((id) => {
       const policy = adjudicatedRetrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy;
@@ -2925,6 +3172,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
         reasoning_summary: `${queryPlan.reasoningSummary} ${metadataPlan.reasoning_summary} Operational overlay policies available: ${profile.operationalPolicyCount()}.`,
       },
       sourcePlan,
+      ...(evidenceEntailmentMetadata ? { evidenceEntailment: evidenceEntailmentMetadata } : {}),
       executionMode: {
         planning: planningMode,
         composition: "model",

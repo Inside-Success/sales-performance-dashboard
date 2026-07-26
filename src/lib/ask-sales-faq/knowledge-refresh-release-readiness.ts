@@ -125,7 +125,6 @@ export function assessKnowledgeRefreshReleaseReadiness(
   if (!decisionKey) reasons.push("The draft has no stable policy identity.");
   if (
     decisionKey &&
-    decisionKeySource === "derived" &&
     context.activeDecisionKeys?.includes(decisionKey) &&
     !candidate.conflicting_policy_ids.length
   ) {

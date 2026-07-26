@@ -1,0 +1,1478 @@
+{
+  "schemaVersion": "ask-sales-v5-5-regression-runtime-v1",
+  "status": "complete",
+  "diagnosticOnly": true,
+  "promotionEvidence": false,
+  "datasetName": "ask-sales-v5-4-post-freeze-fresh-slack-gold-2026-07-25",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-4-fresh-slack-gold-2026-07-25.json",
+  "datasetSha256": "1e47a4c2460e265ade95ab636973b329950f7b4b5867be669f9d2a60b98e019b",
+  "expectedPrompts": 1,
+  "concurrency": 1,
+  "startedAt": "2026-07-26T00:07:19.926Z",
+  "completedAt": "2026-07-26T00:07:36.509Z",
+  "conversations": [
+    {
+      "id": "v54fresh-01",
+      "title": "v54fresh-01",
+      "prompts": [
+        {
+          "id": "v54fresh-01",
+          "question": "If a prospective cast member says they have been in prison, should I disqualify them before the call, and what should I tell them?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Disqualify and send the rejection letter. You do not need to volunteer the reason; if they ask why, explaining it is optional.",
+          "requiredConcepts": [
+            "disqualify",
+            "rejection letter",
+            "reason is optional unless asked"
+          ],
+          "forbiddenConcepts": [
+            "continue the call and automatically approve",
+            "must disclose the reason"
+          ],
+          "evaluationStrata": [
+            "qualification",
+            "rejection",
+            "recent-authority"
+          ],
+          "sourceIds": [
+            "slack:C0AUQKNR8CF:1784921916.034179",
+            "slack:C0AUQKNR8CF:1784922005.656529",
+            "slack:C0AUQKNR8CF:1784922115.044719",
+            "slack:C0AUQKNR8CF:1784922130.057229"
+          ],
+          "approvedBy": [
+            "Madeline"
+          ],
+          "candidate": {
+            "ok": true,
+            "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "structuredAnswer": {
+              "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+              "sections": [
+                {
+                  "title": "Next step",
+                  "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                  "tone": "route"
+                }
+              ],
+              "confidenceLabel": "Low",
+              "confidenceScore": 35,
+              "sourceMode": "fallback"
+            },
+            "lane": "route",
+            "needsRoute": true,
+            "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+            "routeChannels": [
+              "#sales-questions-requests"
+            ],
+            "provider": "deepseek",
+            "model": "deepseek-v4-pro",
+            "latencyMs": 16578,
+            "citations": [],
+            "selectedPolicyIds": [],
+            "redactions": [],
+            "runtimeMetadata": {
+              "pipelineVersion": "v5.5-isolated",
+              "isolation": {
+                "productionSelectorChanged": false,
+                "databaseWrites": false,
+                "historyPersistence": false
+              },
+              "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v55_raw-record-entailment-publisher-conflicts-r1",
+              "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+              "turn": {
+                "kind": "new",
+                "currentQuestion": "If a prospective cast member says they have been in prison, should I disqualify them before the call, and what should I tell them?",
+                "standaloneQuestion": "If a prospective cast member says they have been in prison, should I disqualify them before the call, and what should I tell them?",
+                "immediatePreviousUserQuestion": null,
+                "immediatePreviousAssistantAnswer": null,
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "memoryAnswer": null,
+                "usedImmediateContext": false,
+                "explicitCorrection": false,
+                "explicitScopeSwitch": false,
+                "stylePreferences": [],
+                "contextMessages": [],
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                "actionableQuestion": "If a prospective cast member says they have been in prison, should I disqualify them before the call, and what should I tell them?",
+                "conversationalPreface": null
+              },
+              "retrieval": {
+                "corpusSize": 2625,
+                "candidateCount": 65,
+                "candidates": [
+                  {
+                    "id": "operational_028049116d5ae589",
+                    "rank": 1,
+                    "score": 116.47406536033418,
+                    "decisionKey": "audition-greenlight-requirement-before-call",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.3418817293789138,
+                    "matchedDecisionId": "operational_028049116d5ae589::a1"
+                  },
+                  {
+                    "id": "operational_8b61b93c6ed8d271",
+                    "rank": 2,
+                    "score": 113.3030737762859,
+                    "decisionKey": "sms-opt-out-call1-handling",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.29277002188455997,
+                    "matchedDecisionId": "operational_8b61b93c6ed8d271::a2"
+                  },
+                  {
+                    "id": "claim_025c646cfb2def32__a2",
+                    "rank": 3,
+                    "score": 103.04799022526541,
+                    "decisionKey": "qualification-and-show-fit-rubric-what-reps-can-say-1-a2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.07453559924999299,
+                    "matchedDecisionId": "claim_025c646cfb2def32__a2::a1"
+                  },
+                  {
+                    "id": "operational_31610f7682b639b0",
+                    "rank": 4,
+                    "score": 97.23727181318749,
+                    "decisionKey": "qualify-despite-budget-concern",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.23570226039551584,
+                    "matchedDecisionId": "operational_31610f7682b639b0::a1"
+                  },
+                  {
+                    "id": "v3src_testimonials_landing_page",
+                    "rank": 5,
+                    "score": 97.07589956022176,
+                    "decisionKey": "approved-cast-member-testimonials-resource",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.18257418583505536,
+                    "matchedDecisionId": "v3src_testimonials_landing_page::a2"
+                  },
+                  {
+                    "id": "claim_cdefc66a08f0d5cb",
+                    "rank": 6,
+                    "score": 93.78243216624271,
+                    "decisionKey": "newsletter-subscription-request",
+                    "answerability": "route_or_support",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.2176428750330035,
+                    "matchedDecisionId": "claim_cdefc66a08f0d5cb::a1"
+                  },
+                  {
+                    "id": "operational_dc30d8c99ef71b34",
+                    "rank": 7,
+                    "score": 92.32781967278055,
+                    "decisionKey": "cast-member-minimum-age",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.19611613513818402,
+                    "matchedDecisionId": "operational_dc30d8c99ef71b34::a1"
+                  },
+                  {
+                    "id": "v3src_past_cast_contact_boundary",
+                    "rank": 8,
+                    "score": 94.30604002512703,
+                    "decisionKey": "past-cast-contact-and-testimonials-boundary",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.16666666666666666,
+                    "matchedDecisionId": "v3src_past_cast_contact_boundary::a1"
+                  },
+                  {
+                    "id": "operational_fedc9ebb7bb98a44",
+                    "rank": 9,
+                    "score": 93.62274610008157,
+                    "decisionKey": "mastermind-food-beverage-fee-communication",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.25993762245501817,
+                    "matchedDecisionId": "operational_fedc9ebb7bb98a44::a3"
+                  },
+                  {
+                    "id": "operational_063e4ae5ac8ca50d",
+                    "rank": 10,
+                    "score": 81.3634087618257,
+                    "decisionKey": "cast-member-hq-example-link",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.19611613513818402,
+                    "matchedDecisionId": "operational_063e4ae5ac8ca50d::a2"
+                  },
+                  {
+                    "id": "claim_025c646cfb2def32__a4",
+                    "rank": 11,
+                    "score": 82.3975146064656,
+                    "decisionKey": "qualification-and-show-fit-rubric-what-reps-can-say-1-a4",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.06375767130633382,
+                    "matchedDecisionId": "claim_025c646cfb2def32__a4::a1"
+                  },
+                  {
+                    "id": "operational_bcd766a411262ca1",
+                    "rank": 12,
+                    "score": 80.32552579246688,
+                    "decisionKey": "disqualifying-leads-without-business",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.06711560552140243,
+                    "matchedDecisionId": "operational_bcd766a411262ca1::a1"
+                  },
+                  {
+                    "id": "operational_332070a5ba42a56d",
+                    "rank": 13,
+                    "score": 76.77537713985113,
+                    "decisionKey": "business-owner-requirement",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.15512630699850574,
+                    "matchedDecisionId": "operational_332070a5ba42a56d::a1"
+                  },
+                  {
+                    "id": "operational_2b17482dfcc4cbf7",
+                    "rank": 14,
+                    "score": 76.76486370250527,
+                    "decisionKey": "disqualifying-leads-poor-fit",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.11547005383792514,
+                    "matchedDecisionId": "operational_2b17482dfcc4cbf7::a1"
+                  },
+                  {
+                    "id": "operational_ecf60219942d4a40",
+                    "rank": 15,
+                    "score": 76.23870905983213,
+                    "decisionKey": "mentioning-signed-cast-members-to-prospects",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.14907119849998599,
+                    "matchedDecisionId": "operational_ecf60219942d4a40::a1"
+                  },
+                  {
+                    "id": "operational_0d4b90874c9a6480",
+                    "rank": 16,
+                    "score": 76.2016218254185,
+                    "decisionKey": "newsletter-subscription-request",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.2631174057921088,
+                    "matchedDecisionId": "operational_0d4b90874c9a6480::a1"
+                  },
+                  {
+                    "id": "claim_025c646cfb2def32__a5",
+                    "rank": 17,
+                    "score": 75.79447118849102,
+                    "decisionKey": "qualification-and-show-fit-rubric-what-reps-can-say-1-a5",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.06711560552140243,
+                    "matchedDecisionId": "claim_025c646cfb2def32__a5::a2"
+                  },
+                  {
+                    "id": "operational_679eab9fd086a697",
+                    "rank": 18,
+                    "score": 74.38744038850984,
+                    "decisionKey": "realtor-eligibility",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.10690449676496974,
+                    "matchedDecisionId": "operational_679eab9fd086a697::a1"
+                  },
+                  {
+                    "id": "claim_025c646cfb2def32__a3",
+                    "rank": 19,
+                    "score": 75.46756657803937,
+                    "decisionKey": "qualification-and-show-fit-rubric-what-reps-can-say-1-a3",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.07453559924999299,
+                    "matchedDecisionId": "claim_025c646cfb2def32__a3::a1"
+                  },
+                  {
+                    "id": "operational_c01b72abfd51007a",
+                    "rank": 20,
+                    "score": 44.827996906264424,
+                    "decisionKey": "termination-letter-trigger",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.15075567228888181,
+                    "matchedDecisionId": "operational_c01b72abfd51007a::a3"
+                  },
+                  {
+                    "id": "claim_fc8f6fe345925660__a4",
+                    "rank": 21,
+                    "score": 33.33333333333333,
+                    "decisionKey": "qualification-and-show-fit-rubric-answer-3-a4",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_fc8f6fe345925660__a4::publisher-sibling"
+                  },
+                  {
+                    "id": "operational_4638919324004671",
+                    "rank": 22,
+                    "score": 66.66666666666666,
+                    "decisionKey": "outreach-script-check-booking-status",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_4638919324004671::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_4462fe8f2d09e36a",
+                    "rank": 23,
+                    "score": 66.66666666666666,
+                    "decisionKey": "disqualify-before-casting-interview",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_4462fe8f2d09e36a::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_487ed85dc344585c",
+                    "rank": 24,
+                    "score": 66.66666666666666,
+                    "decisionKey": "unsigned-contract-after-payment-follow-up",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_487ed85dc344585c::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_eaa24ef70a0d18ce",
+                    "rank": 25,
+                    "score": 59.44444444444444,
+                    "decisionKey": "holding-greenlight-before-deadline",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_eaa24ef70a0d18ce::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_002f4a0766bfd646",
+                    "rank": 26,
+                    "score": 55.55555555555556,
+                    "decisionKey": "duplicate-lead-handling-procedure",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_002f4a0766bfd646::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_3ddd8f0540bd8936",
+                    "rank": 27,
+                    "score": 55.55555555555556,
+                    "decisionKey": "dummy-leads-booking-limit",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_3ddd8f0540bd8936::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_3f34e8c40bd83f4c",
+                    "rank": 28,
+                    "score": 55.55555555555556,
+                    "decisionKey": "maximum-calls-before-moving-on",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_3f34e8c40bd83f4c::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_56d1c095ca6a01e5",
+                    "rank": 29,
+                    "score": 55.55555555555556,
+                    "decisionKey": "criminal-background-rejection-letter",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_56d1c095ca6a01e5::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_87297887641ef436",
+                    "rank": 30,
+                    "score": 55.55555555555556,
+                    "decisionKey": "call1-commitment-same-week-rule",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_87297887641ef436::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_8e78123dc0d23ea4",
+                    "rank": 31,
+                    "score": 55.55555555555556,
+                    "decisionKey": "stop-approval-letter-after-cancellation",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_8e78123dc0d23ea4::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_bc9bc70f9ba6f452",
+                    "rank": 32,
+                    "score": 55.55555555555556,
+                    "decisionKey": "schedule-call1-in-future-if-not-done",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_bc9bc70f9ba6f452::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_e1a229f457fb4219",
+                    "rank": 33,
+                    "score": 55.55555555555556,
+                    "decisionKey": "no-show-call2-disqualification",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_e1a229f457fb4219::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_ea9828f2c4a5b6cc",
+                    "rank": 34,
+                    "score": 55.55555555555556,
+                    "decisionKey": "greenlight-call2-scheduling-deadline",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_ea9828f2c4a5b6cc::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_ecf1b0a58559973d",
+                    "rank": 35,
+                    "score": 55.55555555555556,
+                    "decisionKey": "same-day-call2-without-greenlight",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_ecf1b0a58559973d::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_293a0b0906ac87d1",
+                    "rank": 36,
+                    "score": 48.33333333333333,
+                    "decisionKey": "20-list-ownership-checks-before-outreach",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_293a0b0906ac87d1::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_c9fc0901e683c634",
+                    "rank": 37,
+                    "score": 48.33333333333333,
+                    "decisionKey": "rescheduling-before-call-1-has-happened",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "live_only",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_c9fc0901e683c634::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_bbbcb3592e4865c5",
+                    "rank": 38,
+                    "score": 48.33333333333333,
+                    "decisionKey": "call-1-reschedule-after-emergency-before-audition",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_bbbcb3592e4865c5::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_b867ddade89b189e",
+                    "rank": 39,
+                    "score": 48.33333333333333,
+                    "decisionKey": "pass-off-agent-switch-notification",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_b867ddade89b189e::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_19fdb181886385b8",
+                    "rank": 40,
+                    "score": 48.33333333333333,
+                    "decisionKey": "pre-call-qualification-process",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_19fdb181886385b8::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_91a5fa6f23e5bb62",
+                    "rank": 41,
+                    "score": 48.33333333333333,
+                    "decisionKey": "early-ended-pass-off-call-disposition",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_91a5fa6f23e5bb62::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_941811560f35aa76",
+                    "rank": 42,
+                    "score": 48.33333333333333,
+                    "decisionKey": "pass-off-call-7-minute-window",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_941811560f35aa76::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_a3fafbb7a306f3dc",
+                    "rank": 43,
+                    "score": 48.33333333333333,
+                    "decisionKey": "opt-out-client-call-attempt-policy",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_a3fafbb7a306f3dc::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_a72009a7b953d3ae",
+                    "rank": 44,
+                    "score": 48.33333333333333,
+                    "decisionKey": "call-drop-procedure",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_a72009a7b953d3ae::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_b59f8a2aec561e81",
+                    "rank": 45,
+                    "score": 48.33333333333333,
+                    "decisionKey": "reschedule-before-call1-allowed",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_b59f8a2aec561e81::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_54e4d8f4163f0486__a1",
+                    "rank": 22,
+                    "score": 22.22222222222222,
+                    "decisionKey": "qualification-and-show-fit-rubric-answer-2-a1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_54e4d8f4163f0486__a1::publisher-sibling"
+                  },
+                  {
+                    "id": "claim_fc8f6fe345925660__a2",
+                    "rank": 23,
+                    "score": 22.22222222222222,
+                    "decisionKey": "qualification-and-show-fit-rubric-answer-3-a2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_fc8f6fe345925660__a2::publisher-sibling"
+                  },
+                  {
+                    "id": "operational_ea0349d125e4561d",
+                    "rank": 48,
+                    "score": 55.55555555555556,
+                    "decisionKey": "termination-letter-trigger-greenlight",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_ea0349d125e4561d::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_892ff92b97bd500f",
+                    "rank": 49,
+                    "score": 48.33333333333333,
+                    "decisionKey": "call-2-no-show-consequences",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_892ff92b97bd500f::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_1832fb6937e013cf",
+                    "rank": 50,
+                    "score": 48.33333333333333,
+                    "decisionKey": "criminal-background-proceed-nonrefundable",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_1832fb6937e013cf::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_0de0110a15158df9__a4",
+                    "rank": 51,
+                    "score": 44.44444444444444,
+                    "decisionKey": "main_istv.reapply.minimum_after_missed_cohort",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_0de0110a15158df9__a4::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_396379cd8a7da9ba__a1",
+                    "rank": 52,
+                    "score": 44.44444444444444,
+                    "decisionKey": "main-istv-call-2-cohort-reschedule-rules-answer-3-a1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_396379cd8a7da9ba__a1::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_5414dce8f56da6d5__a3",
+                    "rank": 53,
+                    "score": 44.44444444444444,
+                    "decisionKey": "production-language-and-translation-boundary-answer-1-a3",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_5414dce8f56da6d5__a3::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_91adcd3b411340ef__a1",
+                    "rank": 54,
+                    "score": 44.44444444444444,
+                    "decisionKey": "greenlight-pdf-and-cohort-deadlines-answer-3-a1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_91adcd3b411340ef__a1::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_055bdb739fb0f20f",
+                    "rank": 55,
+                    "score": 44.44444444444444,
+                    "decisionKey": "recent-recovery-story-new-business-fit",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_055bdb739fb0f20f::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_5832bc94697de030",
+                    "rank": 56,
+                    "score": 44.44444444444444,
+                    "decisionKey": "call-2-second-no-show",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_5832bc94697de030::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_94613c79fac4034d",
+                    "rank": 57,
+                    "score": 44.44444444444444,
+                    "decisionKey": "one-call-close-skipping-call-1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_94613c79fac4034d::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_ab3af5624f038ead",
+                    "rank": 58,
+                    "score": 44.44444444444444,
+                    "decisionKey": "external-media-clearance-requirement",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_ab3af5624f038ead::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_d7ea81c9b0130f57",
+                    "rank": 59,
+                    "score": 44.44444444444444,
+                    "decisionKey": "criminal-past-probation-background-checks",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_d7ea81c9b0130f57::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_7d7232bc7d71f7c3",
+                    "rank": 60,
+                    "score": 44.44444444444444,
+                    "decisionKey": "same-week-commitment-required-after-call1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_7d7232bc7d71f7c3::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_994e7defbf068906",
+                    "rank": 61,
+                    "score": 44.44444444444444,
+                    "decisionKey": "greenlight-rejection-insufficient-social-info",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_994e7defbf068906::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_02fb9371d225a3e3",
+                    "rank": 62,
+                    "score": 44.44444444444444,
+                    "decisionKey": "contract-resigning-after-whop-payment",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_02fb9371d225a3e3::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_0900f8d6a2c66df7",
+                    "rank": 63,
+                    "score": 44.44444444444444,
+                    "decisionKey": "casting-startups-criteria",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_0900f8d6a2c66df7::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_0beff80b9d355341",
+                    "rank": 64,
+                    "score": 44.44444444444444,
+                    "decisionKey": "applicant-hesitations-indicate-not-a-good-fit",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_0beff80b9d355341::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_11cb958eeb8d553c",
+                    "rank": 65,
+                    "score": 44.44444444444444,
+                    "decisionKey": "reschedule-before-greenlight",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_11cb958eeb8d553c::raw-lexical-recall"
+                  }
+                ],
+                "blockedTopicIds": [],
+                "blockedMatches": [],
+                "diagnostics": {
+                  "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "evidenceState": "exact_evidence_found",
+                      "documentsConsidered": 3490,
+                      "hardCompatible": 25,
+                      "directLaneSelected": 18,
+                      "expansionLaneSelected": 0,
+                      "selectedPolicyIds": [
+                        "operational_028049116d5ae589",
+                        "operational_8b61b93c6ed8d271",
+                        "claim_025c646cfb2def32__a2",
+                        "operational_31610f7682b639b0",
+                        "claim_cdefc66a08f0d5cb",
+                        "operational_dc30d8c99ef71b34",
+                        "operational_fedc9ebb7bb98a44",
+                        "operational_063e4ae5ac8ca50d",
+                        "claim_025c646cfb2def32__a4",
+                        "operational_bcd766a411262ca1",
+                        "operational_332070a5ba42a56d",
+                        "operational_2b17482dfcc4cbf7",
+                        "operational_ecf60219942d4a40",
+                        "operational_0d4b90874c9a6480",
+                        "claim_025c646cfb2def32__a5",
+                        "operational_679eab9fd086a697",
+                        "claim_025c646cfb2def32__a3",
+                        "claim_fc8f6fe345925660__a4",
+                        "operational_4638919324004671",
+                        "operational_4462fe8f2d09e36a",
+                        "operational_487ed85dc344585c",
+                        "operational_eaa24ef70a0d18ce",
+                        "operational_002f4a0766bfd646",
+                        "operational_3ddd8f0540bd8936",
+                        "operational_3f34e8c40bd83f4c",
+                        "operational_56d1c095ca6a01e5",
+                        "operational_87297887641ef436",
+                        "operational_8e78123dc0d23ea4",
+                        "operational_bc9bc70f9ba6f452",
+                        "operational_e1a229f457fb4219",
+                        "operational_ea9828f2c4a5b6cc",
+                        "operational_ecf1b0a58559973d",
+                        "claim_293a0b0906ac87d1",
+                        "claim_c9fc0901e683c634",
+                        "claim_bbbcb3592e4865c5",
+                        "operational_b867ddade89b189e",
+                        "operational_19fdb181886385b8",
+                        "operational_91a5fa6f23e5bb62",
+                        "operational_941811560f35aa76",
+                        "operational_a3fafbb7a306f3dc",
+                        "operational_a72009a7b953d3ae",
+                        "operational_b59f8a2aec561e81"
+                      ],
+                      "rejectionCounts": {
+                        "decision_object": 1931,
+                        "decision_contract": 2467,
+                        "relation": 1515,
+                        "material_condition": 3,
+                        "payment_qualifier": 16
+                      }
+                    },
+                    {
+                      "needId": "N2",
+                      "evidenceState": "exact_evidence_found",
+                      "documentsConsidered": 3490,
+                      "hardCompatible": 39,
+                      "directLaneSelected": 18,
+                      "expansionLaneSelected": 1,
+                      "selectedPolicyIds": [
+                        "operational_028049116d5ae589",
+                        "operational_8b61b93c6ed8d271",
+                        "claim_025c646cfb2def32__a2",
+                        "v3src_testimonials_landing_page",
+                        "v3src_past_cast_contact_boundary",
+                        "claim_cdefc66a08f0d5cb",
+                        "operational_fedc9ebb7bb98a44",
+                        "operational_dc30d8c99ef71b34",
+                        "operational_31610f7682b639b0",
+                        "claim_025c646cfb2def32__a4",
+                        "operational_063e4ae5ac8ca50d",
+                        "operational_bcd766a411262ca1",
+                        "operational_ecf60219942d4a40",
+                        "operational_0d4b90874c9a6480",
+                        "claim_025c646cfb2def32__a5",
+                        "claim_025c646cfb2def32__a3",
+                        "operational_c01b72abfd51007a",
+                        "operational_4638919324004671",
+                        "operational_eaa24ef70a0d18ce",
+                        "operational_002f4a0766bfd646",
+                        "operational_3ddd8f0540bd8936",
+                        "operational_87297887641ef436",
+                        "claim_c9fc0901e683c634",
+                        "claim_54e4d8f4163f0486__a1",
+                        "claim_fc8f6fe345925660__a2",
+                        "operational_ea0349d125e4561d",
+                        "claim_892ff92b97bd500f",
+                        "operational_1832fb6937e013cf",
+                        "claim_0de0110a15158df9__a4",
+                        "claim_396379cd8a7da9ba__a1",
+                        "claim_5414dce8f56da6d5__a3",
+                        "claim_91adcd3b411340ef__a1",
+                        "claim_055bdb739fb0f20f",
+                        "claim_5832bc94697de030",
+                        "claim_94613c79fac4034d",
+                        "claim_ab3af5624f038ead",
+                        "claim_d7ea81c9b0130f57",
+                        "operational_7d7232bc7d71f7c3",
+                        "operational_994e7defbf068906",
+                        "operational_02fb9371d225a3e3",
+                        "operational_0900f8d6a2c66df7",
+                        "operational_0beff80b9d355341",
+                        "operational_11cb958eeb8d553c"
+                      ],
+                      "rejectionCounts": {
+                        "decision_object": 1928,
+                        "decision_contract": 2467,
+                        "relation": 1504,
+                        "material_condition": 3,
+                        "payment_qualifier": 16
+                      }
+                    }
+                  ]
+                }
+              },
+              "plan": {
+                "needs": [
+                  {
+                    "id": "N1",
+                    "text": "Determine if a prospective cast member who has been in prison should be disqualified before the call.",
+                    "relation": "requirement",
+                    "request_kind": "knowledge",
+                    "product_scope": "unknown",
+                    "domains": [
+                      "casting",
+                      "eligibility"
+                    ],
+                    "actions": [
+                      "disqualify"
+                    ],
+                    "entities": [
+                      "prospective cast member",
+                      "prison"
+                    ],
+                    "lane": "route",
+                    "evidence_refs": [],
+                    "supported_claim": "",
+                    "reason": "No approved record provided for this need.",
+                    "route_key": "sales_policy",
+                    "clarification_question": ""
+                  },
+                  {
+                    "id": "N2",
+                    "text": "Determine what to tell a prospective cast member who has been in prison if they are disqualified.",
+                    "relation": "requirement",
+                    "request_kind": "knowledge",
+                    "product_scope": "unknown",
+                    "domains": [
+                      "casting",
+                      "communication"
+                    ],
+                    "actions": [
+                      "tell"
+                    ],
+                    "entities": [
+                      "prospective cast member",
+                      "prison"
+                    ],
+                    "lane": "route",
+                    "evidence_refs": [],
+                    "supported_claim": "",
+                    "reason": "The record explicitly addresses what to tell a candidate with a criminal past, matching the need.",
+                    "route_key": "sales_policy",
+                    "clarification_question": ""
+                  }
+                ],
+                "overall_lane": "route",
+                "confidence_score": 90,
+                "reasoning_summary": "The user asks two distinct atomic decisions: (1) whether to disqualify before the call, and (2) what to tell them. These are split into separate needs for retrieval of policy and script. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1751."
+              },
+              "sourcePlan": {
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "lane": "route",
+                    "directPolicyIds": [],
+                    "preferredPolicyIds": [],
+                    "excludedConflictPolicyIds": [],
+                    "reason": "No approved record provided for this need.",
+                    "modelDisposition": "route",
+                    "modelDirectPolicyIds": [],
+                    "deterministicPolicyIds": []
+                  },
+                  {
+                    "needId": "N2",
+                    "lane": "route",
+                    "directPolicyIds": [],
+                    "preferredPolicyIds": [],
+                    "excludedConflictPolicyIds": [
+                      "operational_1832fb6937e013cf"
+                    ],
+                    "reason": "The record explicitly addresses what to tell a candidate with a criminal past, matching the need.",
+                    "modelDisposition": "route",
+                    "modelDirectPolicyIds": [],
+                    "deterministicPolicyIds": []
+                  }
+                ],
+                "reasoningSummary": "N1 has no records, so it is routed. N2 is answered by the provided record which directly states the required messaging. Runtime authority conflict choice remained disabled."
+              },
+              "evidenceEntailment": {
+                "status": "complete",
+                "candidateCount": 1,
+                "answeredNeedCount": 0,
+                "routedNeedCount": 2,
+                "blockedPublishCollisionCount": 0,
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "disposition": "route",
+                    "coverageMode": "none",
+                    "preferredPolicyIds": [],
+                    "uncoveredRequestElements": [
+                      "Whether a prospective cast member who has been in prison should be disqualified before the call"
+                    ],
+                    "materialConflict": false,
+                    "reason": "No approved record provided for this need.",
+                    "records": []
+                  },
+                  {
+                    "needId": "N2",
+                    "disposition": "answer",
+                    "coverageMode": "single",
+                    "preferredPolicyIds": [
+                      "operational_1832fb6937e013cf"
+                    ],
+                    "uncoveredRequestElements": [],
+                    "materialConflict": false,
+                    "reason": "The record explicitly addresses what to tell a candidate with a criminal past, matching the need.",
+                    "records": [
+                      {
+                        "policyId": "operational_1832fb6937e013cf",
+                        "verdict": "partial_or_conditional",
+                        "confidence": 0.95,
+                        "supportingQuote": "You can try to approve and push forward if you think the applicant should be featured, but inform them that any financial commitment is non-refundable and there is no guarantee of feature if they have a criminal past.",
+                        "supportingQuoteVerified": true,
+                        "supportingQuoteShapeVerified": false,
+                        "uncoveredRequestElements": [],
+                        "specificDifference": "The record directly states what to tell a candidate with a criminal past: inform them about non-refundable financial commitment and no guarantee of feature."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "executionMode": {
+                "planning": "hybrid_model",
+                "composition": "model",
+                "validation": "model_and_deterministic"
+              },
+              "validation": {
+                "verdict": "route",
+                "sentenceChecks": [],
+                "removedSentences": [],
+                "unresolvedNeedIds": [
+                  "N1",
+                  "N2"
+                ],
+                "reason": "Every retained sentence passed deterministic and semantic validation."
+              },
+              "providerAttempts": [
+                {
+                  "provider": "deepseek",
+                  "model": "deepseek-v4-pro",
+                  "purpose": "v4_systemic_query_plan",
+                  "status": "success",
+                  "latencyMs": 5144,
+                  "promptChars": 4331,
+                  "completionTokens": 374,
+                  "totalTokens": 1330,
+                  "reasoningMode": "disabled",
+                  "temperature": 0
+                },
+                {
+                  "provider": "deepseek",
+                  "model": "deepseek-v4-pro",
+                  "purpose": "v5_5_raw_record_entailment_validation",
+                  "status": "success",
+                  "latencyMs": 4408,
+                  "promptChars": 7612,
+                  "completionTokens": 375,
+                  "totalTokens": 1963,
+                  "reasoningMode": "disabled",
+                  "temperature": 0
+                }
+              ],
+              "stageTimings": {
+                "turnResolutionMs": 8,
+                "queryPlanningMs": 5162,
+                "v5BoundedRetrievalMs": 6441,
+                "v55PublisherSiblingExpansionCount": 3,
+                "v55RawLexicalRecallCount": 42,
+                "evidenceEntailmentMs": 4412,
+                "sourcePlanningMs": 4412,
+                "evidenceDraftingMs": 0,
+                "validationMs": 0,
+                "totalMs": 16578
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "completed": 1,
+    "lanes": {
+      "route": 1
+    },
+    "answeredOrPartial": 0,
+    "routes": 1,
+    "providerAttempts": 2,
+    "unsuccessfulProviderAttempts": 0,
+    "latencyMs": {
+      "mean": 16578,
+      "p50": 16578,
+      "p90": 16578,
+      "max": 16578
+    }
+  }
+}

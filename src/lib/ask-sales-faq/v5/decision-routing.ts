@@ -31,6 +31,7 @@ const REFERENCED_CONTEXT_REVIEW = /\b(?:review|assess|analy[sz]e|look\s+at|read)
 const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i;
 const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
 const CURRENT_CROSS_PRODUCT_REVIEW = /\b(?:current|currently|still|active|available)\b.{0,180}\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b|\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b.{0,180}\b(?:current|currently|still|active|available)\b|\bnot\s+a\s+fit\b.{0,220}\b(?:move|transfer|pass)\b|\b(?:move|transfer|pass)\b.{0,220}\bnot\s+a\s+fit\b/i;
+const CURRENT_GOVERNED_REFERENCE_QUESTION = /\b(?:what|which|does|do|is|are)\b.{0,100}\b(?:current|approved|official)\b.{0,100}\b(?:price|pricing|cost|payment\s+plans?|installments?|policy|rule|process|package|offer)\b|\b(?:current|approved|official)\b.{0,100}\b(?:price|pricing|cost|payment\s+plans?|installments?|policy|rule|process|package|offer)\b/i;
 const QUALIFICATION_EXCEPTION_REVIEW = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,180}\b(?:approve|approval|eligible|greenlight|green\s+light)\b|\b(?:approve|approval|eligible|greenlight|green\s+light)\b.{0,180}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
 const QUALIFICATION_CASE_REVIEW_OVERLAY = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,220}\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b|\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b.{0,220}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
 const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
@@ -111,7 +112,7 @@ export function deterministicV52ActionOwner(text: string): RouteKey | null {
  * deliberately left to evidence retrieval unless a current-state or exception
  * signal makes a live owner necessary. */
 export function deterministicV53ActionOwner(text: string): RouteKey | null {
-  if (CURRENT_CROSS_PRODUCT_REVIEW.test(text) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if ((CURRENT_CROSS_PRODUCT_REVIEW.test(text) && !CURRENT_GOVERNED_REFERENCE_QUESTION.test(text)) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
   if (CASE_SPECIFIC_SENSITIVE_BACKGROUND.test(text) && SENSITIVE_BACKGROUND_FACT.test(text) && SENSITIVE_ELIGIBILITY_DECISION.test(text)) {
     return /\b(?:greenlight|green\s+light)\b/i.test(text) ? "greenlight" : "sales_policy";
   }
@@ -131,6 +132,7 @@ const FINANCE_TRANSACTION_WORK = /\b(?:ach|wire|refund|commission|transaction|ch
 const GREENLIGHT_WORK = /\b(?:greenlight|green\s+light|approval\s+letter)\b.{0,140}\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b|\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b.{0,140}\b(?:greenlight|green\s+light|approval\s+letter)\b/i;
 const SENSITIVE_POLICY_DECISION = /\b(?:criminal|felon|conviction|lawsuit|background\s+check|exception|not\s+a\s+fit|transfer\s+(?:the\s+)?prospect|switch\s+(?:the\s+)?prospect)\b.{0,150}\b(?:approve|proceed|eligible|move\s+forward|reject|transfer|switch|decide)\w*\b/i;
 const STABLE_REFUND_WINDOW_POLICY = /\b(?:refund|cooling[- ]?off)\s+window\b|\bthree[- ]day\b.{0,60}\brefund\b|\brefund\b.{0,60}\bthree[- ]day\b/i;
+const CUSTOM_PAYMENT_LINK_OR_SPLIT_WORK = /\b(?:build|create|generate|arrange|set\s*up|make)\b.{0,160}\b(?:custom\s+)?(?:payment\s+link|payment\s+split|split\s+payment)\b|\b(?:split|divide)\b.{0,120}\bpayment\b.{0,120}\b(?:across|between|using|half)\b.{0,80}\b(?:credit|debit|cards?)\b|\b(?:paid[- ]in[- ]full|pay\s+in\s+full)\b.{0,160}\b(?:half|split|credit\s+card|debit\s+card)\b/i;
 
 /**
  * Classifies live work from the complete immutable request, using the work
@@ -140,6 +142,7 @@ const STABLE_REFUND_WINDOW_POLICY = /\b(?:refund|cooling[- ]?off)\s+window\b|\bt
 export function deterministicV54ActionOwner(text: string): RouteKey | null {
   const explicitlyOperational = EXPLICIT_DESTINATION_REQUEST.test(text) || LIVE_HELP_REQUEST.test(text) || LIVE_OWNER_ACTION.test(text) || LIVE_MUTATION_REQUEST.test(text);
   if (SENSITIVE_POLICY_DECISION.test(text)) return "sales_policy";
+  if (CUSTOM_PAYMENT_LINK_OR_SPLIT_WORK.test(text)) return "sales_tech";
   if (!explicitlyOperational && (STABLE_POLICY_SHAPE.test(text) || DEONTIC_REP_POLICY_SHAPE.test(text))) return null;
 
   if (SALES_TECH_WORK_OBJECT.test(text) && (SALES_TECH_WORK_STATE.test(text) || explicitlyOperational)) return "sales_tech";

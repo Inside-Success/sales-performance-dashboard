@@ -92,6 +92,9 @@ describe("Ask Sales V5.4 coverage, consensus, routing, and conversation boundari
     expect(deterministicV54ActionOwner("Which channel should receive a request for a missing Greenlight letter?")).toBe("greenlight");
     expect(deterministicV54ActionOwner("A rep needs a same-day Greenlight letter. Should the chatbot approve or generate it?")).toBe("greenlight");
     expect(deterministicV54ActionOwner("Should a rep approve a prospect with a criminal conviction?")).toBe("sales_policy");
+    expect(deterministicV54ActionOwner("A client wants to pay in full using half credit card and half debit card. Can the rep arrange that?")).toBe("sales_tech");
+    expect(deterministicV54ActionOwner("Can I build a custom payment link myself?")).toBe("sales_tech");
+    expect(deterministicV54ActionOwner("What are the current ISTV prices and payment plans?")).toBeNull();
     expect(deterministicV54ActionOwner("What is the approved policy for payment plans?")).toBeNull();
 
     const question = "Where should I report a payment link that is not prompting the contract?";
