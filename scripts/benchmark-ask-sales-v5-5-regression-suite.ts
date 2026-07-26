@@ -4,6 +4,7 @@ import path from "node:path";
 
 import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 import { runAskSalesFaqV55 } from "@/lib/ask-sales-faq/v5-5/runtime";
+import { runAskSalesFaqV56 } from "@/lib/ask-sales-faq/v5-6/runtime";
 
 type GoldPrompt = Record<string, unknown> & { id?: string; question: string };
 type GoldConversation = Record<string, unknown> & { id: string; title?: string; prompts: GoldPrompt[] };
@@ -12,7 +13,9 @@ type Dataset = Record<string, unknown> & {
   cases?: GoldPrompt[];
   conversations?: GoldConversation[];
 };
-type EvaluatedPrompt = GoldPrompt & { candidate: Awaited<ReturnType<typeof runAskSalesFaqV55>> };
+type CandidateName = "v55" | "v56";
+type CandidateResult = Awaited<ReturnType<typeof runAskSalesFaqV55>> | Awaited<ReturnType<typeof runAskSalesFaqV56>>;
+type EvaluatedPrompt = GoldPrompt & { candidate: CandidateResult };
 
 function argument(name: string, fallback = "") {
   const prefix = `--${name}=`;
@@ -55,6 +58,8 @@ async function main() {
   const inputPath = path.resolve(argument("input"));
   if (!argument("input")) throw new Error("--input is required");
   const outputPath = path.resolve(argument("output", "artifacts/ask-sales-faq-v5-5/regression-suite-runtime.json"));
+  const candidateName = argument("candidate", "v55") as CandidateName;
+  if (!new Set<CandidateName>(["v55", "v56"]).has(candidateName)) throw new Error("--candidate must be v55 or v56");
   const concurrency = Math.max(1, Math.min(3, Number.parseInt(argument("concurrency", "3"), 10) || 3));
   const raw = await readFile(inputPath, "utf8");
   const dataset = JSON.parse(raw) as Dataset;
@@ -77,6 +82,10 @@ async function main() {
     status: "running",
     diagnosticOnly: true,
     promotionEvidence: false,
+    candidateName,
+    runtimeEntrypoint: candidateName === "v56"
+      ? "@/lib/ask-sales-faq/v5-6/runtime#runAskSalesFaqV56"
+      : "@/lib/ask-sales-faq/v5-5/runtime#runAskSalesFaqV55",
     datasetName: dataset.name || path.basename(inputPath),
     datasetPath: inputPath,
     datasetSha256: sha256(raw),
@@ -107,7 +116,9 @@ async function main() {
       for (let promptIndex = 0; promptIndex < source.prompts.length; promptIndex += 1) {
         const prompt = source.prompts[promptIndex];
         history.push({ role: "user", content: prompt.question });
-        const candidate = await runAskSalesFaqV55(prompt.question, history);
+        const candidate = candidateName === "v56"
+          ? await runAskSalesFaqV56(prompt.question, history)
+          : await runAskSalesFaqV55(prompt.question, history);
         history.push({ role: "assistant", content: candidate.answer });
         evaluated.prompts.push({ ...prompt, id: prompt.id || `${source.id}-p${promptIndex + 1}`, candidate });
         report.conversations = [...report.conversations.filter((item) => item.id !== source.id), evaluated];

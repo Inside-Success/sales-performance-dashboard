@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "ask-sales-v5-6-evaluation-verification-v1",
+  "status": "verified",
+  "verifiedAt": "2026-07-26T19:44:58.273Z",
+  "repeatability": {
+    "executions": 100,
+    "laneFlipComparisons": 0,
+    "decisionBoundaryFlipComparisons": 0,
+    "exactAnswerFlipComparisons": 0,
+    "casesRequiringManualReview": 0
+  },
+  "comparison": {
+    "v3": {
+      "completed": 20,
+      "lanes": {
+        "answer_from_evidence": 15,
+        "route_from_evidence": 4,
+        "conversation_reply": 1
+      },
+      "providerAttempts": 75,
+      "successfulProviderAttempts": 75,
+      "providerBackedOutputs": 20,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0,
+      "providerUnavailableOutputs": 0,
+      "meanLatencyMs": 15781,
+      "p90LatencyMs": 20413
+    },
+    "v55": {
+      "completed": 20,
+      "lanes": {
+        "answer": 10,
+        "route": 9,
+        "conversation": 1
+      },
+      "providerAttempts": 33,
+      "successfulProviderAttempts": 31,
+      "providerBackedOutputs": 19,
+      "unsuccessfulProviderAttempts": 2,
+      "terminalProviderFailures": 0,
+      "providerUnavailableOutputs": 0,
+      "meanLatencyMs": 22156,
+      "p90LatencyMs": 33366
+    },
+    "v56": {
+      "completed": 20,
+      "lanes": {
+        "answer": 18,
+        "route": 2
+      },
+      "providerAttempts": 38,
+      "successfulProviderAttempts": 38,
+      "providerBackedOutputs": 20,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0,
+      "providerUnavailableOutputs": 0,
+      "meanLatencyMs": 10422,
+      "p90LatencyMs": 12150
+    }
+  },
+  "blindReview": {
+    "prompts": 20,
+    "batches": 4,
+    "verifiedRuleShown": true,
+    "systemsHidden": true,
+    "selfContained": true
+  },
+  "productionPromotionAuthorized": false
+}

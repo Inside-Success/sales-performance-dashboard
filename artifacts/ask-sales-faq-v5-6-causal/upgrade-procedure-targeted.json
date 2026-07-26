@@ -1,0 +1,1786 @@
+{
+  "schemaVersion": "ask-sales-v5-5-regression-runtime-v1",
+  "status": "complete",
+  "diagnosticOnly": true,
+  "promotionEvidence": false,
+  "candidateName": "v56",
+  "runtimeEntrypoint": "@/lib/ask-sales-faq/v5-6/runtime#runAskSalesFaqV56",
+  "datasetName": "Ask Sales V4.2 fresh Slack authoritative holdout",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v4-2-systemic/artifacts/ask-sales-faq-v4-2/fresh-slack-authoritative-holdout-50.json",
+  "datasetSha256": "27c5e421a08724ee5c9aaf6fa5a278ef3c639b0179b4391c3d567a48cd72fc86",
+  "expectedPrompts": 1,
+  "concurrency": 1,
+  "startedAt": "2026-07-26T19:10:51.374Z",
+  "completedAt": "2026-07-26T19:11:01.917Z",
+  "conversations": [
+    {
+      "id": "fresh-slack-v42-a02",
+      "sourceMessageTs": "1784735503.466409",
+      "title": "Paid client package upgrade process",
+      "prompts": [
+        {
+          "question": "What is the current process when a client has paid and wants to upgrade their package?",
+          "independent": true,
+          "evaluationStrata": [
+            "fresh_slack_answer",
+            "upgrade"
+          ],
+          "goldNeeds": [
+            {
+              "id": "a02",
+              "text": "paid-client package upgrade process",
+              "atomic": true,
+              "expectedDisposition": "answer",
+              "expectedRouteKey": null,
+              "policyIds": [],
+              "blockedTopicIds": [],
+              "goldContext": [
+                "Use the new upgrade form. It can be found by searching Slack for the upgrade keywords."
+              ],
+              "blockedContext": []
+            }
+          ],
+          "id": "fresh-slack-v42-a02-p1",
+          "candidate": {
+            "ok": true,
+            "answer": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms. To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late.",
+            "structuredAnswer": {
+              "summary": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms. To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late.",
+              "sections": [
+                {
+                  "title": "Answer",
+                  "items": [
+                    "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms.",
+                    "To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late."
+                  ],
+                  "tone": "good"
+                }
+              ],
+              "confidenceLabel": "High",
+              "confidenceScore": 95,
+              "sourceMode": "evidence"
+            },
+            "lane": "answer",
+            "needsRoute": false,
+            "routeReason": null,
+            "routeChannels": [],
+            "provider": "deepseek",
+            "model": "deepseek-v4-pro",
+            "latencyMs": 10534,
+            "citations": [
+              {
+                "policyId": "curated_af3fa1d5bbe01125",
+                "title": "Use the new upgrade form before selecting VIP upgrade terms",
+                "decisionKey": "vip-upgrade-use-new-upgrade-form-before-contract-selection",
+                "lastReviewed": "2026-07-22",
+                "authority": 10,
+                "sourceKind": "authoritative_slack_operational_qna",
+                "approvedBy": [
+                  "Madeline"
+                ]
+              },
+              {
+                "policyId": "claim_d4765c6b8aa3730e",
+                "title": "Upgrade from lower license / mid-payment plan",
+                "decisionKey": "upgrade-from-lower-license-mid-payment-plan",
+                "lastReviewed": "2026-07-10",
+                "authority": 90,
+                "sourceKind": "trusted_slack_summary",
+                "approvedBy": [
+                  "Rich Allen"
+                ]
+              }
+            ],
+            "selectedPolicyIds": [
+              "curated_af3fa1d5bbe01125",
+              "claim_d4765c6b8aa3730e"
+            ],
+            "redactions": [],
+            "runtimeMetadata": {
+              "pipelineVersion": "v5.6-isolated",
+              "isolation": {
+                "productionSelectorChanged": false,
+                "databaseWrites": false,
+                "historyPersistence": false
+              },
+              "knowledgeVersion": "8c8c677c1209f2d7+v5_b238cd256bfa130a+v55_raw-record-entailment-publisher-conflicts-r1+v56_owner_overlay_bcee3409db57ef5a",
+              "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:d23e7e68d8f4b77b",
+              "turn": {
+                "kind": "new",
+                "currentQuestion": "What is the current process when a client has paid and wants to upgrade their package?",
+                "standaloneQuestion": "What is the current process when a client has paid and wants to upgrade their package?",
+                "immediatePreviousUserQuestion": null,
+                "immediatePreviousAssistantAnswer": null,
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "memoryAnswer": null,
+                "usedImmediateContext": false,
+                "explicitCorrection": false,
+                "explicitScopeSwitch": false,
+                "stylePreferences": [],
+                "contextMessages": [],
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                "actionableQuestion": "What is the current process when a client has paid and wants to upgrade their package?",
+                "conversationalPreface": null
+              },
+              "retrieval": {
+                "corpusSize": 2627,
+                "candidateCount": 47,
+                "candidates": [
+                  {
+                    "id": "curated_af3fa1d5bbe01125",
+                    "rank": 1,
+                    "score": 186.37215521928536,
+                    "decisionKey": "vip-upgrade-use-new-upgrade-form-before-contract-selection",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.13608276348795434,
+                    "matchedDecisionId": "curated_af3fa1d5bbe01125::a1"
+                  },
+                  {
+                    "id": "claim_9ecfb269cce72cbe__a7",
+                    "rank": 2,
+                    "score": 167.63099861566718,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a7",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.06622661785325219,
+                    "matchedDecisionId": "claim_9ecfb269cce72cbe__a7::a2"
+                  },
+                  {
+                    "id": "claim_9ecfb269cce72cbe__a2",
+                    "rank": 3,
+                    "score": 162.85193187059656,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.32128773156099955,
+                    "matchedDecisionId": "claim_9ecfb269cce72cbe__a2::a1"
+                  },
+                  {
+                    "id": "claim_9ecfb269cce72cbe__a1",
+                    "rank": 4,
+                    "score": 134.80590662753727,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a1",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.17213259316477408,
+                    "matchedDecisionId": "claim_9ecfb269cce72cbe__a1::a1"
+                  },
+                  {
+                    "id": "claim_40f77c8772f7951d",
+                    "rank": 5,
+                    "score": 131.88858579317917,
+                    "decisionKey": "standard-to-vip-upgrade-after-5k-paid",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.15713484026367722,
+                    "matchedDecisionId": "claim_40f77c8772f7951d::a1"
+                  },
+                  {
+                    "id": "operational_1c4c5ca21d7202f9",
+                    "rank": 6,
+                    "score": 127.45038114673628,
+                    "decisionKey": "upgrade-timing-before-filming",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.17407765595569785,
+                    "matchedDecisionId": "operational_1c4c5ca21d7202f9::a1"
+                  },
+                  {
+                    "id": "operational_e339861728613be9",
+                    "rank": 7,
+                    "score": 125.59200683546925,
+                    "decisionKey": "license-upgrade-process",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.2300894966542111,
+                    "matchedDecisionId": "operational_e339861728613be9::a1"
+                  },
+                  {
+                    "id": "operational_0ae8f1ccdde2b02c",
+                    "rank": 8,
+                    "score": 123.70944156277329,
+                    "decisionKey": "package-upgrade-downgrade-form",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.2013468165642073,
+                    "matchedDecisionId": "operational_0ae8f1ccdde2b02c::a1"
+                  },
+                  {
+                    "id": "claim_a4bb973d3d4627cb__a4",
+                    "rank": 9,
+                    "score": 122.25769105620468,
+                    "decisionKey": "contracts-edits-and-signature-process-route-if-unclear-1-a4",
+                    "answerability": "route_or_support",
+                    "qualityTier": "supporting",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "live_only",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.23717082451262844,
+                    "matchedDecisionId": "claim_a4bb973d3d4627cb__a4::a1"
+                  },
+                  {
+                    "id": "claim_d4765c6b8aa3730e",
+                    "rank": 10,
+                    "score": 119.6008744405427,
+                    "decisionKey": "upgrade-from-lower-license-mid-payment-plan",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.32128773156099955,
+                    "matchedDecisionId": "claim_d4765c6b8aa3730e::a2"
+                  },
+                  {
+                    "id": "operational_6e0f1dff49d5b13c",
+                    "rank": 11,
+                    "score": 116.04380636091109,
+                    "decisionKey": "mid-payment-upgrade-process",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.21213203435596426,
+                    "matchedDecisionId": "operational_6e0f1dff49d5b13c::a1"
+                  },
+                  {
+                    "id": "claim_527d746a2e41c49f__a2",
+                    "rank": 12,
+                    "score": 111.17807649399624,
+                    "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.1432229748078866,
+                    "matchedDecisionId": "claim_527d746a2e41c49f__a2::a2"
+                  },
+                  {
+                    "id": "claim_527d746a2e41c49f__a7",
+                    "rank": 13,
+                    "score": 106.04004932193934,
+                    "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a7",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 7,
+                    "semanticVectorScore": 0.07372097807744857,
+                    "matchedDecisionId": "claim_527d746a2e41c49f__a7::a2"
+                  },
+                  {
+                    "id": "operational_83a14d8e125a069a",
+                    "rank": 14,
+                    "score": 105.59451867531261,
+                    "decisionKey": "upgrade-deadline-before-filming",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 1,
+                    "semanticVectorScore": 0.31622776601683794,
+                    "matchedDecisionId": "operational_83a14d8e125a069a::a1"
+                  },
+                  {
+                    "id": "operational_eb210d429efba752",
+                    "rank": 15,
+                    "score": 83.63677575094809,
+                    "decisionKey": "recurring-payment-method-after-bank-transfer-deposit",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.16064386578049977,
+                    "matchedDecisionId": "operational_eb210d429efba752::a2"
+                  },
+                  {
+                    "id": "operational_3bd55704aef9517f",
+                    "rank": 16,
+                    "score": 72.75472314438686,
+                    "decisionKey": "third-party-contract-clearance-payment-first",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.21213203435596426,
+                    "matchedDecisionId": "operational_3bd55704aef9517f::a1"
+                  },
+                  {
+                    "id": "operational_d7491c6399ba940d",
+                    "rank": 17,
+                    "score": 71.28133204914731,
+                    "decisionKey": "refund-after-full-payment-lands",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.1556997888323046,
+                    "matchedDecisionId": "operational_d7491c6399ba940d::a1"
+                  },
+                  {
+                    "id": "claim_787a9c1961161775",
+                    "rank": 18,
+                    "score": 70.27286940669306,
+                    "decisionKey": "contracts-edits-and-signature-process-answer-2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.20519567041703082,
+                    "matchedDecisionId": "claim_787a9c1961161775::a2"
+                  },
+                  {
+                    "id": "claim_a884a66cd557a33a__a2",
+                    "rank": 19,
+                    "score": 69.40781937403983,
+                    "decisionKey": "contracts-edits-and-signature-process-what-reps-must-not-say-1-a2",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 14,
+                    "semanticVectorScore": 0.19069251784911848,
+                    "matchedDecisionId": "claim_a884a66cd557a33a__a2::a1"
+                  },
+                  {
+                    "id": "claim_028cf371215a8cc5__a5",
+                    "rank": 20,
+                    "score": 42.857142857142854,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-what-reps-can-say-1-a5",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_028cf371215a8cc5__a5::publisher-sibling"
+                  },
+                  {
+                    "id": "claim_0043194d67006434__a8",
+                    "rank": 21,
+                    "score": 28.57142857142857,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-what-reps-must-not-say-1-a8",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_0043194d67006434__a8::publisher-sibling"
+                  },
+                  {
+                    "id": "claim_26780013d013e10b",
+                    "rank": 22,
+                    "score": 28.57142857142857,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-3",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_26780013d013e10b::publisher-sibling"
+                  },
+                  {
+                    "id": "claim_9ecfb269cce72cbe__a3",
+                    "rank": 23,
+                    "score": 28.57142857142857,
+                    "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-7-a3",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv",
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_9ecfb269cce72cbe__a3::publisher-sibling"
+                  },
+                  {
+                    "id": "operational_8a52958a95248e44",
+                    "rank": 24,
+                    "score": 85.71428571428572,
+                    "decisionKey": "upgrade-standard-to-vip-payment",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_8a52958a95248e44::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_23a1c7d5f84be845",
+                    "rank": 25,
+                    "score": 71.42857142857143,
+                    "decisionKey": "standard-to-vip-upgrade-process",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_23a1c7d5f84be845::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_ada8c370b893f027",
+                    "rank": 26,
+                    "score": 57.14285714285714,
+                    "decisionKey": "delay-process-12-months-lite-license",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_ada8c370b893f027::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_4e7a2fc61fe382d9",
+                    "rank": 27,
+                    "score": 57.14285714285714,
+                    "decisionKey": "payment-link-credit-card-storage",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_4e7a2fc61fe382d9::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_8122b3e25149ec69",
+                    "rank": 28,
+                    "score": 57.14285714285714,
+                    "decisionKey": "use-investment-loss-to-encourage-contract-signing",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_8122b3e25149ec69::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_fdcce8a3cb5e8069",
+                    "rank": 29,
+                    "score": 57.14285714285714,
+                    "decisionKey": "additional-person-onboarding-process",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_fdcce8a3cb5e8069::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_f082e4d8c61ab679",
+                    "rank": 30,
+                    "score": 47.857142857142854,
+                    "decisionKey": "vip-upgrade-for-amazon-and-apple",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "product_agnostic"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_f082e4d8c61ab679::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_867865f3fbdccad6",
+                    "rank": 31,
+                    "score": 47.857142857142854,
+                    "decisionKey": "handling-call-with-spouse-when-price-is-confidential",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_867865f3fbdccad6::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_3913a0070eea7d3a",
+                    "rank": 32,
+                    "score": 47.857142857142854,
+                    "decisionKey": "requirement-to-pay-for-episode",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_3913a0070eea7d3a::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_80c98c9e2f1a1e7f",
+                    "rank": 33,
+                    "score": 47.857142857142854,
+                    "decisionKey": "applicant-multiple-shows-same-rep",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_80c98c9e2f1a1e7f::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_f72789703f7047a5",
+                    "rank": 34,
+                    "score": 47.857142857142854,
+                    "decisionKey": "license-tier-presentation-strategy",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_f72789703f7047a5::raw-lexical-recall"
+                  },
+                  {
+                    "id": "claim_db8cd6d8fec64959",
+                    "rank": 35,
+                    "score": 42.85714285714286,
+                    "decisionKey": "dj-vip-partial-payment-special-payment-link",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "dj_nlceo"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "claim_db8cd6d8fec64959::raw-lexical-recall"
+                  },
+                  {
+                    "id": "v3src_main_istv_upgrade_window",
+                    "rank": 36,
+                    "score": 42.85714285714286,
+                    "decisionKey": "main-istv-standard-to-vip-upgrade-window",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "canonical",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "governed_policy",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "v3src_main_istv_upgrade_window::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_498d085e1dfda892",
+                    "rank": 37,
+                    "score": 42.85714285714286,
+                    "decisionKey": "multiple-contact-anomaly",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_498d085e1dfda892::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_68580d1a4fcd3141",
+                    "rank": 38,
+                    "score": 42.85714285714286,
+                    "decisionKey": "master-mind-event-info-access",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_68580d1a4fcd3141::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_8cc338f8a27bef4b",
+                    "rank": 39,
+                    "score": 42.85714285714286,
+                    "decisionKey": "minimum-payment-to-start",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_8cc338f8a27bef4b::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_c01b72abfd51007a",
+                    "rank": 40,
+                    "score": 42.85714285714286,
+                    "decisionKey": "termination-letter-trigger",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "time_sensitive",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_c01b72abfd51007a::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_0a9e906d5f229a87",
+                    "rank": 41,
+                    "score": 42.85714285714286,
+                    "decisionKey": "money-monday-access-timing",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_0a9e906d5f229a87::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_19fdb181886385b8",
+                    "rank": 42,
+                    "score": 42.85714285714286,
+                    "decisionKey": "pre-call-qualification-process",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_19fdb181886385b8::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_28607ab5fadfe394",
+                    "rank": 43,
+                    "score": 42.85714285714286,
+                    "decisionKey": "amazon-apple-google-youtube-tv-submission-guarantee",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_28607ab5fadfe394::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_2f1ce91ce88e2399",
+                    "rank": 44,
+                    "score": 42.85714285714286,
+                    "decisionKey": "weak-story-approval-production-denial",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "main_istv"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_2f1ce91ce88e2399::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_31610f7682b639b0",
+                    "rank": 45,
+                    "score": 42.85714285714286,
+                    "decisionKey": "qualify-despite-budget-concern",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_31610f7682b639b0::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_37ba5d8a6d9ff2e4",
+                    "rank": 46,
+                    "score": 42.85714285714286,
+                    "decisionKey": "post-call1-uncompelling-story",
+                    "answerability": "route_or_support",
+                    "qualityTier": "contextual_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_37ba5d8a6d9ff2e4::raw-lexical-recall"
+                  },
+                  {
+                    "id": "operational_4308fa14b14b5502",
+                    "rank": 47,
+                    "score": 42.85714285714286,
+                    "decisionKey": "framing-impact-questions-without-asking-revenue",
+                    "answerability": "answer_evidence",
+                    "qualityTier": "trusted_evidence",
+                    "productScopes": [
+                      "unknown"
+                    ],
+                    "sourceKind": "authoritative_operational_qna",
+                    "temporalRisk": "stable",
+                    "relationScore": 0,
+                    "semanticVectorScore": 0,
+                    "matchedDecisionId": "operational_4308fa14b14b5502::raw-lexical-recall"
+                  }
+                ],
+                "blockedTopicIds": [],
+                "blockedMatches": [],
+                "diagnostics": {
+                  "snapshotVersion": "8c8c677c1209f2d7+v5_b238cd256bfa130a+v56-owner-overlay",
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "evidenceState": "exact_evidence_found",
+                      "documentsConsidered": 3490,
+                      "hardCompatible": 185,
+                      "directLaneSelected": 18,
+                      "expansionLaneSelected": 6,
+                      "selectedPolicyIds": [
+                        "curated_af3fa1d5bbe01125",
+                        "claim_9ecfb269cce72cbe__a7",
+                        "claim_9ecfb269cce72cbe__a2",
+                        "claim_9ecfb269cce72cbe__a1",
+                        "claim_40f77c8772f7951d",
+                        "operational_1c4c5ca21d7202f9",
+                        "operational_e339861728613be9",
+                        "operational_0ae8f1ccdde2b02c",
+                        "claim_a4bb973d3d4627cb__a4",
+                        "claim_d4765c6b8aa3730e",
+                        "operational_6e0f1dff49d5b13c",
+                        "claim_527d746a2e41c49f__a2",
+                        "claim_527d746a2e41c49f__a7",
+                        "operational_83a14d8e125a069a",
+                        "operational_eb210d429efba752",
+                        "operational_3bd55704aef9517f",
+                        "operational_d7491c6399ba940d",
+                        "claim_787a9c1961161775",
+                        "claim_a884a66cd557a33a__a2",
+                        "claim_028cf371215a8cc5__a5",
+                        "claim_0043194d67006434__a8",
+                        "claim_26780013d013e10b",
+                        "claim_9ecfb269cce72cbe__a3",
+                        "operational_8a52958a95248e44",
+                        "operational_23a1c7d5f84be845",
+                        "operational_ada8c370b893f027",
+                        "operational_4e7a2fc61fe382d9",
+                        "operational_8122b3e25149ec69",
+                        "operational_fdcce8a3cb5e8069",
+                        "claim_f082e4d8c61ab679",
+                        "operational_867865f3fbdccad6",
+                        "operational_3913a0070eea7d3a",
+                        "operational_80c98c9e2f1a1e7f",
+                        "operational_f72789703f7047a5",
+                        "claim_db8cd6d8fec64959",
+                        "v3src_main_istv_upgrade_window",
+                        "operational_498d085e1dfda892",
+                        "operational_68580d1a4fcd3141",
+                        "operational_8cc338f8a27bef4b",
+                        "operational_c01b72abfd51007a",
+                        "operational_0a9e906d5f229a87",
+                        "operational_19fdb181886385b8",
+                        "operational_28607ab5fadfe394",
+                        "operational_2f1ce91ce88e2399",
+                        "operational_31610f7682b639b0",
+                        "operational_37ba5d8a6d9ff2e4",
+                        "operational_4308fa14b14b5502"
+                      ],
+                      "rejectionCounts": {
+                        "relation": 1775,
+                        "decision_contract": 1700,
+                        "decision_object": 1487,
+                        "material_condition": 13,
+                        "payment_qualifier": 21,
+                        "insufficient_direct_signal": 8,
+                        "workflow_stage_or_time": 1
+                      }
+                    }
+                  ]
+                }
+              },
+              "plan": {
+                "needs": [
+                  {
+                    "id": "N1",
+                    "text": "What is the current process when a client has paid and wants to upgrade their package?",
+                    "relation": "procedure",
+                    "request_kind": "knowledge",
+                    "product_scope": "unknown",
+                    "domains": [
+                      "upgrades",
+                      "payments"
+                    ],
+                    "actions": [
+                      "upgrade"
+                    ],
+                    "entities": [
+                      "package",
+                      "client"
+                    ],
+                    "lane": "answer",
+                    "evidence_refs": [
+                      "curated_af3fa1d5bbe01125",
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "supported_claim": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms. To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late.",
+                    "reason": "V5.5 preserved every bounded collective approved decision instead of allowing answer composition to omit part of the selected guidance.",
+                    "route_key": null,
+                    "clarification_question": ""
+                  }
+                ],
+                "overall_lane": "answer",
+                "confidence_score": 95,
+                "reasoning_summary": "The user asks for the current process when a client has paid and wants to upgrade their package. This is a single atomic request for the procedure. No product scope is specified, so it remains unknown. The request is for knowledge about the process, not an operational action. No material ambiguity is present. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 locked high-impact exact evidence for N1. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1753."
+              },
+              "sourcePlan": {
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "lane": "answer",
+                    "directPolicyIds": [
+                      "curated_af3fa1d5bbe01125",
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "preferredPolicyIds": [
+                      "curated_af3fa1d5bbe01125",
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "excludedConflictPolicyIds": [
+                      "claim_9ecfb269cce72cbe__a7",
+                      "claim_9ecfb269cce72cbe__a2",
+                      "claim_9ecfb269cce72cbe__a1"
+                    ],
+                    "reason": "V5.6 composed the source-reviewed required records for a claim-scoped multi-step authority resolution.",
+                    "modelDisposition": "answer",
+                    "modelDirectPolicyIds": [
+                      "curated_af3fa1d5bbe01125",
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "deterministicPolicyIds": []
+                  }
+                ],
+                "reasoningSummary": "The question asks for the current process when a client has paid and wants to upgrade. Record claim_d4765c6b8aa3730e provides a step-by-step process and timing, making it a direct answer. Other records either provide partial steps or are less comprehensive, but this single record covers the request fully. Runtime authority conflict choice remained disabled."
+              },
+              "evidenceEntailment": {
+                "status": "complete",
+                "candidateCount": 5,
+                "maxCandidatesPerNeed": 20,
+                "authorityResolutionsApplied": true,
+                "exactQualifierBoundaries": true,
+                "exactRelationshipContexts": true,
+                "compactDifferentQuestionRecords": true,
+                "enforceControllingAuthorityWhenAvailable": true,
+                "enforceRequiredAuthorityComposition": true,
+                "causalTraceVersion": "raw-entailment-causal-trace-v1",
+                "needTraces": [
+                  {
+                    "needId": "N1",
+                    "resolvedNeed": {
+                      "text": "What is the current process when a client has paid and wants to upgrade their package?",
+                      "authorityText": "What is the current process when a client has paid and wants to upgrade their package?",
+                      "originalRequestText": "What is the current process when a client has paid and wants to upgrade their package?",
+                      "relation": "procedure",
+                      "requestKind": "knowledge",
+                      "productScope": "unknown",
+                      "domains": [
+                        "upgrades",
+                        "payments"
+                      ],
+                      "actions": [
+                        "upgrade"
+                      ],
+                      "entities": [
+                        "package",
+                        "client"
+                      ],
+                      "forcedRouteKey": null
+                    },
+                    "collectiveEvidenceEligible": false,
+                    "admittedPolicyIds": [
+                      "curated_af3fa1d5bbe01125",
+                      "claim_9ecfb269cce72cbe__a7",
+                      "claim_9ecfb269cce72cbe__a2",
+                      "claim_9ecfb269cce72cbe__a1",
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "candidates": [
+                      {
+                        "policyId": "curated_af3fa1d5bbe01125",
+                        "rank": 1,
+                        "score": 186.37215521928536,
+                        "admittedToEntailment": true,
+                        "exclusionReasons": [],
+                        "authorityDisposition": "controlling",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Use the new upgrade form to fill out the client's upgrade information before selecting or sending the contract and payment option. Boundaries: This instruction does not authorize a custom payment plan, identify the exact current form link, or permit edits to contract terms."
+                      },
+                      {
+                        "policyId": "operational_8a52958a95248e44",
+                        "rank": 1.5,
+                        "score": 85.71428571428572,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Have the cast member sign the upgraded contract and pay the difference. Do not cancel the original payment. Conditions: Cast member has already paid $5k for standard; Cast member wants to upgrade to VIP. Boundaries: Does not apply to downgrades or other package changes; Does not address refund eligibility for other scenarios."
+                      },
+                      {
+                        "policyId": "operational_23a1c7d5f84be845",
+                        "rank": 1.51,
+                        "score": 71.42857142857143,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "To upgrade a cast member who paid $20K for Standard to VIP ($30K), have them sign a new VIP contract and process the difference in payment. Payment details should be handled via the tech channel. Conditions: Cast member has already paid for Standard; Upgrade is to VIP which includes submission to both Apple TV and Amazon. Boundaries: Does not specify payment methods or timelines; Does not address partial upgrades or other tiers."
+                      },
+                      {
+                        "policyId": "operational_ada8c370b893f027",
+                        "rank": 1.52,
+                        "score": 57.14285714285714,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "Yes, it is fine to delay the process for 12 months; just email. Conditions: The cast member has bought a Lite license and paid a $2500 deposit. Boundaries: Does not specify if full license payment is required to secure the episode."
+                      },
+                      {
+                        "policyId": "operational_4e7a2fc61fe382d9",
+                        "rank": 1.53,
+                        "score": 57.14285714285714,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "When using the payment link to save/store credit card information, the card will not be charged until the next payment is due; the payment window showing 'free' is correct. Conditions: The payment link is used to store credit card info for future payments.; The client has paid the deposit via wire and remaining payments via credit card. Boundaries: Does not address other scenarios where the payment link might charge immediately.; Does not confirm the specific payment link URL or process."
+                      },
+                      {
+                        "policyId": "operational_8122b3e25149ec69",
+                        "rank": 1.54,
+                        "score": 57.14285714285714,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Use the point that the client will lose the initial investment if they do not sign to open the conversation and encourage them to get involved again. Conditions: Client has paid but not signed; You want to prompt the client without being pushy. Boundaries: Does not guarantee the client will sign; Does not provide exact wording for the conversation."
+                      },
+                      {
+                        "policyId": "operational_fdcce8a3cb5e8069",
+                        "rank": 1.55,
+                        "score": 57.14285714285714,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Whoever is interested in filming must be on the call to discuss details. They are allowed as long as the studio/fulfillment/production has notice, and this information should be included in the onboarding process and form. Conditions: The additional person wants to be in the episode.; Notice is given to studio/fulfillment/production. Boundaries: This does not override any show-specific restrictions."
+                      },
+                      {
+                        "policyId": "claim_f082e4d8c61ab679",
+                        "rank": 1.56,
+                        "score": 47.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "trusted_slack_summary",
+                        "approvedBy": [
+                          "Madeline Cary"
+                        ],
+                        "rawApprovedRecord": "Upgrade to $30K VIP, have the client sign a new VIP contract, process the payment difference, and send payment details/questions to tech."
+                      },
+                      {
+                        "policyId": "operational_867865f3fbdccad6",
+                        "rank": 1.57,
+                        "score": 47.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "Proceed with the process but skip or cut the video at the price part; manually cover the last slides if needed, or skip the license video and go over greenlight and onboarding. Conditions: The spouse has explicitly requested not to mention price.; The call is with the spouse of an existing client. Boundaries: Does not address discount eligibility for the spouse.; Does not provide a standard script for this scenario."
+                      },
+                      {
+                        "policyId": "operational_3913a0070eea7d3a",
+                        "rank": 1.58,
+                        "score": 47.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Clients cannot have an episode without covering production, editing, and licensing costs. Payment is required before proceeding. Conditions: The client is requesting to go over details without having paid. Boundaries: Does not specify the exact payment timing or process.; Does not address partial payments or payment plans."
+                      },
+                      {
+                        "policyId": "operational_80c98c9e2f1a1e7f",
+                        "rank": 1.59,
+                        "score": 47.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "The applicant should continue to work with whichever rep was his first point of contact. He can buy however many shows he wants through the one original rep. Conditions: The applicant has been contacted by multiple reps. Boundaries: Does not address if the original rep is unavailable."
+                      },
+                      {
+                        "policyId": "operational_f72789703f7047a5",
+                        "rank": 1.6,
+                        "score": 47.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Present the license tier that aligns with the prospect's stated budget to build trust; if they express interest in a higher tier, it can be presented, but use discount urgency to close. Conditions: Prospect has explicitly stated a budget limit; Sales rep gauges prospect's business suitability from application and conversation. Boundaries: Do not push a higher tier if it may put the prospect off; upgrades can happen later."
+                      },
+                      {
+                        "policyId": "claim_db8cd6d8fec64959",
+                        "rank": 1.61,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "trusted_slack_summary",
+                        "approvedBy": [
+                          "Madeline Cary"
+                        ],
+                        "rawApprovedRecord": "Tech can help; special links are not really standard, but if the client wants to pay the full balance, tech can likely make something work. The rep later said they did Lite first and would upgrade to VIP the next day."
+                      },
+                      {
+                        "policyId": "v3src_main_istv_upgrade_window",
+                        "rank": 1.62,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "v3_trusted_source_decision",
+                        "approvedBy": [
+                          "Madeline Cary"
+                        ],
+                        "rawApprovedRecord": "A main ISTV Standard cast member may upgrade to VIP at any time before filming. After filming, the package can no longer be upgraded."
+                      },
+                      {
+                        "policyId": "operational_498d085e1dfda892",
+                        "rank": 1.63,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "As of 2026-07-01, multiple contacts are anomalies affecting less than 1% of leads. The process is not broken; reps should clarify if the lead has an appointment and, if so, confirm the Zoom link and hang up. Conditions: The lead reports being contacted by multiple reps. Boundaries: Does not guarantee no process improvements are needed."
+                      },
+                      {
+                        "policyId": "operational_68580d1a4fcd3141",
+                        "rank": 1.6400000000000001,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "As of 2026-05-26, clients can ask fulfillment for Master Mind event information after they have paid. Conditions: The client has already paid. Boundaries: Does not provide information to prospects or unpaid clients; Does not specify what the event entails."
+                      },
+                      {
+                        "policyId": "operational_8cc338f8a27bef4b",
+                        "rank": 1.65,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "not_eligible_raw_evidence",
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline",
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "A minimum payment of $2,500 is required right now to proceed, with the remainder to be paid later for an upgrade. Conditions: Customer cannot pay full amount immediately. Boundaries: Does not guarantee upgrade availability or terms."
+                      },
+                      {
+                        "policyId": "operational_c01b72abfd51007a",
+                        "rank": 1.66,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Rudy"
+                        ],
+                        "rawApprovedRecord": "Termination letters are based on the ALL PAYMENTS channel. If a client has paid but the payment is not yet reflected in that channel, they may still receive a termination letter. The rep should email the client to expect a possible letter and ignore it, as the cast team processes many cancellations and manual updates may not occur in time. Conditions: Payment has been made but is pending (e.g., ACH transfer).; The payment has not yet appeared in the ALL PAYMENTS channel. Boundaries: This does not guarantee the termination letter will be stopped; it only advises proactive communication with the client."
+                      },
+                      {
+                        "policyId": "operational_0a9e906d5f229a87",
+                        "rank": 1.67,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Clients should have access to Money Monday trainings as soon as they join. Conditions: The client has completed the joining process. Boundaries: Does not specify the exact mechanism of access or any delays."
+                      },
+                      {
+                        "policyId": "operational_19fdb181886385b8",
+                        "rank": 1.68,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Wait to go through the qualification process on the Zoom call. You can email or SMS to ask questions, but typically just wait to see if they show for the call and go through the system as usual. Conditions: Lead has a scheduled call 1; Lead's business appears unqualified or unprofessional from initial research. Boundaries: Does not require pre-call disqualification; Does not mandate pre-call outreach."
+                      },
+                      {
+                        "policyId": "operational_28607ab5fadfe394",
+                        "rank": 1.69,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "As of 2026-07-01, we cannot guarantee placement; Amazon has its own approval process, but all episodes submitted so far have been accepted without issue. Google placement is not provided except via our website search. Streaming on Roku, Apple, and Fire TV through the Inside Success TV app is guaranteed. Conditions: The client is purchasing a license that includes submission to these platforms. Boundaries: Does not guarantee acceptance by Amazon or other third-party platforms.; Google TV distribution is not included."
+                      },
+                      {
+                        "policyId": "operational_2f1ce91ce88e2399",
+                        "rank": 1.7,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "No, they will not be denied on the production side if they have a legitimate business and want to use the assets to grow. Conditions: Prospect has a legitimate business and intends to use the assets for growth. Boundaries: Does not address cases where the business is not legitimate or the story is fabricated."
+                      },
+                      {
+                        "policyId": "operational_31610f7682b639b0",
+                        "rank": 1.71,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Go through the qualification process as usual and disqualify on the call only if the client states something that disqualifies them. Conditions: The client has mentioned a lack of funds before the call. Boundaries: Does not guarantee the client will be qualified.; Does not override standard disqualification criteria."
+                      },
+                      {
+                        "policyId": "operational_37ba5d8a6d9ff2e4",
+                        "rank": 1.72,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "route_or_support",
+                        "qualityTier": "contextual_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "If booked for call 2, go through the process as written in the scripts; they may commit. If they have no business, send the rejection letter. Conditions: Lead has completed call 1; Lead's story is not compelling. Boundaries: Does not guarantee commitment; Does not apply if lead has no business."
+                      },
+                      {
+                        "policyId": "operational_4308fa14b14b5502",
+                        "rank": 1.73,
+                        "score": 42.85714285714286,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "authoritative_slack_operational_qna",
+                        "approvedBy": [
+                          "Madeline"
+                        ],
+                        "rawApprovedRecord": "Frame the question as 'how could this be negatively impacting your business' instead of using words like 'cost' or 'costing'. Conditions: Prospect has raised a problem on their own.; You want to quantify impact without asking for revenue. Boundaries: Do not use words like 'cost' or 'costing'.; Does not permit directly asking about revenue."
+                      },
+                      {
+                        "policyId": "claim_9ecfb269cce72cbe__a7",
+                        "rank": 2,
+                        "score": 167.63099861566718,
+                        "admittedToEntailment": true,
+                        "exclusionReasons": [],
+                        "authorityDisposition": "controlling",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "Use the proper upgraded contract and payment-difference link through the current sales-tech or finance route. Do not create custom links manually."
+                      },
+                      {
+                        "policyId": "claim_028cf371215a8cc5__a5",
+                        "rank": 2.25,
+                        "score": 42.857142857142854,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "If a discounted main ISTV Lite client upgrades before filming, carry the $2,000 same-day discount forward to the upgraded main ISTV package and charge only the proper difference."
+                      },
+                      {
+                        "policyId": "claim_0043194d67006434__a8",
+                        "rank": 2.26,
+                        "score": 28.57142857142857,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "Do not upgrade a client after filming."
+                      },
+                      {
+                        "policyId": "claim_26780013d013e10b",
+                        "rank": 2.27,
+                        "score": 28.57142857142857,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "Next Level CEO / Daymond John pricing and payment options: | Package | PIF | Listed payment options | | --- | ---: | --- | | Lite | $10,000 | $2,500 x 4, $3,600 x 3, or $5,000 x 2 | | Standard | $15,000 | $4,000 x 4, $5,000 x 3, or $7,500 x 2 | | Premium VIP | $20,000 | $5,000 x 4, $7,000 x 3, or $10,000 x 2 | | CEO Day upgrade | $5,000 | PIF only |"
+                      },
+                      {
+                        "policyId": "claim_9ecfb269cce72cbe__a3",
+                        "rank": 2.28,
+                        "score": 28.57142857142857,
+                        "admittedToEntailment": false,
+                        "exclusionReasons": [
+                          "superseded_by_available_controlling_authority"
+                        ],
+                        "authorityDisposition": "unresolved",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "If the client received the main ISTV $2,000 same-day discount, that discount carries forward to the upgraded main ISTV package."
+                      },
+                      {
+                        "policyId": "claim_9ecfb269cce72cbe__a2",
+                        "rank": 4,
+                        "score": 162.85193187059656,
+                        "admittedToEntailment": true,
+                        "exclusionReasons": [],
+                        "authorityDisposition": "controlling",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "After filming, it is too late to upgrade the package."
+                      },
+                      {
+                        "policyId": "claim_9ecfb269cce72cbe__a1",
+                        "rank": 5,
+                        "score": 134.80590662753727,
+                        "admittedToEntailment": true,
+                        "exclusionReasons": [],
+                        "authorityDisposition": "controlling",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "canonical",
+                        "sourceKind": "approved_article",
+                        "approvedBy": [
+                          "Syed Moonis Haider"
+                        ],
+                        "rawApprovedRecord": "Main ISTV clients can upgrade before filming."
+                      },
+                      {
+                        "policyId": "claim_d4765c6b8aa3730e",
+                        "rank": 11,
+                        "score": 119.6008744405427,
+                        "admittedToEntailment": true,
+                        "exclusionReasons": [],
+                        "authorityDisposition": "controlling",
+                        "blockedPublishCollision": false,
+                        "answerability": "answer_evidence",
+                        "qualityTier": "trusted_evidence",
+                        "sourceKind": "trusted_slack_summary",
+                        "approvedBy": [
+                          "Rich Allen"
+                        ],
+                        "rawApprovedRecord": "To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late."
+                      }
+                    ]
+                  }
+                ],
+                "answeredNeedCount": 1,
+                "routedNeedCount": 0,
+                "blockedPublishCollisionCount": 0,
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "disposition": "answer",
+                    "coverageMode": "single",
+                    "preferredPolicyIds": [
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "uncoveredRequestElements": [],
+                    "materialConflict": false,
+                    "reason": "The record claim_d4765c6b8aa3730e explicitly outlines the upgrade process: communicate with fulfillment, connect with billing/tech, have client sign new contract, take additional payment, and states the timing (until filming). It directly answers the question.",
+                    "records": [
+                      {
+                        "policyId": "claim_d4765c6b8aa3730e",
+                        "verdict": "direct_answer",
+                        "confidence": 0.95,
+                        "supportingQuote": "To communicate with fulfillment, connect with billing/tech, have the client sign a new upgraded contract, and take additional payment to meet the minimum option of the new license. clients can upgrade until filming; after filming, editing starts and it is too late.",
+                        "supportingQuoteVerified": true,
+                        "supportingQuoteShapeVerified": true,
+                        "uncoveredRequestElements": [],
+                        "specificDifference": "The record directly describes the process for a client who has paid and wants to upgrade, including steps and timing."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "executionMode": {
+                "planning": "hybrid_model",
+                "composition": "model",
+                "validation": "model_and_deterministic"
+              },
+              "validation": {
+                "verdict": "pass",
+                "sentenceChecks": [
+                  {
+                    "sentenceId": "S1",
+                    "status": "supported",
+                    "evidenceRefs": [
+                      "curated_af3fa1d5bbe01125"
+                    ],
+                    "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                    "deterministicErrors": [],
+                    "answeredNeedIds": [
+                      "N1"
+                    ]
+                  },
+                  {
+                    "sentenceId": "S2",
+                    "status": "supported",
+                    "evidenceRefs": [
+                      "claim_d4765c6b8aa3730e"
+                    ],
+                    "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                    "deterministicErrors": [],
+                    "answeredNeedIds": [
+                      "N1"
+                    ]
+                  }
+                ],
+                "removedSentences": [],
+                "unresolvedNeedIds": [],
+                "reason": "Every retained sentence passed deterministic and semantic validation."
+              },
+              "providerAttempts": [
+                {
+                  "provider": "deepseek",
+                  "model": "deepseek-v4-pro",
+                  "purpose": "v4_systemic_query_plan",
+                  "status": "success",
+                  "latencyMs": 3369,
+                  "promptChars": 4243,
+                  "completionTokens": 229,
+                  "totalTokens": 1163,
+                  "reasoningMode": "disabled",
+                  "temperature": 0
+                },
+                {
+                  "provider": "deepseek",
+                  "model": "deepseek-v4-pro",
+                  "purpose": "v5_6_bounded_raw_record_entailment_validation",
+                  "status": "success",
+                  "latencyMs": 3933,
+                  "promptChars": 9084,
+                  "completionTokens": 358,
+                  "totalTokens": 2365,
+                  "reasoningMode": "disabled",
+                  "temperature": 0
+                }
+              ],
+              "stageTimings": {
+                "turnResolutionMs": 5,
+                "queryPlanningMs": 3394,
+                "v5BoundedRetrievalMs": 2891,
+                "v55PublisherSiblingExpansionCount": 4,
+                "v55RawLexicalRecallCount": 24,
+                "v56OwnerConfirmedOverlayMatchCount": 0,
+                "evidenceEntailmentMs": 3993,
+                "sourcePlanningMs": 3993,
+                "evidenceDraftingMs": 3,
+                "validationMs": 1,
+                "totalMs": 10534
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "completed": 1,
+    "lanes": {
+      "answer": 1
+    },
+    "answeredOrPartial": 1,
+    "routes": 0,
+    "providerAttempts": 2,
+    "unsuccessfulProviderAttempts": 0,
+    "latencyMs": {
+      "mean": 10534,
+      "p50": 10534,
+      "p90": 10534,
+      "max": 10534
+    }
+  }
+}

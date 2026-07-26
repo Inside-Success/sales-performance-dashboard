@@ -16,6 +16,7 @@ export type V4SystemicAuthorityResolution = {
   relations: V4SystemicRelation[];
   match_groups: string[][];
   controlling_policy_ids: string[];
+  required_policy_ids?: string[];
   excluded_policy_ids: string[];
   globally_retired_policy_ids?: string[];
   resolved_blocked_topic_ids: string[];
@@ -150,10 +151,14 @@ export function validateV4SystemicAuthorityResolutions(policies: V4SystemicPolic
     if (!resolution.relations.length || resolution.relations.includes("other")) errors.push(`${resolution.id} has no bounded relationship facet`);
     if (!resolution.controlling_policy_ids.length) errors.push(`${resolution.id} has no controlling policy`);
     const controlling = new Set(resolution.controlling_policy_ids);
+    if (resolution.required_policy_ids?.length === 1) errors.push(`${resolution.id} must not declare a one-record collective requirement`);
+    for (const id of resolution.required_policy_ids || []) {
+      if (!controlling.has(id)) errors.push(`${resolution.id} requires non-controlling policy ${id}`);
+    }
     for (const id of [...resolution.excluded_policy_ids, ...(resolution.globally_retired_policy_ids || [])]) {
       if (controlling.has(id)) errors.push(`${resolution.id} both controls and excludes policy ${id}`);
     }
-    for (const id of [...resolution.controlling_policy_ids, ...resolution.excluded_policy_ids, ...(resolution.globally_retired_policy_ids || [])]) {
+    for (const id of [...resolution.controlling_policy_ids, ...(resolution.required_policy_ids || []), ...resolution.excluded_policy_ids, ...(resolution.globally_retired_policy_ids || [])]) {
       if (!ids.has(id)) errors.push(`${resolution.id} references missing policy ${id}`);
     }
     if (blockerIds) {

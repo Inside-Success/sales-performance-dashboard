@@ -6,8 +6,9 @@ import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 import { runAskSalesFaqV3 } from "@/lib/ask-sales-faq/v3/runtime";
 import { getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { runAskSalesFaqV55 } from "@/lib/ask-sales-faq/v5-5/runtime";
+import { runAskSalesFaqV56 } from "@/lib/ask-sales-faq/v5-6/runtime";
 
-type SystemName = "v3" | "v55";
+type SystemName = "v3" | "v55" | "v56";
 type GoldItem = {
   id: string;
   question: string;
@@ -31,7 +32,9 @@ type Dataset = {
   cases: GoldItem[];
   conversations: Conversation[];
 };
-type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> | Awaited<ReturnType<typeof runAskSalesFaqV55>>;
+type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV55>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV56>>;
 type EvaluatedItem = GoldItem & { systems: Partial<Record<SystemName, RuntimeResult>> };
 type EvaluatedConversation = Omit<Conversation, "prompts"> & { prompts: EvaluatedItem[] };
 
@@ -84,26 +87,33 @@ function providerPreflight(systems: SystemName[]) {
       model: v4.model,
       transport: v4.transport,
     },
+    v56: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
   };
   const missing = systems.filter((system) => !preflight[system].configured);
   if (missing.length) {
     throw new Error(`Provider preflight failed for ${missing.join(", ")}; no runtime output was generated`);
   }
-  if (systems.includes("v3") && systems.includes("v55") && (
-    preflight.v3.provider !== preflight.v55.provider || preflight.v3.model !== preflight.v55.model
-  )) {
-    throw new Error("Provider parity failed: V3 and V5.5 must use the same provider and model");
+  const challengers = systems.filter((system): system is "v55" | "v56" => system !== "v3");
+  if (systems.includes("v3") && challengers.some((system) =>
+    preflight.v3.provider !== preflight[system].provider || preflight.v3.model !== preflight[system].model)) {
+    throw new Error("Provider parity failed: V3 and every requested V5 candidate must use the same provider and model");
   }
   return preflight;
 }
 
 async function run(system: SystemName, question: string, history: AskSalesFaqChatMessage[]) {
-  return system === "v3" ? runAskSalesFaqV3(question, history) : runAskSalesFaqV55(question, history);
+  if (system === "v3") return runAskSalesFaqV3(question, history);
+  return system === "v55" ? runAskSalesFaqV55(question, history) : runAskSalesFaqV56(question, history);
 }
 
-function systemOrder(key: string, reverse: boolean): SystemName[] {
+function systemOrder(key: string, reverse: boolean, systems: SystemName[]): SystemName[] {
   const parity = Number.parseInt(sha256(key).slice(-1), 16) % 2;
-  const order: SystemName[] = parity === 0 ? ["v3", "v55"] : ["v55", "v3"];
+  const order = parity === 0 ? [...systems] : [...systems].reverse();
   return reverse ? order.reverse() : order;
 }
 
@@ -149,8 +159,8 @@ async function main() {
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
   const systems = argument("systems", "v3,v55").split(",").map((value) => value.trim()).filter(Boolean) as SystemName[];
-  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55"]).has(system))) {
-    throw new Error("--systems must be a comma-separated subset of v3,v55");
+  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56"]).has(system))) {
+    throw new Error("--systems must be a comma-separated subset of v3,v55,v56");
   }
   const preflight = providerPreflight(systems);
   const selectedCases = mode === "repeatability" ? new Set(dataset.repeatability.caseIds) : null;
@@ -177,6 +187,7 @@ async function main() {
     runtimeEntrypoints: {
       v3: "@/lib/ask-sales-faq/v3/runtime#runAskSalesFaqV3",
       v55: "@/lib/ask-sales-faq/v5-5/runtime#runAskSalesFaqV55",
+      v56: "@/lib/ask-sales-faq/v5-6/runtime#runAskSalesFaqV56",
     },
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,
@@ -191,7 +202,7 @@ async function main() {
   await mkdir(path.dirname(outputPath), { recursive: true });
 
   for (const item of report.cases) {
-    const order = systemOrder(item.id, reverseOrder).filter((system) => systems.includes(system));
+    const order = systemOrder(item.id, reverseOrder, systems);
     report.executionOrder.push({ key: item.id, systems: order });
     for (const system of order) {
       const history: AskSalesFaqChatMessage[] = [{ role: "user", content: item.question }];
@@ -203,7 +214,7 @@ async function main() {
   }
 
   for (const conversation of report.conversations) {
-    const order = systemOrder(conversation.id, reverseOrder).filter((system) => systems.includes(system));
+    const order = systemOrder(conversation.id, reverseOrder, systems);
     report.executionOrder.push({ key: conversation.id, systems: order });
     for (const system of order) {
       const history: AskSalesFaqChatMessage[] = [];
