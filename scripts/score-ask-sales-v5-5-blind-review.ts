@@ -48,15 +48,17 @@ async function main() {
   assert(argument("feedback"), "Provide the completed blind feedback with --feedback=/absolute/or/relative/path.json");
   const outputPath = path.resolve(argument("output", path.join(directory, "blind-human-score.json")));
 
-  const [datasetRaw, runtimeRaw, packetRaw, keyRaw, feedbackRaw] = await Promise.all([
+  const [datasetRaw, runtimeRaw, repeatabilityRaw, packetRaw, keyRaw, feedbackRaw] = await Promise.all([
     readFile(datasetPath, "utf8"),
     readFile(path.join(directory, "primary-runtime.json"), "utf8"),
+    readFile(path.join(directory, "repeatability-runtime.json"), "utf8"),
     readFile(path.join(directory, "blinded-review-packet.json"), "utf8"),
     readFile(path.join(directory, "sealed-unblind-key.json"), "utf8"),
     readFile(feedbackPath, "utf8"),
   ]);
   const dataset = object(JSON.parse(datasetRaw));
   const runtime = object(JSON.parse(runtimeRaw));
+  const repeatability = object(JSON.parse(repeatabilityRaw));
   const packet = object(JSON.parse(packetRaw));
   const key = object(JSON.parse(keyRaw));
   const feedback = object(JSON.parse(feedbackRaw));
@@ -65,6 +67,7 @@ async function main() {
   const feedbackItems = Array.isArray(feedback.items) ? feedback.items.map(object) : [];
 
   assert(text(runtime.status) === "complete", "Primary runtime report is incomplete");
+  assert(text(repeatability.status) === "complete" && text(repeatability.mode) === "repeatability", "Repeatability report is incomplete");
   assert(text(feedback.schemaVersion) === "ask-sales-blind-human-review-v2", "Feedback must use the corrected review schema");
   assert(text(runtime.datasetSha256) === sha256(datasetRaw), "Runtime report is not bound to this dataset");
   assert(text(key.packetFileSha256) === sha256(packetRaw), "Unblind key is not bound to this packet file");
@@ -140,6 +143,26 @@ async function main() {
       Array.isArray(conversation.prompts) ? conversation.prompts.map(object) : []) : []),
   ];
   const runtimeById = new Map(runtimeItems.map((item) => [text(item.id), item]));
+  const repeatabilityItems = [
+    ...(Array.isArray(repeatability.cases) ? repeatability.cases.map(object) : []),
+    ...(Array.isArray(repeatability.conversations) ? repeatability.conversations.map(object).flatMap((conversation) =>
+      Array.isArray(conversation.prompts) ? conversation.prompts.map(object) : []) : []),
+  ];
+  const repeatabilityMismatches: Array<{ id: string; system: string }> = [];
+  const stableDecision = (value: JsonRecord) => JSON.stringify({
+    lane: text(value.lane) || text(value.outcome),
+    needsRoute: value.needsRoute === true,
+    routeChannels: Array.isArray(value.routeChannels) ? value.routeChannels : [],
+  });
+  for (const repeated of repeatabilityItems) {
+    const primary = runtimeById.get(text(repeated.id));
+    assert(primary, `Repeatability prompt ${text(repeated.id)} is missing from the primary report`);
+    for (const system of ["v3", "v55"] as const) {
+      if (stableDecision(object(object(primary.systems)[system])) !== stableDecision(object(object(repeated.systems)[system]))) {
+        repeatabilityMismatches.push({ id: text(repeated.id), system });
+      }
+    }
+  }
   for (const item of goldItems.filter((entry) => text(entry.expectedDisposition) === "route")) {
     const runtimeItem = runtimeById.get(text(item.id));
     assert(runtimeItem, `Runtime output missing for routed control ${text(item.id)}`);
@@ -162,12 +185,14 @@ async function main() {
     noV55CriticalErrors: perSystem.v55.materialErrors <= number(gate.maximumV55CriticalErrors),
     noV55WrongActionOwners: perSystem.v55.wrongActionOwners <= number(gate.maximumV55WrongActionOwners),
     minimumV55AcceptableRate: v55AcceptableRate >= number(gate.minimumV55AcceptableRate),
+    repeatabilityDecisionStable: repeatabilityMismatches.length === 0,
     explicitOwnerApprovalRecorded: false,
   };
   const technicalGatePassed = checks.meaningfulPairwiseLead
     && checks.noV55CriticalErrors
     && checks.noV55WrongActionOwners
-    && checks.minimumV55AcceptableRate;
+    && checks.minimumV55AcceptableRate
+    && checks.repeatabilityDecisionStable;
   const result = {
     schemaVersion: "ask-sales-v5-5-blind-human-score-v2",
     scoredAt: new Date().toISOString(),
@@ -186,6 +211,7 @@ async function main() {
     },
     preregisteredGate: gate,
     checks,
+    repeatabilityMismatches,
     technicalGatePassed,
     productionPromotionAuthorized: false,
     decision: technicalGatePassed

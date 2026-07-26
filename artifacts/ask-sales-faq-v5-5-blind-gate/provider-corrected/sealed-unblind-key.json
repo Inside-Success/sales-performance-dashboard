@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "ask-sales-v5-5-unblind-key-v2",
+  "packetId": "v55-blind-32cb80bf99b6",
+  "packetContentSha256": "dd4a5e215ff4bc97f6a627aff71234fb6f10bf935d2aaa13596f0496191946d5",
+  "packetFileSha256": "2005362a7557803f45cf17e223de505ac0f10dc8ee4d803e5e969939266f745a",
+  "runtimeInputSha256": "dbdb92251630c38a6f3a29f5696dd23b7b52a59279d37cec37234e24e8d35781",
+  "datasetSha256": "32cb80bf99b6def87aa2715347aa32a4d5b5aebdc9d59a6569e24722bb63605f",
+  "mappingByItem": {
+    "dj-cohort-deadline": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "istv-placement-duration": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "call2-baseline-quote-sequence": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "new-business-eligibility": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "contracted-payment-link-after-decline": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "roi-discussion-boundary": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "call2-same-week": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "oncehub-applicant-cancellation": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "cast-member-contact-privacy": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "minor-cast-member-eligibility": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "authors-business-owner-exception": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "best-doctors-own-practice": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "route-finance-action": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "route-greenlight-action": {
+      "A": "v3",
+      "B": "v55"
+    },
+    "call1-pricing-turn-1": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "call1-pricing-turn-2": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "editing-onboarding-turn-1": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "editing-onboarding-turn-2": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "content-rights-turn-1": {
+      "A": "v55",
+      "B": "v3"
+    },
+    "content-rights-turn-2": {
+      "A": "v55",
+      "B": "v3"
+    }
+  }
+}

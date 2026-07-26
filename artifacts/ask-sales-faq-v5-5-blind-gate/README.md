@@ -1,20 +1,13 @@
 # Ask Sales blind answer review
 
-Open `ASK-SALES-BLIND-REVIEW.html` in a browser. It shows one question at a time in four batches of five.
+## Superseded root packet — do not review or score
 
-For each question:
+The files in this directory root are retained only as an audit record of an invalid run. They must not be used to compare V3 with V5.5 because:
 
-1. Read the authoritative rule.
-2. Choose Answer A, Answer B, both acceptable, or neither.
-3. Mark a serious error only for a materially wrong rule, unsafe answer, privacy issue, or wrong action owner.
-4. Add a short note only when useful.
+- neither runtime had a configured model provider, so all provider-attempt counts were zero;
+- the supposed V5.5 side called the frozen V5.4 entrypoint;
+- the user reviewed the resulting fallback-heavy packet before those defects were found.
 
-At the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.
+The corrected provider-backed diagnostic and its low-overload review packet are in [`provider-corrected/`](provider-corrected/). Open `provider-corrected/ASK-SALES-BLIND-REVIEW.html`, not the root HTML file.
 
-Return the completed JSON and score it from the repository root with:
-
-```bash
-pnpm score:ask-sales-faq:v5-5:blind-review -- --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json
-```
-
-The scorer rejects incomplete or mismatched feedback, unblinds only after review, checks the preregistered thresholds, and always leaves production promotion unauthorized until the owner gives separate approval.
+The corrected run uses the real production V3 and frozen isolated V5.5 entrypoints with provider/model parity. It is useful diagnostic evidence, but these questions are already exposed and therefore are not a fresh unseen promotion holdout. V5.5 also has a repeatability promotion hold. Production promotion remains unauthorized.

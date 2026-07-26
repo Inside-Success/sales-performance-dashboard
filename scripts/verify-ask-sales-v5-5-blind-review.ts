@@ -86,6 +86,7 @@ async function main() {
   ];
   const primaryById = new Map(flattenRuntime(runtime).map((item) => [text(item.id), item]));
   const repeatedItems = flattenRuntime(repeatability);
+  const repeatabilityMismatches: Array<{ id: string; system: string; primary: string; repeat: string }> = [];
   assert(repeatedItems.length === 9, "Repeatability run must contain the preregistered nine prompts");
   for (const repeated of repeatedItems) {
     const primary = primaryById.get(text(repeated.id));
@@ -99,7 +100,14 @@ async function main() {
         routeChannels: Array.isArray(value.routeChannels) ? value.routeChannels : [],
       });
       assert(text(primaryOutput.answer) && text(repeatedOutput.answer), `${system} returned an empty repeatability answer for ${text(repeated.id)}`);
-      assert(stableFields(primaryOutput) === stableFields(repeatedOutput), `${system} changed its decision or route for repeatability prompt ${text(repeated.id)}`);
+      const primaryStable = stableFields(primaryOutput);
+      const repeatedStable = stableFields(repeatedOutput);
+      if (primaryStable !== repeatedStable) repeatabilityMismatches.push({
+        id: text(repeated.id),
+        system,
+        primary: primaryStable,
+        repeat: repeatedStable,
+      });
     }
   }
 
@@ -140,12 +148,15 @@ async function main() {
   }
 
   process.stdout.write(`${JSON.stringify({
-    status: "verified",
+    status: repeatabilityMismatches.length ? "verified_with_promotion_hold" : "verified",
     prompts: items.length,
     batches: 4,
     systemsHidden: true,
     selfContainedHtml: true,
     groupBalance: aCounts,
+    repeatabilityDecisionStable: repeatabilityMismatches.length === 0,
+    repeatabilityMismatches,
+    promotionHold: repeatabilityMismatches.length > 0,
     datasetSha256: sha256(datasetRaw),
     runtimeSha256: sha256(runtimeRaw),
     repeatabilitySha256: sha256(repeatabilityRaw),
