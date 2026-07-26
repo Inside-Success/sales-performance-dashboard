@@ -121,8 +121,13 @@ function htmlDocument(packet: JsonRecord) {
     const packet = ${inlinePacket};
     const items = packet.items;
     const storageKey = 'ask-sales-blind-review-' + packet.packetId;
+    let memoryStorage = {};
+    const safeStorage = (() => {
+      try { localStorage.setItem('__ask_sales_storage_test__','1'); localStorage.removeItem('__ask_sales_storage_test__'); return localStorage; }
+      catch { return { getItem:(key) => memoryStorage[key] || null, setItem:(key,value) => { memoryStorage[key]=value; }, removeItem:(key) => { delete memoryStorage[key]; } }; }
+    })();
     let index = 0;
-    let responses = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    let responses = JSON.parse(safeStorage.getItem(storageKey) || '{}');
     const esc = (value) => String(value ?? '').replace(/[&<>\"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
     function answerPanel(label, output) {
       const route = output.routeChannels?.length ? '<p class="muted"><strong>Route:</strong> ' + esc(output.routeChannels.join(', ')) + '</p>' : '';
@@ -159,7 +164,7 @@ function htmlDocument(packet: JsonRecord) {
         seriousError: document.querySelector('input[name=seriousError]:checked')?.value || '',
         note: document.getElementById('note')?.value || ''
       };
-      localStorage.setItem(storageKey, JSON.stringify(responses));
+      safeStorage.setItem(storageKey, JSON.stringify(responses));
       const status = document.getElementById('saveStatus'); if (status) status.textContent = 'Saved locally';
     }
     function exportPayload() {
@@ -174,8 +179,8 @@ function htmlDocument(packet: JsonRecord) {
       };
     }
     document.getElementById('download').addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(),null,2)+'\\n'],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ask-sales-blind-review-feedback.json'; a.click(); URL.revokeObjectURL(a.href); document.getElementById('toolStatus').textContent='Feedback file downloaded.'; });
-    document.getElementById('copy').addEventListener('click', async () => { await navigator.clipboard.writeText(JSON.stringify(exportPayload(),null,2)); document.getElementById('toolStatus').textContent='Feedback JSON copied.'; });
-    document.getElementById('clear').addEventListener('click', () => { if (confirm('Clear all saved choices for this review?')) { responses={}; localStorage.removeItem(storageKey); index=0; render(); document.getElementById('toolStatus').textContent='Saved choices cleared.'; } });
+    document.getElementById('copy').addEventListener('click', async () => { const value=JSON.stringify(exportPayload(),null,2); try { await navigator.clipboard.writeText(value); } catch { const area=document.createElement('textarea'); area.value=value; document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove(); } document.getElementById('toolStatus').textContent='Feedback JSON copied.'; });
+    document.getElementById('clear').addEventListener('click', () => { if (confirm('Clear all saved choices for this review?')) { responses={}; safeStorage.removeItem(storageKey); index=0; render(); document.getElementById('toolStatus').textContent='Saved choices cleared.'; } });
     render();
   </script>
 </body>
@@ -251,7 +256,7 @@ async function main() {
     systemsStillBlindedDuringReview: true,
     items: items.map((item) => ({ id: item.id, preference: "", seriousError: "", note: "" })),
   };
-  const guide = `# Ask Sales blind answer review\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the authoritative rule.\n2. Choose Answer A, Answer B, both acceptable, or neither.\n3. Mark a serious error only for a materially wrong rule, unsafe answer, privacy issue, or wrong action owner.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.\n`;
+  const guide = `# Ask Sales blind answer review\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the authoritative rule.\n2. Choose Answer A, Answer B, both acceptable, or neither.\n3. Mark a serious error only for a materially wrong rule, unsafe answer, privacy issue, or wrong action owner.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.\n\nReturn the completed JSON and score it from the repository root with:\n\n\`\`\`bash\npnpm score:ask-sales-faq:v5-5:blind-review -- --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json\n\`\`\`\n\nThe scorer rejects incomplete or mismatched feedback, unblinds only after review, checks the preregistered thresholds, and always leaves production promotion unauthorized until the owner gives separate approval.\n`;
   await mkdir(outputDirectory, { recursive: true });
   await Promise.all([
     writeFile(path.join(outputDirectory, "blinded-review-packet.json"), packetRaw, "utf8"),

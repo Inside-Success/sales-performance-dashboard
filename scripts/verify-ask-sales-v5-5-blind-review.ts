@@ -28,16 +28,19 @@ function assert(condition: unknown, message: string): asserts condition {
 async function main() {
   const directory = path.resolve(argument("dir", "artifacts/ask-sales-faq-v5-5-blind-gate"));
   const datasetPath = path.resolve(argument("dataset", "tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json"));
-  const [datasetRaw, runtimeRaw, packetRaw, keyRaw, templateRaw, html, guide] = await Promise.all([
+  const [datasetRaw, runtimeRaw, repeatabilityRaw, packetRaw, keyRaw, templateRaw, html, guide, scorer] = await Promise.all([
     readFile(datasetPath, "utf8"),
     readFile(path.join(directory, "primary-runtime.json"), "utf8"),
+    readFile(path.join(directory, "repeatability-runtime.json"), "utf8"),
     readFile(path.join(directory, "blinded-review-packet.json"), "utf8"),
     readFile(path.join(directory, "sealed-unblind-key.json"), "utf8"),
     readFile(path.join(directory, "review-feedback-template.json"), "utf8"),
     readFile(path.join(directory, "ASK-SALES-BLIND-REVIEW.html"), "utf8"),
     readFile(path.join(directory, "README.md"), "utf8"),
+    readFile(path.resolve("scripts/score-ask-sales-v5-5-blind-review.ts"), "utf8"),
   ]);
   const runtime = object(JSON.parse(runtimeRaw));
+  const repeatability = object(JSON.parse(repeatabilityRaw));
   const packet = object(JSON.parse(packetRaw));
   const key = object(JSON.parse(keyRaw));
   const template = object(JSON.parse(templateRaw));
@@ -46,7 +49,9 @@ async function main() {
   const runtimeSummary = object(runtime.summary);
 
   assert(text(runtime.status) === "complete", "Runtime report is not complete");
+  assert(text(repeatability.status) === "complete" && text(repeatability.mode) === "repeatability", "Repeatability report is not complete");
   assert(text(runtime.datasetSha256) === sha256(datasetRaw), "Runtime dataset hash does not match the sealed gold");
+  assert(text(repeatability.datasetSha256) === sha256(datasetRaw), "Repeatability report is not bound to the sealed gold");
   assert(object(runtimeSummary.v3).completed === 20 && object(runtimeSummary.v55).completed === 20, "Both systems must complete all 20 prompts");
   assert(object(runtimeSummary.v3).terminalProviderFailures === 0 && object(runtimeSummary.v55).terminalProviderFailures === 0, "Provider failures invalidate the blind packet");
   assert(items.length === 20, "Blind packet must contain exactly 20 items");
@@ -58,6 +63,30 @@ async function main() {
   assert(text(key.packetContentSha256) === text(packet.packetSha256), "Packet content hash does not match unblind key");
   assert(text(key.packetFileSha256) === sha256(packetRaw), "Packet file hash does not match unblind key");
   assert(text(template.packetSha256) === text(packet.packetSha256), "Feedback template is bound to the wrong packet");
+
+  const flattenRuntime = (report: JsonRecord) => [
+    ...(Array.isArray(report.cases) ? report.cases.map(object) : []),
+    ...(Array.isArray(report.conversations) ? report.conversations.map(object).flatMap((conversation) =>
+      Array.isArray(conversation.prompts) ? conversation.prompts.map(object) : []) : []),
+  ];
+  const primaryById = new Map(flattenRuntime(runtime).map((item) => [text(item.id), item]));
+  const repeatedItems = flattenRuntime(repeatability);
+  assert(repeatedItems.length === 9, "Repeatability run must contain the preregistered nine prompts");
+  for (const repeated of repeatedItems) {
+    const primary = primaryById.get(text(repeated.id));
+    assert(primary, `Repeatability prompt ${text(repeated.id)} is absent from the primary run`);
+    for (const system of ["v3", "v55"] as const) {
+      const primaryOutput = object(object(primary.systems)[system]);
+      const repeatedOutput = object(object(repeated.systems)[system]);
+      const stableFields = (value: JsonRecord) => JSON.stringify({
+        answer: text(value.answer),
+        lane: text(value.lane) || text(value.outcome),
+        needsRoute: value.needsRoute === true,
+        routeChannels: Array.isArray(value.routeChannels) ? value.routeChannels : [],
+      });
+      assert(stableFields(primaryOutput) === stableFields(repeatedOutput), `${system} changed its output for repeatability prompt ${text(repeated.id)}`);
+    }
+  }
 
   const groupMappings = new Map<string, string>();
   const dataset = object(JSON.parse(datasetRaw));
@@ -87,9 +116,10 @@ async function main() {
   assert(!/<script[^>]+src=|<link[^>]+href=|https?:\/\//i.test(html), "Reviewer HTML must be self-contained and make no network requests");
   assert(/one question at a time/i.test(guide) && /four batches of five/i.test(guide), "Reviewer guide does not state the low-overload workflow");
   assert(/Download feedback JSON/.test(html) && /Both acceptable/.test(html) && /No serious error/.test(html), "Reviewer controls are incomplete");
+  assert(/technicalGatePassed/.test(scorer) && /productionPromotionAuthorized: false/.test(scorer), "Blind scorer must enforce a non-promoting technical decision");
 
-  const secretPattern = /(?:sk-[A-Za-z0-9_-]{20,}|gh[opsu]_[A-Za-z0-9]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)/;
-  for (const [name, contents] of Object.entries({ datasetRaw, runtimeRaw, packetRaw, keyRaw, templateRaw, html, guide })) {
+  const secretPattern = /(?:\bsk-[A-Za-z0-9_-]{20,}|\bgh[opsu]_[A-Za-z0-9]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)/;
+  for (const [name, contents] of Object.entries({ datasetRaw, runtimeRaw, repeatabilityRaw, packetRaw, keyRaw, templateRaw, html, guide, scorer })) {
     assert(!secretPattern.test(contents), `${name} contains a credential-like value`);
   }
 
@@ -102,6 +132,7 @@ async function main() {
     groupBalance: aCounts,
     datasetSha256: sha256(datasetRaw),
     runtimeSha256: sha256(runtimeRaw),
+    repeatabilitySha256: sha256(repeatabilityRaw),
     packetFileSha256: sha256(packetRaw),
   }, null, 2)}\n`);
 }

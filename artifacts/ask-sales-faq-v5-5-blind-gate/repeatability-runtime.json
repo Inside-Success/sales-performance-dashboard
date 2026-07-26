@@ -1,0 +1,4318 @@
+{
+  "schemaVersion": "ask-sales-v5-5-blind-runtime-v1",
+  "status": "complete",
+  "mode": "repeatability",
+  "promotionEvidence": false,
+  "datasetName": "Ask Sales V5.5 frozen blind human gate",
+  "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-5-blind-gate/tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json",
+  "datasetSha256": "55208bc63a54dd3e1291fa6b122e65e9f1c9d23d62bebb9e198e8a0b4d69edb4",
+  "datasetSealedAt": "2026-07-26T00:00:00.000Z",
+  "runtimeFreezeCommit": "f8d9915ba2be2d87374d748d8f3bb62e3b409afb",
+  "evaluationToolCommit": "3076d8d6ce13057d0fd239f6556a9665800ec319",
+  "systems": [
+    "v3",
+    "v55"
+  ],
+  "pairing": "deterministically alternated per standalone case or complete conversation",
+  "reverseOrder": true,
+  "startedAt": "2026-07-26T01:25:28.449Z",
+  "completedAt": "2026-07-26T01:25:41.638Z",
+  "expectedPromptsPerSystem": 9,
+  "executionOrder": [
+    {
+      "key": "dj-cohort-deadline",
+      "systems": [
+        "v3",
+        "v55"
+      ]
+    },
+    {
+      "key": "new-business-eligibility",
+      "systems": [
+        "v3",
+        "v55"
+      ]
+    },
+    {
+      "key": "call2-same-week",
+      "systems": [
+        "v55",
+        "v3"
+      ]
+    },
+    {
+      "key": "route-finance-action",
+      "systems": [
+        "v55",
+        "v3"
+      ]
+    },
+    {
+      "key": "route-greenlight-action",
+      "systems": [
+        "v3",
+        "v55"
+      ]
+    },
+    {
+      "key": "conversation-call1-pricing",
+      "systems": [
+        "v55",
+        "v3"
+      ]
+    },
+    {
+      "key": "conversation-content-rights",
+      "systems": [
+        "v3",
+        "v55"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "dj-cohort-deadline",
+      "question": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Daymond John / Next Level CEO leads are not subject to the main ISTV Sunday cohort deadline, and their acceptance letters should not include that deadline.",
+      "requiredConcepts": [
+        "DJ/NLCEO excluded from Sunday cohort deadline"
+      ],
+      "forbiddenConcepts": [
+        "apply the main ISTV Sunday deadline to DJ/NLCEO"
+      ],
+      "evaluationStrata": [
+        "product-scope",
+        "deadline",
+        "relationship-matching"
+      ],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778524418.669819",
+        "slack:C0AUQKNR8CF:1778525932.194489",
+        "slack:C0AUQKNR8CF:1778534873.951559"
+      ],
+      "approvedBy": [
+        "Rudy",
+        "Rich"
+      ],
+      "systems": {
+        "v3": {
+          "ok": true,
+          "conversationId": "",
+          "messageId": "",
+          "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+          "structuredAnswer": {
+            "summary": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+            "sections": [],
+            "confidenceLabel": "Low",
+            "confidenceScore": 0,
+            "sourceMode": "fallback"
+          },
+          "outcome": "route_from_evidence",
+          "source": null,
+          "model": null,
+          "provider": null,
+          "needsRoute": true,
+          "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "redactions": [],
+          "latencyMs": 79,
+          "sanitizedQuestion": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+          "contextualQuestion": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+          "matchedArticleId": null,
+          "errorClass": "v3_provider_failure",
+          "runtimeMetadata": {
+            "pipelineVersion": "v3",
+            "knowledgeVersion": "8c8c677c1209f2d7",
+            "providerAttempts": [],
+            "v3": {
+              "turn": {
+                "kind": "new",
+                "productScope": "dj_nlceo",
+                "excludedScopes": [],
+                "usedImmediateContext": false,
+                "previousUserQuestionUsed": false,
+                "previousAssistantAnswerUsed": false,
+                "explicitScopeSwitch": false,
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+              },
+              "retrieval": {
+                "query": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+                "preselectionCandidateCount": 20,
+                "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                "evidenceContract": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?"
+                    }
+                  ],
+                  "support": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ]
+                },
+                "candidateCount": 0,
+                "candidates": [],
+                "blockedCandidates": [
+                  {
+                    "id": "blocked_913ac98aba6b4bca",
+                    "score": 9
+                  },
+                  {
+                    "id": "blocked_a831b31bb88c5f4b",
+                    "score": 3
+                  }
+                ]
+              },
+              "selection": {
+                "selectedPolicyIds": [],
+                "rejectedPolicyIds": [],
+                "coverage": [
+                  {
+                    "need": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+                    "status": "unresolved",
+                    "policyIds": [],
+                    "reason": "No applicable approved evidence was selected."
+                  }
+                ]
+              },
+              "validation": {
+                "verdict": "pass",
+                "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                "removedClaims": []
+              },
+              "stageTimings": {
+                "turnResolutionMs": 4,
+                "retrievalMs": 71,
+                "evidenceSelectionMs": 0,
+                "validationMs": 0,
+                "totalMs": 79
+              }
+            }
+          }
+        },
+        "v55": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": null,
+          "model": null,
+          "latencyMs": 989,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+              "standaloneQuestion": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "dj_nlceo",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 15,
+              "candidates": [
+                {
+                  "id": "claim_49d7d7b8c2c45c22__a1",
+                  "rank": 1,
+                  "score": 215.04332924291586,
+                  "decisionKey": "main-istv-call-2-cohort-reschedule-rules-answer-4-a1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_49d7d7b8c2c45c22__a1::a1"
+                },
+                {
+                  "id": "claim_49d7d7b8c2c45c22__a3",
+                  "rank": 2,
+                  "score": 207.73007243796383,
+                  "decisionKey": "main-istv-call-2-cohort-reschedule-rules-answer-4-a3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_49d7d7b8c2c45c22__a3::a1"
+                },
+                {
+                  "id": "owner-dj-nlceo-current-offer-overview",
+                  "rank": 3,
+                  "score": 206.7502039962788,
+                  "decisionKey": "dj-nlceo-current-offer-overview",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "owner-dj-nlceo-current-offer-overview::a2"
+                },
+                {
+                  "id": "claim_bb04a794e0a74ea5__a1",
+                  "rank": 4,
+                  "score": 202.61352661104837,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-5-a1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_bb04a794e0a74ea5__a1::a1"
+                },
+                {
+                  "id": "claim_0de0110a15158df9__a5",
+                  "rank": 5,
+                  "score": 196.4109786818908,
+                  "decisionKey": "main-istv-call-2-cohort-reschedule-rules-what-reps-can-say-1-a5",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_0de0110a15158df9__a5::a1"
+                },
+                {
+                  "id": "claim_bb04a794e0a74ea5__a4",
+                  "rank": 6,
+                  "score": 187.81727640662174,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-5-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_bb04a794e0a74ea5__a4::a1"
+                },
+                {
+                  "id": "operational_9c2e2877e4eb0eca",
+                  "rank": 7,
+                  "score": 187.65497106256734,
+                  "decisionKey": "dj-leads-sunday-cohort-exclusion",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_9c2e2877e4eb0eca::a1"
+                },
+                {
+                  "id": "claim_7b369e2044443924__a6",
+                  "rank": 8,
+                  "score": 180.87240603178887,
+                  "decisionKey": "greenlight-pdf-and-cohort-deadlines-what-reps-must-not-say-1-a6",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_7b369e2044443924__a6::a1"
+                },
+                {
+                  "id": "claim_0043194d67006434__a6",
+                  "rank": 9,
+                  "score": 120.64175366216459,
+                  "decisionKey": "istv-nlceo-pricing-and-same-day-discount-what-reps-must-not-say-1-a6",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "main_istv",
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_0043194d67006434__a6::a1"
+                },
+                {
+                  "id": "operational_9b68964b0c744ff8",
+                  "rank": 10,
+                  "score": 118.06036364462159,
+                  "decisionKey": "dj-call2-extension",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_9b68964b0c744ff8::a1"
+                },
+                {
+                  "id": "operational_163700d38c9f7854",
+                  "rank": 11,
+                  "score": 106.27452517702199,
+                  "decisionKey": "dj-no-cohort-rebooking-allowed",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "dj_nlceo"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_163700d38c9f7854::a1"
+                },
+                {
+                  "id": "operational_8d18b740370bfd9f",
+                  "rank": 12,
+                  "score": 95.67944077142363,
+                  "decisionKey": "cohort-extension-policy",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_8d18b740370bfd9f::a1"
+                },
+                {
+                  "id": "operational_7d7232bc7d71f7c3",
+                  "rank": 13,
+                  "score": 95.24845596016712,
+                  "decisionKey": "same-week-commitment-required-after-call1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_7d7232bc7d71f7c3::a2"
+                },
+                {
+                  "id": "operational_ea9828f2c4a5b6cc",
+                  "rank": 14,
+                  "score": 94.52635706877406,
+                  "decisionKey": "greenlight-call2-scheduling-deadline",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_ea9828f2c4a5b6cc::a1"
+                },
+                {
+                  "id": "operational_1871230cd437435b",
+                  "rank": 15,
+                  "score": 56.87344238287094,
+                  "decisionKey": "calling-time-cutoff",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_1871230cd437435b::a1"
+                }
+              ],
+              "blockedTopicIds": [
+                "blocked_913ac98aba6b4bca"
+              ],
+              "blockedMatches": [
+                {
+                  "needId": "N1",
+                  "topicId": "blocked_913ac98aba6b4bca",
+                  "score": 0.625,
+                  "matchedTerms": [
+                    "the",
+                    "sunday",
+                    "cohort",
+                    "deadline",
+                    "rul",
+                    "next",
+                    "level",
+                    "ceo",
+                    "lead"
+                  ]
+                }
+              ],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 53,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_49d7d7b8c2c45c22__a1",
+                      "claim_49d7d7b8c2c45c22__a3",
+                      "owner-dj-nlceo-current-offer-overview",
+                      "claim_bb04a794e0a74ea5__a1",
+                      "claim_0de0110a15158df9__a5",
+                      "claim_bb04a794e0a74ea5__a4",
+                      "operational_9c2e2877e4eb0eca",
+                      "claim_7b369e2044443924__a6",
+                      "claim_0043194d67006434__a6",
+                      "operational_9b68964b0c744ff8",
+                      "operational_163700d38c9f7854",
+                      "operational_8d18b740370bfd9f",
+                      "operational_7d7232bc7d71f7c3",
+                      "operational_ea9828f2c4a5b6cc",
+                      "operational_1871230cd437435b"
+                    ],
+                    "rejectionCounts": {
+                      "wrong_product_scope": 1063,
+                      "relation": 2363,
+                      "decision_contract": 2318,
+                      "payment_qualifier": 11
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+                  "relation": "deadline",
+                  "request_kind": "knowledge",
+                  "product_scope": "dj_nlceo",
+                  "domains": [],
+                  "actions": [],
+                  "entities": [],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 10,
+              "reasoning_summary": "Used the complete source question as one retrieval need. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                }
+              ],
+              "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_fallback",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [],
+            "stageTimings": {
+              "turnResolutionMs": 4,
+              "queryPlanningMs": 17,
+              "v5BoundedRetrievalMs": 932,
+              "sourcePlanningMs": 29,
+              "evidenceDraftingMs": 1,
+              "validationMs": 0,
+              "totalMs": 989
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "new-business-eligibility",
+      "question": "Is there a minimum time a business must have been operating before it can qualify?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No fixed minimum time in business was set. A new business can still be approved when it is legitimate, has the means, and otherwise qualifies.",
+      "requiredConcepts": [
+        "no fixed minimum",
+        "legitimate business",
+        "financial means"
+      ],
+      "forbiddenConcepts": [
+        "automatic one-year minimum",
+        "automatic approval"
+      ],
+      "evaluationStrata": [
+        "qualification",
+        "conditional-rule"
+      ],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779838579.542829",
+        "slack:C0AUQKNR8CF:1779839376.676389",
+        "slack:C0AUQKNR8CF:1779840932.470589"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rudy"
+      ],
+      "systems": {
+        "v3": {
+          "ok": true,
+          "conversationId": "",
+          "messageId": "",
+          "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+          "structuredAnswer": {
+            "summary": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+            "sections": [],
+            "confidenceLabel": "Low",
+            "confidenceScore": 0,
+            "sourceMode": "fallback"
+          },
+          "outcome": "route_from_evidence",
+          "source": null,
+          "model": null,
+          "provider": null,
+          "needsRoute": true,
+          "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "redactions": [],
+          "latencyMs": 58,
+          "sanitizedQuestion": "Is there a minimum time a business must have been operating before it can qualify?",
+          "contextualQuestion": "Is there a minimum time a business must have been operating before it can qualify?",
+          "matchedArticleId": null,
+          "errorClass": "v3_provider_failure",
+          "runtimeMetadata": {
+            "pipelineVersion": "v3",
+            "knowledgeVersion": "8c8c677c1209f2d7",
+            "providerAttempts": [],
+            "v3": {
+              "turn": {
+                "kind": "new",
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "usedImmediateContext": false,
+                "previousUserQuestionUsed": false,
+                "previousAssistantAnswerUsed": false,
+                "explicitScopeSwitch": false,
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+              },
+              "retrieval": {
+                "query": "Is there a minimum time a business must have been operating before it can qualify?",
+                "preselectionCandidateCount": 20,
+                "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                "evidenceContract": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Is there a minimum time a business must have been operating before it can qualify?"
+                    }
+                  ],
+                  "support": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ]
+                },
+                "candidateCount": 0,
+                "candidates": [],
+                "blockedCandidates": [
+                  {
+                    "id": "blocked_5e90cd97a0faf7bf",
+                    "score": 3
+                  }
+                ]
+              },
+              "selection": {
+                "selectedPolicyIds": [],
+                "rejectedPolicyIds": [],
+                "coverage": [
+                  {
+                    "need": "Is there a minimum time a business must have been operating before it can qualify?",
+                    "status": "unresolved",
+                    "policyIds": [],
+                    "reason": "No applicable approved evidence was selected."
+                  }
+                ]
+              },
+              "validation": {
+                "verdict": "pass",
+                "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                "removedClaims": []
+              },
+              "stageTimings": {
+                "turnResolutionMs": 0,
+                "retrievalMs": 57,
+                "evidenceSelectionMs": 0,
+                "validationMs": 0,
+                "totalMs": 58
+              }
+            }
+          }
+        },
+        "v55": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": null,
+          "model": null,
+          "latencyMs": 942,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Is there a minimum time a business must have been operating before it can qualify?",
+              "standaloneQuestion": "Is there a minimum time a business must have been operating before it can qualify?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Is there a minimum time a business must have been operating before it can qualify?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 3,
+              "candidates": [
+                {
+                  "id": "claim_6e636dc287b976f5",
+                  "rank": 1,
+                  "score": 148.08271831152973,
+                  "decisionKey": "minimum-time-in-business",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_6e636dc287b976f5::a1"
+                },
+                {
+                  "id": "operational_401a1c3c868c9be1",
+                  "rank": 2,
+                  "score": 130.6046927232478,
+                  "decisionKey": "new-business-eligibility",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_401a1c3c868c9be1::a1"
+                },
+                {
+                  "id": "operational_dc30d8c99ef71b34",
+                  "rank": 3,
+                  "score": 69.4784173207955,
+                  "decisionKey": "cast-member-minimum-age",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_dc30d8c99ef71b34::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 3,
+                    "directLaneSelected": 3,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_6e636dc287b976f5",
+                      "operational_401a1c3c868c9be1",
+                      "operational_dc30d8c99ef71b34"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 3450,
+                      "decision_contract": 3412,
+                      "payment_qualifier": 4,
+                      "decision_object": 33
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Is there a minimum time a business must have been operating before it can qualify?",
+                  "relation": "limit",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [],
+                  "actions": [],
+                  "entities": [],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 10,
+              "reasoning_summary": "Used the complete source question as one retrieval need. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                }
+              ],
+              "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_fallback",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [],
+            "stageTimings": {
+              "turnResolutionMs": 1,
+              "queryPlanningMs": 3,
+              "v5BoundedRetrievalMs": 935,
+              "sourcePlanningMs": 3,
+              "evidenceDraftingMs": 0,
+              "validationMs": 0,
+              "totalMs": 942
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "call2-same-week",
+      "question": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Call 2 must be scheduled in the same week as Call 1. The stated exceptions are genuine emergencies such as serious illness, a car accident, or a death in the family; investor availability is not one of them.",
+      "requiredConcepts": [
+        "same week",
+        "investor travel is not an emergency exception"
+      ],
+      "forbiddenConcepts": [
+        "automatic two-week extension"
+      ],
+      "evaluationStrata": [
+        "deadline",
+        "exception",
+        "conditional-rule"
+      ],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781545356.192409",
+        "slack:C0AUQKNR8CF:1781545577.365009"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "systems": {
+        "v55": {
+          "ok": true,
+          "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+          "structuredAnswer": {
+            "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "provider": null,
+          "model": null,
+          "latencyMs": 2316,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+              "standaloneQuestion": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 15,
+              "candidates": [
+                {
+                  "id": "claim_e48b234c260720af",
+                  "rank": 1,
+                  "score": 180.72303416380396,
+                  "decisionKey": "call-2-timing-after-call-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_e48b234c260720af::a1"
+                },
+                {
+                  "id": "claim_5f0578dcbb379c78",
+                  "rank": 2,
+                  "score": 124.1228012413087,
+                  "decisionKey": "call-1-reschedule-after-leaving-early",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_5f0578dcbb379c78::a2"
+                },
+                {
+                  "id": "operational_94b080a4a92a4051",
+                  "rank": 3,
+                  "score": 90.67044328513974,
+                  "decisionKey": "filming-schedule-availability",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "live_only",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_94b080a4a92a4051::a1"
+                },
+                {
+                  "id": "operational_2c1a6c3703c2e417",
+                  "rank": 4,
+                  "score": 81.00816168485302,
+                  "decisionKey": "re-engaging-lost-leads",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_2c1a6c3703c2e417::a2"
+                },
+                {
+                  "id": "claim_aa5693a927f4c445",
+                  "rank": 5,
+                  "score": 64.20897450070616,
+                  "decisionKey": "missed-11-59-pm-cohort-deadline",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_aa5693a927f4c445::a1"
+                },
+                {
+                  "id": "claim_1de025df28a920a4",
+                  "rank": 6,
+                  "score": 58.418924004403635,
+                  "decisionKey": "double-booked-calls-in-daily-stats",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_1de025df28a920a4::a1"
+                },
+                {
+                  "id": "operational_d55a2b70f8eae669",
+                  "rank": 7,
+                  "score": 56.60179453341914,
+                  "decisionKey": "total-closed-calls-definition",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_d55a2b70f8eae669::a1"
+                },
+                {
+                  "id": "operational_26b99ddb953847bc",
+                  "rank": 8,
+                  "score": 55.7737926900061,
+                  "decisionKey": "weekend-decision-deadline",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_26b99ddb953847bc::a1"
+                },
+                {
+                  "id": "claim_527d746a2e41c49f__a6",
+                  "rank": 9,
+                  "score": 55.385595752983534,
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a6",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_527d746a2e41c49f__a6::a1"
+                },
+                {
+                  "id": "claim_a7a6cc03f1b209ce",
+                  "rank": 10,
+                  "score": 54.259735020118136,
+                  "decisionKey": "first-invoice-rep-payout-timing",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "live_only",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_a7a6cc03f1b209ce::a1"
+                },
+                {
+                  "id": "claim_b2fb537dc8bb391e",
+                  "rank": 11,
+                  "score": 53.03232040703083,
+                  "decisionKey": "second-call-discount-when-no-pitch-happened",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_b2fb537dc8bb391e::a2"
+                },
+                {
+                  "id": "operational_04970626b9bd7bc6",
+                  "rank": 12,
+                  "score": 52.82257112581482,
+                  "decisionKey": "payment-completion-post-deadline-partial-deposit",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_04970626b9bd7bc6::a1"
+                },
+                {
+                  "id": "claim_49759a691b24edb4",
+                  "rank": 13,
+                  "score": 51.54160723578031,
+                  "decisionKey": "greenlight-limit-of-15-per-week",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_49759a691b24edb4::a1"
+                },
+                {
+                  "id": "claim_c376ae6963df3bfe__a1",
+                  "rank": 14,
+                  "score": 50.72365863422951,
+                  "decisionKey": "twenty-percent-dial-out-sop-answer-3-a1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_c376ae6963df3bfe__a1::a1"
+                },
+                {
+                  "id": "claim_80d4013e259f7430",
+                  "rank": 15,
+                  "score": 47.14007694379963,
+                  "decisionKey": "multiple-partners-in-documentary-imdb",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_80d4013e259f7430::a3"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 161,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_e48b234c260720af",
+                      "claim_5f0578dcbb379c78",
+                      "operational_94b080a4a92a4051",
+                      "operational_2c1a6c3703c2e417",
+                      "claim_aa5693a927f4c445",
+                      "claim_1de025df28a920a4",
+                      "operational_d55a2b70f8eae669",
+                      "operational_26b99ddb953847bc",
+                      "claim_527d746a2e41c49f__a6",
+                      "claim_a7a6cc03f1b209ce",
+                      "claim_b2fb537dc8bb391e",
+                      "operational_04970626b9bd7bc6",
+                      "claim_49759a691b24edb4",
+                      "claim_c376ae6963df3bfe__a1",
+                      "claim_80d4013e259f7430"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 2183,
+                      "decision_contract": 2396,
+                      "decision_object": 472,
+                      "workflow_stage_or_time": 442,
+                      "insufficient_direct_signal": 201,
+                      "payment_qualifier": 27,
+                      "material_condition": 4
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+                  "relation": "permission",
+                  "request_kind": "knowledge",
+                  "product_scope": "unknown",
+                  "domains": [],
+                  "actions": [],
+                  "entities": [],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                  "route_key": "sales_policy",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 10,
+              "reasoning_summary": "Used the complete source question as one retrieval need. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                }
+              ],
+              "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_fallback",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [],
+            "stageTimings": {
+              "turnResolutionMs": 2,
+              "queryPlanningMs": 1,
+              "v5BoundedRetrievalMs": 2280,
+              "sourcePlanningMs": 32,
+              "evidenceDraftingMs": 1,
+              "validationMs": 0,
+              "totalMs": 2316
+            }
+          }
+        },
+        "v3": {
+          "ok": true,
+          "conversationId": "",
+          "messageId": "",
+          "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+          "structuredAnswer": {
+            "summary": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+            "sections": [],
+            "confidenceLabel": "Low",
+            "confidenceScore": 0,
+            "sourceMode": "fallback"
+          },
+          "outcome": "route_from_evidence",
+          "source": null,
+          "model": null,
+          "provider": null,
+          "needsRoute": true,
+          "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+          "redactions": [],
+          "latencyMs": 67,
+          "sanitizedQuestion": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+          "contextualQuestion": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+          "matchedArticleId": null,
+          "errorClass": "v3_provider_failure",
+          "runtimeMetadata": {
+            "pipelineVersion": "v3",
+            "knowledgeVersion": "8c8c677c1209f2d7",
+            "providerAttempts": [],
+            "v3": {
+              "turn": {
+                "kind": "new",
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "usedImmediateContext": false,
+                "previousUserQuestionUsed": false,
+                "previousAssistantAnswerUsed": false,
+                "explicitScopeSwitch": false,
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+              },
+              "retrieval": {
+                "query": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+                "preselectionCandidateCount": 20,
+                "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                "evidenceContract": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?"
+                    }
+                  ],
+                  "support": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ]
+                },
+                "candidateCount": 0,
+                "candidates": [],
+                "blockedCandidates": [
+                  {
+                    "id": "blocked_45abaf241abea0b6",
+                    "score": 6
+                  },
+                  {
+                    "id": "blocked_67afbfba9c7cd399",
+                    "score": 3
+                  },
+                  {
+                    "id": "blocked_fe9318bb03f76b91",
+                    "score": 3
+                  }
+                ]
+              },
+              "selection": {
+                "selectedPolicyIds": [],
+                "rejectedPolicyIds": [],
+                "coverage": [
+                  {
+                    "need": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+                    "status": "unresolved",
+                    "policyIds": [],
+                    "reason": "No applicable approved evidence was selected."
+                  }
+                ]
+              },
+              "validation": {
+                "verdict": "pass",
+                "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                "removedClaims": []
+              },
+              "stageTimings": {
+                "turnResolutionMs": 0,
+                "retrievalMs": 66,
+                "semanticRecallMs": 0,
+                "evidenceSelectionMs": 1,
+                "validationMs": 0,
+                "totalMs": 67
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "route-finance-action",
+      "question": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "The chatbot must not claim it completed or approved a refund. Route the duplicate-charge and refund operation to #sales-finance-requests and avoid sharing sensitive payment details.",
+      "requiredConcepts": [
+        "#sales-finance-requests",
+        "no refund promise",
+        "cannot perform the action"
+      ],
+      "forbiddenConcepts": [
+        "claim the refund was processed",
+        "#greenlight-requests",
+        "request card or bank details"
+      ],
+      "evaluationStrata": [
+        "action-routing",
+        "finance",
+        "safety-control"
+      ],
+      "sourceIds": [
+        "approved-faq:payments-current",
+        "approved-route:finance"
+      ],
+      "approvedBy": [
+        "Project owner approved current route catalog"
+      ],
+      "systems": {
+        "v55": {
+          "ok": true,
+          "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+          "structuredAnswer": {
+            "summary": "This needs a Finance action, so please post it in #sales-finance-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #sales-finance-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #sales-finance-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#sales-finance-requests"
+          ],
+          "provider": null,
+          "model": null,
+          "latencyMs": 2178,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+              "standaloneQuestion": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 14,
+              "candidates": [
+                {
+                  "id": "claim_bafeb9e8cf19b664",
+                  "rank": 1,
+                  "score": 121.86466821120099,
+                  "decisionKey": "refund-request-immediately-after-signing",
+                  "answerability": "route_or_support",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_bafeb9e8cf19b664::a1"
+                },
+                {
+                  "id": "claim_cfb5be032755c9e4__a2",
+                  "rank": 2,
+                  "score": 98.01287102509991,
+                  "decisionKey": "sales-tech-routing-and-support-requests-what-reps-can-say-1-a2",
+                  "answerability": "route_or_support",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cfb5be032755c9e4__a2::a1"
+                },
+                {
+                  "id": "claim_d9a60dd2b9827b4a",
+                  "rank": 3,
+                  "score": 85.75914725314243,
+                  "decisionKey": "canadian-visa-filming-extension",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_d9a60dd2b9827b4a::a1"
+                },
+                {
+                  "id": "operational_96c5cf5c976b099f",
+                  "rank": 4,
+                  "score": 85.55557529822532,
+                  "decisionKey": "cancel-refund-offer-alternative",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_96c5cf5c976b099f::a1"
+                },
+                {
+                  "id": "claim_cfb5be032755c9e4__a4",
+                  "rank": 5,
+                  "score": 83.43464774508912,
+                  "decisionKey": "sales-tech-routing-and-support-requests-what-reps-can-say-1-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cfb5be032755c9e4__a4::a1"
+                },
+                {
+                  "id": "claim_cfb5be032755c9e4__a3",
+                  "rank": 6,
+                  "score": 82.75823856255295,
+                  "decisionKey": "sales-tech-routing-and-support-requests-what-reps-can-say-1-a3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cfb5be032755c9e4__a3::a1"
+                },
+                {
+                  "id": "claim_3378257807845c1a",
+                  "rank": 7,
+                  "score": 77.76766837650977,
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_3378257807845c1a::a1"
+                },
+                {
+                  "id": "claim_a945480e3c44efaa",
+                  "rank": 8,
+                  "score": 69.673349149008,
+                  "decisionKey": "payment-plan-and-link-boundaries-answer-3",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_a945480e3c44efaa::a2"
+                },
+                {
+                  "id": "claim_ed2063d72ae8653d",
+                  "rank": 9,
+                  "score": 68.73116496756822,
+                  "decisionKey": "refund-rules-by-product-route-if-asked-about-exceptions-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_ed2063d72ae8653d::a1"
+                },
+                {
+                  "id": "claim_cfb5be032755c9e4__a1",
+                  "rank": 10,
+                  "score": 67.25886853069855,
+                  "decisionKey": "sales-tech-routing-and-support-requests-what-reps-can-say-1-a1",
+                  "answerability": "route_or_support",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cfb5be032755c9e4__a1::a1"
+                },
+                {
+                  "id": "claim_527d746a2e41c49f__a4",
+                  "rank": 11,
+                  "score": 65.67912212416964,
+                  "decisionKey": "payment-plan-and-link-boundaries-what-reps-can-say-1-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_527d746a2e41c49f__a4::a1"
+                },
+                {
+                  "id": "operational_d9dfe4b00f79b6b4",
+                  "rank": 12,
+                  "score": 65.34891104554332,
+                  "decisionKey": "payment-issue-escalation-to-luke",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_d9dfe4b00f79b6b4::a3"
+                },
+                {
+                  "id": "operational_c3c97dbd3185c63a",
+                  "rank": 13,
+                  "score": 64.56429762126923,
+                  "decisionKey": "refund-request-channel",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_c3c97dbd3185c63a::a1"
+                },
+                {
+                  "id": "claim_cd7c75cef725a02d__a2",
+                  "rank": 14,
+                  "score": 60.19939088801344,
+                  "decisionKey": "refund-rules-by-product-what-reps-must-not-say-1-a2",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 7,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cd7c75cef725a02d__a2::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 126,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "claim_bafeb9e8cf19b664",
+                      "claim_cfb5be032755c9e4__a2",
+                      "claim_d9a60dd2b9827b4a",
+                      "operational_96c5cf5c976b099f",
+                      "claim_cfb5be032755c9e4__a4",
+                      "claim_cfb5be032755c9e4__a3",
+                      "claim_3378257807845c1a",
+                      "claim_a945480e3c44efaa",
+                      "claim_ed2063d72ae8653d",
+                      "claim_cfb5be032755c9e4__a1",
+                      "claim_527d746a2e41c49f__a4",
+                      "operational_d9dfe4b00f79b6b4",
+                      "operational_c3c97dbd3185c63a",
+                      "claim_cd7c75cef725a02d__a2"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 2190,
+                      "decision_contract": 2097,
+                      "decision_object": 611,
+                      "other_hard_boundary": 380,
+                      "material_condition": 7,
+                      "payment_qualifier": 27,
+                      "insufficient_direct_signal": 148,
+                      "workflow_stage_or_time": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+                  "relation": "permission",
+                  "request_kind": "operational_action",
+                  "product_scope": "unknown",
+                  "domains": [],
+                  "actions": [],
+                  "entities": [],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                  "route_key": "finance",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 10,
+              "reasoning_summary": "Used the complete source question as one retrieval need. V5.4 bound the original live work object and lifecycle stage to finance before retrieval could obscure ownership. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                }
+              ],
+              "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_fallback",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [],
+            "stageTimings": {
+              "turnResolutionMs": 2,
+              "queryPlanningMs": 2,
+              "v5BoundedRetrievalMs": 2142,
+              "sourcePlanningMs": 32,
+              "evidenceDraftingMs": 0,
+              "validationMs": 0,
+              "totalMs": 2178
+            }
+          }
+        },
+        "v3": {
+          "ok": true,
+          "conversationId": "",
+          "messageId": "",
+          "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-finance-requests before replying.",
+          "structuredAnswer": {
+            "summary": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-finance-requests before replying.",
+            "sections": [],
+            "confidenceLabel": "Low",
+            "confidenceScore": 0,
+            "sourceMode": "fallback"
+          },
+          "outcome": "route_from_evidence",
+          "source": null,
+          "model": null,
+          "provider": null,
+          "needsRoute": true,
+          "routeReason": "Please verify the unresolved part in #sales-finance-requests before replying.",
+          "redactions": [],
+          "latencyMs": 63,
+          "sanitizedQuestion": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+          "contextualQuestion": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+          "matchedArticleId": null,
+          "errorClass": "v3_provider_failure",
+          "runtimeMetadata": {
+            "pipelineVersion": "v3",
+            "knowledgeVersion": "8c8c677c1209f2d7",
+            "providerAttempts": [],
+            "v3": {
+              "turn": {
+                "kind": "new",
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "usedImmediateContext": false,
+                "previousUserQuestionUsed": false,
+                "previousAssistantAnswerUsed": false,
+                "explicitScopeSwitch": false,
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+              },
+              "retrieval": {
+                "query": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+                "preselectionCandidateCount": 20,
+                "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                "evidenceContract": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?"
+                    }
+                  ],
+                  "support": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ]
+                },
+                "candidateCount": 0,
+                "candidates": [],
+                "blockedCandidates": []
+              },
+              "selection": {
+                "selectedPolicyIds": [],
+                "rejectedPolicyIds": [],
+                "coverage": [
+                  {
+                    "need": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+                    "status": "unresolved",
+                    "policyIds": [],
+                    "reason": "No applicable approved evidence was selected."
+                  }
+                ]
+              },
+              "validation": {
+                "verdict": "pass",
+                "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                "removedClaims": []
+              },
+              "stageTimings": {
+                "turnResolutionMs": 0,
+                "retrievalMs": 63,
+                "semanticRecallMs": 0,
+                "evidenceSelectionMs": 0,
+                "validationMs": 0,
+                "totalMs": 63
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "route-greenlight-action",
+      "question": "Please send my client’s greenlight letter before our call today.",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The chatbot cannot send the letter. Direct the rep to #greenlight-requests for the request or urgent status follow-up, without promising timing or outcome.",
+      "requiredConcepts": [
+        "#greenlight-requests",
+        "cannot perform the action"
+      ],
+      "forbiddenConcepts": [
+        "claim the letter was sent",
+        "#sales-finance-requests",
+        "promise delivery time"
+      ],
+      "evaluationStrata": [
+        "action-routing",
+        "greenlight",
+        "safety-control"
+      ],
+      "sourceIds": [
+        "approved-faq:greenlight-current",
+        "approved-route:greenlight"
+      ],
+      "approvedBy": [
+        "Project owner approved current route catalog"
+      ],
+      "systems": {
+        "v3": {
+          "ok": true,
+          "conversationId": "",
+          "messageId": "",
+          "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #greenlight-requests before replying.",
+          "structuredAnswer": {
+            "summary": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #greenlight-requests before replying.",
+            "sections": [],
+            "confidenceLabel": "Low",
+            "confidenceScore": 0,
+            "sourceMode": "fallback"
+          },
+          "outcome": "route_from_evidence",
+          "source": null,
+          "model": null,
+          "provider": null,
+          "needsRoute": true,
+          "routeReason": "Please verify the unresolved part in #greenlight-requests before replying.",
+          "redactions": [],
+          "latencyMs": 60,
+          "sanitizedQuestion": "Please send my client’s greenlight letter before our call today.",
+          "contextualQuestion": "Please send my client’s greenlight letter before our call today.",
+          "matchedArticleId": null,
+          "errorClass": "v3_provider_failure",
+          "runtimeMetadata": {
+            "pipelineVersion": "v3",
+            "knowledgeVersion": "8c8c677c1209f2d7",
+            "providerAttempts": [],
+            "v3": {
+              "turn": {
+                "kind": "new",
+                "productScope": "unknown",
+                "excludedScopes": [],
+                "usedImmediateContext": false,
+                "previousUserQuestionUsed": false,
+                "previousAssistantAnswerUsed": false,
+                "explicitScopeSwitch": false,
+                "intentResolutionMode": "deterministic",
+                "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+              },
+              "retrieval": {
+                "query": "Please send my client’s greenlight letter before our call today.",
+                "preselectionCandidateCount": 20,
+                "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                "evidenceContract": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Please send my client’s greenlight letter before our call today."
+                    }
+                  ],
+                  "support": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ]
+                },
+                "candidateCount": 0,
+                "candidates": [],
+                "blockedCandidates": []
+              },
+              "selection": {
+                "selectedPolicyIds": [],
+                "rejectedPolicyIds": [],
+                "coverage": [
+                  {
+                    "need": "Please send my client’s greenlight letter before our call today.",
+                    "status": "unresolved",
+                    "policyIds": [],
+                    "reason": "No applicable approved evidence was selected."
+                  }
+                ]
+              },
+              "validation": {
+                "verdict": "pass",
+                "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                "removedClaims": []
+              },
+              "stageTimings": {
+                "turnResolutionMs": 4,
+                "retrievalMs": 55,
+                "semanticRecallMs": 1,
+                "evidenceSelectionMs": 0,
+                "validationMs": 0,
+                "totalMs": 60
+              }
+            }
+          }
+        },
+        "v55": {
+          "ok": true,
+          "answer": "Please submit this greenlight request in #greenlight-requests.",
+          "structuredAnswer": {
+            "summary": "Please submit this greenlight request in #greenlight-requests.",
+            "sections": [
+              {
+                "title": "Next step",
+                "body": "Use #greenlight-requests for the part that still needs confirmation.",
+                "tone": "route"
+              }
+            ],
+            "confidenceLabel": "Low",
+            "confidenceScore": 35,
+            "sourceMode": "fallback"
+          },
+          "lane": "route",
+          "needsRoute": true,
+          "routeReason": "Use #greenlight-requests only for the remaining owner action or confirmation.",
+          "routeChannels": [
+            "#greenlight-requests"
+          ],
+          "provider": null,
+          "model": null,
+          "latencyMs": 1000,
+          "citations": [],
+          "selectedPolicyIds": [],
+          "redactions": [],
+          "runtimeMetadata": {
+            "pipelineVersion": "v5.4-isolated",
+            "isolation": {
+              "productionSelectorChanged": false,
+              "databaseWrites": false,
+              "historyPersistence": false
+            },
+            "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+            "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+            "turn": {
+              "kind": "new",
+              "currentQuestion": "Please send my client’s greenlight letter before our call today.",
+              "standaloneQuestion": "Please send my client’s greenlight letter before our call today.",
+              "immediatePreviousUserQuestion": null,
+              "immediatePreviousAssistantAnswer": null,
+              "productScope": "unknown",
+              "excludedScopes": [],
+              "memoryAnswer": null,
+              "usedImmediateContext": false,
+              "explicitCorrection": false,
+              "explicitScopeSwitch": false,
+              "stylePreferences": [],
+              "contextMessages": [],
+              "intentResolutionMode": "deterministic",
+              "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+              "actionableQuestion": "Please send my client’s greenlight letter before our call today.",
+              "conversationalPreface": null
+            },
+            "retrieval": {
+              "corpusSize": 2625,
+              "candidateCount": 15,
+              "candidates": [
+                {
+                  "id": "operational_8f9721b5a381a9da",
+                  "rank": 1,
+                  "score": 96.55340029809616,
+                  "decisionKey": "weekend-greenlight-availability",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_8f9721b5a381a9da::a1"
+                },
+                {
+                  "id": "operational_1cca7b74ae6b3d32",
+                  "rank": 2,
+                  "score": 92.07850390309578,
+                  "decisionKey": "missing-greenlight-letter-contact",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_1cca7b74ae6b3d32::a1"
+                },
+                {
+                  "id": "operational_46dec68ca63f811f",
+                  "rank": 3,
+                  "score": 90.78475068295792,
+                  "decisionKey": "same-day-second-appointment-protocol",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_46dec68ca63f811f::a1"
+                },
+                {
+                  "id": "operational_12ff0f522da9d5f9",
+                  "rank": 4,
+                  "score": 88.5915689259401,
+                  "decisionKey": "greenlight-letter-fulfillment-request",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_12ff0f522da9d5f9::a1"
+                },
+                {
+                  "id": "operational_ea0349d125e4561d",
+                  "rank": 5,
+                  "score": 87.70470056731915,
+                  "decisionKey": "termination-letter-trigger-greenlight",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_ea0349d125e4561d::a2"
+                },
+                {
+                  "id": "curated_v43_greenlight_supporting_documents",
+                  "rank": 6,
+                  "score": 84.98643346506786,
+                  "decisionKey": "greenlight-supporting-documents-fulfillment-hotline",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "curated_v43_greenlight_supporting_documents::a1"
+                },
+                {
+                  "id": "claim_225676da6cac4aab",
+                  "rank": 7,
+                  "score": 83.33893384294976,
+                  "decisionKey": "greenlight-pdf-and-cohort-deadlines-answer-1",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_225676da6cac4aab::a1"
+                },
+                {
+                  "id": "claim_51de45a8d54c0de1",
+                  "rank": 8,
+                  "score": 82.42175926879429,
+                  "decisionKey": "sales-tech-routing-and-support-requests-answer-5",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_51de45a8d54c0de1::a1"
+                },
+                {
+                  "id": "operational_6836f6f3ab38cc58",
+                  "rank": 9,
+                  "score": 81.25443314684422,
+                  "decisionKey": "green-light-letter-timing",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_6836f6f3ab38cc58::a1"
+                },
+                {
+                  "id": "claim_cfb5be032755c9e4__a4",
+                  "rank": 10,
+                  "score": 78.81251878266076,
+                  "decisionKey": "sales-tech-routing-and-support-requests-what-reps-can-say-1-a4",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "canonical",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_cfb5be032755c9e4__a4::a1"
+                },
+                {
+                  "id": "operational_6e4b34d5aa2fffc7",
+                  "rank": 11,
+                  "score": 78.19474913177936,
+                  "decisionKey": "green-light-recording-multiple-clients",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_6e4b34d5aa2fffc7::a1"
+                },
+                {
+                  "id": "claim_4aa05df0e349e44f__a6",
+                  "rank": 12,
+                  "score": 75.84177142379201,
+                  "decisionKey": "greenlight-pdf-and-cohort-deadlines-route-if-unclear-1-a6",
+                  "answerability": "route_or_support",
+                  "qualityTier": "supporting",
+                  "productScopes": [
+                    "product_agnostic"
+                  ],
+                  "sourceKind": "governed_policy",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "claim_4aa05df0e349e44f__a6::a1"
+                },
+                {
+                  "id": "operational_87e3a485005b7a59",
+                  "rank": 13,
+                  "score": 74.90949431034684,
+                  "decisionKey": "rejection-without-greenlight-letter-sent",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_87e3a485005b7a59::a1"
+                },
+                {
+                  "id": "operational_4ca907fdab0f29b4",
+                  "rank": 14,
+                  "score": 71.19721228356016,
+                  "decisionKey": "saturday-first-calls-greenlight",
+                  "answerability": "answer_evidence",
+                  "qualityTier": "trusted_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "stable",
+                  "relationScore": 1,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_4ca907fdab0f29b4::a2"
+                },
+                {
+                  "id": "operational_3988b4bfa379ee63",
+                  "rank": 15,
+                  "score": 67.66159277266439,
+                  "decisionKey": "expedited-green-light-letter-request",
+                  "answerability": "route_or_support",
+                  "qualityTier": "contextual_evidence",
+                  "productScopes": [
+                    "unknown"
+                  ],
+                  "sourceKind": "authoritative_operational_qna",
+                  "temporalRisk": "time_sensitive",
+                  "relationScore": 14,
+                  "semanticVectorScore": 0,
+                  "matchedDecisionId": "operational_3988b4bfa379ee63::a1"
+                }
+              ],
+              "blockedTopicIds": [],
+              "blockedMatches": [],
+              "diagnostics": {
+                "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                "needs": [
+                  {
+                    "needId": "N1",
+                    "evidenceState": "exact_evidence_found",
+                    "documentsConsidered": 3490,
+                    "hardCompatible": 31,
+                    "directLaneSelected": 18,
+                    "expansionLaneSelected": 0,
+                    "selectedPolicyIds": [
+                      "operational_8f9721b5a381a9da",
+                      "operational_1cca7b74ae6b3d32",
+                      "operational_46dec68ca63f811f",
+                      "operational_12ff0f522da9d5f9",
+                      "operational_ea0349d125e4561d",
+                      "curated_v43_greenlight_supporting_documents",
+                      "claim_225676da6cac4aab",
+                      "claim_51de45a8d54c0de1",
+                      "operational_6836f6f3ab38cc58",
+                      "claim_cfb5be032755c9e4__a4",
+                      "operational_6e4b34d5aa2fffc7",
+                      "claim_4aa05df0e349e44f__a6",
+                      "operational_87e3a485005b7a59",
+                      "operational_4ca907fdab0f29b4",
+                      "operational_3988b4bfa379ee63"
+                    ],
+                    "rejectionCounts": {
+                      "relation": 3371,
+                      "decision_contract": 3437,
+                      "workflow_stage_or_time": 54,
+                      "material_condition": 1,
+                      "decision_object": 15,
+                      "insufficient_direct_signal": 9,
+                      "other_hard_boundary": 9
+                    }
+                  }
+                ]
+              }
+            },
+            "plan": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Please send my client’s greenlight letter before our call today.",
+                  "relation": "artifact_identity",
+                  "request_kind": "operational_action",
+                  "product_scope": "unknown",
+                  "domains": [],
+                  "actions": [],
+                  "entities": [],
+                  "lane": "route",
+                  "evidence_refs": [],
+                  "supported_claim": "",
+                  "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                  "route_key": "greenlight",
+                  "clarification_question": ""
+                }
+              ],
+              "overall_lane": "route",
+              "confidence_score": 10,
+              "reasoning_summary": "Used the complete source question as one retrieval need. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. V5.4 bound the original live work object and lifecycle stage to greenlight before retrieval could obscure ownership. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+            },
+            "sourcePlan": {
+              "needs": [
+                {
+                  "needId": "N1",
+                  "lane": "route",
+                  "directPolicyIds": [],
+                  "preferredPolicyIds": [],
+                  "excludedConflictPolicyIds": [],
+                  "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                }
+              ],
+              "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+            },
+            "executionMode": {
+              "planning": "hybrid_fallback",
+              "composition": "model",
+              "validation": "model_and_deterministic"
+            },
+            "validation": {
+              "verdict": "route",
+              "sentenceChecks": [],
+              "removedSentences": [],
+              "unresolvedNeedIds": [
+                "N1"
+              ],
+              "reason": "Every retained sentence passed deterministic and semantic validation."
+            },
+            "providerAttempts": [],
+            "stageTimings": {
+              "turnResolutionMs": 1,
+              "queryPlanningMs": 8,
+              "v5BoundedRetrievalMs": 976,
+              "sourcePlanningMs": 14,
+              "evidenceDraftingMs": 0,
+              "validationMs": 0,
+              "totalMs": 1000
+            }
+          }
+        }
+      }
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conversation-call1-pricing",
+      "title": "Natural follow-up: price questions during Call 1",
+      "prompts": [
+        {
+          "id": "call1-pricing-turn-1",
+          "question": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Do not discuss fees or quote the minimum on Call 1. Explain that cost is discussed on Call 2 after determining whether the studio approves them and which option fits.",
+          "requiredConcepts": [
+            "do not quote cost on Call 1",
+            "discuss on Call 2 after approval"
+          ],
+          "forbiddenConcepts": [
+            "quote $10K on Call 1"
+          ],
+          "evaluationStrata": [
+            "conversation",
+            "pricing",
+            "turn-one"
+          ],
+          "sourceIds": [
+            "slack:C0AUQKNR8CF:1779825414.828269",
+            "slack:C0AUQKNR8CF:1779828046.082489",
+            "slack:C0AUQKNR8CF:1779828681.237599"
+          ],
+          "approvedBy": [
+            "Madeline",
+            "Rudy"
+          ],
+          "systems": {
+            "v55": {
+              "ok": true,
+              "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+              "structuredAnswer": {
+                "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                "sections": [
+                  {
+                    "title": "Next step",
+                    "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                    "tone": "route"
+                  }
+                ],
+                "confidenceLabel": "Low",
+                "confidenceScore": 35,
+                "sourceMode": "fallback"
+              },
+              "lane": "route",
+              "needsRoute": true,
+              "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+              "routeChannels": [
+                "#sales-questions-requests"
+              ],
+              "provider": null,
+              "model": null,
+              "latencyMs": 2467,
+              "citations": [],
+              "selectedPolicyIds": [],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.4-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                  "standaloneQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2625,
+                  "candidateCount": 16,
+                  "candidates": [
+                    {
+                      "id": "claim_1d232ebb85984275",
+                      "rank": 1,
+                      "score": 109.23917051986645,
+                      "decisionKey": "licensing-terms-before-call-1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_1d232ebb85984275::a1"
+                    },
+                    {
+                      "id": "operational_d2578f8784ed8f05",
+                      "rank": 2,
+                      "score": 107.87445230492321,
+                      "decisionKey": "handling-pricing-inquiries-on-call-1",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_d2578f8784ed8f05::a1"
+                    },
+                    {
+                      "id": "claim_eb6977ef9ef6f90b",
+                      "rank": 3,
+                      "score": 98.00820464209673,
+                      "decisionKey": "marketing-dollars-question-from-prospect",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_eb6977ef9ef6f90b::a1"
+                    },
+                    {
+                      "id": "operational_2d4f1ca359a6e91d",
+                      "rank": 4,
+                      "score": 93.35714371840831,
+                      "decisionKey": "marketing-budget-question-response",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_2d4f1ca359a6e91d::a2"
+                    },
+                    {
+                      "id": "claim_d8f7bb6d2647ddd3",
+                      "rank": 5,
+                      "score": 92.70900775304199,
+                      "decisionKey": "photographing-confidential-slides-during-a-call",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_d8f7bb6d2647ddd3::a3"
+                    },
+                    {
+                      "id": "operational_62405318bb19cae4",
+                      "rank": 6,
+                      "score": 90.22215058879011,
+                      "decisionKey": "disclosing-commission-to-clients",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_62405318bb19cae4::a1"
+                    },
+                    {
+                      "id": "operational_4308fa14b14b5502",
+                      "rank": 7,
+                      "score": 88.63006393251956,
+                      "decisionKey": "framing-impact-questions-without-asking-revenue",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_4308fa14b14b5502::a1"
+                    },
+                    {
+                      "id": "operational_916fb049a6d77dd3",
+                      "rank": 8,
+                      "score": 77.76422604843887,
+                      "decisionKey": "reddit-concerns-not-proactively-address",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_916fb049a6d77dd3::a1"
+                    },
+                    {
+                      "id": "claim_f9e905f997f46b5c",
+                      "rank": 9,
+                      "score": 74.560043865217,
+                      "decisionKey": "driving-during-calls",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_f9e905f997f46b5c::a1"
+                    },
+                    {
+                      "id": "claim_3c2e38fb0d7a1eb6",
+                      "rank": 10,
+                      "score": 68.7618640793395,
+                      "decisionKey": "opt-out-dnc-and-security-escalation-answer-1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_3c2e38fb0d7a1eb6::a1"
+                    },
+                    {
+                      "id": "operational_746d8aea0ad3a92e",
+                      "rank": 11,
+                      "score": 65.74028414205142,
+                      "decisionKey": "handle-chronic-rescheduling",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_746d8aea0ad3a92e::a1"
+                    },
+                    {
+                      "id": "operational_8e1f180bade73454",
+                      "rank": 12,
+                      "score": 65.58479354307738,
+                      "decisionKey": "duplicate-appointment-resolution",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_8e1f180bade73454::a3"
+                    },
+                    {
+                      "id": "operational_f80f1a4db66d9b45",
+                      "rank": 13,
+                      "score": 65.55685446489136,
+                      "decisionKey": "keap-view-booked-call",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_f80f1a4db66d9b45::a1"
+                    },
+                    {
+                      "id": "operational_ed71cb7aad76c9c7",
+                      "rank": 14,
+                      "score": 65.37888025656449,
+                      "decisionKey": "roi-objection-framing-guidance",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_ed71cb7aad76c9c7::a2"
+                    },
+                    {
+                      "id": "operational_4058a4e46b79d00f",
+                      "rank": 15,
+                      "score": 64.54267771564173,
+                      "decisionKey": "disqualified-applicant-call-1-drop",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 7,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_4058a4e46b79d00f::a1"
+                    },
+                    {
+                      "id": "claim_0e568d11f3ea1a16",
+                      "rank": 16,
+                      "score": 61.508829159341474,
+                      "decisionKey": "minimum-age",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_0e568d11f3ea1a16::a2"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3490,
+                        "hardCompatible": 407,
+                        "directLaneSelected": 18,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "claim_1d232ebb85984275",
+                          "operational_d2578f8784ed8f05",
+                          "claim_eb6977ef9ef6f90b",
+                          "operational_2d4f1ca359a6e91d",
+                          "claim_d8f7bb6d2647ddd3",
+                          "operational_62405318bb19cae4",
+                          "operational_4308fa14b14b5502",
+                          "operational_916fb049a6d77dd3",
+                          "claim_f9e905f997f46b5c",
+                          "claim_3c2e38fb0d7a1eb6",
+                          "operational_746d8aea0ad3a92e",
+                          "operational_8e1f180bade73454",
+                          "operational_f80f1a4db66d9b45",
+                          "operational_ed71cb7aad76c9c7",
+                          "operational_4058a4e46b79d00f",
+                          "claim_0e568d11f3ea1a16"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 1856,
+                          "decision_contract": 1906,
+                          "decision_object": 613,
+                          "workflow_stage_or_time": 278,
+                          "insufficient_direct_signal": 304,
+                          "payment_qualifier": 21,
+                          "material_condition": 11
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                      "relation": "requirement",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [],
+                      "actions": [],
+                      "entities": [],
+                      "lane": "route",
+                      "evidence_refs": [],
+                      "supported_claim": "",
+                      "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                      "route_key": "sales_policy",
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "route",
+                  "confidence_score": 10,
+                  "reasoning_summary": "Used the complete source question as one retrieval need. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "route",
+                      "directPolicyIds": [],
+                      "preferredPolicyIds": [],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                    }
+                  ],
+                  "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+                },
+                "executionMode": {
+                  "planning": "hybrid_fallback",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "route",
+                  "sentenceChecks": [],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [],
+                "stageTimings": {
+                  "turnResolutionMs": 1,
+                  "queryPlanningMs": 0,
+                  "v5BoundedRetrievalMs": 2428,
+                  "sourcePlanningMs": 38,
+                  "evidenceDraftingMs": 0,
+                  "validationMs": 0,
+                  "totalMs": 2467
+                }
+              }
+            },
+            "v3": {
+              "ok": true,
+              "conversationId": "",
+              "messageId": "",
+              "answer": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests.",
+              "structuredAnswer": {
+                "summary": "I can’t give you a confident policy answer for that specific case yet. The right next step is to check #sales-questions-requests.",
+                "sections": [],
+                "confidenceLabel": "Low",
+                "confidenceScore": 0,
+                "sourceMode": "fallback"
+              },
+              "outcome": "route_from_evidence",
+              "source": null,
+              "model": null,
+              "provider": null,
+              "needsRoute": true,
+              "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+              "redactions": [],
+              "latencyMs": 59,
+              "sanitizedQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+              "contextualQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+              "matchedArticleId": null,
+              "errorClass": "v3_provider_failure",
+              "runtimeMetadata": {
+                "pipelineVersion": "v3",
+                "knowledgeVersion": "8c8c677c1209f2d7",
+                "providerAttempts": [],
+                "v3": {
+                  "turn": {
+                    "kind": "new",
+                    "productScope": "unknown",
+                    "excludedScopes": [],
+                    "usedImmediateContext": false,
+                    "previousUserQuestionUsed": false,
+                    "previousAssistantAnswerUsed": false,
+                    "explicitScopeSwitch": false,
+                    "intentResolutionMode": "deterministic",
+                    "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+                  },
+                  "retrieval": {
+                    "query": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                    "preselectionCandidateCount": 20,
+                    "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                    "evidenceContract": {
+                      "needs": [
+                        {
+                          "id": "N1",
+                          "text": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?"
+                        }
+                      ],
+                      "support": [],
+                      "unresolvedNeedIds": [
+                        "N1"
+                      ]
+                    },
+                    "candidateCount": 0,
+                    "candidates": [],
+                    "blockedCandidates": [
+                      {
+                        "id": "blocked_5bd0a1e1f41418c9",
+                        "score": 5
+                      },
+                      {
+                        "id": "blocked_45abaf241abea0b6",
+                        "score": 3
+                      },
+                      {
+                        "id": "blocked_2b3b76627b5986e5",
+                        "score": 3
+                      }
+                    ]
+                  },
+                  "selection": {
+                    "selectedPolicyIds": [],
+                    "rejectedPolicyIds": [],
+                    "coverage": [
+                      {
+                        "need": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                        "status": "unresolved",
+                        "policyIds": [],
+                        "reason": "No applicable approved evidence was selected."
+                      }
+                    ]
+                  },
+                  "validation": {
+                    "verdict": "pass",
+                    "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                    "removedClaims": []
+                  },
+                  "stageTimings": {
+                    "turnResolutionMs": 0,
+                    "retrievalMs": 59,
+                    "semanticRecallMs": 0,
+                    "evidenceSelectionMs": 0,
+                    "validationMs": 0,
+                    "totalMs": 59
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "call1-pricing-turn-2",
+          "question": "What if they keep pushing me for an exact breakdown?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Do not invent or break down line items. Reiterate that pricing varies and the person is not yet cast; if cost is their only concern and they will not accept the process, the opportunity may not be a fit.",
+          "requiredConcepts": [
+            "no line-item breakdown",
+            "pricing varies",
+            "not yet cast"
+          ],
+          "forbiddenConcepts": [
+            "invent exact travel or promotion costs",
+            "custom quote"
+          ],
+          "evaluationStrata": [
+            "conversation",
+            "pricing",
+            "follow-up"
+          ],
+          "sourceIds": [
+            "slack:C0AUQKNR8CF:1779825414.828269",
+            "slack:C0AUQKNR8CF:1779829032.991179",
+            "slack:C0AUQKNR8CF:1779829524.532689"
+          ],
+          "approvedBy": [
+            "Rudy"
+          ],
+          "systems": {
+            "v55": {
+              "ok": true,
+              "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+              "structuredAnswer": {
+                "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                "sections": [
+                  {
+                    "title": "Next step",
+                    "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                    "tone": "route"
+                  }
+                ],
+                "confidenceLabel": "Low",
+                "confidenceScore": 35,
+                "sourceMode": "fallback"
+              },
+              "lane": "route",
+              "needsRoute": true,
+              "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+              "routeChannels": [
+                "#sales-questions-requests"
+              ],
+              "provider": null,
+              "model": null,
+              "latencyMs": 979,
+              "citations": [],
+              "selectedPolicyIds": [],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.4-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+                "turn": {
+                  "kind": "follow_up",
+                  "currentQuestion": "What if they keep pushing me for an exact breakdown?",
+                  "standaloneQuestion": "Immediate prior subject: If a prospect asks about cost during Call 1, should I tell them the $10K minimum?\nCurrent request about that subject: What if they keep pushing me for an exact breakdown?",
+                  "immediatePreviousUserQuestion": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                  "immediatePreviousAssistantAnswer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": true,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [
+                    {
+                      "role": "user",
+                      "content": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?"
+                    },
+                    {
+                      "role": "assistant",
+                      "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+                    }
+                  ],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+                  "actionableQuestion": "What if they keep pushing me for an exact breakdown?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2625,
+                  "candidateCount": 15,
+                  "candidates": [
+                    {
+                      "id": "operational_5ae798d520d93a3d",
+                      "rank": 1,
+                      "score": 87.20432490948639,
+                      "decisionKey": "interview-volume-americas-top-agent",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_5ae798d520d93a3d::a1"
+                    },
+                    {
+                      "id": "operational_2d4f1ca359a6e91d",
+                      "rank": 2,
+                      "score": 83.61577127201483,
+                      "decisionKey": "marketing-budget-question-response",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_2d4f1ca359a6e91d::a2"
+                    },
+                    {
+                      "id": "claim_d9e7c2f5a04fc7ae",
+                      "rank": 3,
+                      "score": 82.94925552410744,
+                      "decisionKey": "discussing-expenses-or-price-before-call-2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_d9e7c2f5a04fc7ae::a1"
+                    },
+                    {
+                      "id": "claim_7dc8ab12672b0859",
+                      "rank": 4,
+                      "score": 82.42036594338744,
+                      "decisionKey": "license-pricing-pdf-before-call-2",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_7dc8ab12672b0859::a1"
+                    },
+                    {
+                      "id": "operational_7d7232bc7d71f7c3",
+                      "rank": 5,
+                      "score": 80.58905940196067,
+                      "decisionKey": "same-week-commitment-required-after-call1",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_7d7232bc7d71f7c3::a2"
+                    },
+                    {
+                      "id": "operational_0fc4659b490e0d95",
+                      "rank": 6,
+                      "score": 76.42441118127283,
+                      "decisionKey": "price-discussion-on-call2-only",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_0fc4659b490e0d95::a1"
+                    },
+                    {
+                      "id": "operational_d2578f8784ed8f05",
+                      "rank": 7,
+                      "score": 75.9038640696291,
+                      "decisionKey": "handling-pricing-inquiries-on-call-1",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_d2578f8784ed8f05::a1"
+                    },
+                    {
+                      "id": "operational_1df9f29a7119d9a9",
+                      "rank": 8,
+                      "score": 75.79636025111677,
+                      "decisionKey": "qualifying-leads-without-active-business",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_1df9f29a7119d9a9::a1"
+                    },
+                    {
+                      "id": "operational_746d8aea0ad3a92e",
+                      "rank": 9,
+                      "score": 74.13769684481244,
+                      "decisionKey": "handle-chronic-rescheduling",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_746d8aea0ad3a92e::a1"
+                    },
+                    {
+                      "id": "operational_148be1aa9aea1a5e",
+                      "rank": 10,
+                      "score": 73.76722036285149,
+                      "decisionKey": "applicant-assignment-first-contact",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_148be1aa9aea1a5e::a1"
+                    },
+                    {
+                      "id": "operational_8d86e3fa17858864",
+                      "rank": 11,
+                      "score": 73.26326703648706,
+                      "decisionKey": "call-lead-before-meeting-for-invalid-email",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_8d86e3fa17858864::a1"
+                    },
+                    {
+                      "id": "claim_bc6feb1c60e8c90d__a3",
+                      "rank": 12,
+                      "score": 72.82133319415817,
+                      "decisionKey": "call-1-flow-answer-2-a3",
+                      "answerability": "route_or_support",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_bc6feb1c60e8c90d__a3::a1"
+                    },
+                    {
+                      "id": "operational_f7b8d0c74bb0b6bd",
+                      "rank": 13,
+                      "score": 72.62570519246071,
+                      "decisionKey": "women-and-power-release-timeline",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_f7b8d0c74bb0b6bd::a2"
+                    },
+                    {
+                      "id": "operational_28d2a05cc6356925",
+                      "rank": 14,
+                      "score": 72.50435225744292,
+                      "decisionKey": "telling-applicant-decision-by-end-of-day",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_28d2a05cc6356925::a1"
+                    },
+                    {
+                      "id": "claim_d938eb5a2a31cce1",
+                      "rank": 15,
+                      "score": 72.25092585910984,
+                      "decisionKey": "missed-onboarding-appointment",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 1,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_d938eb5a2a31cce1::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "neighbor_only",
+                        "documentsConsidered": 3490,
+                        "hardCompatible": 1735,
+                        "directLaneSelected": 18,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "operational_5ae798d520d93a3d",
+                          "operational_2d4f1ca359a6e91d",
+                          "claim_d9e7c2f5a04fc7ae",
+                          "claim_7dc8ab12672b0859",
+                          "operational_7d7232bc7d71f7c3",
+                          "operational_0fc4659b490e0d95",
+                          "operational_d2578f8784ed8f05",
+                          "operational_1df9f29a7119d9a9",
+                          "operational_746d8aea0ad3a92e",
+                          "operational_148be1aa9aea1a5e",
+                          "operational_8d86e3fa17858864",
+                          "claim_bc6feb1c60e8c90d__a3",
+                          "operational_f7b8d0c74bb0b6bd",
+                          "operational_28d2a05cc6356925",
+                          "claim_d938eb5a2a31cce1"
+                        ],
+                        "rejectionCounts": {
+                          "decision_object": 962,
+                          "decision_contract": 1018,
+                          "material_condition": 16,
+                          "relation": 64,
+                          "insufficient_direct_signal": 673,
+                          "payment_qualifier": 39,
+                          "workflow_stage_or_time": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "What if they keep pushing me for an exact breakdown?",
+                      "relation": "other",
+                      "request_kind": "knowledge",
+                      "product_scope": "unknown",
+                      "domains": [],
+                      "actions": [],
+                      "entities": [],
+                      "lane": "route",
+                      "evidence_refs": [],
+                      "supported_claim": "",
+                      "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                      "route_key": "sales_policy",
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "route",
+                  "confidence_score": 10,
+                  "reasoning_summary": "Used the complete source question as one retrieval need. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "route",
+                      "directPolicyIds": [],
+                      "preferredPolicyIds": [],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                    }
+                  ],
+                  "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+                },
+                "executionMode": {
+                  "planning": "hybrid_fallback",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "route",
+                  "sentenceChecks": [],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [],
+                "stageTimings": {
+                  "turnResolutionMs": 2,
+                  "queryPlanningMs": 0,
+                  "v5BoundedRetrievalMs": 964,
+                  "sourcePlanningMs": 13,
+                  "evidenceDraftingMs": 0,
+                  "validationMs": 0,
+                  "totalMs": 979
+                }
+              }
+            },
+            "v3": {
+              "ok": true,
+              "conversationId": "",
+              "messageId": "",
+              "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+              "structuredAnswer": {
+                "summary": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+                "sections": [],
+                "confidenceLabel": "Low",
+                "confidenceScore": 0,
+                "sourceMode": "fallback"
+              },
+              "outcome": "route_from_evidence",
+              "source": null,
+              "model": null,
+              "provider": null,
+              "needsRoute": true,
+              "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+              "redactions": [],
+              "latencyMs": 62,
+              "sanitizedQuestion": "What if they keep pushing me for an exact breakdown?",
+              "contextualQuestion": "Immediate prior subject: If a prospect asks about cost during Call 1, should I tell them the $10K minimum?\nCurrent request about that subject: What if they keep pushing me for an exact breakdown?",
+              "matchedArticleId": null,
+              "errorClass": "v3_provider_failure",
+              "runtimeMetadata": {
+                "pipelineVersion": "v3",
+                "knowledgeVersion": "8c8c677c1209f2d7",
+                "providerAttempts": [],
+                "v3": {
+                  "turn": {
+                    "kind": "follow_up",
+                    "productScope": "unknown",
+                    "excludedScopes": [],
+                    "usedImmediateContext": true,
+                    "previousUserQuestionUsed": true,
+                    "previousAssistantAnswerUsed": true,
+                    "explicitScopeSwitch": false,
+                    "intentResolutionMode": "deterministic",
+                    "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals."
+                  },
+                  "retrieval": {
+                    "query": "What if they keep pushing me for an exact breakdown?\nImmediate prior subject: If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+                    "preselectionCandidateCount": 20,
+                    "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                    "evidenceContract": {
+                      "needs": [
+                        {
+                          "id": "N1",
+                          "text": "Immediate prior subject: If a prospect asks about cost during Call 1, should I tell them the $10K minimum?\nCurrent request about that subject: What if they keep pushing me for an exact breakdown?"
+                        }
+                      ],
+                      "support": [],
+                      "unresolvedNeedIds": [
+                        "N1"
+                      ]
+                    },
+                    "candidateCount": 0,
+                    "candidates": [],
+                    "blockedCandidates": []
+                  },
+                  "selection": {
+                    "selectedPolicyIds": [],
+                    "rejectedPolicyIds": [],
+                    "coverage": [
+                      {
+                        "need": "Immediate prior subject: If a prospect asks about cost during Call 1, should I tell them the $10K minimum?\nCurrent request about that subject: What if they keep pushing me for an exact breakdown?",
+                        "status": "unresolved",
+                        "policyIds": [],
+                        "reason": "No applicable approved evidence was selected."
+                      }
+                    ]
+                  },
+                  "validation": {
+                    "verdict": "pass",
+                    "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                    "removedClaims": []
+                  },
+                  "stageTimings": {
+                    "turnResolutionMs": 0,
+                    "retrievalMs": 62,
+                    "evidenceSelectionMs": 0,
+                    "validationMs": 0,
+                    "totalMs": 62
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "conversation-content-rights",
+      "title": "Natural follow-up: full episode versus clips",
+      "prompts": [
+        {
+          "id": "content-rights-turn-1",
+          "question": "Can a cast member upload their full episode to YouTube?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. They may post the trailer, but not the full episode on YouTube.",
+          "requiredConcepts": [
+            "trailer allowed",
+            "full episode not allowed on YouTube"
+          ],
+          "forbiddenConcepts": [
+            "full episode allowed"
+          ],
+          "evaluationStrata": [
+            "conversation",
+            "rights",
+            "turn-one"
+          ],
+          "sourceIds": [
+            "slack:C0AUQKNR8CF:1783021601.334749",
+            "slack:C0AUQKNR8CF:1783021973.926369"
+          ],
+          "approvedBy": [
+            "Madeline"
+          ],
+          "systems": {
+            "v3": {
+              "ok": true,
+              "conversationId": "",
+              "messageId": "",
+              "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+              "structuredAnswer": {
+                "summary": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+                "sections": [],
+                "confidenceLabel": "Low",
+                "confidenceScore": 0,
+                "sourceMode": "fallback"
+              },
+              "outcome": "route_from_evidence",
+              "source": null,
+              "model": null,
+              "provider": null,
+              "needsRoute": true,
+              "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+              "redactions": [],
+              "latencyMs": 55,
+              "sanitizedQuestion": "Can a cast member upload their full episode to YouTube?",
+              "contextualQuestion": "Can a cast member upload their full episode to YouTube?",
+              "matchedArticleId": null,
+              "errorClass": "v3_provider_failure",
+              "runtimeMetadata": {
+                "pipelineVersion": "v3",
+                "knowledgeVersion": "8c8c677c1209f2d7",
+                "providerAttempts": [],
+                "v3": {
+                  "turn": {
+                    "kind": "new",
+                    "productScope": "unknown",
+                    "excludedScopes": [],
+                    "usedImmediateContext": false,
+                    "previousUserQuestionUsed": false,
+                    "previousAssistantAnswerUsed": false,
+                    "explicitScopeSwitch": false,
+                    "intentResolutionMode": "deterministic",
+                    "intentResolutionReason": "Resolved as new from explicit conversation and referent signals."
+                  },
+                  "retrieval": {
+                    "query": "Can a cast member upload their full episode to YouTube?",
+                    "preselectionCandidateCount": 20,
+                    "evidenceSelectionReason": "Evidence selection failed; no unverified candidates were exposed to composition.",
+                    "evidenceContract": {
+                      "needs": [
+                        {
+                          "id": "N1",
+                          "text": "Can a cast member upload their full episode to YouTube?"
+                        }
+                      ],
+                      "support": [],
+                      "unresolvedNeedIds": [
+                        "N1"
+                      ]
+                    },
+                    "candidateCount": 0,
+                    "candidates": [],
+                    "blockedCandidates": []
+                  },
+                  "selection": {
+                    "selectedPolicyIds": [],
+                    "rejectedPolicyIds": [],
+                    "coverage": [
+                      {
+                        "need": "Can a cast member upload their full episode to YouTube?",
+                        "status": "unresolved",
+                        "policyIds": [],
+                        "reason": "No applicable approved evidence was selected."
+                      }
+                    ]
+                  },
+                  "validation": {
+                    "verdict": "pass",
+                    "reason": "No applicable approved evidence was selected; preserved the fail-closed route.",
+                    "removedClaims": []
+                  },
+                  "stageTimings": {
+                    "turnResolutionMs": 0,
+                    "retrievalMs": 54,
+                    "semanticRecallMs": 0,
+                    "evidenceSelectionMs": 1,
+                    "validationMs": 0,
+                    "totalMs": 55
+                  }
+                }
+              }
+            },
+            "v55": {
+              "ok": true,
+              "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+              "structuredAnswer": {
+                "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                "sections": [
+                  {
+                    "title": "Next step",
+                    "body": "Use #sales-questions-requests for the part that still needs confirmation.",
+                    "tone": "route"
+                  }
+                ],
+                "confidenceLabel": "Low",
+                "confidenceScore": 35,
+                "sourceMode": "fallback"
+              },
+              "lane": "route",
+              "needsRoute": true,
+              "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+              "routeChannels": [
+                "#sales-questions-requests"
+              ],
+              "provider": null,
+              "model": null,
+              "latencyMs": 1781,
+              "citations": [],
+              "selectedPolicyIds": [],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.4-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+                "turn": {
+                  "kind": "new",
+                  "currentQuestion": "Can a cast member upload their full episode to YouTube?",
+                  "standaloneQuestion": "Can a cast member upload their full episode to YouTube?",
+                  "immediatePreviousUserQuestion": null,
+                  "immediatePreviousAssistantAnswer": null,
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": false,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+                  "actionableQuestion": "Can a cast member upload their full episode to YouTube?",
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 2625,
+                  "candidateCount": 14,
+                  "candidates": [
+                    {
+                      "id": "operational_e98b5bdcc149c42b",
+                      "rank": 1,
+                      "score": 195.4882308892412,
+                      "decisionKey": "youtube-full-episode-upload-restriction",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_e98b5bdcc149c42b::a1"
+                    },
+                    {
+                      "id": "claim_21b70bbb958defbb",
+                      "rank": 2,
+                      "score": 191.34630335215996,
+                      "decisionKey": "client-posting-episode-to-youtube",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_21b70bbb958defbb::a1"
+                    },
+                    {
+                      "id": "operational_26dcf59671b33c9c",
+                      "rank": 3,
+                      "score": 177.63705736092822,
+                      "decisionKey": "youtube-clip-upload-permission",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_26dcf59671b33c9c::a1"
+                    },
+                    {
+                      "id": "claim_459e8ba36975af57",
+                      "rank": 4,
+                      "score": 138.8578362917488,
+                      "decisionKey": "posting-full-episode-to-youtube",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_459e8ba36975af57::a1"
+                    },
+                    {
+                      "id": "operational_f34e1e8918da61aa",
+                      "rank": 5,
+                      "score": 120.48442865034802,
+                      "decisionKey": "full-episode-posting-restriction",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_f34e1e8918da61aa::a1"
+                    },
+                    {
+                      "id": "operational_0693b490b5b53626",
+                      "rank": 6,
+                      "score": 112.39777070241466,
+                      "decisionKey": "episode-clips-in-ads-permission",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_0693b490b5b53626::a1"
+                    },
+                    {
+                      "id": "claim_8929350dea67d856",
+                      "rank": 7,
+                      "score": 106.28020852319406,
+                      "decisionKey": "events-mastermind-red-carpet-answer-4",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "canonical",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_8929350dea67d856::a1"
+                    },
+                    {
+                      "id": "claim_606e9d59e3cd964f",
+                      "rank": 8,
+                      "score": 101.04828192842828,
+                      "decisionKey": "existing-client-buying-another-show",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "time_sensitive",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_606e9d59e3cd964f::a3"
+                    },
+                    {
+                      "id": "operational_0d5728d49672c97c",
+                      "rank": 9,
+                      "score": 95.30327686432912,
+                      "decisionKey": "six-month-training-discontinuation",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_0d5728d49672c97c::a2"
+                    },
+                    {
+                      "id": "operational_ce674c4a7c6cfb9a",
+                      "rank": 10,
+                      "score": 93.50472565816455,
+                      "decisionKey": "episode-placement-on-own-platform",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_ce674c4a7c6cfb9a::a1"
+                    },
+                    {
+                      "id": "operational_124147acaaa7366d",
+                      "rank": 11,
+                      "score": 91.39711161101458,
+                      "decisionKey": "launch-party-before-airing",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_124147acaaa7366d::a1"
+                    },
+                    {
+                      "id": "operational_4aa22a1505930eeb",
+                      "rank": 12,
+                      "score": 88.3612563289164,
+                      "decisionKey": "multiple-family-members-on-episode",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_4aa22a1505930eeb::a1"
+                    },
+                    {
+                      "id": "operational_d100653da3acb942",
+                      "rank": 13,
+                      "score": 87.58163644742743,
+                      "decisionKey": "sharing-episode-on-social-media",
+                      "answerability": "route_or_support",
+                      "qualityTier": "contextual_evidence",
+                      "productScopes": [
+                        "unknown"
+                      ],
+                      "sourceKind": "authoritative_operational_qna",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "operational_d100653da3acb942::a1"
+                    },
+                    {
+                      "id": "claim_85fb115ef895ab63",
+                      "rank": 14,
+                      "score": 71.38562900103287,
+                      "decisionKey": "roi-capital-raise-and-viewer-number-claims",
+                      "answerability": "answer_evidence",
+                      "qualityTier": "trusted_evidence",
+                      "productScopes": [
+                        "product_agnostic"
+                      ],
+                      "sourceKind": "governed_policy",
+                      "temporalRisk": "stable",
+                      "relationScore": 14,
+                      "semanticVectorScore": 0,
+                      "matchedDecisionId": "claim_85fb115ef895ab63::a1"
+                    }
+                  ],
+                  "blockedTopicIds": [],
+                  "blockedMatches": [],
+                  "diagnostics": {
+                    "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+                    "needs": [
+                      {
+                        "needId": "N1",
+                        "evidenceState": "exact_evidence_found",
+                        "documentsConsidered": 3490,
+                        "hardCompatible": 43,
+                        "directLaneSelected": 18,
+                        "expansionLaneSelected": 0,
+                        "selectedPolicyIds": [
+                          "operational_e98b5bdcc149c42b",
+                          "claim_21b70bbb958defbb",
+                          "operational_26dcf59671b33c9c",
+                          "claim_459e8ba36975af57",
+                          "operational_f34e1e8918da61aa",
+                          "operational_0693b490b5b53626",
+                          "claim_8929350dea67d856",
+                          "claim_606e9d59e3cd964f",
+                          "operational_0d5728d49672c97c",
+                          "operational_ce674c4a7c6cfb9a",
+                          "operational_124147acaaa7366d",
+                          "operational_4aa22a1505930eeb",
+                          "operational_d100653da3acb942",
+                          "claim_85fb115ef895ab63"
+                        ],
+                        "rejectionCounts": {
+                          "relation": 1952,
+                          "decision_contract": 2546,
+                          "decision_object": 733,
+                          "material_condition": 6,
+                          "workflow_stage_or_time": 329,
+                          "other_hard_boundary": 215,
+                          "insufficient_direct_signal": 185,
+                          "payment_qualifier": 27
+                        }
+                      }
+                    ]
+                  }
+                },
+                "plan": {
+                  "needs": [
+                    {
+                      "id": "N1",
+                      "text": "Can a cast member upload their full episode to YouTube?",
+                      "relation": "permission",
+                      "request_kind": "artifact_request",
+                      "product_scope": "unknown",
+                      "domains": [],
+                      "actions": [],
+                      "entities": [],
+                      "lane": "route",
+                      "evidence_refs": [],
+                      "supported_claim": "",
+                      "reason": "The isolated evidence selector was unavailable, so V5 withheld an unvalidated answer.",
+                      "route_key": "sales_policy",
+                      "clarification_question": ""
+                    }
+                  ],
+                  "overall_lane": "route",
+                  "confidence_score": 10,
+                  "reasoning_summary": "Used the complete source question as one retrieval need. V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner. V5 failed closed because evidence selection was unavailable. Operational overlay policies available: 1751."
+                },
+                "sourcePlan": {
+                  "needs": [
+                    {
+                      "needId": "N1",
+                      "lane": "route",
+                      "directPolicyIds": [],
+                      "preferredPolicyIds": [],
+                      "excludedConflictPolicyIds": [],
+                      "reason": "The isolated source adjudicator was unavailable, so V5 withheld an unadjudicated answer."
+                    }
+                  ],
+                  "reasoningSummary": "V5 failed closed because source-timeline adjudication was unavailable. V5.2 applied the non-bypassable decision contract and contextual authority gate. V5.3 recovered only exact model-confirmed source positions that passed pairwise material-compatibility checks. V5.4 treated aligned exact records as support while retaining fail-closed behavior for genuine policy conflicts."
+                },
+                "executionMode": {
+                  "planning": "hybrid_fallback",
+                  "composition": "model",
+                  "validation": "model_and_deterministic"
+                },
+                "validation": {
+                  "verdict": "route",
+                  "sentenceChecks": [],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [
+                    "N1"
+                  ],
+                  "reason": "Every retained sentence passed deterministic and semantic validation."
+                },
+                "providerAttempts": [],
+                "stageTimings": {
+                  "turnResolutionMs": 0,
+                  "queryPlanningMs": 1,
+                  "v5BoundedRetrievalMs": 1756,
+                  "sourcePlanningMs": 24,
+                  "evidenceDraftingMs": 0,
+                  "validationMs": 0,
+                  "totalMs": 1781
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "content-rights-turn-2",
+          "question": "What about shorter reels chopped from the episode?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. Chopped reels from the episode may be posted.",
+          "requiredConcepts": [
+            "chopped reels allowed"
+          ],
+          "forbiddenConcepts": [
+            "extend permission to the full episode"
+          ],
+          "evaluationStrata": [
+            "conversation",
+            "rights",
+            "follow-up"
+          ],
+          "sourceIds": [
+            "slack:C0AUQKNR8CF:1783021601.334749",
+            "slack:C0AUQKNR8CF:1783024379.859519",
+            "slack:C0AUQKNR8CF:1783025266.764309"
+          ],
+          "approvedBy": [
+            "Madeline"
+          ],
+          "systems": {
+            "v3": {
+              "ok": true,
+              "conversationId": "",
+              "messageId": "",
+              "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+              "structuredAnswer": {
+                "summary": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+                "sections": [],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "conversation"
+              },
+              "outcome": "conversation_reply",
+              "source": null,
+              "model": null,
+              "provider": null,
+              "needsRoute": false,
+              "routeReason": null,
+              "redactions": [],
+              "latencyMs": 1,
+              "sanitizedQuestion": "What about shorter reels chopped from the episode?",
+              "contextualQuestion": "What about shorter reels chopped from the episode?",
+              "matchedArticleId": null,
+              "errorClass": "v3_provider_failure",
+              "runtimeMetadata": {
+                "pipelineVersion": "v3",
+                "knowledgeVersion": "8c8c677c1209f2d7",
+                "providerAttempts": [],
+                "v3": {
+                  "turn": {
+                    "kind": "rewrite",
+                    "productScope": "unknown",
+                    "excludedScopes": [],
+                    "usedImmediateContext": true,
+                    "previousUserQuestionUsed": true,
+                    "previousAssistantAnswerUsed": true,
+                    "explicitScopeSwitch": false,
+                    "intentResolutionMode": "deterministic",
+                    "intentResolutionReason": "Resolved as rewrite from explicit conversation and referent signals."
+                  },
+                  "retrieval": {
+                    "query": "What about shorter reels chopped from the episode?",
+                    "candidateCount": 0,
+                    "candidates": [],
+                    "blockedCandidates": []
+                  },
+                  "selection": {
+                    "selectedPolicyIds": [],
+                    "rejectedPolicyIds": [],
+                    "coverage": []
+                  },
+                  "validation": {
+                    "verdict": "pass",
+                    "reason": "Conversation response is not a policy answer.",
+                    "removedClaims": []
+                  },
+                  "stageTimings": {
+                    "turnResolutionMs": 0,
+                    "retrievalMs": 0,
+                    "validationMs": 0,
+                    "totalMs": 0
+                  }
+                }
+              }
+            },
+            "v55": {
+              "ok": true,
+              "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+              "structuredAnswer": {
+                "summary": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                "sections": [],
+                "confidenceLabel": "High",
+                "confidenceScore": 100,
+                "sourceMode": "conversation"
+              },
+              "lane": "conversation",
+              "needsRoute": false,
+              "routeReason": null,
+              "routeChannels": [],
+              "provider": null,
+              "model": null,
+              "latencyMs": 3,
+              "citations": [],
+              "selectedPolicyIds": [],
+              "redactions": [],
+              "runtimeMetadata": {
+                "pipelineVersion": "v5.4-isolated",
+                "isolation": {
+                  "productionSelectorChanged": false,
+                  "databaseWrites": false,
+                  "historyPersistence": false
+                },
+                "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v54_coverage-consensus-r4",
+                "turn": {
+                  "kind": "rewrite",
+                  "currentQuestion": "What about shorter reels chopped from the episode?",
+                  "standaloneQuestion": "What about shorter reels chopped from the episode?",
+                  "immediatePreviousUserQuestion": "Can a cast member upload their full episode to YouTube?",
+                  "immediatePreviousAssistantAnswer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+                  "productScope": "unknown",
+                  "excludedScopes": [],
+                  "memoryAnswer": null,
+                  "usedImmediateContext": true,
+                  "explicitCorrection": false,
+                  "explicitScopeSwitch": false,
+                  "stylePreferences": [],
+                  "contextMessages": [
+                    {
+                      "role": "user",
+                      "content": "Can a cast member upload their full episode to YouTube?"
+                    },
+                    {
+                      "role": "assistant",
+                      "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+                    }
+                  ],
+                  "intentResolutionMode": "deterministic",
+                  "intentResolutionReason": "Resolved as rewrite from explicit conversation and referent signals.",
+                  "actionableQuestion": null,
+                  "conversationalPreface": null
+                },
+                "retrieval": {
+                  "corpusSize": 0,
+                  "candidateCount": 0,
+                  "candidates": [],
+                  "blockedTopicIds": []
+                },
+                "plan": {
+                  "needs": [],
+                  "overall_lane": "conversation",
+                  "confidence_score": 100,
+                  "reasoning_summary": "Conversation-only turn. Frozen V4 supplied the non-regression fallback."
+                },
+                "executionMode": {
+                  "planning": "hybrid_fallback",
+                  "composition": "not_required",
+                  "validation": "not_required"
+                },
+                "validation": {
+                  "verdict": "pass",
+                  "sentenceChecks": [],
+                  "removedSentences": [],
+                  "unresolvedNeedIds": [],
+                  "reason": "No policy answer was required."
+                },
+                "providerAttempts": [],
+                "stageTimings": {
+                  "turnResolutionMs": 0,
+                  "totalMs": 3,
+                  "systemicFallbackTotalMs": 3
+                },
+                "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "v3": {
+      "completed": 9,
+      "lanes": {
+        "route_from_evidence": 8,
+        "conversation_reply": 1
+      },
+      "providerAttempts": 0,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0,
+      "meanLatencyMs": 56,
+      "p90LatencyMs": 79
+    },
+    "v55": {
+      "completed": 9,
+      "lanes": {
+        "route": 8,
+        "conversation": 1
+      },
+      "providerAttempts": 0,
+      "unsuccessfulProviderAttempts": 0,
+      "terminalProviderFailures": 0,
+      "meanLatencyMs": 1406,
+      "p90LatencyMs": 2467
+    }
+  }
+}

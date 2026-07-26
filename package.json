@@ -45,6 +45,7 @@
     "benchmark:ask-sales-faq:v5-5:blind-gate": "vite-node --config vitest.config.ts scripts/benchmark-ask-sales-v5-5-blind-gate.ts",
     "build:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/build-ask-sales-v5-5-blind-review.ts",
     "verify:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/verify-ask-sales-v5-5-blind-review.ts",
+    "score:ask-sales-faq:v5-5:blind-review": "vite-node --config vitest.config.ts scripts/score-ask-sales-v5-5-blind-review.ts",
     "compile:ask-sales-faq:v4:systemic-knowledge": "vite-node --config vitest.config.ts scripts/compile-ask-sales-v4-systemic-operational-knowledge.ts",
     "prepare:ask-sales-faq:v4:systemic-enriched-classification": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-enriched-classification.ts",
     "prepare:ask-sales-faq:v4:systemic-authority-grounding": "vite-node --config vitest.config.ts scripts/prepare-ask-sales-v4-systemic-authority-grounding-reclassification.ts",
