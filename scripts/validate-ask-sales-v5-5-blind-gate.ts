@@ -2,11 +2,12 @@ import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-type GoldItem = { id: string; sourceIds?: string[] };
+type GoldItem = { id: string; sourceIds?: string[]; goldAnswer?: string };
 type Dataset = {
   schemaVersion: number;
   status: string;
   runtimeFreezeCommit: string;
+  supersedesInvalidRun?: Record<string, unknown>;
   promotionGate: Record<string, unknown>;
   reviewDesign: Record<string, unknown>;
   repeatability: { caseIds: string[]; conversationIds: string[] };
@@ -60,8 +61,9 @@ async function main() {
   const datasetPath = path.resolve(argument("dataset", defaultDataset));
   const raw = await readFile(datasetPath, "utf8");
   const dataset = JSON.parse(raw) as Dataset;
-  assert(dataset.schemaVersion === 3, "Blind gate must use schemaVersion 3");
-  assert(dataset.status === "sealed_before_runtime_evaluation", "Dataset must be sealed before any model output is generated");
+  assert(dataset.schemaVersion === 4, "Blind gate must use provider-corrected schemaVersion 4");
+  assert(dataset.status === "sealed_for_provider_corrected_evaluation", "Dataset must be sealed before any corrected provider output is generated");
+  assert(Boolean(dataset.supersedesInvalidRun), "Corrected dataset must identify the invalid run it supersedes");
   assert(/^[0-9a-f]{40}$/.test(dataset.runtimeFreezeCommit), "Runtime freeze must be a full Git commit");
   assert(dataset.cases.length === 14, "Blind gate must contain exactly 14 standalone cases");
   assert(dataset.conversations.length === 3, "Blind gate must contain exactly three conversations");
@@ -78,9 +80,18 @@ async function main() {
   assert(dataset.reviewDesign.itemsPerBatch === 5, "Human review batches must remain five items or fewer");
   assert(dataset.repeatability.caseIds.length === 5 && dataset.repeatability.conversationIds.length === 2, "Repeatability subset must remain preregistered");
 
-  const slackParents = items.flatMap((item) => item.sourceIds || [])
+  const sources = items.flatMap((item) => item.sourceIds || []);
+  const slackParents = sources
     .filter((sourceId) => exactSlackSourcePattern.test(sourceId));
-  assert(slackParents.length >= 36, "Slack-backed gold must retain question and authoritative reply lineage");
+  assert(slackParents.length >= 30, "Slack-backed gold must retain substantial question and authoritative reply lineage");
+  assert(sources.some((sourceId) => sourceId.startsWith("transcript:GMT20260707-135929:")), "Doctor gold must retain Mike/Rich transcript lineage");
+  assert(sources.some((sourceId) => sourceId.startsWith("active-video:1FMWLYoZXQdBxu0Y0RLNl4mamepeOSaBx:")), "Pricing gold must retain active Call 2 video lineage");
+  const doctor = items.find((item) => item.id === "best-doctors-own-practice");
+  assert(/hospital-employed doctor can qualify|doctor can be considered/i.test(doctor?.goldAnswer || ""), "Doctor gold must not revive the superseded practice-ownership rule");
+  assert(/nurse does not qualify as a doctor/i.test(doctor?.goldAnswer || ""), "Doctor gold must preserve the doctor/nurse boundary");
+  const pricing = items.find((item) => item.id === "call2-baseline-quote-sequence");
+  assert(/start with the main \$20,000 Standard package/i.test(pricing?.goldAnswer || ""), "Call 2 gold must preserve the $20K-first pitch sequence");
+  assert(/Do not present all three prices at once/i.test(pricing?.goldAnswer || ""), "Call 2 gold must preserve the one-option-at-a-time boundary");
   const prior = new Set(await priorSlackSources(datasetPath));
   const overlaps = [...new Set(slackParents.filter((sourceId) => prior.has(sourceId)))];
   assert(overlaps.length === 0, `Blind gate leaked prior evaluation Slack sources: ${overlaps.join(", ")}`);

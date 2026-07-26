@@ -74,7 +74,6 @@ function htmlDocument(packet: JsonRecord) {
     .answers { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .answer { border:1px solid var(--line); border-radius:14px; padding:16px; min-height:170px; background:#fff; }
     .answer h2 { display:flex; justify-content:space-between; gap:8px; }
-    .pill { font-size:11px; font-weight:700; color:var(--muted); background:var(--soft); border-radius:99px; padding:5px 8px; white-space:nowrap; }
     .answerText { white-space:pre-wrap; line-height:1.55; }
     fieldset { border:0; padding:0; margin:20px 0 0; }
     legend { font-weight:800; margin-bottom:10px; }
@@ -102,7 +101,7 @@ function htmlDocument(packet: JsonRecord) {
     <header>
       <div class="eyebrow">Blind human review</div>
       <h1>Choose the more useful and correct answer</h1>
-      <p class="muted">The systems are hidden. Review one question at a time. The authoritative rule is shown so you do not have to remember it. Your choices are saved only in this browser and can be exported as JSON.</p>
+      <p class="muted">The systems are hidden. Review one question at a time. The verified rule is shown so you do not have to remember it. Your choices are saved only in this browser and can be exported as JSON.</p>
       <div class="progressRow"><div class="progress"><div id="bar"></div></div><strong id="progressText"></strong></div>
     </header>
     <section class="card" id="reviewCard" aria-live="polite"></section>
@@ -131,7 +130,7 @@ function htmlDocument(packet: JsonRecord) {
     const esc = (value) => String(value ?? '').replace(/[&<>\"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
     function answerPanel(label, output) {
       const route = output.routeChannels?.length ? '<p class="muted"><strong>Route:</strong> ' + esc(output.routeChannels.join(', ')) + '</p>' : '';
-      return '<article class="answer"><h2>Answer ' + label + '<span class="pill">' + esc(output.disposition || 'response') + '</span></h2><div class="answerText">' + esc(output.answer) + '</div>' + route + '</article>';
+      return '<article class="answer"><h2>Answer ' + label + '</h2><div class="answerText">' + esc(output.answer) + '</div>' + route + '</article>';
     }
     function choices(name, values, selected) {
       return '<div class="choices">' + values.map(([value,label]) => '<label class="choice"><input type="radio" name="' + name + '" value="' + value + '" ' + (selected === value ? 'checked' : '') + '><span>' + label + '</span></label>').join('') + '</div>';
@@ -145,10 +144,10 @@ function htmlDocument(packet: JsonRecord) {
       document.getElementById('reviewCard').innerHTML =
         '<div class="eyebrow">Batch ' + batch + ' · Question ' + (index + 1) + '</div>' +
         '<div class="question">' + esc(item.question) + '</div>' +
-        '<div class="gold"><strong>Authoritative rule</strong>' + esc(item.goldAnswer) + '</div>' +
+        '<div class="gold"><strong>Verified rule</strong>' + esc(item.goldAnswer) + '</div>' +
         '<div class="answers">' + answerPanel('A', item.outputA) + answerPanel('B', item.outputB) + '</div>' +
-        '<fieldset><legend>1. Which answer is better?</legend>' + choices('preference', [['A','A'],['B','B'],['both','Both acceptable'],['neither','Neither']], saved.preference) + '</fieldset>' +
-        '<fieldset><legend>2. Is there a serious operational error?</legend>' + choices('seriousError', [['none','No serious error'],['A','A has one'],['B','B has one'],['both','Both have one']], saved.seriousError) + '</fieldset>' +
+        '<fieldset><legend>1. Which response would you trust a sales rep to use?</legend>' + choices('preference', [['A','A'],['B','B'],['both','Both are usable'],['neither','Neither is usable']], saved.preference) + '</fieldset>' +
+        '<fieldset><legend>2. Does either response say something materially wrong or send the rep to the wrong place?</legend>' + choices('materialError', [['none','No'],['A','Yes — A'],['B','Yes — B'],['both','Yes — both']], saved.materialError) + '</fieldset>' +
         '<fieldset><legend>Optional short note</legend><textarea id="note" placeholder="Only add a note if something important is missing or wrong.">' + esc(saved.note || '') + '</textarea></fieldset>' +
         '<div class="nav"><button class="secondary" id="previous" ' + (index === 0 ? 'disabled' : '') + '>Previous</button><span class="save" id="saveStatus">Saved locally</span><button class="primary" id="next">' + (index === items.length - 1 ? 'Finish' : 'Save & next') + '</button></div>' +
         '<details><summary>Why this question is included</summary><p>' + esc(item.evaluationStrata.join(' · ')) + '</p></details>';
@@ -161,7 +160,7 @@ function htmlDocument(packet: JsonRecord) {
       const item = items[index];
       responses[item.id] = {
         preference: document.querySelector('input[name=preference]:checked')?.value || '',
-        seriousError: document.querySelector('input[name=seriousError]:checked')?.value || '',
+        materialError: document.querySelector('input[name=materialError]:checked')?.value || '',
         note: document.getElementById('note')?.value || ''
       };
       safeStorage.setItem(storageKey, JSON.stringify(responses));
@@ -170,12 +169,12 @@ function htmlDocument(packet: JsonRecord) {
     function exportPayload() {
       save();
       return {
-        schemaVersion: 'ask-sales-blind-human-review-v1',
+        schemaVersion: 'ask-sales-blind-human-review-v2',
         packetId: packet.packetId,
         packetSha256: packet.packetSha256,
         reviewedAt: new Date().toISOString(),
         systemsStillBlindedDuringReview: true,
-        items: items.map((item) => ({ id:item.id, ...(responses[item.id] || {preference:'',seriousError:'',note:''}) }))
+        items: items.map((item) => ({ id:item.id, ...(responses[item.id] || {preference:'',materialError:'',note:''}) }))
       };
     }
     document.getElementById('download').addEventListener('click', () => { const blob = new Blob([JSON.stringify(exportPayload(),null,2)+'\\n'],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ask-sales-blind-review-feedback.json'; a.click(); URL.revokeObjectURL(a.href); document.getElementById('toolStatus').textContent='Feedback file downloaded.'; });
@@ -188,8 +187,8 @@ function htmlDocument(packet: JsonRecord) {
 }
 
 async function main() {
-  const inputPath = path.resolve(argument("input", "artifacts/ask-sales-faq-v5-5-blind-gate/primary-runtime.json"));
-  const outputDirectory = path.resolve(argument("output-dir", "artifacts/ask-sales-faq-v5-5-blind-gate"));
+  const inputPath = path.resolve(argument("input", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected/primary-runtime.json"));
+  const outputDirectory = path.resolve(argument("output-dir", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected"));
   const raw = await readFile(inputPath, "utf8");
   const report = object(JSON.parse(raw));
   if (text(report.status) !== "complete") throw new Error("Only a complete runtime report can be blinded");
@@ -221,7 +220,7 @@ async function main() {
     };
   });
   const packetBase = {
-    schemaVersion: "ask-sales-v5-5-blinded-review-packet-v1",
+    schemaVersion: "ask-sales-v5-5-blinded-review-packet-v2",
     packetId: `v55-blind-${datasetSha256.slice(0, 12)}`,
     createdAt: new Date().toISOString(),
     runtimeInputSha256: sha256(raw),
@@ -229,7 +228,7 @@ async function main() {
     systemsHidden: true,
     instructions: {
       preference: "Choose A, B, both acceptable, or neither.",
-      seriousError: "Mark only a materially wrong rule, unsafe over-answer, privacy issue, or wrong action owner.",
+      materialError: "Mark a response only when it states a materially wrong rule, gives unsafe guidance, or sends the rep to the wrong place.",
       note: "Optional and short.",
     },
     items,
@@ -239,7 +238,7 @@ async function main() {
   const packetRaw = `${JSON.stringify(packet, null, 2)}\n`;
   const mappingByItem = Object.fromEntries(rows.map((row) => [row.item.id, mappings.get(row.groupId)]));
   const key = {
-    schemaVersion: "ask-sales-v5-5-unblind-key-v1",
+    schemaVersion: "ask-sales-v5-5-unblind-key-v2",
     packetId: packet.packetId,
     packetContentSha256: packet.packetSha256,
     packetFileSha256: sha256(packetRaw),
@@ -248,15 +247,15 @@ async function main() {
     mappingByItem,
   };
   const template = {
-    schemaVersion: "ask-sales-blind-human-review-v1",
+    schemaVersion: "ask-sales-blind-human-review-v2",
     packetId: packet.packetId,
     packetSha256: packet.packetSha256,
     reviewedAt: null,
     reviewer: "",
     systemsStillBlindedDuringReview: true,
-    items: items.map((item) => ({ id: item.id, preference: "", seriousError: "", note: "" })),
+    items: items.map((item) => ({ id: item.id, preference: "", materialError: "", note: "" })),
   };
-  const guide = `# Ask Sales blind answer review\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the authoritative rule.\n2. Choose Answer A, Answer B, both acceptable, or neither.\n3. Mark a serious error only for a materially wrong rule, unsafe answer, privacy issue, or wrong action owner.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.\n\nReturn the completed JSON and score it from the repository root with:\n\n\`\`\`bash\npnpm score:ask-sales-faq:v5-5:blind-review -- --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json\n\`\`\`\n\nThe scorer rejects incomplete or mismatched feedback, unblinds only after review, checks the preregistered thresholds, and always leaves production promotion unauthorized until the owner gives separate approval.\n`;
+  const guide = `# Ask Sales blind answer review\n\nOpen \`ASK-SALES-BLIND-REVIEW.html\` in a browser. It shows one question at a time in four batches of five.\n\nFor each question:\n\n1. Read the verified rule.\n2. Choose Answer A, Answer B, both usable, or neither usable.\n3. Mark an answer only if it says something materially wrong or sends the rep to the wrong place.\n4. Add a short note only when useful.\n\nAt the end, download or copy the feedback JSON. Do not open the unblind key until the review is complete.\n\nReturn the completed JSON and score it from the repository root with:\n\n\`\`\`bash\npnpm score:ask-sales-faq:v5-5:blind-review -- --dir=artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json\n\`\`\`\n\nThe scorer rejects incomplete or mismatched feedback, unblinds only after review, checks the preregistered thresholds, and always leaves production promotion unauthorized until the owner gives separate approval.\n`;
   await mkdir(outputDirectory, { recursive: true });
   await Promise.all([
     writeFile(path.join(outputDirectory, "blinded-review-packet.json"), packetRaw, "utf8"),

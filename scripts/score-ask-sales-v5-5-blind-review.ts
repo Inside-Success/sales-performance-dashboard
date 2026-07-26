@@ -42,7 +42,7 @@ function hasExpectedOwner(answer: string, expectedRouteKey: string) {
 }
 
 async function main() {
-  const directory = path.resolve(argument("dir", "artifacts/ask-sales-faq-v5-5-blind-gate"));
+  const directory = path.resolve(argument("dir", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected"));
   const datasetPath = path.resolve(argument("dataset", "tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json"));
   const feedbackPath = path.resolve(argument("feedback"));
   assert(argument("feedback"), "Provide the completed blind feedback with --feedback=/absolute/or/relative/path.json");
@@ -65,6 +65,7 @@ async function main() {
   const feedbackItems = Array.isArray(feedback.items) ? feedback.items.map(object) : [];
 
   assert(text(runtime.status) === "complete", "Primary runtime report is incomplete");
+  assert(text(feedback.schemaVersion) === "ask-sales-blind-human-review-v2", "Feedback must use the corrected review schema");
   assert(text(runtime.datasetSha256) === sha256(datasetRaw), "Runtime report is not bound to this dataset");
   assert(text(key.packetFileSha256) === sha256(packetRaw), "Unblind key is not bound to this packet file");
   assert(text(feedback.packetId) === text(packet.packetId), "Feedback packet ID does not match");
@@ -82,12 +83,12 @@ async function main() {
     const response = feedbackById.get(text(item.id));
     assert(response, `Missing feedback for ${text(item.id)}`);
     assert(validPreferences.has(text(response.preference)), `Missing or invalid preference for ${text(item.id)}`);
-    assert(validErrors.has(text(response.seriousError)), `Missing or invalid serious-error choice for ${text(item.id)}`);
+    assert(validErrors.has(text(response.materialError)), `Missing or invalid material-error choice for ${text(item.id)}`);
   }
 
   const perSystem = {
-    v3: { exclusiveWins: 0, acceptable: 0, seriousErrors: 0, wrongActionOwners: 0 },
-    v55: { exclusiveWins: 0, acceptable: 0, seriousErrors: 0, wrongActionOwners: 0 },
+    v3: { exclusiveWins: 0, acceptable: 0, materialErrors: 0, wrongActionOwners: 0 },
+    v55: { exclusiveWins: 0, acceptable: 0, materialErrors: 0, wrongActionOwners: 0 },
   };
   let ties = 0;
   let neither = 0;
@@ -97,7 +98,7 @@ async function main() {
     const mapping = object(mappings[id]) as Mapping;
     assert(new Set([text(mapping.A), text(mapping.B)]).size === 2, `Invalid system mapping for ${id}`);
     const preference = text(response.preference);
-    const seriousError = text(response.seriousError);
+    const materialError = text(response.materialError);
 
     if (preference === "A" || preference === "B") {
       const winner = mapping[preference];
@@ -111,20 +112,20 @@ async function main() {
       neither += 1;
     }
 
-    if (seriousError === "A" || seriousError === "B") {
-      perSystem[mapping[seriousError]].seriousErrors += 1;
-    } else if (seriousError === "both") {
-      perSystem.v3.seriousErrors += 1;
-      perSystem.v55.seriousErrors += 1;
+    if (materialError === "A" || materialError === "B") {
+      perSystem[mapping[materialError]].materialErrors += 1;
+    } else if (materialError === "both") {
+      perSystem.v3.materialErrors += 1;
+      perSystem.v55.materialErrors += 1;
     }
 
     return {
       id,
       preference,
-      seriousError,
+      materialError,
       note: text(response.note),
       unblindedPreference: preference === "A" || preference === "B" ? mapping[preference] : preference,
-      unblindedSeriousError: seriousError === "A" || seriousError === "B" ? mapping[seriousError] : seriousError,
+      unblindedMaterialError: materialError === "A" || materialError === "B" ? mapping[materialError] : materialError,
     };
   });
 
@@ -158,7 +159,7 @@ async function main() {
   const pairwiseNetWins = perSystem.v55.exclusiveWins - perSystem.v3.exclusiveWins;
   const checks = {
     meaningfulPairwiseLead: pairwiseNetWins >= number(gate.minimumPairwiseNetWinsOverV3),
-    noV55CriticalErrors: perSystem.v55.seriousErrors <= number(gate.maximumV55CriticalErrors),
+    noV55CriticalErrors: perSystem.v55.materialErrors <= number(gate.maximumV55CriticalErrors),
     noV55WrongActionOwners: perSystem.v55.wrongActionOwners <= number(gate.maximumV55WrongActionOwners),
     minimumV55AcceptableRate: v55AcceptableRate >= number(gate.minimumV55AcceptableRate),
     explicitOwnerApprovalRecorded: false,
@@ -168,7 +169,7 @@ async function main() {
     && checks.noV55WrongActionOwners
     && checks.minimumV55AcceptableRate;
   const result = {
-    schemaVersion: "ask-sales-v5-5-blind-human-score-v1",
+    schemaVersion: "ask-sales-v5-5-blind-human-score-v2",
     scoredAt: new Date().toISOString(),
     packetId: text(packet.packetId),
     packetSha256: text(packet.packetSha256),

@@ -4,7 +4,8 @@ import path from "node:path";
 
 import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 import { runAskSalesFaqV3 } from "@/lib/ask-sales-faq/v3/runtime";
-import { runAskSalesFaqV5 } from "@/lib/ask-sales-faq/v5/runtime";
+import { getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
+import { runAskSalesFaqV55 } from "@/lib/ask-sales-faq/v5-5/runtime";
 
 type SystemName = "v3" | "v55";
 type GoldItem = {
@@ -30,7 +31,7 @@ type Dataset = {
   cases: GoldItem[];
   conversations: Conversation[];
 };
-type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> | Awaited<ReturnType<typeof runAskSalesFaqV5>>;
+type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> | Awaited<ReturnType<typeof runAskSalesFaqV55>>;
 type EvaluatedItem = GoldItem & { systems: Partial<Record<SystemName, RuntimeResult>> };
 type EvaluatedConversation = Omit<Conversation, "prompts"> & { prompts: EvaluatedItem[] };
 
@@ -55,8 +56,49 @@ function providerAttempts(result: RuntimeResult) {
   return result.runtimeMetadata?.providerAttempts || [];
 }
 
+function providerUnavailable(result: RuntimeResult) {
+  return /(?:no provider configured|provider succeeded|evidence selector was unavailable|source adjudicator was unavailable)/i
+    .test(JSON.stringify(result));
+}
+
+function successfulProviderAttempts(result: RuntimeResult) {
+  return providerAttempts(result).filter((attempt) => attempt.status === "success").length;
+}
+
+function providerPreflight(systems: SystemName[]) {
+  const v4 = getV4ProviderReadiness();
+  const v3Configured = Boolean(process.env.DEEPSEEK_API_KEY || (
+    process.env.ANTHROPIC_API_KEY && process.env.FAQ_ALLOW_CLAUDE_FALLBACK === "true"
+  ));
+  const preflight = {
+    v3: {
+      configured: v3Configured,
+      provider: process.env.DEEPSEEK_API_KEY ? "deepseek" : v3Configured ? "anthropic" : null,
+      model: process.env.DEEPSEEK_API_KEY
+        ? process.env.FAQ_V3_DEEPSEEK_MODEL || process.env.FAQ_DEEPSEEK_MODEL || "deepseek-v4-pro"
+        : v3Configured ? process.env.FAQ_V3_CLAUDE_MODEL || process.env.FAQ_CLAUDE_MODEL || "claude-sonnet-4-6" : null,
+    },
+    v55: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
+  };
+  const missing = systems.filter((system) => !preflight[system].configured);
+  if (missing.length) {
+    throw new Error(`Provider preflight failed for ${missing.join(", ")}; no runtime output was generated`);
+  }
+  if (systems.includes("v3") && systems.includes("v55") && (
+    preflight.v3.provider !== preflight.v55.provider || preflight.v3.model !== preflight.v55.model
+  )) {
+    throw new Error("Provider parity failed: V3 and V5.5 must use the same provider and model");
+  }
+  return preflight;
+}
+
 async function run(system: SystemName, question: string, history: AskSalesFaqChatMessage[]) {
-  return system === "v3" ? runAskSalesFaqV3(question, history) : runAskSalesFaqV5(question, history);
+  return system === "v3" ? runAskSalesFaqV3(question, history) : runAskSalesFaqV55(question, history);
 }
 
 function systemOrder(key: string, reverse: boolean): SystemName[] {
@@ -78,9 +120,11 @@ function summary(cases: EvaluatedItem[], conversations: EvaluatedConversation[],
         return counts;
       }, {}),
       providerAttempts: results.reduce((total, result) => total + providerAttempts(result).length, 0),
+      successfulProviderAttempts: results.reduce((total, result) => total + successfulProviderAttempts(result), 0),
       unsuccessfulProviderAttempts: results.reduce((total, result) =>
         total + providerAttempts(result).filter((attempt) => attempt.status !== "success").length, 0),
       terminalProviderFailures: results.filter(terminalProviderFailure).length,
+      providerUnavailableOutputs: results.filter(providerUnavailable).length,
       meanLatencyMs: latencies.length ? Math.round(latencies.reduce((total, value) => total + value, 0) / latencies.length) : null,
       p90LatencyMs: latencies.length ? latencies[Math.min(latencies.length - 1, Math.ceil(latencies.length * 0.9) - 1)] : null,
     }];
@@ -89,14 +133,17 @@ function summary(cases: EvaluatedItem[], conversations: EvaluatedConversation[],
 
 async function main() {
   const datasetPath = path.resolve(argument("dataset", "tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json"));
-  const outputPath = path.resolve(argument("output", "artifacts/ask-sales-faq-v5-5-blind-gate/primary-runtime.json"));
   const mode = argument("mode", "primary");
   if (!new Set(["primary", "repeatability"]).has(mode)) throw new Error("--mode must be primary or repeatability");
+  const outputPath = path.resolve(argument(
+    "output",
+    `artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected/${mode === "repeatability" ? "repeatability" : "primary"}-runtime.json`,
+  ));
   const reverseOrder = argument("reverse-order", mode === "repeatability" ? "true" : "false") === "true";
   const datasetRaw = await readFile(datasetPath, "utf8");
   const dataset = JSON.parse(datasetRaw) as Dataset;
-  if (dataset.schemaVersion !== 3 || dataset.status !== "sealed_before_runtime_evaluation") {
-    throw new Error("V5.5 blind gate requires the sealed schemaVersion 3 dataset");
+  if (dataset.schemaVersion !== 4 || dataset.status !== "sealed_for_provider_corrected_evaluation") {
+    throw new Error("V5.5 blind gate requires the provider-corrected sealed schemaVersion 4 dataset");
   }
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
@@ -104,6 +151,7 @@ async function main() {
   if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55"]).has(system))) {
     throw new Error("--systems must be a comma-separated subset of v3,v55");
   }
+  const preflight = providerPreflight(systems);
   const selectedCases = mode === "repeatability" ? new Set(dataset.repeatability.caseIds) : null;
   const selectedConversations = mode === "repeatability" ? new Set(dataset.repeatability.conversationIds) : null;
   const cases = dataset.cases.filter((item) => !selectedCases || selectedCases.has(item.id)).map((item): EvaluatedItem => ({ ...item, systems: {} }));
@@ -113,7 +161,7 @@ async function main() {
   }));
   const totalPrompts = cases.length + conversations.reduce((total, conversation) => total + conversation.prompts.length, 0);
   const report = {
-    schemaVersion: "ask-sales-v5-5-blind-runtime-v1",
+    schemaVersion: "ask-sales-v5-5-blind-runtime-v2",
     status: "running",
     mode,
     promotionEvidence: mode === "primary",
@@ -124,6 +172,11 @@ async function main() {
     runtimeFreezeCommit: dataset.runtimeFreezeCommit,
     evaluationToolCommit: argument("evaluation-commit") || null,
     systems,
+    providerPreflight: preflight,
+    runtimeEntrypoints: {
+      v3: "@/lib/ask-sales-faq/v3/runtime#runAskSalesFaqV3",
+      v55: "@/lib/ask-sales-faq/v5-5/runtime#runAskSalesFaqV55",
+    },
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,
     startedAt: new Date().toISOString(),
@@ -166,9 +219,29 @@ async function main() {
 
   report.summary = summary(report.cases, report.conversations, systems);
   for (const system of systems) {
-    const systemSummary = report.summary[system] as { completed: number; terminalProviderFailures: number };
-    if (systemSummary.completed !== totalPrompts || systemSummary.terminalProviderFailures !== 0) {
-      throw new Error(`${system} did not produce all ${totalPrompts} terminally successful outputs`);
+    const systemSummary = report.summary[system] as {
+      completed: number;
+      successfulProviderAttempts: number;
+      terminalProviderFailures: number;
+      providerUnavailableOutputs: number;
+    };
+    if (
+      systemSummary.completed !== totalPrompts ||
+      systemSummary.successfulProviderAttempts === 0 ||
+      systemSummary.terminalProviderFailures !== 0 ||
+      systemSummary.providerUnavailableOutputs !== 0
+    ) {
+      throw new Error(`${system} did not produce all ${totalPrompts} provider-backed terminally successful outputs`);
+    }
+  }
+  const answerItems = [...report.cases, ...report.conversations.flatMap((conversation) => conversation.prompts)]
+    .filter((item) => item.expectedDisposition === "answer");
+  for (const item of answerItems) {
+    for (const system of systems) {
+      const result = item.systems[system];
+      if (!result || successfulProviderAttempts(result) === 0 || providerUnavailable(result)) {
+        throw new Error(`${system} did not execute a successful provider stage for answer prompt ${item.id}`);
+      }
     }
   }
   report.status = "complete";

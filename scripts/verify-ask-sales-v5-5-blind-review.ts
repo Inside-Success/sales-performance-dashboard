@@ -17,6 +17,10 @@ function text(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
+function number(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
 function sha256(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -26,7 +30,7 @@ function assert(condition: unknown, message: string): asserts condition {
 }
 
 async function main() {
-  const directory = path.resolve(argument("dir", "artifacts/ask-sales-faq-v5-5-blind-gate"));
+  const directory = path.resolve(argument("dir", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected"));
   const datasetPath = path.resolve(argument("dataset", "tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json"));
   const [datasetRaw, runtimeRaw, repeatabilityRaw, packetRaw, keyRaw, templateRaw, html, guide, scorer] = await Promise.all([
     readFile(datasetPath, "utf8"),
@@ -47,13 +51,21 @@ async function main() {
   const items = Array.isArray(packet.items) ? packet.items.map(object) : [];
   const mappings = object(key.mappingByItem);
   const runtimeSummary = object(runtime.summary);
+  const preflight = object(runtime.providerPreflight);
 
   assert(text(runtime.status) === "complete", "Runtime report is not complete");
   assert(text(repeatability.status) === "complete" && text(repeatability.mode) === "repeatability", "Repeatability report is not complete");
   assert(text(runtime.datasetSha256) === sha256(datasetRaw), "Runtime dataset hash does not match the sealed gold");
   assert(text(repeatability.datasetSha256) === sha256(datasetRaw), "Repeatability report is not bound to the sealed gold");
+  assert(object(preflight.v3).configured === true && object(preflight.v55).configured === true, "Both provider preflights must be configured");
+  assert(text(object(preflight.v3).provider) === text(object(preflight.v55).provider), "Provider names are not in parity");
+  assert(text(object(preflight.v3).model) === text(object(preflight.v55).model), "Provider models are not in parity");
+  assert(text(object(runtime.runtimeEntrypoints).v55) === "@/lib/ask-sales-faq/v5-5/runtime#runAskSalesFaqV55", "Runtime report did not execute the V5.5 entrypoint");
   assert(object(runtimeSummary.v3).completed === 20 && object(runtimeSummary.v55).completed === 20, "Both systems must complete all 20 prompts");
   assert(object(runtimeSummary.v3).terminalProviderFailures === 0 && object(runtimeSummary.v55).terminalProviderFailures === 0, "Provider failures invalidate the blind packet");
+  assert(number(object(runtimeSummary.v3).successfulProviderAttempts) > 0 && number(object(runtimeSummary.v55).successfulProviderAttempts) > 0, "Both systems must record successful provider attempts");
+  assert(object(runtimeSummary.v3).providerUnavailableOutputs === 0 && object(runtimeSummary.v55).providerUnavailableOutputs === 0, "Provider-unavailable fallbacks invalidate the packet");
+  assert(/"pipelineVersion": "v5\.5-isolated"/.test(runtimeRaw), "Corrected runtime output does not identify the V5.5 pipeline");
   assert(items.length === 20, "Blind packet must contain exactly 20 items");
   assert(new Set(items.map((item) => text(item.id))).size === 20, "Blind packet IDs must be unique");
   assert(items.every((item) => text(object(item.outputA).answer) && text(object(item.outputB).answer)), "Every item must contain two non-empty answers");
@@ -63,6 +75,8 @@ async function main() {
   assert(text(key.packetContentSha256) === text(packet.packetSha256), "Packet content hash does not match unblind key");
   assert(text(key.packetFileSha256) === sha256(packetRaw), "Packet file hash does not match unblind key");
   assert(text(template.packetSha256) === text(packet.packetSha256), "Feedback template is bound to the wrong packet");
+  assert(text(template.schemaVersion) === "ask-sales-blind-human-review-v2", "Feedback template must use the corrected review schema");
+  assert(Array.isArray(template.items) && template.items.map(object).every((item) => "materialError" in item && !("seriousError" in item)), "Feedback template must use the plain material-error field");
 
   const flattenRuntime = (report: JsonRecord) => [
     ...(Array.isArray(report.cases) ? report.cases.map(object) : []),
@@ -79,12 +93,12 @@ async function main() {
       const primaryOutput = object(object(primary.systems)[system]);
       const repeatedOutput = object(object(repeated.systems)[system]);
       const stableFields = (value: JsonRecord) => JSON.stringify({
-        answer: text(value.answer),
         lane: text(value.lane) || text(value.outcome),
         needsRoute: value.needsRoute === true,
         routeChannels: Array.isArray(value.routeChannels) ? value.routeChannels : [],
       });
-      assert(stableFields(primaryOutput) === stableFields(repeatedOutput), `${system} changed its output for repeatability prompt ${text(repeated.id)}`);
+      assert(text(primaryOutput.answer) && text(repeatedOutput.answer), `${system} returned an empty repeatability answer for ${text(repeated.id)}`);
+      assert(stableFields(primaryOutput) === stableFields(repeatedOutput), `${system} changed its decision or route for repeatability prompt ${text(repeated.id)}`);
     }
   }
 
@@ -115,7 +129,8 @@ async function main() {
   assert(!/sealed-unblind-key|mappingByItem|\"v3\"|\"v55\"/.test(html), "Reviewer HTML leaks system identity or the key location");
   assert(!/<script[^>]+src=|<link[^>]+href=|https?:\/\//i.test(html), "Reviewer HTML must be self-contained and make no network requests");
   assert(/one question at a time/i.test(guide) && /four batches of five/i.test(guide), "Reviewer guide does not state the low-overload workflow");
-  assert(/Download feedback JSON/.test(html) && /Both acceptable/.test(html) && /No serious error/.test(html), "Reviewer controls are incomplete");
+  assert(/Download feedback JSON/.test(html) && /Both are usable/.test(html) && /send the rep to the wrong place/.test(html), "Reviewer controls are incomplete or unclear");
+  assert(!/<span class="pill">/.test(html), "Backend disposition labels must not appear in the reviewer UI");
   assert(/technicalGatePassed/.test(scorer) && /productionPromotionAuthorized: false/.test(scorer), "Blind scorer must enforce a non-promoting technical decision");
 
   const secretPattern = /(?:\bsk-[A-Za-z0-9_-]{20,}|\bgh[opsu]_[A-Za-z0-9]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)/;
