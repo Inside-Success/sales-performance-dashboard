@@ -1,115 +1,118 @@
-# Ask Sales V5.5 blind human promotion gate
+# Ask Sales V5.5 provider-corrected blind diagnostic
 
 Date: 2026-07-26
-Status: implemented and technically verified; human review pending; production promotion not authorized
+Status: valid provider-backed diagnostic; blind human review pending; production promotion blocked
 
-## Decision in one paragraph
+## Executive decision
 
-Frozen V5.5 has **not** earned production replacement. A new source-only comparison was sealed before either runtime was opened, executed against production V3 and frozen V5.5, repeated on the preregistered subset, and converted into a low-overload blind review. The primary diagnostic is unfavorable for both systems: of 18 prompts whose authoritative Slack answer was shown in the source gold, each runtime produced 17 explicit routes and one route-like conversation reply instead of a substantive answer. Both correctly routed the two live-action controls to Finance and Greenlight. Human pairwise scoring remains required, but the observed answer coverage already rules out a responsible V5.5 production recommendation.
+Do not replace production V3 with V5.5. The first 20-question comparison was invalid because neither system had a usable model provider and the candidate side called V5.4 while being labeled V5.5. A corrected isolated run now compares the real production V3 runtime with the frozen V5.5 runtime on the same DeepSeek model. V3 answered materially more of the source-answerable questions. V5.5 was faster, but over-routed clear rules and changed one decision on the repeatability run.
 
-## Isolation and safety
+The corrected blind review is useful for direct human answer preferences. It is not fresh unseen promotion evidence because the questions and source gold were already exposed during the invalid first review. A non-bypassable repeatability hold also blocks promotion regardless of the human score.
+
+## What was corrected
+
+- Real runtime entrypoints: production V3 versus frozen isolated V5.5.
+- Provider parity: the same DeepSeek model and direct-provider mode for both systems.
+- Provider preflight: missing configuration now stops before any runtime output is written.
+- Provider-backed minimums: provider-unavailable fallbacks cannot masquerade as a completed comparison.
+- The doctor gold now follows Mike and Rich's Zoom clarification: practice ownership is not required; a hospital-employed doctor can qualify; a nurse is not a doctor.
+- The Call 2 pricing gold now requires the $20,000 Standard package first, followed only by approved upsell/downsell options and listed installment plans based on fit and financial position. Reps must not show all packages at once or invent a custom split.
+- The reviewer now shows one question, one verified rule, and Answer A/B at a time. Backend disposition labels are hidden.
+- The scorer independently checks decision repeatability and cannot pass the technical gate while any mismatch remains.
+
+## Isolation and governance
 
 - Production V3 was not edited, deployed, reconfigured, or promoted.
 - Frozen V5.5 runtime commit `f8d9915ba2be2d87374d748d8f3bb62e3b409afb` was not changed.
-- The evaluation branch began from that exact commit. `git diff f8d9915... -- src/lib/ask-sales-faq/v5-5 src/lib/ask-sales-faq/v5 src/app/api/ask-sales-faq` remains empty.
-- Slack was used read-only. No Slack message, reaction, edit, deletion, or workflow write occurred.
-- No database, n8n, Google, Vercel configuration, deployment, subscription, or production write occurred.
+- No Slack message, reaction, edit, deletion, or workflow write occurred.
+- No database, n8n, Google, Vercel configuration/deployment, subscription, authentication, knowledge release, or production write occurred.
 - No local development server ran.
-- A branch-scoped Preview environment was read only for the primary runtime and its temporary local environment file was deleted afterward. No credential is stored in these artifacts.
+- Existing Vercel Preview configuration was read only to check provider availability. No deployment or environment write occurred, and the temporary local environment file was deleted.
+- The saved production V3 policy-matching replacement remains separately pending and was not implemented or superseded.
 
-## Preregistered evidence
+## Corrected evidence identity
 
-- Dataset: `tests/ask-sales-faq/v5-5-blind-human-gold-2026-07-26.json`
-- Dataset SHA-256: `55208bc63a54dd3e1291fa6b122e65e9f1c9d23d62bebb9e198e8a0b4d69edb4`
-- Pre-output seal commit: `3076d8d6ce13057d0fd239f6556a9665800ec319`
-- Scope: 14 standalone questions plus three two-turn conversations, for 20 prompts total.
-- Source construction: 18 answer prompts use authoritative threaded Slack resolutions; two safety controls use the current approved owner-route catalog.
-- Leakage check: 333 previously used Slack evidence IDs were checked and the final set had zero source-ID overlap.
-- Exclusions: ambiguous or unresolved threads, peer-only advice, client personal data, and questions selected because a candidate already answered them well.
-- Authority handling: exact decision, scope, conditions, finality, recency, and role are evaluated together. Rich normally outranks Madeline, while a materially newer exact decision can control in context.
+- Dataset: 14 standalone prompts plus three two-turn conversations, 20 prompts total.
+- Prior Slack evidence IDs checked: 333.
+- Prior source-ID overlap: zero.
+- Dataset SHA-256: `32cb80bf99b6def87aa2715347aa32a4d5b5aebdc9d59a6569e24722bb63605f`.
+- Evaluation commit: `4428175fab02dccf39cd9d8c27be0bbad5f2a634`.
 
-The gate was frozen before runtime output:
+The zero source overlap still protects against copying earlier source records, but the user's invalid first review exposed these questions and their rules. For that reason, this corrected execution is classified as a provider-backed diagnostic rather than a fresh promotion holdout.
 
-- at least four V5.5 net pairwise wins over V3;
-- zero V5.5 serious operational errors;
-- zero V5.5 wrong action owners;
-- at least 80% conservative V5.5 acceptability;
-- explicit owner approval even if all technical thresholds pass.
+## Valid provider-backed result
 
-## Runtime result before human scoring
-
-Primary report: `artifacts/ask-sales-faq-v5-5-blind-gate/primary-runtime.json`
-SHA-256: `36c5dcd2165b39729e659c6044d7a4b18fe7d5ab39a3f077f335b66d3ed944ca`
-
-| Observation | Production V3 | Frozen V5.5 |
+| Measure | Production V3 | Frozen V5.5 |
 |---|---:|---:|
 | Prompts completed | 20/20 | 20/20 |
-| Explicit route lane | 19 | 19 |
-| Conversation lane | 1 | 1 |
-| Answerable source-gold prompts routed or answered with route-like fallback | 18/18 | 18/18 |
-| Provider attempts | 0 | 0 |
+| Answer lanes | 16 | 12 |
+| Route lanes | 3 | 7 |
+| Conversation lanes | 1 | 1 |
+| Provider-backed outputs | 20 | 19 |
+| Successful provider attempts | 74/74 | 33/34 |
 | Terminal provider failures | 0 | 0 |
-| Mean latency | 67 ms | 1,831 ms |
-| P90 latency | 87 ms | 2,643 ms |
-| Finance action owner | correct | correct |
-| Greenlight action owner | correct | correct |
+| Provider-unavailable outputs | 0 | 0 |
+| Mean latency | 15,097 ms | 11,074 ms |
+| P90 latency | 19,174 ms | 13,188 ms |
 
-These lane counts are not human correctness scores. They do show that the failure happened before answer composition: neither runtime admitted enough authoritative evidence to call the model on this new set. This is not a DeepSeek transport failure and cannot be fixed by changing prose generation alone.
+V5.5 recovered from its one unsuccessful attempt and completed every prompt. The answer-coverage difference therefore comes from runtime evidence selection/adjudication, not provider absence.
 
-## Repeatability
+Primary runtime SHA-256: `dbdb92251630c38a6f3a29f5696dd23b7b52a59279d37cec37234e24e8d35781`.
 
-The preregistered nine-prompt subset was rerun in reverse system order.
+## Manual engineering audit
 
-- Report: `artifacts/ask-sales-faq-v5-5-blind-gate/repeatability-runtime.json`
-- SHA-256: `b0f533893a8a32da736180f7509d4be6782cd1d47c046a288a5748a0b35320bb`
-- Exact answer, lane, route flag, and route-channel differences from the primary run: `0/18` system outputs.
-- Provider failures: zero.
+V3 had stronger coverage. V5.5 routed clear answerable rules for:
 
-The poor answer coverage is therefore repeatable on this subset, not a one-off model variation.
+- the five-year ISTV placement guarantee;
+- the $20,000-first Call 2 quote sequence;
+- the same-week Call 2 rule;
+- hospital-employed-doctor eligibility;
+- the editing timeline.
 
-## Human review packet
+V5.5 gave clean source-aligned answers for several other rules, including Daymond John cohort handling, ROI, OnceHub cancellation, cast-member privacy, minors, authors, and live onboarding. It was faster and used fewer provider attempts.
 
-Open `artifacts/ask-sales-faq-v5-5-blind-gate/ASK-SALES-BLIND-REVIEW.html` directly in a browser.
+Both systems failed the chopped-reels follow-up. V5.5 repeated the full-episode rule instead of resolving the new object, while V3 contradicted itself. V3 also omitted the exact $20,000 baseline in the Call 2 pricing answer and added avoidable detail in some responses. Keeping V3 live is a risk-minimizing decision, not a claim that V3 is already ideal.
 
-- one question at a time;
-- four batches of five;
-- authoritative rule displayed above the two candidate answers;
-- system identities hidden and balanced by independent question/conversation group;
-- a two-choice judgment plus an optional short note;
-- answers saved locally when browser storage is available, with safe in-memory fallback;
-- feedback downloadable or copyable as JSON;
-- self-contained file with no external scripts or network calls.
+## Repeatability promotion hold
 
-Packet ID: `v55-blind-55208bc63a54`
-Packet file SHA-256: `4219ba8eff341c081cfdfbdb98c69c54d44dd39ceae5460708f9ba5a35ca64a2`
+The reverse-order nine-prompt run found one material V5.5 decision change:
 
-The system key is deliberately separate in `sealed-unblind-key.json`. Do not open it before the review is complete.
+- `call1-pricing-turn-2`: the primary run answered; the repeat run routed to `#sales-questions-requests`.
 
-After the reviewer returns the completed JSON:
+The verifier status is `verified_with_promotion_hold`. The scorer independently recomputes the mismatch and sets `technicalGatePassed` to false while it remains.
 
-```bash
-pnpm score:ask-sales-faq:v5-5:blind-review -- --feedback=/absolute/path/to/ask-sales-blind-review-feedback.json
-```
+- Repeatability SHA-256: `84b64a76c40b5ddc38a56d3a6751de1ef16c01ae5688d4738e022b62ac1e7b53`.
+- Review packet SHA-256: `2005362a7557803f45cf17e223de505ac0f10dc8ee4d803e5e969939266f745a`.
+- Packet ID: `v55-blind-32cb80bf99b6`.
 
-The scorer rejects incomplete, mismatched, or unblinded feedback; maps A/B choices only after review; checks the frozen thresholds; verifies the two action owners from runtime output; and never authorizes production automatically.
+## Review and fixed safety behavior
 
-## Verification completed
+The corrected review is at:
 
-- dataset seal and prior-source overlap validation;
-- 20/20 paired primary runtime completion;
-- 9/9 paired reverse-order repeatability completion;
-- exact repeatability comparison: 18/18 stable outputs;
-- blind mapping completeness, balance, and conversation stability;
-- packet/key/runtime/dataset hash binding;
-- self-contained/no-network HTML checks;
-- credential-pattern scan;
-- browser rendering and interaction check without a local server;
-- zero browser console errors or warnings;
-- incomplete-feedback rejection and synthetic completed-feedback scorer test;
-- project tests, TypeScript, scoped lint, isolation validation, and GitHub checks recorded with the final evaluation commit.
+`artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected/ASK-SALES-BLIND-REVIEW.html`
 
-## Honest conclusion and next decision
+It contains four batches of five questions, saves progress locally with an in-memory fallback, makes notes optional, and exports schema-validated feedback JSON. The mapping remains hidden and balanced by independent question/conversation group. The scorer rejects incomplete or mismatched feedback, checks material errors and wrong action owners, enforces the repeatability hold, and always leaves `productionPromotionAuthorized` false until a separate approved release decision.
 
-V5.5 remains the strongest earlier V5 candidate on consumed and production-distribution diagnostics, but this independent set reveals that its knowledge-access improvement is not general enough. It is not meaningfully better than V3 here, it is much slower, and neither system delivers the answer coverage the sales team needs. Replacing production now would most likely preserve the current over-routing problem while adding latency; it would not deliver the promised step change.
+## Verification
 
-Finish the blinded review because it provides auditable human evidence and may reveal differences in route wording or safety. Regardless, do not promote V5.5 unless the preregistered gate passes and the owner explicitly approves it. If the gate fails, the next implementation should target the governed knowledge publication/access boundary revealed by these unseen source-gold misses, not patch these 20 questions or loosen fail-closed safety globally.
+- corrected source/dataset validation passed;
+- the no-provider negative test failed closed before producing invalid output;
+- valid primary execution completed 20/20 for each system with provider/model parity;
+- reverse-order repeatability execution completed 9/9 for each system;
+- packet/key/runtime/dataset hash binding passed;
+- hiding, mapping balance, conversation mapping, and no-network checks passed;
+- responsive browser rendering and save/next navigation passed without a local server;
+- synthetic completed feedback proved that the repeatability hold cannot be bypassed even when all human answers are marked acceptable;
+- TypeScript, scoped lint, project tests, production build, isolation/diff checks, secret scanning, and governed GitHub checks are recorded on the final branch head.
+
+## Honest conclusion and pending work
+
+This correction is meaningful because it replaces an invalid comparison with real provider-backed evidence. The evidence does not support V5.5 promotion: V5.5 remains over-conservative on accessible knowledge and is not fully decision-stable. V3 should remain live.
+
+Pending in order:
+
+1. Complete the corrected blind review and preserve its score as diagnostic human evidence.
+2. Do not change V5.5 merely to win these 20 consumed prompts.
+3. If further runtime work is separately authorized, repair evidence adjudication/admission and follow-up intent resolution systemically, then freeze the new candidate.
+4. Evaluate that frozen candidate on a genuinely new, high-quality, source-only set that neither the developer nor reviewer used for tuning.
+5. Require zero critical wrong-policy answers, zero wrong operational owners, stable repeat decisions, meaningful human usefulness over V3, and explicit owner approval before any isolated canary or production replacement.
