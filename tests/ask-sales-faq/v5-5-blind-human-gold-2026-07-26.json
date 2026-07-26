@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 3,
+  "name": "Ask Sales V5.5 frozen blind human gate",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-26T00:00:00.000Z",
+  "runtimeFreezeCommit": "f8d9915ba2be2d87374d748d8f3bb62e3b409afb",
+  "selectionPolicy": {
+    "primaryChannel": "#sales-questions-requests",
+    "channelId": "C0AUQKNR8CF",
+    "sourceRule": "Slack cases require an authoritative threaded resolution and a parent source absent from every earlier Ask Sales test and runtime artifact.",
+    "authorityRule": "Exact decision, scope, conditions, finality, recency, and role control. Rich normally outranks Madeline, but context and a materially newer exact decision can control.",
+    "exclusions": [
+      "No question was selected because V3 or V5.5 already answered it well.",
+      "Ambiguous or unresolved threads were excluded.",
+      "No answer was inferred from peer-only advice.",
+      "No client personal data was copied into the fixture."
+    ]
+  },
+  "promotionGate": {
+    "minimumPairwiseNetWinsOverV3": 4,
+    "maximumV55CriticalErrors": 0,
+    "maximumV55WrongActionOwners": 0,
+    "minimumV55AcceptableRate": 0.8,
+    "requiresExplicitOwnerApproval": true,
+    "note": "This 20-prompt gate is decision evidence, not automatic authorization to replace production."
+  },
+  "reviewDesign": {
+    "systemsHidden": true,
+    "showSourceGold": true,
+    "itemsPerBatch": 5,
+    "reviewQuestions": [
+      "Which answer is better: A, B, both, or neither?",
+      "Does either answer contain a serious operational error?",
+      "Optional short note"
+    ]
+  },
+  "repeatability": {
+    "caseIds": [
+      "dj-cohort-deadline",
+      "new-business-eligibility",
+      "call2-same-week",
+      "route-finance-action",
+      "route-greenlight-action"
+    ],
+    "conversationIds": ["conversation-call1-pricing", "conversation-content-rights"]
+  },
+  "cases": [
+    {
+      "id": "dj-cohort-deadline",
+      "question": "Do the Sunday cohort deadline rules apply to Daymond John / Next Level CEO leads?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Daymond John / Next Level CEO leads are not subject to the main ISTV Sunday cohort deadline, and their acceptance letters should not include that deadline.",
+      "requiredConcepts": ["DJ/NLCEO excluded from Sunday cohort deadline"],
+      "forbiddenConcepts": ["apply the main ISTV Sunday deadline to DJ/NLCEO"],
+      "evaluationStrata": ["product-scope", "deadline", "relationship-matching"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778524418.669819", "slack:C0AUQKNR8CF:1778525932.194489", "slack:C0AUQKNR8CF:1778534873.951559"],
+      "approvedBy": ["Rudy", "Rich"]
+    },
+    {
+      "id": "istv-placement-duration",
+      "question": "For how long is an episode guaranteed to stay on ISTV?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The approved ISTV guarantee is five years. Rudy limited that statement to ISTV and identified company sale, company closure, or serious client misconduct as removal boundaries.",
+      "requiredConcepts": ["five years", "ISTV only"],
+      "forbiddenConcepts": ["two-year guarantee", "applies to every external platform"],
+      "evaluationStrata": ["rights", "duration", "scope-boundary"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779896586.341629", "slack:C0AUQKNR8CF:1779897245.069929", "slack:C0AUQKNR8CF:1779897480.633369"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "multiple-episode-purchase",
+      "question": "Can a client buy multiple episodes, and can they choose different seasons or shows?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. A client can purchase multiple episodes and choose the same season, different seasons, or a mix of shows, with each episode purchased.",
+      "requiredConcepts": ["multiple episodes allowed", "choice of shows or seasons"],
+      "forbiddenConcepts": ["only one episode", "same season only"],
+      "evaluationStrata": ["offer", "entitlement", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779143630.947619", "slack:C0AUQKNR8CF:1779143888.161259", "slack:C0AUQKNR8CF:1779151189.133299", "slack:C0AUQKNR8CF:1779151194.672059"],
+      "approvedBy": ["Madeline", "Rudy"]
+    },
+    {
+      "id": "new-business-eligibility",
+      "question": "Is there a minimum time a business must have been operating before it can qualify?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No fixed minimum time in business was set. A new business can still be approved when it is legitimate, has the means, and otherwise qualifies.",
+      "requiredConcepts": ["no fixed minimum", "legitimate business", "financial means"],
+      "forbiddenConcepts": ["automatic one-year minimum", "automatic approval"],
+      "evaluationStrata": ["qualification", "conditional-rule"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779838579.542829", "slack:C0AUQKNR8CF:1779839376.676389", "slack:C0AUQKNR8CF:1779840932.470589"],
+      "approvedBy": ["Madeline", "Rudy"]
+    },
+    {
+      "id": "contracted-payment-link-after-decline",
+      "question": "A bank transfer failed, but the client already signed for four $2,500 payments. Can I send the official link for that same contracted plan?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The official link can be sent when it matches the amount and payment plan already in the signed contract. This does not authorize changing the plan or creating a custom link.",
+      "requiredConcepts": ["same contracted plan allowed", "official matching link"],
+      "forbiddenConcepts": ["custom payment terms", "promise payment succeeded"],
+      "evaluationStrata": ["payment", "contract", "condition-preservation"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780959095.247439", "slack:C0AUQKNR8CF:1780961882.705619"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "roi-discussion-boundary",
+      "question": "A prospect wants me to explain what ROI the episode will generate. What can I promise?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not promise or discuss ROI. The rep must not claim that the episode will generate a particular return.",
+      "requiredConcepts": ["cannot discuss or promise ROI"],
+      "forbiddenConcepts": ["ROI guarantee", "unsupported sales-funnel outcome"],
+      "evaluationStrata": ["compliance", "prohibited-claim"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778369603.541469", "slack:C0AUQKNR8CF:1778373737.206909"],
+      "approvedBy": ["Rudy"]
+    },
+    {
+      "id": "call2-same-week",
+      "question": "A prospect finished Call 1 but wants Call 2 two weeks later because their investors are traveling. Can I schedule it then?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Call 2 must be scheduled in the same week as Call 1. The stated exceptions are genuine emergencies such as serious illness, a car accident, or a death in the family; investor availability is not one of them.",
+      "requiredConcepts": ["same week", "investor travel is not an emergency exception"],
+      "forbiddenConcepts": ["automatic two-week extension"],
+      "evaluationStrata": ["deadline", "exception", "conditional-rule"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781545356.192409", "slack:C0AUQKNR8CF:1781545577.365009"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "oncehub-applicant-cancellation",
+      "question": "The applicant asked to cancel but did not cancel their booking. Can I remove it from my side, and what reason should I enter?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Use the OnceHub link inside the booking to cancel it and enter ‘applicant requested to cancel’ as the reason.",
+      "requiredConcepts": ["cancel through OnceHub", "applicant requested to cancel"],
+      "forbiddenConcepts": ["invent a different reason", "leave the slot blocked"],
+      "evaluationStrata": ["sop", "calendar", "exact-action"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779377899.558059", "slack:C0AUQKNR8CF:1779377980.577929"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "cast-member-contact-privacy",
+      "question": "A prospect wants to speak directly with a previous cast member before deciding. Can I share someone’s contact details?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not provide a cast member’s contact information or arrange direct contact. Use only approved public testimonials or examples.",
+      "requiredConcepts": ["do not share cast member contact information"],
+      "forbiddenConcepts": ["provide personal contact details", "arrange direct contact"],
+      "evaluationStrata": ["privacy", "testimonial-boundary"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780440269.685649", "slack:C0AUQKNR8CF:1780441516.873609"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "minor-cast-member-eligibility",
+      "question": "Must every cast member be at least 18?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A younger cast member can be considered if they have a successful business and an adult accompanies them. This is not automatic approval.",
+      "requiredConcepts": ["minor can be considered", "successful business", "adult accompaniment"],
+      "forbiddenConcepts": ["automatic approval", "strict 18-plus rule"],
+      "evaluationStrata": ["qualification", "age", "conditions"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782752809.108669", "slack:C0AUQKNR8CF:1782753742.400819"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "authors-business-owner-exception",
+      "question": "For America’s Authors, does a published author with a personal brand also need to own a separate business?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. For America’s Authors, a published author with a personal brand can qualify without separately owning a business.",
+      "requiredConcepts": ["published author with personal brand can qualify", "business ownership not required for this show"],
+      "forbiddenConcepts": ["apply the general business-owner requirement without the Authors exception"],
+      "evaluationStrata": ["show-scope", "qualification", "exception"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779971368.106499", "slack:C0AUQKNR8CF:1779978185.580639"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "best-doctors-own-practice",
+      "question": "Is a doctor who works for a hospital but does not own a practice a fit for America’s Best Doctors?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. For America’s Best Doctors, the stated rule is that a doctor without their own practice is not a good fit.",
+      "requiredConcepts": ["own practice required for America’s Best Doctors"],
+      "forbiddenConcepts": ["confuse a nurse with a doctor", "apply a different show’s rule"],
+      "evaluationStrata": ["show-scope", "qualification", "relationship-matching"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783369383.767539", "slack:C0AUQKNR8CF:1783369455.207019"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "route-finance-action",
+      "question": "My client says they were charged twice and wants me to refund one charge. Can you fix it for me?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "The chatbot must not claim it completed or approved a refund. Route the duplicate-charge and refund operation to #sales-finance-requests and avoid sharing sensitive payment details.",
+      "requiredConcepts": ["#sales-finance-requests", "no refund promise", "cannot perform the action"],
+      "forbiddenConcepts": ["claim the refund was processed", "#greenlight-requests", "request card or bank details"],
+      "evaluationStrata": ["action-routing", "finance", "safety-control"],
+      "sourceIds": ["approved-faq:payments-current", "approved-route:finance"],
+      "approvedBy": ["Project owner approved current route catalog"]
+    },
+    {
+      "id": "route-greenlight-action",
+      "question": "Please send my client’s greenlight letter before our call today.",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The chatbot cannot send the letter. Direct the rep to #greenlight-requests for the request or urgent status follow-up, without promising timing or outcome.",
+      "requiredConcepts": ["#greenlight-requests", "cannot perform the action"],
+      "forbiddenConcepts": ["claim the letter was sent", "#sales-finance-requests", "promise delivery time"],
+      "evaluationStrata": ["action-routing", "greenlight", "safety-control"],
+      "sourceIds": ["approved-faq:greenlight-current", "approved-route:greenlight"],
+      "approvedBy": ["Project owner approved current route catalog"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conversation-call1-pricing",
+      "title": "Natural follow-up: price questions during Call 1",
+      "prompts": [
+        {
+          "id": "call1-pricing-turn-1",
+          "question": "If a prospect asks about cost during Call 1, should I tell them the $10K minimum?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Do not discuss fees or quote the minimum on Call 1. Explain that cost is discussed on Call 2 after determining whether the studio approves them and which option fits.",
+          "requiredConcepts": ["do not quote cost on Call 1", "discuss on Call 2 after approval"],
+          "forbiddenConcepts": ["quote $10K on Call 1"],
+          "evaluationStrata": ["conversation", "pricing", "turn-one"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779825414.828269", "slack:C0AUQKNR8CF:1779828046.082489", "slack:C0AUQKNR8CF:1779828681.237599"],
+          "approvedBy": ["Madeline", "Rudy"]
+        },
+        {
+          "id": "call1-pricing-turn-2",
+          "question": "What if they keep pushing me for an exact breakdown?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Do not invent or break down line items. Reiterate that pricing varies and the person is not yet cast; if cost is their only concern and they will not accept the process, the opportunity may not be a fit.",
+          "requiredConcepts": ["no line-item breakdown", "pricing varies", "not yet cast"],
+          "forbiddenConcepts": ["invent exact travel or promotion costs", "custom quote"],
+          "evaluationStrata": ["conversation", "pricing", "follow-up"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779825414.828269", "slack:C0AUQKNR8CF:1779829032.991179", "slack:C0AUQKNR8CF:1779829524.532689"],
+          "approvedBy": ["Rudy"]
+        }
+      ]
+    },
+    {
+      "id": "conversation-editing-onboarding",
+      "title": "Natural follow-up: episode timing and onboarding",
+      "prompts": [
+        {
+          "id": "editing-onboarding-turn-1",
+          "question": "After filming, how long does it usually take for a client’s episode to be ready?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "A useful expectation is roughly four to six months for editing, often around five months depending on how quickly the client gets to Miami. A rush may sometimes be possible in two to three months after filming, but it is not guaranteed.",
+          "requiredConcepts": ["roughly four to six months", "rush two to three months may be possible", "not guaranteed"],
+          "forbiddenConcepts": ["guaranteed one year", "guaranteed two months"],
+          "evaluationStrata": ["conversation", "timeline", "turn-one"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779912405.761239", "slack:C0AUQKNR8CF:1779913050.780999", "slack:C0AUQKNR8CF:1779916197.540319", "slack:C0AUQKNR8CF:1779929897.328199"],
+          "approvedBy": ["Madeline", "Rich", "Rudy"]
+        },
+        {
+          "id": "editing-onboarding-turn-2",
+          "question": "And can the client just watch a recording of onboarding instead of attending live?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. The client must attend onboarding live. A rep may attend live or watch a recording if one is available.",
+          "requiredConcepts": ["client attends live", "rep may use recording if available"],
+          "forbiddenConcepts": ["client can replace live onboarding with a recording"],
+          "evaluationStrata": ["conversation", "onboarding", "follow-up"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779912405.761239", "slack:C0AUQKNR8CF:1779913063.225589", "slack:C0AUQKNR8CF:1779913070.796079", "slack:C0AUQKNR8CF:1779913260.041349"],
+          "approvedBy": ["Madeline"]
+        }
+      ]
+    },
+    {
+      "id": "conversation-content-rights",
+      "title": "Natural follow-up: full episode versus clips",
+      "prompts": [
+        {
+          "id": "content-rights-turn-1",
+          "question": "Can a cast member upload their full episode to YouTube?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. They may post the trailer, but not the full episode on YouTube.",
+          "requiredConcepts": ["trailer allowed", "full episode not allowed on YouTube"],
+          "forbiddenConcepts": ["full episode allowed"],
+          "evaluationStrata": ["conversation", "rights", "turn-one"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783021601.334749", "slack:C0AUQKNR8CF:1783021973.926369"],
+          "approvedBy": ["Madeline"]
+        },
+        {
+          "id": "content-rights-turn-2",
+          "question": "What about shorter reels chopped from the episode?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. Chopped reels from the episode may be posted.",
+          "requiredConcepts": ["chopped reels allowed"],
+          "forbiddenConcepts": ["extend permission to the full episode"],
+          "evaluationStrata": ["conversation", "rights", "follow-up"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783021601.334749", "slack:C0AUQKNR8CF:1783024379.859519", "slack:C0AUQKNR8CF:1783025266.764309"],
+          "approvedBy": ["Madeline"]
+        }
+      ]
+    }
+  ]
+}
