@@ -11,6 +11,8 @@ V5.5 is **not approved to replace production V3 yet**. The available evaluation 
 ## Isolation and immutable baselines
 
 - V5.5 runtime identity: `v5.5-isolated`.
+- Dashboard draft PR: [#82](https://github.com/Inside-Success/sales-performance-dashboard/pull/82), stacked on frozen V5.4.
+- Documentation draft PR: [#57](https://github.com/Inside-Success/faq-chatbot/pull/57), stacked on the V5.4 documentation branch.
 - Production selector: unchanged; live production still selects V3.
 - Frozen V5.4 commit: `3ccd714` and unchanged.
 - V5.5 uses the existing isolated Preview-only API and lab; it does not persist conversations or bypass the Preview capability boundary.
