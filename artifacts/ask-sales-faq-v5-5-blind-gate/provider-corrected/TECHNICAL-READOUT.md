@@ -87,4 +87,4 @@ pnpm score:ask-sales-faq:v5-5:blind-review -- --dir=artifacts/ask-sales-faq-v5-5
 
 The next runtime change, if separately authorized, should repair V5.5's evidence adjudication/admission and follow-up intent resolution systemically. These 20 prompts must remain regression diagnostics and must not be patched individually or reused as unseen promotion proof.
 
-Production V3, Vercel production, Slack, Google, n8n, the database, authentication, knowledge releases, and the separately saved production policy-matcher replacement remain unchanged.
+Production V3, Slack, Google, n8n, the database, authentication, knowledge releases, and the separately saved production policy-matcher replacement remain unchanged. GitHub publication created only automatic Preview record `dpl_HRtikv25vgJhWqEH2uf1bFMNBTuM`; it failed before an application build at 0 ms and has no production alias. Production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remains READY.

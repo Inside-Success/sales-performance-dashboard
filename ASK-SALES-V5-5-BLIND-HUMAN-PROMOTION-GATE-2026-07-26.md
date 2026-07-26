@@ -25,9 +25,9 @@ The corrected blind review is useful for direct human answer preferences. It is 
 - Production V3 was not edited, deployed, reconfigured, or promoted.
 - Frozen V5.5 runtime commit `f8d9915ba2be2d87374d748d8f3bb62e3b409afb` was not changed.
 - No Slack message, reaction, edit, deletion, or workflow write occurred.
-- No database, n8n, Google, Vercel configuration/deployment, subscription, authentication, knowledge release, or production write occurred.
+- No database, n8n, Google, Vercel configuration, subscription, authentication, knowledge release, or production write occurred.
 - No local development server ran.
-- Existing Vercel Preview configuration was read only to check provider availability. No deployment or environment write occurred, and the temporary local environment file was deleted.
+- Existing Vercel Preview configuration was read only to check provider availability, and the temporary local environment file was deleted. GitHub publication automatically created Preview record `dpl_HRtikv25vgJhWqEH2uf1bFMNBTuM`; it is Preview-targeted, failed before an application build at 0 ms, has no production alias, and was not retried. Production deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` remains READY on `sales-performance-dashboard-rose.vercel.app`.
 - The saved production V3 policy-matching replacement remains separately pending and was not implemented or superseded.
 
 ## Corrected evidence identity
