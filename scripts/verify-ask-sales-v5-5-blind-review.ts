@@ -64,6 +64,7 @@ async function main() {
   assert(object(runtimeSummary.v3).completed === 20 && object(runtimeSummary.v55).completed === 20, "Both systems must complete all 20 prompts");
   assert(object(runtimeSummary.v3).terminalProviderFailures === 0 && object(runtimeSummary.v55).terminalProviderFailures === 0, "Provider failures invalidate the blind packet");
   assert(number(object(runtimeSummary.v3).successfulProviderAttempts) > 0 && number(object(runtimeSummary.v55).successfulProviderAttempts) > 0, "Both systems must record successful provider attempts");
+  assert(number(object(runtimeSummary.v3).providerBackedOutputs) >= 10 && number(object(runtimeSummary.v55).providerBackedOutputs) >= 10, "At least half of each system's outputs must execute a successful provider stage");
   assert(object(runtimeSummary.v3).providerUnavailableOutputs === 0 && object(runtimeSummary.v55).providerUnavailableOutputs === 0, "Provider-unavailable fallbacks invalidate the packet");
   assert(/"pipelineVersion": "v5\.5-isolated"/.test(runtimeRaw), "Corrected runtime output does not identify the V5.5 pipeline");
   assert(items.length === 20, "Blind packet must contain exactly 20 items");
