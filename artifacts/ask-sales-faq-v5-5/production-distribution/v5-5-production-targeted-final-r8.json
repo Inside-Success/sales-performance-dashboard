@@ -1,0 +1,925 @@
+{
+  "schemaVersion": "ask-sales-v5-5-production-v55-runtime-v1",
+  "status": "complete",
+  "promotionEvidence": false,
+  "diagnosticOnly": true,
+  "sourcePath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-5/production-distribution/production-distribution-2026-07-13-to-2026-07-25T21-03-19-000Z.json",
+  "sourceSha256": "ffb64f3be8a559a6623cdbe1cd578a8a5e77e5e699ee8e9394f0e4406f2f513b",
+  "sourcePopulationCount": 125,
+  "evaluatedCount": 1,
+  "system": "v55",
+  "concurrency": 1,
+  "startedAt": "2026-07-25T23:46:47.219Z",
+  "completedAt": "2026-07-25T23:47:14.460Z",
+  "results": [
+    {
+      "id": "production-008",
+      "conversationKey": "95f95d75649ad62e",
+      "conversationTurn": 4,
+      "question": "What else does it include",
+      "productionAnswer": "Beyond the platform submission, VIP includes a 20-25 minute episode, 150,000 pre-promo views, and airing on the ISN app plus a Tier-1 streaming app if accepted. It also includes a podcast (not with Rudy), everything in the Standard plan (like a podcast and an announcement email to the full database), and Mastermind/red-carpet access with a $200 non-refundable attendance fee.",
+      "productionOutcome": "answer_from_evidence",
+      "productionNeedsRoute": false,
+      "productionRouteReason": null,
+      "productionProvider": "deepseek",
+      "productionModel": "deepseek-v4-pro",
+      "productionLatencyMs": 23165,
+      "productionErrorClass": null,
+      "productionRuntimeMetadata": {
+        "v3": {
+          "turn": {
+            "kind": "follow_up",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "explicitScopeSwitch": false,
+            "intentResolutionMode": "deterministic",
+            "usedImmediateContext": true,
+            "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+            "previousUserQuestionUsed": true,
+            "previousAssistantAnswerUsed": true
+          },
+          "retrieval": {
+            "query": "What else does it include\nImmediate prior subject: VIP is submitted to just Amazon or all 3",
+            "candidates": [
+              {
+                "id": "claim_c9e50172a4cd057b",
+                "score": 42.46,
+                "policyKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "main_istv",
+                  "dj_nlceo"
+                ]
+              },
+              {
+                "id": "claim_bc81f6b175e90ef3",
+                "score": 45.07,
+                "policyKey": "vip-includes-podcast",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "contextual_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_5196fa865a42396d",
+                "score": 43.73,
+                "policyKey": "vip-license-includes-20k-plan-items",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "contextual_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_cb54db52c3464015__a1",
+                "score": 50.7,
+                "policyKey": "events-mastermind-red-carpet-what-reps-can-say-1-a1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_e35c3076026455e6",
+                "score": 49.45,
+                "policyKey": "events-mastermind-red-carpet-answer-1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_cb54db52c3464015__a2",
+                "score": 46.95,
+                "policyKey": "events-mastermind-red-carpet-what-reps-can-say-1-a2",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              }
+            ],
+            "candidateCount": 6,
+            "evidenceContract": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "What deliverables, benefits, or features are included in the VIP package beyond the platform submission?"
+                }
+              ],
+              "support": [
+                {
+                  "needId": "N1",
+                  "reason": "P9 lists core VIP deliverables. P17 and P18 confirm podcast inclusion and that VIP includes Standard items. P13/P14 confirm Mastermind/red-carpet access in all packages. P16 adds the attendance fee. P11 confirms all tiers air on ISN app. Together they directly answer what else VIP includes.",
+                  "relation": "direct",
+                  "policyIds": [
+                    "claim_c9e50172a4cd057b",
+                    "claim_bc81f6b175e90ef3",
+                    "claim_5196fa865a42396d",
+                    "claim_cb54db52c3464015__a1",
+                    "claim_e35c3076026455e6",
+                    "claim_cb54db52c3464015__a2"
+                  ],
+                  "hardBoundary": false,
+                  "supportedClaim": "VIP includes a 20-25 minute episode, 150,000 pre-promo views, submission to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted, podcast (not with Rudy), everything in the Standard plan (such as podcast and announcement email to the full database), Mastermind/red-carpet access (with a $200 non-refundable attendance fee), and airing on the Inside Success Network app."
+                }
+              ],
+              "unresolvedNeedIds": []
+            },
+            "blockedCandidates": [],
+            "evidenceSelectionReason": "The question asks what else VIP includes beyond platform submission. Multiple cards provide direct evidence of additional VIP features: episode length, pre-promo views, podcast, Standard plan items, Mastermind access, attendance fee, and ISN app airing. No needs remain unresolved.",
+            "preselectionCandidateCount": 20
+          },
+          "selection": {
+            "coverage": [
+              {
+                "need": "What deliverables, benefits, or features are included in the VIP package beyond the platform submission?",
+                "reason": "All requested deliverables beyond platform submission are covered by the evidence.",
+                "status": "answered",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d",
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6",
+                  "claim_cb54db52c3464015__a2"
+                ]
+              }
+            ],
+            "rejectedPolicyIds": [],
+            "selectedPolicyIds": [
+              "claim_c9e50172a4cd057b",
+              "claim_bc81f6b175e90ef3",
+              "claim_5196fa865a42396d",
+              "claim_cb54db52c3464015__a1",
+              "claim_e35c3076026455e6",
+              "claim_cb54db52c3464015__a2"
+            ]
+          },
+          "validation": {
+            "reason": "All sentence claims are directly supported by the selected evidence. The answer fully addresses the user's need for VIP inclusions beyond platform submission.",
+            "verdict": "pass",
+            "needChecks": [
+              {
+                "reason": "All requested deliverables beyond platform submission are covered by the evidence.",
+                "status": "answered",
+                "needRef": "N1",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d",
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6",
+                  "claim_cb54db52c3464015__a2"
+                ]
+              }
+            ],
+            "removedClaims": [],
+            "sentenceChecks": [
+              {
+                "reason": "V1 directly states VIP includes 20-25 minute episode, 150,000 pre-promo views, ISN app plus Tier-1 streaming app if accepted.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "sentenceRef": "S1"
+              },
+              {
+                "reason": "V2 confirms VIP includes podcast, but not with Rudy.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_bc81f6b175e90ef3"
+                ],
+                "sentenceRef": "S2"
+              },
+              {
+                "reason": "V3 states VIP includes everything in the Standard plan, such as podcast and announcement email.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_5196fa865a42396d"
+                ],
+                "sentenceRef": "S3"
+              },
+              {
+                "reason": "V4 and V5 confirm Mastermind/red-carpet access is included in all packages.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6"
+                ],
+                "sentenceRef": "S4"
+              },
+              {
+                "reason": "V6 states there is a $200 non-refundable Mastermind attendance fee.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_cb54db52c3464015__a2"
+                ],
+                "sentenceRef": "S5"
+              }
+            ]
+          },
+          "stageTimings": {
+            "totalMs": 23165,
+            "retrievalMs": 113,
+            "validationMs": 8731,
+            "turnResolutionMs": 0,
+            "answerGenerationMs": 7978,
+            "evidenceSelectionMs": 6342
+          }
+        },
+        "pipelineVersion": "v3",
+        "knowledgeVersion": "abdbc621f4b32ae9",
+        "providerAttempts": [
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_selection",
+            "provider": "deepseek",
+            "latencyMs": 6341,
+            "promptChars": 23528,
+            "temperature": 0,
+            "totalTokens": 6060,
+            "reasoningMode": "disabled",
+            "completionTokens": 347
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_answer",
+            "provider": "deepseek",
+            "latencyMs": 7977,
+            "promptChars": 13852,
+            "temperature": 0.2,
+            "totalTokens": 4083,
+            "reasoningMode": "disabled",
+            "completionTokens": 625
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_grounding_validation",
+            "provider": "deepseek",
+            "latencyMs": 8730,
+            "promptChars": 13518,
+            "temperature": 0,
+            "totalTokens": 3877,
+            "reasoningMode": "disabled",
+            "completionTokens": 798
+          }
+        ]
+      },
+      "feedback": null,
+      "capturedAt": "2026-07-13 16:40:50.992058+00",
+      "candidate": {
+        "ok": true,
+        "answer": "VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted.",
+        "structuredAnswer": {
+          "summary": "VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted.",
+          "sections": [
+            {
+              "title": "Guidance",
+              "items": [
+                "VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted."
+              ],
+              "tone": "good"
+            }
+          ],
+          "confidenceLabel": "High",
+          "confidenceScore": 95,
+          "sourceMode": "evidence"
+        },
+        "lane": "answer",
+        "needsRoute": false,
+        "routeReason": null,
+        "routeChannels": [],
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "latencyMs": 8376,
+        "citations": [
+          {
+            "policyId": "claim_c9e50172a4cd057b",
+            "title": "ISTV, Next Level CEO Pricing, And Same-Day Discount: Answer",
+            "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+            "lastReviewed": "2026-07-09",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Syed Moonis Haider"
+            ]
+          }
+        ],
+        "selectedPolicyIds": [
+          "claim_c9e50172a4cd057b"
+        ],
+        "redactions": [],
+        "runtimeMetadata": {
+          "pipelineVersion": "v5.5-isolated",
+          "isolation": {
+            "productionSelectorChanged": false,
+            "databaseWrites": false,
+            "historyPersistence": false
+          },
+          "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v55_raw-record-entailment-publisher-conflicts-r1",
+          "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+          "turn": {
+            "kind": "follow_up",
+            "currentQuestion": "What else does it include",
+            "standaloneQuestion": "Immediate prior subject: VIP is submitted to just Amazon or all 3\nCurrent request about that subject: What else does it include",
+            "immediatePreviousUserQuestion": "VIP is submitted to just Amazon or all 3",
+            "immediatePreviousAssistantAnswer": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "memoryAnswer": null,
+            "usedImmediateContext": true,
+            "explicitCorrection": false,
+            "explicitScopeSwitch": false,
+            "stylePreferences": [],
+            "contextMessages": [
+              {
+                "role": "user",
+                "content": "What awards are at the award show"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              },
+              {
+                "role": "user",
+                "content": "Average viewership on episodes on istv"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              },
+              {
+                "role": "user",
+                "content": "VIP is submitted to just Amazon or all 3"
+              },
+              {
+                "role": "assistant",
+                "content": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi."
+              }
+            ],
+            "intentResolutionMode": "deterministic",
+            "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+            "actionableQuestion": "What else does it include",
+            "conversationalPreface": null
+          },
+          "retrieval": {
+            "corpusSize": 2625,
+            "candidateCount": 20,
+            "candidates": [
+              {
+                "id": "operational_4d89f3fa51f643df",
+                "rank": 1,
+                "score": 155.71050578122848,
+                "decisionKey": "vip-plan-inclusions",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.1466471150213533,
+                "matchedDecisionId": "operational_4d89f3fa51f643df::a1"
+              },
+              {
+                "id": "claim_bc81f6b175e90ef3",
+                "rank": 2,
+                "score": 146.49354514242322,
+                "decisionKey": "vip-includes-podcast",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.23570226039551587,
+                "matchedDecisionId": "claim_bc81f6b175e90ef3::a1"
+              },
+              {
+                "id": "claim_80d4013e259f7430",
+                "rank": 3,
+                "score": 145.20879492335413,
+                "decisionKey": "multiple-partners-in-documentary-imdb",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.11605177063713189,
+                "matchedDecisionId": "claim_80d4013e259f7430::a4"
+              },
+              {
+                "id": "claim_0c9788975a1a8d6c",
+                "rank": 4,
+                "score": 144.47987873680654,
+                "decisionKey": "package-hierarchy-license-options-deliverables",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.24494897427831783,
+                "matchedDecisionId": "claim_0c9788975a1a8d6c::a1"
+              },
+              {
+                "id": "claim_5196fa865a42396d",
+                "rank": 5,
+                "score": 137.74219361355327,
+                "decisionKey": "vip-license-includes-20k-plan-items",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.16329931618554522,
+                "matchedDecisionId": "claim_5196fa865a42396d::a1"
+              },
+              {
+                "id": "claim_a67cbc990c0e81d9__a4",
+                "rank": 6,
+                "score": 87.54141905664825,
+                "decisionKey": "platform-proof-and-claims-boundaries-answer-1-a4",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.31980107453341566,
+                "matchedDecisionId": "claim_a67cbc990c0e81d9__a4::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a3",
+                "rank": 7,
+                "score": 72.68259419593666,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.30151134457776363,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a3::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a7",
+                "rank": 8,
+                "score": 62.45476797843125,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.2578483140393151,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a7::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a1",
+                "rank": 9,
+                "score": 61.263597788033266,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.3078596479934797,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a1::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a5",
+                "rank": 10,
+                "score": 57.100767026389434,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.29268470350248177,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a5::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a6",
+                "rank": 11,
+                "score": 56.90648703945664,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.2795530723408051,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a6::a2"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a8",
+                "rank": 12,
+                "score": 55.0994053564278,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a8",
+                "answerability": "route_or_support",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 1,
+                "semanticVectorScore": 0.270232002768764,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a8::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a2",
+                "rank": 13,
+                "score": 50.5083439149429,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.3078596479934797,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a2::a1"
+              },
+              {
+                "id": "owner-vip-tier-one-platform-boundary",
+                "rank": 14,
+                "score": 63.63636363636363,
+                "decisionKey": "vip-license-platform-coverage",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "owner-vip-tier-one-platform-boundary::raw-lexical-recall"
+              },
+              {
+                "id": "claim_c9e50172a4cd057b",
+                "rank": 15,
+                "score": 63.63636363636363,
+                "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_c9e50172a4cd057b::raw-lexical-recall"
+              },
+              {
+                "id": "operational_56eb2c8181d936c9",
+                "rank": 16,
+                "score": 39.54545454545455,
+                "decisionKey": "tier-1-streaming-platform-choice",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_56eb2c8181d936c9::raw-lexical-recall"
+              },
+              {
+                "id": "operational_28607ab5fadfe394",
+                "rank": 17,
+                "score": 36.36363636363637,
+                "decisionKey": "amazon-apple-google-youtube-tv-submission-guarantee",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_28607ab5fadfe394::raw-lexical-recall"
+              },
+              {
+                "id": "operational_83e6034fe5175e61",
+                "rank": 18,
+                "score": 36.36363636363637,
+                "decisionKey": "vip-license-extra-platforms",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_83e6034fe5175e61::raw-lexical-recall"
+              },
+              {
+                "id": "operational_3cfb0025a6454374",
+                "rank": 19,
+                "score": 30.454545454545457,
+                "decisionKey": "streaming-platform-submission-count",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_3cfb0025a6454374::raw-lexical-recall"
+              },
+              {
+                "id": "operational_71d679ffa0520656",
+                "rank": 20,
+                "score": 27.27272727272727,
+                "decisionKey": "full-episode-hosting-on-client-streaming-platform",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "dj_nlceo"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_71d679ffa0520656::raw-lexical-recall"
+              }
+            ],
+            "blockedTopicIds": [],
+            "blockedMatches": [],
+            "diagnostics": {
+              "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+              "needs": [
+                {
+                  "needId": "N1",
+                  "evidenceState": "exact_evidence_found",
+                  "documentsConsidered": 3490,
+                  "hardCompatible": 20,
+                  "directLaneSelected": 18,
+                  "expansionLaneSelected": 0,
+                  "selectedPolicyIds": [
+                    "operational_4d89f3fa51f643df",
+                    "claim_bc81f6b175e90ef3",
+                    "claim_80d4013e259f7430",
+                    "claim_0c9788975a1a8d6c",
+                    "claim_5196fa865a42396d",
+                    "claim_a67cbc990c0e81d9__a4",
+                    "claim_9a12d8eaefcf143a__a3",
+                    "claim_9a12d8eaefcf143a__a7",
+                    "claim_9a12d8eaefcf143a__a1",
+                    "claim_9a12d8eaefcf143a__a5",
+                    "claim_9a12d8eaefcf143a__a6",
+                    "claim_9a12d8eaefcf143a__a8",
+                    "claim_9a12d8eaefcf143a__a2",
+                    "owner-vip-tier-one-platform-boundary",
+                    "claim_c9e50172a4cd057b",
+                    "operational_56eb2c8181d936c9",
+                    "operational_28607ab5fadfe394",
+                    "operational_83e6034fe5175e61",
+                    "operational_3cfb0025a6454374",
+                    "operational_71d679ffa0520656"
+                  ],
+                  "rejectionCounts": {
+                    "decision_object": 3301,
+                    "decision_contract": 1018,
+                    "relation": 112,
+                    "material_condition": 16,
+                    "payment_qualifier": 39,
+                    "insufficient_direct_signal": 1,
+                    "workflow_stage_or_time": 1
+                  }
+                }
+              ]
+            }
+          },
+          "plan": {
+            "needs": [
+              {
+                "id": "N1",
+                "text": "What else is included in the VIP / Premium offering beyond submission to one Tier-1 streaming platform?",
+                "relation": "inclusion",
+                "request_kind": "knowledge",
+                "product_scope": "unknown",
+                "domains": [
+                  "VIP",
+                  "Premium"
+                ],
+                "actions": [
+                  "include"
+                ],
+                "entities": [
+                  "VIP",
+                  "Premium"
+                ],
+                "lane": "answer",
+                "evidence_refs": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "supported_claim": "VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted",
+                "reason": "V5.5 preserved the selected high-impact approved record wording instead of paraphrasing it.",
+                "route_key": null,
+                "clarification_question": ""
+              }
+            ],
+            "overall_lane": "answer",
+            "confidence_score": 95,
+            "reasoning_summary": "The user asks what else is included in the VIP / Premium offering, given the prior clarification that it involves submission to one Tier-1 streaming platform. This is a single atomic request for additional inclusions beyond the already stated streaming submission. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 locked high-impact exact evidence for N1, N1. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1751."
+          },
+          "sourcePlan": {
+            "needs": [
+              {
+                "needId": "N1",
+                "lane": "answer",
+                "directPolicyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "preferredPolicyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "excludedConflictPolicyIds": [
+                  "claim_bc81f6b175e90ef3",
+                  "claim_0c9788975a1a8d6c",
+                  "claim_5196fa865a42396d"
+                ],
+                "reason": "Raw question-to-record entailment selected claim_c9e50172a4cd057b: The user asks what else is included in VIP/Premium beyond submission to one Tier-1 platform. Record claim_c9e50172a4cd057b explicitly lists the VIP/Premium package deliverables: 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted. This directly answers the question with a verbatim quote.",
+                "modelDisposition": "answer",
+                "modelDirectPolicyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "deterministicPolicyIds": []
+              }
+            ],
+            "reasoningSummary": "Only one record (claim_c9e50172a4cd057b) directly lists VIP/Premium deliverables beyond Tier-1 submission. Other records discuss podcast inclusion or package hierarchy but do not provide the specific deliverables requested. The selected record is a direct answer with high confidence. Runtime authority conflict choice remained disabled."
+          },
+          "evidenceEntailment": {
+            "status": "complete",
+            "candidateCount": 4,
+            "answeredNeedCount": 1,
+            "routedNeedCount": 0,
+            "blockedPublishCollisionCount": 0,
+            "needs": [
+              {
+                "needId": "N1",
+                "disposition": "answer",
+                "coverageMode": "single",
+                "preferredPolicyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "uncoveredRequestElements": [],
+                "materialConflict": false,
+                "reason": "The user asks what else is included in VIP/Premium beyond submission to one Tier-1 platform. Record claim_c9e50172a4cd057b explicitly lists the VIP/Premium package deliverables: 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted. This directly answers the question with a verbatim quote.",
+                "records": [
+                  {
+                    "policyId": "claim_c9e50172a4cd057b",
+                    "verdict": "direct_answer",
+                    "confidence": 0.95,
+                    "supportingQuote": "VIP / Premium | $30,000 | 20-25 minute episode, 150,000 pre-promo views, submitted to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "The record directly lists the VIP/Premium package deliverables beyond Tier-1 submission, including episode length, pre-promo views, and app distribution."
+                  }
+                ]
+              }
+            ]
+          },
+          "executionMode": {
+            "planning": "hybrid_model",
+            "composition": "model",
+            "validation": "model_and_deterministic"
+          },
+          "validation": {
+            "verdict": "pass",
+            "sentenceChecks": [
+              {
+                "sentenceId": "S1",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              }
+            ],
+            "removedSentences": [],
+            "unresolvedNeedIds": [],
+            "reason": "Every retained sentence passed deterministic and semantic validation."
+          },
+          "providerAttempts": [
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v4_systemic_query_plan",
+              "status": "success",
+              "latencyMs": 2805,
+              "promptChars": 4977,
+              "completionTokens": 209,
+              "totalTokens": 1318,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            },
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v5_5_raw_record_entailment_validation",
+              "status": "success",
+              "latencyMs": 4225,
+              "promptChars": 8778,
+              "completionTokens": 386,
+              "totalTokens": 2365,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            }
+          ],
+          "stageTimings": {
+            "turnResolutionMs": 4,
+            "queryPlanningMs": 2806,
+            "v5BoundedRetrievalMs": 1098,
+            "v55PublisherSiblingExpansionCount": 0,
+            "v55RawLexicalRecallCount": 7,
+            "evidenceEntailmentMs": 4227,
+            "sourcePlanningMs": 4227,
+            "evidenceDraftingMs": 0,
+            "validationMs": 0,
+            "totalMs": 8376
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "completed": 1,
+    "lanes": {
+      "answer": 1
+    },
+    "answeredOrPartial": 1,
+    "routes": 0,
+    "providerAttempts": 2,
+    "unsuccessfulProviderAttempts": 0,
+    "latencyMs": {
+      "mean": 8376,
+      "p50": 8376,
+      "p90": 8376,
+      "max": 8376
+    }
+  }
+}

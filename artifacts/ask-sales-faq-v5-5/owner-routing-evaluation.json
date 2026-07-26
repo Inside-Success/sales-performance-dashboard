@@ -1,0 +1,1542 @@
+{
+  "schemaVersion": "ask-sales-v5-5-owner-routing-evaluation-v1",
+  "createdAt": "2026-07-26T00:07:47.891Z",
+  "fiveOwners": [
+    "finance",
+    "greenlight",
+    "sales_policy",
+    "sales_tech",
+    "fulfillment"
+  ],
+  "independentGold": {
+    "datasetPath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/tests/ask-sales-faq/v5-3-independent-slack-gold-2026-07-25.json",
+    "datasetSha256": "3ce9873f6203d8775bbe663530ecbf1fbf019d94d89b36e10137a9ac59ddbe63",
+    "total": 12,
+    "correct": 12,
+    "accuracy": 1,
+    "unclassified": 0,
+    "confusionMatrix": {
+      "finance": {
+        "finance": 1,
+        "greenlight": 0,
+        "sales_policy": 0,
+        "sales_tech": 0,
+        "fulfillment": 0,
+        "unclassified": 0
+      },
+      "greenlight": {
+        "finance": 0,
+        "greenlight": 3,
+        "sales_policy": 0,
+        "sales_tech": 0,
+        "fulfillment": 0,
+        "unclassified": 0
+      },
+      "sales_policy": {
+        "finance": 0,
+        "greenlight": 0,
+        "sales_policy": 1,
+        "sales_tech": 0,
+        "fulfillment": 0,
+        "unclassified": 0
+      },
+      "sales_tech": {
+        "finance": 0,
+        "greenlight": 0,
+        "sales_policy": 0,
+        "sales_tech": 5,
+        "fulfillment": 0,
+        "unclassified": 0
+      },
+      "fulfillment": {
+        "finance": 0,
+        "greenlight": 0,
+        "sales_policy": 0,
+        "sales_tech": 0,
+        "fulfillment": 2,
+        "unclassified": 0
+      }
+    },
+    "perOwner": {
+      "finance": {
+        "support": 1,
+        "precision": 1,
+        "recall": 1
+      },
+      "greenlight": {
+        "support": 3,
+        "precision": 1,
+        "recall": 1
+      },
+      "sales_policy": {
+        "support": 1,
+        "precision": 1,
+        "recall": 1
+      },
+      "sales_tech": {
+        "support": 5,
+        "precision": 1,
+        "recall": 1
+      },
+      "fulfillment": {
+        "support": 2,
+        "precision": 1,
+        "recall": 1
+      }
+    },
+    "details": [
+      {
+        "id": "v53gate-06",
+        "question": "A client wants to pay in full using half credit card and half debit card. Can the rep arrange that?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "v53gate-20",
+        "question": "A client paid from a US bank account and only has a debit confirmation. Where should the rep ask someone to confirm whether the ACH or wire arrived?",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "v53gate-21",
+        "question": "A paid client needs to reschedule onboarding and cannot find the invite. Where should the rep send the request?",
+        "expected": "fulfillment",
+        "predicted": "fulfillment"
+      },
+      {
+        "id": "v53gate-22",
+        "question": "I have an urgent Greenlight request but do not have access to the Greenlight channel. Where does this action belong?",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "v53gate-23",
+        "question": "The payment links are no longer prompting clients to sign the contract. Where should this live system issue be reported?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "v53gate-24",
+        "question": "A specific applicant has a serious old criminal history but says they turned their life around. Can the rep approve them based on that story?",
+        "expected": "sales_policy",
+        "predicted": "sales_policy"
+      },
+      {
+        "id": "v53gate-25",
+        "question": "A paid client wants to attend the Mastermind event but cannot find where to register. Where should the rep send the request?",
+        "expected": "fulfillment",
+        "predicted": "fulfillment"
+      },
+      {
+        "id": "v53gate-26",
+        "question": "A rep needs a same-day Greenlight letter for a Call 2. Should the chatbot approve or generate it?",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "v53gate-29",
+        "question": "A Greenlight approval is missing from the PDF before a scheduled call. Where should the rep request the current update?",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "v53gate-30",
+        "question": "I booked leads from the 20-percent list and need them kept off tomorrow's sheet so other reps do not contact them. Where should that update be requested?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "v53gate-39",
+        "question": "Can a paid-in-full client split the payment across a credit card and debit card?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "v53gate-40",
+        "question": "Can I just build that custom payment link myself?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      }
+    ]
+  },
+  "governedRouteCards": {
+    "role": "supporting diagnostic only; these records helped shape prior routing and are not independent promotion evidence",
+    "total": 217,
+    "correct": 28,
+    "accuracy": 0.129,
+    "unclassified": 178,
+    "confusionMatrix": {
+      "finance": {
+        "finance": 6,
+        "greenlight": 0,
+        "sales_policy": 0,
+        "sales_tech": 0,
+        "fulfillment": 0,
+        "unclassified": 30
+      },
+      "greenlight": {
+        "finance": 0,
+        "greenlight": 8,
+        "sales_policy": 0,
+        "sales_tech": 1,
+        "fulfillment": 0,
+        "unclassified": 13
+      },
+      "sales_policy": {
+        "finance": 1,
+        "greenlight": 1,
+        "sales_policy": 1,
+        "sales_tech": 2,
+        "fulfillment": 0,
+        "unclassified": 45
+      },
+      "sales_tech": {
+        "finance": 2,
+        "greenlight": 0,
+        "sales_policy": 0,
+        "sales_tech": 10,
+        "fulfillment": 0,
+        "unclassified": 55
+      },
+      "fulfillment": {
+        "finance": 0,
+        "greenlight": 4,
+        "sales_policy": 0,
+        "sales_tech": 0,
+        "fulfillment": 3,
+        "unclassified": 35
+      }
+    },
+    "perOwner": {
+      "finance": {
+        "support": 36,
+        "precision": 0.6667,
+        "recall": 0.1667
+      },
+      "greenlight": {
+        "support": 22,
+        "precision": 0.6154,
+        "recall": 0.3636
+      },
+      "sales_policy": {
+        "support": 50,
+        "precision": 1,
+        "recall": 0.02
+      },
+      "sales_tech": {
+        "support": 67,
+        "precision": 0.7692,
+        "recall": 0.1493
+      },
+      "fulfillment": {
+        "support": 42,
+        "precision": 1,
+        "recall": 0.0714
+      }
+    },
+    "details": [
+      {
+        "id": "owner-current-show-watchability-route",
+        "question": "Where should I verify whether Mompreneurs is on air?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_6b3311cee0cd4b18__a3",
+        "question": "\"You can send the current contract link.\" - \"You can send the contract before Call 2, but it is not advised.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_6b3311cee0cd4b18__a4",
+        "question": "\"You can send the current contract link.\" - \"You can send the contract before Call 2, but it is not advised.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_32c0109ffc45fc1f",
+        "question": "The internal maintenance source for show changes is project operations, where new shows are added.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_45061abe2a61e6a0__a3",
+        "question": "\"If a show was just added, paused, missing from a form, or disputed, I need to confirm with the current sales/ops owner before giving a final answer.\"",
+        "expected": "sales_policy",
+        "predicted": "sales_policy"
+      },
+      {
+        "id": "claim_cb54db52c3464015__a3",
+        "question": "\"For dates, venue details, guest rules, or current logistics, confirm with the current event/source owner before promising anything.\"",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_225676da6cac4aab",
+        "question": "Use `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, same-day greenlight letter requests, greenlight-letter status/escalations, and questions about whether a letter should or should",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_28f890ae7a724fed",
+        "question": "If a Greenlight PDF or tracking sheet shows a failed social check or similar internal status, route the rep's internal process/status question to `#greenlight-requests`.",
+        "expected": "greenlight",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "claim_2ae486610090c18d",
+        "question": "Greenlight caps, exact daily/weekly limits, cutoff times, send windows, status definitions, and emergency-stop mechanics can drift.",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_ac4e8e045f59a071",
+        "question": "This article does not approve exact greenlight caps, daily/weekly capacity, PDF send windows, tracking-sheet status definitions, or an automated/manual letter workflow.",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_20ba7b6e4fc904b7__a1",
+        "question": "\"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\" - \"If the PDF/status shows a failed social check or unclear internal status, route that internal question to `#greenlight-requests`",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_20ba7b6e4fc904b7__a2",
+        "question": "\"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\" - \"If the PDF/status shows a failed social check or unclear internal status, route that internal question to `#greenlight-requests`",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_20ba7b6e4fc904b7__a4",
+        "question": "\"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\" - \"If the PDF/status shows a failed social check or unclear internal status, route that internal question to `#greenlight-requests`",
+        "expected": "sales_policy",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_20ba7b6e4fc904b7__a5",
+        "question": "\"For greenlight letter requests or urgent letter sends, post in `#greenlight-requests`.\" - \"If the PDF/status shows a failed social check or unclear internal status, route that internal question to `#greenlight-requests`",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_3a1b32e8b73e2983",
+        "question": "If a prospect or applicant asks for an audition recording or call recording to be deleted, vaulted, sent, or handled after they are not a fit, do not send, delete, or vault it yourself.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_9ad917516910bdbe",
+        "question": "If the request is about deleting, vaulting, or removing an audition/call recording, route it to the source owner/compliance owner or current process owner.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_2ae5226f31e7c13f",
+        "question": "If the request is about internal dashboard access, approved dashboard talking points, or whether dashboard content can be shown externally, route to the current dashboard/source owner or sales leadership.",
+        "expected": "sales_policy",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "claim_70a1fbb9c1da6d59__a4",
+        "question": "\"For a recording deletion or vaulting request, do not handle it yourself. Route it to the source owner/compliance owner.\"",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_a945480e3c44efaa",
+        "question": "Wire/ACH, invoice, failed-payment, duplicate-charge, card-update, payment-status, refund, and billing questions are separate finance/payment operations.",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_f2bddec7b84e1829__a1",
+        "question": "Use `#sales-finance-requests` for client billing, failed payments, duplicate charges, card-update/payment-status questions, refunds, wire/ACH, invoices, and finance/payment exceptions.",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_f2bddec7b84e1829__a2",
+        "question": "Use `#sales-finance-requests` for client billing, failed payments, duplicate charges, card-update/payment-status questions, refunds, wire/ACH, invoices, and finance/payment exceptions.",
+        "expected": "sales_tech",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_f2bddec7b84e1829__a3",
+        "question": "Use `#sales-finance-requests` for client billing, failed payments, duplicate charges, card-update/payment-status questions, refunds, wire/ACH, invoices, and finance/payment exceptions.",
+        "expected": "sales_policy",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_527d746a2e41c49f__a4",
+        "question": "\"For wire/ACH, invoice, failed-payment, duplicate-charge, card-update, payment-status, refund, or billing questions, post in `#sales-finance-requests` before giving payment instructions or promising an outcome.\"",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_011c2a2b1fcc2c79__a2",
+        "question": "Do not route a custom payment plan request as if finance may approve a new plan; the answer is to use only the approved listed plans.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_549de32fd14c61fc",
+        "question": "Confirm with the current production or Sales Ops owner before promising any language accommodation that goes beyond the English-only process above.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_ad0cea88c6c647f0",
+        "question": "Use `#sales-finance-requests` for finance/client billing issues such as failed payments, duplicate charges, payment status, card updates, wire/ACH, invoices, refunds, billing questions, and payment-operation exceptions t",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "claim_51de45a8d54c0de1",
+        "question": "Use `#greenlight-requests` for greenlight letter requests, urgent greenlight letter sends, and greenlight-letter status/escalation requests.",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "claim_e4012595ed47ee8e__a2",
+        "question": "Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_e4012595ed47ee8e__a3",
+        "question": "Do not send sensitive payment, card, bank, client PII, raw recording links, or CRM URLs into chatbot answers.",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "v3src_bank_payment_verification",
+        "question": "Is a US bank-account payment instant and where should it be checked?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_544dc79d0ccbfd52",
+        "question": "Where can a DJ closer check whether a sale/payment went through if a different email was used?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_42e17f1de20ed99f",
+        "question": "Can reps send contract PDFs, license options, wet-sign PDFs, or answer legal entity questions?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_c5e9922f54ce23ad",
+        "question": "Which channel receives contracts, and what if a contract is not populating?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "transcript-contract-link-no-edits",
+        "question": "Can a rep send the full contract link to a prospect?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "v3src_evening_greenlight_request",
+        "question": "Can a rep request a greenlight document the same evening as Call 1?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_5314addbb477b820",
+        "question": "How do reps remove or stop contact from an inappropriate prospect who has not opted out?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_e24b4961ea29bb81",
+        "question": "If the system auto-sends a similar prep email, should reps still send the mandatory email/SMS?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_f88558a2dbbe4d7e",
+        "question": "Some show options were missing from Keap call disposition; how should reps handle that?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "claim_cdefc66a08f0d5cb",
+        "question": "Newsletter subscription request",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_625ea08eb1206633",
+        "question": "Where should reps route payment schedule changes after an upgrade contract is signed?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_c9b18a1648ed195e",
+        "question": "Who helps when a rep needs a link for two separate payments?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "claim_6c347410dc429929",
+        "question": "Where should a rep route a client who changes their mind after sale?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_9848cdfb2da72c0a",
+        "question": "Can a doctor who works at a hospital be cast without owning the practice?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_ebe493f9f76bba2a",
+        "question": "Where can someone download and watch the ISTV app?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_352d06cf4103a85b",
+        "question": "How to handle a refund request from an attorney?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_8ac4fa24ec5beb59",
+        "question": "How can I request a channel name change?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d7491c6399ba940d",
+        "question": "How to handle a refund request when a lead has paid a deposit?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b790a0e21dbde21d",
+        "question": "How to handle a cast member complaining about additional costs?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_586bf193e863a47b",
+        "question": "How should I handle a lead who wants a partnership instead of joining the network?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d050d240b857f9d0",
+        "question": "Is it possible to defer the payment plan and onboarding for a client who cannot start immediately?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_bcf78bc5f518462a",
+        "question": "How to handle a refund request due to process error?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2a903db3ef4ce4cf",
+        "question": "How to handle a refund request as a casting team member?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a9ababb7ca4eb5cb",
+        "question": "How do I handle a client requesting a refund?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b5bd8cf6dba8d1c5",
+        "question": "How to handle a lead with potentially inappropriate or suggestive content?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_ae8cdc6c6c3ac54a",
+        "question": "How to handle client questions about social promo assets?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d5a05525ea5a53ee",
+        "question": "How to handle wire transfer issues with Bank of Hawaii?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_v51_nlceo_filming_window",
+        "question": "Where should a rep ask about exact Next Level CEO studio dates?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_v43_daily_stats_workflow",
+        "question": "Where should I correct an inaccurate EOD stats submission?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_v43_greenlight_supporting_documents",
+        "question": "Where should I send documents a Call 1 lead provides for greenlight approval?",
+        "expected": "fulfillment",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "curated_6385430e3a079b63",
+        "question": "Can I cancel an audition for someone I recently disqualified who keeps applying again?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "curated_57cb23fd1f148047",
+        "question": "How should a rep help an applicant who is using Zoom for the first time?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2807618fd2f2eef9",
+        "question": "Where can I find payment links for the Lite 10K package?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b608b796cde4395e",
+        "question": "How to handle a client questioning payment without a signed contract and requesting legal contact?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a5805a5ba238d666",
+        "question": "Can I request a Greenlight document after hours?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a35e3e36695d6977",
+        "question": "Who can expedite greenlight letters?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_bf5063343c6100a2",
+        "question": "When should I send the Greenlight letter if the candidate's second call is after the usual deadline?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_bc9bc70f9ba6f452",
+        "question": "How to handle a client who wants to delay the first call?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_21691c8fddd1425c",
+        "question": "Can I send the ISTV License Options to a client who already signed?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_26b6eb76a96c32c1",
+        "question": "Can I get a special link for a client who wants to pay the remaining balance tomorrow?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_8e78123dc0d23ea4",
+        "question": "Who should I contact to stop the PDF from going out?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b538bda220e68e22",
+        "question": "Who approves Sunday cohort second calls?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_45f1b14459293498",
+        "question": "Who handles green light letters on weekends?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_53ef4e4b0f7547aa",
+        "question": "Who should handle a prospect when multiple closers are involved?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a4bda59185566d1d",
+        "question": "Can I send the contract before Call 2?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_dc947face46c02c7",
+        "question": "Can we send the contract to the client without payment?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2e02af890c7e3362",
+        "question": "Who gets the client if double booked?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b6e843c1d65d79e1",
+        "question": "How to handle a client who rescheduled with a different show rep?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_b377363978c4c613",
+        "question": "How do I submit a client for greenlight approval after Call 1?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_cb9acc78a0ba2fa9",
+        "question": "How to handle a business partner who needs to see details?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_688310b92a00f2e7",
+        "question": "How to categorize a lead who replies 'not interested' via SMS?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9eb5fc180f9d0ef1",
+        "question": "How to handle a client who won't have funds until a later date?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_5f52aa7ca7ce2aa1",
+        "question": "Do we need to submit another Pay Me for recurring payments that appear in the feed?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_5305918eab9e1dc0",
+        "question": "Can I send the contract for review before the prospect commits?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_16cb31e70f5e774e",
+        "question": "How to handle a prospect interested in a multi-episode series?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d2431e615846c7aa",
+        "question": "Is it okay to send a specific episode to a prospect?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_481cd47364011710",
+        "question": "How do I confirm an ACH payment was received?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_dbcfe037ad4115a5",
+        "question": "Where do I send proof of payment for an ACH sale if there is no attachment option in the Pay Me form?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d9a615488178bd45",
+        "question": "How do real estate agents handle agency compliance for the show?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_8693306806eb2ff6",
+        "question": "Who qualifies for Americas Best Builders?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f2d4c5c9dc367670",
+        "question": "Where should I report a bank transfer not showing up?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_3726e54d8443a631",
+        "question": "How to handle a booking that exceeds the initially agreed hours?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_1d8f77794a691803",
+        "question": "How do I fix a calendar booking where I accidentally put my own name instead of the lead's?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_4e43ac8cf7271f79",
+        "question": "Where should I post calendar-related requests?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_053169eb158feac8",
+        "question": "Where should I request help with my calendar?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_a72009a7b953d3ae",
+        "question": "How to handle a dropped call during the sales process?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_96c5cf5c976b099f",
+        "question": "What can we offer a client who paid $5K and wants to cancel?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_5406213ade826958",
+        "question": "Where can I find information about current calls for cast members?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4c121913833c25e0",
+        "question": "I have a prospect who can only meet during a mandatory team meeting. What should I do?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6b0dcbc93f7dfeb7",
+        "question": "Who do I contact to change a client's recurring payment method?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a96fdcdb8d04461f",
+        "question": "How do I handle a prospect who cancels a booked call?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_e15c096d104fe563",
+        "question": "Who is the closer for a signed contract?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_68162a16a37da6bb",
+        "question": "Who to contact if a lead wants to dispute a failed background check?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_350af893a6e323b6",
+        "question": "Who should I contact for commissions on my ledger?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_e7d9dad0029a5b12",
+        "question": "How to get help locating a contract?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_92792495bd1c467e",
+        "question": "Who should I contact about a client's contract status?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d22bcbea333a0d77",
+        "question": "Who handles custom contracts for upgrades?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_dfb8d9b4414db409",
+        "question": "How do we handle situations where the agent needs brokerage approval?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d882a9ecbc9a3736",
+        "question": "Where can I find the credit card update link for DJ?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_a16cf43006f58d72",
+        "question": "Where are the DJ Greenlight approval PDFs?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_e157d9ee2212facd",
+        "question": "Why can't I see Typeform details or appointment status for a DJ lead?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_aa3fefd6bbb9c492",
+        "question": "What is the SOP for rebooking a lead who missed a cohort for DJ?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_ddefa26a34c84e95",
+        "question": "How do I handle a duplicate appointment in Keap?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_989ab39f15755274",
+        "question": "Who should I contact for early Greenlight letters?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_5d4d7c62a20b5ac8",
+        "question": "Who should answer questions about criminal background policy?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_64d5e0cb2938209f",
+        "question": "Who should I contact to expedite a green lit letter?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_467802173bf4831a",
+        "question": "Who can create an expedited approval letter?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9dc17a7d8d897a60",
+        "question": "Where can I confirm that filming sessions have been scheduled?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_02c27dcf5691ff98",
+        "question": "Where should I post finance or billing requests?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_62b678d443bd04a9",
+        "question": "Who do I contact for finance issues?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_5adb9d74a6a3cef1",
+        "question": "How do I find out who a client is booked with?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2febf80028acd8dd",
+        "question": "Where should I post questions about upgrading or film dates?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_09f7a00728682b7c",
+        "question": "Where should I report a fulfillment problem?",
+        "expected": "fulfillment",
+        "predicted": "fulfillment"
+      },
+      {
+        "id": "operational_39888fcce288c5e9",
+        "question": "How do I request an edit on the Green Light Doc?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_1e2defcc8cbb5815",
+        "question": "Who do I send additional client info for green light?",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "operational_9605c10792e8593d",
+        "question": "Who can provide a green light approval?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6836f6f3ab38cc58",
+        "question": "How soon before a call should we send the Green Light letter?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_eea47eab31a701e0",
+        "question": "Who handles updates to the green light document?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6e4b34d5aa2fffc7",
+        "question": "How to handle Green Light recording when multiple clients are on the same call?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f92fa535a04b5bdb",
+        "question": "Who do I contact for greenlight approval?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_12ff0f522da9d5f9",
+        "question": "Who handles greenlight letter requests?",
+        "expected": "fulfillment",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "operational_162a7b92d669a1f9",
+        "question": "Who should I contact if a greenlight letter was not generated?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_08fde9aaefbde46f",
+        "question": "How do I request a greenlight letter?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9eb0e5e7ab5cf853",
+        "question": "Is there anyone else who can review and write greenlight letters?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_d244e9bb822d5eae",
+        "question": "How can I confirm a Greenlight PDF was sent to a client?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_851a3a454fa38f08",
+        "question": "Where do I post to greenlight?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_7ecd60d1bf711846",
+        "question": "Who handles greenlight requests?",
+        "expected": "greenlight",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "operational_d049446d10613326",
+        "question": "How do I submit a greenlight request?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_ae2ba3881af6f4fe",
+        "question": "How to block someone who hasn't opted out?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2aa0381baee79196",
+        "question": "How to handle a prospect asking for investment details before the scheduled call?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_397ad7ebf8602b43",
+        "question": "Where can I find an ISTV passoff recording if not in the usual location?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_81236deb8edcb883",
+        "question": "How to handle a prospect not in Keap?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_8795fdbd0da71270",
+        "question": "Where do I report Keap login problems?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_bd3f6b419f3fb36e",
+        "question": "Who do I ask to add my name in Keap?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_2b63ecd728ce3397",
+        "question": "Where do I get help with the lead disposition form?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_73e36ae00420b064",
+        "question": "Who owns a lead when multiple reps have them booked?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_303f8714aad7a1a4",
+        "question": "Who manages the leaderboard?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_55ff8d432eca5ac9",
+        "question": "Who do I contact for adjustments to my ledger?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_82181bf2be3f72a2",
+        "question": "Where can I find the mastermind link?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_0ae58969589ddd29",
+        "question": "Who handles mastermind sign-ups?",
+        "expected": "sales_policy",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6e0f1dff49d5b13c",
+        "question": "How to handle a client upgrading to a higher license mid-payment plan?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_1ec92fc4c9fcdac0",
+        "question": "How to handle missed calls when no one can take over?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_0b16401fa7843ba4",
+        "question": "Where do I post about missing call recordings?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_1cca7b74ae6b3d32",
+        "question": "Who do I contact if my greenlight letter is blank or missing?",
+        "expected": "fulfillment",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "operational_d0e13c861aae1a6e",
+        "question": "Where can I find the link for Money Mondays training?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6d516ec472148034",
+        "question": "Where can I find the link and time for Money Mondays?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_04160d091a8335e6",
+        "question": "Who can change Keap records?",
+        "expected": "sales_policy",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_34a8fa2017c67219",
+        "question": "How to handle a cast member who cannot find their show on the sign-up form?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4e86dda6c7fb91b3",
+        "question": "How to transfer a lead who is already in the Next Level CEO pipeline?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9e50b168e2f6519f",
+        "question": "Who can take a scheduled NLCEO call?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_66d166166988f4a0",
+        "question": "How to report a no-show for an inbound call?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_262d67194a7f217e",
+        "question": "Who should I notify when a signed contract backs out and ACH fails?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_57f29377ea73025c",
+        "question": "Who handles issues for onboarded clients?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f68ed55620b19911",
+        "question": "How to help a client with the onboarding form?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_dd0bb98051b413a6",
+        "question": "Where can I find detailed onboarding process documents?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_703d3988fcd756a8",
+        "question": "How do I fix OnceHub not letting me schedule?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_ecbca21d86f92d98",
+        "question": "How to handle a client who opted out and wants to use the opted-out email again?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6899240a264985df",
+        "question": "Where can I find a recording of a pass-off call?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6accc2ef283c51dc",
+        "question": "Where should I route a request to pause a client's payments for two months?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f7df3a7f545e4443",
+        "question": "Who should I tag when submitting to the Pay Me channel?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4c700f33ca71a0e1",
+        "question": "Where to report payment capture problems?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_241286a1f5d61630",
+        "question": "Where can I confirm a payment made through Plaid?",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "operational_7014e7e49d194d00",
+        "question": "Where should I ask about a client's final payment status?",
+        "expected": "finance",
+        "predicted": "finance"
+      },
+      {
+        "id": "operational_d9dfe4b00f79b6b4",
+        "question": "Who do I contact if a client cannot make future payments?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6f1523622d615b66",
+        "question": "How do I handle a payment or billing issue?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4fdad527ac3069fe",
+        "question": "My payment link is not working, where should I report this?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_571fa87d2cf880fe",
+        "question": "How do I send a payment link for a client's remaining balance?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_e369ffe3bc8245f8",
+        "question": "Where to find a payment made via credit card link?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4c1311906d1d6095",
+        "question": "How do I handle a client who needs to pause payments due to temporary hardship?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4c24682035e6072a",
+        "question": "How to handle a client's request to change payment schedule?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f2dd9f6fe3c88280",
+        "question": "Who should I contact for payment processing issues?",
+        "expected": "sales_tech",
+        "predicted": "finance"
+      },
+      {
+        "id": "operational_2fe7f58f6d0b90fb",
+        "question": "How can I verify a client's payment?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f5e7e1c8abccdb06",
+        "question": "Where can I find a phone call recording?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2eeb7815debb5b0d",
+        "question": "Who can a confused client speak to after onboarding?",
+        "expected": "fulfillment",
+        "predicted": "fulfillment"
+      },
+      {
+        "id": "operational_3b8b65962f363208",
+        "question": "Who handles questions about the 2-day marketing event after purchase?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_efe47bda29668849",
+        "question": "Who should handle post-sale or fulfillment questions from a client?",
+        "expected": "fulfillment",
+        "predicted": "fulfillment"
+      },
+      {
+        "id": "operational_2d7ea888c84e9c79",
+        "question": "Who should I notify if a client needs to reschedule the group onboarding call?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6e5dbff55d36dcf8",
+        "question": "Where can a client see the pre-promotion of their story?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_440761537901786a",
+        "question": "Who should I contact with feedback about production?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_cec70c3b5530d00f",
+        "question": "How to handle a Next Level CEO call when not approved?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_86b48c506cf19d47",
+        "question": "Where should I ask for a recording?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_215fa0f82a8eb3d1",
+        "question": "Who should I contact for a [redacted URL] invite?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_8c3388a973a3191d",
+        "question": "How do I process a refund request?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_c3c97dbd3185c63a",
+        "question": "Which channel should I use for a refund?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_f7c659fcf266c937",
+        "question": "How to handle a refund when the client paid but hasn't signed the contract?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_e038f1eb57ea8db6",
+        "question": "How to handle a prospect rescheduling to another rep's calendar?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_87c857c7f942b5c0",
+        "question": "How do I reinstate text messages for a lead who previously opted out?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_ef0c4bcb20c9e5c0",
+        "question": "Where should I report issues with my booking calendar?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_5351fb7fe6c7c0c1",
+        "question": "How to confirm a wire transfer payment is recorded?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_670169972a070a7b",
+        "question": "Who should I reach out to for a same-day Green Light Letter?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_4bffebded4e71bca",
+        "question": "Who handles same-day greenlight approvals?",
+        "expected": "greenlight",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_2f3e0107634143fc",
+        "question": "Who can provide a same-day greenlight PDF?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_99c259c37a3816ff",
+        "question": "Who should be notified for a same-day onboarding booking?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_227ab8738df7b9c4",
+        "question": "Where do I request graphics for a show?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_153b81b8c3d57175",
+        "question": "Where to find a list of currently casting shows?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6d7616839456e135",
+        "question": "How to request a group tag for PayMe posts?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_7fe46c21747f9c7a",
+        "question": "Where can I find split payment links?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9dae770bfa74fa92",
+        "question": "What options exist for a client who can no longer make payments after the refund window?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_fb75478442cd9701",
+        "question": "Where do I ask about Miami studio dates?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_c09ebb4534134385",
+        "question": "Where to ask about studio session availability?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6771e2b686d17da5",
+        "question": "Where should I post payment technical issues?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_068dba10cebc480f",
+        "question": "Where can I find answers about package inclusions?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_9a700fd924e5291e",
+        "question": "How do I request a payment link for a license upgrade?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_6f41541f1dae0c5a",
+        "question": "Who can help with an urgent greenlight letter?",
+        "expected": "fulfillment",
+        "predicted": "greenlight"
+      },
+      {
+        "id": "operational_0c0f71135777c4f1",
+        "question": "How do I verify a client's US bank account payment?",
+        "expected": "finance",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_15708058d952def4",
+        "question": "Who can we refer Cat members to for videography?",
+        "expected": "fulfillment",
+        "predicted": "unclassified"
+      },
+      {
+        "id": "operational_7f62f841d6b5f9ee",
+        "question": "Where do I request zoom links for clients?",
+        "expected": "sales_tech",
+        "predicted": "sales_tech"
+      },
+      {
+        "id": "operational_a3b08154f6de7a02",
+        "question": "Where are the Zoom recordings for my calls?",
+        "expected": "sales_tech",
+        "predicted": "unclassified"
+      }
+    ]
+  }
+}

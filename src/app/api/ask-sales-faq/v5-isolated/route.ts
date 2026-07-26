@@ -12,11 +12,12 @@ import {
 import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthorized } from "@/lib/ask-sales-faq/v4/isolation";
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
+import { findV55PublishCollisions } from "@/lib/ask-sales-faq/v5-5/publisher-collisions";
 import {
-  ASK_SALES_V51_PIPELINE_VERSION,
-  getV51KnowledgeVersion,
-  runAskSalesFaqV5,
-} from "@/lib/ask-sales-faq/v5/runtime";
+  ASK_SALES_V55_PIPELINE_VERSION,
+  getV55KnowledgeVersion,
+  runAskSalesFaqV55,
+} from "@/lib/ask-sales-faq/v5-5/runtime";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -61,7 +62,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", ASK_SALES_V51_PIPELINE_VERSION);
+  response.headers.set("x-ask-sales-runtime", ASK_SALES_V55_PIPELINE_VERSION);
   return response;
 }
 
@@ -69,16 +70,17 @@ export async function GET() {
   if (!isV4IsolatedRuntimeEnabled()) return new NextResponse(null, { status: 404 });
   const provider = getV4ProviderReadiness();
   const snapshot = getV5KnowledgeSnapshot();
+  const publishCollisions = findV55PublishCollisions(snapshot.policies);
   const accessTokenConfigured = (process.env.ASK_SALES_V4_LAB_TOKEN || "").length >= 24;
   const historySigningConfigured = isV4HistorySigningConfigured();
   const modelAccessConfirmed = process.env.ASK_SALES_V4_MODEL_ACCESS_CONFIRMED === "true";
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: ASK_SALES_V51_PIPELINE_VERSION,
+    runtime: ASK_SALES_V55_PIPELINE_VERSION,
     persistence: false,
     productionSelectorChanged: false,
-    knowledgeVersion: getV51KnowledgeVersion(),
+    knowledgeVersion: getV55KnowledgeVersion(),
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
     operationalPolicyCount: snapshot.operationalPolicyCount,
@@ -87,6 +89,7 @@ export async function GET() {
     activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
     governedOperationalPromotionCount: snapshot.governedOperationalPromotionCount,
     governedOperationalAuditCount: snapshot.governedOperationalAuditReport.length,
+    unresolvedPublishCollisionCount: publishCollisions.length,
     referenceReviewDate: snapshot.referenceReviewDate,
     accessTokenConfigured,
     historySigningConfigured,
@@ -117,7 +120,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV51KnowledgeVersion();
+    const knowledgeVersion = getV55KnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v5_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {
@@ -158,7 +161,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const question = parsed.data.question;
-      const result = await runAskSalesFaqV5(question, [...verifiedMessages, { role: "user", content: question }], {
+      const result = await runAskSalesFaqV55(question, [...verifiedMessages, { role: "user", content: question }], {
         provider: generateV4Json,
         validatorProvider: generateV4ValidationJson,
       });
@@ -174,7 +177,7 @@ export async function POST(request: NextRequest) {
       reservation.release();
     }
   } catch (error) {
-    console.error("Ask Sales V5.4 isolated request failed", error instanceof Error ? error.message : "unknown error");
-    return json({ ok: false, error: "The isolated V5.4 runtime failed safely. No production request or database write was attempted." }, 503);
+    console.error("Ask Sales V5.5 isolated request failed", error instanceof Error ? error.message : "unknown error");
+    return json({ ok: false, error: "The isolated V5.5 runtime failed safely. No production request or database write was attempted." }, 503);
   }
 }

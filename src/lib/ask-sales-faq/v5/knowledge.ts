@@ -365,29 +365,37 @@ function compileV54GovernedPolicies(policies: V4SystemicPolicy[], referenceRevie
       continue;
     }
 
+    if (hasMaterialConflict) {
+      auditReport.push({
+        decisionKey,
+        candidateIds: candidates.map((policy) => policy.id),
+        existingAnswerIds: existing.map((policy) => policy.id),
+        selectedPolicyId: null,
+        disposition: "withheld_for_explicit_publisher_conflict_resolution",
+      });
+      continue;
+    }
     const newest = Math.max(...combined.map((policy) => dateTimestamp(policy.effective_at || policy.last_reviewed)));
     const ranked = [...combined].sort((left, right) =>
       governedAuthorityScore(right, newest) - governedAuthorityScore(left, newest) ||
       dateTimestamp(right.effective_at || right.last_reviewed) - dateTimestamp(left.effective_at || left.last_reviewed) ||
       left.id.localeCompare(right.id),
     );
-    const margin = governedAuthorityScore(ranked[0], newest) - governedAuthorityScore(ranked[1] || ranked[0], newest);
     const winner = ranked[0];
-    const unopposed = !hasMaterialConflict && v54DecisionsFormConsensus(decisions);
-    const decisivelyAdjudicated = hasMaterialConflict && margin >= 1.75;
-    if ((!unopposed && !decisivelyAdjudicated) || existing.some((policy) => policy.id === winner.id)) {
+    const unopposed = v54DecisionsFormConsensus(decisions);
+    if (!unopposed || existing.some((policy) => policy.id === winner.id)) {
       auditReport.push({
         decisionKey,
         candidateIds: candidates.map((policy) => policy.id),
         existingAnswerIds: existing.map((policy) => policy.id),
         selectedPolicyId: null,
-        disposition: !unopposed && !decisivelyAdjudicated ? "withheld_unresolved_material_conflict" : "covered_by_controlling_existing_answer",
+        disposition: !unopposed ? "withheld_for_explicit_publisher_conflict_resolution" : "covered_by_controlling_existing_answer",
       });
       continue;
     }
     selected.set(winner.id, {
       consensusSize: combined.length,
-      disposition: decisivelyAdjudicated ? "contextual_authority_selected" : "governed_consensus_selected",
+      disposition: "governed_consensus_selected",
     });
     auditReport.push({
       decisionKey,

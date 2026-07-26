@@ -1,0 +1,3198 @@
+{
+  "schemaVersion": "ask-sales-v5-5-production-v55-runtime-v1",
+  "status": "complete",
+  "promotionEvidence": false,
+  "diagnosticOnly": true,
+  "sourcePath": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/sales-performance-dashboard-v5-2-controlled-decision/artifacts/ask-sales-faq-v5-5/production-distribution/production-distribution-2026-07-13-to-2026-07-25T21-03-19-000Z.json",
+  "sourceSha256": "ffb64f3be8a559a6623cdbe1cd578a8a5e77e5e699ee8e9394f0e4406f2f513b",
+  "sourcePopulationCount": 125,
+  "evaluatedCount": 3,
+  "system": "v55",
+  "concurrency": 2,
+  "startedAt": "2026-07-25T23:45:33.155Z",
+  "completedAt": "2026-07-25T23:46:04.577Z",
+  "results": [
+    {
+      "id": "production-007",
+      "conversationKey": "95f95d75649ad62e",
+      "conversationTurn": 3,
+      "question": "VIP is submitted to just Amazon or all 3",
+      "productionAnswer": "VIP is submitted to just one Tier-1 platform, and currently that platform is Amazon. It is not submitted to all three platforms.",
+      "productionOutcome": "answer_from_evidence",
+      "productionNeedsRoute": false,
+      "productionRouteReason": null,
+      "productionProvider": "deepseek",
+      "productionModel": "deepseek-v4-pro",
+      "productionLatencyMs": 22195,
+      "productionErrorClass": null,
+      "productionRuntimeMetadata": {
+        "v3": {
+          "turn": {
+            "kind": "new",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "explicitScopeSwitch": false,
+            "intentResolutionMode": "deterministic",
+            "usedImmediateContext": false,
+            "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+            "previousUserQuestionUsed": false,
+            "previousAssistantAnswerUsed": false
+          },
+          "retrieval": {
+            "query": "VIP is submitted to just Amazon or all 3",
+            "candidates": [
+              {
+                "id": "claim_e45d71d65356e6d7__a4",
+                "score": 122.71,
+                "policyKey": "platform-proof-and-claims-boundaries-answer-1-a4",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_aa79cd74bf3778b7",
+                "score": 104.04,
+                "policyKey": "vip-tier-one-platform-submission",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "trusted_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_508134574a4a4ea5",
+                "score": 67.5,
+                "policyKey": "vip-license-platform-coverage",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "trusted_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              }
+            ],
+            "candidateCount": 3,
+            "semanticQueries": [
+              "VIP submission destination Amazon only or all three",
+              "VIP submission policy single retailer versus multiple retailers",
+              "VIP submission scope Amazon exclusive or all retailers"
+            ],
+            "evidenceContract": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "Is VIP submitted to just Amazon?"
+                },
+                {
+                  "id": "N2",
+                  "text": "Is VIP submitted to all three platforms (Amazon, Apple TV, Tubi)?"
+                }
+              ],
+              "support": [
+                {
+                  "needId": "N1",
+                  "reason": "P1 states VIP is submitted to one Tier-1 platform: Amazon Prime Video, Apple TV, or Tubi. P2 and P3 confirm that currently VIP is only Amazon. Together they directly answer that VIP is submitted to just Amazon.",
+                  "relation": "direct",
+                  "policyIds": [
+                    "claim_e45d71d65356e6d7__a4",
+                    "claim_aa79cd74bf3778b7",
+                    "claim_508134574a4a4ea5"
+                  ],
+                  "hardBoundary": false,
+                  "supportedClaim": "VIP is submitted to one Tier-1 platform, which can be Amazon Prime Video, and currently it is only Amazon."
+                },
+                {
+                  "needId": "N2",
+                  "reason": "P1 explicitly limits submission to one Tier-1 platform, not all three. P2 and P3 confirm the current single platform is Amazon. This directly answers that VIP is not submitted to all three.",
+                  "relation": "direct",
+                  "policyIds": [
+                    "claim_e45d71d65356e6d7__a4",
+                    "claim_aa79cd74bf3778b7",
+                    "claim_508134574a4a4ea5"
+                  ],
+                  "hardBoundary": false,
+                  "supportedClaim": "VIP is not submitted to all three platforms; it is submitted to only one, which is currently Amazon."
+                }
+              ],
+              "unresolvedNeedIds": []
+            },
+            "blockedCandidates": [],
+            "evidenceSelectionReason": "The question asks whether VIP is submitted to just Amazon or all three platforms. P1 defines the policy: VIP is submitted to one Tier-1 platform (Amazon, Apple TV, or Tubi). P2 and P3 provide current context that it is only Amazon. These cards together directly answer both atomic needs: VIP is submitted to just Amazon, not all three.",
+            "preselectionCandidateCount": 31
+          },
+          "selection": {
+            "coverage": [
+              {
+                "need": "Is VIP submitted to just Amazon?",
+                "reason": "V1 states VIP is submitted to one Tier-1 platform (Amazon, Apple TV, or Tubi). V2 and V3 confirm currently it is only Amazon.",
+                "status": "answered",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ]
+              },
+              {
+                "need": "Is VIP submitted to all three platforms (Amazon, Apple TV, Tubi)?",
+                "reason": "V1 limits submission to one platform, not all three. V2 and V3 confirm the current single platform is Amazon.",
+                "status": "answered",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ]
+              }
+            ],
+            "rejectedPolicyIds": [],
+            "selectedPolicyIds": [
+              "claim_e45d71d65356e6d7__a4",
+              "claim_aa79cd74bf3778b7",
+              "claim_508134574a4a4ea5"
+            ]
+          },
+          "validation": {
+            "reason": "All sentence claims are directly supported by the selected evidence. Needs are fully answered. No unsupported or irrelevant claims present.",
+            "verdict": "repair",
+            "needChecks": [
+              {
+                "reason": "V1 states VIP is submitted to one Tier-1 platform (Amazon, Apple TV, or Tubi). V2 and V3 confirm currently it is only Amazon.",
+                "status": "answered",
+                "needRef": "N1",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ]
+              },
+              {
+                "reason": "V1 limits submission to one platform, not all three. V2 and V3 confirm the current single platform is Amazon.",
+                "status": "answered",
+                "needRef": "N2",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ]
+              }
+            ],
+            "removedClaims": [],
+            "sentenceChecks": [
+              {
+                "reason": "V1 states VIP is submitted to one Tier-1 platform (Amazon, Apple TV, or Tubi). V2 and V3 confirm currently it is only Amazon.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ],
+                "sentenceRef": "S1"
+              },
+              {
+                "reason": "V1 limits submission to one platform, not all three. V2 and V3 confirm the current single platform is Amazon.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_e45d71d65356e6d7__a4",
+                  "claim_aa79cd74bf3778b7",
+                  "claim_508134574a4a4ea5"
+                ],
+                "sentenceRef": "S2"
+              }
+            ]
+          },
+          "stageTimings": {
+            "totalMs": 22195,
+            "retrievalMs": 116,
+            "validationMs": 7109,
+            "semanticRecallMs": 2485,
+            "turnResolutionMs": 5,
+            "answerGenerationMs": 5524,
+            "evidenceSelectionMs": 6956
+          }
+        },
+        "pipelineVersion": "v3",
+        "knowledgeVersion": "abdbc621f4b32ae9",
+        "providerAttempts": [
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_semantic_recall",
+            "provider": "deepseek",
+            "latencyMs": 2144,
+            "promptChars": 1006,
+            "temperature": 0,
+            "totalTokens": 272,
+            "reasoningMode": "disabled",
+            "completionTokens": 43
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_selection",
+            "provider": "deepseek",
+            "latencyMs": 6948,
+            "promptChars": 31975,
+            "temperature": 0,
+            "totalTokens": 8247,
+            "reasoningMode": "disabled",
+            "completionTokens": 393
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_answer",
+            "provider": "deepseek",
+            "latencyMs": 5523,
+            "promptChars": 9750,
+            "temperature": 0.2,
+            "totalTokens": 2715,
+            "reasoningMode": "disabled",
+            "completionTokens": 417
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_grounding_validation",
+            "provider": "deepseek",
+            "latencyMs": 7109,
+            "promptChars": 11208,
+            "temperature": 0,
+            "totalTokens": 3068,
+            "reasoningMode": "disabled",
+            "completionTokens": 600
+          }
+        ]
+      },
+      "feedback": null,
+      "capturedAt": "2026-07-13 16:39:59.930318+00",
+      "candidate": {
+        "ok": true,
+        "answer": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+        "structuredAnswer": {
+          "summary": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+          "sections": [
+            {
+              "title": "Guidance",
+              "items": [
+                "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi."
+              ],
+              "tone": "good"
+            }
+          ],
+          "confidenceLabel": "High",
+          "confidenceScore": 95,
+          "sourceMode": "evidence"
+        },
+        "lane": "answer",
+        "needsRoute": false,
+        "routeReason": null,
+        "routeChannels": [],
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "latencyMs": 7846,
+        "citations": [
+          {
+            "policyId": "claim_a67cbc990c0e81d9__a4",
+            "title": "Platform, Proof, And Claims Boundaries: Answer",
+            "decisionKey": "platform-proof-and-claims-boundaries-answer-1-a4",
+            "lastReviewed": "2026-07-14",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Syed Moonis Haider"
+            ]
+          }
+        ],
+        "selectedPolicyIds": [
+          "claim_a67cbc990c0e81d9__a4"
+        ],
+        "redactions": [],
+        "runtimeMetadata": {
+          "pipelineVersion": "v5.5-isolated",
+          "isolation": {
+            "productionSelectorChanged": false,
+            "databaseWrites": false,
+            "historyPersistence": false
+          },
+          "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v55_raw-record-entailment-publisher-conflicts-r1",
+          "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+          "turn": {
+            "kind": "new",
+            "currentQuestion": "VIP is submitted to just Amazon or all 3",
+            "standaloneQuestion": "VIP is submitted to just Amazon or all 3",
+            "immediatePreviousUserQuestion": "Average viewership on episodes on istv",
+            "immediatePreviousAssistantAnswer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "memoryAnswer": null,
+            "usedImmediateContext": false,
+            "explicitCorrection": false,
+            "explicitScopeSwitch": false,
+            "stylePreferences": [],
+            "contextMessages": [
+              {
+                "role": "user",
+                "content": "What awards are at the award show"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              },
+              {
+                "role": "user",
+                "content": "Average viewership on episodes on istv"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              }
+            ],
+            "intentResolutionMode": "deterministic",
+            "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+            "actionableQuestion": "VIP is submitted to just Amazon or all 3",
+            "conversationalPreface": null
+          },
+          "retrieval": {
+            "corpusSize": 2625,
+            "candidateCount": 23,
+            "candidates": [
+              {
+                "id": "claim_aa79cd74bf3778b7",
+                "rank": 1,
+                "score": 123.6019956035113,
+                "decisionKey": "vip-tier-one-platform-submission",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.4166666666666667,
+                "matchedDecisionId": "claim_aa79cd74bf3778b7::a1"
+              },
+              {
+                "id": "claim_a67cbc990c0e81d9__a4",
+                "rank": 2,
+                "score": 112.50141905664825,
+                "decisionKey": "platform-proof-and-claims-boundaries-answer-1-a4",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.2886751345948129,
+                "matchedDecisionId": "claim_a67cbc990c0e81d9__a4::a1"
+              },
+              {
+                "id": "claim_93c33d9477c40ca6",
+                "rank": 3,
+                "score": 28.57142857142857,
+                "decisionKey": "platform-proof-and-claims-boundaries-answer-4",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_93c33d9477c40ca6::publisher-sibling"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a3",
+                "rank": 4,
+                "score": 28.57142857142857,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a3::publisher-sibling"
+              },
+              {
+                "id": "claim_a67cbc990c0e81d9__a3",
+                "rank": 5,
+                "score": 28.57142857142857,
+                "decisionKey": "platform-proof-and-claims-boundaries-answer-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_a67cbc990c0e81d9__a3::publisher-sibling"
+              },
+              {
+                "id": "operational_56eb2c8181d936c9",
+                "rank": 6,
+                "score": 85.71428571428572,
+                "decisionKey": "tier-1-streaming-platform-choice",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_56eb2c8181d936c9::raw-lexical-recall"
+              },
+              {
+                "id": "operational_4ec6a34d71ab0959",
+                "rank": 7,
+                "score": 62.142857142857146,
+                "decisionKey": "vip-streaming-platforms-amazon-only",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_4ec6a34d71ab0959::raw-lexical-recall"
+              },
+              {
+                "id": "operational_28607ab5fadfe394",
+                "rank": 8,
+                "score": 60,
+                "decisionKey": "amazon-apple-google-youtube-tv-submission-guarantee",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_28607ab5fadfe394::raw-lexical-recall"
+              },
+              {
+                "id": "claim_c9e50172a4cd057b",
+                "rank": 9,
+                "score": 57.14285714285714,
+                "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_c9e50172a4cd057b::raw-lexical-recall"
+              },
+              {
+                "id": "operational_3cfb0025a6454374",
+                "rank": 10,
+                "score": 57.14285714285714,
+                "decisionKey": "streaming-platform-submission-count",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_3cfb0025a6454374::raw-lexical-recall"
+              },
+              {
+                "id": "owner-vip-tier-one-platform-boundary",
+                "rank": 11,
+                "score": 52.85714285714286,
+                "decisionKey": "vip-license-platform-coverage",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "owner-vip-tier-one-platform-boundary::raw-lexical-recall"
+              },
+              {
+                "id": "operational_f7b8d0c74bb0b6bd",
+                "rank": 12,
+                "score": 47,
+                "decisionKey": "women-and-power-release-timeline",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_f7b8d0c74bb0b6bd::raw-lexical-recall"
+              },
+              {
+                "id": "operational_78b1196c7125117e",
+                "rank": 13,
+                "score": 42.85714285714286,
+                "decisionKey": "tagging-announced-cast-on-social-media",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_78b1196c7125117e::raw-lexical-recall"
+              },
+              {
+                "id": "operational_83e6034fe5175e61",
+                "rank": 14,
+                "score": 42.85714285714286,
+                "decisionKey": "vip-license-extra-platforms",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_83e6034fe5175e61::raw-lexical-recall"
+              },
+              {
+                "id": "claim_0d3c27364edb910d",
+                "rank": 15,
+                "score": 40,
+                "decisionKey": "post-sale-handoff-after-close-answer-5",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_0d3c27364edb910d::raw-lexical-recall"
+              },
+              {
+                "id": "claim_c02aa623dd33f7bd",
+                "rank": 16,
+                "score": 40,
+                "decisionKey": "power-couples-second-episode-discount",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_c02aa623dd33f7bd::raw-lexical-recall"
+              },
+              {
+                "id": "operational_19b5d8dc0079e9cb",
+                "rank": 17,
+                "score": 40,
+                "decisionKey": "vip-license-landing-page-ads",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_19b5d8dc0079e9cb::raw-lexical-recall"
+              },
+              {
+                "id": "operational_23a1c7d5f84be845",
+                "rank": 18,
+                "score": 40,
+                "decisionKey": "standard-to-vip-upgrade-process",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_23a1c7d5f84be845::raw-lexical-recall"
+              },
+              {
+                "id": "operational_4d89f3fa51f643df",
+                "rank": 19,
+                "score": 40,
+                "decisionKey": "vip-plan-inclusions",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_4d89f3fa51f643df::raw-lexical-recall"
+              },
+              {
+                "id": "operational_50ac78c370343964",
+                "rank": 20,
+                "score": 40,
+                "decisionKey": "no-client-documents-without-approval",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_50ac78c370343964::raw-lexical-recall"
+              },
+              {
+                "id": "operational_82036b75562e3c4f",
+                "rank": 21,
+                "score": 40,
+                "decisionKey": "greenlight-submission-channel",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_82036b75562e3c4f::raw-lexical-recall"
+              },
+              {
+                "id": "operational_82c47a6407748e27",
+                "rank": 22,
+                "score": 40,
+                "decisionKey": "stop-sms-opt-out-procedure",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_82c47a6407748e27::raw-lexical-recall"
+              },
+              {
+                "id": "operational_de0a679ae2751e8b",
+                "rank": 23,
+                "score": 40,
+                "decisionKey": "vip-istv-second-episode-filming",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_de0a679ae2751e8b::raw-lexical-recall"
+              }
+            ],
+            "blockedTopicIds": [],
+            "blockedMatches": [],
+            "diagnostics": {
+              "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+              "needs": [
+                {
+                  "needId": "N1",
+                  "evidenceState": "exact_evidence_found",
+                  "documentsConsidered": 3490,
+                  "hardCompatible": 2,
+                  "directLaneSelected": 2,
+                  "expansionLaneSelected": 0,
+                  "selectedPolicyIds": [
+                    "claim_aa79cd74bf3778b7",
+                    "claim_a67cbc990c0e81d9__a4",
+                    "claim_93c33d9477c40ca6",
+                    "claim_9a12d8eaefcf143a__a3",
+                    "claim_a67cbc990c0e81d9__a3",
+                    "operational_56eb2c8181d936c9",
+                    "operational_4ec6a34d71ab0959",
+                    "operational_28607ab5fadfe394",
+                    "claim_c9e50172a4cd057b",
+                    "operational_3cfb0025a6454374",
+                    "owner-vip-tier-one-platform-boundary",
+                    "operational_f7b8d0c74bb0b6bd",
+                    "operational_78b1196c7125117e",
+                    "operational_83e6034fe5175e61",
+                    "claim_0d3c27364edb910d",
+                    "claim_c02aa623dd33f7bd",
+                    "operational_19b5d8dc0079e9cb",
+                    "operational_23a1c7d5f84be845",
+                    "operational_4d89f3fa51f643df",
+                    "operational_50ac78c370343964",
+                    "operational_82036b75562e3c4f",
+                    "operational_82c47a6407748e27",
+                    "operational_de0a679ae2751e8b"
+                  ],
+                  "rejectionCounts": {
+                    "decision_object": 3331,
+                    "decision_contract": 1018,
+                    "relation": 100,
+                    "material_condition": 16,
+                    "payment_qualifier": 39,
+                    "other_hard_boundary": 1,
+                    "workflow_stage_or_time": 1
+                  }
+                }
+              ]
+            }
+          },
+          "plan": {
+            "needs": [
+              {
+                "id": "N1",
+                "text": "Is VIP submitted to only Amazon, or to all three platforms?",
+                "relation": "inclusion",
+                "request_kind": "knowledge",
+                "product_scope": "unknown",
+                "domains": [
+                  "submission"
+                ],
+                "actions": [
+                  "submit"
+                ],
+                "entities": [
+                  "VIP",
+                  "Amazon"
+                ],
+                "lane": "answer",
+                "evidence_refs": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "supported_claim": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+                "reason": "V5.5 preserved the selected high-impact approved record wording instead of paraphrasing it.",
+                "route_key": null,
+                "clarification_question": ""
+              }
+            ],
+            "overall_lane": "answer",
+            "confidence_score": 95,
+            "reasoning_summary": "The user asks whether VIP is submitted exclusively to Amazon or to all three platforms. This is a single atomic decision about the scope of submission. No additional context or conditions are present. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 locked high-impact exact evidence for N1, N1. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1751."
+          },
+          "sourcePlan": {
+            "needs": [
+              {
+                "needId": "N1",
+                "lane": "answer",
+                "directPolicyIds": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "preferredPolicyIds": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "excludedConflictPolicyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "operational_3cfb0025a6454374",
+                  "owner-vip-tier-one-platform-boundary",
+                  "claim_9a12d8eaefcf143a__a3"
+                ],
+                "reason": "Raw question-to-record entailment selected claim_a67cbc990c0e81d9__a4: The question asks whether VIP is submitted to just Amazon or all three platforms. Record claim_a67cbc990c0e81d9__a4 explicitly states VIP/Premium is submitted to one Tier-1 platform, listing Amazon as one option, directly answering that it is not submitted to all three.",
+                "modelDisposition": "answer",
+                "modelDirectPolicyIds": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "deterministicPolicyIds": []
+              }
+            ],
+            "reasoningSummary": "The user asks if VIP is submitted to just Amazon or all three platforms. Record claim_a67cbc990c0e81d9__a4 directly states VIP/Premium is submitted to one Tier-1 platform, listing Amazon as one of three options, confirming it is not submitted to all three. This is a direct answer with high confidence. Runtime authority conflict choice remained disabled."
+          },
+          "evidenceEntailment": {
+            "status": "complete",
+            "candidateCount": 5,
+            "answeredNeedCount": 1,
+            "routedNeedCount": 0,
+            "blockedPublishCollisionCount": 0,
+            "needs": [
+              {
+                "needId": "N1",
+                "disposition": "answer",
+                "coverageMode": "single",
+                "preferredPolicyIds": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "uncoveredRequestElements": [],
+                "materialConflict": false,
+                "reason": "The question asks whether VIP is submitted to just Amazon or all three platforms. Record claim_a67cbc990c0e81d9__a4 explicitly states VIP/Premium is submitted to one Tier-1 platform, listing Amazon as one option, directly answering that it is not submitted to all three.",
+                "records": [
+                  {
+                    "policyId": "claim_a67cbc990c0e81d9__a4",
+                    "verdict": "direct_answer",
+                    "confidence": 1,
+                    "supportingQuote": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "Directly states VIP is submitted to one platform, not all three."
+                  }
+                ]
+              }
+            ]
+          },
+          "executionMode": {
+            "planning": "hybrid_model",
+            "composition": "model",
+            "validation": "model_and_deterministic"
+          },
+          "validation": {
+            "verdict": "pass",
+            "sentenceChecks": [
+              {
+                "sentenceId": "S1",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_a67cbc990c0e81d9__a4"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              }
+            ],
+            "removedSentences": [],
+            "unresolvedNeedIds": [],
+            "reason": "Every retained sentence passed deterministic and semantic validation."
+          },
+          "providerAttempts": [
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v4_systemic_query_plan",
+              "status": "success",
+              "latencyMs": 2594,
+              "promptChars": 4669,
+              "completionTokens": 179,
+              "totalTokens": 1218,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            },
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v5_5_raw_record_entailment_validation",
+              "status": "success",
+              "latencyMs": 3712,
+              "promptChars": 9206,
+              "completionTokens": 347,
+              "totalTokens": 2436,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            }
+          ],
+          "stageTimings": {
+            "turnResolutionMs": 0,
+            "queryPlanningMs": 2594,
+            "v5BoundedRetrievalMs": 1099,
+            "v55PublisherSiblingExpansionCount": 3,
+            "v55RawLexicalRecallCount": 18,
+            "evidenceEntailmentMs": 3712,
+            "sourcePlanningMs": 3712,
+            "evidenceDraftingMs": 1,
+            "validationMs": 0,
+            "totalMs": 7846
+          }
+        }
+      }
+    },
+    {
+      "id": "production-008",
+      "conversationKey": "95f95d75649ad62e",
+      "conversationTurn": 4,
+      "question": "What else does it include",
+      "productionAnswer": "Beyond the platform submission, VIP includes a 20-25 minute episode, 150,000 pre-promo views, and airing on the ISN app plus a Tier-1 streaming app if accepted. It also includes a podcast (not with Rudy), everything in the Standard plan (like a podcast and an announcement email to the full database), and Mastermind/red-carpet access with a $200 non-refundable attendance fee.",
+      "productionOutcome": "answer_from_evidence",
+      "productionNeedsRoute": false,
+      "productionRouteReason": null,
+      "productionProvider": "deepseek",
+      "productionModel": "deepseek-v4-pro",
+      "productionLatencyMs": 23165,
+      "productionErrorClass": null,
+      "productionRuntimeMetadata": {
+        "v3": {
+          "turn": {
+            "kind": "follow_up",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "explicitScopeSwitch": false,
+            "intentResolutionMode": "deterministic",
+            "usedImmediateContext": true,
+            "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+            "previousUserQuestionUsed": true,
+            "previousAssistantAnswerUsed": true
+          },
+          "retrieval": {
+            "query": "What else does it include\nImmediate prior subject: VIP is submitted to just Amazon or all 3",
+            "candidates": [
+              {
+                "id": "claim_c9e50172a4cd057b",
+                "score": 42.46,
+                "policyKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "main_istv",
+                  "dj_nlceo"
+                ]
+              },
+              {
+                "id": "claim_bc81f6b175e90ef3",
+                "score": 45.07,
+                "policyKey": "vip-includes-podcast",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "contextual_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_5196fa865a42396d",
+                "score": 43.73,
+                "policyKey": "vip-license-includes-20k-plan-items",
+                "sourceKind": "trusted_slack_summary",
+                "qualityTier": "contextual_evidence",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_cb54db52c3464015__a1",
+                "score": 50.7,
+                "policyKey": "events-mastermind-red-carpet-what-reps-can-say-1-a1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_e35c3076026455e6",
+                "score": 49.45,
+                "policyKey": "events-mastermind-red-carpet-answer-1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_cb54db52c3464015__a2",
+                "score": 46.95,
+                "policyKey": "events-mastermind-red-carpet-what-reps-can-say-1-a2",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              }
+            ],
+            "candidateCount": 6,
+            "evidenceContract": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "What deliverables, benefits, or features are included in the VIP package beyond the platform submission?"
+                }
+              ],
+              "support": [
+                {
+                  "needId": "N1",
+                  "reason": "P9 lists core VIP deliverables. P17 and P18 confirm podcast inclusion and that VIP includes Standard items. P13/P14 confirm Mastermind/red-carpet access in all packages. P16 adds the attendance fee. P11 confirms all tiers air on ISN app. Together they directly answer what else VIP includes.",
+                  "relation": "direct",
+                  "policyIds": [
+                    "claim_c9e50172a4cd057b",
+                    "claim_bc81f6b175e90ef3",
+                    "claim_5196fa865a42396d",
+                    "claim_cb54db52c3464015__a1",
+                    "claim_e35c3076026455e6",
+                    "claim_cb54db52c3464015__a2"
+                  ],
+                  "hardBoundary": false,
+                  "supportedClaim": "VIP includes a 20-25 minute episode, 150,000 pre-promo views, submission to one Tier-1 platform, ISN app plus Tier-1 streaming app if accepted, podcast (not with Rudy), everything in the Standard plan (such as podcast and announcement email to the full database), Mastermind/red-carpet access (with a $200 non-refundable attendance fee), and airing on the Inside Success Network app."
+                }
+              ],
+              "unresolvedNeedIds": []
+            },
+            "blockedCandidates": [],
+            "evidenceSelectionReason": "The question asks what else VIP includes beyond platform submission. Multiple cards provide direct evidence of additional VIP features: episode length, pre-promo views, podcast, Standard plan items, Mastermind access, attendance fee, and ISN app airing. No needs remain unresolved.",
+            "preselectionCandidateCount": 20
+          },
+          "selection": {
+            "coverage": [
+              {
+                "need": "What deliverables, benefits, or features are included in the VIP package beyond the platform submission?",
+                "reason": "All requested deliverables beyond platform submission are covered by the evidence.",
+                "status": "answered",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d",
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6",
+                  "claim_cb54db52c3464015__a2"
+                ]
+              }
+            ],
+            "rejectedPolicyIds": [],
+            "selectedPolicyIds": [
+              "claim_c9e50172a4cd057b",
+              "claim_bc81f6b175e90ef3",
+              "claim_5196fa865a42396d",
+              "claim_cb54db52c3464015__a1",
+              "claim_e35c3076026455e6",
+              "claim_cb54db52c3464015__a2"
+            ]
+          },
+          "validation": {
+            "reason": "All sentence claims are directly supported by the selected evidence. The answer fully addresses the user's need for VIP inclusions beyond platform submission.",
+            "verdict": "pass",
+            "needChecks": [
+              {
+                "reason": "All requested deliverables beyond platform submission are covered by the evidence.",
+                "status": "answered",
+                "needRef": "N1",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d",
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6",
+                  "claim_cb54db52c3464015__a2"
+                ]
+              }
+            ],
+            "removedClaims": [],
+            "sentenceChecks": [
+              {
+                "reason": "V1 directly states VIP includes 20-25 minute episode, 150,000 pre-promo views, ISN app plus Tier-1 streaming app if accepted.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_c9e50172a4cd057b"
+                ],
+                "sentenceRef": "S1"
+              },
+              {
+                "reason": "V2 confirms VIP includes podcast, but not with Rudy.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_bc81f6b175e90ef3"
+                ],
+                "sentenceRef": "S2"
+              },
+              {
+                "reason": "V3 states VIP includes everything in the Standard plan, such as podcast and announcement email.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_5196fa865a42396d"
+                ],
+                "sentenceRef": "S3"
+              },
+              {
+                "reason": "V4 and V5 confirm Mastermind/red-carpet access is included in all packages.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_cb54db52c3464015__a1",
+                  "claim_e35c3076026455e6"
+                ],
+                "sentenceRef": "S4"
+              },
+              {
+                "reason": "V6 states there is a $200 non-refundable Mastermind attendance fee.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_cb54db52c3464015__a2"
+                ],
+                "sentenceRef": "S5"
+              }
+            ]
+          },
+          "stageTimings": {
+            "totalMs": 23165,
+            "retrievalMs": 113,
+            "validationMs": 8731,
+            "turnResolutionMs": 0,
+            "answerGenerationMs": 7978,
+            "evidenceSelectionMs": 6342
+          }
+        },
+        "pipelineVersion": "v3",
+        "knowledgeVersion": "abdbc621f4b32ae9",
+        "providerAttempts": [
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_selection",
+            "provider": "deepseek",
+            "latencyMs": 6341,
+            "promptChars": 23528,
+            "temperature": 0,
+            "totalTokens": 6060,
+            "reasoningMode": "disabled",
+            "completionTokens": 347
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_answer",
+            "provider": "deepseek",
+            "latencyMs": 7977,
+            "promptChars": 13852,
+            "temperature": 0.2,
+            "totalTokens": 4083,
+            "reasoningMode": "disabled",
+            "completionTokens": 625
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_grounding_validation",
+            "provider": "deepseek",
+            "latencyMs": 8730,
+            "promptChars": 13518,
+            "temperature": 0,
+            "totalTokens": 3877,
+            "reasoningMode": "disabled",
+            "completionTokens": 798
+          }
+        ]
+      },
+      "feedback": null,
+      "capturedAt": "2026-07-13 16:40:50.992058+00",
+      "candidate": {
+        "ok": true,
+        "answer": "The VIP plan includes all features of the 20k plan, such as the podcast and announcement email to the entire database, plus additional VIP-specific benefits. VIP includes podcast: Yes, but not with Rudy. VIP license includes 20K plan items: Yes, plus VIP items; Madeline later confirmed.",
+        "structuredAnswer": {
+          "summary": "The VIP plan includes all features of the 20k plan, such as the podcast and announcement email to the entire database, plus additional VIP-specific benefits. VIP includes podcast: Yes, but not with Rudy. VIP license includes 20K plan items: Yes, plus VIP items; Madeline later confirmed.",
+          "sections": [
+            {
+              "title": "Answer",
+              "items": [
+                "The VIP plan includes all features of the 20k plan, such as the podcast and announcement email to the entire database, plus additional VIP-specific benefits.",
+                "VIP includes podcast: Yes, but not with Rudy.",
+                "VIP license includes 20K plan items: Yes, plus VIP items; Madeline later confirmed."
+              ],
+              "tone": "good"
+            }
+          ],
+          "confidenceLabel": "High",
+          "confidenceScore": 95,
+          "sourceMode": "evidence"
+        },
+        "lane": "answer",
+        "needsRoute": false,
+        "routeReason": null,
+        "routeChannels": [],
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "latencyMs": 11040,
+        "citations": [
+          {
+            "policyId": "operational_4d89f3fa51f643df",
+            "title": "VIP plan includes all 20k plan features plus VIP extras",
+            "decisionKey": "vip-plan-inclusions",
+            "lastReviewed": "2026-06-23",
+            "authority": 9.5,
+            "sourceKind": "authoritative_slack_operational_qna",
+            "approvedBy": [
+              "Madeline"
+            ]
+          },
+          {
+            "policyId": "claim_bc81f6b175e90ef3",
+            "title": "VIP includes podcast?",
+            "decisionKey": "vip-includes-podcast",
+            "lastReviewed": "2026-07-10",
+            "authority": 90,
+            "sourceKind": "trusted_slack_summary",
+            "approvedBy": [
+              "Madeline Cary"
+            ]
+          },
+          {
+            "policyId": "claim_5196fa865a42396d",
+            "title": "VIP license includes 20K plan items?",
+            "decisionKey": "vip-license-includes-20k-plan-items",
+            "lastReviewed": "2026-07-10",
+            "authority": 90,
+            "sourceKind": "trusted_slack_summary",
+            "approvedBy": [
+              "Madeline Cary"
+            ]
+          }
+        ],
+        "selectedPolicyIds": [
+          "operational_4d89f3fa51f643df",
+          "claim_bc81f6b175e90ef3",
+          "claim_5196fa865a42396d"
+        ],
+        "redactions": [],
+        "runtimeMetadata": {
+          "pipelineVersion": "v5.5-isolated",
+          "isolation": {
+            "productionSelectorChanged": false,
+            "databaseWrites": false,
+            "historyPersistence": false
+          },
+          "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v55_raw-record-entailment-publisher-conflicts-r1",
+          "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+          "turn": {
+            "kind": "follow_up",
+            "currentQuestion": "What else does it include",
+            "standaloneQuestion": "Immediate prior subject: VIP is submitted to just Amazon or all 3\nCurrent request about that subject: What else does it include",
+            "immediatePreviousUserQuestion": "VIP is submitted to just Amazon or all 3",
+            "immediatePreviousAssistantAnswer": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi.",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "memoryAnswer": null,
+            "usedImmediateContext": true,
+            "explicitCorrection": false,
+            "explicitScopeSwitch": false,
+            "stylePreferences": [],
+            "contextMessages": [
+              {
+                "role": "user",
+                "content": "What awards are at the award show"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              },
+              {
+                "role": "user",
+                "content": "Average viewership on episodes on istv"
+              },
+              {
+                "role": "assistant",
+                "content": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+              },
+              {
+                "role": "user",
+                "content": "VIP is submitted to just Amazon or all 3"
+              },
+              {
+                "role": "assistant",
+                "content": "VIP / Premium is submitted to one Tier-1 streaming platform: Amazon Prime Video, Apple TV streaming app, or Tubi."
+              }
+            ],
+            "intentResolutionMode": "deterministic",
+            "intentResolutionReason": "Resolved as follow_up from explicit conversation and referent signals.",
+            "actionableQuestion": "What else does it include",
+            "conversationalPreface": null
+          },
+          "retrieval": {
+            "corpusSize": 2625,
+            "candidateCount": 20,
+            "candidates": [
+              {
+                "id": "operational_4d89f3fa51f643df",
+                "rank": 1,
+                "score": 155.71050578122848,
+                "decisionKey": "vip-plan-inclusions",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.1466471150213533,
+                "matchedDecisionId": "operational_4d89f3fa51f643df::a1"
+              },
+              {
+                "id": "claim_bc81f6b175e90ef3",
+                "rank": 2,
+                "score": 146.49354514242322,
+                "decisionKey": "vip-includes-podcast",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.23570226039551587,
+                "matchedDecisionId": "claim_bc81f6b175e90ef3::a1"
+              },
+              {
+                "id": "claim_80d4013e259f7430",
+                "rank": 3,
+                "score": 145.20879492335413,
+                "decisionKey": "multiple-partners-in-documentary-imdb",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.11605177063713189,
+                "matchedDecisionId": "claim_80d4013e259f7430::a4"
+              },
+              {
+                "id": "claim_0c9788975a1a8d6c",
+                "rank": 4,
+                "score": 144.47987873680654,
+                "decisionKey": "package-hierarchy-license-options-deliverables",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.24494897427831783,
+                "matchedDecisionId": "claim_0c9788975a1a8d6c::a1"
+              },
+              {
+                "id": "claim_5196fa865a42396d",
+                "rank": 5,
+                "score": 137.74219361355327,
+                "decisionKey": "vip-license-includes-20k-plan-items",
+                "answerability": "answer_evidence",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.16329931618554522,
+                "matchedDecisionId": "claim_5196fa865a42396d::a1"
+              },
+              {
+                "id": "claim_a67cbc990c0e81d9__a4",
+                "rank": 6,
+                "score": 87.54141905664825,
+                "decisionKey": "platform-proof-and-claims-boundaries-answer-1-a4",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.31980107453341566,
+                "matchedDecisionId": "claim_a67cbc990c0e81d9__a4::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a3",
+                "rank": 7,
+                "score": 72.68259419593666,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.30151134457776363,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a3::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a7",
+                "rank": 8,
+                "score": 62.45476797843125,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.2578483140393151,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a7::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a1",
+                "rank": 9,
+                "score": 61.263597788033266,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.3078596479934797,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a1::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a5",
+                "rank": 10,
+                "score": 57.100767026389434,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a5",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.29268470350248177,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a5::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a6",
+                "rank": 11,
+                "score": 56.90648703945664,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a6",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.2795530723408051,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a6::a2"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a8",
+                "rank": 12,
+                "score": 55.0994053564278,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a8",
+                "answerability": "route_or_support",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 1,
+                "semanticVectorScore": 0.270232002768764,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a8::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a2",
+                "rank": 13,
+                "score": 50.5083439149429,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.3078596479934797,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a2::a1"
+              },
+              {
+                "id": "owner-vip-tier-one-platform-boundary",
+                "rank": 14,
+                "score": 63.63636363636363,
+                "decisionKey": "vip-license-platform-coverage",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "owner-vip-tier-one-platform-boundary::raw-lexical-recall"
+              },
+              {
+                "id": "claim_c9e50172a4cd057b",
+                "rank": 15,
+                "score": 63.63636363636363,
+                "decisionKey": "istv-nlceo-pricing-and-same-day-discount-answer-1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_c9e50172a4cd057b::raw-lexical-recall"
+              },
+              {
+                "id": "operational_56eb2c8181d936c9",
+                "rank": 16,
+                "score": 39.54545454545455,
+                "decisionKey": "tier-1-streaming-platform-choice",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_56eb2c8181d936c9::raw-lexical-recall"
+              },
+              {
+                "id": "operational_28607ab5fadfe394",
+                "rank": 17,
+                "score": 36.36363636363637,
+                "decisionKey": "amazon-apple-google-youtube-tv-submission-guarantee",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_28607ab5fadfe394::raw-lexical-recall"
+              },
+              {
+                "id": "operational_83e6034fe5175e61",
+                "rank": 18,
+                "score": 36.36363636363637,
+                "decisionKey": "vip-license-extra-platforms",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_83e6034fe5175e61::raw-lexical-recall"
+              },
+              {
+                "id": "operational_3cfb0025a6454374",
+                "rank": 19,
+                "score": 30.454545454545457,
+                "decisionKey": "streaming-platform-submission-count",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_3cfb0025a6454374::raw-lexical-recall"
+              },
+              {
+                "id": "operational_71d679ffa0520656",
+                "rank": 20,
+                "score": 27.27272727272727,
+                "decisionKey": "full-episode-hosting-on-client-streaming-platform",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "dj_nlceo"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_71d679ffa0520656::raw-lexical-recall"
+              }
+            ],
+            "blockedTopicIds": [],
+            "blockedMatches": [],
+            "diagnostics": {
+              "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+              "needs": [
+                {
+                  "needId": "N1",
+                  "evidenceState": "exact_evidence_found",
+                  "documentsConsidered": 3490,
+                  "hardCompatible": 20,
+                  "directLaneSelected": 18,
+                  "expansionLaneSelected": 0,
+                  "selectedPolicyIds": [
+                    "operational_4d89f3fa51f643df",
+                    "claim_bc81f6b175e90ef3",
+                    "claim_80d4013e259f7430",
+                    "claim_0c9788975a1a8d6c",
+                    "claim_5196fa865a42396d",
+                    "claim_a67cbc990c0e81d9__a4",
+                    "claim_9a12d8eaefcf143a__a3",
+                    "claim_9a12d8eaefcf143a__a7",
+                    "claim_9a12d8eaefcf143a__a1",
+                    "claim_9a12d8eaefcf143a__a5",
+                    "claim_9a12d8eaefcf143a__a6",
+                    "claim_9a12d8eaefcf143a__a8",
+                    "claim_9a12d8eaefcf143a__a2",
+                    "owner-vip-tier-one-platform-boundary",
+                    "claim_c9e50172a4cd057b",
+                    "operational_56eb2c8181d936c9",
+                    "operational_28607ab5fadfe394",
+                    "operational_83e6034fe5175e61",
+                    "operational_3cfb0025a6454374",
+                    "operational_71d679ffa0520656"
+                  ],
+                  "rejectionCounts": {
+                    "decision_object": 3301,
+                    "decision_contract": 1018,
+                    "relation": 112,
+                    "material_condition": 16,
+                    "payment_qualifier": 39,
+                    "insufficient_direct_signal": 1,
+                    "workflow_stage_or_time": 1
+                  }
+                }
+              ]
+            }
+          },
+          "plan": {
+            "needs": [
+              {
+                "id": "N1",
+                "text": "What else is included in the VIP / Premium offering beyond submission to one Tier-1 streaming platform?",
+                "relation": "inclusion",
+                "request_kind": "knowledge",
+                "product_scope": "unknown",
+                "domains": [
+                  "VIP",
+                  "Premium"
+                ],
+                "actions": [
+                  "include"
+                ],
+                "entities": [
+                  "VIP",
+                  "Premium"
+                ],
+                "lane": "answer",
+                "evidence_refs": [
+                  "operational_4d89f3fa51f643df",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d"
+                ],
+                "supported_claim": "the VIP plan includes all features of the 20k plan, such as the podcast and announcement email to the entire database, plus additional VIP-specific benefits VIP includes podcast: Yes, but not with Rudy. VIP license includes 20K plan items: Yes, plus VIP items; Madeline later confirmed.",
+                "reason": "V5.5 preserved every bounded collective approved decision instead of allowing answer composition to omit part of the selected guidance.",
+                "route_key": null,
+                "clarification_question": ""
+              }
+            ],
+            "overall_lane": "answer",
+            "confidence_score": 95,
+            "reasoning_summary": "The user asks what else is included in the VIP / Premium offering, given the prior clarification that it involves submission to one Tier-1 streaming platform. This is a single atomic request for additional inclusions. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 locked high-impact exact evidence for N1. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1751."
+          },
+          "sourcePlan": {
+            "needs": [
+              {
+                "needId": "N1",
+                "lane": "answer",
+                "directPolicyIds": [
+                  "operational_4d89f3fa51f643df",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d"
+                ],
+                "preferredPolicyIds": [
+                  "operational_4d89f3fa51f643df",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d"
+                ],
+                "excludedConflictPolicyIds": [
+                  "claim_c9e50172a4cd057b",
+                  "claim_0c9788975a1a8d6c"
+                ],
+                "reason": "Raw question-to-record entailment selected operational_4d89f3fa51f643df, claim_bc81f6b175e90ef3, claim_5196fa865a42396d: The user asks what else VIP includes beyond Tier-1 submission. Three records directly answer: operational_4d89f3fa51f643df states VIP includes all 20k plan features (podcast, announcement email) plus VIP extras; claim_bc81f6b175e90ef3 confirms podcast inclusion; claim_5196fa865a42396d confirms 20k plan items plus VIP items. Together they cover the requested additional inclusions without conflict. claim_c9e50172a4cd057b only details the VIP package deliverables (episode length, views, submission) but does not list other inclusions, so it is not needed. claim_0c9788975a1a8d6c is non-answer. Collective coverage is appropriate as each record addresses a distinct aspect of the question.",
+                "modelDisposition": "answer",
+                "modelDirectPolicyIds": [
+                  "operational_4d89f3fa51f643df",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d"
+                ],
+                "deterministicPolicyIds": []
+              }
+            ],
+            "reasoningSummary": "Three records directly answer what else VIP includes: operational_4d89f3fa51f643df (all 20k features plus VIP extras), claim_bc81f6b175e90ef3 (podcast), claim_5196fa865a42396d (20k items plus VIP items). No conflicts; collective coverage is complete. Runtime authority conflict choice remained disabled."
+          },
+          "evidenceEntailment": {
+            "status": "complete",
+            "candidateCount": 5,
+            "answeredNeedCount": 1,
+            "routedNeedCount": 0,
+            "blockedPublishCollisionCount": 0,
+            "needs": [
+              {
+                "needId": "N1",
+                "disposition": "answer",
+                "coverageMode": "collective",
+                "preferredPolicyIds": [
+                  "operational_4d89f3fa51f643df",
+                  "claim_bc81f6b175e90ef3",
+                  "claim_5196fa865a42396d"
+                ],
+                "uncoveredRequestElements": [],
+                "materialConflict": false,
+                "reason": "The user asks what else VIP includes beyond Tier-1 submission. Three records directly answer: operational_4d89f3fa51f643df states VIP includes all 20k plan features (podcast, announcement email) plus VIP extras; claim_bc81f6b175e90ef3 confirms podcast inclusion; claim_5196fa865a42396d confirms 20k plan items plus VIP items. Together they cover the requested additional inclusions without conflict. claim_c9e50172a4cd057b only details the VIP package deliverables (episode length, views, submission) but does not list other inclusions, so it is not needed. claim_0c9788975a1a8d6c is non-answer. Collective coverage is appropriate as each record addresses a distinct aspect of the question.",
+                "records": [
+                  {
+                    "policyId": "operational_4d89f3fa51f643df",
+                    "verdict": "direct_answer",
+                    "confidence": 0.95,
+                    "supportingQuote": "the VIP plan includes all features of the 20k plan, such as the podcast and announcement email to the entire database, plus additional VIP-specific benefits",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "Directly states VIP includes all 20k plan features, naming podcast and announcement email, plus additional VIP benefits."
+                  },
+                  {
+                    "policyId": "claim_bc81f6b175e90ef3",
+                    "verdict": "direct_answer",
+                    "confidence": 0.95,
+                    "supportingQuote": "Yes, but not with Rudy.",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "Confirms VIP includes podcast, with a condition on host."
+                  },
+                  {
+                    "policyId": "claim_5196fa865a42396d",
+                    "verdict": "direct_answer",
+                    "confidence": 0.95,
+                    "supportingQuote": "Yes, plus VIP items; Madeline later confirmed.",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "Confirms VIP includes everything in the 20K plan, such as podcast and announcement email, plus VIP items."
+                  }
+                ]
+              }
+            ]
+          },
+          "executionMode": {
+            "planning": "hybrid_model",
+            "composition": "model",
+            "validation": "model_and_deterministic"
+          },
+          "validation": {
+            "verdict": "pass",
+            "sentenceChecks": [
+              {
+                "sentenceId": "S1",
+                "status": "supported",
+                "evidenceRefs": [
+                  "operational_4d89f3fa51f643df"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S2",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_bc81f6b175e90ef3"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S3",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_5196fa865a42396d"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              }
+            ],
+            "removedSentences": [],
+            "unresolvedNeedIds": [],
+            "reason": "Every retained sentence passed deterministic and semantic validation."
+          },
+          "providerAttempts": [
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v4_systemic_query_plan",
+              "status": "success",
+              "latencyMs": 2698,
+              "promptChars": 4977,
+              "completionTokens": 203,
+              "totalTokens": 1312,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            },
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v5_5_raw_record_entailment_validation",
+              "status": "success",
+              "latencyMs": 6964,
+              "promptChars": 9374,
+              "completionTokens": 673,
+              "totalTokens": 2807,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            }
+          ],
+          "stageTimings": {
+            "turnResolutionMs": 6,
+            "queryPlanningMs": 2700,
+            "v5BoundedRetrievalMs": 1135,
+            "v55PublisherSiblingExpansionCount": 0,
+            "v55RawLexicalRecallCount": 7,
+            "evidenceEntailmentMs": 6966,
+            "sourcePlanningMs": 6966,
+            "evidenceDraftingMs": 1,
+            "validationMs": 0,
+            "totalMs": 11040
+          }
+        }
+      }
+    },
+    {
+      "id": "production-012",
+      "conversationKey": "c75d9769fe15d6f4",
+      "conversationTurn": 2,
+      "question": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+      "productionAnswer": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers. If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels. Brand-new reps generally are not in those channels until approved, but do not hard-code \"new rep cannot take it\" if they already have approved channel access. Do not tell a rep to take the call if they are not in the approved passoff/dummy-call channel.",
+      "productionOutcome": "answer_from_evidence",
+      "productionNeedsRoute": false,
+      "productionRouteReason": null,
+      "productionProvider": "deepseek",
+      "productionModel": "deepseek-v4-pro",
+      "productionLatencyMs": 23831,
+      "productionErrorClass": null,
+      "productionRuntimeMetadata": {
+        "v3": {
+          "turn": {
+            "kind": "new",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "explicitScopeSwitch": false,
+            "intentResolutionMode": "deterministic",
+            "usedImmediateContext": false,
+            "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+            "previousUserQuestionUsed": false,
+            "previousAssistantAnswerUsed": false
+          },
+          "retrieval": {
+            "query": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+            "candidates": [
+              {
+                "id": "claim_b72e1415aa70d806__a3",
+                "score": 189.82,
+                "policyKey": "americas-top-lawyers-passoff-boundary-answer-1-a3",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_b72e1415aa70d806__a1",
+                "score": 188.56,
+                "policyKey": "americas-top-lawyers-passoff-boundary-answer-1-a1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_b72e1415aa70d806__a2",
+                "score": 185.46,
+                "policyKey": "americas-top-lawyers-passoff-boundary-answer-1-a2",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              },
+              {
+                "id": "claim_955fdf50aef22e8b__a1",
+                "score": 183.74,
+                "policyKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a1",
+                "sourceKind": "approved_article",
+                "qualityTier": "canonical",
+                "answerability": "answer_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ]
+              }
+            ],
+            "candidateCount": 4,
+            "evidenceContract": {
+              "needs": [
+                {
+                  "id": "N1",
+                  "text": "What is the approved guidance for America's Top Lawyers Passoff Boundary?"
+                }
+              ],
+              "support": [
+                {
+                  "needId": "N1",
+                  "reason": "The question asks for the approved guidance for the America's Top Lawyers Passoff Boundary. Cards P1, P2, P3, and P5 are all canonical answer_evidence cards with the decision key 'americas-top-lawyers-passoff-boundary' and product_scope 'product_agnostic'. They directly provide the boundary rules: what to do with Video 2, who can take the call based on channel membership, handling of new reps, and what not to tell reps. Together they form the complete approved guidance.",
+                  "relation": "direct",
+                  "policyIds": [
+                    "claim_b72e1415aa70d806__a3",
+                    "claim_b72e1415aa70d806__a1",
+                    "claim_b72e1415aa70d806__a2",
+                    "claim_955fdf50aef22e8b__a1"
+                  ],
+                  "hardBoundary": false,
+                  "supportedClaim": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers. If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels. Brand-new reps generally are not in those channels until approved, but do not hard-code 'new rep cannot take it' if they already have approved channel access. Do not tell a rep to take the call if they are not in the approved passoff/dummy-call channel."
+                }
+              ],
+              "unresolvedNeedIds": []
+            },
+            "blockedCandidates": [
+              {
+                "id": "dual-product-opportunity-ownership",
+                "score": 3
+              }
+            ],
+            "evidenceSelectionReason": "The resolved question is a single atomic need asking for the approved guidance. The four canonical cards (P1, P2, P3, P5) directly answer with the passoff boundary rules. Other cards either address different topics (e.g., show lists, routing, material sharing) or are less specific/trusted, so they are not needed.",
+            "preselectionCandidateCount": 20
+          },
+          "selection": {
+            "coverage": [
+              {
+                "need": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+                "reason": "All four evidence cards directly provide the complete approved guidance.",
+                "status": "answered",
+                "policyIds": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a1"
+                ]
+              }
+            ],
+            "rejectedPolicyIds": [],
+            "selectedPolicyIds": [
+              "claim_b72e1415aa70d806__a3",
+              "claim_b72e1415aa70d806__a1",
+              "claim_b72e1415aa70d806__a2",
+              "claim_955fdf50aef22e8b__a1"
+            ]
+          },
+          "validation": {
+            "reason": "All sentences are directly supported by the selected evidence and fully answer the user's question. No irrelevant or unsupported claims are present.",
+            "verdict": "pass",
+            "needChecks": [
+              {
+                "reason": "All four evidence cards directly provide the complete approved guidance.",
+                "status": "answered",
+                "needRef": "N1",
+                "policyIds": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a1"
+                ]
+              }
+            ],
+            "removedClaims": [],
+            "sentenceChecks": [
+              {
+                "reason": "V1 directly states the guidance.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_b72e1415aa70d806__a3"
+                ],
+                "sentenceRef": "S1"
+              },
+              {
+                "reason": "V2 directly states the channel-based eligibility.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_b72e1415aa70d806__a1"
+                ],
+                "sentenceRef": "S2"
+              },
+              {
+                "reason": "V3 directly states the new rep nuance.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_b72e1415aa70d806__a2"
+                ],
+                "sentenceRef": "S3"
+              },
+              {
+                "reason": "V4 directly states the prohibition.",
+                "status": "supported",
+                "policyIds": [
+                  "claim_955fdf50aef22e8b__a1"
+                ],
+                "sentenceRef": "S4"
+              }
+            ]
+          },
+          "stageTimings": {
+            "totalMs": 23830,
+            "retrievalMs": 234,
+            "validationMs": 9117,
+            "turnResolutionMs": 3,
+            "answerGenerationMs": 7678,
+            "evidenceSelectionMs": 6798
+          }
+        },
+        "pipelineVersion": "v3",
+        "knowledgeVersion": "abdbc621f4b32ae9",
+        "providerAttempts": [
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_selection",
+            "provider": "deepseek",
+            "latencyMs": 6793,
+            "promptChars": 23278,
+            "temperature": 0,
+            "totalTokens": 5925,
+            "reasoningMode": "disabled",
+            "completionTokens": 400
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_evidence_answer",
+            "provider": "deepseek",
+            "latencyMs": 7677,
+            "promptChars": 11567,
+            "temperature": 0.2,
+            "totalTokens": 3283,
+            "reasoningMode": "disabled",
+            "completionTokens": 558
+          },
+          {
+            "model": "deepseek-v4-pro",
+            "status": "success",
+            "purpose": "v3_grounding_validation",
+            "provider": "deepseek",
+            "latencyMs": 9116,
+            "promptChars": 13004,
+            "temperature": 0,
+            "totalTokens": 3580,
+            "reasoningMode": "disabled",
+            "completionTokens": 766
+          }
+        ]
+      },
+      "feedback": null,
+      "capturedAt": "2026-07-13 18:02:05.446923+00",
+      "candidate": {
+        "ok": true,
+        "answer": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers. \"For America's Top Lawyers, do not play the final part of Video 2 that mentions lawyers.\" \"If you are in the passoff or dummy-call channel for this, that channel access is the approval control.\" \"If you are not in the channel or are unsure, do not take it without checking the current passoff owner.\" If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels. Brand-new reps generally are not in those channels until approved, but do not hard-code \"new rep cannot take it\" if they already have approved channel access. Do not use this article as a general dummy-call/passoff SOP for other shows or no-show cases.",
+        "structuredAnswer": {
+          "summary": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers. \"For America's Top Lawyers, do not play the final part of Video 2 that mentions lawyers.\" \"If you are in the passoff or dummy-call channel for this, that channel access is the approval control.\" \"If you are not in the channel or are unsure, do not take it without checking the current passoff owner.\" If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels. Brand-new reps generally are not in those channels until approved, but do not hard-code \"new rep cannot take it\" if they already have approved channel access. Do not use this article as a general dummy-call/passoff SOP for other shows or no-show cases.",
+          "sections": [
+            {
+              "title": "Answer",
+              "items": [
+                "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers.",
+                "\"For America's Top Lawyers, do not play the final part of Video 2 that mentions lawyers.\"",
+                "\"If you are in the passoff or dummy-call channel for this, that channel access is the approval control.\"",
+                "\"If you are not in the channel or are unsure, do not take it without checking the current passoff owner.\"",
+                "If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels.",
+                "Brand-new reps generally are not in those channels until approved, but do not hard-code \"new rep cannot take it\" if they already have approved channel access.",
+                "Do not use this article as a general dummy-call/passoff SOP for other shows or no-show cases."
+              ],
+              "tone": "good"
+            }
+          ],
+          "confidenceLabel": "High",
+          "confidenceScore": 95,
+          "sourceMode": "evidence"
+        },
+        "lane": "answer",
+        "needsRoute": false,
+        "routeReason": null,
+        "routeChannels": [],
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "latencyMs": 7769,
+        "citations": [
+          {
+            "policyId": "claim_b72e1415aa70d806__a3",
+            "title": "America's Top Lawyers Passoff Boundary: Answer",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a3",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_ef912c9a15ee89e1__a3",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Can Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a3",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_ef912c9a15ee89e1__a1",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Can Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a1",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_ef912c9a15ee89e1__a2",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Can Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a2",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_b72e1415aa70d806__a1",
+            "title": "America's Top Lawyers Passoff Boundary: Answer",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a1",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_955fdf50aef22e8b__a1",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Must Not Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a1",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_b72e1415aa70d806__a2",
+            "title": "America's Top Lawyers Passoff Boundary: Answer",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a2",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_955fdf50aef22e8b__a2",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Must Not Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a2",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_955fdf50aef22e8b__a3",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Must Not Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a3",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          },
+          {
+            "policyId": "claim_955fdf50aef22e8b__a4",
+            "title": "America's Top Lawyers Passoff Boundary: What Reps Must Not Say",
+            "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a4",
+            "lastReviewed": "2026-07-07",
+            "authority": 100,
+            "sourceKind": "approved_article",
+            "approvedBy": [
+              "Rich Allen",
+              "Mike Wisner"
+            ]
+          }
+        ],
+        "selectedPolicyIds": [
+          "claim_b72e1415aa70d806__a3",
+          "claim_ef912c9a15ee89e1__a3",
+          "claim_ef912c9a15ee89e1__a1",
+          "claim_ef912c9a15ee89e1__a2",
+          "claim_b72e1415aa70d806__a1",
+          "claim_955fdf50aef22e8b__a1",
+          "claim_b72e1415aa70d806__a2",
+          "claim_955fdf50aef22e8b__a2",
+          "claim_955fdf50aef22e8b__a3",
+          "claim_955fdf50aef22e8b__a4"
+        ],
+        "redactions": [],
+        "runtimeMetadata": {
+          "pipelineVersion": "v5.5-isolated",
+          "isolation": {
+            "productionSelectorChanged": false,
+            "databaseWrites": false,
+            "historyPersistence": false
+          },
+          "knowledgeVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f+v55_raw-record-entailment-publisher-conflicts-r1",
+          "authorityResolutionVersion": "ask-sales-v5.1-claim-authority-resolutions-v21:8185e1c2ffece9a5",
+          "turn": {
+            "kind": "new",
+            "currentQuestion": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+            "standaloneQuestion": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+            "immediatePreviousUserQuestion": "Can I say Apple TV or Tier-1 placement is guaranteed?",
+            "immediatePreviousAssistantAnswer": "Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement.",
+            "productScope": "unknown",
+            "excludedScopes": [],
+            "memoryAnswer": null,
+            "usedImmediateContext": false,
+            "explicitCorrection": false,
+            "explicitScopeSwitch": false,
+            "stylePreferences": [],
+            "contextMessages": [
+              {
+                "role": "user",
+                "content": "Can I say Apple TV or Tier-1 placement is guaranteed?"
+              },
+              {
+                "role": "assistant",
+                "content": "Do not guarantee Amazon, Apple TV streaming app, Tubi, or any other Tier-1 placement."
+              }
+            ],
+            "intentResolutionMode": "deterministic",
+            "intentResolutionReason": "Resolved as new from explicit conversation and referent signals.",
+            "actionableQuestion": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+            "conversationalPreface": null
+          },
+          "retrieval": {
+            "corpusSize": 2625,
+            "candidateCount": 29,
+            "candidates": [
+              {
+                "id": "claim_b72e1415aa70d806__a3",
+                "rank": 1,
+                "score": 226.65868797953195,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.42111744380615784,
+                "matchedDecisionId": "claim_b72e1415aa70d806__a3::a1"
+              },
+              {
+                "id": "claim_b72e1415aa70d806__a1",
+                "rank": 2,
+                "score": 225.57195508160237,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.42857142857142855,
+                "matchedDecisionId": "claim_b72e1415aa70d806__a1::a1"
+              },
+              {
+                "id": "claim_955fdf50aef22e8b__a1",
+                "rank": 3,
+                "score": 221.68807455696634,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.4447495899966607,
+                "matchedDecisionId": "claim_955fdf50aef22e8b__a1::a1"
+              },
+              {
+                "id": "claim_b72e1415aa70d806__a2",
+                "rank": 4,
+                "score": 221.51380670277425,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-answer-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.3833259389999639,
+                "matchedDecisionId": "claim_b72e1415aa70d806__a2::a1"
+              },
+              {
+                "id": "claim_955fdf50aef22e8b__a2",
+                "rank": 5,
+                "score": 207.78986604189205,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.41403933560541256,
+                "matchedDecisionId": "claim_955fdf50aef22e8b__a2::a1"
+              },
+              {
+                "id": "claim_955fdf50aef22e8b__a3",
+                "rank": 6,
+                "score": 206.98303508687826,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.4073065399812784,
+                "matchedDecisionId": "claim_955fdf50aef22e8b__a3::a1"
+              },
+              {
+                "id": "claim_955fdf50aef22e8b__a4",
+                "rank": 7,
+                "score": 202.4839984128719,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-must-not-say-1-a4",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.39477101697586137,
+                "matchedDecisionId": "claim_955fdf50aef22e8b__a4::a1"
+              },
+              {
+                "id": "claim_45061abe2a61e6a0__a3",
+                "rank": 8,
+                "score": 144.46922905781867,
+                "decisionKey": "current-show-source-what-reps-can-say-1-a3",
+                "answerability": "route_or_support",
+                "qualityTier": "supporting",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 14,
+                "semanticVectorScore": 0.207669652660466,
+                "matchedDecisionId": "claim_45061abe2a61e6a0__a3::a1"
+              },
+              {
+                "id": "claim_70a1fbb9c1da6d59__a2",
+                "rank": 9,
+                "score": 90.98041137524609,
+                "decisionKey": "internal-material-sharing-boundaries-what-reps-can-say-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.11664236870396086,
+                "matchedDecisionId": "claim_70a1fbb9c1da6d59__a2::a1"
+              },
+              {
+                "id": "claim_70a1fbb9c1da6d59__a1",
+                "rank": 10,
+                "score": 90.07748916747451,
+                "decisionKey": "internal-material-sharing-boundaries-what-reps-can-say-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.11664236870396086,
+                "matchedDecisionId": "claim_70a1fbb9c1da6d59__a1::a1"
+              },
+              {
+                "id": "claim_70a1fbb9c1da6d59__a5",
+                "rank": 11,
+                "score": 85.31198636176715,
+                "decisionKey": "internal-material-sharing-boundaries-what-reps-can-say-1-a5",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 14,
+                "semanticVectorScore": 0.10798984943120776,
+                "matchedDecisionId": "claim_70a1fbb9c1da6d59__a5::a1"
+              },
+              {
+                "id": "operational_06a1e6e090dc4353",
+                "rank": 12,
+                "score": 75.19819685390186,
+                "decisionKey": "top-closer-approval-limit-increase",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 14,
+                "semanticVectorScore": 0.16609095970747995,
+                "matchedDecisionId": "operational_06a1e6e090dc4353::a1"
+              },
+              {
+                "id": "claim_165ccbd74bc0805e",
+                "rank": 13,
+                "score": 73.70996628193126,
+                "decisionKey": "internal-material-sharing-boundaries-answer-1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.1889822365046136,
+                "matchedDecisionId": "claim_165ccbd74bc0805e::a1"
+              },
+              {
+                "id": "claim_9a12d8eaefcf143a__a7",
+                "rank": 14,
+                "score": 72.100649625859,
+                "decisionKey": "platform-proof-and-claims-boundaries-what-reps-can-say-1-a7",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 14,
+                "semanticVectorScore": 0.09235141930792204,
+                "matchedDecisionId": "claim_9a12d8eaefcf143a__a7::a2"
+              },
+              {
+                "id": "operational_d7713e1024b82069",
+                "rank": 15,
+                "score": 39.65841759698318,
+                "decisionKey": "rudy-dial-out-video-link",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "live_only",
+                "relationScore": 1,
+                "semanticVectorScore": 0.1336306209562122,
+                "matchedDecisionId": "operational_d7713e1024b82069::a1"
+              },
+              {
+                "id": "operational_4710cdc35769fd4e",
+                "rank": 16,
+                "score": 36.526141369345375,
+                "decisionKey": "sales-summit-audience",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 1,
+                "semanticVectorScore": 0.18650096164806276,
+                "matchedDecisionId": "operational_4710cdc35769fd4e::a1"
+              },
+              {
+                "id": "claim_ef912c9a15ee89e1__a3",
+                "rank": 17,
+                "score": 42.857142857142854,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a3",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_ef912c9a15ee89e1__a3::publisher-sibling"
+              },
+              {
+                "id": "kr_7ace400fcdf68db9",
+                "rank": 18,
+                "score": 57.14285714285714,
+                "decisionKey": "current-show-source-latest-approved-show-list-1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "kr_7ace400fcdf68db9::raw-lexical-recall"
+              },
+              {
+                "id": "operational_9d65e2a4ee596115",
+                "rank": 19,
+                "score": 57.14285714285714,
+                "decisionKey": "americas-top-lawyers-new-rep-restriction",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_9d65e2a4ee596115::raw-lexical-recall"
+              },
+              {
+                "id": "operational_f6a454711d932f5c",
+                "rank": 20,
+                "score": 57.14285714285714,
+                "decisionKey": "americas-top-lawyers-episode-plans",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_f6a454711d932f5c::raw-lexical-recall"
+              },
+              {
+                "id": "claim_0580aeb0f6c688e0",
+                "rank": 21,
+                "score": 42.85714285714286,
+                "decisionKey": "newer-reps-taking-america-s-top-lawyers-calls",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_0580aeb0f6c688e0::raw-lexical-recall"
+              },
+              {
+                "id": "operational_e3f5277ee65cc171",
+                "rank": 22,
+                "score": 42.85714285714286,
+                "decisionKey": "cohort-system-start-date",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_e3f5277ee65cc171::raw-lexical-recall"
+              },
+              {
+                "id": "operational_1c7d9308ff48e52f",
+                "rank": 23,
+                "score": 42.85714285714286,
+                "decisionKey": "show-info-links",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_1c7d9308ff48e52f::raw-lexical-recall"
+              },
+              {
+                "id": "operational_5bd457a04a239d63",
+                "rank": 24,
+                "score": 42.85714285714286,
+                "decisionKey": "payme-dropdown-show-selection",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_5bd457a04a239d63::raw-lexical-recall"
+              },
+              {
+                "id": "operational_5d1816ef2998f88f",
+                "rank": 25,
+                "score": 42.85714285714286,
+                "decisionKey": "americas-top-builders-rebrand",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_5d1816ef2998f88f::raw-lexical-recall"
+              },
+              {
+                "id": "operational_733af196efc157a4",
+                "rank": 26,
+                "score": 42.85714285714286,
+                "decisionKey": "cast-switch-between-shows-allowed",
+                "answerability": "answer_evidence",
+                "qualityTier": "trusted_evidence",
+                "productScopes": [
+                  "main_istv"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "time_sensitive",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_733af196efc157a4::raw-lexical-recall"
+              },
+              {
+                "id": "operational_6712c8bc6e4906fa",
+                "rank": 27,
+                "score": 38.57142857142857,
+                "decisionKey": "lawyer-show-restricted-closing",
+                "answerability": "route_or_support",
+                "qualityTier": "contextual_evidence",
+                "productScopes": [
+                  "unknown"
+                ],
+                "sourceKind": "authoritative_operational_qna",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "operational_6712c8bc6e4906fa::raw-lexical-recall"
+              },
+              {
+                "id": "claim_ef912c9a15ee89e1__a1",
+                "rank": 28,
+                "score": 34.285714285714285,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a1",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_ef912c9a15ee89e1__a1::raw-lexical-recall"
+              },
+              {
+                "id": "claim_ef912c9a15ee89e1__a2",
+                "rank": 29,
+                "score": 34.285714285714285,
+                "decisionKey": "americas-top-lawyers-passoff-boundary-what-reps-can-say-1-a2",
+                "answerability": "answer_evidence",
+                "qualityTier": "canonical",
+                "productScopes": [
+                  "product_agnostic"
+                ],
+                "sourceKind": "governed_policy",
+                "temporalRisk": "stable",
+                "relationScore": 0,
+                "semanticVectorScore": 0,
+                "matchedDecisionId": "claim_ef912c9a15ee89e1__a2::raw-lexical-recall"
+              }
+            ],
+            "blockedTopicIds": [],
+            "blockedMatches": [],
+            "diagnostics": {
+              "snapshotVersion": "8c8c677c1209f2d7+v5_6921138ec79d251f",
+              "needs": [
+                {
+                  "needId": "N1",
+                  "evidenceState": "exact_evidence_found",
+                  "documentsConsidered": 3490,
+                  "hardCompatible": 17,
+                  "directLaneSelected": 17,
+                  "expansionLaneSelected": 0,
+                  "selectedPolicyIds": [
+                    "claim_b72e1415aa70d806__a3",
+                    "claim_b72e1415aa70d806__a1",
+                    "claim_955fdf50aef22e8b__a1",
+                    "claim_b72e1415aa70d806__a2",
+                    "claim_955fdf50aef22e8b__a2",
+                    "claim_955fdf50aef22e8b__a3",
+                    "claim_955fdf50aef22e8b__a4",
+                    "claim_45061abe2a61e6a0__a3",
+                    "claim_70a1fbb9c1da6d59__a2",
+                    "claim_70a1fbb9c1da6d59__a1",
+                    "claim_70a1fbb9c1da6d59__a5",
+                    "operational_06a1e6e090dc4353",
+                    "claim_165ccbd74bc0805e",
+                    "claim_9a12d8eaefcf143a__a7",
+                    "operational_d7713e1024b82069",
+                    "operational_4710cdc35769fd4e",
+                    "claim_ef912c9a15ee89e1__a3",
+                    "kr_7ace400fcdf68db9",
+                    "operational_9d65e2a4ee596115",
+                    "operational_f6a454711d932f5c",
+                    "claim_0580aeb0f6c688e0",
+                    "operational_e3f5277ee65cc171",
+                    "operational_1c7d9308ff48e52f",
+                    "operational_5bd457a04a239d63",
+                    "operational_5d1816ef2998f88f",
+                    "operational_733af196efc157a4",
+                    "operational_6712c8bc6e4906fa",
+                    "claim_ef912c9a15ee89e1__a1",
+                    "claim_ef912c9a15ee89e1__a2"
+                  ],
+                  "rejectionCounts": {
+                    "decision_object": 985,
+                    "decision_contract": 2874,
+                    "relation": 2452,
+                    "material_condition": 14,
+                    "payment_qualifier": 20,
+                    "insufficient_direct_signal": 1,
+                    "workflow_stage_or_time": 1
+                  }
+                }
+              ]
+            }
+          },
+          "plan": {
+            "needs": [
+              {
+                "id": "N1",
+                "text": "What is the approved guidance for America's Top Lawyers Passoff Boundary?",
+                "relation": "eligibility",
+                "request_kind": "knowledge",
+                "product_scope": "unknown",
+                "domains": [
+                  "sales",
+                  "compliance"
+                ],
+                "actions": [
+                  "define",
+                  "explain"
+                ],
+                "entities": [
+                  "America's Top Lawyers",
+                  "Passoff Boundary"
+                ],
+                "lane": "answer",
+                "evidence_refs": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_ef912c9a15ee89e1__a3",
+                  "claim_ef912c9a15ee89e1__a1",
+                  "claim_ef912c9a15ee89e1__a2",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_955fdf50aef22e8b__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a2",
+                  "claim_955fdf50aef22e8b__a3",
+                  "claim_955fdf50aef22e8b__a4"
+                ],
+                "supported_claim": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers. \"For America's Top Lawyers, do not play the final part of Video 2 that mentions lawyers.\" \"If you are in the passoff or dummy-call channel for this, that channel access is the approval control.\" \"If you are not in the channel or are unsure, do not take it without checking the current passoff owner.\" If the rep is in the passoff channel or dummy-call channel, they can take the call because only approved people should be in those channels. Do not tell a rep to take the call if they are not in the approved passoff/dummy-call channel. Brand-new reps generally are not in those channels until approved, but do not hard-code \"new rep cannot take it\" if they already have approved channel access. Do not say all new reps are blocked if the rep already has approved channel access. Do not play the lawyer-specific final portion of Video 2. Do not use this article as a general dummy-call/passoff SOP for other shows or no-show cases.",
+                "reason": "V5.5 preserved every bounded collective approved decision instead of allowing answer composition to omit part of the selected guidance.",
+                "route_key": null,
+                "clarification_question": ""
+              }
+            ],
+            "overall_lane": "answer",
+            "confidence_score": 95,
+            "reasoning_summary": "The user asks for the approved guidance on a specific term 'America's Top Lawyers Passoff Boundary'. This is a single atomic request for the definition or policy explanation of that term. No conditions or compound elements are present. V5.5 skipped lossy answer drafting because every need was already resolved by the final raw-record entailment gate. V5.5 locked high-impact exact evidence for N1. V5.5 preserved bounded collective evidence without lossy summarization. Operational overlay policies available: 1751."
+          },
+          "sourcePlan": {
+            "needs": [
+              {
+                "needId": "N1",
+                "lane": "answer",
+                "directPolicyIds": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_ef912c9a15ee89e1__a3",
+                  "claim_ef912c9a15ee89e1__a1",
+                  "claim_ef912c9a15ee89e1__a2",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_955fdf50aef22e8b__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a2",
+                  "claim_955fdf50aef22e8b__a3",
+                  "claim_955fdf50aef22e8b__a4"
+                ],
+                "preferredPolicyIds": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_ef912c9a15ee89e1__a3",
+                  "claim_ef912c9a15ee89e1__a1",
+                  "claim_ef912c9a15ee89e1__a2",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_955fdf50aef22e8b__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a2",
+                  "claim_955fdf50aef22e8b__a3",
+                  "claim_955fdf50aef22e8b__a4"
+                ],
+                "excludedConflictPolicyIds": [
+                  "kr_7ace400fcdf68db9",
+                  "operational_9d65e2a4ee596115",
+                  "operational_f6a454711d932f5c",
+                  "claim_0580aeb0f6c688e0",
+                  "operational_e3f5277ee65cc171",
+                  "operational_1c7d9308ff48e52f",
+                  "operational_5bd457a04a239d63",
+                  "operational_5d1816ef2998f88f",
+                  "operational_733af196efc157a4",
+                  "operational_6712c8bc6e4906fa"
+                ],
+                "reason": "V5.5 expanded one selected atomic rule to its non-conflicting canonical publisher siblings for the requested approved overview.",
+                "modelDisposition": "answer",
+                "modelDirectPolicyIds": [
+                  "claim_b72e1415aa70d806__a3",
+                  "claim_ef912c9a15ee89e1__a3",
+                  "claim_ef912c9a15ee89e1__a1",
+                  "claim_ef912c9a15ee89e1__a2",
+                  "claim_b72e1415aa70d806__a1",
+                  "claim_955fdf50aef22e8b__a1",
+                  "claim_b72e1415aa70d806__a2",
+                  "claim_955fdf50aef22e8b__a2",
+                  "claim_955fdf50aef22e8b__a3",
+                  "claim_955fdf50aef22e8b__a4"
+                ],
+                "deterministicPolicyIds": []
+              }
+            ],
+            "reasoningSummary": "The question asks for the approved guidance for America's Top Lawyers Passoff Boundary. Record claim_b72e1415aa70d806__a3 explicitly states the guidance: 'For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers.' This is a direct answer with high confidence, and no other records are needed. Runtime authority conflict choice remained disabled."
+          },
+          "evidenceEntailment": {
+            "status": "complete",
+            "candidateCount": 20,
+            "answeredNeedCount": 1,
+            "routedNeedCount": 0,
+            "blockedPublishCollisionCount": 0,
+            "needs": [
+              {
+                "needId": "N1",
+                "disposition": "answer",
+                "coverageMode": "single",
+                "preferredPolicyIds": [
+                  "claim_b72e1415aa70d806__a3"
+                ],
+                "uncoveredRequestElements": [],
+                "materialConflict": false,
+                "reason": "The record claim_b72e1415aa70d806__a3 directly answers the question by providing the approved guidance: 'For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers.' This is a verbatim quote that matches the requested information.",
+                "records": [
+                  {
+                    "policyId": "claim_b72e1415aa70d806__a3",
+                    "verdict": "direct_answer",
+                    "confidence": 1,
+                    "supportingQuote": "For America's Top Lawyers, do not play the last part of Video 2 that mentions lawyers.",
+                    "supportingQuoteVerified": true,
+                    "supportingQuoteShapeVerified": true,
+                    "uncoveredRequestElements": [],
+                    "specificDifference": "Directly states the approved guidance for the passoff boundary."
+                  }
+                ]
+              }
+            ]
+          },
+          "executionMode": {
+            "planning": "hybrid_model",
+            "composition": "model",
+            "validation": "model_and_deterministic"
+          },
+          "validation": {
+            "verdict": "pass",
+            "sentenceChecks": [
+              {
+                "sentenceId": "S1",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_b72e1415aa70d806__a3"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S2",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_ef912c9a15ee89e1__a3"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S3",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_ef912c9a15ee89e1__a1"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S4",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_ef912c9a15ee89e1__a2"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S5",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_b72e1415aa70d806__a1"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S6",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_955fdf50aef22e8b__a1"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S7",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_b72e1415aa70d806__a2"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S8",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_955fdf50aef22e8b__a2"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S9",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_955fdf50aef22e8b__a3"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              },
+              {
+                "sentenceId": "S10",
+                "status": "supported",
+                "evidenceRefs": [
+                  "claim_955fdf50aef22e8b__a4"
+                ],
+                "reason": "V5.5 retained the exact raw decision selected by quote-verified question-to-record entailment; the replaced legacy relation gate was not reapplied.",
+                "deterministicErrors": [],
+                "answeredNeedIds": [
+                  "N1"
+                ]
+              }
+            ],
+            "removedSentences": [],
+            "unresolvedNeedIds": [],
+            "reason": "Every retained sentence passed deterministic and semantic validation."
+          },
+          "providerAttempts": [
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v4_systemic_query_plan",
+              "status": "success",
+              "latencyMs": 2835,
+              "promptChars": 4551,
+              "completionTokens": 225,
+              "totalTokens": 1234,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            },
+            {
+              "provider": "deepseek",
+              "model": "deepseek-v4-pro",
+              "purpose": "v5_5_raw_record_entailment_validation",
+              "status": "success",
+              "latencyMs": 3453,
+              "promptChars": 16414,
+              "completionTokens": 330,
+              "totalTokens": 4381,
+              "reasoningMode": "disabled",
+              "temperature": 0
+            }
+          ],
+          "stageTimings": {
+            "turnResolutionMs": 0,
+            "queryPlanningMs": 2836,
+            "v5BoundedRetrievalMs": 1232,
+            "v55PublisherSiblingExpansionCount": 1,
+            "v55RawLexicalRecallCount": 12,
+            "evidenceEntailmentMs": 3455,
+            "sourcePlanningMs": 3455,
+            "evidenceDraftingMs": 2,
+            "validationMs": 0,
+            "totalMs": 7769
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "completed": 3,
+    "lanes": {
+      "answer": 3
+    },
+    "answeredOrPartial": 3,
+    "routes": 0,
+    "providerAttempts": 6,
+    "unsuccessfulProviderAttempts": 0,
+    "latencyMs": {
+      "mean": 8885,
+      "p50": 7846,
+      "p90": 11040,
+      "max": 11040
+    }
+  }
+}

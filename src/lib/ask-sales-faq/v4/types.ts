@@ -102,7 +102,7 @@ export type V4EvidenceCitation = {
 };
 
 export type V4RuntimeMetadata = {
-  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated";
+  pipelineVersion: "v4-isolated" | "v4-systemic" | "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated";
   isolation: {
     productionSelectorChanged: false;
     databaseWrites: false;
@@ -161,6 +161,7 @@ export type V4RuntimeMetadata = {
     }>;
     reasoningSummary: string;
   };
+  evidenceEntailment?: Record<string, unknown>;
   executionMode: {
     planning: "model" | "deterministic_governed" | "deterministic_fallback" | "systemic_model" | "systemic_fallback" | "systemic_champion" | "hybrid_model" | "hybrid_fallback" | "conversation";
     composition: "model" | "exact_evidence" | "not_required";
