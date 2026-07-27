@@ -46,6 +46,7 @@ export type RawRecordEntailmentOptions = {
   applyAuthorityResolutions?: boolean;
   exactQualifierBoundaries?: boolean;
   exactRelationshipContexts?: boolean;
+  exactEntitySubtypes?: boolean;
   compactDifferentQuestionRecords?: boolean;
   enforceControllingAuthorityWhenAvailable?: boolean;
   enforceRequiredAuthorityComposition?: boolean;
@@ -61,6 +62,7 @@ const V55_ENTAILMENT_OPTIONS: Required<RawRecordEntailmentOptions> = {
   applyAuthorityResolutions: false,
   exactQualifierBoundaries: false,
   exactRelationshipContexts: false,
+  exactEntitySubtypes: false,
   compactDifferentQuestionRecords: false,
   enforceControllingAuthorityWhenAvailable: false,
   enforceRequiredAuthorityComposition: false,
@@ -156,9 +158,24 @@ function quoteMatchesRequestedFactType(
   quote: string,
   requireCompleteRequestedQualifiers = false,
   exactRelationshipContexts = false,
+  exactEntitySubtypes = false,
 ) {
   const question = atomicQuestion(need, plan).toLowerCase();
   const evidence = quote.toLowerCase();
+  if (exactEntitySubtypes) {
+    const mediaSubtypes = [
+      { id: "episode", pattern: /\b(?:episodes?|tv\s+shows?|television\s+shows?)\b/i },
+      { id: "podcast", pattern: /\b(?:podcasts?|spotify|apple\s+podcasts?)\b/i },
+      { id: "social", pattern: /\b(?:social\s+media|instagram|facebook|reels?|social\s+post)\b/i },
+      { id: "twenty_percent_calls", pattern: /\b(?:20\s*%|20\s+percent|twenty\s+percent|dial[- ]out\s+list)\b/i },
+      { id: "call_two", pattern: /\b(?:call\s*2|call\s+two|second\s+calls?)\b/i },
+      { id: "rescheduled_call", pattern: /\b(?:rescheduled?|rebooked?)\s+calls?\b/i },
+      { id: "double_booking", pattern: /\b(?:double[- ]book(?:ed|ing)?|duplicate\s+bookings?)\b/i },
+    ];
+    const requested = mediaSubtypes.filter((facet) => facet.pattern.test(question)).map((facet) => facet.id);
+    const evidenced = mediaSubtypes.filter((facet) => facet.pattern.test(evidence)).map((facet) => facet.id);
+    if (requested.length && evidenced.length && !requested.some((facet) => evidenced.includes(facet))) return false;
+  }
   if (/\bbased on (?:their )?keap answers?\b/.test(evidence) && !/\bkeap\b/.test(question)) return false;
   if (/\b(?:prison|incarcerat(?:ed|ion)|jail)\b/.test(question) && !/\b(?:prison|incarcerat(?:ed|ion)|jail)\b/.test(evidence)) return false;
   const duration = (value: string) => [...value.matchAll(/\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|twelve)\s*[- ]?(day|week|month|year)s?\b/g)]
@@ -175,6 +192,11 @@ function quoteMatchesRequestedFactType(
   if (asksPaymentPlan && !/\b(?:payment|installment|instalment|split|listed)\s+(?:plan|option|schedule)s?\b/.test(evidence)) return false;
   const asksReschedulePermission = /\b(?:reschedule|rebook|move\s+(?:the\s+)?(?:call|appointment|booking))\b/.test(question);
   if (asksReschedulePermission && !/\b(?:reschedule|rebook|move\s+(?:the\s+)?(?:call|appointment|booking)|book\s+(?:for|on)\s+(?:another|a different))\b/.test(evidence)) return false;
+  const asksCompoundReceiptLocation = /\bwhere\b/.test(question) && /\bpayment\b/.test(question) && /\b(?:signed\s+)?contract\b/.test(question);
+  if (asksCompoundReceiptLocation && !(
+    /\bcontracts?\s+channel\b/.test(evidence) &&
+    /\b(?:all\s+payments?|payment(?:s)?\s+notifications?)\b/.test(evidence)
+  )) return false;
   const asksAwardIdentity = /\b(?:awards?|prizes?|award categories)\b/.test(question);
   if (asksAwardIdentity && !/\b(?:awards?|prizes?|award categories)\b/.test(evidence)) return false;
   const asksPlatformExclusivity = (!exactRelationshipContexts || /\b(?:platform|amazon|apple\s*tv|tubi|tier[- ]?1|submission|submitted)\b/.test(question)) &&
@@ -282,14 +304,14 @@ export function rawEntailmentCandidateExclusionReasons(
       item.needScores?.[need.id] &&
       (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
       !blockedDecisionKeys.has(item.policy.decision_key) &&
-      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts) &&
+      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes) &&
       broadInclusionCandidate(need, plan, retrieval.turn, item));
     const controllingCandidateAvailable = retrieval.candidates.some((item) =>
       (controllingIds.has(item.policy.id) || item.policy.source.kind === "owner_confirmed_isolated_overlay") &&
       item.needScores?.[need.id] &&
       (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
       !blockedDecisionKeys.has(item.policy.decision_key) &&
-      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts) &&
+      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes) &&
       broadInclusionCandidate(need, plan, retrieval.turn, item));
     if (
       claimScopedControllingAvailable &&
@@ -304,7 +326,7 @@ export function rawEntailmentCandidateExclusionReasons(
     }
   }
   if (!candidate.needScores?.[need.id]) reasons.push("missing_need_score");
-  if (!quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts)) reasons.push("fact_type_mismatch");
+  if (!quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes)) reasons.push("fact_type_mismatch");
   if (!broadInclusionCandidate(need, plan, retrieval.turn, candidate)) reasons.push("broad_inclusion_mismatch");
   if (
     allowsCollectiveEvidence(need, plan, retrieval.turn) &&
@@ -381,6 +403,7 @@ Rules:
 - A record can directly answer a question asking for the general rule even when it states conditions, but the eventual answer must preserve those conditions. For a question asking the outcome of a specific scenario, every prerequisite needed for that outcome must be established in the question.
 - If a record requires a step before an action, it directly answers whether the user may simply take that action without the step. Preserve the required step; do not infer permission for what may happen afterward.
 - A rule about duration does not answer a start date; an amount does not answer a payment option; an artifact identity does not answer its location; one person's duties do not establish another person's duties; one show or product does not answer another.
+- Keep named content subtypes exact. An episode or TV-show question is not a podcast question, and a podcast or social-media record cannot answer it merely because both mention views, performance, or statistics.
 - A catalog of shows, products, or programs does not answer which awards or award categories exist.
 - A current canonical package table can answer what that named package includes. Quote the relevant package row; do not reject it merely because the same record also contains prices or other packages.
 - A package/base/PIF price and an installment amount are different facts. An installment schedule does not establish a package price unless the record explicitly labels that total as Price, PIF, paid in full, or equivalent. Do not infer totals by adding installments.
@@ -456,6 +479,7 @@ function parseOutput(
         supportingQuote,
         modelVerdict === "direct_answer",
         options.exactRelationshipContexts,
+        options.exactEntitySubtypes,
       ));
       const uncovered = (Array.isArray(record.uncovered_request_elements) ? record.uncovered_request_elements : [])
         .map((value) => clean(value, 240))
@@ -475,6 +499,7 @@ function parseOutput(
           rawRecord,
           true,
           options.exactRelationshipContexts,
+          options.exactEntitySubtypes,
         )
       ) {
         supportingQuote = rawRecord;
@@ -756,6 +781,7 @@ export async function refineSourcePlanWithRawEntailment(input: {
       authorityResolutionsApplied: options.applyAuthorityResolutions,
       exactQualifierBoundaries: options.exactQualifierBoundaries,
       exactRelationshipContexts: options.exactRelationshipContexts,
+      exactEntitySubtypes: options.exactEntitySubtypes,
       compactDifferentQuestionRecords: options.compactDifferentQuestionRecords,
       enforceControllingAuthorityWhenAvailable: options.enforceControllingAuthorityWhenAvailable,
       enforceRequiredAuthorityComposition: options.enforceRequiredAuthorityComposition,

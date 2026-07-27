@@ -14,10 +14,10 @@ import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 import { findV55PublishCollisions } from "@/lib/ask-sales-faq/v5-5/publisher-collisions";
 import {
-  ASK_SALES_V57_PIPELINE_VERSION,
-  runAskSalesFaqV57,
-} from "@/lib/ask-sales-faq/v5-7/runtime";
-import { getV57KnowledgeVersion, getV57OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-7/knowledge";
+  ASK_SALES_V58_PIPELINE_VERSION,
+  runAskSalesFaqV58,
+} from "@/lib/ask-sales-faq/v5-8/runtime";
+import { getV58KnowledgeVersion, getV58OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-8/knowledge";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -62,7 +62,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", ASK_SALES_V57_PIPELINE_VERSION);
+  response.headers.set("x-ask-sales-runtime", ASK_SALES_V58_PIPELINE_VERSION);
   return response;
 }
 
@@ -77,15 +77,16 @@ export async function GET() {
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: ASK_SALES_V57_PIPELINE_VERSION,
+    runtime: ASK_SALES_V58_PIPELINE_VERSION,
     persistence: false,
     productionSelectorChanged: false,
-    knowledgeVersion: getV57KnowledgeVersion(),
+    knowledgeVersion: getV58KnowledgeVersion(),
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
-    operationalPolicyCount: getV57OperationalPolicyCount(),
+    operationalPolicyCount: getV58OperationalPolicyCount(),
     isolatedOwnerConfirmedOverlayCount: 2,
     claimScopedSourceResolutionVersion: "v57-r1",
+    relationshipOwnerContextVersion: "v58-r1",
     stableOperationalPromotionCount: snapshot.stableOperationalPromotionCount,
     activeScopedOperationalPromotionCount: snapshot.activeScopedOperationalPromotionCount,
     activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV57KnowledgeVersion();
+    const knowledgeVersion = getV58KnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v5_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const question = parsed.data.question;
-      const result = await runAskSalesFaqV57(question, [...verifiedMessages, { role: "user", content: question }], {
+      const result = await runAskSalesFaqV58(question, [...verifiedMessages, { role: "user", content: question }], {
         provider: generateV4Json,
         validatorProvider: generateV4ValidationJson,
       });
@@ -179,7 +180,7 @@ export async function POST(request: NextRequest) {
       reservation.release();
     }
   } catch (error) {
-    console.error("Ask Sales V5.7 isolated request failed", error instanceof Error ? error.message : "unknown error");
-    return json({ ok: false, error: "The isolated V5.7 runtime failed safely. No production request or database write was attempted." }, 503);
+    console.error("Ask Sales V5.8 isolated request failed", error instanceof Error ? error.message : "unknown error");
+    return json({ ok: false, error: "The isolated V5.8 runtime failed safely. No production request or database write was attempted." }, 503);
   }
 }

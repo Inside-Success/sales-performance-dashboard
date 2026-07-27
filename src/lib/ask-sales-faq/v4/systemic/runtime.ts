@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated" | "v5.6-isolated" | "v5.7-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated" | "v5.6-isolated" | "v5.7-isolated" | "v5.8-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   resolveTurn?: (question: string, messages: AskSalesFaqChatMessage[]) => V3TurnResolution;
