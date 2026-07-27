@@ -153,8 +153,10 @@ async function main() {
   const reverseOrder = argument("reverse-order", mode === "repeatability" ? "true" : "false") === "true";
   const datasetRaw = await readFile(datasetPath, "utf8");
   const dataset = JSON.parse(datasetRaw) as Dataset;
-  if (dataset.schemaVersion !== 4 || dataset.status !== "sealed_for_provider_corrected_evaluation") {
-    throw new Error("V5.5 blind gate requires the provider-corrected sealed schemaVersion 4 dataset");
+  const providerCorrectedBlindGate = dataset.schemaVersion === 4 && dataset.status === "sealed_for_provider_corrected_evaluation";
+  const v56UnseenPromotionGate = dataset.schemaVersion === 3 && dataset.status === "sealed_before_runtime_evaluation";
+  if (!providerCorrectedBlindGate && !v56UnseenPromotionGate) {
+    throw new Error("Blind benchmark requires a supported sealed evaluation dataset");
   }
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
