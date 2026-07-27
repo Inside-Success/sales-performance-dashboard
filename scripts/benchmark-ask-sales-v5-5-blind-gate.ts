@@ -10,8 +10,9 @@ import { runAskSalesFaqV56 } from "@/lib/ask-sales-faq/v5-6/runtime";
 import { runAskSalesFaqV57 } from "@/lib/ask-sales-faq/v5-7/runtime";
 import { runAskSalesFaqV58 } from "@/lib/ask-sales-faq/v5-8/runtime";
 import { runAskSalesFaqV59 } from "@/lib/ask-sales-faq/v5-9/runtime";
+import { runAskSalesFaqV510 } from "@/lib/ask-sales-faq/v5-10/runtime";
 
-type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59";
+type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59" | "v510";
 type GoldItem = {
   id: string;
   question: string;
@@ -40,7 +41,8 @@ type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> |
   Awaited<ReturnType<typeof runAskSalesFaqV56>> |
   Awaited<ReturnType<typeof runAskSalesFaqV57>> |
   Awaited<ReturnType<typeof runAskSalesFaqV58>> |
-  Awaited<ReturnType<typeof runAskSalesFaqV59>>;
+  Awaited<ReturnType<typeof runAskSalesFaqV59>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV510>>;
 type EvaluatedItem = GoldItem & { systems: Partial<Record<SystemName, RuntimeResult>> };
 type EvaluatedConversation = Omit<Conversation, "prompts"> & { prompts: EvaluatedItem[] };
 
@@ -117,12 +119,18 @@ function providerPreflight(systems: SystemName[]) {
       model: v4.model,
       transport: v4.transport,
     },
+    v510: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
   };
   const missing = systems.filter((system) => !preflight[system].configured);
   if (missing.length) {
     throw new Error(`Provider preflight failed for ${missing.join(", ")}; no runtime output was generated`);
   }
-  const challengers = systems.filter((system): system is "v55" | "v56" | "v57" | "v58" | "v59" => system !== "v3");
+  const challengers = systems.filter((system): system is "v55" | "v56" | "v57" | "v58" | "v59" | "v510" => system !== "v3");
   if (systems.includes("v3") && challengers.some((system) =>
     preflight.v3.provider !== preflight[system].provider || preflight.v3.model !== preflight[system].model)) {
     throw new Error("Provider parity failed: V3 and every requested V5 candidate must use the same provider and model");
@@ -136,7 +144,8 @@ async function run(system: SystemName, question: string, history: AskSalesFaqCha
   if (system === "v56") return runAskSalesFaqV56(question, history);
   if (system === "v57") return runAskSalesFaqV57(question, history);
   if (system === "v58") return runAskSalesFaqV58(question, history);
-  return runAskSalesFaqV59(question, history);
+  if (system === "v59") return runAskSalesFaqV59(question, history);
+  return runAskSalesFaqV510(question, history);
 }
 
 function systemOrder(key: string, reverse: boolean, systems: SystemName[]): SystemName[] {
@@ -189,8 +198,8 @@ async function main() {
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
   const systems = argument("systems", "v3,v55").split(",").map((value) => value.trim()).filter(Boolean) as SystemName[];
-  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59"]).has(system))) {
-    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59");
+  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59", "v510"]).has(system))) {
+    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59,v510");
   }
   const preflight = providerPreflight(systems);
   const selectedCases = mode === "repeatability" ? new Set(dataset.repeatability.caseIds) : null;
@@ -221,6 +230,7 @@ async function main() {
       v57: "@/lib/ask-sales-faq/v5-7/runtime#runAskSalesFaqV57",
       v58: "@/lib/ask-sales-faq/v5-8/runtime#runAskSalesFaqV58",
       v59: "@/lib/ask-sales-faq/v5-9/runtime#runAskSalesFaqV59",
+      v510: "@/lib/ask-sales-faq/v5-10/runtime#runAskSalesFaqV510",
     },
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,

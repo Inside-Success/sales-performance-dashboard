@@ -58,6 +58,7 @@ export type RawRecordEntailmentOptions = {
   normalizeActionMorphology?: boolean;
   recoverNegatedConditionAnswer?: boolean;
   admitNewerSameAuthoritySupport?: boolean;
+  admitDecisionFamilyCandidate?: boolean;
   versionLabel?: string;
 };
 
@@ -80,6 +81,7 @@ const V55_ENTAILMENT_OPTIONS: Required<RawRecordEntailmentOptions> = {
   normalizeActionMorphology: false,
   recoverNegatedConditionAnswer: false,
   admitNewerSameAuthoritySupport: false,
+  admitDecisionFamilyCandidate: false,
   versionLabel: "V5.5",
 };
 
@@ -427,7 +429,9 @@ export function rawEntailmentCandidateExclusionReasons(
     }
   }
   if (!candidate.needScores?.[need.id]) reasons.push("missing_need_score");
-  if (!quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes, false, options.normalizeActionMorphology)) reasons.push("fact_type_mismatch");
+  const decisionFamilyCandidate = options.admitDecisionFamilyCandidate &&
+    candidate.needScores?.[need.id]?.matchedDecisionId?.endsWith("::v510-decision-family") === true;
+  if (!decisionFamilyCandidate && !quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes, false, options.normalizeActionMorphology)) reasons.push("fact_type_mismatch");
   if (!broadInclusionCandidate(need, plan, retrieval.turn, candidate)) reasons.push("broad_inclusion_mismatch");
   if (
     allowsCollectiveEvidence(need, plan, retrieval.turn) &&
@@ -581,7 +585,10 @@ function parseOutput(
       let quoteVerified = verifiedSupportingQuote(supportingQuote, rawRecord);
       const need = plan.needs.find((candidate) => candidate.id === needId);
       const specificDifference = clean(record.specific_difference);
-      let quoteShapeVerified = Boolean(need && quoteMatchesRequestedFactType(
+      const selectedCandidate = candidates.find((candidate) => candidate.policy.id === ref);
+      const decisionFamilyCandidate = options.admitDecisionFamilyCandidate &&
+        selectedCandidate?.needScores?.[needId]?.matchedDecisionId?.endsWith("::v510-decision-family") === true;
+      let quoteShapeVerified = decisionFamilyCandidate || Boolean(need && quoteMatchesRequestedFactType(
         { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
         plan,
         supportingQuote,
@@ -616,7 +623,7 @@ function parseOutput(
         (!uncovered.length || negatedConditionDirectAnswer) &&
         rawRecord.length <= 900 &&
         need &&
-        quoteMatchesRequestedFactType(
+        (decisionFamilyCandidate || quoteMatchesRequestedFactType(
           { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
           plan,
           rawRecord,
@@ -625,7 +632,7 @@ function parseOutput(
           options.exactEntitySubtypes,
           options.scopeQualifiersToEligibility,
           options.normalizeActionMorphology,
-        )
+        ))
       ) {
         supportingQuote = rawRecord;
         quoteVerified = true;
