@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 3,
+  "status": "sealed_before_runtime_evaluation",
+  "name": "ask-sales-v5-10-final-promotion-gold-2026-07-27",
+  "sealedAt": "2026-07-27T08:30:00.000Z",
+  "runtimeFreezeCommit": "ba7d2987f13aeffc6f754e91c9e476ec6d0a9b9e",
+  "preregistrationCommit": "f9752c5",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "counts": {
+    "standaloneCases": 14,
+    "conversations": 3,
+    "conversationPrompts": 6,
+    "totalPrompts": 20
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "All 17 parent Slack source IDs were checked against every earlier Ask Sales test and runtime artifact and had zero matches at seal time.",
+      "Every controlling reply was read directly from Slack before the gold was written. Peer-only, unresolved, malformed, screenshot-dependent, live-status, and unrealistic prompts were excluded.",
+      "The set contains five Rich or Rich-plus-authority sources, three explicit passive-chatbot routing controls, six natural follow-up prompts, and broad policy, payment, ownership, content, operations, and channel-routing coverage.",
+      "No Slack message, reaction, draft, edit, join, invitation, or other write was performed.",
+      "This dataset is invalidated as promotion evidence if V5.10 is tuned after any runtime output is inspected."
+    ]
+  },
+  "knowledgeSnapshot": "frozen V5.10 governed operational corpus and V5.9 runtime plus bounded decision-family evidence controls at the runtime freeze commit",
+  "repeatability": {
+    "caseIds": [
+      "v510final-01",
+      "v510final-03",
+      "v510final-05",
+      "v510final-07",
+      "v510final-09",
+      "v510final-11",
+      "v510final-13"
+    ],
+    "conversationIds": [
+      "v510final-conv-01",
+      "v510final-conv-02",
+      "v510final-conv-03"
+    ],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v510final-01",
+      "question": "I'm trained as a Daymond John closer. Can I call outbound leads who applied to other ISTV shows and sell them that offer too?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A Daymond John closer should only sell the Daymond John offer unless separately trained and approved for ISTV. The offers and deliverables are different.",
+      "requiredConcepts": ["DJ closer sells DJ only", "ISTV requires separate training or approval"],
+      "forbiddenConcepts": ["sell any ISTV show without approval", "the offers are interchangeable"],
+      "evaluationStrata": ["show-scope", "role", "rich-authority", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782812111.580709"],
+      "approvedBy": ["Madeline", "Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_516034b1a34f51ff"]
+    },
+    {
+      "id": "v510final-02",
+      "question": "For daily stats when my calendar has double bookings, is scheduled calls the number of leads booked and conducted calls the number of leads who actually showed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. For double bookings, scheduled calls is the total number of leads booked, and conducted calls is the total number of leads who showed.",
+      "requiredConcepts": ["scheduled equals leads booked", "conducted equals leads who showed"],
+      "forbiddenConcepts": ["count only one per time slot", "exclude double-booked leads"],
+      "evaluationStrata": ["daily-stats", "counting", "rich-authority", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781029030.051799"],
+      "approvedBy": ["Madeline", "Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a5d452de2a7975bd"]
+    },
+    {
+      "id": "v510final-03",
+      "question": "Can you generate the Zoom link for my applicant's sales call?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot generate a live Zoom link. Submit the request in the Sales Tech Requests channel.",
+      "requiredConcepts": ["cannot perform the live action", "Sales Tech Requests"],
+      "forbiddenConcepts": ["invent a Zoom link", "route to Finance", "route to Greenlight"],
+      "evaluationStrata": ["action-control", "zoom", "owner-routing", "rich-authority", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779345025.231459"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_route",
+      "controllingPolicyIds": ["operational_7f62f841d6b5f9ee"]
+    },
+    {
+      "id": "v510final-04",
+      "question": "Before I call someone from the outbound list, do I need to check whether another rep already owns them in Keap?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Check Keap before calling outbound leads so you do not contact or rebook a lead already assigned to another rep.",
+      "requiredConcepts": ["check Keap before calling", "avoid crossing an existing rep assignment"],
+      "forbiddenConcepts": ["the outbound list overrides Keap", "ownership never matters"],
+      "evaluationStrata": ["lead-ownership", "Keap", "rich-authority", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782763352.021679"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_448f8c2704df8e55"]
+    },
+    {
+      "id": "v510final-05",
+      "question": "A prospect will send the payment tomorrow morning. Should I have them sign the contract tonight and collect payment afterward?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The company process is payment first, then contract signing.",
+      "requiredConcepts": ["payment first", "contract signing after payment"],
+      "forbiddenConcepts": ["sign first and pay later", "either order is acceptable"],
+      "evaluationStrata": ["payment", "contract", "sequence", "high-impact", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779582833.269479"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_041d12084fa741b7"]
+    },
+    {
+      "id": "v510final-06",
+      "question": "Does a cast member on a four-payment plan have to be paid in full before the filming session?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. They do not have to be paid in full before filming as long as they are not delinquent on any scheduled payment.",
+      "requiredConcepts": ["not required to be paid in full", "must not be delinquent"],
+      "forbiddenConcepts": ["always PIF before filming", "missed payments do not matter"],
+      "evaluationStrata": ["payment-plan", "filming", "exception", "high-impact", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782936260.718629"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_81fec7e571567d91"]
+    },
+    {
+      "id": "v510final-07",
+      "question": "Does the VIP license place the episode on several extra platforms?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Not several by default. It adds one main extra-platform opportunity, Amazon Prime, and placement is not guaranteed. Apple TV submission can be purchased separately.",
+      "requiredConcepts": ["one main extra platform", "Amazon Prime is not guaranteed", "Apple TV submission costs extra"],
+      "forbiddenConcepts": ["guaranteed on multiple platforms", "Apple TV is included automatically"],
+      "evaluationStrata": ["offer", "platform", "scope", "high-impact", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782191013.038519"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_83e6034fe5175e61", "operational_ca6cb425195128cc"]
+    },
+    {
+      "id": "v510final-08",
+      "question": "A skeptical prospect wants to tour the studio before signing. Are in-person studio tours allowed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not promise an in-person studio tour before signing. Use approved proof such as the virtual studio tour, articles, and past episodes instead.",
+      "requiredConcepts": ["no in-person studio tour", "use approved proof or virtual tour"],
+      "forbiddenConcepts": ["promise a studio visit", "send them to the studio unannounced"],
+      "evaluationStrata": ["studio", "permission", "sales-proof", "high-impact", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780081112.367689"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_f446fea74271930f"]
+    },
+    {
+      "id": "v510final-09",
+      "question": "Do I have to wait until exactly 24 hours before Call 1 to send the vital-information email?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Send it the day before the meeting; it does not need to be exactly 24 hours before, but it must be sent before 9 PM ET the night before.",
+      "requiredConcepts": ["send the day before", "before 9 PM ET", "not exactly 24 hours"],
+      "forbiddenConcepts": ["must be exactly 24 hours", "send after 9 PM the night before"],
+      "evaluationStrata": ["call-procedure", "email", "timing", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780442253.811159"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a18f92da46ca52b4"]
+    },
+    {
+      "id": "v510final-10",
+      "question": "My applicant is marked opted out in Keap but is already scheduled for Call 1 today. Should I cancel the call?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Join and run the audition normally. If they do not appear, wait five minutes, follow up by phone or text, and mark a no-show only if there is still no response.",
+      "requiredConcepts": ["do not cancel", "run the audition", "after five minutes call or text before marking no-show"],
+      "forbiddenConcepts": ["cancel automatically because Keap says opted out", "mark no-show immediately"],
+      "evaluationStrata": ["Keap", "call-procedure", "no-show", "high-impact", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782134400.768999"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_68417cfa4748ed36"]
+    },
+    {
+      "id": "v510final-11",
+      "question": "If a backup rep joins a pass-off call and the original rep arrives six minutes after the scheduled start, who keeps the call?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The original rep keeps the call because they have seven minutes from the scheduled start time to reclaim it. The backup rep should politely exit.",
+      "requiredConcepts": ["original rep has seven minutes", "window starts at scheduled time", "backup exits"],
+      "forbiddenConcepts": ["backup keeps it after five minutes", "window starts when the applicant joins"],
+      "evaluationStrata": ["pass-off", "lead-ownership", "time-window", "relationship", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778774465.286009"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_941811560f35aa76"]
+    },
+    {
+      "id": "v510final-12",
+      "question": "Can you confirm what a Daymond John client's first payment will say on the receipt for tax write-off purposes?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance_request",
+      "goldAnswer": "The chatbot should not decide or verify receipt and tax-write-off details. Submit the question in the Sales Finance Requests channel.",
+      "requiredConcepts": ["cannot verify the receipt detail", "Sales Finance Requests"],
+      "forbiddenConcepts": ["invent a receipt label", "provide tax advice", "route to Sales Tech"],
+      "evaluationStrata": ["action-control", "finance", "owner-routing", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783198212.034449"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_route",
+      "controllingPolicyIds": ["operational_ea478910e79c9719"]
+    },
+    {
+      "id": "v510final-13",
+      "question": "Can you create and send an urgent greenlight letter for the applicant I just approved?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight_request",
+      "goldAnswer": "The chatbot cannot create or send a live greenlight letter. Submit the request through the Greenlight Requests process with the applicant details.",
+      "requiredConcepts": ["cannot perform the live action", "Greenlight Requests"],
+      "forbiddenConcepts": ["claim the letter was created", "route to Finance", "route to Sales Tech"],
+      "evaluationStrata": ["action-control", "greenlight", "owner-routing", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782240281.676789"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_route",
+      "controllingPolicyIds": ["operational_6f41541f1dae0c5a"]
+    },
+    {
+      "id": "v510final-14",
+      "question": "Where should I tell a prospect to watch an Inside Success TV episode?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Direct them to the Inside Success TV website, the mobile app in the Apple App Store, or the TV app on Roku, Apple TV, or Fire TV devices. Do not claim an episode exists for a newer show that has not aired yet.",
+      "requiredConcepts": ["website or mobile app", "Roku Apple TV or Fire TV", "do not invent unaired episodes"],
+      "forbiddenConcepts": ["tell them only to Google it", "claim every casting show already has episodes"],
+      "evaluationStrata": ["navigation", "episodes", "scope", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783540809.763929"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_7b63cae5908e03f6", "operational_5e1d4f63230f50c7"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v510final-conv-01",
+      "title": "Sharing episodes without implying results",
+      "prompts": [
+        {
+          "id": "v510final-conv-01-turn-1",
+          "question": "Can I send a prospect an episode featuring an entrepreneur in a similar industry?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. You may share an episode from the platform that the prospect can relate to.",
+          "requiredConcepts": ["may share an episode from the platform", "choose a relevant episode"],
+          "forbiddenConcepts": ["never share episodes", "promise the prospect the same results"],
+          "evaluationStrata": ["follow-up", "content", "permission", "rich-authority"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782246686.087219"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_d2431e615846c7aa"]
+        },
+        {
+          "id": "v510final-conv-01-turn-2",
+          "question": "Can I also tell them how well that person's episode performed so they understand the likely ROI?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Do not share results or metrics and do not imply ROI or success. Share the episode itself without performance claims.",
+          "requiredConcepts": ["do not share results or metrics", "do not imply ROI", "episode itself is still shareable"],
+          "forbiddenConcepts": ["share performance numbers", "promise similar success"],
+          "evaluationStrata": ["follow-up", "content", "ROI", "rich-authority", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782246686.087219"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e78173ca2150b433", "operational_d2431e615846c7aa"]
+        }
+      ]
+    },
+    {
+      "id": "v510final-conv-02",
+      "title": "License slides and PDF follow-up",
+      "prompts": [
+        {
+          "id": "v510final-conv-02-turn-1",
+          "question": "A prospect wants to review the license options with their team. Can I email them the sales slide deck?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Do not email the slide deck. Prefer to screen-share the approved PDF and walk them through the options on the call.",
+          "requiredConcepts": ["do not email the slide deck", "use the approved PDF", "prefer screen sharing"],
+          "forbiddenConcepts": ["email the slide deck", "send any internal slides"],
+          "evaluationStrata": ["follow-up", "sales-material", "permission", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1777322925.376889"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_cd78979d3c4a3551", "operational_609a28316f3fda05"]
+        },
+        {
+          "id": "v510final-conv-02-turn-2",
+          "question": "What if they insist that I email something they can show the team?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "You may email the approved PDF as a last resort, but still do not send the slide deck. Screen-sharing and handling questions live is preferred.",
+          "requiredConcepts": ["approved PDF may be emailed as a last resort", "slide deck remains prohibited", "screen sharing is preferred"],
+          "forbiddenConcepts": ["email the slide deck", "PDF must never be sent"],
+          "evaluationStrata": ["follow-up", "referent", "sales-material", "exception", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1777322925.376889"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_609a28316f3fda05", "operational_cd78979d3c4a3551"]
+        }
+      ]
+    },
+    {
+      "id": "v510final-conv-03",
+      "title": "Self-generated lead onboarding and commission",
+      "prompts": [
+        {
+          "id": "v510final-conv-03-turn-1",
+          "question": "I closed a friend who did not come through an Instagram application. Do I need a different onboarding form for this self-generated lead?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Use the same onboarding process for a self-generated lead.",
+          "requiredConcepts": ["same onboarding process", "no separate form required"],
+          "forbiddenConcepts": ["skip onboarding", "invent a different form"],
+          "evaluationStrata": ["follow-up", "onboarding", "lead-source", "qualifier"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1778265617.738829"],
+          "approvedBy": ["Madeline", "Raul"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e8d48b15b869f868"]
+        },
+        {
+          "id": "v510final-conv-03-turn-2",
+          "question": "Is there anything different I should make sure happens because I generated the lead myself?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. Make sure the TEC team records the self-generated lead so you receive the 20% commission. The onboarding steps themselves stay the same.",
+          "requiredConcepts": ["TEC records the self-generated lead", "20% commission", "onboarding remains the same"],
+          "forbiddenConcepts": ["commission is automatically guaranteed without recording", "use a different onboarding process"],
+          "evaluationStrata": ["follow-up", "referent", "commission", "lead-source", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1778265617.738829"],
+          "approvedBy": ["Madeline", "Raul"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e8d48b15b869f868"]
+        }
+      ]
+    }
+  ]
+}
