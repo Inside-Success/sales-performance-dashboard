@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-8-final-promotion-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T03:08:17Z",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "533530fa1d4783848c4fd57b2bcb3cd78258c9e0",
+  "preregistrationCommit": "6f7c15f9fe1c30e632694f179d96f822c716969f",
+  "knowledgeSnapshot": "frozen V5.8 generated operational Q&A, approved FAQ bundle, governed registries, source-resolution rules, and relationship-owner-context runtime at the runtime freeze commit",
+  "counts": {
+    "standaloneCases": 14,
+    "conversations": 3,
+    "conversationPrompts": 6,
+    "totalPrompts": 20
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "Every parent source message ID is absent from every earlier Ask Sales evaluation dataset and runtime artifact at seal time.",
+      "Source selection excluded peer-only, self-replied, screenshot-dependent, current-status, uncertain, conflicting, previously used, and unrealistic chatbot questions.",
+      "All 20 prompts have source-backed policy content in the frozen V5.8 knowledge snapshot.",
+      "Three prompts intentionally require routing because the passive chatbot cannot perform the requested live action.",
+      "Six prompts are approved by Rich or by a thread where Rich confirms or owns the decision.",
+      "This dataset is invalidated as promotion evidence if V5.8 is tuned after any runtime output is inspected."
+    ]
+  },
+  "repeatability": {
+    "caseIds": [
+      "v58final-01",
+      "v58final-03",
+      "v58final-05",
+      "v58final-07",
+      "v58final-11",
+      "v58final-13",
+      "v58final-14"
+    ],
+    "conversationIds": [
+      "v58final-conv-01",
+      "v58final-conv-02",
+      "v58final-conv-03"
+    ],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v58final-01",
+      "question": "A client's attorney wants several clauses added to the agreement before the client pays. Can we amend the contract for them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. ISTV does not change the approved contract for individual clients. The client must accept the agreement as written or the opportunity is not a fit; do not promise an addendum or extra disclaimer.",
+      "requiredConcepts": ["do not change the contract", "accept the agreement as written or it is not a fit"],
+      "forbiddenConcepts": ["promise an addendum", "customize the contract for this client"],
+      "evaluationStrata": ["contract", "high-impact", "policy", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783361420.993769", "slack:C0AUQKNR8CF:1783361774.574749"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_dc6a6804e527ab7d"]
+    },
+    {
+      "id": "v58final-02",
+      "question": "Please create a Green Light letter now for a candidate whose Call 2 is on Monday.",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The chatbot cannot create or send a Green Light letter. Post the request in #greenlight-requests. In the source case Rich allowed the letter to be sent before the Monday Call 2 and required the candidate to be told that Monday at 11:59 PM was that cohort's deadline; that source did not make Monday a permanent deadline for every cohort.",
+      "requiredConcepts": ["cannot create or send the letter", "#greenlight-requests", "Monday deadline was specific to that cohort"],
+      "forbiddenConcepts": ["claim the letter was created", "Monday is always the cohort deadline", "route to Finance"],
+      "evaluationStrata": ["action-route", "greenlight", "rich-authority", "deadline", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783079985.241049", "slack:C0AUQKNR8CF:1783087630.493529"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_bf5063343c6100a2"]
+    },
+    {
+      "id": "v58final-03",
+      "question": "My prospect will be driving during our scheduled call because of a child's doctor appointment. Should I keep the call or rebook it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Rebook the call. A prospect who is driving cannot give the meeting proper attention; this is a driving-specific safety and focus decision, not a rule that every minor distraction requires rebooking.",
+      "requiredConcepts": ["rebook the call", "driving prevents proper focus"],
+      "forbiddenConcepts": ["continue the video call while driving", "disqualify the prospect"],
+      "evaluationStrata": ["scheduling", "rich-authority", "condition", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782738853.450109", "slack:C0AUQKNR8CF:1782739103.178389"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_90091842d5c4a4a1"]
+    },
+    {
+      "id": "v58final-04",
+      "question": "A recurring installment appeared in the payment feed. Do I submit another Pay Me for it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not submit another Pay Me for a recurring payment that already appears in the feed. This does not define the process for a one-time payment or a payment missing from the feed.",
+      "requiredConcepts": ["do not submit another Pay Me", "recurring payment already appears in the feed"],
+      "forbiddenConcepts": ["submit Pay Me again", "the rule covers a missing payment"],
+      "evaluationStrata": ["payments", "finance-boundary", "condition", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783457181.112869", "slack:C0AUQKNR8CF:1783457197.491149"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_5f52aa7ca7ce2aa1"]
+    },
+    {
+      "id": "v58final-05",
+      "question": "I cold-called a lead yesterday and then learned that they booked online. Who should take the appointment?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The first representative who actually spoke with the applicant takes the call. Check the applicant's Keap appointments and notes to confirm who spoke with them and whether an appointment or notes were recorded.",
+      "requiredConcepts": ["first rep who spoke with the applicant takes the call", "check Keap appointments and notes"],
+      "forbiddenConcepts": ["the online booking always overrides prior contact", "the record owner always takes it"],
+      "evaluationStrata": ["lead-ownership", "relationship", "crm", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783450183.803009", "slack:C0AUQKNR8CF:1783453745.242039"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_794a12698663a8a2"]
+    },
+    {
+      "id": "v58final-06",
+      "question": "A real-estate employee does not own the brokerage, but she independently started a nonprofit helping veterans and elderly people. Can that nonprofit make her eligible?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, she may be considered because of her independent nonprofit project. That exception does not make every real-estate employee eligible, and normal story, fit, and qualification checks still apply.",
+      "requiredConcepts": ["may be considered because of the nonprofit", "does not qualify every real-estate employee"],
+      "forbiddenConcepts": ["brokerage employment alone qualifies her", "automatic approval"],
+      "evaluationStrata": ["eligibility", "ownership", "relationship", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783445609.063709", "slack:C0AUQKNR8CF:1783446082.736389"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_428fa0e8ecaa3b2a"]
+    },
+    {
+      "id": "v58final-07",
+      "question": "A strong Daymond John prospect has a website but will not officially launch the business for another three months. Can she still be greenlit?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, in the source scenario she could be greenlit and use the opportunity to announce the upcoming launch because she had a strong story, was a good fit, saw the value, could afford it, and the launch was only three months away. This is not blanket approval for every pre-launch applicant.",
+      "requiredConcepts": ["may be greenlit in this scenario", "launch is three months away", "not blanket approval"],
+      "forbiddenConcepts": ["all pre-launch businesses qualify", "must wait until after launch"],
+      "evaluationStrata": ["eligibility", "daymond-john", "compound", "high-impact", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783441423.599979", "slack:C0AUQKNR8CF:1783441523.241319"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_997cc28bbeeacd18"]
+    },
+    {
+      "id": "v58final-08",
+      "question": "May I take all 40 of my leads from the Slack lead channel instead of using the outbound list?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The allocation is 20 leads from the Slack channel and 20 from the outbound list, with 40 total. It does not allow taking all 40 from Slack.",
+      "requiredConcepts": ["20 from Slack", "20 from outbound", "not all 40 from Slack"],
+      "forbiddenConcepts": ["40 Slack leads are allowed", "only 20 total leads"],
+      "evaluationStrata": ["lead-procedure", "numeric", "source-relationship", "sales-process"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783631631.946859", "slack:C0AUQKNR8CF:1783693290.185849"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_9e4b495152a54027"]
+    },
+    {
+      "id": "v58final-09",
+      "question": "A prospect explicitly asks me to email the contract before deciding. Am I allowed to send it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, you may send the contract when the prospect explicitly asks for it. The preferred sales practice is still to review the basic terms on the call rather than sending it proactively.",
+      "requiredConcepts": ["may send it when explicitly requested", "best practice is to review basic terms on the call"],
+      "forbiddenConcepts": ["never send the contract", "send it proactively to every prospect"],
+      "evaluationStrata": ["contract", "condition", "high-impact", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783671451.715859", "slack:C0AUQKNR8CF:1783693876.263079"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_bb933d76b00226c0"]
+    },
+    {
+      "id": "v58final-10",
+      "question": "My reschedule link failed, so the applicant booked with another casting manager. Should I move the appointment back to my calendar?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. In this failed-link scenario, leave the new appointment as it is so the applicant is not confused or inconvenienced. This does not decide a different case where the applicant explicitly asks to move back.",
+      "requiredConcepts": ["leave the appointment as it is", "avoid confusing or inconveniencing the applicant"],
+      "forbiddenConcepts": ["move it back automatically", "cancel both appointments"],
+      "evaluationStrata": ["scheduling", "lead-ownership", "condition", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784141896.828959", "slack:C0AUQKNR8CF:1784143082.769549"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_65b9679916778463"]
+    },
+    {
+      "id": "v58final-11",
+      "question": "A prospect is currently indicted for wire fraud and embezzlement. Should I greenlight them because they have not been convicted yet?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not greenlight this applicant; the source decision is a hard pass for a current wire-fraud and embezzlement indictment. Do not generalize that narrow decision to every unrelated charge without policy support.",
+      "requiredConcepts": ["do not greenlight", "hard pass for the current wire-fraud and embezzlement indictment"],
+      "forbiddenConcepts": ["greenlight because there is no conviction", "all allegations are treated identically"],
+      "evaluationStrata": ["eligibility", "criminal-history", "high-impact", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783700349.178869", "slack:C0AUQKNR8CF:1783703725.102689"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_e2032d7f60e3e298"]
+    },
+    {
+      "id": "v58final-12",
+      "question": "Two reps have the same client scheduled. Who owns the client?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "For the double-booking rule in the source, whoever had the first scheduled booking or call gets the client. Confirm the timestamps before applying the rule; the source does not decide a case where the first booking was cancelled or rescheduled.",
+      "requiredConcepts": ["first scheduled booking or call gets the client", "confirm the timestamps"],
+      "forbiddenConcepts": ["the last booking wins", "the CRM owner always wins"],
+      "evaluationStrata": ["lead-ownership", "rich-authority", "relationship", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783360713.376299", "slack:C0AUQKNR8CF:1783374189.577319"],
+      "approvedBy": ["Madeline", "Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_2e02af890c7e3362"]
+    },
+    {
+      "id": "v58final-13",
+      "question": "Please block an offensive lead in the CRM so they cannot reapply. I already cancelled them and added them to Opt Out.",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot block or edit the live CRM record. Since the lead was already cancelled and added to Opt Out, post the request in #sales-tech-requests so the tech team can prevent reapplication.",
+      "requiredConcepts": ["cannot edit the live CRM", "#sales-tech-requests", "prevent reapplication"],
+      "forbiddenConcepts": ["claim the lead was blocked", "route to Finance"],
+      "evaluationStrata": ["action-route", "sales-tech", "opt-out", "high-impact", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783521414.467059", "slack:C0AUQKNR8CF:1783522126.894909"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_c938861d3d9eb36a"]
+    },
+    {
+      "id": "v58final-14",
+      "question": "Can you transfer my Keap leads into HubSpot and tell me when the training is scheduled?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot transfer live CRM records or confirm a current training schedule. Route the request to the HubSpot implementation owner or #sales-tech-requests for current training and migration guidance; do not attempt an unapproved self-import.",
+      "requiredConcepts": ["cannot transfer live CRM records", "HubSpot owner or #sales-tech-requests", "current training guidance"],
+      "forbiddenConcepts": ["claim the leads were transferred", "give an invented training date", "route to Finance"],
+      "evaluationStrata": ["action-route", "sales-tech", "rich-authority", "live-status", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783005594.911269", "slack:C0AUQKNR8CF:1783011550.662849", "slack:C0AUQKNR8CF:1783012150.434509"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_9d46e0df96dfff1c"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v58final-conv-01",
+      "title": "Emergency exception requires evidence",
+      "prompts": [
+        {
+          "id": "v58final-conv-01-turn-1",
+          "question": "A genuine family emergency means my prospect cannot complete Call 2 before the cohort closes. Is an extension possible?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes, an extension may be granted for a genuine emergency when the prospect provides proof. The emergency does not create an automatic exception without evidence.",
+          "requiredConcepts": ["extension may be granted", "proof of the emergency is required"],
+          "forbiddenConcepts": ["all emergencies get an automatic extension", "no exception is ever possible"],
+          "evaluationStrata": ["follow-up", "deadline", "rich-confirmed", "high-impact", "condition"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783508343.654649", "slack:C0AUQKNR8CF:1783520384.999809", "slack:C0AUQKNR8CF:1783532822.663089"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e406268a039d4e46"]
+        },
+        {
+          "id": "v58final-conv-01-turn-2",
+          "question": "So can I approve it based only on what they told me?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Their statement alone is not enough under this exception; obtain some form of proof of the genuine emergency before granting the extension.",
+          "requiredConcepts": ["statement alone is not enough", "obtain proof before granting the extension"],
+          "forbiddenConcepts": ["approve it on their word alone", "proof is optional"],
+          "evaluationStrata": ["follow-up", "referent", "rich-confirmed", "high-impact", "entailment"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783508343.654649", "slack:C0AUQKNR8CF:1783520384.999809", "slack:C0AUQKNR8CF:1783532822.663089"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e406268a039d4e46"]
+        }
+      ]
+    },
+    {
+      "id": "v58final-conv-02",
+      "title": "Recurring client invoices and commission ledger",
+      "prompts": [
+        {
+          "id": "v58final-conv-02-turn-1",
+          "question": "Do I need to send invoices to clients for their recurring payments?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Client invoices for recurring payments are automated. The sales representative invoices ISTV for the commission owed on those recurring payments.",
+          "requiredConcepts": ["client recurring invoices are automated", "rep invoices ISTV for commission"],
+          "forbiddenConcepts": ["rep invoices the client", "recurring invoices are manual"],
+          "evaluationStrata": ["follow-up", "payments", "finance-boundary", "relationship"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783445512.865439", "slack:C0AUQKNR8CF:1783445715.117549"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_0b955bdf040ec84d"]
+        },
+        {
+          "id": "v58final-conv-02-turn-2",
+          "question": "Where should those recurring payments appear for me?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "They should appear in your ledger. Keep a personal sales diary as a backup so you can track your sales and reconcile the ledger.",
+          "requiredConcepts": ["should appear in your ledger", "keep a personal sales diary"],
+          "forbiddenConcepts": ["they never appear in the ledger", "invoice the client directly"],
+          "evaluationStrata": ["follow-up", "referent", "payments", "relationship"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783445512.865439", "slack:C0AUQKNR8CF:1783446064.453989", "slack:C0AUQKNR8CF:1783446263.044059"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_0b955bdf040ec84d"]
+        }
+      ]
+    },
+    {
+      "id": "v58final-conv-03",
+      "title": "Two-calendar conflict escalation",
+      "prompts": [
+        {
+          "id": "v58final-conv-03-turn-1",
+          "question": "A prospect is on my calendar and another rep's calendar at the same time. What should I do first?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Contact the other representative by DM and work out the calendar conflict together. This source does not provide an automatic tie-breaker for the simultaneous two-calendar case.",
+          "requiredConcepts": ["DM the other representative", "work out the conflict together"],
+          "forbiddenConcepts": ["take the lead without contacting the other rep", "last booking automatically wins"],
+          "evaluationStrata": ["follow-up", "lead-ownership", "relationship", "condition"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783702498.867049", "slack:C0AUQKNR8CF:1783703663.283449"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_d4c701f4e0230b55"]
+        },
+        {
+          "id": "v58final-conv-03-turn-2",
+          "question": "And if we still cannot agree who handles them?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Escalate the unresolved conflict to Madeline by DM. She can involve Rich if necessary.",
+          "requiredConcepts": ["escalate to Madeline by DM", "Madeline can involve Rich"],
+          "forbiddenConcepts": ["route to Finance", "decide it yourself without escalation"],
+          "evaluationStrata": ["follow-up", "referent", "lead-ownership", "wrong-owner-risk"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783702498.867049", "slack:C0AUQKNR8CF:1783703663.283449"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_d4c701f4e0230b55"]
+        }
+      ]
+    }
+  ]
+}
