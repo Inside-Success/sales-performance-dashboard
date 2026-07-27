@@ -37,6 +37,17 @@ function selected(question: string, item = need(question)) {
 
 describe("Ask Sales V5.12 answer fidelity and owner routing", () => {
   it.each([
+    ["Can the client negotiate a longer Amazon Prime duration for the episode?", "amazon_duration_contract_negotiation", "v512src-amazon-duration-contract-negotiation"],
+    ["Is a nurse already cast for America's Top Doctors automatically invalid, or can Sales Ops use a subcategory?", "nurse_doctors_subcategory", "v512src-nurse-doctors-subcategory"],
+    ["A VIP lead missed payment before the cohort closed. How long must they wait to try again?", "missed_payment_cohort_six_month_wait", "v512src-missed-payment-cohort-six-month-wait"],
+    ["The intake says the applicant was in prison. Should I reject before the call and explain why?", "prison_intake_rejection", "v512src-prison-intake-rejection-procedure"],
+    ["Can a prospect add a custom refund amendment to the standard contract?", "standard_contract_no_custom_amendments", "v512src-standard-contract-no-custom-amendments"],
+    ["Can a rep track outreach in a personal CRM instead of HubSpot or Keap?", "company_crm_hubspot_keap", "v512src-company-crm-hubspot-keap"],
+    ["For the Daymond John offer, what do SEO, social promo assets, and the swag package mean?", "dj_seo_social_swag_definitions", "v512src-dj-seo-social-swag-definitions"],
+    ["After a missed outbound call, can I include my public OnceHub link in the first text or email?", "oncehub_no_answer_text_email", "v512src-oncehub-no-answer-text-email"],
+    ["How long can a Daymond John client delay filming before they must audition again?", "dj_six_month_filming_reaudition", "v512src-dj-six-month-filming-and-reaudition"],
+    ["What is the wire SOP for the contract, proof, onboarding, Finance confirmation, and Pay Me?", "wire_close_finance_confirmation", "v512src-wire-close-finance-confirmation"],
+    ["Which form should I use when an existing client pays to upgrade their package?", "current_package_upgrade_form", "v512src-current-package-upgrade-form"],
     ["Could the prospect stop by the Miami studio before deciding?", "studio_visit", "v512src-studio-visit-virtual-walkthrough"],
     ["They no-showed Call 1 and never did the audition. Must they wait 90 days to rebook next week?", "call1_no_audition_reschedule", "v512src-call1-no-audition-no-wait"],
     ["Can a physiotherapist who owns 3 practices fit the Best Doctors show?", "physical_therapist_three_practices", "v512src-physical-therapist-three-practices"],
@@ -54,6 +65,18 @@ describe("Ask Sales V5.12 answer fidelity and owner routing", () => {
     expect(v512DecisionFamiliesForNeed(item)).toContain(family);
     const candidates = selected(question, item);
     expect(candidates.map((candidate) => candidate.policy.id)).toEqual([policyId]);
+  });
+
+  it("does not apply the six-month missed-payment rule to a general Call 2 no-show", () => {
+    expect(v512DecisionFamiliesForNeed(need("They no-showed Call 2. When can they reapply?"))).not.toContain("missed_payment_cohort_six_month_wait");
+  });
+
+  it("does not apply the nurse subcategory exception to a general nurse eligibility question for another show", () => {
+    expect(v512DecisionFamiliesForNeed(need("Can a nurse apply for Women in Power?"))).not.toContain("nurse_doctors_subcategory");
+  });
+
+  it("does not confuse a Keap lead-owner change with the company-CRM choice", () => {
+    expect(v512DecisionFamiliesForNeed(need("I booked a 20% spreadsheet lead but Keap lists Rudy as owner. Should I change the owner to myself?"))).not.toContain("company_crm_hubspot_keap");
   });
 
   it("keeps audience targeting and delivery timing as separate controlled decisions", () => {

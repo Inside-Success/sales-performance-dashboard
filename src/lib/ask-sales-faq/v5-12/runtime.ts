@@ -16,7 +16,7 @@ import { getV512KnowledgeVersion, getV512OperationalPolicyCount } from "@/lib/as
 import { retrieveV512Policies } from "@/lib/ask-sales-faq/v5-12/retrieval";
 
 export const ASK_SALES_V512_PIPELINE_VERSION = "v5.12-isolated" as const;
-export const ASK_SALES_V512_DECISION_LAYER_VERSION = "answer-fidelity-owner-routing-r1";
+export const ASK_SALES_V512_DECISION_LAYER_VERSION = "answer-fidelity-owner-routing-reviewed-slack-delta-r2";
 
 const EXPLICIT_LIVE_ACTION = /\b(?:please|can\s+(?:you|someone)|could\s+(?:you|someone)|need\s+(?:you|someone|the\s+team)\s+to|which\s+(?:person|vendor)|who\s+should\s+i\s+(?:ask|hire|contact))\b|^\s*(?:create|send|issue|change|update|fix|cancel|refund|reschedule|hire|replace|locate|trace)\b/i;
 const FULFILLMENT_ACTION = /\b(?:videographer|filming|film\s+date|studio\s+booking|onboarding|editing|edit\s+status|trailer|episode\s+delivery|production|post[- ]sale|ad\s+campaign|promotion\s+delivery|view\s+target|fulfillment)\b/i;
