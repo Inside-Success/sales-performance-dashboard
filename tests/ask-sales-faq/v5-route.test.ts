@@ -3,15 +3,15 @@ import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({ run: vi.fn() }));
 
-vi.mock("@/lib/ask-sales-faq/v5-8/runtime", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/ask-sales-faq/v5-8/runtime")>()),
-  runAskSalesFaqV58: mocks.run,
+vi.mock("@/lib/ask-sales-faq/v5-9/runtime", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/ask-sales-faq/v5-9/runtime")>()),
+  runAskSalesFaqV59: mocks.run,
 }));
 
 import { GET, POST } from "@/app/api/ask-sales-faq/v5-isolated/route";
 import { verifyV4HistoryToken } from "@/lib/ask-sales-faq/v4/history-token";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
-import { getV58KnowledgeVersion } from "@/lib/ask-sales-faq/v5-8/knowledge";
+import { getV59KnowledgeVersion } from "@/lib/ask-sales-faq/v5-9/knowledge";
 
 const original = {
   flag: process.env.ASK_SALES_V4_ISOLATED,
@@ -68,10 +68,10 @@ describe("Ask Sales V5 isolated route", () => {
     await expect(response.json()).resolves.toMatchObject({
       ok: true,
       ready: true,
-      runtime: "v5.8-isolated",
+      runtime: "v5.9-isolated",
       persistence: false,
       productionSelectorChanged: false,
-      knowledgeVersion: getV58KnowledgeVersion(),
+      knowledgeVersion: getV59KnowledgeVersion(),
       sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
       snapshotHash: snapshot.snapshotHash,
       stableOperationalPromotionCount: snapshot.stableOperationalPromotionCount,
@@ -79,7 +79,7 @@ describe("Ask Sales V5 isolated route", () => {
       activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
       referenceReviewDate: snapshot.referenceReviewDate,
     });
-    expect(response.headers.get("x-ask-sales-runtime")).toBe("v5.8-isolated");
+    expect(response.headers.get("x-ask-sales-runtime")).toBe("v5.9-isolated");
   });
 
   it("calls only V5 and binds encrypted history to the exact snapshot", async () => {
@@ -96,7 +96,7 @@ describe("Ask Sales V5 isolated route", () => {
     const verified = verifyV4HistoryToken({
       token: data.historyToken,
       conversationId: "v5_case",
-      knowledgeVersion: getV58KnowledgeVersion(),
+      knowledgeVersion: getV59KnowledgeVersion(),
     });
     expect(verified.messages).toEqual([
       { role: "user", content: "Can this be answered?" },
