@@ -40,6 +40,12 @@ Date: 2026-07-27
 - Selected-source flips: 0/24.
 - Exact-answer flips: 0/24.
 
+### Newest post-fix Slack check
+
+- One authoritative lead-ownership thread was posted after the prior Slack gate.
+- V3 and V5.12 both routed it because the newly posted rule is absent from both frozen knowledge snapshots.
+- No runtime patch was made from this result. It is evidence that the governed refresh/approval/publish cycle remains an operational requirement, not evidence that answer projection failed when the source was available.
+
 ## Honest release position
 
-V5.12 is materially stronger than the frozen pre-delta candidate and substantially more helpful than V3 on this source-backed gate. The evidence supports an owner-approved isolated preview or tightly monitored canary. It does not support an automatic full production replacement: the newest rules became development evidence once used to repair the candidate, and the governed refresh/publish workflow must compile future approved decisions into the candidate knowledge snapshot so this drift does not recur.
+V5.12 is materially stronger than the frozen pre-delta candidate and substantially more helpful than V3 on this source-backed gate. The evidence supports an owner-approved isolated preview or tightly monitored canary. It does not support an automatic full production replacement: the repaired rules are now development evidence, the independent post-fix sample contains only one case, and the governed refresh/publish workflow must compile future approved decisions into the candidate knowledge snapshot so drift does not recur.
