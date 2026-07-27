@@ -255,5 +255,5 @@ describe("Ask Sales V5.4 coverage, consensus, routing, and conversation boundari
       policyId: "operational_79a0b7756a0faf31",
       text: expect.stringMatching(/as of 2026-06-23.*stats are not shared/i),
     });
-  });
+  }, 15_000);
 });

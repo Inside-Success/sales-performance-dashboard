@@ -40,7 +40,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Ask Sales tests
-        run: npm run test:ask-sales-faq
+        run: npm run test:ask-sales-faq:ci
       - name: Ask Sales static safety validator
         run: node scripts/validate-ask-sales-faq.mjs
       - name: Ask Sales V4 isolation validator

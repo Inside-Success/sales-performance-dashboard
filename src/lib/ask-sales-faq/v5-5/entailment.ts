@@ -46,9 +46,19 @@ export type RawRecordEntailmentOptions = {
   applyAuthorityResolutions?: boolean;
   exactQualifierBoundaries?: boolean;
   exactRelationshipContexts?: boolean;
+  exactEntitySubtypes?: boolean;
   compactDifferentQuestionRecords?: boolean;
   enforceControllingAuthorityWhenAvailable?: boolean;
   enforceRequiredAuthorityComposition?: boolean;
+  admitClaimScopedControllingSupport?: boolean;
+  recoverCompleteRawRecordShape?: boolean;
+  recoverModelConfirmedRawRecord?: boolean;
+  scopeQualifiersToEligibility?: boolean;
+  admitExactCaseSpecificSupport?: boolean;
+  normalizeActionMorphology?: boolean;
+  recoverNegatedConditionAnswer?: boolean;
+  admitNewerSameAuthoritySupport?: boolean;
+  admitDecisionFamilyCandidate?: boolean;
   versionLabel?: string;
 };
 
@@ -59,9 +69,19 @@ const V55_ENTAILMENT_OPTIONS: Required<RawRecordEntailmentOptions> = {
   applyAuthorityResolutions: false,
   exactQualifierBoundaries: false,
   exactRelationshipContexts: false,
+  exactEntitySubtypes: false,
   compactDifferentQuestionRecords: false,
   enforceControllingAuthorityWhenAvailable: false,
   enforceRequiredAuthorityComposition: false,
+  admitClaimScopedControllingSupport: false,
+  recoverCompleteRawRecordShape: false,
+  recoverModelConfirmedRawRecord: false,
+  scopeQualifiersToEligibility: false,
+  admitExactCaseSpecificSupport: false,
+  normalizeActionMorphology: false,
+  recoverNegatedConditionAnswer: false,
+  admitNewerSameAuthoritySupport: false,
+  admitDecisionFamilyCandidate: false,
   versionLabel: "V5.5",
 };
 
@@ -105,6 +125,27 @@ function eligibleRawEvidence(candidate: V4SystemicCandidate) {
     [...TRUSTED_OPERATIONAL_APPROVERS].some((approver) => name.toLowerCase().includes(approver)));
 }
 
+function eligibleClaimScopedControllingSupport(
+  candidate: V4SystemicCandidate,
+  need: V4SystemicNeed,
+  options: Required<RawRecordEntailmentOptions>,
+) {
+  if (!options.admitClaimScopedControllingSupport) return false;
+  if (
+    v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) !== "controlling" &&
+    !isClaimScopedResolutionCandidate(need, candidate)
+  ) return false;
+  if (candidate.policy.answerability !== "route_or_support") return false;
+  if (candidate.policy.systemic.ownerReviewRequired) return false;
+  if (candidate.policy.systemic.scopeRisk === "case_specific" || candidate.policy.systemic.temporalRisk === "live_only") return false;
+  return candidate.policy.source.approved_by.some((name) =>
+    [...TRUSTED_OPERATIONAL_APPROVERS].some((approver) => name.toLowerCase().includes(approver)));
+}
+
+function isClaimScopedResolutionCandidate(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
+  return candidate.needScores?.[need.id]?.matchedDecisionId?.endsWith("::v57-source-resolution") === true;
+}
+
 function verifiedSupportingQuote(quote: string, rawRecord: string) {
   const normalizedQuote = normalizedSpan(quote);
   return normalizedQuote.length >= 12 && normalizedSpan(rawRecord).includes(normalizedQuote);
@@ -125,15 +166,64 @@ export function requestedQualificationQualifiers(question: string, exactBoundari
     : normalized.includes(qualifier));
 }
 
+const QUALIFIER_COVERAGE: Record<string, RegExp> = {
+  "non-profit": /\bnon[- ]?profits?\b/i,
+  nonprofit: /\bnon[- ]?profits?\b/i,
+  veteran: /\bveterans?\b/i,
+  employee: /\b(?:employees?|employed\s+by|works?\s+(?:for|at))\b/i,
+  doctor: /\b(?:doctors?|physicians?)\b/i,
+  physician: /\b(?:doctors?|physicians?)\b/i,
+  freelancer: /\bfreelanc(?:e|er|ers|ing)\b/i,
+  freelance: /\bfreelanc(?:e|er|ers|ing)\b/i,
+  criminal: /\b(?:criminal|conviction|convicted|indict(?:ed|ment)|felon(?:y|ies)?)\b/i,
+  felon: /\b(?:felons?|felon(?:y|ies)|conviction|convicted)\b/i,
+};
+
+function qualifierCovered(evidence: string, qualifier: string, aliases: boolean) {
+  if (!aliases) return evidence.toLowerCase().includes(qualifier);
+  const pattern = QUALIFIER_COVERAGE[qualifier];
+  return pattern ? pattern.test(evidence) : evidence.toLowerCase().includes(qualifier);
+}
+
+function requestedQualifiersForNeed(
+  question: string,
+  need: V4SystemicNeed,
+  options: Required<RawRecordEntailmentOptions>,
+) {
+  if (
+    options.scopeQualifiersToEligibility &&
+    need.relation !== "eligibility" &&
+    !/\b(?:eligible|qualif\w*|good\s+fit|can\s+(?:be\s+)?greenlit|should\s+(?:i|we)\s+greenlight)\b/i.test(question)
+  ) return [];
+  return requestedQualificationQualifiers(question, options.exactQualifierBoundaries);
+}
+
 function quoteMatchesRequestedFactType(
   need: V4SystemicNeed,
   plan: V4SystemicQueryPlan,
   quote: string,
   requireCompleteRequestedQualifiers = false,
   exactRelationshipContexts = false,
+  exactEntitySubtypes = false,
+  qualifierAliases = false,
+  normalizeActionMorphology = false,
 ) {
   const question = atomicQuestion(need, plan).toLowerCase();
   const evidence = quote.toLowerCase();
+  if (exactEntitySubtypes) {
+    const mediaSubtypes = [
+      { id: "episode", pattern: /\b(?:episodes?|tv\s+shows?|television\s+shows?)\b/i },
+      { id: "podcast", pattern: /\b(?:podcasts?|spotify|apple\s+podcasts?)\b/i },
+      { id: "social", pattern: /\b(?:social\s+media|instagram|facebook|reels?|social\s+post)\b/i },
+      { id: "twenty_percent_calls", pattern: /\b(?:20\s*%|20\s+percent|twenty\s+percent|dial[- ]out\s+list)\b/i },
+      { id: "call_two", pattern: /\b(?:call\s*2|call\s+two|second\s+calls?)\b/i },
+      { id: "rescheduled_call", pattern: /\b(?:rescheduled?|rebooked?)\s+calls?\b/i },
+      { id: "double_booking", pattern: /\b(?:double[- ]book(?:ed|ing)?|duplicate\s+bookings?)\b/i },
+    ];
+    const requested = mediaSubtypes.filter((facet) => facet.pattern.test(question)).map((facet) => facet.id);
+    const evidenced = mediaSubtypes.filter((facet) => facet.pattern.test(evidence)).map((facet) => facet.id);
+    if (requested.length && evidenced.length && !requested.some((facet) => evidenced.includes(facet))) return false;
+  }
   if (/\bbased on (?:their )?keap answers?\b/.test(evidence) && !/\bkeap\b/.test(question)) return false;
   if (/\b(?:prison|incarcerat(?:ed|ion)|jail)\b/.test(question) && !/\b(?:prison|incarcerat(?:ed|ion)|jail)\b/.test(evidence)) return false;
   const duration = (value: string) => [...value.matchAll(/\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|twelve)\s*[- ]?(day|week|month|year)s?\b/g)]
@@ -148,8 +238,16 @@ function quoteMatchesRequestedFactType(
   if (asksPackagePrice && !/\b(?:price|pif|paid[- ]in[- ]full|total\s+(?:price|cost)|base\s+(?:price|cost))\b/.test(evidence)) return false;
   const asksPaymentPlan = /\b(?:payment|installment|instalment|split)\s+(?:plan|option|schedule)s?\b/.test(question);
   if (asksPaymentPlan && !/\b(?:payment|installment|instalment|split|listed)\s+(?:plan|option|schedule)s?\b/.test(evidence)) return false;
-  const asksReschedulePermission = /\b(?:reschedule|rebook|move\s+(?:the\s+)?(?:call|appointment|booking))\b/.test(question);
-  if (asksReschedulePermission && !/\b(?:reschedule|rebook|move\s+(?:the\s+)?(?:call|appointment|booking)|book\s+(?:for|on)\s+(?:another|a different))\b/.test(evidence)) return false;
+  const rescheduleAction = normalizeActionMorphology
+    ? /\b(?:reschedul(?:e|ed|es|ing)|rebook(?:ed|s|ing)?|move\s+(?:the\s+)?(?:call|appointment|booking)|book\s+(?:for|on)\s+(?:another|a different))\b/
+    : /\b(?:reschedule|rebook|move\s+(?:the\s+)?(?:call|appointment|booking)|book\s+(?:for|on)\s+(?:another|a different))\b/;
+  const asksReschedulePermission = rescheduleAction.test(question);
+  if (asksReschedulePermission && !rescheduleAction.test(evidence)) return false;
+  const asksCompoundReceiptLocation = /\bwhere\b/.test(question) && /\bpayment\b/.test(question) && /\b(?:signed\s+)?contract\b/.test(question);
+  if (asksCompoundReceiptLocation && !(
+    /\bcontracts?\s+channel\b/.test(evidence) &&
+    /\b(?:all\s+payments?|payment(?:s)?\s+notifications?)\b/.test(evidence)
+  )) return false;
   const asksAwardIdentity = /\b(?:awards?|prizes?|award categories)\b/.test(question);
   if (asksAwardIdentity && !/\b(?:awards?|prizes?|award categories)\b/.test(evidence)) return false;
   const asksPlatformExclusivity = (!exactRelationshipContexts || /\b(?:platform|amazon|apple\s*tv|tubi|tier[- ]?1|submission|submitted)\b/.test(question)) &&
@@ -160,7 +258,7 @@ function quoteMatchesRequestedFactType(
   if (asksPlatformExclusivity && !establishesPlatformExclusivity) return false;
   if (requireCompleteRequestedQualifiers && /\b(?:eligible|qualif\w*|consider\w*|good fit|can|could)\b/.test(question)) {
     const requestedQualifiers = requestedQualificationQualifiers(question);
-    if (requestedQualifiers.some((qualifier) => !evidence.includes(qualifier))) return false;
+    if (requestedQualifiers.some((qualifier) => !qualifierCovered(evidence, qualifier, qualifierAliases))) return false;
   }
   return true;
 }
@@ -204,8 +302,49 @@ function publisherSourceKey(candidate: V4SystemicCandidate) {
   return kbSource || "";
 }
 
+function operationalApproverTier(candidate: V4SystemicCandidate) {
+  const names = candidate.policy.source.approved_by.join(" ").toLowerCase();
+  if (/\b(?:rich|mike|rudy)\b/.test(names)) return 3;
+  if (/\braul\b/.test(names)) return 2;
+  if (/\bmadeline\b/.test(names)) return 1;
+  return 0;
+}
+
+function policyEffectiveTime(candidate: V4SystemicCandidate) {
+  const value = Date.parse(candidate.policy.effective_at || candidate.policy.last_reviewed || "");
+  return Number.isFinite(value) ? value : 0;
+}
+
+function exactCaseSpecificSupport(
+  candidate: V4SystemicCandidate,
+  need: V4SystemicNeed,
+  plan: V4SystemicQueryPlan,
+  options: Required<RawRecordEntailmentOptions>,
+) {
+  if (!options.admitExactCaseSpecificSupport) return false;
+  const needScore = candidate.needScores?.[need.id];
+  if (!needScore || needScore.rank > 1) return false;
+  if (candidate.policy.answerability !== "route_or_support") return false;
+  if (candidate.policy.systemic.sourceClass !== "authoritative_operational_qna") return false;
+  if (candidate.policy.systemic.scopeRisk !== "case_specific" || candidate.policy.systemic.temporalRisk === "live_only") return false;
+  if (candidate.policy.systemic.ownerReviewRequired) return false;
+  if (!candidate.policy.source.approved_by.some((name) =>
+    [...TRUSTED_OPERATIONAL_APPROVERS].some((approver) => name.toLowerCase().includes(approver)))) return false;
+  return quoteMatchesRequestedFactType(
+    need,
+    plan,
+    candidate.policy.decision,
+    false,
+    options.exactRelationshipContexts,
+    options.exactEntitySubtypes,
+    options.scopeQualifiersToEligibility,
+    options.normalizeActionMorphology,
+  );
+}
+
 function isControllingAuthorityCandidate(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
   return v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) === "controlling" ||
+    isClaimScopedResolutionCandidate(need, candidate) ||
     candidate.policy.source.kind === "owner_confirmed_isolated_overlay";
 }
 
@@ -242,28 +381,57 @@ export function rawEntailmentCandidateExclusionReasons(
 ) {
   const options = resolvedOptions(rawOptions);
   const reasons: string[] = [];
-  if (!eligibleRawEvidence(candidate)) reasons.push("not_eligible_raw_evidence");
+  if (
+    !eligibleRawEvidence(candidate) &&
+    !eligibleClaimScopedControllingSupport(candidate, need, options) &&
+    !exactCaseSpecificSupport(candidate, need, plan, options)
+  ) {
+    reasons.push("not_eligible_raw_evidence");
+  }
   if (blockedDecisionKeys.has(candidate.policy.decision_key)) reasons.push("blocked_publish_collision");
   if (options.applyAuthorityResolutions &&
     v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) === "excluded") reasons.push("excluded_by_authority_resolution");
   if (options.enforceControllingAuthorityWhenAvailable) {
     const controllingIds = new Set(matchingV4SystemicAuthorityResolutions(need)
       .flatMap((resolution) => resolution.controlling_policy_ids));
+    const claimScopedControllingAvailable = retrieval.candidates.some((item) =>
+      isClaimScopedResolutionCandidate(need, item) &&
+      item.needScores?.[need.id] &&
+      (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
+      !blockedDecisionKeys.has(item.policy.decision_key) &&
+      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes, false, options.normalizeActionMorphology) &&
+      broadInclusionCandidate(need, plan, retrieval.turn, item));
     const controllingCandidateAvailable = retrieval.candidates.some((item) =>
       (controllingIds.has(item.policy.id) || item.policy.source.kind === "owner_confirmed_isolated_overlay") &&
       item.needScores?.[need.id] &&
-      eligibleRawEvidence(item) &&
+      (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
       !blockedDecisionKeys.has(item.policy.decision_key) &&
-      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts) &&
+      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes, false, options.normalizeActionMorphology) &&
       broadInclusionCandidate(need, plan, retrieval.turn, item));
-    if (controllingCandidateAvailable &&
+    const newerSameAuthoritySupport = options.admitNewerSameAuthoritySupport &&
+      candidate.needScores?.[need.id] && candidate.needScores[need.id].rank <= 1 &&
+      retrieval.candidates.some((item) =>
+        (controllingIds.has(item.policy.id) || item.policy.source.kind === "owner_confirmed_isolated_overlay") &&
+        item.needScores?.[need.id] &&
+        operationalApproverTier(candidate) >= operationalApproverTier(item) &&
+        policyEffectiveTime(candidate) > policyEffectiveTime(item));
+    if (
+      claimScopedControllingAvailable &&
+      !isClaimScopedResolutionCandidate(need, candidate)
+    ) {
+      reasons.push("superseded_by_claim_scoped_source_resolution");
+    } else if (controllingCandidateAvailable &&
+      !newerSameAuthoritySupport &&
       !controllingIds.has(candidate.policy.id) &&
-      candidate.policy.source.kind !== "owner_confirmed_isolated_overlay") {
+      candidate.policy.source.kind !== "owner_confirmed_isolated_overlay" &&
+      !isClaimScopedResolutionCandidate(need, candidate)) {
       reasons.push("superseded_by_available_controlling_authority");
     }
   }
   if (!candidate.needScores?.[need.id]) reasons.push("missing_need_score");
-  if (!quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts)) reasons.push("fact_type_mismatch");
+  const decisionFamilyCandidate = options.admitDecisionFamilyCandidate &&
+    candidate.needScores?.[need.id]?.matchedDecisionId?.endsWith("::v510-decision-family") === true;
+  if (!decisionFamilyCandidate && !quoteMatchesRequestedFactType(need, plan, candidate.policy.decision, false, options.exactRelationshipContexts, options.exactEntitySubtypes, false, options.normalizeActionMorphology)) reasons.push("fact_type_mismatch");
   if (!broadInclusionCandidate(need, plan, retrieval.turn, candidate)) reasons.push("broad_inclusion_mismatch");
   if (
     allowsCollectiveEvidence(need, plan, retrieval.turn) &&
@@ -339,7 +507,13 @@ Rules:
 - Break the atomic need into its requested facts. Each record's uncovered_request_elements must be empty for direct_answer. List every fact missing from that individual record for partial_or_conditional or different_question. The need-level uncovered_request_elements must list anything still missing after the selected record set is considered together.
 - A record can directly answer a question asking for the general rule even when it states conditions, but the eventual answer must preserve those conditions. For a question asking the outcome of a specific scenario, every prerequisite needed for that outcome must be established in the question.
 - If a record requires a step before an action, it directly answers whether the user may simply take that action without the step. Preserve the required step; do not infer permission for what may happen afterward.
+${options.recoverNegatedConditionAnswer ? `- A record that explicitly requires a condition directly answers a yes/no question asking whether that condition can be skipped, omitted, or replaced by a verbal claim. The answer is no; do not label the record partial merely because it phrases the requirement positively.
+- A general approved rule directly covers a narrower example when it establishes the same requested action or outcome and the narrower example adds no conflicting condition. Do not demand that the record repeat every harmless detail from the example.
+- An explicit exception matching the user's stated condition is not a material conflict with a general default rule. Preserve the exception's prerequisites and authority boundary.
+- Records saying an exception may be granted with proof and records saying the exception must be approved by a named authority are compatible, not conflicting. Answer that it is possible while preserving both the proof and approval requirements.
+- When two non-conflicting records answer the same request, prefer the newer record from equal-or-higher authority when it states more explicit conditions matching the user's scenario. Never erase the newer conditions by selecting an older unconditional summary.` : ""}
 - A rule about duration does not answer a start date; an amount does not answer a payment option; an artifact identity does not answer its location; one person's duties do not establish another person's duties; one show or product does not answer another.
+- Keep named content subtypes exact. An episode or TV-show question is not a podcast question, and a podcast or social-media record cannot answer it merely because both mention views, performance, or statistics.
 - A catalog of shows, products, or programs does not answer which awards or award categories exist.
 - A current canonical package table can answer what that named package includes. Quote the relevant package row; do not reject it merely because the same record also contains prices or other packages.
 - A package/base/PIF price and an installment amount are different facts. An installment schedule does not establish a package price unless the record explicitly labels that total as Price, PIF, paid in full, or equivalent. Do not infer totals by adding installments.
@@ -399,29 +573,77 @@ function parseOutput(
     const candidates = candidatesByNeed.get(needId) || [];
     const allowed = new Set(candidates.map((candidate) => candidate.policy.id));
     const rawRecordById = new Map(candidates.map((candidate) => [candidate.policy.id, candidate.policy.decision]));
+    const recoveredNegatedRefs = new Set<string>();
     const records = (Array.isArray(item.records) ? item.records : []).flatMap((value): ModelRecord[] => {
       if (!value || typeof value !== "object") return [];
       const record = value as Record<string, unknown>;
       const ref = clean(record.ref, 180);
       const modelVerdict = clean(record.verdict, 40) as EntailmentVerdict;
       if (!allowed.has(ref) || !new Set<EntailmentVerdict>(["direct_answer", "partial_or_conditional", "different_question"]).has(modelVerdict)) return [];
-      const supportingQuote = clean(record.supporting_quote, 900);
-      const quoteVerified = verifiedSupportingQuote(supportingQuote, rawRecordById.get(ref) || "");
+      let supportingQuote = clean(record.supporting_quote, 900);
+      const rawRecord = rawRecordById.get(ref) || "";
+      let quoteVerified = verifiedSupportingQuote(supportingQuote, rawRecord);
       const need = plan.needs.find((candidate) => candidate.id === needId);
-      const quoteShapeVerified = Boolean(need && quoteMatchesRequestedFactType(
+      const specificDifference = clean(record.specific_difference);
+      const selectedCandidate = candidates.find((candidate) => candidate.policy.id === ref);
+      const decisionFamilyCandidate = options.admitDecisionFamilyCandidate &&
+        selectedCandidate?.needScores?.[needId]?.matchedDecisionId?.endsWith("::v510-decision-family") === true;
+      let quoteShapeVerified = decisionFamilyCandidate || Boolean(need && quoteMatchesRequestedFactType(
         { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
         plan,
         supportingQuote,
         modelVerdict === "direct_answer",
         options.exactRelationshipContexts,
+        options.exactEntitySubtypes,
+        options.scopeQualifiersToEligibility,
+        options.normalizeActionMorphology,
       ));
       const uncovered = (Array.isArray(record.uncovered_request_elements) ? record.uncovered_request_elements : [])
         .map((value) => clean(value, 240))
         .filter(Boolean)
         .slice(0, 12);
-      const verdict = modelVerdict === "direct_answer" && (!quoteVerified || !quoteShapeVerified || uncovered.length)
+      const modelConfirmsExactRawRecord = options.recoverModelConfirmedRawRecord &&
+        modelVerdict === "partial_or_conditional" &&
+        /\b(?:directly|exactly|matches?|confirms?|explicitly)\b/i.test(specificDifference) &&
+        !/\b(?:different|unrelated|missing|does\s+not|doesn't|not\s+address|only\s+partial|mismatch)\b/i.test(specificDifference);
+      const negatedConditionDirectAnswer = options.recoverNegatedConditionAnswer &&
+        modelVerdict === "partial_or_conditional" &&
+        quoteVerified &&
+        clamp(record.confidence) >= 0.84 &&
+        /\b(?:without|based\s+(?:only|solely)\s+on|only\s+(?:what|their|the)\b|just\s+(?:what|their|the)\b)/i.test(atomicQuestion(need!, plan, turn)) &&
+        /\b(?:requires?|required|must|need(?:ed)?|cannot|can't|do\s+not|don't|not\s+enough)\b/i.test(`${rawRecord} ${specificDifference}`) &&
+        /\b(?:requires?|required|must|without|based\s+only|not\s+enough|cannot|can't)\b/i.test(specificDifference);
+      let recoveredDirectAnswer = negatedConditionDirectAnswer;
+      if (negatedConditionDirectAnswer) recoveredNegatedRefs.add(ref);
+      if (
+        options.recoverCompleteRawRecordShape &&
+        (modelVerdict === "direct_answer" || modelConfirmsExactRawRecord || negatedConditionDirectAnswer) &&
+        quoteVerified &&
+        (!quoteShapeVerified || modelConfirmsExactRawRecord || negatedConditionDirectAnswer) &&
+        (!uncovered.length || negatedConditionDirectAnswer) &&
+        rawRecord.length <= 900 &&
+        need &&
+        (decisionFamilyCandidate || quoteMatchesRequestedFactType(
+          { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
+          plan,
+          rawRecord,
+          true,
+          options.exactRelationshipContexts,
+          options.exactEntitySubtypes,
+          options.scopeQualifiersToEligibility,
+          options.normalizeActionMorphology,
+        ))
+      ) {
+        supportingQuote = rawRecord;
+        quoteVerified = true;
+        quoteShapeVerified = true;
+        recoveredDirectAnswer = true;
+      }
+      const effectiveUncovered = negatedConditionDirectAnswer ? [] : uncovered;
+      const intendedDirectAnswer = modelVerdict === "direct_answer" || recoveredDirectAnswer;
+      const verdict = intendedDirectAnswer && (!quoteVerified || !quoteShapeVerified || effectiveUncovered.length)
         ? "partial_or_conditional" as const
-        : modelVerdict;
+        : recoveredDirectAnswer ? "direct_answer" as const : modelVerdict;
       return [{
         ref,
         verdict,
@@ -429,33 +651,51 @@ function parseOutput(
         supporting_quote: supportingQuote,
         supporting_quote_verified: quoteVerified,
         supporting_quote_shape_verified: quoteShapeVerified,
-        uncovered_request_elements: uncovered,
-        specific_difference: clean(record.specific_difference),
+        uncovered_request_elements: effectiveUncovered,
+        specific_difference: specificDifference,
       }];
     });
-    const preferredRefs = [...new Set([
+    let preferredRefs = [...new Set([
       ...(Array.isArray(item.preferred_refs) ? item.preferred_refs : []),
       ...(item.preferred_ref ? [item.preferred_ref] : []),
     ].map((value) => clean(value, 180)).filter((ref) => allowed.has(ref)))].slice(0, 20);
+    if (!preferredRefs.length && item.material_conflict !== true && recoveredNegatedRefs.size) {
+      const recovered = records
+        .filter((record) => recoveredNegatedRefs.has(record.ref) && record.verdict === "direct_answer")
+        .sort((left, right) => right.confidence - left.confidence)[0];
+      if (recovered) preferredRefs = [recovered.ref];
+    }
     const coverageMode = item.coverage_mode === "collective" ? "collective" : item.coverage_mode === "single" ? "single" : preferredRefs.length === 1 ? "single" : "none";
-    const uncoveredRequestElements = (Array.isArray(item.uncovered_request_elements) ? item.uncovered_request_elements : [])
+    const modelUncoveredRequestElements = (Array.isArray(item.uncovered_request_elements) ? item.uncovered_request_elements : [])
       .map((value) => clean(value, 240))
       .filter(Boolean)
       .slice(0, 12);
-    const neededQualifiers = requestedQualificationQualifiers(
-      atomicQuestion(plan.needs.find((need) => need.id === needId)!, plan, turn),
-      options.exactQualifierBoundaries,
+    const recoveredNegatedAnswer = preferredRefs.length === 1 && recoveredNegatedRefs.has(preferredRefs[0]);
+    const uncoveredRequestElements = recoveredNegatedAnswer ? [] : modelUncoveredRequestElements;
+    const need = plan.needs.find((candidate) => candidate.id === needId)!;
+    const neededQualifiers = requestedQualifiersForNeed(
+      atomicQuestion(need, plan, turn),
+      need,
+      options,
     );
     const selectedEvidence = preferredRefs
       .map((ref) => records.find((record) => record.ref === ref)?.supporting_quote || "")
       .join(" ")
       .toLowerCase();
-    const missingQualifiers = neededQualifiers.filter((qualifier) => !selectedEvidence.includes(qualifier));
+    const missingQualifiers = neededQualifiers.filter((qualifier) =>
+      !qualifierCovered(selectedEvidence, qualifier, options.scopeQualifiersToEligibility));
     const completeUncoveredRequestElements = [...new Set([
       ...uncoveredRequestElements,
       ...missingQualifiers.map((qualifier) => `No selected supporting quote covers the named qualifier: ${qualifier}`),
     ])].slice(0, 12);
-    const disposition = item.disposition === "answer" && !missingQualifiers.length ? "answer" : "route";
+    const preferredDirectRecord = preferredRefs.length === 1
+      ? records.find((record) => record.ref === preferredRefs[0] && record.verdict === "direct_answer" && record.confidence >= 0.84 &&
+        record.supporting_quote_verified && record.supporting_quote_shape_verified)
+      : null;
+    const disposition = (
+      item.disposition === "answer" ||
+      (options.recoverModelConfirmedRawRecord && Boolean(preferredDirectRecord))
+    ) && !missingQualifiers.length && !uncoveredRequestElements.length ? "answer" : "route";
     byNeed.set(needId, {
       need_id: needId,
       disposition,
@@ -694,6 +934,7 @@ export async function refineSourcePlanWithRawEntailment(input: {
       authorityResolutionsApplied: options.applyAuthorityResolutions,
       exactQualifierBoundaries: options.exactQualifierBoundaries,
       exactRelationshipContexts: options.exactRelationshipContexts,
+      exactEntitySubtypes: options.exactEntitySubtypes,
       compactDifferentQuestionRecords: options.compactDifferentQuestionRecords,
       enforceControllingAuthorityWhenAvailable: options.enforceControllingAuthorityWhenAvailable,
       enforceRequiredAuthorityComposition: options.enforceRequiredAuthorityComposition,

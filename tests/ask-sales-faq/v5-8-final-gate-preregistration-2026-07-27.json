@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "name": "ask-sales-v5-8-final-promotion-gate-preregistration-2026-07-27",
+  "status": "preregistered_before_final_source_selection",
+  "preregisteredAt": "2026-07-27T07:56:39+05:00",
+  "runtimeFreezeCommit": "533530fa1d4783848c4fd57b2bcb3cd78258c9e0",
+  "slackChannelId": "C0AUQKNR8CF",
+  "sourceAccess": "read_only",
+  "selectionProtocol": {
+    "eligible": [
+      "A realistic sales-rep question with a complete, readable threaded answer from Rich, Mike, Rudy, Raul, or Madeline",
+      "The answer can be converted into an auditable label without guessing at missing screenshot or private context",
+      "The question tests stable knowledge, a natural follow-up, an exact relationship or qualifier, or an intentional passive-chatbot routing boundary",
+      "Every final source message ID has zero overlap with earlier Ask Sales evaluation datasets and runtime artifacts"
+    ],
+    "excluded": [
+      "Screenshot-only, attachment-only, peer-only, self-replied, joke, announcement, malformed, or unresolved threads",
+      "Questions that would not realistically be asked of the passive Ask Sales chatbot",
+      "Pure live actions except a small preregistered routing-control stratum",
+      "Questions whose answer requires unavailable private context or a current live-status lookup",
+      "Any source or wording used to design, tune, or development-test V5.8"
+    ],
+    "authorityReview": "Review exact decision scope and recency, not speaker rank alone. Rich normally controls Sales policy over Madeline when both govern the same decision; a newer Madeline statement can control a changed or narrower decision when the evidence supports that reading.",
+    "selectionOrder": "Select and seal the complete source-audited gold set before executing V3 or V5.8. Runtime output must not affect inclusion, wording, labels, or source interpretation."
+  },
+  "primarySet": {
+    "targetStandalonePrompts": 14,
+    "targetConversations": 3,
+    "targetConversationPrompts": 6,
+    "targetTotalPrompts": 20,
+    "minimumActionOrUnsupportedControls": 3,
+    "minimumNaturalOrFollowUpPrompts": 6,
+    "minimumRelationshipQualifierScopeChallenges": 6,
+    "minimumHighImpactDecisions": 6,
+    "minimumRichOrMultiAuthorityApprovedPrompts": 6,
+    "maximumPriorSourceIdOverlap": 0
+  },
+  "coverageTargets": [
+    "pricing, packages, discounts, payments, or contracts",
+    "eligibility, ownership, profession, business fit, or show scope",
+    "Call 1, Call 2, no-show, reapply, scheduling, opt-out, or lead procedure",
+    "rights, testimonials, onboarding, filming, editing, distribution, or performance claims",
+    "Finance, Green Light, Fulfillment, Sales Tech, or another live-action owner",
+    "natural language, short follow-up, demonstrative referent, or topic switch",
+    "unsupported, irrelevant, live-status, or passive-chatbot control"
+  ],
+  "productionLogDiagnostic": {
+    "maximumPrompts": 4,
+    "promotionEvidence": false,
+    "labelRequirement": "Only include a production-log prompt when a source-backed expected result can be independently established."
+  },
+  "promotionGate": {
+    "requireCompleteProviderBackedOutputs": true,
+    "maximumV58MaterialErrors": 0,
+    "maximumV58WrongActionOwners": 0,
+    "minimumV58AcceptableRate": 0.85,
+    "minimumPairwiseNetWinsOverV3": 3,
+    "requirePositiveLeadAcrossMultipleStrata": true,
+    "requireNoMaterialStratumRegression": true,
+    "repeatabilityExecutions": 3,
+    "maximumMaterialLaneOrContentFlipRate": 0.05,
+    "requiresManualSourceAudit": true,
+    "requiresBlindHumanReview": true,
+    "requiresExplicitOwnerApproval": true
+  },
+  "productionPromotionAuthorized": false
+}

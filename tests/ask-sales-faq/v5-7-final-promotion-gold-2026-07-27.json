@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-7-final-promotion-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T01:33:44Z",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "5f7bf48b776734cd414daf948d0d109831069ea9",
+  "preregistrationCommit": "2e18921bd1becb3abead83761e318caf616082e3",
+  "knowledgeSnapshot": "frozen V5.7 generated operational Q&A, approved FAQ bundle, and governed registries at the runtime freeze commit",
+  "counts": {
+    "standaloneCases": 18,
+    "conversations": 3,
+    "conversationPrompts": 6,
+    "totalPrompts": 24
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "Every source message ID is absent from every earlier Ask Sales evaluation dataset and runtime artifact at seal time.",
+      "The source window was chosen before runtime and weak, screenshot-dependent, peer-only, unresolved, and case-specific threads were excluded.",
+      "All 24 prompts have an exact source record in the frozen generated operational Q&A snapshot.",
+      "Four prompts intentionally require routing because the chatbot cannot perform the requested live action.",
+      "This dataset is invalidated as promotion evidence if V5.7 is tuned after any runtime output is inspected."
+    ]
+  },
+  "repeatability": {
+    "caseIds": [
+      "v57final-01",
+      "v57final-04",
+      "v57final-07",
+      "v57final-09",
+      "v57final-11",
+      "v57final-14",
+      "v57final-17"
+    ],
+    "conversationIds": [
+      "v57final-conv-01",
+      "v57final-conv-02",
+      "v57final-conv-03"
+    ],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v57final-01",
+      "question": "A prospect asks why they do not receive residuals from their episode. What should I tell them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "ISTV does not make money from the client's episode and does not take any money the client may make from having the episode on the network.",
+      "requiredConcepts": ["ISTV does not make money from the episode", "ISTV does not take money the client may make"],
+      "forbiddenConcepts": ["promise residual payments", "ISTV takes a share of episode revenue"],
+      "evaluationStrata": ["rights", "revenue", "high-impact", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782831445.403979", "slack:C0AUQKNR8CF:1782837089.671029"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b8ae1776983a13a8"]
+    },
+    {
+      "id": "v57final-02",
+      "question": "An Operation CEO applicant has two businesses. Must the episode focus on only one of them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The applicant may mention both businesses during the episode.",
+      "requiredConcepts": ["may mention both businesses"],
+      "forbiddenConcepts": ["must choose only one business", "automatic approval"],
+      "evaluationStrata": ["content", "operation-ceo", "relationship", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782826120.954649", "slack:C0AUQKNR8CF:1782834387.409769"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b990c2fbc5565b4e"]
+    },
+    {
+      "id": "v57final-03",
+      "question": "I booked a Next Level CEO Call 1 but forgot to confirm that filming is at the Miami studio. Should I wait until Call 1 to mention it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "You may call the lead back after scheduling to make the Miami studio expectation clear. This is useful for confirming they are on board and avoiding a wasted call.",
+      "requiredConcepts": ["may call back", "make the Miami studio expectation clear"],
+      "forbiddenConcepts": ["hide the studio requirement", "the lead can film remotely"],
+      "evaluationStrata": ["call-stage", "daymond-john", "condition", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782822639.641789", "slack:C0AUQKNR8CF:1782832732.047689"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_c21a37c50451542c"]
+    },
+    {
+      "id": "v57final-04",
+      "question": "A prospect says weak authority is making them lose customers. May I ask what that is costing them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not frame it with 'cost' or 'costing.' Ask how the problem could be negatively impacting their business instead; this does not permit directly asking for revenue.",
+      "requiredConcepts": ["ask how it negatively impacts the business", "avoid cost or costing wording", "do not ask revenue directly"],
+      "forbiddenConcepts": ["ask for their revenue", "ask for an exact dollar loss"],
+      "evaluationStrata": ["call-language", "finance-boundary", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782774686.735249", "slack:C0AUQKNR8CF:1782830787.413829"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_4308fa14b14b5502"]
+    },
+    {
+      "id": "v57final-05",
+      "question": "Can someone who owns a Verizon franchise qualify, or are all franchise applicants disqualified?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "A franchise owner may qualify, while a franchise manager does not qualify on that basis. Normal fit and qualification checks still apply to the owner.",
+      "requiredConcepts": ["franchise owner may qualify", "franchise manager does not"],
+      "forbiddenConcepts": ["all franchise applicants are disqualified", "all franchise managers qualify"],
+      "evaluationStrata": ["qualification", "ownership", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782763181.101309", "slack:C0AUQKNR8CF:1782764460.736739"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_0dfa29c2419ecad9"]
+    },
+    {
+      "id": "v57final-06",
+      "question": "An author has no formal company, but has a book website and physical books that are selling. Can they qualify for America's Authors if the book is about history rather than business?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. An author may qualify without a formal business when the book has a website and physical copies that are selling; the book does not have to be about business. Normal fit checks still apply.",
+      "requiredConcepts": ["may qualify without a formal business", "book website", "physical copies are selling", "topic need not be business"],
+      "forbiddenConcepts": ["an LLC is always required", "only business books qualify"],
+      "evaluationStrata": ["qualification", "authors", "compound", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782758398.610779", "slack:C0AUQKNR8CF:1782759376.738839", "slack:C0AUQKNR8CF:1782759521.403419", "slack:C0AUQKNR8CF:1782759584.419099"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_8b94e9ca32170c04"]
+    },
+    {
+      "id": "v57final-07",
+      "question": "A dial-out lead hung up as soon as I said Inside Success TV but never said STOP or asked not to be contacted. Should I add them to opt-outs?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A hang-up alone is not an opt-out. Add the lead to opt-outs only when they explicitly request no further contact, such as saying STOP or 'do not contact me.'",
+      "requiredConcepts": ["hang-up alone is not an opt-out", "explicit no-contact request is required"],
+      "forbiddenConcepts": ["automatically add every hang-up to opt-outs", "ignore an explicit STOP"],
+      "evaluationStrata": ["opt-out", "dial-out", "compliance", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782748328.933549", "slack:C0AUQKNR8CF:1782755476.333079"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_90cf1f852123c11c"]
+    },
+    {
+      "id": "v57final-08",
+      "question": "How many total bookings should a prospect be allowed before I stop rescheduling them?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Allow no more than three total bookings. The source does not define a separate number of reschedules beyond that total-booking limit.",
+      "requiredConcepts": ["no more than three total bookings"],
+      "forbiddenConcepts": ["unlimited reschedules", "three reschedules plus the initial booking"],
+      "evaluationStrata": ["scheduling", "numeric", "boundary", "sales-process"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782742521.320359", "slack:C0AUQKNR8CF:1782755104.679519"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_dd635bd952b92756"]
+    },
+    {
+      "id": "v57final-09",
+      "question": "Can I use the old separate ISTV PDF for just the $12K option when I pitch that package?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The old individual license PDFs are not current and should not be used. Use the approved combined PDF with all three options, and scroll to and focus on the option being pitched.",
+      "requiredConcepts": ["do not use old individual PDFs", "use the combined three-option PDF", "focus on the pitched option"],
+      "forbiddenConcepts": ["the old individual PDF is still approved", "invent a new one-package PDF"],
+      "evaluationStrata": ["document", "pricing", "supersession", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783021197.162229", "slack:C0AUQKNR8CF:1783022172.324099", "slack:C0AUQKNR8CF:1783529346.335149", "slack:C0AUQKNR8CF:1783529570.255219"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_bfadc26d21771491"]
+    },
+    {
+      "id": "v57final-10",
+      "question": "A cast member asks whether spaces remain for the two-day marketing event, but the registration link is expired. Can the chatbot check or fix this?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "The chatbot cannot check live availability or repair the link. This is a post-sale request, so post it in the Fulfillment Hotline channel for the current production or fulfillment owner.",
+      "requiredConcepts": ["cannot check live availability", "post-sale request", "Fulfillment Hotline"],
+      "forbiddenConcepts": ["claim a space was reserved", "route to Finance"],
+      "evaluationStrata": ["action-route", "fulfillment", "live-status", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782755128.231889", "slack:C0AUQKNR8CF:1782755657.159039"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_3b8b65962f363208"]
+    },
+    {
+      "id": "v57final-11",
+      "question": "A disqualified applicant wants the audition recording for personal use to show her daughter. May I send it without the Inside Success portion?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not provide the audition recording to the disqualified applicant, including a version requested only for personal use.",
+      "requiredConcepts": ["do not provide the audition recording", "personal use does not change the answer"],
+      "forbiddenConcepts": ["send an edited copy", "share it privately"],
+      "evaluationStrata": ["recording", "privacy", "rich-authority", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783083621.284679", "slack:C0AUQKNR8CF:1783087532.984829"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_c771a226fa22bdae"]
+    },
+    {
+      "id": "v57final-12",
+      "question": "A person from the dial-out list replied two weeks later and wants to discuss the opportunity. Can I book an audition if they have never had a first audition?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. You may book the dial-out lead because they have not had a first audition yet.",
+      "requiredConcepts": ["may book", "has not had a first audition"],
+      "forbiddenConcepts": ["two weeks automatically disqualifies them", "book even after a prior first audition"],
+      "evaluationStrata": ["dial-out", "scheduling", "rich-authority", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783083621.284679", "slack:C0AUQKNR8CF:1783087532.984829"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a51d76e320aa2c10"]
+    },
+    {
+      "id": "v57final-13",
+      "question": "A VIP prospect asks for view statistics from the last few episodes. What can I share?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not share individual episode statistics because performance varies and quoting them could imply the same outcome. You may instead explain that the Standard license guarantees 100,000 trailer views during pre-promotion.",
+      "requiredConcepts": ["do not share individual episode statistics", "could imply the same outcome", "100,000 trailer views for Standard pre-promotion"],
+      "forbiddenConcepts": ["promise the prior episode's result", "invent a VIP episode average"],
+      "evaluationStrata": ["distribution", "claims", "numeric", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783019849.802759", "slack:C0AUQKNR8CF:1783020053.981729", "slack:C0AUQKNR8CF:1783020087.953959", "slack:C0AUQKNR8CF:1783020180.906649", "slack:C0AUQKNR8CF:1783020768.343509"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_4eab610f3effa67d"]
+    },
+    {
+      "id": "v57final-14",
+      "question": "A Call 1 prospect is texting and yawning through the video. Can I end the call early?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not end the call early. If the prospect is not a good fit, soft-disqualify them on the call so the communication is clear.",
+      "requiredConcepts": ["do not end the call early", "soft-disqualify on the call if not a fit"],
+      "forbiddenConcepts": ["hang up immediately", "approve them automatically"],
+      "evaluationStrata": ["call-stage", "qualification", "condition", "sales-process"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782914499.490149", "slack:C0AUQKNR8CF:1782923645.086869"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_3f4f5a27912da502"]
+    },
+    {
+      "id": "v57final-15",
+      "question": "What is the difference between Lost Cast and Disqualified Cast?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Disqualified Cast means the lead is not qualified and should not be sold to. Lost Cast means the lead could have been sold to, but the sale was not closed.",
+      "requiredConcepts": ["Disqualified means should not sell", "Lost means could sell but did not close"],
+      "forbiddenConcepts": ["the two statuses mean the same thing", "Lost always means no-show"],
+      "evaluationStrata": ["crm-status", "qualification", "relationship", "definition"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783029321.146779", "slack:C0AUQKNR8CF:1783032820.027839", "slack:C0AUQKNR8CF:1783089411.589019"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_9d11f5c53458368e"]
+    },
+    {
+      "id": "v57final-16",
+      "question": "The same prospect is duplicated on two reps' calendars. Can the chatbot combine the leads and replace the duplicate appointment?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot change calendar or CRM records. Repost the duplicate-lead request in #sales-tech-requests so the tech team can investigate and combine or correct the records.",
+      "requiredConcepts": ["cannot change records", "#sales-tech-requests"],
+      "forbiddenConcepts": ["claim the leads were combined", "route to Finance"],
+      "evaluationStrata": ["action-route", "sales-tech", "live-record", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784573106.019439", "slack:C0AUQKNR8CF:1784573789.274239"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_6ff74b9488c41877"]
+    },
+    {
+      "id": "v57final-17",
+      "question": "I want a same-evening Green Light letter after Call 1. Can the chatbot create it for me now?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The chatbot cannot create or send the letter. Post the request in #greenlight-requests and ask whether the Green Light team is available for the same-evening turnaround; the timing is not guaranteed.",
+      "requiredConcepts": ["cannot create or send the letter", "#greenlight-requests", "availability is not guaranteed"],
+      "forbiddenConcepts": ["claim the letter was created", "route to Sales Tech"],
+      "evaluationStrata": ["action-route", "greenlight", "live-status", "wrong-owner-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783714887.177609", "slack:C0AUQKNR8CF:1783714956.535209", "slack:C0AUQKNR8CF:1783714970.236799"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a5805a5ba238d666"]
+    },
+    {
+      "id": "v57final-18",
+      "question": "I made three calls from the 20% dial-out list today. Should those count as scheduled calls in my daily stats?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Scheduled calls are inbound calls booked on your calendar by the tech team. Calls from the 20% list are not included as scheduled calls.",
+      "requiredConcepts": ["20% calls do not count as scheduled calls", "scheduled calls are inbound tech-booked calls"],
+      "forbiddenConcepts": ["count all dial-out calls as scheduled", "exclude the calls from every metric"],
+      "evaluationStrata": ["reporting", "20-percent", "rich-confirmed", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782773608.643499", "slack:C0AUQKNR8CF:1782830684.843599", "slack:C0AUQKNR8CF:1782845426.215469"],
+      "approvedBy": ["Madeline", "Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_219aafb9f6e5d2b6"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v57final-conv-01",
+      "title": "Follower count versus useful online presence",
+      "prompts": [
+        {
+          "id": "v57final-conv-01-turn-1",
+          "question": "Does a small social-media following make an otherwise qualified applicant a bad fit?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. Follower count itself does not qualify or disqualify an applicant. Evaluate the business, story, and overall fit.",
+          "requiredConcepts": ["follower count does not qualify or disqualify", "evaluate overall fit"],
+          "forbiddenConcepts": ["a minimum follower count is required", "automatic approval"],
+          "evaluationStrata": ["follow-up", "qualification", "social-media", "relationship"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782830677.311169", "slack:C0AUQKNR8CF:1782836988.121789"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_826177b5885c3db9"]
+        },
+        {
+          "id": "v57final-conv-01-turn-2",
+          "question": "Then why does an online presence matter at all?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Some online presence helps the cast member maximize the reuse license, but the number of followers still does not qualify or disqualify them.",
+          "requiredConcepts": ["helps maximize the reuse license", "follower number is not a qualification rule"],
+          "forbiddenConcepts": ["guarantees sales", "sets a follower minimum"],
+          "evaluationStrata": ["follow-up", "referent", "qualification", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782830677.311169", "slack:C0AUQKNR8CF:1782836988.121789"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_826177b5885c3db9"]
+        }
+      ]
+    },
+    {
+      "id": "v57final-conv-02",
+      "title": "Dual ISTV and Daymond John application ownership",
+      "prompts": [
+        {
+          "id": "v57final-conv-02-turn-1",
+          "question": "Can a prospect apply for both an ISTV show and Next Level CEO with Daymond John?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes, a prospect may apply for both.",
+          "requiredConcepts": ["yes", "may apply for both"],
+          "forbiddenConcepts": ["dual applications are prohibited"],
+          "evaluationStrata": ["follow-up", "eligibility", "cross-show", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782767114.351429", "slack:C0AUQKNR8CF:1782770054.209789"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_076d7d2156d7b6ba"]
+        },
+        {
+          "id": "v57final-conv-02-turn-2",
+          "question": "Who should handle that applicant?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "A representative who is trained on the Daymond John side should handle the dual applicant.",
+          "requiredConcepts": ["DJ-trained representative should handle"],
+          "forbiddenConcepts": ["any untrained rep can handle both", "route to Finance"],
+          "evaluationStrata": ["follow-up", "referent", "ownership", "wrong-owner-risk"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1782767114.351429", "slack:C0AUQKNR8CF:1782770054.209789"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_076d7d2156d7b6ba"]
+        }
+      ]
+    },
+    {
+      "id": "v57final-conv-03",
+      "title": "Payment and contract confirmation followed by missing ACH",
+      "prompts": [
+        {
+          "id": "v57final-conv-03-turn-1",
+          "question": "Where should I confirm that an ISTV client's payment and signed contract were received?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Check the All Payments channel for the payment notification and the contracts channel for the signed-contract notification. Those channels show the records; the chatbot cannot verify a specific client's live status.",
+          "requiredConcepts": ["All Payments channel for payment", "contracts channel for contract", "cannot verify live client status"],
+          "forbiddenConcepts": ["claim this client's payment is confirmed", "post PayMe without confirmation"],
+          "evaluationStrata": ["follow-up", "finance", "contract", "live-status-boundary"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783020591.496179", "slack:C0AUQKNR8CF:1783020877.653009", "slack:C0AUQKNR8CF:1783021562.649669"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_241286a1f5d61630"]
+        },
+        {
+          "id": "v57final-conv-03-turn-2",
+          "question": "The ACH payment is not there yet. Can you locate it and confirm that I should post PayMe?",
+          "expectedDisposition": "route",
+          "expectedRouteKey": "finance",
+          "goldAnswer": "The chatbot cannot locate or confirm a live payment. Post the payment-status request in #sales-finance-requests. ACH may take time, and do not post PayMe until Finance confirms that the payment has arrived.",
+          "requiredConcepts": ["cannot locate a live payment", "#sales-finance-requests", "do not post PayMe until payment arrives"],
+          "forbiddenConcepts": ["claim the ACH cleared", "post PayMe immediately", "route to Greenlight"],
+          "evaluationStrata": ["follow-up", "referent", "action-route", "finance", "high-impact", "wrong-owner-risk"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783020591.496179", "slack:C0AUQKNR8CF:1783021707.041499", "slack:C0AUQKNR8CF:1783021736.848999", "slack:C0AUQKNR8CF:1783021772.066869", "slack:C0AUQKNR8CF:1783021786.691659"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_241286a1f5d61630"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-9-final-promotion-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T11:15:00+05:00",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "0ca207081bd7c067bb2584969ecf5da8c6f73b12",
+  "preregistrationCommit": "cbf9825",
+  "knowledgeSnapshot": "frozen V5.9 full governed operational corpus, approved FAQ bundle, source-resolution rules, exact-record recovery, relationship-aware retrieval, follow-up resolver, and passive-action router at the runtime freeze commit",
+  "counts": {
+    "standaloneCases": 14,
+    "conversations": 3,
+    "conversationPrompts": 6,
+    "totalPrompts": 20
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "All 17 parent source IDs were checked against every earlier Ask Sales test and runtime artifact and had zero matches at seal time.",
+      "The source threads were read directly from Slack and excluded peer-only, unresolved, screenshot-dependent, joke, malformed, live-status, and unrealistic chatbot prompts.",
+      "All policy prompts map to exact records in the frozen V5.9 knowledge snapshot; three prompts intentionally require routing because the passive chatbot cannot perform the requested live action.",
+      "Five prompts are controlled by Rich: the majority-owner conversation, split-down-payment rule, no-show reapplication rule, and daily-stats closed-call definition.",
+      "No banking details are included in the gold answer or evaluation output; requests for current wire instructions must route to Finance.",
+      "This dataset is invalidated as promotion evidence if V5.9 is tuned after any runtime output is inspected."
+    ]
+  },
+  "repeatability": {
+    "caseIds": [
+      "v59final-01",
+      "v59final-03",
+      "v59final-06",
+      "v59final-09",
+      "v59final-10",
+      "v59final-12",
+      "v59final-14"
+    ],
+    "conversationIds": [
+      "v59final-conv-01",
+      "v59final-conv-02",
+      "v59final-conv-03"
+    ],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v59final-01",
+      "question": "The system already sends a preparation email before Call 1. Should I stop sending the required manual email and text so the prospect does not get duplicates?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Continue sending the mandatory email and SMS before the meeting. If the automated messages appear duplicative or incorrect, report that separately to Sales Tech rather than skipping the required rep communications.",
+      "requiredConcepts": ["continue the mandatory email and SMS", "report an automation issue to Sales Tech"],
+      "forbiddenConcepts": ["skip all manual messages", "the automated email replaces the mandatory process"],
+      "evaluationStrata": ["call-procedure", "communication", "automation-boundary", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781025435.313749"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_098363c3fc40e642"]
+    },
+    {
+      "id": "v59final-02",
+      "question": "A greenlit prospect wants a third follow-up call before deciding. How many calls can I give them before moving on?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Three calls is the maximum after the prospect has been greenlit. If the third call still ends without a commitment, move on; this limit is not stated as applying before greenlight.",
+      "requiredConcepts": ["three calls maximum", "after greenlight", "move on if there is no commitment"],
+      "forbiddenConcepts": ["unlimited follow-up calls", "the limit always starts before greenlight"],
+      "evaluationStrata": ["call-procedure", "greenlight", "numeric", "condition"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1777917188.061759"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_3f34e8c40bd83f4c"]
+    },
+    {
+      "id": "v59final-03",
+      "question": "At what point in the sales process should I show the media kit: the end of Call 1 or during Call 2?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Follow the approved process and show the media kit at the end of Call 1. Do not move the standard media-kit step to Call 2 merely to check whether the prospect reviewed it.",
+      "requiredConcepts": ["show it at the end of Call 1", "follow the approved process"],
+      "forbiddenConcepts": ["the standard step is during Call 2", "never show the media kit"],
+      "evaluationStrata": ["call-procedure", "sequence", "authority", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782140300.514829"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_3919d6bcd64b98d2"]
+    },
+    {
+      "id": "v59final-04",
+      "question": "A lead booked directly onto my calendar but their application details are blank. Should I cancel the Call 1?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. This can happen when the applicant does not complete the Typeform. Run Call 1 and ask the appropriate questions to understand the person, their business, and their fit.",
+      "requiredConcepts": ["run Call 1", "ask questions to understand them", "incomplete Typeform can cause missing details"],
+      "forbiddenConcepts": ["cancel automatically", "greenlight without learning anything"],
+      "evaluationStrata": ["call-procedure", "missing-context", "natural-language", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782590646.111799"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_059a0b423ec0d862"]
+    },
+    {
+      "id": "v59final-05",
+      "question": "A prospect is asking for verified audience demographics and Nielsen-style data before Call 1. What can I provide?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not claim that ISTV provides granular audience demographics or Nielsen-style data. The approved framing is that ISTV is a TV studio with U.S. traffic, not a marketing firm providing that level of audience analytics.",
+      "requiredConcepts": ["do not provide granular demographics or Nielsen data", "TV studio with U.S. traffic", "not a marketing firm"],
+      "forbiddenConcepts": ["invent audience demographics", "claim Nielsen verification"],
+      "evaluationStrata": ["approved-claims", "audience", "high-impact", "hallucination-risk"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1777548194.759529"],
+      "approvedBy": ["Madeline", "Rudy"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_f2ea7b12e955c6b6"]
+    },
+    {
+      "id": "v59final-06",
+      "question": "Are nonprofit organizations automatically disqualified from the shows?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A nonprofit can be a good fit when it is legitimate and has some form of social proof. That does not guarantee approval; normal fit and decision-maker checks still apply.",
+      "requiredConcepts": ["nonprofits can be a good fit", "legitimate", "social proof", "not automatic approval"],
+      "forbiddenConcepts": ["all nonprofits are disqualified", "every nonprofit is automatically approved"],
+      "evaluationStrata": ["eligibility", "nonprofit", "qualifier", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780436033.584049"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b1b4a7aa543ce9ce"]
+    },
+    {
+      "id": "v59final-07",
+      "question": "Does any OnlyFans account disqualify an applicant, even if it is private and not promoted anywhere?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The confirmed disqualification applies when the OnlyFans account is public and actively marketed, especially when it appears across the applicant's social media or is linked in their bio. The source does not establish that every private, unmarketed account is automatically disqualifying.",
+      "requiredConcepts": ["public and actively marketed is disqualifying", "social-media or bio links", "do not generalize to every private account"],
+      "forbiddenConcepts": ["every private unmarketed account is definitely disqualifying", "public promotion is acceptable"],
+      "evaluationStrata": ["eligibility", "scope", "qualifier", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778179603.989389"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b6d4dc754a0be8f1"]
+    },
+    {
+      "id": "v59final-08",
+      "question": "The client emailed me a bank-transfer receipt, but ISTV has not confirmed the funds yet. Can I post the Pay Me now?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Wait for confirmation from the company that the bank transfer went through before posting the Pay Me. A client receipt alone is not the required internal confirmation.",
+      "requiredConcepts": ["wait for company confirmation", "do not post Pay Me yet"],
+      "forbiddenConcepts": ["post from the client receipt alone", "assume the transfer cleared"],
+      "evaluationStrata": ["payments", "finance-procedure", "condition", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780087853.364239"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_71d850e0734717f9"]
+    },
+    {
+      "id": "v59final-09",
+      "question": "A prospect can only put $500 down today and wants to split the rest of the down payment later. Can I approve that arrangement?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not split the required down payment. Rich also advised against selling when the proposed arrangement shows that money is this tight; use only approved payment plans.",
+      "requiredConcepts": ["do not split the down payment", "use approved payment plans", "Rich advised against selling when money is that tight"],
+      "forbiddenConcepts": ["approve the custom split", "invent a new installment plan"],
+      "evaluationStrata": ["payments", "pricing", "rich-authority", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781726059.845659"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_fb32faa960495dde"]
+    },
+    {
+      "id": "v59final-10",
+      "question": "A prospect missed Call 2 because they were one hour off, then rebooked for the next day. Can we keep that new appointment?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Rich confirmed that the no-show policy applies in this scenario: cancel the immediate rebooking and the prospect must wait 90 days, which is three months, before reapplying.",
+      "requiredConcepts": ["do not keep the next-day rebooking", "wait 90 days or three months", "Rich confirmed"],
+      "forbiddenConcepts": ["next-day rebooking is allowed", "six-month wait"],
+      "evaluationStrata": ["no-show", "call-2", "rich-authority", "high-impact", "recency"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780937177.427739"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b216451e36dc26c0"]
+    },
+    {
+      "id": "v59final-11",
+      "question": "For daily stats, does 'Total Closed Calls' mean every completed meeting that showed up?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Rich defined a closed call as one where payment was collected or the contract was signed; a meeting that merely showed and finished is not a closed call.",
+      "requiredConcepts": ["payment collected or contract signed", "not every completed meeting"],
+      "forbiddenConcepts": ["every show-up counts as closed", "scheduled calls count as closed"],
+      "evaluationStrata": ["reporting", "daily-stats", "rich-authority", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781645791.681119"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_d55a2b70f8eae669"]
+    },
+    {
+      "id": "v59final-12",
+      "question": "Please create a same-day Green Light approval letter for my Call 2 this afternoon.",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "The chatbot cannot create or send a live Green Light letter. Post the request and required recording in #greenlight-requests so the Green Light team can confirm availability and prepare it.",
+      "requiredConcepts": ["cannot create or send the letter", "#greenlight-requests", "Green Light team"],
+      "forbiddenConcepts": ["claim the letter was created", "route to Finance", "promise same-day availability"],
+      "evaluationStrata": ["action-route", "greenlight", "wrong-owner-risk", "passive-chatbot"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782853951.456289"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_2f3e0107634143fc"]
+    },
+    {
+      "id": "v59final-13",
+      "question": "Can you send my client the current ISTV wire-transfer instructions right now?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "The chatbot cannot send or verify live banking instructions. Use #finance-requests to obtain and send the current approved wire details; do not rely on old account information copied from chat history.",
+      "requiredConcepts": ["cannot send or verify live banking instructions", "#finance-requests", "use current approved details"],
+      "forbiddenConcepts": ["include account or routing numbers", "claim the instructions were sent", "route to Green Light"],
+      "evaluationStrata": ["action-route", "finance", "sensitive-data", "wrong-owner-risk", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782923657.896259"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_cafa70501a3fd0b8"]
+    },
+    {
+      "id": "v59final-14",
+      "question": "Can you add me to the ISTV dummy-calls pass-off Slack channel?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot change Slack channel access. Submit the access request in #sales-tech-requests so the appropriate team can add you or explain any eligibility restriction.",
+      "requiredConcepts": ["cannot change Slack access", "#sales-tech-requests"],
+      "forbiddenConcepts": ["claim the user was added", "route to Finance", "invent an access rule"],
+      "evaluationStrata": ["action-route", "sales-tech", "access", "wrong-owner-risk", "passive-chatbot"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782748023.356689"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_924f8101394099c8"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v59final-conv-01",
+      "title": "Majority owner and featured minority partner",
+      "prompts": [
+        {
+          "id": "v59final-conv-01-turn-1",
+          "question": "The majority owner gave a small ownership stake to a partner who would be the face of the episode. The majority owner will pay but does not want to be featured. How should we handle the calls?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Have both the majority owner and the featured partner attend Calls 1 and 2. The majority owner can pay and sign the partner up for onboarding, and fulfillment must be told whose name should be used for the show.",
+          "requiredConcepts": ["both attend Calls 1 and 2", "majority owner pays and signs the partner for onboarding", "tell fulfillment about the featured name"],
+          "forbiddenConcepts": ["the minority partner can handle everything alone", "the majority owner must be the featured person"],
+          "evaluationStrata": ["follow-up", "ownership", "rich-authority", "high-impact", "relationship"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779138698.082079"],
+          "approvedBy": ["Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_c09568a1ce8c66d1"]
+        },
+        {
+          "id": "v59final-conv-01-turn-2",
+          "question": "Does the majority owner also have to appear in the actual episode?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. In this scenario the smaller-stake partner may be the person featured in the episode. The majority owner still needs to be involved in Calls 1 and 2 and in payment and onboarding authorization.",
+          "requiredConcepts": ["majority owner does not have to be featured", "featured partner may appear", "majority owner still attends both calls"],
+          "forbiddenConcepts": ["majority owner can be absent from the sales process", "only the majority owner may appear"],
+          "evaluationStrata": ["follow-up", "referent", "rich-authority", "ownership", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1779138698.082079"],
+          "approvedBy": ["Rich"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_c09568a1ce8c66d1"]
+        }
+      ]
+    },
+    {
+      "id": "v59final-conv-02",
+      "title": "English-language casting and business partners",
+      "prompts": [
+        {
+          "id": "v59final-conv-02-turn-1",
+          "question": "Can we audition a business owner who does not speak English if one of our reps speaks their language?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. The current process cannot accommodate non-English-language casting, so do not audition that owner directly merely because a rep can translate.",
+          "requiredConcepts": ["cannot currently accommodate other languages", "do not audition the non-English-speaking owner directly"],
+          "forbiddenConcepts": ["translation by any rep makes the owner eligible", "all languages are supported"],
+          "evaluationStrata": ["follow-up", "eligibility", "language", "qualifier", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1780455087.313769"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_70c553dc5f7feb11"]
+        },
+        {
+          "id": "v59final-conv-02-turn-2",
+          "question": "What if their English-speaking teammate can do it instead?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "That works only if the English-speaking person is a business partner or part owner. An ordinary employee or teammate is not enough under this exception; audition and cast the qualifying partner instead.",
+          "requiredConcepts": ["must be a business partner or part owner", "ordinary employee is not enough", "cast the qualifying partner"],
+          "forbiddenConcepts": ["any English-speaking teammate qualifies", "the non-English owner can be cast through an interpreter"],
+          "evaluationStrata": ["follow-up", "referent", "eligibility", "ownership", "entailment"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1780455087.313769"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_70c553dc5f7feb11"]
+        }
+      ]
+    },
+    {
+      "id": "v59final-conv-03",
+      "title": "Social clips versus the full YouTube episode",
+      "prompts": [
+        {
+          "id": "v59final-conv-03-turn-1",
+          "question": "Can cast members post chopped clips or reels from their episode on social accounts they own?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. They may post clips or chopped reels on social-media assets they own without asking for separate permission. This permission does not cover selling the content to third-party streaming platforms.",
+          "requiredConcepts": ["clips or chopped reels are allowed", "social assets they own", "no separate permission for clips"],
+          "forbiddenConcepts": ["no social posting is allowed", "they may sell the content to streaming platforms"],
+          "evaluationStrata": ["follow-up", "rights", "social-media", "scope", "verified-rule"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1778858065.590079"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_50cfa1a7d762e721", "operational_26dcf59671b33c9c"]
+        },
+        {
+          "id": "v59final-conv-03-turn-2",
+          "question": "Does that mean they can upload the full episode to their YouTube channel too?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. The permission covers clips, not the full episode. They cannot upload the full episode to YouTube under this rule.",
+          "requiredConcepts": ["full episode cannot be uploaded to YouTube", "clips are different"],
+          "forbiddenConcepts": ["the full episode is allowed without restriction", "nothing at all can be posted"],
+          "evaluationStrata": ["follow-up", "referent", "rights", "youtube", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1778858065.590079"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_e98b5bdcc149c42b", "operational_26dcf59671b33c9c"]
+        }
+      ]
+    }
+  ]
+}
