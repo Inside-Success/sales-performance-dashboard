@@ -96,6 +96,12 @@ describe("V5.13 immutable final decision contract", () => {
     expect(v513DecisionContractErrors(item, right)).toEqual([]);
   });
 
+  it("keeps payment-before-contract sequencing separate from contract delivery automation", () => {
+    const item = need("Do I send the payment link or contract link first, or both at the same time?", "procedure");
+    const right = policy("sequence", "Standard payment before contract", "Collect payment first and then have the client sign the contract. Do not have a client sign tonight when payment will arrive tomorrow.");
+    expect(v513DecisionContractErrors(item, right)).toEqual([]);
+  });
+
   it("rejects a later reschedule rule for the immediate Call 1 waiting SOP", () => {
     const item = need("What is the SOP when I join Call 1 and the client is not there yet?", "procedure");
     const wrong = policy("reapply", "Call 1 rescheduling", "If the first audition never happened, reschedule for next week without a 90-day wait.");

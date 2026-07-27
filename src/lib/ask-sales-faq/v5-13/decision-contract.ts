@@ -40,7 +40,14 @@ export function v513DecisionContractErrors(need: V4SystemicNeed, policy: V4Syste
   const evidence = policyText(policy);
   const errors: string[] = [];
 
+  const asksPaymentContractSequence = /\bpayment\b/i.test(request) && /\bcontract\b/i.test(request) &&
+    /\b(?:first|order|sequence|before|after|both|same\s+time)\b/i.test(request);
+
   for (const contract of FOCUS_CONTRACTS) {
+    // A payment-versus-contract order question is answered by a sequencing
+    // decision. It must not be forced through the separate delivery/automation
+    // vocabulary merely because the rep used the word "send" or "link".
+    if (contract.id === "contract_delivery" && asksPaymentContractSequence) continue;
     if (contract.request.test(request) && !contract.evidence.test(evidence)) errors.push(`focus_mismatch:${contract.id}`);
   }
   if (CALL_1.test(request) && CALL_2.test(evidence) && !CALL_1.test(evidence)) errors.push("stage_mismatch:call_1_to_call_2");

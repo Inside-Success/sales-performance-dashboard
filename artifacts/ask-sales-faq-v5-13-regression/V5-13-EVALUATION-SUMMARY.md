@@ -20,7 +20,7 @@ The isolated candidate replayed all 134 privacy-reduced responses across 87 real
 
 V5.13 completed 285 provider-stage attempts. Four attempts failed and recovered; no response ended with a provider-only failure. Mean latency was 15,513 ms and P90 was 26,092 ms.
 
-Manual engineering review found that V5.13 removed the principal V5.12 wrong-relationship failures while retaining more answer/partial coverage than historical V3. Remaining gaps include the contract/payment sequence, show-season/episode-count scope, and conservative variability in a small number of answerable cases.
+Manual engineering review found that V5.13 removed the principal V5.12 wrong-relationship failures while retaining more answer/partial coverage than historical V3. A post-replay trace audit corrected one over-strict distinction between contract-delivery automation and the separately approved payment-before-contract sequence. The apparent show-season gap is a correct route: approved evidence says there are multiple seasons but does not give the numeric total the user asked for. Conservative variability remains in a small number of answerable cases.
 
 ## Focused nine-case gate
 
@@ -42,4 +42,4 @@ The compact blinded owner-review packet is local at `artifacts/ask-sales-faq-v5-
 
 ## Release position
 
-V5.13 is a meaningful safety improvement and a credible direct-replacement candidate, but it is not approved for production. Complete the compact blind review and verify the two named knowledge gaps before requesting explicit promotion approval.
+V5.13 is a meaningful safety improvement and a credible direct-replacement candidate, but it is not approved for production. Complete the compact blind review and a focused repeatability check before requesting explicit promotion approval.
