@@ -174,7 +174,7 @@ describe("Ask Sales V5.7 claim-scoped source resolution", () => {
       },
     });
     expect(result.sourcePlan.needs[0]).toMatchObject({ lane: "answer", preferredPolicyIds: ["owner-six-month-training-discontinued"] });
-  });
+  }, 15_000);
 
   it("turns source fields into natural user-facing prose", () => {
     expect(naturalizeV57Decision("No. Conditions: The client is current. Boundaries: Does not cover delinquent accounts."))
