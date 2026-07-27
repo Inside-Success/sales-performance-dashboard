@@ -1,0 +1,1249 @@
+{
+  "schemaVersion": "ask-sales-v5-10-final-gate-manual-audit-v1",
+  "status": "complete_promotion_gate_failed",
+  "generatedAt": "2026-07-27T06:54:22.793Z",
+  "primaryRuntimeSha256": "dcd3152de3a5cfcac49461171d0e4cdd8c6a319beac2e99f44e0ff4956d74c58",
+  "repeatabilityAnalysisSha256": "2360884fd067c7aaeaa14cb1163e4be9898ebfa2c33c54f46dd8f5ef755da779",
+  "methodology": {
+    "sourceOnlyGold": true,
+    "manualReview": true,
+    "aiJudgePromotionAuthority": false,
+    "postOutputRuntimeTuning": false,
+    "productionChanged": false
+  },
+  "summary": {
+    "prompts": 20,
+    "v3": {
+      "acceptable": 12,
+      "acceptableRate": 0.6,
+      "materialErrors": 4,
+      "wrongOwners": 2,
+      "falseRoutes": 4
+    },
+    "v510": {
+      "acceptable": 15,
+      "acceptableRate": 0.75,
+      "materialErrors": 2,
+      "wrongOwners": 1,
+      "falseRoutes": 3
+    },
+    "pairwise": {
+      "v510Wins": 8,
+      "v3Wins": 1,
+      "ties": 11,
+      "netWinsOverV3": 7
+    },
+    "repeatability": {
+      "runs": 3,
+      "prompts": 13,
+      "executions": 39,
+      "comparisonOpportunities": 26,
+      "laneFlipComparisons": 2,
+      "laneFlipRate": 0.07692307692307693,
+      "decisionBoundaryFlipComparisons": 2,
+      "decisionBoundaryFlipRate": 0.07692307692307693,
+      "sourceFlipComparisons": 1,
+      "sourceFlipRate": 0.038461538461538464,
+      "exactAnswerFlipComparisons": 2,
+      "exactAnswerFlipRate": 0.07692307692307693,
+      "casesRequiringManualReview": 2,
+      "preregisteredMaximumMaterialFlipRate": 0.05,
+      "passesAutomatedLaneFlipGate": false,
+      "passesAutomatedDecisionBoundaryFlipGate": false
+    }
+  },
+  "gates": {
+    "completeProviderBackedOutputs": true,
+    "zeroV510MaterialErrors": false,
+    "zeroV510WrongActionOwners": false,
+    "minimumV510AcceptableRate85Percent": false,
+    "minimumPairwiseNetWinsPlus3": true,
+    "positiveLeadAcrossMultipleStrata": true,
+    "noMaterialStratumRegression": false,
+    "maximumMaterialLaneOrContentFlipRate5Percent": false,
+    "manualSourceAuditComplete": true,
+    "blindHumanReviewComplete": false,
+    "explicitOwnerApproval": false
+  },
+  "promotionDecision": "do_not_promote_v5_10",
+  "blindReviewDecision": "not_run_because_prerequisite_correctness_and_repeatability_gates_failed",
+  "rootCauses": [
+    {
+      "code": "specificity_recency_conflict_unresolved",
+      "examples": [
+        "v510final-07",
+        "v510final-10"
+      ],
+      "finding": "The runtime still lets an older broad governed rule defeat or deadlock a newer, narrower authoritative Slack decision."
+    },
+    {
+      "code": "action_owner_intent_not_forced",
+      "examples": [
+        "v510final-03"
+      ],
+      "finding": "An explicit live Zoom-link request is recognized as a knowledge permission question, so the forced Sales Tech owner is never set and the generic Sales Questions fallback wins."
+    },
+    {
+      "code": "exact_record_admission_unstable",
+      "examples": [
+        "v510final-05"
+      ],
+      "finding": "The exact payment-first record is present, but model admission alternates between withholding it and returning it as a partial answer."
+    },
+    {
+      "code": "followup_referent_lost",
+      "examples": [
+        "v510final-conv-02-turn-2"
+      ],
+      "finding": "The follow-up resolver does not carry the approved PDF referent into retrieval, producing an unnecessary route even though turn one selected the controlling record."
+    }
+  ],
+  "items": [
+    {
+      "id": "v510final-01",
+      "question": "I'm trained as a Daymond John closer. Can I call outbound leads who applied to other ISTV shows and sell them that offer too?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. A Daymond John closer should only sell the Daymond John offer unless separately trained and approved for ISTV. The offers and deliverables are different.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782812111.580709"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly keep a DJ-only closer inside the DJ offer boundary."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, as a Daymond John-trained closer you should only sell Daymond John. If a lead applied to another ISTV show and is interested in that offer, you must pass them to an ISTV-assigned rep instead of calling them outbound to sell that other show.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "current-show-source",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "A DJ closer cannot sell ISTV leads; only DJ leads are permitted. This applies when the closer is trained only on DJ.; The leads are for ISTV. It does not address whether a DJ closer can sell other non-ISTV leads. It does not establish a process for cross-training.",
+        "selectedPolicyIds": [
+          "operational_516034b1a34f51ff"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-02",
+      "question": "For daily stats when my calendar has double bookings, is scheduled calls the number of leads booked and conducted calls the number of leads who actually showed?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Yes. For double bookings, scheduled calls is the total number of leads booked, and conducted calls is the total number of leads who showed.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1781029030.051799"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly count booked leads and leads who showed."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Yes, that's correct. For daily stats, scheduled calls count each booking individually, so if you have double bookings, each one counts as a separate scheduled call. Conducted calls also count each person who actually showed as an individual stat, even if they were part of a double booking.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Yes, scheduled calls are the total number of leads, and conducted calls are the total number of leads who showed. This applies when the context is daily stats for double bookings. It does not address counting each time slot separately.",
+        "selectedPolicyIds": [
+          "operational_a5d452de2a7975bd"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-03",
+      "question": "Can you generate the Zoom link for my applicant's sales call?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "The chatbot cannot generate a live Zoom link. Submit the request in the Sales Tech Requests channel.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779345025.231459"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": true,
+          "falseRoute": false,
+          "label": "wrong_action_owner"
+        },
+        "v510": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": true,
+          "falseRoute": false,
+          "label": "wrong_action_owner"
+        },
+        "note": "Both route a live Zoom-link request to Sales Questions instead of Sales Tech."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+        "answer": "I can’t confirm a reliable answer for that exact case from the applicable guidance. Please check #sales-questions-requests before replying to the prospect.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-04",
+      "question": "Before I call someone from the outbound list, do I need to check whether another rep already owns them in Keap?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Yes. Check Keap before calling outbound leads so you do not contact or rebook a lead already assigned to another rep.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782763352.021679"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": true,
+          "falseRoute": true,
+          "label": "false_route_wrong_owner"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.10 answers the exact Keap ownership rule; V3 withholds it and sends the rep to Sales Tech."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-tech-requests before replying.",
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-tech-requests before giving the prospect an answer.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "You must check Keap for lead ownership before calling outbound leads. This applies when Applies to outbound lead calling. It does not address inbound lead handling.",
+        "selectedPolicyIds": [
+          "operational_448f8c2704df8e55"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-05",
+      "question": "A prospect will send the payment tomorrow morning. Should I have them sign the contract tonight and collect payment afterward?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. The company process is payment first, then contract signing.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1779582833.269479"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_incorrect"
+        },
+        "v510": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "safe_false_route"
+        },
+        "note": "V3 incorrectly permits signing before payment and introduces an unrelated discount; V5.10 is safer but fails to answer the exact payment-first rule."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "You can send the contract tonight, but it's not advised and often hurts the sale. The normal close flow keeps contract and payment together unless leadership approves an exception. For the $2K discount, payment must be same day, so collecting it tomorrow would not qualify. If the prospect insists on signing tonight and paying tomorrow, confirm the exception with leadership and let the prospect know the $2K discount won't apply.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "contracts-edits-and-signature-process",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-06",
+      "question": "Does a cast member on a four-payment plan have to be paid in full before the filming session?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. They do not have to be paid in full before filming as long as they are not delinquent on any scheduled payment.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782936260.718629"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly allow filming before PIF when the payment plan is not delinquent."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, a cast member on a four-payment plan does not have to be paid in full before the filming session, as long as they are not delinquent on their payments leading up to filming. They can film before full payment, but they will not receive the digital asset until the balance is paid in full.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, full payment is not required before filming as long as the cast member is not delinquent on any payments. This applies when cast member is on a payment plan; Cast member is not delinquent on any payments prior to filming. It does not apply if payments are delinquent.",
+        "selectedPolicyIds": [
+          "operational_09864438bb225c32"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-07",
+      "question": "Does the VIP license place the episode on several extra platforms?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Not several by default. It adds one main extra-platform opportunity, Amazon Prime, and placement is not guaranteed. Apple TV submission can be purchased separately.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782191013.038519"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_incorrect"
+        },
+        "v510": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_incorrect"
+        },
+        "note": "Both prefer an older governed platform boundary and miss the newer exact rule that VIP primarily adds non-guaranteed Amazon Prime while Apple TV submission can be purchased separately."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, the VIP license does not place the episode on several extra platforms. VIP includes submission to one Tier-1 platform—Amazon Prime Video, the Apple TV streaming app, or Tubi—not multiple platforms. Placement on that platform is not guaranteed because the platform itself decides.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "platform-proof-and-claims-boundaries",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Main ISTV VIP/Premium includes submission to one Tier-1 streaming platform: Amazon Prime Video, the Apple TV streaming app, or Tubi. The platform decides placement, so placement is not guaranteed. A client cannot pay extra to force or guarantee Apple TV submission or placement.",
+        "selectedPolicyIds": [
+          "owner-vip-tier-one-platform-boundary"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-08",
+      "question": "A skeptical prospect wants to tour the studio before signing. Are in-person studio tours allowed?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Do not promise an in-person studio tour before signing. Use approved proof such as the virtual studio tour, articles, and past episodes instead.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780081112.367689"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly prohibit in-person pre-signing studio tours and point to virtual proof."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "In-person studio tours before signing are not allowed. We can share a virtual studio tour instead, so the prospect can see the space without visiting in person.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No to in-person pre-signing studio tours; a virtual studio tour Drive link, Wistia studio tour, and studio resources page were shared.",
+        "selectedPolicyIds": [
+          "claim_843c8ae5ea29aab9"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-09",
+      "question": "Do I have to wait until exactly 24 hours before Call 1 to send the vital-information email?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Send it the day before the meeting; it does not need to be exactly 24 hours before, but it must be sent before 9 PM ET the night before.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1780442253.811159"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly state day-before delivery before 9 PM ET, not exactly 24 hours."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, you don't have to wait exactly 24 hours. The vital-information email just needs to be sent the day before the meeting, as long as it goes out before 9 PM EST that night.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "The vital info email just has to be sent the day before the meeting, before 9 PM EST; it does not have to be exactly 24 hours in advance. This applies when Email contains vital info; Sent the day before the meeting; Sent before 9 PM EST. It does not address sending the email more than one day in advance. It does not specify content of vital info.",
+        "selectedPolicyIds": [
+          "operational_a18f92da46ca52b4"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-10",
+      "question": "My applicant is marked opted out in Keap but is already scheduled for Call 1 today. Should I cancel the call?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Join and run the audition normally. If they do not appear, wait five minutes, follow up by phone or text, and mark a no-show only if there is still no response.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782134400.768999"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_incorrect"
+        },
+        "v510": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "safe_conflict_route"
+        },
+        "note": "V3 applies a broad older opt-out cancellation rule and says to cancel. V5.10 detects the conflict and routes safely, but it should resolve the newer, narrower already-scheduled exception and answer."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Yes, cancel the call. The policy is to cancel any pending call if the person opted out before the call. Since your applicant is marked opted out in Keap and the call is scheduled for today, you should cancel it.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "opt-out-dnc-and-security-escalation",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-11",
+      "question": "If a backup rep joins a pass-off call and the original rep arrives six minutes after the scheduled start, who keeps the call?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "The original rep keeps the call because they have seven minutes from the scheduled start time to reclaim it. The backup rep should politely exit.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778774465.286009"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.10 correctly applies the seven-minute pass-off ownership window; V3 withholds the answer."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "The original rep has a 7-minute window from the scheduled start time to join the call. If they join within that window, the covering rep must politely exit. This applies when the call is a scheduled pass-off call; The original rep joins within 7 minutes of the scheduled start time. Limit: The 7-minute window does not start when the applicant joins early; it starts at the scheduled meeting time (e.g., 12:00 or 12:30).",
+        "selectedPolicyIds": [
+          "operational_941811560f35aa76"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-12",
+      "question": "Can you confirm what a Daymond John client's first payment will say on the receipt for tax write-off purposes?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance_request",
+      "goldAnswer": "The chatbot should not decide or verify receipt and tax-write-off details. Submit the question in the Sales Finance Requests channel.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783198212.034449"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly route receipt and tax-detail verification to Sales Finance."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-finance-requests before replying.",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-finance-requests before replying.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-finance-requests"
+        ],
+        "routeReason": "Use #sales-finance-requests only for the remaining owner action or confirmation.",
+        "answer": "This needs a Finance action, so please post it in #sales-finance-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-13",
+      "question": "Can you create and send an urgent greenlight letter for the applicant I just approved?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight_request",
+      "goldAnswer": "The chatbot cannot create or send a live greenlight letter. Submit the request through the Greenlight Requests process with the applicant details.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782240281.676789"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_boundary_weak"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both identify Greenlight Requests, but V5.10 clearly states that the passive chatbot cannot create or send the letter itself."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Yes, you can create and send an urgent greenlight letter for the applicant you just approved. To do this, use the #greenlight-requests channel to submit your request, and the team will handle it from there.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "sales-tech-routing-and-support-requests",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#greenlight-requests"
+        ],
+        "routeReason": "Use #greenlight-requests only for the remaining owner action or confirmation.",
+        "answer": "Please submit this greenlight request in #greenlight-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-14",
+      "question": "Where should I tell a prospect to watch an Inside Success TV episode?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Direct them to the Inside Success TV website, the mobile app in the Apple App Store, or the TV app on Roku, Apple TV, or Fire TV devices. Do not claim an episode exists for a newer show that has not aired yet.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1783540809.763929"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_incomplete"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.10 gives the complete website, mobile-app, and Roku/Apple/Fire-device answer; V3 omits website and mobile-app options."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Tell them to watch on the Inside Success Network app. They can download it on a Roku, Fire Stick, or Apple TV device.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "platform-proof-and-claims-boundaries",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Direct prospects to the company website, mobile app on the Apple Store, or TV via Roku, Apple, or Fire devices.",
+        "selectedPolicyIds": [
+          "operational_7b63cae5908e03f6"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-01-turn-1",
+      "question": "Can I send a prospect an episode featuring an entrepreneur in a similar industry?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Yes. You may share an episode from the platform that the prospect can relate to.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782246686.087219"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "does_not_answer"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.10 directly allows sharing a relevant platform episode; V3 gives navigation advice and leaves the permission unresolved."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+        "answer": "Prospects can search keywords on the website or downloadable application. Use #sales-questions-requests for the unresolved part.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "You may share any episode from the platform, but do not share results or metrics. This applies when No results or metrics are shared; Episode is from the platform. It does not allow sharing results or implying success.",
+        "selectedPolicyIds": [
+          "operational_d2431e615846c7aa"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-01-turn-2",
+      "question": "Can I also tell them how well that person's episode performed so they understand the likely ROI?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Do not share results or metrics and do not imply ROI or success. Share the episode itself without performance claims.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1782246686.087219"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "judgment": {
+        "winner": "v510",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_overlong"
+        },
+        "note": "V5.10 preserves the no-metrics/no-ROI boundary, although it adds unnecessary detail. V3 withholds the follow-up answer."
+      },
+      "v3": {
+        "lane": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": [],
+        "routeReason": "Please verify the unresolved part in #sales-questions-requests before replying.",
+        "answer": "That exact situation isn’t resolved by the guidance I can safely use. Please verify it in #sales-questions-requests before replying.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. This applies when the prospect is asking for specific metrics or proof of results. It does not provide actual stats or case studies. It does not override the policy of not sharing ROI data.",
+        "selectedPolicyIds": [
+          "operational_79a0b7756a0faf31"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-02-turn-1",
+      "question": "A prospect wants to review the license options with their team. Can I email them the sales slide deck?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Do not email the slide deck. Prefer to screen-share the approved PDF and walk them through the options on the call.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1777322925.376889"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly prohibit emailing the slide deck and prefer the approved PDF."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, you cannot email the sales slide deck to the prospect. The slide deck is considered internal material, and our policy prohibits sharing internal materials—including stats decks and sales materials—with clients unless explicitly approved.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "internal-material-sharing-boundaries",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "Do not email the slide deck; use the PDF version instead. It does not prohibit sharing the PDF version.",
+        "selectedPolicyIds": [
+          "operational_cd78979d3c4a3551"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-02-turn-2",
+      "question": "What if they insist that I email something they can show the team?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "You may email the approved PDF as a last resort, but still do not send the slide deck. Screen-sharing and handling questions live is preferred.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1777322925.376889"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "followup_false_route"
+        },
+        "note": "V3 carries the PDF referent and answers the last-resort exception; V5.10 loses the referent and routes."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "If the prospect insists on having something to share with their team, you can send the License Options document. This is only allowed after you have explained the options on the call and the prospect specifically needs it for internal review. Do not add any promises beyond what is in the document.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ],
+        "routeReason": "Use #sales-questions-requests only for the remaining owner action or confirmation.",
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-03-turn-1",
+      "question": "I closed a friend who did not come through an Instagram application. Do I need a different onboarding form for this self-generated lead?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "No. Use the same onboarding process for a self-generated lead.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778265617.738829"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Raul"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly keep the standard onboarding process for a self-generated lead."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "No, you do not need a different onboarding form. The onboarding process is the same for self-generated leads, including friends. The key difference is ensuring that the tech team applies the self-generated lead commission correctly.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "The onboarding process is the same as for other clients; ensure TEC gives 20% commission for self-generated leads. This applies when client is a self-generated lead (not from Instagram leads). It does not provide the specific form or link to use. It does not detail how to ensure the 20% commission.",
+        "selectedPolicyIds": [
+          "operational_e8d48b15b869f868"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    },
+    {
+      "id": "v510final-conv-03-turn-2",
+      "question": "Is there anything different I should make sure happens because I generated the lead myself?",
+      "expectedDisposition": "answer",
+      "expectedRouteKey": null,
+      "goldAnswer": "Yes. Make sure the TEC team records the self-generated lead so you receive the 20% commission. The onboarding steps themselves stay the same.",
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1778265617.738829"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Raul"
+      ],
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v510": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly preserve onboarding while telling TEC to record the 20% self-generated commission."
+      },
+      "v3": {
+        "lane": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "The onboarding process is the same. The only thing to watch is making sure tech applies the self-generated lead commission correctly.",
+        "selectedPolicyIds": [],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      },
+      "v510": {
+        "lane": "answer",
+        "needsRoute": false,
+        "routeChannels": [],
+        "routeReason": "",
+        "answer": "The onboarding process is the same as for other clients; ensure TEC gives 20% commission for self-generated leads. This applies when client is a self-generated lead (not from Instagram leads). It does not provide the specific form or link to use. It does not detail how to ensure the 20% commission.",
+        "selectedPolicyIds": [
+          "operational_e8d48b15b869f868"
+        ],
+        "matchedArticleId": "",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "providerBacked": true
+      }
+    }
+  ]
+}

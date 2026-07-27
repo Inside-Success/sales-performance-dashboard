@@ -1,0 +1,505 @@
+{
+  "schemaVersion": "ask-sales-v5-10-repeatability-analysis-v1",
+  "status": "complete",
+  "generatedAt": "2026-07-27T06:54:22.499Z",
+  "inputs": [
+    {
+      "path": "artifacts/ask-sales-faq-v5-10-final-gate/repeatability-run-1.json",
+      "sha256": "c64d4118bd7230bf39686a348ee0fdd7e963817f39d297a92762f08a658fb6d6"
+    },
+    {
+      "path": "artifacts/ask-sales-faq-v5-10-final-gate/repeatability-run-2.json",
+      "sha256": "d4ed0800e38d76136960205fdc2b6429fa890fb41f214b98e1984eee88833711"
+    },
+    {
+      "path": "artifacts/ask-sales-faq-v5-10-final-gate/repeatability-run-3.json",
+      "sha256": "0a6ba4eda4761eeb196a318abc69660d63996466bdbfa9cee2666272583ce4b0"
+    }
+  ],
+  "methodology": {
+    "baseline": "Runs 2 and 3 are compared with run 1 on the exact same prompt ID.",
+    "potentialMaterialBoundary": "Lane, routing, numeric tokens, and permission/prohibition modality.",
+    "caution": "Exact-answer and source variation is surfaced for human inspection; it is not automatically labeled material.",
+    "promotionEvidence": true
+  },
+  "aggregate": {
+    "runs": 3,
+    "prompts": 13,
+    "executions": 39,
+    "comparisonOpportunities": 26,
+    "laneFlipComparisons": 2,
+    "laneFlipRate": 0.07692307692307693,
+    "decisionBoundaryFlipComparisons": 2,
+    "decisionBoundaryFlipRate": 0.07692307692307693,
+    "sourceFlipComparisons": 1,
+    "sourceFlipRate": 0.038461538461538464,
+    "exactAnswerFlipComparisons": 2,
+    "exactAnswerFlipRate": 0.07692307692307693,
+    "casesRequiringManualReview": 2,
+    "preregisteredMaximumMaterialFlipRate": 0.05,
+    "passesAutomatedLaneFlipGate": false,
+    "passesAutomatedDecisionBoundaryFlipGate": false
+  },
+  "caseVariants": [
+    {
+      "id": "v510final-01",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "cannot",
+            "only",
+            "only",
+            "permitted"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_516034b1a34f51ff"
+        ]
+      ],
+      "exactAnswers": [
+        "A DJ closer cannot sell ISTV leads; only DJ leads are permitted. This applies when the closer is trained only on DJ.; The leads are for ISTV. It does not address whether a DJ closer can sell other non-ISTV leads. It does not establish a process for cross-training."
+      ]
+    },
+    {
+      "id": "v510final-03",
+      "expectedDisposition": "route",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "route"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "can't"
+          ]
+        }
+      ],
+      "sourceSets": [
+        []
+      ],
+      "exactAnswers": [
+        "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+      ]
+    },
+    {
+      "id": "v510final-05",
+      "expectedDisposition": "answer",
+      "laneVariants": 2,
+      "decisionBoundaryVariants": 2,
+      "sourceVariants": 2,
+      "exactAnswerVariants": 2,
+      "manualReviewRequired": true,
+      "lanes": [
+        "route",
+        "partial"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "can't"
+          ]
+        },
+        {
+          "lane": "partial",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "numbers": [],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        [],
+        [
+          "operational_041d12084fa741b7"
+        ]
+      ],
+      "exactAnswers": [
+        "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "Company process requires payment first, then contract signing. It does not allow exceptions. For the remaining case-specific part, please ask in #sales-questions-requests."
+      ]
+    },
+    {
+      "id": "v510final-07",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "1"
+          ],
+          "modalities": [
+            "cannot"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "owner-vip-tier-one-platform-boundary"
+        ]
+      ],
+      "exactAnswers": [
+        "Main ISTV VIP/Premium includes submission to one Tier-1 streaming platform: Amazon Prime Video, the Apple TV streaming app, or Tubi. The platform decides placement, so placement is not guaranteed. A client cannot pay extra to force or guarantee Apple TV submission or placement."
+      ]
+    },
+    {
+      "id": "v510final-09",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "24hours",
+            "9",
+            "9"
+          ],
+          "modalities": [
+            "have to"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_a18f92da46ca52b4"
+        ]
+      ],
+      "exactAnswers": [
+        "The vital info email just has to be sent the day before the meeting, before 9 PM EST; it does not have to be exactly 24 hours in advance. This applies when Email contains vital info; Sent the day before the meeting; Sent before 9 PM EST. It does not address sending the email more than one day in advance. It does not specify content of vital info."
+      ]
+    },
+    {
+      "id": "v510final-11",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "00",
+            "12",
+            "12",
+            "30",
+            "7",
+            "7",
+            "7"
+          ],
+          "modalities": [
+            "must"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_941811560f35aa76"
+        ]
+      ],
+      "exactAnswers": [
+        "The original rep has a 7-minute window from the scheduled start time to join the call. If they join within that window, the covering rep must politely exit. This applies when the call is a scheduled pass-off call; The original rep joins within 7 minutes of the scheduled start time. Limit: The 7-minute window does not start when the applicant joins early; it starts at the scheduled meeting time (e.g., 12:00 or 12:30)."
+      ]
+    },
+    {
+      "id": "v510final-13",
+      "expectedDisposition": "route",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "route"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#greenlight-requests"
+          ],
+          "numbers": [],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        []
+      ],
+      "exactAnswers": [
+        "Please submit this greenlight request in #greenlight-requests."
+      ]
+    },
+    {
+      "id": "v510final-conv-01-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "do not",
+            "may",
+            "no"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_d2431e615846c7aa"
+        ]
+      ],
+      "exactAnswers": [
+        "You may share any episode from the platform, but do not share results or metrics. This applies when No results or metrics are shared; Episode is from the platform. It does not allow sharing results or implying success."
+      ]
+    },
+    {
+      "id": "v510final-conv-01-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "06",
+            "2026",
+            "23,",
+            "90day"
+          ],
+          "modalities": [
+            "can",
+            "only"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_79a0b7756a0faf31"
+        ]
+      ],
+      "exactAnswers": [
+        "As of 2026-06-23, reiterate that episode-level stats are not shared, similar to Netflix. Emphasize the founder's industry history and success with 90 Day Hustle and Mawer Capital to build trust. Clarify that this is TV, not a Meta ad, and results vary; only trailer views can be guaranteed. This applies when the prospect is asking for specific metrics or proof of results. It does not provide actual stats or case studies. It does not override the policy of not sharing ROI data."
+      ]
+    },
+    {
+      "id": "v510final-conv-02-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [],
+          "modalities": [
+            "do not"
+          ]
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_cd78979d3c4a3551"
+        ]
+      ],
+      "exactAnswers": [
+        "Do not email the slide deck; use the PDF version instead. It does not prohibit sharing the PDF version."
+      ]
+    },
+    {
+      "id": "v510final-conv-02-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "route"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "route",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "numbers": [],
+          "modalities": [
+            "can",
+            "can't"
+          ]
+        }
+      ],
+      "sourceSets": [
+        []
+      ],
+      "exactAnswers": [
+        "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests."
+      ]
+    },
+    {
+      "id": "v510final-conv-03-turn-1",
+      "expectedDisposition": "answer",
+      "laneVariants": 1,
+      "decisionBoundaryVariants": 1,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 1,
+      "manualReviewRequired": false,
+      "lanes": [
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "20%",
+            "20%"
+          ],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_e8d48b15b869f868"
+        ]
+      ],
+      "exactAnswers": [
+        "The onboarding process is the same as for other clients; ensure TEC gives 20% commission for self-generated leads. This applies when client is a self-generated lead (not from Instagram leads). It does not provide the specific form or link to use. It does not detail how to ensure the 20% commission."
+      ]
+    },
+    {
+      "id": "v510final-conv-03-turn-2",
+      "expectedDisposition": "answer",
+      "laneVariants": 2,
+      "decisionBoundaryVariants": 2,
+      "sourceVariants": 1,
+      "exactAnswerVariants": 2,
+      "manualReviewRequired": true,
+      "lanes": [
+        "partial",
+        "answer"
+      ],
+      "decisionBoundaries": [
+        {
+          "lane": "partial",
+          "needsRoute": true,
+          "routeChannels": [
+            "#sales-questions-requests"
+          ],
+          "numbers": [
+            "20%",
+            "20%"
+          ],
+          "modalities": []
+        },
+        {
+          "lane": "answer",
+          "needsRoute": false,
+          "routeChannels": [],
+          "numbers": [
+            "20%",
+            "20%"
+          ],
+          "modalities": []
+        }
+      ],
+      "sourceSets": [
+        [
+          "operational_e8d48b15b869f868"
+        ]
+      ],
+      "exactAnswers": [
+        "The onboarding process is the same as for other clients; ensure TEC gives 20% commission for self-generated leads. This applies when client is a self-generated lead (not from Instagram leads). It does not provide the specific form or link to use. It does not detail how to ensure the 20% commission. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "The onboarding process is the same as for other clients; ensure TEC gives 20% commission for self-generated leads. This applies when client is a self-generated lead (not from Instagram leads). It does not provide the specific form or link to use. It does not detail how to ensure the 20% commission."
+      ]
+    }
+  ]
+}
