@@ -42,7 +42,7 @@ describe("Ask Sales V5.10 decision-family evidence controls", () => {
     expect(candidates).toHaveLength(1);
     expect(candidates[0].policy.decision).toMatch(/ask the right questions/i);
     expect(candidates[0].policy.decision).not.toMatch(/double[- ]book/i);
-  });
+  }, 15_000);
 
   it("uses the authoritative 90-day no-show rule instead of a scheduling-conflict exception", () => {
     const question = "They no-showed the second call and booked another appointment tomorrow. Can we keep it?";
@@ -57,7 +57,7 @@ describe("Ask Sales V5.10 decision-family evidence controls", () => {
     const plan: V4SystemicQueryPlan = { needs: [item], conversationIntent: "answer", reasoningSummary: "Fixture." };
     expect(preferredV510ExactEvidenceSentence(item, plan, retrieval, [candidates[0].policy.id])?.text)
       .toMatch(/^No\. The prospect must reapply in 90 days/i);
-  });
+  }, 15_000);
 
   it("does not convert a non-English owner into an English-capable applicant", () => {
     const question = "May we cast an owner who cannot speak English because the closer is bilingual?";

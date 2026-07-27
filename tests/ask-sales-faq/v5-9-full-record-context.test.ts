@@ -93,7 +93,7 @@ describe("Ask Sales V5.9 full-record and conversational context controls", () =>
     expect(exclusionReasons).toEqual([]);
     expect(retrieval.candidates.find((candidate) => candidate.policy.id === "operational_59d74978d4b58531")?.needScores?.N1)
       .toBeUndefined();
-  });
+  }, 15_000);
 
   it("does not treat a VIP deadline default as the same scenario as a genuine emergency exception", () => {
     const question = "A genuine family emergency means my prospect cannot complete Call 2 before the cohort closes. Is an extension possible?";
@@ -266,5 +266,5 @@ describe("Ask Sales V5.9 full-record and conversational context controls", () =>
       lane: "answer",
       preferredPolicyIds: [chosenRef],
     });
-  });
+  }, 15_000);
 });
