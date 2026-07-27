@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "name": "ask-sales-v5-7-final-promotion-gate-preregistration-2026-07-27",
+  "status": "preregistered_before_final_source_selection",
+  "preregisteredAt": "2026-07-27T06:28:00+05:00",
+  "runtimeFreezeCommit": "5f7bf48b776734cd414daf948d0d109831069ea9",
+  "slackChannelId": "C0AUQKNR8CF",
+  "sourceAccess": "read_only",
+  "selectionProtocol": {
+    "eligible": [
+      "A real sales-rep question with a readable, authoritative threaded answer",
+      "The answer is attributable to Rich, Mike, Rudy, Raul, or Madeline",
+      "The question is realistic for the passive Ask Sales chatbot",
+      "The source thread is self-contained enough to create an auditable answer label",
+      "Every source message ID has zero overlap with all prior Ask Sales evaluation datasets and runtime artifacts"
+    ],
+    "excluded": [
+      "Screenshot-only, attachment-only, missing-context, joke, announcement, or malformed questions",
+      "Pure requests for a human to perform an action unless intentionally selected as a routing control",
+      "Questions whose source answer depends on unavailable private context",
+      "Threads with unresolved material disagreement after checking the complete frozen authority state",
+      "Any question or source used to design or tune V5.7"
+    ],
+    "authorityReview": "Gold labels must be checked against the complete frozen knowledge state. Rich normally outranks Madeline for Sales policy, but recency, scope, and whether the statements govern the exact same decision must be evaluated together.",
+    "selectionOrder": "Select for quality and coverage before any V3 or V5.7 runtime is executed. Runtime output must never influence inclusion, exclusion, wording, or gold labels."
+  },
+  "primarySet": {
+    "targetStandalonePrompts": 18,
+    "targetConversations": 3,
+    "targetConversationPrompts": 6,
+    "targetTotalPrompts": 24,
+    "minimumActionOrUnsupportedControls": 4,
+    "minimumNaturalOrFollowUpPrompts": 5,
+    "minimumRelationshipQualifierScopeChallenges": 6,
+    "minimumHighImpactDecisions": 6,
+    "maximumPriorSourceIdOverlap": 0
+  },
+  "coverageTargets": [
+    "pricing, packages, discounts, or payment boundaries",
+    "eligibility, business fit, content, or show scope",
+    "Call 1, Call 2, no-show, cohort, reapply, or scheduling procedure",
+    "contracts, rights, testimonials, onboarding, filming, editing, or distribution",
+    "Finance, Green Light, Fulfillment, Sales Tech, Slack access, or other action ownership",
+    "natural follow-up or referent-dependent conversation",
+    "unsupported, irrelevant, live-status, or passive-chatbot control"
+  ],
+  "productionLogDiagnostic": {
+    "maximumPrompts": 5,
+    "promotionEvidence": false
+  },
+  "knowledgePresenceValues": [
+    "present_exact",
+    "present_compatible",
+    "missing_from_snapshot",
+    "governance_conflict"
+  ],
+  "promotionGate": {
+    "requireCompleteProviderBackedOutputs": true,
+    "maximumV57MaterialErrors": 0,
+    "maximumV57WrongActionOwners": 0,
+    "minimumV57AcceptableRate": 0.85,
+    "minimumPairwiseNetWinsOverV3": 4,
+    "requirePositiveLeadAcrossMultipleStrata": true,
+    "requireNoMaterialStratumRegression": true,
+    "repeatabilityExecutions": 3,
+    "maximumMaterialLaneOrContentFlipRate": 0.05,
+    "requiresManualSourceAudit": true,
+    "requiresBlindHumanReview": true,
+    "requiresExplicitOwnerApproval": true
+  },
+  "productionPromotionAuthorized": false
+}
