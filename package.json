@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:ask-sales-faq": "vitest run tests/ask-sales-faq",
+    "test:ask-sales-faq:ci": "vitest run tests/ask-sales-faq --pool=forks --maxWorkers=1 --no-file-parallelism",
     "test:ask-sales-faq:v4": "vitest run tests/ask-sales-faq/v4-*.test.ts",
     "validate:ask-sales-faq:v4:isolation": "node scripts/validate-ask-sales-v4-isolation.mjs",
     "validate:ask-sales-faq:v4:fresh-evaluation": "node scripts/validate-ask-sales-v4-fresh-evaluation.mjs",
