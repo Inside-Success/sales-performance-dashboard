@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "ask-sales-v5-12-production-head-to-head-analysis-v1",
+  "createdAt": "2026-07-27T18:50:40.692Z",
+  "sourceRuntimeSha256": "98ffb1b7773b1a7cd45f9fa9cf238f35de80642254351ab5f03e7e256a173f74",
+  "scope": {
+    "responses": 134,
+    "conversations": 87,
+    "selection": "complete privacy-reduced production population in the frozen launch window; no favorable-case sampling",
+    "historicalControl": "actual stored V3 answer and route outcome",
+    "challenger": "fresh isolated V5.12 replay with candidate-owned conversation history",
+    "productionMutation": false,
+    "productionPromotion": false
+  },
+  "laneCounts": {
+    "v3": {
+      "answer": 61,
+      "conversation": 1,
+      "route": 72
+    },
+    "v512": {
+      "answer": 70,
+      "conversation": 1,
+      "partial": 11,
+      "route": 52
+    },
+    "transitions": {
+      "answer->answer": 38,
+      "answer->partial": 8,
+      "answer->route": 15,
+      "conversation->conversation": 1,
+      "route->answer": 32,
+      "route->partial": 3,
+      "route->route": 37
+    }
+  },
+  "runtime": {
+    "v3LatencyMs": {
+      "mean": 18511,
+      "p50": 17013,
+      "p90": 26600,
+      "max": 36301
+    },
+    "v512LatencyMs": {
+      "mean": 16721,
+      "p50": 14320,
+      "p90": 27236,
+      "max": 57814
+    },
+    "v512ProviderStageAttempts": 283,
+    "v512FailedStageAttemptsRecovered": 5,
+    "v512ProviderFailureOnlyOutputs": 0
+  },
+  "manualAudit": {
+    "method": "Engineering review of every lane change, every feedback-bearing response, multi-turn failures, and selected-source/answer alignment. This is not independent SME gold.",
+    "highConfidenceMaterialErrorCount": 12,
+    "highConfidenceMaterialErrors": {
+      "production-008": {
+        "category": "follow_up_non_answer",
+        "reason": "Repeated the platform boundary instead of answering what else VIP includes."
+      },
+      "production-019": {
+        "category": "request_relationship_mismatch",
+        "reason": "Returned a platform boundary instead of reviewing or improving the customer email."
+      },
+      "production-031": {
+        "category": "request_relationship_mismatch",
+        "reason": "Returned the no-contract-amendment rule for a contract-delivery automation question."
+      },
+      "production-082": {
+        "category": "wrong_topic_match",
+        "reason": "Returned an onboarding-call attendance rule for a question about leveraging client material."
+      },
+      "production-087": {
+        "category": "follow_up_wrong_topic",
+        "reason": "Returned the DJ cohort rule for a follow-up asking whether Mastermind is networking or marketing education."
+      },
+      "production-098": {
+        "category": "wrong_procedure",
+        "reason": "Returned a reapply-wait rule for the live Call 1 no-show procedure; historical V3 had the directly responsive SOP and positive feedback."
+      },
+      "production-109": {
+        "category": "wrong_topic_match",
+        "reason": "Returned an agent-switch notification rule for a daily-stats reporting question."
+      },
+      "production-110": {
+        "category": "request_relationship_mismatch",
+        "reason": "Answered contract-duration language instead of the time until an episode becomes live on Amazon."
+      },
+      "production-111": {
+        "category": "wrong_owner_and_topic",
+        "reason": "Returned a client scheduling-extension rule instead of routing the urgent greenlight action to the greenlight owner."
+      },
+      "production-126": {
+        "category": "scope_leakage",
+        "reason": "Used a SAG-specific production-details record for a general studio-address request and returned unrelated personnel details."
+      },
+      "production-127": {
+        "category": "scope_leakage",
+        "reason": "Repeated the SAG-specific production-details record for a general Miami studio-address follow-up."
+      },
+      "production-133": {
+        "category": "composed_irrelevant_rule",
+        "reason": "Appended an unrelated missing-show disposition rule to a DNC/opt-out procedure answer."
+      }
+    },
+    "highConfidenceFalseRouteCount": 9,
+    "highConfidenceFalseRoutes": {
+      "production-032": "Contract-link delivery was directly answerable from the historical approved guidance.",
+      "production-036": "The major-platform boundary was directly answerable.",
+      "production-041": "The approved no-ROI-discussion boundary was directly answerable.",
+      "production-042": "The internal-material privacy boundary was directly answerable.",
+      "production-045": "The discontinued weekly-social-support rule was directly answerable.",
+      "production-058": "The Call 1 pricing boundary was directly answerable.",
+      "production-077": "The no-cohort rule for DJ/NLCEO was directly answerable.",
+      "production-120": "The immediate follow-up referred to the prison-rejection procedure and should have retained context.",
+      "production-131": "The current events/Mastermind terms had a directly responsive historical answer."
+    },
+    "primaryFailureMode": "The stored rule can be correct while V5.12 binds it to the wrong requested relationship, topic, workflow stage, or follow-up referent."
+  },
+  "conclusion": {
+    "meaningfullyBetterThanV3OnThisPopulation": false,
+    "safeForDirectProductionReplacement": false,
+    "promotionGate": "failed",
+    "reason": "The higher answer rate includes multiple high-confidence wrong-topic and wrong-procedure answers, including live greenlight and Call 1 cases. These are more dangerous than a safe route.",
+    "nextAction": "Keep V3 live. Treat wrong-relationship admission and follow-up object binding as release blockers before another direct-replacement test."
+  }
+}
