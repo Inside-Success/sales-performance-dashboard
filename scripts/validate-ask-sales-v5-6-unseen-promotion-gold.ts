@@ -32,7 +32,9 @@ type Dataset = {
 const root = process.cwd();
 const datasetPath = path.join(root, "tests/ask-sales-faq/v5-6-unseen-promotion-gold-2026-07-27.json");
 const dataset = JSON.parse(readFileSync(datasetPath, "utf8")) as Dataset;
-const assert = (value: unknown, message: string): asserts value => { if (!value) throw new Error(message); };
+const assert: (value: unknown, message: string) => asserts value = (value, message) => {
+  if (!value) throw new Error(message);
+};
 const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
 const walk = (directory: string): string[] => readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
   const absolute = path.join(directory, entry.name);

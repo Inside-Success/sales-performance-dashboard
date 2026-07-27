@@ -49,6 +49,8 @@ export type RawRecordEntailmentOptions = {
   compactDifferentQuestionRecords?: boolean;
   enforceControllingAuthorityWhenAvailable?: boolean;
   enforceRequiredAuthorityComposition?: boolean;
+  admitClaimScopedControllingSupport?: boolean;
+  recoverCompleteRawRecordShape?: boolean;
   versionLabel?: string;
 };
 
@@ -62,6 +64,8 @@ const V55_ENTAILMENT_OPTIONS: Required<RawRecordEntailmentOptions> = {
   compactDifferentQuestionRecords: false,
   enforceControllingAuthorityWhenAvailable: false,
   enforceRequiredAuthorityComposition: false,
+  admitClaimScopedControllingSupport: false,
+  recoverCompleteRawRecordShape: false,
   versionLabel: "V5.5",
 };
 
@@ -103,6 +107,27 @@ function eligibleRawEvidence(candidate: V4SystemicCandidate) {
   if (candidate.policy.systemic.scopeRisk === "case_specific" || candidate.policy.systemic.temporalRisk === "live_only") return false;
   return candidate.policy.source.approved_by.some((name) =>
     [...TRUSTED_OPERATIONAL_APPROVERS].some((approver) => name.toLowerCase().includes(approver)));
+}
+
+function eligibleClaimScopedControllingSupport(
+  candidate: V4SystemicCandidate,
+  need: V4SystemicNeed,
+  options: Required<RawRecordEntailmentOptions>,
+) {
+  if (!options.admitClaimScopedControllingSupport) return false;
+  if (
+    v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) !== "controlling" &&
+    !isClaimScopedResolutionCandidate(need, candidate)
+  ) return false;
+  if (candidate.policy.answerability !== "route_or_support") return false;
+  if (candidate.policy.systemic.ownerReviewRequired) return false;
+  if (candidate.policy.systemic.scopeRisk === "case_specific" || candidate.policy.systemic.temporalRisk === "live_only") return false;
+  return candidate.policy.source.approved_by.some((name) =>
+    [...TRUSTED_OPERATIONAL_APPROVERS].some((approver) => name.toLowerCase().includes(approver)));
+}
+
+function isClaimScopedResolutionCandidate(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
+  return candidate.needScores?.[need.id]?.matchedDecisionId?.endsWith("::v57-source-resolution") === true;
 }
 
 function verifiedSupportingQuote(quote: string, rawRecord: string) {
@@ -206,6 +231,7 @@ function publisherSourceKey(candidate: V4SystemicCandidate) {
 
 function isControllingAuthorityCandidate(need: V4SystemicNeed, candidate: V4SystemicCandidate) {
   return v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) === "controlling" ||
+    isClaimScopedResolutionCandidate(need, candidate) ||
     candidate.policy.source.kind === "owner_confirmed_isolated_overlay";
 }
 
@@ -242,23 +268,38 @@ export function rawEntailmentCandidateExclusionReasons(
 ) {
   const options = resolvedOptions(rawOptions);
   const reasons: string[] = [];
-  if (!eligibleRawEvidence(candidate)) reasons.push("not_eligible_raw_evidence");
+  if (!eligibleRawEvidence(candidate) && !eligibleClaimScopedControllingSupport(candidate, need, options)) {
+    reasons.push("not_eligible_raw_evidence");
+  }
   if (blockedDecisionKeys.has(candidate.policy.decision_key)) reasons.push("blocked_publish_collision");
   if (options.applyAuthorityResolutions &&
     v4SystemicResolutionPolicyDisposition(need, candidate.policy.id) === "excluded") reasons.push("excluded_by_authority_resolution");
   if (options.enforceControllingAuthorityWhenAvailable) {
     const controllingIds = new Set(matchingV4SystemicAuthorityResolutions(need)
       .flatMap((resolution) => resolution.controlling_policy_ids));
-    const controllingCandidateAvailable = retrieval.candidates.some((item) =>
-      (controllingIds.has(item.policy.id) || item.policy.source.kind === "owner_confirmed_isolated_overlay") &&
+    const claimScopedControllingAvailable = retrieval.candidates.some((item) =>
+      isClaimScopedResolutionCandidate(need, item) &&
       item.needScores?.[need.id] &&
-      eligibleRawEvidence(item) &&
+      (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
       !blockedDecisionKeys.has(item.policy.decision_key) &&
       quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts) &&
       broadInclusionCandidate(need, plan, retrieval.turn, item));
-    if (controllingCandidateAvailable &&
+    const controllingCandidateAvailable = retrieval.candidates.some((item) =>
+      (controllingIds.has(item.policy.id) || item.policy.source.kind === "owner_confirmed_isolated_overlay") &&
+      item.needScores?.[need.id] &&
+      (eligibleRawEvidence(item) || eligibleClaimScopedControllingSupport(item, need, options)) &&
+      !blockedDecisionKeys.has(item.policy.decision_key) &&
+      quoteMatchesRequestedFactType(need, plan, item.policy.decision, false, options.exactRelationshipContexts) &&
+      broadInclusionCandidate(need, plan, retrieval.turn, item));
+    if (
+      claimScopedControllingAvailable &&
+      !isClaimScopedResolutionCandidate(need, candidate)
+    ) {
+      reasons.push("superseded_by_claim_scoped_source_resolution");
+    } else if (controllingCandidateAvailable &&
       !controllingIds.has(candidate.policy.id) &&
-      candidate.policy.source.kind !== "owner_confirmed_isolated_overlay") {
+      candidate.policy.source.kind !== "owner_confirmed_isolated_overlay" &&
+      !isClaimScopedResolutionCandidate(need, candidate)) {
       reasons.push("superseded_by_available_controlling_authority");
     }
   }
@@ -405,10 +446,11 @@ function parseOutput(
       const ref = clean(record.ref, 180);
       const modelVerdict = clean(record.verdict, 40) as EntailmentVerdict;
       if (!allowed.has(ref) || !new Set<EntailmentVerdict>(["direct_answer", "partial_or_conditional", "different_question"]).has(modelVerdict)) return [];
-      const supportingQuote = clean(record.supporting_quote, 900);
-      const quoteVerified = verifiedSupportingQuote(supportingQuote, rawRecordById.get(ref) || "");
+      let supportingQuote = clean(record.supporting_quote, 900);
+      const rawRecord = rawRecordById.get(ref) || "";
+      let quoteVerified = verifiedSupportingQuote(supportingQuote, rawRecord);
       const need = plan.needs.find((candidate) => candidate.id === needId);
-      const quoteShapeVerified = Boolean(need && quoteMatchesRequestedFactType(
+      let quoteShapeVerified = Boolean(need && quoteMatchesRequestedFactType(
         { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
         plan,
         supportingQuote,
@@ -419,6 +461,26 @@ function parseOutput(
         .map((value) => clean(value, 240))
         .filter(Boolean)
         .slice(0, 12);
+      if (
+        options.recoverCompleteRawRecordShape &&
+        modelVerdict === "direct_answer" &&
+        quoteVerified &&
+        !quoteShapeVerified &&
+        !uncovered.length &&
+        rawRecord.length <= 900 &&
+        need &&
+        quoteMatchesRequestedFactType(
+          { ...need, authorityText: turn.usedImmediateContext ? need.text : need.authorityText },
+          plan,
+          rawRecord,
+          true,
+          options.exactRelationshipContexts,
+        )
+      ) {
+        supportingQuote = rawRecord;
+        quoteVerified = true;
+        quoteShapeVerified = true;
+      }
       const verdict = modelVerdict === "direct_answer" && (!quoteVerified || !quoteShapeVerified || uncovered.length)
         ? "partial_or_conditional" as const
         : modelVerdict;
