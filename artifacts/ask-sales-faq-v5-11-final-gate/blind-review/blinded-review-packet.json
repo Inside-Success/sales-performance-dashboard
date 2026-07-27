@@ -1,0 +1,708 @@
+{
+  "schemaVersion": "ask-sales-v511-blinded-review-packet-v2",
+  "packetId": "v511-blind-d4816e64f377",
+  "createdAt": "2026-07-27T12:50:44.176Z",
+  "runtimeInputSha256": "5ce28fc0f8411f5685b8c45a44b68f36881580e3af29432010326d67b6040c7f",
+  "datasetSha256": "d4816e64f3770a4abe1031d841b49773066a7b70e79c7ccf4d7e73ff91c523ab",
+  "systemsHidden": true,
+  "instructions": {
+    "preference": "Choose A, B, both acceptable, or neither.",
+    "materialError": "Mark a response only when it states a materially wrong rule, gives unsafe guidance, or sends the rep to the wrong place.",
+    "note": "Optional and short."
+  },
+  "items": [
+    {
+      "id": "v511final-01",
+      "order": 1,
+      "batch": 1,
+      "conversationId": null,
+      "question": "A prospect wants to stop by the Miami studio before deciding. Can I arrange an informal pop-in?",
+      "goldAnswer": "No. Do not arrange an unplanned studio visit outside the person's filming date. Send the approved virtual studio walkthrough instead.",
+      "evaluationStrata": [
+        "contentRightsPlatformsAndClaims",
+        "postSaleAndFulfillment",
+        "permission"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "No, a financial commitment is required to visit the studio. This applies when the client has not made any financial commitment. It does not specify the minimum financial commitment required. For the remaining case-specific part, please ask in #sales-questions-requests.",
+        "disposition": "partial",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      },
+      "outputB": {
+        "answer": "No, an informal pop-in is not allowed. Company policy requires some form of financial commitment before anyone can access the studio, and in-person pre-signing tours are not permitted. Instead, you can share the virtual studio tour resources to give the prospect a feel for the space.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-02",
+      "order": 2,
+      "batch": 1,
+      "conversationId": null,
+      "question": "A Call 1 applicant sent an aggressive, profane reply and their application suggests a criminal background. Should I still let them into the Zoom?",
+      "goldAnswer": "No. Tell the applicant they are not a fit and the company will not move forward, and do not admit them to the Zoom.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "callBookingAndLeadHandling",
+        "high-impact"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "No, you should not let them into the Zoom. When a Call 1 applicant sends an aggressive, profane reply and their application suggests a criminal background, the policy is to message them that they are not a fit and not moving forward, and not allow them into the Zoom.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Message the candidate that they are not a fit and do not allow them into the Zoom. This applies when Candidate has a criminal background and concerning application responses. It does not specify exact messaging template.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-03",
+      "order": 3,
+      "batch": 1,
+      "conversationId": null,
+      "question": "I booked a lead from the 20% spreadsheet, but Keap currently lists Rudy as the rep. Should I change the owner to myself?",
+      "goldAnswer": "Yes. If you booked the available 20% lead, update the Keap owner from Rudy to yourself.",
+      "evaluationStrata": [
+        "callBookingAndLeadHandling",
+        "lead-ownership",
+        "relationship"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Yes, change the rep in Keap to your name. This applies when You booked someone from the 20% spreadsheet.; The lead already has a rep assigned. It does not address if the original rep should be notified. It does not cover cases where the booking is disputed.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, you should change the Keap owner to yourself since you are in communication with the lead.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-04",
+      "order": 4,
+      "batch": 1,
+      "conversationId": null,
+      "question": "How many leads may I take from the 20% spreadsheet and the 20% dial-out channel?",
+      "goldAnswer": "The limit is 20 from the spreadsheet and 20 from the channel.",
+      "evaluationStrata": [
+        "callBookingAndLeadHandling",
+        "dial-out",
+        "numeric-boundary"
+      ],
+      "approvedBy": [
+        "Rich",
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "20; 20 and 20 for both sheet and channel. The limit is 20 leads for dial-out and 20 leads for the channel. It does not address any other lead sources. It does not specify if the limits are daily or per session.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "You may take 20 leads from the 20% spreadsheet and 20 leads from the 20% dial-out channel.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-05",
+      "order": 5,
+      "batch": 1,
+      "conversationId": null,
+      "question": "Can a client use a debit card through the credit-card payment link?",
+      "goldAnswer": "Yes. The credit-card payment link also accepts a debit card.",
+      "evaluationStrata": [
+        "paymentsContractsAndOffers",
+        "payment-method"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-finance-requests before giving the prospect an answer.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, the payment link for credit cards also works for debit cards. This applies when Applies to the specified payment link. It does not guarantee acceptance for all debit card types or issuers.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-06",
+      "order": 6,
+      "batch": 2,
+      "conversationId": null,
+      "question": "A lead is sending repeated inappropriate messages after leaving a Zoom. What should I do?",
+      "goldAnswer": "Block the lead in Zoom, opt them out, and report the case in Sales Tech so future contact can be blocked or unsubscribed.",
+      "evaluationStrata": [
+        "liveActionAndOwnerRouting",
+        "safety",
+        "owner-routing"
+      ],
+      "approvedBy": [
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Post in the tech channel and opt out. Tech should block or unsubscribe the lead. If inappropriate messages bypass you, they may go to Rich.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "As of 2026-06-03, post in the tech channel to opt out and block the contact. They can unsubscribe from future emails. In Zoom, block the user via the info icon. Forward any further inappropriate messages directly to Rich. This applies when Contact is sending inappropriate messages; Contact has not opted out. It does not cover legal escalation beyond forwarding to Rich.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-07",
+      "order": 7,
+      "batch": 2,
+      "conversationId": null,
+      "question": "A signed ACH payment failed because the client's bank account was temporarily restricted after a name change. Can they update the payment method and keep the signed Lite terms?",
+      "goldAnswer": "Yes, but obtain hard proof from the bank and complete the corrected payment before that Sunday's deadline.",
+      "evaluationStrata": [
+        "paymentsContractsAndOffers",
+        "exception",
+        "deadline",
+        "high-impact"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Yes, the cast member can update the payment method, but must provide a hard letter/proof from the bank explaining the issue, and it must be completed before the upcoming Sunday. This applies when the contract was already signed.; The ACH failure was due to a bank account restriction (e.g., name change).; Bank proof is provided.; Completed before the specified Sunday deadline. It does not apply if the contract was not signed or if the failure is not due to a verifiable bank issue.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, the client can update the payment method and keep the signed Lite terms. To proceed, the team will need hard bank proof for FTC, and the payment must be completed before Sunday. Use #sales-finance-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-08",
+      "order": 8,
+      "batch": 2,
+      "conversationId": null,
+      "question": "May I schedule a Call 2 or a reschedule at 6:30 or 7 PM on my personal calendar?",
+      "goldAnswer": "Yes. Set your public or personal calendar to the hours you want, but do not overlap it with or modify the master calendar.",
+      "evaluationStrata": [
+        "callBookingAndLeadHandling",
+        "calendar",
+        "scope"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Scheduling 2nd calls and reschedules is up to the rep through public/personal calendar hours, but do not overlap or touch the master calendar.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, you may schedule a Call 2 or a reschedule at 6:30 or 7 PM on your personal calendar. It is up to your discretion, as long as the booking does not overlap or touch the master calendar.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-09",
+      "order": 9,
+      "batch": 2,
+      "conversationId": null,
+      "question": "Should I tell a prospect that ISTV completes a formal full background check before approval?",
+      "goldAnswer": "No. Describe it as a background review using social profiles, Google searches, and similar checks, not as a formal full background check.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "contentRightsPlatformsAndClaims",
+        "claim-boundary"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "No, you should not tell a prospect that ISTV completes a formal full background check before approval. The background check is not formal or full, and it occurs after the first payment is collected, not before approval. The team checks the person's background, socials, and Google search rather than running a formal background check.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "A soft background check (socials, Google search) is performed on all clients post-payment, not before green light. This applies when client has made payment. It does not include a full formal background check.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-10",
+      "order": 10,
+      "batch": 2,
+      "conversationId": null,
+      "question": "Can a franchise owner proceed, or do they need approval from the ultimate brand decision-maker?",
+      "goldAnswer": "They can proceed, but they will probably need approval from the brand or ultimate decision-maker.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "decision-authority",
+        "qualifier"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "If the franchisee did not start the business, they would most likely need approval from the original owner; suggest having the person who started the business on Call2 if possible. If they cannot get the original owner on Call2, pass. This applies when the person is a franchisee who did not start the business. It does not guarantee approval if original owner is on Call2.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes, a franchise owner can proceed without approval from the ultimate brand decision-maker if they are an owner or part owner. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-11",
+      "order": 11,
+      "batch": 3,
+      "conversationId": null,
+      "question": "I took a call from the pass-off channel and need the recording for greenlight review. Where should I get it?",
+      "goldAnswer": "For a pass-off call, ask the rep who originally owned the call to DM you the recording. Dummy-channel recordings are available in that channel.",
+      "evaluationStrata": [
+        "liveActionAndOwnerRouting",
+        "postSaleAndFulfillment",
+        "recording"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "You can get the recording through the Zoom recording link for that call. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "For dummy pass-offs, check the dummy call recordings channel. For assigned calls, wait for the original rep to send it via DM. If unresponsive, ask tech support in the tech channel with client name and rep name. This applies when Dummy pass-offs have a dedicated channel.; Assigned call recordings must be requested from the original rep first. It does not guarantee tech can locate the recording.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-12",
+      "order": 12,
+      "batch": 3,
+      "conversationId": null,
+      "question": "Keap's disposition form does not list the show the lead applied for. Should I just select Legacy Makers?",
+      "goldAnswer": "Do not guess the show. Report the missing show option in Sales Tech so the form can be corrected.",
+      "evaluationStrata": [
+        "liveActionAndOwnerRouting",
+        "owner-routing",
+        "system-issue"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "No, you should not select Legacy Makers when the show the lead applied for is missing from Keap's disposition form. Choosing a placeholder or wrong show is not allowed. Instead, route this to the appropriate team to get the correct show added or to confirm the next step.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Mark the show as Legacy Makers and leave a comment in the note section with the new show name the client applied for. This applies when the show list in Keap has not yet been updated to include the new show. Limit: This is a temporary workaround until tech updates the show list.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-13",
+      "order": 13,
+      "batch": 3,
+      "conversationId": null,
+      "question": "A prospect no-showed Call 1 and never completed the first audition, but contacted me the following week to reschedule. Must they wait 90 days?",
+      "goldAnswer": "No. Because the first audition was never conducted, you may reschedule them the following week.",
+      "evaluationStrata": [
+        "callBookingAndLeadHandling",
+        "reapplication",
+        "relationship"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "No, they do not need to wait 90 days. Since the first audition was never conducted, the prospect can reschedule right away.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Yes if the first audition was not conducted.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-14",
+      "order": 14,
+      "batch": 3,
+      "conversationId": null,
+      "question": "Does a physical therapist who owns three practices qualify for America's Best Doctors?",
+      "goldAnswer": "Yes. A physical therapist with three owned practices can qualify for America's Best Doctors.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "relationship",
+        "rich-authority"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Physical therapists are evaluated on a case-by-case basis for America's Best Doctors. There is no blanket yes or no, so you cannot promise qualification without a review. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v511final-15",
+      "order": 15,
+      "batch": 3,
+      "conversationId": null,
+      "question": "A business-owner couple wants to discuss one partner's childhood abuse and how she overcame it to help others. Is that story itself unsuitable for the show?",
+      "goldAnswer": "No. That story can be suitable when discussed openly to help others; continue the normal fit and greenlight process.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "contentRightsPlatformsAndClaims",
+        "sensitive-content"
+      ],
+      "approvedBy": [
+        "Raul",
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "It is acceptable for a cast member to share a story about overcoming childhood abuse, including sexual abuse, to help others.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-16",
+      "order": 16,
+      "batch": 4,
+      "conversationId": null,
+      "question": "A cast member's own videographer cancelled just before filming. Can you tell me which replacement videographer to hire?",
+      "goldAnswer": "The chatbot should not choose a live vendor. Ask in the Fulfillment channel for the current approved referral or next step.",
+      "evaluationStrata": [
+        "liveActionAndOwnerRouting",
+        "postSaleAndFulfillment",
+        "correctAbstentionOrClarification"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      },
+      "outputB": {
+        "answer": "I don’t want to guess on that case. Please confirm it in #sales-questions-requests before giving the prospect an answer.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-17",
+      "order": 17,
+      "batch": 4,
+      "conversationId": null,
+      "question": "A prospect completed Call 1 for both a Daymond John show and an ISTV show with different reps. Which rep should continue?",
+      "goldAnswer": "The rep who conducted the first Call 1 or held the first booking should continue, and the second rep should cancel. A non-DJ rep must not sell the DJ offer.",
+      "evaluationStrata": [
+        "callBookingAndLeadHandling",
+        "lead-ownership",
+        "relationship",
+        "high-impact"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "The original point of contact should continue working with the prospect. The prospect can purchase both shows through that rep.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v511final-18",
+      "order": 18,
+      "batch": 4,
+      "conversationId": null,
+      "question": "A woman works full time but runs paid book collaborations and wants to expand beyond her region. Could she be a fit for America's Authors?",
+      "goldAnswer": "Yes. That can be a fit for America's Authors, and she may also benefit from networking at the Mastermind event.",
+      "evaluationStrata": [
+        "qualificationAndEligibility",
+        "contentRightsPlatformsAndClaims",
+        "relationship"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Yes, she could be a fit for America's Authors. A legitimate author can qualify without a separate business, as selling their books is the business itself. Since she runs paid book collaborations, she likely qualifies as a real author, but you should confirm that her books are genuinely available for sale online or in stores.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "I can’t confirm this safely from the approved guidance. Please ask in #sales-questions-requests.",
+        "disposition": "route",
+        "needsRoute": true,
+        "routeChannels": [
+          "#sales-questions-requests"
+        ]
+      }
+    },
+    {
+      "id": "v511final-conv-01-turn-1",
+      "order": 19,
+      "batch": 4,
+      "conversationId": "v511final-conv-01",
+      "question": "A prospect says their attorney must review the contract before payment. What should I do first?",
+      "goldAnswer": "First walk the prospect through the contract and resolve their questions live on the call.",
+      "evaluationStrata": [
+        "paymentsContractsAndOffers",
+        "naturalFollowups",
+        "callBookingAndLeadHandling"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "No. In the standard company process, collect payment first and then have the client sign the contract. Do not have a client sign tonight when payment will arrive tomorrow. A separately approved same-call wire workflow is a narrower exception and must not be inferred unless the question explicitly says it is a wire close.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "First, try to walk the prospect through the contract and address any concerns right on the call.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-conv-01-turn-2",
+      "order": 20,
+      "batch": 4,
+      "conversationId": "v511final-conv-01",
+      "question": "What if they still insist on having the attorney look at it?",
+      "goldAnswer": "As a last resort, send the approved contract PDF and schedule another call to continue the close.",
+      "evaluationStrata": [
+        "paymentsContractsAndOffers",
+        "naturalFollowups",
+        "referent",
+        "exception"
+      ],
+      "approvedBy": [
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "Yes, you can send the contract by email for lawyer review. This applies when prospect is adamant about legal review.; No amendments will be made to the contract. It does not imply that amendments are allowed.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "If the prospect still insists on having their attorney review the contract before payment, the worst-case fallback is to send them the contract PDF and schedule another call to go over it. However, you should first try to walk them through the contract and address any concerns right on the current call.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-conv-02-turn-1",
+      "order": 21,
+      "batch": 5,
+      "conversationId": "v511final-conv-02",
+      "question": "What is the difference between Call 1, Call 2, and onboarding?",
+      "goldAnswer": "Call 1 is the first audition. Call 2 is the closing call. Onboarding happens after payment and contract signing to prepare the client for production.",
+      "evaluationStrata": [
+        "postSaleAndFulfillment",
+        "callBookingAndLeadHandling",
+        "naturalFollowups"
+      ],
+      "approvedBy": [
+        "Rich",
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "Call 1 is the first audition, Call 2 is the closing call, and onboarding is booked after close via the welcome email. Onboarding happens after payment and signed contract with the studio team, scripting call, and Miami filming date.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Call 1 is first audition, Call 2 is closing call, and onboarding is booked after close via the welcome email. Call 1/2 are applicant calls for audition/info/license prescription; onboarding happens after payment and signed contract with the studio team, scripting call, and Miami filming date.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-conv-02-turn-2",
+      "order": 22,
+      "batch": 5,
+      "conversationId": "v511final-conv-02",
+      "question": "Who handles that last stage, and when should it be booked?",
+      "goldAnswer": "The studio team handles onboarding. Book it for the day after the close using the instructions in the welcome email.",
+      "evaluationStrata": [
+        "postSaleAndFulfillment",
+        "naturalFollowups",
+        "referent"
+      ],
+      "approvedBy": [
+        "Rich",
+        "Madeline"
+      ],
+      "outputA": {
+        "answer": "The studio executive team handles onboarding. You should book the onboarding call for the next day after close.",
+        "disposition": "answer_from_evidence",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "The studio executive team handles detailed onboarding-call questions. Reps should avoid overpromising fulfillment details. Call 1 is first audition, Call 2 is closing call, and onboarding is booked after close via the welcome email. Call 1/2 are applicant calls for audition/info/license prescription; onboarding happens after payment and signed contract with the studio team, scripting call, and Miami filming date.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-conv-03-turn-1",
+      "order": 23,
+      "batch": 5,
+      "conversationId": "v511final-conv-03",
+      "question": "How are the 100,000 guaranteed promotional views delivered and tracked?",
+      "goldAnswer": "They are delivered through a Facebook ad run from the official ISTV Instagram page, and the client receives dashboard access to track the campaign.",
+      "evaluationStrata": [
+        "contentRightsPlatformsAndClaims",
+        "paymentsContractsAndOffers",
+        "claim-boundary",
+        "high-impact"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "As of 2026-07-03, the 100k guaranteed views are delivered through a Facebook ad run via the official ISTV Instagram page. Clients can track the promotion through a dashboard. This applies when the promotion is a Facebook ad.; The ad is run through ISTV's Instagram account. It does not guarantee views on other platforms. It does not specify exact tracking metrics beyond the dashboard.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Pre-promotion is done on the Inside Success TV Instagram and ads run to the client trailer, but production/onboarding should handle post-sale fulfillment questions. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    },
+    {
+      "id": "v511final-conv-03-turn-2",
+      "order": 24,
+      "batch": 5,
+      "conversationId": "v511final-conv-03",
+      "question": "Can the client choose the audience and how long it takes to reach the view target?",
+      "goldAnswer": "Targeting is configured from the ad copy, creative text, and relevant location. Do not promise a delivery timeline; timing is a post-sale Fulfillment question.",
+      "evaluationStrata": [
+        "contentRightsPlatformsAndClaims",
+        "postSaleAndFulfillment",
+        "naturalFollowups",
+        "correctAbstentionOrClarification"
+      ],
+      "approvedBy": [
+        "Madeline",
+        "Rich"
+      ],
+      "outputA": {
+        "answer": "As of 2026-07-03, the ad targeting is configured based on the words in the ad copy and graphics. For example, keywords like 'pet spa' and location 'Palm Beach FL' will target relevant demographics. This applies when Targeting is derived from the ad's text and visual content.; Location targeting is included based on the business location mentioned. Limit: Clients cannot manually select demographics; it is based on ad content. It does not cover all possible targeting parameters. The promotion typically delivers within a few weeks up to 2 months, but exact timing should be confirmed with the fulfillment hotline. This applies when This is a post-sale procedure.; Timeline may vary. Limit: Not a guaranteed timeframe; fulfillment hotline has the final answer. It does not cover delays or exceptions.",
+        "disposition": "answer",
+        "needsRoute": false,
+        "routeChannels": []
+      },
+      "outputB": {
+        "answer": "Targeting is based on ad copy and graphic keywords, along with location, using Meta. The exact time to reach the view target is not confirmed by the available evidence. Use #sales-questions-requests for the unresolved part.",
+        "disposition": "route_from_evidence",
+        "needsRoute": true,
+        "routeChannels": []
+      }
+    }
+  ],
+  "packetSha256": "9d5fa56677a891412ec428de5f7057641e5f87eed4268ab7b01881596ca702f2"
+}

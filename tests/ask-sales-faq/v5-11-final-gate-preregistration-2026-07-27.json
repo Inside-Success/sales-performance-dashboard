@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "name": "Ask Sales V5.11 source-disjoint final promotion gate",
+  "status": "preregistered_before_source_selection",
+  "preregisteredAt": "2026-07-27T12:08:00.000Z",
+  "runtimeFreezeCommit": "9cf9419",
+  "productionChanged": false,
+  "selection": {
+    "targetPrompts": 24,
+    "minimumDistinctSlackParentThreads": 20,
+    "allowedChannelIds": ["C0AUQKNR8CF"],
+    "authoritativeReplyRequired": true,
+    "acceptedApprovers": ["Rich", "Mike", "Rudy", "Raul", "Madeline"],
+    "sourceDisjointFromAllEarlierGoldAndEvaluationSets": true,
+    "excludeRuntimeOutputFromGoldAuthoring": true,
+    "excludeLowQualityOrAmbiguousQuestions": true,
+    "excludeQuestionsWhoseThreadDoesNotResolveTheAskedDecision": true
+  },
+  "requiredStrata": {
+    "liveActionAndOwnerRouting": 3,
+    "paymentsContractsAndOffers": 4,
+    "qualificationAndEligibility": 4,
+    "callBookingAndLeadHandling": 4,
+    "contentRightsPlatformsAndClaims": 4,
+    "postSaleAndFulfillment": 2,
+    "naturalFollowups": 2,
+    "correctAbstentionOrClarification": 1
+  },
+  "evaluation": {
+    "systems": ["v3", "v511"],
+    "providerParityRequired": true,
+    "primaryRunCount": 1,
+    "repeatabilityRuns": 3,
+    "repeatabilitySubsetPrompts": 12,
+    "manualSourceOnlyAuditRequired": true,
+    "blindHumanReviewRequired": true,
+    "aiJudgeHasPromotionAuthority": false
+  },
+  "promotionGates": {
+    "completeProviderBackedOutputs": true,
+    "zeroV511MaterialErrors": true,
+    "zeroV511WrongActionOwners": true,
+    "minimumV511AcceptableRate": 0.85,
+    "minimumPairwiseNetWinsOverV3": 3,
+    "noMaterialStratumRegression": true,
+    "maximumLaneOrMaterialDecisionFlipRate": 0.05,
+    "sourceDisjointnessVerified": true,
+    "productionIsolationVerified": true,
+    "explicitOwnerApprovalRequired": true
+  },
+  "guardrails": [
+    "No runtime or knowledge change after source selection.",
+    "A safe route is correct when the source does not support an answer or the request is a live action.",
+    "A false route is a failure when an exact authoritative answer exists.",
+    "Evaluation may not reward verbosity, confidence, or answer rate by themselves.",
+    "No production promotion occurs in this phase."
+  ]
+}

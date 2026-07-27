@@ -14,10 +14,10 @@ import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 import { findV55PublishCollisions } from "@/lib/ask-sales-faq/v5-5/publisher-collisions";
 import {
-  ASK_SALES_V510_PIPELINE_VERSION,
-  runAskSalesFaqV510,
-} from "@/lib/ask-sales-faq/v5-10/runtime";
-import { getV510KnowledgeVersion, getV510OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-10/knowledge";
+  ASK_SALES_V511_PIPELINE_VERSION,
+  runAskSalesFaqV511,
+} from "@/lib/ask-sales-faq/v5-11/runtime";
+import { getV511KnowledgeVersion, getV511OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-11/knowledge";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -62,7 +62,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", ASK_SALES_V510_PIPELINE_VERSION);
+  response.headers.set("x-ask-sales-runtime", ASK_SALES_V511_PIPELINE_VERSION);
   return response;
 }
 
@@ -77,18 +77,19 @@ export async function GET() {
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: ASK_SALES_V510_PIPELINE_VERSION,
+    runtime: ASK_SALES_V511_PIPELINE_VERSION,
     persistence: false,
     productionSelectorChanged: false,
-    knowledgeVersion: getV510KnowledgeVersion(),
+    knowledgeVersion: getV511KnowledgeVersion(),
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
-    operationalPolicyCount: getV510OperationalPolicyCount(),
+    operationalPolicyCount: getV511OperationalPolicyCount(),
     isolatedOwnerConfirmedOverlayCount: 2,
     claimScopedSourceResolutionVersion: "v57-r1",
     relationshipOwnerContextVersion: "v58-r1",
     fullRecordContextVersion: "v59-r1",
     decisionFamilyEvidenceControlVersion: "v510-r1",
+    sourceReconciledBoundedControlVersion: "v511-r1",
     stableOperationalPromotionCount: snapshot.stableOperationalPromotionCount,
     activeScopedOperationalPromotionCount: snapshot.activeScopedOperationalPromotionCount,
     activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV510KnowledgeVersion();
+    const knowledgeVersion = getV511KnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v5_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const question = parsed.data.question;
-      const result = await runAskSalesFaqV510(question, [...verifiedMessages, { role: "user", content: question }], {
+      const result = await runAskSalesFaqV511(question, [...verifiedMessages, { role: "user", content: question }], {
         provider: generateV4Json,
         validatorProvider: generateV4ValidationJson,
       });

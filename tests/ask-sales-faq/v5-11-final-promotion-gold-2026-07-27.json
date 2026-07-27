@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 3,
+  "status": "sealed_before_runtime_evaluation",
+  "name": "ask-sales-v5-11-final-promotion-gold-2026-07-27",
+  "sealedAt": "2026-07-27T14:05:00.000Z",
+  "runtimeFreezeCommit": "9cf9419",
+  "preregistrationCommit": "9259707",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "counts": {
+    "standaloneCases": 18,
+    "conversations": 3,
+    "conversationPrompts": 6,
+    "totalPrompts": 24,
+    "distinctSlackParentThreads": 21
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "All 21 parent Slack source IDs were checked against every earlier Ask Sales JSON gold and evaluation set and had zero matches at seal time.",
+      "Every controlling reply came from Rich, Mike, Rudy, Raul, or Madeline and was reviewed before gold authoring.",
+      "Unresolved, peer-only, screenshot-dependent, malformed, and low-value questions were excluded.",
+      "No Slack write, reaction, draft, edit, join, or invitation was performed.",
+      "The frozen V5.11 runtime may not be tuned after these sources or outputs are revealed."
+    ]
+  },
+  "knowledgeSnapshot": "frozen V5.11 governed corpus and bounded decision-family, owner-routing, exact-admission, and follow-up controls at runtime commit 9cf9419",
+  "repeatability": {
+    "caseIds": ["v511final-01", "v511final-03", "v511final-05", "v511final-07", "v511final-09", "v511final-11", "v511final-13", "v511final-17"],
+    "conversationIds": ["v511final-conv-01", "v511final-conv-03"],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v511final-01",
+      "question": "A prospect wants to stop by the Miami studio before deciding. Can I arrange an informal pop-in?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not arrange an unplanned studio visit outside the person's filming date. Send the approved virtual studio walkthrough instead.",
+      "requiredConcepts": ["no informal studio pop-in", "virtual studio walkthrough"],
+      "forbiddenConcepts": ["send them to the studio", "promise an in-person tour"],
+      "evaluationStrata": ["contentRightsPlatformsAndClaims", "postSaleAndFulfillment", "permission"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783618660.735119"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-02",
+      "question": "A Call 1 applicant sent an aggressive, profane reply and their application suggests a criminal background. Should I still let them into the Zoom?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Tell the applicant they are not a fit and the company will not move forward, and do not admit them to the Zoom.",
+      "requiredConcepts": ["not a fit", "do not admit to Zoom"],
+      "forbiddenConcepts": ["run the audition anyway", "approve them automatically"],
+      "evaluationStrata": ["qualificationAndEligibility", "callBookingAndLeadHandling", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780929895.003949"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-03",
+      "question": "I booked a lead from the 20% spreadsheet, but Keap currently lists Rudy as the rep. Should I change the owner to myself?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. If you booked the available 20% lead, update the Keap owner from Rudy to yourself.",
+      "requiredConcepts": ["change Keap owner", "to the rep who booked the lead"],
+      "forbiddenConcepts": ["leave Rudy as owner", "ownership never changes"],
+      "evaluationStrata": ["callBookingAndLeadHandling", "lead-ownership", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780930861.043389"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-04",
+      "question": "How many leads may I take from the 20% spreadsheet and the 20% dial-out channel?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The limit is 20 from the spreadsheet and 20 from the channel.",
+      "requiredConcepts": ["20 from spreadsheet", "20 from channel"],
+      "forbiddenConcepts": ["unlimited from the channel", "30 from each"],
+      "evaluationStrata": ["callBookingAndLeadHandling", "dial-out", "numeric-boundary"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780684458.979059"],
+      "approvedBy": ["Rich", "Madeline"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-05",
+      "question": "Can a client use a debit card through the credit-card payment link?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The credit-card payment link also accepts a debit card.",
+      "requiredConcepts": ["debit card is accepted", "same credit-card link"],
+      "forbiddenConcepts": ["debit requires a different link", "debit is not accepted"],
+      "evaluationStrata": ["paymentsContractsAndOffers", "payment-method"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780685756.920789"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-06",
+      "question": "A lead is sending repeated inappropriate messages after leaving a Zoom. What should I do?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Block the lead in Zoom, opt them out, and report the case in Sales Tech so future contact can be blocked or unsubscribed.",
+      "requiredConcepts": ["block in Zoom", "opt out", "Sales Tech"],
+      "forbiddenConcepts": ["continue contacting them", "route to Finance"],
+      "evaluationStrata": ["liveActionAndOwnerRouting", "safety", "owner-routing"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780511036.323599"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_route"
+    },
+    {
+      "id": "v511final-07",
+      "question": "A signed ACH payment failed because the client's bank account was temporarily restricted after a name change. Can they update the payment method and keep the signed Lite terms?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, but obtain hard proof from the bank and complete the corrected payment before that Sunday's deadline.",
+      "requiredConcepts": ["hard proof from bank", "complete before Sunday", "may update payment method"],
+      "forbiddenConcepts": ["no proof needed", "open-ended extension"],
+      "evaluationStrata": ["paymentsContractsAndOffers", "exception", "deadline", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780429004.262599"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-08",
+      "question": "May I schedule a Call 2 or a reschedule at 6:30 or 7 PM on my personal calendar?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Set your public or personal calendar to the hours you want, but do not overlap it with or modify the master calendar.",
+      "requiredConcepts": ["personal calendar hours are flexible", "do not overlap master", "do not edit master"],
+      "forbiddenConcepts": ["edit the master calendar", "overlapping is fine"],
+      "evaluationStrata": ["callBookingAndLeadHandling", "calendar", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780347654.965099"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-09",
+      "question": "Should I tell a prospect that ISTV completes a formal full background check before approval?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Describe it as a background review using social profiles, Google searches, and similar checks, not as a formal full background check.",
+      "requiredConcepts": ["not a formal full background check", "social and Google review"],
+      "forbiddenConcepts": ["formal criminal background report", "guaranteed comprehensive check"],
+      "evaluationStrata": ["qualificationAndEligibility", "contentRightsPlatformsAndClaims", "claim-boundary"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780345948.508129"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-10",
+      "question": "Can a franchise owner proceed, or do they need approval from the ultimate brand decision-maker?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "They can proceed, but they will probably need approval from the brand or ultimate decision-maker.",
+      "requiredConcepts": ["may proceed", "likely needs brand approval"],
+      "forbiddenConcepts": ["franchise owner always has unrestricted authority", "automatic disqualification"],
+      "evaluationStrata": ["qualificationAndEligibility", "decision-authority", "qualifier"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1779383301.155399"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-11",
+      "question": "I took a call from the pass-off channel and need the recording for greenlight review. Where should I get it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "For a pass-off call, ask the rep who originally owned the call to DM you the recording. Dummy-channel recordings are available in that channel.",
+      "requiredConcepts": ["original rep DMs pass-off recording", "dummy-channel recording is in channel"],
+      "forbiddenConcepts": ["recording is always in pass-off channel", "ask Finance"],
+      "evaluationStrata": ["liveActionAndOwnerRouting", "postSaleAndFulfillment", "recording"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778016992.576449"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-12",
+      "question": "Keap's disposition form does not list the show the lead applied for. Should I just select Legacy Makers?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "Do not guess the show. Report the missing show option in Sales Tech so the form can be corrected.",
+      "requiredConcepts": ["do not guess", "Sales Tech"],
+      "forbiddenConcepts": ["always select Legacy Makers", "route to Finance"],
+      "evaluationStrata": ["liveActionAndOwnerRouting", "owner-routing", "system-issue"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781559513.875619"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_route"
+    },
+    {
+      "id": "v511final-13",
+      "question": "A prospect no-showed Call 1 and never completed the first audition, but contacted me the following week to reschedule. Must they wait 90 days?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Because the first audition was never conducted, you may reschedule them the following week.",
+      "requiredConcepts": ["may reschedule", "first audition was not conducted"],
+      "forbiddenConcepts": ["automatic 90-day wait", "treat as completed Call 1"],
+      "evaluationStrata": ["callBookingAndLeadHandling", "reapplication", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1780936358.795779"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-14",
+      "question": "Does a physical therapist who owns three practices qualify for America's Best Doctors?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. A physical therapist with three owned practices can qualify for America's Best Doctors.",
+      "requiredConcepts": ["qualifies", "ownership of three practices"],
+      "forbiddenConcepts": ["all physical therapists are disqualified", "treat them as a nurse"],
+      "evaluationStrata": ["qualificationAndEligibility", "relationship", "rich-authority"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778765168.125759"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-15",
+      "question": "A business-owner couple wants to discuss one partner's childhood abuse and how she overcame it to help others. Is that story itself unsuitable for the show?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. That story can be suitable when discussed openly to help others; continue the normal fit and greenlight process.",
+      "requiredConcepts": ["story can be suitable", "helping others"],
+      "forbiddenConcepts": ["automatic disqualification because the topic is sensitive", "exploit the story"],
+      "evaluationStrata": ["qualificationAndEligibility", "contentRightsPlatformsAndClaims", "sensitive-content"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1778623561.320989"],
+      "approvedBy": ["Raul", "Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-16",
+      "question": "A cast member's own videographer cancelled just before filming. Can you tell me which replacement videographer to hire?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "The chatbot should not choose a live vendor. Ask in the Fulfillment channel for the current approved referral or next step.",
+      "requiredConcepts": ["Fulfillment channel", "do not invent a vendor"],
+      "forbiddenConcepts": ["name an unverified videographer", "route to Finance"],
+      "evaluationStrata": ["liveActionAndOwnerRouting", "postSaleAndFulfillment", "correctAbstentionOrClarification"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781803114.359149"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_route"
+    },
+    {
+      "id": "v511final-17",
+      "question": "A prospect completed Call 1 for both a Daymond John show and an ISTV show with different reps. Which rep should continue?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The rep who conducted the first Call 1 or held the first booking should continue, and the second rep should cancel. A non-DJ rep must not sell the DJ offer.",
+      "requiredConcepts": ["first Call 1 or booking keeps lead", "second rep cancels", "non-DJ rep cannot sell DJ"],
+      "forbiddenConcepts": ["both reps continue competing", "either rep may sell either offer"],
+      "evaluationStrata": ["callBookingAndLeadHandling", "lead-ownership", "relationship", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1782767217.475259"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v511final-18",
+      "question": "A woman works full time but runs paid book collaborations and wants to expand beyond her region. Could she be a fit for America's Authors?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. That can be a fit for America's Authors, and she may also benefit from networking at the Mastermind event.",
+      "requiredConcepts": ["can fit America's Authors", "book collaboration activity"],
+      "forbiddenConcepts": ["full-time employment automatically disqualifies her", "must remain on Mompreneurs"],
+      "evaluationStrata": ["qualificationAndEligibility", "contentRightsPlatformsAndClaims", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1781805618.036689"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v511final-conv-01",
+      "title": "Attorney contract review",
+      "prompts": [
+        {
+          "id": "v511final-conv-01-turn-1",
+          "question": "A prospect says their attorney must review the contract before payment. What should I do first?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "First walk the prospect through the contract and resolve their questions live on the call.",
+          "requiredConcepts": ["walk through contract live", "resolve questions on call"],
+          "forbiddenConcepts": ["skip the contract discussion", "promise amendments"],
+          "evaluationStrata": ["paymentsContractsAndOffers", "naturalFollowups", "callBookingAndLeadHandling"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781724244.202269"],
+          "approvedBy": ["Rich"],
+          "knowledgePresence": "present_exact"
+        },
+        {
+          "id": "v511final-conv-01-turn-2",
+          "question": "What if they still insist on having the attorney look at it?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "As a last resort, send the approved contract PDF and schedule another call to continue the close.",
+          "requiredConcepts": ["contract PDF as last resort", "schedule another call"],
+          "forbiddenConcepts": ["send internal sales slides", "open-ended follow-up with no call"],
+          "evaluationStrata": ["paymentsContractsAndOffers", "naturalFollowups", "referent", "exception"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1781724244.202269"],
+          "approvedBy": ["Rich"],
+          "knowledgePresence": "present_exact"
+        }
+      ]
+    },
+    {
+      "id": "v511final-conv-02",
+      "title": "Call stages and onboarding",
+      "prompts": [
+        {
+          "id": "v511final-conv-02-turn-1",
+          "question": "What is the difference between Call 1, Call 2, and onboarding?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Call 1 is the first audition. Call 2 is the closing call. Onboarding happens after payment and contract signing to prepare the client for production.",
+          "requiredConcepts": ["Call 1 first audition", "Call 2 closing call", "onboarding after payment and contract"],
+          "forbiddenConcepts": ["Call 1 and onboarding are interchangeable", "onboarding happens before the close"],
+          "evaluationStrata": ["postSaleAndFulfillment", "callBookingAndLeadHandling", "naturalFollowups"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1780430531.263409"],
+          "approvedBy": ["Rich", "Madeline"],
+          "knowledgePresence": "present_exact"
+        },
+        {
+          "id": "v511final-conv-02-turn-2",
+          "question": "Who handles that last stage, and when should it be booked?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "The studio team handles onboarding. Book it for the day after the close using the instructions in the welcome email.",
+          "requiredConcepts": ["studio team handles onboarding", "day after close", "welcome email"],
+          "forbiddenConcepts": ["sales rep runs production onboarding", "book before payment"],
+          "evaluationStrata": ["postSaleAndFulfillment", "naturalFollowups", "referent"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1780430531.263409"],
+          "approvedBy": ["Rich", "Madeline"],
+          "knowledgePresence": "present_exact"
+        }
+      ]
+    },
+    {
+      "id": "v511final-conv-03",
+      "title": "Guaranteed-view promotion scope",
+      "prompts": [
+        {
+          "id": "v511final-conv-03-turn-1",
+          "question": "How are the 100,000 guaranteed promotional views delivered and tracked?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "They are delivered through a Facebook ad run from the official ISTV Instagram page, and the client receives dashboard access to track the campaign.",
+          "requiredConcepts": ["Facebook ad through official ISTV Instagram", "dashboard tracking"],
+          "forbiddenConcepts": ["organic views are guaranteed", "no tracking is available"],
+          "evaluationStrata": ["contentRightsPlatformsAndClaims", "paymentsContractsAndOffers", "claim-boundary", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783083637.578129"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact"
+        },
+        {
+          "id": "v511final-conv-03-turn-2",
+          "question": "Can the client choose the audience and how long it takes to reach the view target?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Targeting is configured from the ad copy, creative text, and relevant location. Do not promise a delivery timeline; timing is a post-sale Fulfillment question.",
+          "requiredConcepts": ["targeting based on copy and location", "do not promise timeline", "Fulfillment handles timing"],
+          "forbiddenConcepts": ["client can freely select any audience", "guarantee a few weeks or two months"],
+          "evaluationStrata": ["contentRightsPlatformsAndClaims", "postSaleAndFulfillment", "naturalFollowups", "correctAbstentionOrClarification"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783083637.578129"],
+          "approvedBy": ["Madeline", "Rich"],
+          "knowledgePresence": "present_exact"
+        }
+      ]
+    }
+  ]
+}
