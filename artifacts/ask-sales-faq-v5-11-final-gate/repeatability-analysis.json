@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "ask-sales-v5-11-repeatability-v1",
+  "status": "complete",
+  "generatedAt": "2026-07-27T12:43:35.279Z",
+  "inputs": [
+    {
+      "path": "artifacts/ask-sales-faq-v5-11-final-gate/repeatability-run-1.json",
+      "sha256": "3676b3203ebe1d37c002ffde386064c0515e6b475aff028ebadc775cfe9bd571"
+    },
+    {
+      "path": "artifacts/ask-sales-faq-v5-11-final-gate/repeatability-run-2.json",
+      "sha256": "02ac802eeff89fa0d85473b64f6b0cff724322c1d88e9cce70b5183260692cc8"
+    },
+    {
+      "path": "artifacts/ask-sales-faq-v5-11-final-gate/repeatability-run-3.json",
+      "sha256": "5d814d43bc02990c05fe221fb1d404d83ef562a1e783e9698b97ba1e14454434"
+    }
+  ],
+  "aggregate": {
+    "runs": 3,
+    "prompts": 12,
+    "executions": 36,
+    "comparisonOpportunities": 24,
+    "laneFlipComparisons": 2,
+    "laneFlipRate": 0.08333333333333333,
+    "decisionBoundaryFlipComparisons": 4,
+    "decisionBoundaryFlipRate": 0.16666666666666666,
+    "sourceFlipComparisons": 3,
+    "sourceFlipRate": 0.125,
+    "exactAnswerFlipComparisons": 4,
+    "exactAnswerFlipRate": 0.16666666666666666,
+    "passesLaneGate": false,
+    "passesBoundaryGate": false
+  },
+  "cases": [
+    {
+      "id": "v511final-01",
+      "laneVariants": 2,
+      "boundaryVariants": 3,
+      "sourceVariants": 2,
+      "answerVariants": 3
+    },
+    {
+      "id": "v511final-03",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-05",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-07",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-09",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-11",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-13",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-17",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-conv-01-turn-1",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-conv-01-turn-2",
+      "laneVariants": 1,
+      "boundaryVariants": 2,
+      "sourceVariants": 2,
+      "answerVariants": 2
+    },
+    {
+      "id": "v511final-conv-03-turn-1",
+      "laneVariants": 1,
+      "boundaryVariants": 1,
+      "sourceVariants": 1,
+      "answerVariants": 1
+    },
+    {
+      "id": "v511final-conv-03-turn-2",
+      "laneVariants": 1,
+      "boundaryVariants": 2,
+      "sourceVariants": 2,
+      "answerVariants": 2
+    }
+  ]
+}

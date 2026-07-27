@@ -205,7 +205,13 @@ async function main() {
     const conversationId = text(conversation.id);
     for (const item of Array.isArray(conversation.prompts) ? conversation.prompts.map(object) : []) rows.push({ groupId: conversationId, conversationId, item });
   }
-  if (rows.length !== 20) throw new Error(`Expected 20 review rows, received ${rows.length}`);
+  const expectedRows = Number(argument("expected-rows", "20"));
+  if (!Number.isInteger(expectedRows) || expectedRows < 1) {
+    throw new Error("--expected-rows must be a positive integer");
+  }
+  if (rows.length !== expectedRows) {
+    throw new Error(`Expected ${expectedRows} review rows, received ${rows.length}`);
+  }
   const mappings = groupMappings(datasetSha256, [...new Set(rows.map((row) => row.groupId))], challenger);
   const items = rows.map(({ groupId, conversationId, item }, index) => {
     const mapping = mappings.get(groupId)!;

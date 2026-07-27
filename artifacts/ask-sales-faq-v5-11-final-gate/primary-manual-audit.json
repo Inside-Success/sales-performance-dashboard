@@ -1,0 +1,632 @@
+{
+  "schemaVersion": "ask-sales-v5-11-final-gate-manual-audit-v1",
+  "status": "complete_promotion_gate_failed",
+  "generatedAt": "2026-07-27T13:01:21.721Z",
+  "primaryRuntimeSha256": "5ce28fc0f8411f5685b8c45a44b68f36881580e3af29432010326d67b6040c7f",
+  "repeatabilitySha256": "c23fd2f6a495bcd097854e5eee9c2dc8e99b616efc2a0af08df896d755a07310",
+  "methodology": {
+    "sourceOnlyGold": true,
+    "directSlackRecheckForDisputes": true,
+    "aiJudgePromotionAuthority": false,
+    "postOutputRuntimeTuning": false,
+    "productionChanged": false
+  },
+  "summary": {
+    "prompts": 24,
+    "v3": {
+      "acceptable": 16,
+      "acceptableRate": 0.6666666666666666,
+      "materialErrors": 2,
+      "wrongOwners": 1,
+      "falseRoutes": 5
+    },
+    "v511": {
+      "acceptable": 17,
+      "acceptableRate": 0.7083333333333334,
+      "materialErrors": 2,
+      "wrongOwners": 1,
+      "falseRoutes": 4
+    },
+    "pairwise": {
+      "v511Wins": 8,
+      "v3Wins": 5,
+      "ties": 11,
+      "netWinsOverV3": 3
+    },
+    "repeatability": {
+      "runs": 3,
+      "prompts": 12,
+      "executions": 36,
+      "comparisonOpportunities": 24,
+      "laneFlipComparisons": 2,
+      "laneFlipRate": 0.08333333333333333,
+      "decisionBoundaryFlipComparisons": 4,
+      "decisionBoundaryFlipRate": 0.16666666666666666,
+      "sourceFlipComparisons": 3,
+      "sourceFlipRate": 0.125,
+      "exactAnswerFlipComparisons": 4,
+      "exactAnswerFlipRate": 0.16666666666666666,
+      "passesLaneGate": false,
+      "passesBoundaryGate": false
+    }
+  },
+  "gates": {
+    "completeProviderBackedOutputs": true,
+    "zeroV511MaterialErrors": false,
+    "zeroV511WrongActionOwners": false,
+    "minimumV511AcceptableRate85Percent": false,
+    "minimumPairwiseNetWinsPlus3": true,
+    "noMaterialStratumRegression": false,
+    "maximumLaneOrMaterialDecisionFlipRate5Percent": false,
+    "sourceDisjointnessVerified": true,
+    "productionIsolationVerified": true,
+    "blindHumanReviewComplete": false,
+    "explicitOwnerApproval": false
+  },
+  "promotionDecision": "do_not_promote_v5_11",
+  "rootCauses": [
+    "Exact authoritative records remain unreachable for some relationship and eligibility questions.",
+    "Live-owner routing still lacks a deterministic Fulfillment owner path.",
+    "The generic payment-first family can displace an attorney-review decision with a different decision key.",
+    "Unconfirmed source-author guesses can survive into otherwise grounded answers.",
+    "Studio-tour admission and two follow-up decisions remain non-deterministic above the five-percent gate."
+  ],
+  "corpusConflict": {
+    "id": "v511final-12",
+    "finding": "A selected Rich route and a later Madeline temporary workaround conflict. V5.11 chose the later actionable record; this item is not counted as a V5.11 material error."
+  },
+  "items": [
+    {
+      "id": "v511final-01",
+      "question": "A prospect wants to stop by the Miami studio before deciding. Can I arrange an informal pop-in?",
+      "goldAnswer": "No. Do not arrange an unplanned studio visit outside the person's filming date. Send the approved virtual studio walkthrough instead.",
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "incomplete_false_route"
+        },
+        "note": "V3 gives the no-pop-in rule and virtual alternative. V5.11 gives a narrower financial-commitment boundary and routes the rest."
+      }
+    },
+    {
+      "id": "v511final-02",
+      "question": "A Call 1 applicant sent an aggressive, profane reply and their application suggests a criminal background. Should I still let them into the Zoom?",
+      "goldAnswer": "No. Tell the applicant they are not a fit and the company will not move forward, and do not admit them to the Zoom.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly reject the concerning applicant and keep them out of Zoom."
+      }
+    },
+    {
+      "id": "v511final-03",
+      "question": "I booked a lead from the 20% spreadsheet, but Keap currently lists Rudy as the rep. Should I change the owner to myself?",
+      "goldAnswer": "Yes. If you booked the available 20% lead, update the Keap owner from Rudy to yourself.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly update Keap ownership to the rep who booked the 20 percent lead."
+      }
+    },
+    {
+      "id": "v511final-04",
+      "question": "How many leads may I take from the 20% spreadsheet and the 20% dial-out channel?",
+      "goldAnswer": "The limit is 20 from the spreadsheet and 20 from the channel.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both preserve the 20 plus 20 limit."
+      }
+    },
+    {
+      "id": "v511final-05",
+      "question": "Can a client use a debit card through the credit-card payment link?",
+      "goldAnswer": "Yes. The credit-card payment link also accepts a debit card.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_finance_route"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.11 answers the exact debit-card rule; V3 withholds it."
+      }
+    },
+    {
+      "id": "v511final-06",
+      "question": "A lead is sending repeated inappropriate messages after leaving a Zoom. What should I do?",
+      "goldAnswer": "Block the lead in Zoom, opt them out, and report the case in Sales Tech so future contact can be blocked or unsubscribed.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both give the correct block, opt-out, and Sales Tech actions."
+      }
+    },
+    {
+      "id": "v511final-07",
+      "question": "A signed ACH payment failed because the client's bank account was temporarily restricted after a name change. Can they update the payment method and keep the signed Lite terms?",
+      "goldAnswer": "Yes, but obtain hard proof from the bank and complete the corrected payment before that Sunday's deadline.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_with_unneeded_route"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both contain the controlling proof and Sunday deadline; V5.11 is direct and complete."
+      }
+    },
+    {
+      "id": "v511final-08",
+      "question": "May I schedule a Call 2 or a reschedule at 6:30 or 7 PM on my personal calendar?",
+      "goldAnswer": "Yes. Set your public or personal calendar to the hours you want, but do not overlap it with or modify the master calendar.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both correctly allow personal-calendar hours without touching or overlapping master."
+      }
+    },
+    {
+      "id": "v511final-09",
+      "question": "Should I tell a prospect that ISTV completes a formal full background check before approval?",
+      "goldAnswer": "No. Describe it as a background review using social profiles, Google searches, and similar checks, not as a formal full background check.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both distinguish a social and Google review from a formal full background check."
+      }
+    },
+    {
+      "id": "v511final-10",
+      "question": "Can a franchise owner proceed, or do they need approval from the ultimate brand decision-maker?",
+      "goldAnswer": "They can proceed, but they will probably need approval from the brand or ultimate decision-maker.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_wrong_approval_boundary"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V3 says a franchise owner needs no ultimate-owner approval. V5.11 preserves the stricter approval and decision-maker boundary."
+      }
+    },
+    {
+      "id": "v511final-11",
+      "question": "I took a call from the pass-off channel and need the recording for greenlight review. Where should I get it?",
+      "goldAnswer": "For a pass-off call, ask the rep who originally owned the call to DM you the recording. Dummy-channel recordings are available in that channel.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route_wrong_recording_source"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.11 distinguishes pass-off and dummy recordings. V3 does not answer the ownership procedure."
+      }
+    },
+    {
+      "id": "v511final-12",
+      "question": "Keap's disposition form does not list the show the lead applied for. Should I just select Legacy Makers?",
+      "goldAnswer": "Do not guess the show. Report the missing show option in Sales Tech so the form can be corrected.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_older_rich_route"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_newer_madeline_workaround"
+        },
+        "note": "The selected Rich thread says Sales Tech; a later authoritative Madeline record supplies the temporary Legacy Makers plus note workaround. This is a corpus-governance conflict, not a simple gold failure; V5.11 uses the newer actionable rule."
+      }
+    },
+    {
+      "id": "v511final-13",
+      "question": "A prospect no-showed Call 1 and never completed the first audition, but contacted me the following week to reschedule. Must they wait 90 days?",
+      "goldAnswer": "No. Because the first audition was never conducted, you may reschedule them the following week.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both allow an immediate Call 1 reschedule because no first audition occurred."
+      }
+    },
+    {
+      "id": "v511final-14",
+      "question": "Does a physical therapist who owns three practices qualify for America's Best Doctors?",
+      "goldAnswer": "Yes. A physical therapist with three owned practices can qualify for America's Best Doctors.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "note": "Both miss Rich's exact yes for a physical therapist who owns three practices."
+      }
+    },
+    {
+      "id": "v511final-15",
+      "question": "A business-owner couple wants to discuss one partner's childhood abuse and how she overcame it to help others. Is that story itself unsuitable for the show?",
+      "goldAnswer": "No. That story can be suitable when discussed openly to help others; continue the normal fit and greenlight process.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.11 correctly recognizes the sensitive recovery story as potentially suitable; V3 withholds it."
+      }
+    },
+    {
+      "id": "v511final-16",
+      "question": "A cast member's own videographer cancelled just before filming. Can you tell me which replacement videographer to hire?",
+      "goldAnswer": "The chatbot should not choose a live vendor. Ask in the Fulfillment channel for the current approved referral or next step.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": true,
+          "falseRoute": false,
+          "label": "wrong_action_owner"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": true,
+          "falseRoute": false,
+          "label": "wrong_action_owner"
+        },
+        "note": "Both safely avoid inventing a vendor but send the rep to Sales Questions instead of Fulfillment."
+      }
+    },
+    {
+      "id": "v511final-17",
+      "question": "A prospect completed Call 1 for both a Daymond John show and an ISTV show with different reps. Which rep should continue?",
+      "goldAnswer": "The rep who conducted the first Call 1 or held the first booking should continue, and the second rep should cancel. A non-DJ rep must not sell the DJ offer.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_wrong_cross_offer_owner"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "note": "V3 wrongly says one original rep can sell both offers. V5.11 is safer but misses Rich's first-Call-1 ownership rule."
+      }
+    },
+    {
+      "id": "v511final-18",
+      "question": "A woman works full time but runs paid book collaborations and wants to expand beyond her region. Could she be a fit for America's Authors?",
+      "goldAnswer": "Yes. That can be a fit for America's Authors, and she may also benefit from networking at the Mastermind event.",
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route"
+        },
+        "note": "V3 answers the American Authors fit; V5.11 withholds it."
+      }
+    },
+    {
+      "id": "v511final-conv-01-turn-1",
+      "question": "A prospect says their attorney must review the contract before payment. What should I do first?",
+      "goldAnswer": "First walk the prospect through the contract and resolve their questions live on the call.",
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_wrong_decision_focus"
+        },
+        "note": "V3 tells the rep to walk through the contract live. V5.11 substitutes the generic payment-first sequence and does not answer the attorney-review decision."
+      }
+    },
+    {
+      "id": "v511final-conv-01-turn-2",
+      "question": "What if they still insist on having the attorney look at it?",
+      "goldAnswer": "As a last resort, send the approved contract PDF and schedule another call to continue the close.",
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable_incomplete"
+        },
+        "note": "Both allow emailing the contract PDF; V3 also preserves the required follow-up call."
+      }
+    },
+    {
+      "id": "v511final-conv-02-turn-1",
+      "question": "What is the difference between Call 1, Call 2, and onboarding?",
+      "goldAnswer": "Call 1 is the first audition. Call 2 is the closing call. Onboarding happens after payment and contract signing to prepare the client for production.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both accurately distinguish Call 1, Call 2, and onboarding."
+      }
+    },
+    {
+      "id": "v511final-conv-02-turn-2",
+      "question": "Who handles that last stage, and when should it be booked?",
+      "goldAnswer": "The studio team handles onboarding. Book it for the day after the close using the instructions in the welcome email.",
+      "judgment": {
+        "winner": "tie",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "Both carry the onboarding referent and identify the studio team after close."
+      }
+    },
+    {
+      "id": "v511final-conv-03-turn-1",
+      "question": "How are the 100,000 guaranteed promotional views delivered and tracked?",
+      "goldAnswer": "They are delivered through a Facebook ad run from the official ISTV Instagram page, and the client receives dashboard access to track the campaign.",
+      "judgment": {
+        "winner": "v511",
+        "v3": {
+          "acceptable": false,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": true,
+          "label": "false_route_incomplete"
+        },
+        "v511": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "note": "V5.11 gives the Facebook-via-ISTV-Instagram and dashboard answer. V3 routes the tracking portion."
+      }
+    },
+    {
+      "id": "v511final-conv-03-turn-2",
+      "question": "Can the client choose the audience and how long it takes to reach the view target?",
+      "goldAnswer": "Targeting is configured from the ad copy, creative text, and relevant location. Do not promise a delivery timeline; timing is a post-sale Fulfillment question.",
+      "judgment": {
+        "winner": "v3",
+        "v3": {
+          "acceptable": true,
+          "materialError": false,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "acceptable"
+        },
+        "v511": {
+          "acceptable": false,
+          "materialError": true,
+          "wrongOwner": false,
+          "falseRoute": false,
+          "label": "materially_unsafe_timeline_guess"
+        },
+        "note": "V3 gives targeting and withholds the unconfirmed timeline. V5.11 correctly caveats Fulfillment but still presents the source author's few-weeks-to-two-month guess as typical."
+      }
+    }
+  ]
+}

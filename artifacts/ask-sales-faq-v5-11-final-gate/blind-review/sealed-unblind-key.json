@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "ask-sales-v511-unblind-key-v2",
+  "packetId": "v511-blind-d4816e64f377",
+  "packetContentSha256": "9d5fa56677a891412ec428de5f7057641e5f87eed4268ab7b01881596ca702f2",
+  "packetFileSha256": "3c19ee62936c478f7f81d9f795121de086dbcb276e2262a78b0a29e40614f0bd",
+  "runtimeInputSha256": "5ce28fc0f8411f5685b8c45a44b68f36881580e3af29432010326d67b6040c7f",
+  "datasetSha256": "d4816e64f3770a4abe1031d841b49773066a7b70e79c7ccf4d7e73ff91c523ab",
+  "mappingByItem": {
+    "v511final-01": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-02": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-03": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-04": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-05": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-06": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-07": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-08": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-09": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-10": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-11": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-12": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-13": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-14": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-15": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-16": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-17": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-18": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-conv-01-turn-1": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-conv-01-turn-2": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-conv-02-turn-1": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-conv-02-turn-2": {
+      "A": "v3",
+      "B": "v511"
+    },
+    "v511final-conv-03-turn-1": {
+      "A": "v511",
+      "B": "v3"
+    },
+    "v511final-conv-03-turn-2": {
+      "A": "v511",
+      "B": "v3"
+    }
+  }
+}
