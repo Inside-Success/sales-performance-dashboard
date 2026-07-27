@@ -39,8 +39,10 @@ jobs:
           node-version: "22.13.1"
           cache: npm
       - run: npm ci
-      - name: Ask Sales tests
-        run: npm run test:ask-sales-faq:ci
+      - name: Ask Sales tests - shard 1 of 2
+        run: npm run test:ask-sales-faq:ci:shard-1
+      - name: Ask Sales tests - shard 2 of 2
+        run: npm run test:ask-sales-faq:ci:shard-2
       - name: Ask Sales static safety validator
         run: node scripts/validate-ask-sales-faq.mjs
       - name: Ask Sales V4 isolation validator
