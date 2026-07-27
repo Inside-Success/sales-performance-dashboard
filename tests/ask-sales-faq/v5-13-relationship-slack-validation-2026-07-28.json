@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-13-relationship-and-latest-slack-validation-2026-07-28",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-28T01:30:00.000+05:00",
+  "runtimeFreezeCommit": "v513-pre-runtime-validation-2026-07-28",
+  "repeatability": { "caseIds": [], "conversationIds": [], "runs": 1 },
+  "cases": [
+    {
+      "id": "v513-slack-01",
+      "question": "A lead on today's outbound list previously applied in December. Should I pass the lead back to the rep they dealt with before?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The lead can be passed back to the rep who dealt with them previously.",
+      "requiredConcepts": ["can pass back", "previous rep"],
+      "forbiddenConcepts": ["must keep the lead", "assign randomly"],
+      "evaluationStrata": ["leadOwnership", "procedure", "latestSlack"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1785166102.386839", "slack:C0AUQKNR8CF:1785166143.270379"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v513-slack-02",
+      "question": "A client reviewed the contract with their attorney and returned the next day. Can I still honor yesterday's $2,000 same-day reduction?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The recording date and discount date must match; the reduction must be completed the same day.",
+      "requiredConcepts": ["same day", "cannot honor next day"],
+      "forbiddenConcepts": ["extend the discount", "automatic exception"],
+      "evaluationStrata": ["discount", "contract", "deadline", "latestSlack"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784953946.433359", "slack:C0AUQKNR8CF:1785161487.192649"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v513-slack-03",
+      "question": "Can a client require us to add several custom amendments to the standard contract?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The standard contract is a prerequisite and is not changed for custom client amendments.",
+      "requiredConcepts": ["no custom amendments", "standard contract"],
+      "forbiddenConcepts": ["promise contract changes", "sales rep may amend"],
+      "evaluationStrata": ["contract", "requirement", "latestSlack"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784915468.547709", "slack:C0AUQKNR8CF:1784918605.352599"],
+      "approvedBy": ["Rich"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v513-slack-04",
+      "question": "What does the contract mean when it asks clients to cooperate with promotional activities and share trailers or social posts?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Clients are encouraged to post the social assets supplied in the onboarding email to announce their ISTV feature and direct their audience to the episode.",
+      "requiredConcepts": ["post supplied social assets", "announce ISTV feature"],
+      "forbiddenConcepts": ["give account passwords", "client must create official ads"],
+      "evaluationStrata": ["contentRights", "promotion", "definition", "latestSlack"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784639519.121099", "slack:C0AUQKNR8CF:1784645774.584139"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v513-action-01",
+      "question": "I have an early closing call tomorrow. Can you send the Green Light Letter with priority and add me to the channel?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "Route this live action to the Greenlight Requests process; the passive chatbot must not claim it sent a letter or changed channel access.",
+      "requiredConcepts": ["greenlight route"],
+      "forbiddenConcepts": ["I sent the letter", "I added you"],
+      "evaluationStrata": ["operationalAction", "greenlight", "safeRoute"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1785000702.875969"],
+      "approvedBy": ["Sales Operations"],
+      "knowledgePresence": "route_only"
+    },
+    {
+      "id": "v513-owner-01",
+      "question": "What is the current Inside Success studio address?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The current Inside Success studio is at 751 Collins Avenue, Miami Beach, FL 33139.",
+      "requiredConcepts": ["751 Collins Avenue", "Miami Beach", "33139"],
+      "forbiddenConcepts": ["SAG personnel", "old studio address"],
+      "evaluationStrata": ["location", "ownerConfirmed", "currentRule"],
+      "sourceIds": ["owner-confirmation:2026-07-28:current-inside-success-studio-address"],
+      "approvedBy": ["Syed Moonis Haider"],
+      "knowledgePresence": "present_exact"
+    },
+    {
+      "id": "v513-relation-01",
+      "question": "What else does VIP include besides Amazon Prime submission?",
+      "expectedDisposition": "route",
+      "goldAnswer": "Do not repeat the Amazon submission boundary as if it answered the other VIP benefits. Route if the complete benefits record is not present.",
+      "requiredConcepts": ["do not substitute platform boundary"],
+      "forbiddenConcepts": ["Amazon Prime is the answer to all benefits"],
+      "evaluationStrata": ["relationshipMismatch", "inclusion", "falseAnswerPrevention"],
+      "sourceIds": ["production-log:production-008"],
+      "approvedBy": ["evaluation"],
+      "knowledgePresence": "absent_or_incomplete"
+    },
+    {
+      "id": "v513-relation-02",
+      "question": "Do we need to send them the contract, or does it come up automatically?",
+      "expectedDisposition": "route",
+      "goldAnswer": "Do not answer with the no-amendments rule. Route unless an approved contract-delivery automation rule directly answers this relationship.",
+      "requiredConcepts": ["contract delivery relationship"],
+      "forbiddenConcepts": ["contract amendments answer"],
+      "evaluationStrata": ["relationshipMismatch", "contract", "automation"],
+      "sourceIds": ["production-log:production-031"],
+      "approvedBy": ["evaluation"],
+      "knowledgePresence": "absent_or_incomplete"
+    },
+    {
+      "id": "v513-relation-03",
+      "question": "How long until the episode goes live on Amazon Prime?",
+      "expectedDisposition": "route",
+      "goldAnswer": "Do not substitute how long an episode remains on Amazon for how long publication takes. Route if publication timing is not confirmed.",
+      "requiredConcepts": ["publication timing is separate"],
+      "forbiddenConcepts": ["contract duration answers publication timing"],
+      "evaluationStrata": ["relationshipMismatch", "AmazonPrime", "timing"],
+      "sourceIds": ["production-log:production-110"],
+      "approvedBy": ["evaluation"],
+      "knowledgePresence": "absent_or_incomplete"
+    }
+  ],
+  "conversations": []
+}

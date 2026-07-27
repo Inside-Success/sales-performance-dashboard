@@ -5,8 +5,9 @@ import path from "node:path";
 import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 import { getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { runAskSalesFaqV512 } from "@/lib/ask-sales-faq/v5-12/runtime";
+import { runAskSalesFaqV513 } from "@/lib/ask-sales-faq/v5-13/runtime";
 
-type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV512>>;
+type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV512>> | Awaited<ReturnType<typeof runAskSalesFaqV513>>;
 
 type Item = {
   id: string;
@@ -78,16 +79,21 @@ function summarize(results: Array<Item & { candidate: RuntimeResult }>) {
 }
 
 async function main() {
+  const system = argument("system", "v512");
+  if (!new Set(["v512", "v513"]).has(system)) throw new Error("--system must be v512 or v513");
+  const runCandidate = system === "v513" ? runAskSalesFaqV513 : runAskSalesFaqV512;
   const provider = getV4ProviderReadiness();
   if (!provider.modelConfigured) {
-    throw new Error("V5.12 provider preflight failed; no runtime output was generated");
+    throw new Error(`${system.toUpperCase()} provider preflight failed; no runtime output was generated`);
   }
   const inputArgument = argument("input");
   if (!inputArgument) throw new Error("--input is required");
   const inputPath = path.resolve(inputArgument);
   const outputPath = path.resolve(argument(
     "output",
-    "artifacts/ask-sales-faq-v5-12-production-head-to-head/v5-12-runtime.json",
+    system === "v513"
+      ? "artifacts/ask-sales-faq-v5-13-production-head-to-head/v5-13-runtime.json"
+      : "artifacts/ask-sales-faq-v5-12-production-head-to-head/v5-12-runtime.json",
   ));
   const concurrency = Math.max(1, Math.min(3, Number.parseInt(argument("concurrency", "2"), 10) || 2));
   const raw = await readFile(inputPath, "utf8");
@@ -103,7 +109,15 @@ async function main() {
     throw new Error("Expected a complete privacy-reduced, SELECT-only production snapshot");
   }
 
-  const conversations = [...snapshot.items.reduce<Map<string, Item[]>>((groups, item) => {
+  const requestedIds = new Set(argument("ids").split(",").map((value) => value.trim()).filter(Boolean));
+  const selectedConversationKeys = requestedIds.size
+    ? new Set(snapshot.items.filter((item) => requestedIds.has(item.id)).map((item) => item.conversationKey))
+    : null;
+  if (requestedIds.size && !selectedConversationKeys?.size) throw new Error("--ids did not match any source item");
+  const selectedItems = selectedConversationKeys
+    ? snapshot.items.filter((item) => selectedConversationKeys.has(item.conversationKey))
+    : snapshot.items;
+  const conversations = [...selectedItems.reduce<Map<string, Item[]>>((groups, item) => {
     groups.set(item.conversationKey, [...(groups.get(item.conversationKey) || []), item]);
     return groups;
   }, new Map()).entries()].map(([conversationKey, items]) => ({
@@ -112,15 +126,15 @@ async function main() {
   }));
 
   const report = {
-    schemaVersion: "ask-sales-v5-12-production-head-to-head-runtime-v1",
+    schemaVersion: `ask-sales-v5-${system.slice(2)}-production-head-to-head-runtime-v1`,
     status: "running",
     productionMutation: false,
     productionPromotion: false,
     sourcePath: inputPath,
     sourceSha256: sha256(raw),
     sourcePopulationCount: snapshot.itemCount,
-    evaluatedCount: snapshot.itemCount,
-    conversationCount: snapshot.conversationCount,
+    evaluatedCount: selectedItems.length,
+    conversationCount: conversations.length,
     concurrency,
     provider,
     startedAt: new Date().toISOString(),
@@ -149,7 +163,7 @@ async function main() {
       const history: AskSalesFaqChatMessage[] = [];
       for (const item of conversation.items) {
         history.push({ role: "user", content: item.question });
-        const candidate = await runAskSalesFaqV512(item.question, history);
+        const candidate = await runCandidate(item.question, history);
         history.push({ role: "assistant", content: candidate.answer });
         report.results.push({ ...item, candidate });
         report.summary = summarize(report.results);

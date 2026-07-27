@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 type JsonRecord = Record<string, unknown>;
-type SystemName = "v3" | "v55" | "v56" | "v59" | "v510" | "v511" | "v512";
+type SystemName = "v3" | "v55" | "v56" | "v59" | "v510" | "v511" | "v512" | "v513";
 
 function argument(name: string, fallback = "") {
   const prefix = `--${name}=`;
@@ -190,8 +190,8 @@ async function main() {
   const inputPath = path.resolve(argument("input", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected/primary-runtime.json"));
   const outputDirectory = path.resolve(argument("output-dir", "artifacts/ask-sales-faq-v5-5-blind-gate/provider-corrected"));
   const challenger = argument("challenger", "v55");
-  if (challenger !== "v55" && challenger !== "v56" && challenger !== "v59" && challenger !== "v510" && challenger !== "v511" && challenger !== "v512") {
-    throw new Error("--challenger must be v55, v56, v59, v510, v511, or v512");
+  if (challenger !== "v55" && challenger !== "v56" && challenger !== "v59" && challenger !== "v510" && challenger !== "v511" && challenger !== "v512" && challenger !== "v513") {
+    throw new Error("--challenger must be v55, v56, v59, v510, v511, v512, or v513");
   }
   const raw = await readFile(inputPath, "utf8");
   const report = object(JSON.parse(raw));
