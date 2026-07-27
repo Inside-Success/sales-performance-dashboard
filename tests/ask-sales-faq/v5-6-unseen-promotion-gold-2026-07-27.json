@@ -1,0 +1,474 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-6-unseen-promotion-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T00:07:04Z",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "1ba4f756357c0afe7ca4a3b4ac2fba84853c348a",
+  "preregistrationCommit": "cb36cbb796aeced19ccd4e90562f67204308324b",
+  "knowledgeSnapshot": "frozen V5.6 generated operational Q&A and governed registries at the runtime freeze commit",
+  "counts": {
+    "standaloneCases": 22,
+    "conversations": 4,
+    "conversationPrompts": 8,
+    "totalPrompts": 30
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedBeforeGold": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "priorSourceIdOverlapAllowed": false,
+    "aiJudgePromotionAuthority": false,
+    "notes": [
+      "Every source message ID is absent from all earlier Ask Sales evaluation tests and artifacts at seal time.",
+      "Weak threads were excluded when they depended on screenshots, lacked an authoritative answer, contained unresolved disagreement, or were too case-specific to form reliable gold.",
+      "Each item was compared with the frozen V5.6 knowledge snapshot before runtime execution.",
+      "A present_exact knowledge item tests retrieval, admission, grounding, and response behavior; it is not a knowledge-availability excuse.",
+      "This dataset cannot be used to tune V5.6 and then remain promotion evidence."
+    ]
+  },
+  "repeatability": {
+    "caseIds": [
+      "v56unseen-01",
+      "v56unseen-05",
+      "v56unseen-08",
+      "v56unseen-12",
+      "v56unseen-16",
+      "v56unseen-18",
+      "v56unseen-22"
+    ],
+    "conversationIds": [
+      "v56unseen-conv-01",
+      "v56unseen-conv-02",
+      "v56unseen-conv-03",
+      "v56unseen-conv-04"
+    ],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v56unseen-01",
+      "question": "A prospect's spouse wants the investment range before joining Call 2. Should I tell them the minimum price so they will show up?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Explain that company policy is to discuss the investment and other details during the scheduled 30-minute Zoom call. Do not quote a minimum just to secure attendance.",
+      "requiredConcepts": ["do not quote before the scheduled discussion", "discuss details on the Zoom call"],
+      "forbiddenConcepts": ["quote a $10,000 minimum", "guarantee approval"],
+      "evaluationStrata": ["pricing", "call-stage", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783546948.282059", "slack:C0AUQKNR8CF:1783605985.617389"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_2aa0381baee79196"]
+    },
+    {
+      "id": "v56unseen-02",
+      "question": "Two 11-year-old twins run a registered business and their mother is present. Can they continue with the audition?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, as long as their mother or legal guardian consents and remains involved. Normal fit and qualification checks still apply.",
+      "requiredConcepts": ["yes", "parent or guardian consent"],
+      "forbiddenConcepts": ["minors are always prohibited", "automatic approval"],
+      "evaluationStrata": ["qualification", "minor", "conditional", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783534270.534319", "slack:C0AUQKNR8CF:1783535220.637339"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_3ff1b0410235443e"]
+    },
+    {
+      "id": "v56unseen-03",
+      "question": "A prospect wants something in writing to compare Lite and Standard after I reviewed both on the call. May I send the license-options document?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "You may send the reuse or license-options document if requested, but it is not advised. Best practice is to compare the options with the prospect on the call.",
+      "requiredConcepts": ["may send if requested", "not advised", "review on the call"],
+      "forbiddenConcepts": ["sending it is prohibited", "send it proactively to every prospect"],
+      "evaluationStrata": ["sales-process", "document", "conditional", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783533529.422949", "slack:C0AUQKNR8CF:1783533683.732349", "slack:C0AUQKNR8CF:1783536123.153959"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_78f77231bab08f9a"]
+    },
+    {
+      "id": "v56unseen-04",
+      "question": "Can a legal dispensary business qualify for an ISTV show?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. A dispensary can be considered as long as the business is legal; normal show-fit and qualification checks still apply.",
+      "requiredConcepts": ["yes", "must be legal", "normal qualification"],
+      "forbiddenConcepts": ["all dispensaries are banned", "automatic approval"],
+      "evaluationStrata": ["qualification", "legality", "conditional", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783511822.187169", "slack:C0AUQKNR8CF:1783520403.417299"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a9104608f5f69c32"]
+    },
+    {
+      "id": "v56unseen-05",
+      "question": "If a prospect asks to have a lawyer review the standard contract before Call 2, are we allowed to send it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, the contract may be sent when the prospect requests it, but it is not advised. Best practice is still to review the terms on the sales call; sending it does not authorize amendments.",
+      "requiredConcepts": ["may send when requested", "not advised", "review terms on the call"],
+      "forbiddenConcepts": ["never send it", "custom amendments are allowed"],
+      "evaluationStrata": ["contract", "call-stage", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783464278.735019", "slack:C0AUQKNR8CF:1783520290.863979"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_a4bda59185566d1d"]
+    },
+    {
+      "id": "v56unseen-06",
+      "question": "Can we film an ISTV episode entirely in Spanish right now?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No, Spanish-language episodes are not currently offered.",
+      "requiredConcepts": ["not currently offered"],
+      "forbiddenConcepts": ["yes, Spanish filming is available", "promise a translator"],
+      "evaluationStrata": ["production", "language", "scope", "current-policy"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783438874.456099", "slack:C0AUQKNR8CF:1783438886.977899"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_af4f8f85e3cfde7b"]
+    },
+    {
+      "id": "v56unseen-07",
+      "question": "Does a recent bankruptcy automatically disqualify a Next Level CEO prospect who is rebuilding the business?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No, bankruptcy does not automatically disqualify the prospect. Evaluate the circumstances and whether they are genuinely rebuilding and moving forward; normal qualification still applies.",
+      "requiredConcepts": ["not automatic disqualification", "depends on circumstances", "rebuilding"],
+      "forbiddenConcepts": ["all bankruptcies disqualify", "automatic approval"],
+      "evaluationStrata": ["qualification", "daymond-john", "conditional", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783360789.009529", "slack:C0AUQKNR8CF:1783360855.902079"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_972825c15ca8f486"]
+    },
+    {
+      "id": "v56unseen-08",
+      "question": "A prospect wants me to connect them directly with a previous Mompreneurs cast member. Can I share the cast member's contact details?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Do not share previous cast-member contact information or arrange direct contact. Use the approved public testimonials page instead.",
+      "requiredConcepts": ["do not share contact information", "use approved testimonials"],
+      "forbiddenConcepts": ["share the cast member's phone or email", "arrange private contact"],
+      "evaluationStrata": ["privacy", "testimonials", "high-impact", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783706500.407409", "slack:C0AUQKNR8CF:1783706676.592359"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_0401d75778f9bfd5"]
+    },
+    {
+      "id": "v56unseen-09",
+      "question": "A dial-out lead's notes mention only a traumatic story and no business. May I mark them unqualified without calling?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not disqualify only from the notes. Ask the proper business and qualification questions first; if they truly do not have a qualifying business, they may then be disqualified.",
+      "requiredConcepts": ["ask qualifying questions first", "may disqualify if no qualifying business"],
+      "forbiddenConcepts": ["skip the qualification check", "a traumatic story alone qualifies"],
+      "evaluationStrata": ["qualification", "dial-out", "conditional", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783687635.128479", "slack:C0AUQKNR8CF:1783695973.925799"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_bcd766a411262ca1"]
+    },
+    {
+      "id": "v56unseen-10",
+      "question": "What exact number of months after signing or filming can I promise for an episode to appear on Amazon Prime?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not promise a specific Amazon Prime timeline. Amazon placement is not guaranteed, so no exact submission or publication timing should be quoted.",
+      "requiredConcepts": ["no specific timeline", "Amazon placement is not guaranteed"],
+      "forbiddenConcepts": ["guaranteed in nine months", "guaranteed in eighteen months"],
+      "evaluationStrata": ["distribution", "claims", "high-impact", "numeric"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783642593.217009", "slack:C0AUQKNR8CF:1783693614.497319"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_b40e0880846c51c9"]
+    },
+    {
+      "id": "v56unseen-11",
+      "question": "Does ISTV submit a cast member to IMDb, or does the cast member do it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The cast member submits themselves on IMDb once the show is live. The IMDb submission is free; ISTV does not submit it on their behalf.",
+      "requiredConcepts": ["cast member self-submits", "once the show is live", "free"],
+      "forbiddenConcepts": ["ISTV submits everyone", "paid IMDb guarantee"],
+      "evaluationStrata": ["distribution", "imdb", "ownership", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783631433.767289", "slack:C0AUQKNR8CF:1783693254.382799"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_5385bb5dd1e7efcd"]
+    },
+    {
+      "id": "v56unseen-12",
+      "question": "Must a cast member on a four-payment plan be paid in full before filming within three months?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. They may film before the plan is paid in full as long as they are not delinquent on any payment due before filming.",
+      "requiredConcepts": ["may film before paid in full", "must not be delinquent"],
+      "forbiddenConcepts": ["full payment is always required first", "delinquency does not matter"],
+      "evaluationStrata": ["payment", "filming", "high-impact", "conditional"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783613201.748789", "slack:C0AUQKNR8CF:1783613636.778989", "slack:C0AUQKNR8CF:1783613652.471919"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_09864438bb225c32"]
+    },
+    {
+      "id": "v56unseen-13",
+      "question": "The old six months of weekly training was discontinued. What support should I describe instead?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Confirm that the six-month weekly training was discontinued. Explain that Rudy's call videos show ways to use the episode, and reps can reinforce those uses and the assets in the Media Kit.",
+      "requiredConcepts": ["six-month training discontinued", "Rudy's videos", "Media Kit"],
+      "forbiddenConcepts": ["promise six months of weekly training", "no support exists"],
+      "evaluationStrata": ["post-sale", "training", "supersession", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783606181.931489", "slack:C0AUQKNR8CF:1783606666.740729"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_0d5728d49672c97c"]
+    },
+    {
+      "id": "v56unseen-14",
+      "question": "A prospect wants a six-part series instead of one feature. What should the rep sell first?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Start with one episode under any appropriate single-episode license. A multi-part series can be considered after the company and client establish a successful working relationship.",
+      "requiredConcepts": ["start with one episode", "establish the working relationship first"],
+      "forbiddenConcepts": ["sell six episodes immediately", "series is never possible"],
+      "evaluationStrata": ["offer", "series", "sales-process", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783551912.518279", "slack:C0AUQKNR8CF:1783606175.728799"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_16cb31e70f5e774e"]
+    },
+    {
+      "id": "v56unseen-15",
+      "question": "Can a cast member discuss a transgender story involving sexual abuse on the network?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The subject can be considered, but the studio interview must not be sexually explicit. Normal content, fit, and production review still apply.",
+      "requiredConcepts": ["can be considered", "must not be explicit"],
+      "forbiddenConcepts": ["the topic is automatically banned", "explicit details are approved"],
+      "evaluationStrata": ["content", "sensitive", "conditional", "scope"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784216270.028119", "slack:C0AUQKNR8CF:1784216315.287979"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_55fc4c25dc5759fe"]
+    },
+    {
+      "id": "v56unseen-16",
+      "question": "My commission is missing from the ledger and I also need a Bill.com invite. Can the chatbot fix both for me?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "The chatbot cannot change the ledger or issue the invite. Post the request in #sales-finance-requests; tag Saad for the commission ledger and Leticia or Michael for the Bill.com invite.",
+      "requiredConcepts": ["cannot perform the action", "#sales-finance-requests", "Saad", "Leticia or Michael"],
+      "forbiddenConcepts": ["claim the ledger was updated", "route to Greenlight Requests"],
+      "evaluationStrata": ["action-route", "finance", "wrong-owner-risk", "compound"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783823671.085749", "slack:C0AUQKNR8CF:1783953143.277419"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_350af893a6e323b6", "operational_02c27dcf5691ff98", "operational_215fa0f82a8eb3d1"]
+    },
+    {
+      "id": "v56unseen-17",
+      "question": "Can you check whether my specific client's signed contract was received?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "fulfillment",
+      "goldAnswer": "The chatbot cannot verify a specific live contract. Route the request to the fulfillment team or hotline so the contract can be located and receipt confirmed.",
+      "requiredConcepts": ["cannot verify a live client record", "fulfillment"],
+      "forbiddenConcepts": ["claim the contract was received", "route to Greenlight Requests"],
+      "evaluationStrata": ["action-route", "fulfillment", "wrong-owner-risk", "specific-client"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784042770.575299", "slack:C0AUQKNR8CF:1784043598.052199", "slack:C0AUQKNR8CF:1784045930.924269"],
+      "approvedBy": ["Madeline", "Saad"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_73d43db916072971"]
+    },
+    {
+      "id": "v56unseen-18",
+      "question": "A 20-percent lead does not appear in Keap. Does that prove they opted out, and what should I do?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_tech",
+      "goldAnswer": "No. Missing from Keap does not prove an opt-out. Post in #sales-tech-requests with the client's name and email so the tech team can check the record.",
+      "requiredConcepts": ["does not prove opt-out", "#sales-tech-requests", "name and email"],
+      "forbiddenConcepts": ["mark them opted out automatically", "route to Finance"],
+      "evaluationStrata": ["action-route", "sales-tech", "wrong-owner-risk", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783631978.909849", "slack:C0AUQKNR8CF:1783693337.198159"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_26326b2f2973c9b5"]
+    },
+    {
+      "id": "v56unseen-19",
+      "question": "Can the chatbot add me to the pass-off and dummy-calls Slack channel?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "sales_policy",
+      "goldAnswer": "No. The chatbot is passive and cannot grant Slack access. Ask Sales Ops in #sales-questions-requests; Raul handled the access request in the source thread.",
+      "requiredConcepts": ["cannot grant access", "Sales Ops", "#sales-questions-requests"],
+      "forbiddenConcepts": ["claim access was added", "route to Finance"],
+      "evaluationStrata": ["action-route", "sales-ops", "wrong-owner-risk", "passive-boundary"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783983998.481869", "slack:C0AUQKNR8CF:1784030662.112439"],
+      "approvedBy": ["Raul"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_1cfa982a95986311"]
+    },
+    {
+      "id": "v56unseen-20",
+      "question": "If I skip the outbound list, may I take 40 leads from the 20-percent Slack channel instead?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The allocation is 20 leads from the Slack channel and 20 from the outbound list; do not substitute 40 from the channel.",
+      "requiredConcepts": ["20 from Slack", "20 from outbound", "not 40 from Slack"],
+      "forbiddenConcepts": ["40 from Slack is allowed"],
+      "evaluationStrata": ["dial-out", "allocation", "numeric", "sales-process"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783796515.626139", "slack:C0AUQKNR8CF:1783953029.725759"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_31d1ad5c3323396b"]
+    },
+    {
+      "id": "v56unseen-21",
+      "question": "Where should a Next Level CEO rep verify that a contract was signed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Check the dedicated DJ contracted channel. If the rep lacks access, ask Sales Ops to add them; the chatbot cannot grant access itself.",
+      "requiredConcepts": ["DJ contracted channel", "ask Sales Ops for access if needed"],
+      "forbiddenConcepts": ["use the ISTV Greenlight Requests channel", "claim the contract is signed"],
+      "evaluationStrata": ["daymond-john", "contract", "artifact-location", "relationship"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1783448962.945799", "slack:C0AUQKNR8CF:1783449747.666479"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_9a00d3c1266b7fb7"]
+    },
+    {
+      "id": "v56unseen-22",
+      "question": "A rejected prospect recorded Call 1 and wants to post the recording online. Is that allowed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Sales-call recordings are confidential and cannot be shared externally. The prospect may be added to the DNC list if appropriate; any pushback should be escalated rather than granting permission.",
+      "requiredConcepts": ["recording is confidential", "cannot be shared externally"],
+      "forbiddenConcepts": ["posting is allowed", "grant legal permission"],
+      "evaluationStrata": ["privacy", "recording", "high-impact", "answerability-stress"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784220216.482659", "slack:C0AUQKNR8CF:1784220333.452789"],
+      "approvedBy": ["Madeline"],
+      "knowledgePresence": "present_exact",
+      "controllingPolicyIds": ["operational_235cd6e23a419a29"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v56unseen-conv-01",
+      "title": "Opt-out communication boundary and follow-up ownership",
+      "prompts": [
+        {
+          "id": "v56unseen-conv-01-turn-1",
+          "question": "She replied STOP to the reminder and then no-showed. Can I still try calling her?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes, you may try calling, but do not send SMS or email after the explicit STOP request.",
+          "requiredConcepts": ["may try calling", "no SMS or email"],
+          "forbiddenConcepts": ["send another text", "ignore the opt-out"],
+          "evaluationStrata": ["follow-up", "opt-out", "compliance", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783959588.906349", "slack:C0AUQKNR8CF:1783962247.400219"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_a3fafbb7a306f3dc"]
+        },
+        {
+          "id": "v56unseen-conv-01-turn-2",
+          "question": "Do I need to do anything else with her information?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. Add the client's information to the opt-out channel so they are unsubscribed from the mailing list.",
+          "requiredConcepts": ["add to the opt-out channel", "unsubscribe from mailing list"],
+          "forbiddenConcepts": ["resume email follow-up", "put the client in Greenlight Requests"],
+          "evaluationStrata": ["follow-up", "referent", "opt-out", "action-guidance"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783959588.906349", "slack:C0AUQKNR8CF:1783962278.957159"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_d62587f25d51e0ba"]
+        }
+      ]
+    },
+    {
+      "id": "v56unseen-conv-02",
+      "title": "No-show timing and late-arrival follow-up",
+      "prompts": [
+        {
+          "id": "v56unseen-conv-02-turn-1",
+          "question": "For a no-show, is two calls, two texts, and waiting ten minutes enough before I leave Zoom?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Yes. After two calls, two texts, and ten minutes with no response, the rep may leave the meeting.",
+          "requiredConcepts": ["two calls", "two texts", "ten minutes", "may leave"],
+          "forbiddenConcepts": ["leave immediately", "wait indefinitely"],
+          "evaluationStrata": ["follow-up", "no-show", "numeric", "sales-process"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783692738.041129", "slack:C0AUQKNR8CF:1783692901.414779"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_62cb13c537cd0e6e"]
+        },
+        {
+          "id": "v56unseen-conv-02-turn-2",
+          "question": "What if he replies after that and wants to join immediately, but I no longer have enough time for the full audition?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "You may reschedule the audition when there is not enough time to conduct it properly.",
+          "requiredConcepts": ["may reschedule", "not enough time for the audition"],
+          "forbiddenConcepts": ["must rush the audition", "automatically disqualify"],
+          "evaluationStrata": ["follow-up", "condition-change", "no-show", "relationship"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783692738.041129", "slack:C0AUQKNR8CF:1783693145.904879"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_62cb13c537cd0e6e"]
+        }
+      ]
+    },
+    {
+      "id": "v56unseen-conv-03",
+      "title": "Operation CEO nonprofit qualification and cohort timing",
+      "prompts": [
+        {
+          "id": "v56unseen-conv-03-turn-1",
+          "question": "Does an Operation CEO prospect need an LLC, or can a nonprofit qualify?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "A nonprofit can qualify for Operation CEO. Normal applicant and organization qualification still applies.",
+          "requiredConcepts": ["nonprofit can qualify", "normal qualification"],
+          "forbiddenConcepts": ["LLC required", "automatic approval"],
+          "evaluationStrata": ["follow-up", "qualification", "nonprofit", "scope"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783627801.900749", "slack:C0AUQKNR8CF:1783629325.389469"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_2332220cd7a14095"]
+        },
+        {
+          "id": "v56unseen-conv-03-turn-2",
+          "question": "His Call 1 is Friday. If he is approved for this cohort, when must Call 2 happen?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "For that cohort, Call 2 must be completed by Saturday or Sunday.",
+          "requiredConcepts": ["Saturday or Sunday", "for the cohort"],
+          "forbiddenConcepts": ["no deadline for main ISTV", "wait three months"],
+          "evaluationStrata": ["follow-up", "referent", "cohort", "timing"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783627801.900749", "slack:C0AUQKNR8CF:1783629384.160899"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_9749944bc86afc27"]
+        }
+      ]
+    },
+    {
+      "id": "v56unseen-conv-04",
+      "title": "Approved testimonial resource and same-day discount boundary",
+      "prompts": [
+        {
+          "id": "v56unseen-conv-04-turn-1",
+          "question": "Where can I find an approved testimonial resource to send a prospect?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Use the approved Legacy Makers testimonials landing page at https://www.legacymakerstv.com/reviews1. It is a landing page, not a private cast-member contact list.",
+          "requiredConcepts": ["approved testimonials landing page", "legacymakerstv.com/reviews1"],
+          "forbiddenConcepts": ["share private cast-member contacts"],
+          "evaluationStrata": ["follow-up", "testimonials", "artifact", "privacy"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783712589.784439", "slack:C0AUQKNR8CF:1783712722.782429"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_5381f76573c0bf06"]
+        },
+        {
+          "id": "v56unseen-conv-04-turn-2",
+          "question": "She wants to review it and the contract, then meet again tomorrow. Does the $2,000 discount carry over?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. The $2,000 discount must be applied on the same day as the first call; it does not carry into the next day.",
+          "requiredConcepts": ["same day as the first call", "does not carry to tomorrow"],
+          "forbiddenConcepts": ["discount carries over automatically", "rep may extend it"],
+          "evaluationStrata": ["follow-up", "pricing", "timing", "high-impact"],
+          "sourceIds": ["slack:C0AUQKNR8CF:1783712589.784439", "slack:C0AUQKNR8CF:1783713666.328909"],
+          "approvedBy": ["Madeline"],
+          "knowledgePresence": "present_exact",
+          "controllingPolicyIds": ["operational_0c97b61cb3fa71c2"]
+        }
+      ]
+    }
+  ]
+}
