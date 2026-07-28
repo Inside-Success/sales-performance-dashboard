@@ -70,6 +70,21 @@ export function shouldShowPlainAnswerWithStructured(content: string, answer: Ask
   return semanticCoverage < 0.78;
 }
 
+export function removeStructuredSummaryDuplicates(answer: AskSalesFaqStructuredAnswer) {
+  const normalizedSummary = normalizeAnswerDisplayText(answer.summary);
+  if (!normalizedSummary) return answer.sections;
+
+  return answer.sections.flatMap((section) => {
+    const body = section.body && normalizeAnswerDisplayText(section.body) === normalizedSummary
+      ? undefined
+      : section.body;
+    const items = section.items?.filter((item) => normalizeAnswerDisplayText(item) !== normalizedSummary);
+
+    if (!body && !items?.length) return [];
+    return [{ ...section, body, items }];
+  });
+}
+
 export function parseAnswerDisplayList(value: string): AnswerDisplayList | null {
   const parts = value
     .replace(/\r/g, "")

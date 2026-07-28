@@ -78,3 +78,15 @@ The daily knowledge-refresh simplification and the older saved policy-matching r
 ## Deferred work
 
 The daily refresh simplification, policy-matching replacement, and the separate quality-audit schema mismatch remain on hold until the V5.14 launch is accepted. None was changed during this release.
+
+## Post-launch health and presentation follow-up
+
+Date: 2026-07-28
+
+- Five genuine authenticated production questions completed with HTTP `200`; their conversation-history reads also completed with HTTP `200`.
+- All five stored exchanges report `pipelineVersion=v5.14`, `error_class=null`, the expected source label, and `answer_from_evidence`.
+- Four model-backed responses used `deepseek-v4-pro`; the exact governed pricing response correctly used the deterministic path. No provider terminal failure occurred.
+- Vercel reports no Ask Sales runtime-error cluster after launch.
+- A narrow presentation fix removes a structured body or item when it exactly repeats the already-visible summary. Additional steps, caveats, and non-duplicate structured content remain visible.
+- Focused presentation checks pass 7/7; the complete Ask Sales suite passes 17 files / 273 tests; static safety passes 107/107; TypeScript, zero-warning scoped ESLint, and the optimized production build pass.
+- The rude/poor-fit test response was source-grounded and safe but did not directly settle whether the rep should end the live call immediately. This is an answer-completeness watch item, not a runtime or deployment failure.
