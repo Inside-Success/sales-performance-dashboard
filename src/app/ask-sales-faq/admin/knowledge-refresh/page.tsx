@@ -53,7 +53,7 @@ export default async function AskSalesKnowledgeRefreshPage({
         <AskSalesAdminHeader
           active="refresh"
           title="Daily Knowledge Inbox"
-          description="Review only useful Slack and Google changes. Accepting an item saves a draft; it never changes the live chatbot until a separate tested publish."
+          description="Review useful read-only Slack and Google changes, then follow one clearly marked next action. AI can suggest updates, but only your reviewed release can change the live chatbot."
           generatedAt={overview.generatedAt}
         />
         <KnowledgeRefreshConsole overview={overview} />

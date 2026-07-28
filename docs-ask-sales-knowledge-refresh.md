@@ -2,7 +2,23 @@
 
 Date: 2026-07-14
 
-Last updated: 2026-07-21
+Last updated: 2026-07-28
+
+## 2026-07-28 owner workflow simplification
+
+The live V5.14 chatbot answer path is unchanged. The daily knowledge owner experience is simplified without removing any approval or publication safety gate:
+
+- The admin page now leads with one plain-language `Your next step` card and four useful counts instead of exposing six operational counters equally.
+- The page has three primary lanes: `Review updates`, `Approved updates`, and `Reviewed history`. Search, source/conflict filters, the replaced archive, and all-records view remain available under one collapsed advanced section.
+- Approved items no longer appear twice on the same page. The owner sees exact wording and the final current-versus-proposed preview once.
+- Release controls use one state-specific next action: `Prepare protected release`, followed by `Publish approved updates` only after the protected repository changes exist. GitHub links remain available under technical details.
+- The underlying fail-closed sequence is unchanged: individual approval, immutable preview, synchronized repository changes, governed checks, exact-head merges, deployment wait, and exact knowledge-version verification.
+- A refresh with one or more source failures is now labeled `Refresh completed with warnings`; it can no longer appear as a fully clean success. Failed sources remain visible with their latest errors and are retried by the next scheduled run.
+- The page explicitly describes V5.14 as the live runtime and AI as discovery-only. Slack, Google Docs, and Google Sheets remain read-only sources.
+
+The 9:20 PM quality-audit workflow `Flp8t7eNbHWu0z0O` was deactivated, not deleted, after seven consecutive staging failures. Its saved graph, version history, and existing quality records remain intact. The separate 9:00 PM knowledge-refresh orchestrator `ua18B5wbsYptLqJX` remains active and unchanged. Runtime validation reports zero errors for both graphs; advisory warnings on the healthy 9:00 PM graph were not used as a reason to alter working production behavior.
+
+The quality audit may later be repaired and reintroduced as a weekly or manual quality-review tool. It is not part of the knowledge-publication authority chain and its pause does not stop daily source refreshes.
 
 ## 2026-07-21 release progress and governed-check repair
 
