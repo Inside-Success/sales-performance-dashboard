@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-14-final-release-gate-2026-07-28",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-28T02:00:00.000Z",
+  "runtimeFreezeCommit": "b1ec6cc5db1d5a6a71da3d2a4beede24b8303d1b",
+  "selection": {
+    "totalPrompts": 20,
+    "productionLogPrompts": 10,
+    "freshParaphrasePrompts": 10,
+    "covers": [
+      "pricing and payment plans",
+      "qualification",
+      "Call 2 offer sequence",
+      "platform claims",
+      "support-program freshness",
+      "contract handling",
+      "Call 1 no-show SOP",
+      "outbound communications",
+      "content rights",
+      "Finance and Greenlight action routing",
+      "natural greeting",
+      "thanks",
+      "goodbye",
+      "follow-up referents"
+    ]
+  },
+  "repeatability": {
+    "caseIds": [],
+    "conversationIds": []
+  },
+  "cases": [
+    {
+      "id": "v514-final-prod-pricing",
+      "origin": "production-001",
+      "question": "What are the current ISTV prices and payment plans?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Lite is $12,000, Standard is $20,000, and VIP/Premium is $30,000. Use only the listed installment plans: Lite 4 x $3,000, 3 x $4,000, or 2 x $6,000; Standard 4 x $5,000 or 2 x $10,000; VIP/Premium 4 x $7,500, 3 x $10,000, or 2 x $15,000.",
+      "requiredConcepts": ["all three package prices", "listed installment plans"],
+      "forbiddenConcepts": ["custom payment plan", "omit every package price"],
+      "evaluationStrata": ["productionLog", "paymentsContractsAndOffers", "completeAnswer"],
+      "sourceIds": ["claim_28235f97538aac88"],
+      "approvedBy": ["Syed Moonis Haider"]
+    },
+    {
+      "id": "v514-final-prod-doctor-nurse",
+      "origin": "production-003",
+      "question": "Hey team, fit check on 2 leads for America's Best Doctors. Jennifer is a retired MD without her own business, while Hans is an RN and is not a business owner. Can either qualify?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "An MD is not disqualified merely for being retired, employed, or not owning a practice. A nurse or RN does not qualify as a doctor for America's Best Doctors. Route any remaining case-specific fit judgment for confirmation.",
+      "requiredConcepts": ["doctor may qualify without owning a practice", "nurse does not qualify"],
+      "forbiddenConcepts": ["nurse qualifies as a doctor", "doctor must own a practice"],
+      "evaluationStrata": ["productionLog", "qualification", "multiPart"],
+      "sourceIds": ["claim_54e4d8f4163f0486__a3"],
+      "approvedBy": ["Rich Allen", "Mike Wisner"]
+    },
+    {
+      "id": "v514-final-prod-quote-sequence",
+      "origin": "production-009",
+      "question": "Can I start them with the 20k license and then if they say it's too expensive ask what they expected it to cost, work the price objection, isolate the price objection, and then show them the lite license?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Start Call 2 with the $20,000 Standard package. Then handle and isolate the price objection and, when appropriate for their financial situation, down-sell to Lite or up-sell to VIP using only approved packages and plans.",
+      "requiredConcepts": ["start with $20,000 Standard", "handle and isolate price objection", "down-sell to Lite when appropriate"],
+      "forbiddenConcepts": ["invent a custom price", "treat price objection as a scam objection"],
+      "evaluationStrata": ["productionLog", "paymentsContractsAndOffers", "relationship"],
+      "sourceIds": ["owner-call2-baseline-package-sequence"],
+      "approvedBy": ["Syed Moonis Haider"]
+    },
+    {
+      "id": "v514-final-prod-tier1-guarantee",
+      "origin": "production-021",
+      "question": "Can a client pay extra to guarantee Apple TV placement or another Tier-1 platform?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. A client cannot pay extra to force or guarantee Apple TV or another Tier-1 submission or placement. The platform decides acceptance.",
+      "requiredConcepts": ["cannot pay extra to guarantee placement", "platform decides"],
+      "forbiddenConcepts": ["guaranteed Apple TV", "pay extra for guaranteed placement"],
+      "evaluationStrata": ["productionLog", "contentRightsPlatformsAndClaims", "prohibition"],
+      "sourceIds": ["owner-vip-tier-one-platform-boundary"],
+      "approvedBy": ["Syed Moonis Haider"]
+    },
+    {
+      "id": "v514-final-prod-weekly-support",
+      "origin": "production-045",
+      "question": "The six months of weekly social-media support calls: when do they start and what happens on those calls?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "That former six-month weekly support-call program has been discontinued, so do not promise a start date or weekly schedule. Reps may point clients to the current Rudy guidance and Media Kit assets instead. This does not cancel the separate Money Mondays offering.",
+      "requiredConcepts": ["weekly support program discontinued", "no current start date", "Money Mondays is separate"],
+      "forbiddenConcepts": ["promise six months of weekly calls", "Money Mondays discontinued"],
+      "evaluationStrata": ["productionLog", "knowledgeFreshness", "scopeBoundary"],
+      "sourceIds": ["v514src-weekly-support-discontinued"],
+      "approvedBy": ["Madeline Cary"]
+    },
+    {
+      "id": "v514-final-prod-contract-review",
+      "origin": "production-052",
+      "question": "Am I able to send a copy of the license contract for their legal team to review before Call 2?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "First walk the prospect through the contract and resolve questions live. If they still insist on attorney review, send the approved contract PDF only as a last resort and schedule another call. Do not promise amendments.",
+      "requiredConcepts": ["walk through contract live first", "PDF only as last resort", "schedule another call"],
+      "forbiddenConcepts": ["promise contract amendments", "send unrelated internal slides"],
+      "evaluationStrata": ["productionLog", "paymentsContractsAndOffers", "procedure"],
+      "sourceIds": ["v512src-attorney-contract-review-sequence"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v514-final-prod-call1-no-show",
+      "origin": "production-098",
+      "question": "What is the SOP when you jump onto a Call 1 and the client is not there yet?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Make two calls, send two texts, wait until ten minutes into the meeting, and then leave if there is no response.",
+      "requiredConcepts": ["two calls", "two texts", "wait ten minutes"],
+      "forbiddenConcepts": ["wait only five minutes", "automatically apply a later reapplication rule"],
+      "evaluationStrata": ["productionLog", "callBookingAndLeadHandling", "stage"],
+      "sourceIds": ["v3src_no_show_attempts_and_late_join"],
+      "approvedBy": ["Madeline Cary"]
+    },
+    {
+      "id": "v514-final-prod-outbound-comms",
+      "origin": "production-107",
+      "question": "What communications do I send if someone books a call from outbound dialing?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Outbound bookings do not receive the same funnel emails. Use the normal mandatory email and SMS templates.",
+      "requiredConcepts": ["not the same funnel emails", "mandatory email and SMS templates"],
+      "forbiddenConcepts": ["no follow-up communication", "invent a new template"],
+      "evaluationStrata": ["productionLog", "callBookingAndLeadHandling", "communication"],
+      "sourceIds": ["claim_3585b16e8ef643a9"],
+      "approvedBy": ["Madeline Cary", "Rich Allen"]
+    },
+    {
+      "id": "v514-final-fresh-reapply",
+      "origin": "freshParaphrase",
+      "question": "A main ISTV applicant was rejected last week. Can they apply again next month?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The normal minimum before reapplying to main ISTV is three months. A genuine documented exception must be approved by Rich or the current owner.",
+      "requiredConcepts": ["three-month minimum", "documented exception needs approval"],
+      "forbiddenConcepts": ["one month is allowed", "six months"],
+      "evaluationStrata": ["freshParaphrase", "callBookingAndLeadHandling", "authority"],
+      "sourceIds": ["curated_v43_rich_main_reapply_three_months"],
+      "approvedBy": ["Rich Allen"]
+    },
+    {
+      "id": "v514-final-fresh-content-rights",
+      "origin": "freshParaphrase",
+      "question": "May cast members upload the chopped reels we provide to social accounts they own?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Cast members may post chopped reels or clips from their episode on social-media accounts they own. This does not establish permission to upload the entire episode or sell it to another platform.",
+      "requiredConcepts": ["chopped reels allowed", "their own social accounts"],
+      "forbiddenConcepts": ["chopped reels prohibited", "entire episode automatically allowed"],
+      "evaluationStrata": ["freshParaphrase", "contentRightsPlatformsAndClaims", "permission"],
+      "sourceIds": ["operational:cast-members-can-post-chopped-reels"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v514-final-fresh-finance-action",
+      "origin": "freshParaphrase",
+      "question": "This client's card was declined and I need someone to check the payment now. Where should I post it?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "finance",
+      "goldAnswer": "Post the live payment-check request in #sales-finance-requests. The chatbot cannot inspect or change the transaction.",
+      "requiredConcepts": ["#sales-finance-requests", "live action"],
+      "forbiddenConcepts": ["#sales-questions-requests", "claim payment succeeded"],
+      "evaluationStrata": ["freshParaphrase", "liveAction", "ownerRouting"],
+      "sourceIds": ["routing:finance"],
+      "approvedBy": ["governed routing"]
+    },
+    {
+      "id": "v514-final-fresh-greenlight-action",
+      "origin": "freshParaphrase",
+      "question": "Can someone urgently send this applicant's greenlight letter before tomorrow morning?",
+      "expectedDisposition": "route",
+      "expectedRouteKey": "greenlight",
+      "goldAnswer": "Post the urgent letter request in #greenlight-requests. The chatbot cannot send or promise the letter or its timing.",
+      "requiredConcepts": ["#greenlight-requests", "cannot send or promise"],
+      "forbiddenConcepts": ["#sales-questions-requests", "promise it will be sent"],
+      "evaluationStrata": ["freshParaphrase", "liveAction", "ownerRouting"],
+      "sourceIds": ["routing:greenlight"],
+      "approvedBy": ["governed routing"]
+    }
+  ],
+  "conversations": [
+    {
+      "id": "v514-final-conversation-natural",
+      "title": "Natural greeting, useful answer, thanks, and goodbye",
+      "prompts": [
+        {
+          "id": "v514-final-natural-turn-1",
+          "origin": "freshParaphrase",
+          "question": "Hi there!",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Respond naturally and invite an Ask Sales question.",
+          "requiredConcepts": ["natural greeting"],
+          "forbiddenConcepts": ["route to Slack", "invent policy"],
+          "evaluationStrata": ["naturalConversation", "greeting"],
+          "sourceIds": [],
+          "approvedBy": ["conversation behavior"]
+        },
+        {
+          "id": "v514-final-natural-turn-2",
+          "origin": "production-020",
+          "question": "Where can customers download the ISTV app?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "Customers can download the ISTV app on Roku, Fire Stick, or Apple TV devices.",
+          "requiredConcepts": ["Roku", "Fire Stick", "Apple TV"],
+          "forbiddenConcepts": ["unsupported device guarantee"],
+          "evaluationStrata": ["productionLog", "naturalConversation", "productAccess"],
+          "sourceIds": ["owner-istv-app-download-devices"],
+          "approvedBy": ["Rich Allen", "Syed Moonis Haider"]
+        },
+        {
+          "id": "v514-final-natural-turn-3",
+          "origin": "freshParaphrase",
+          "question": "Perfect, thank you!",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Acknowledge the thanks naturally without repeating policy or routing.",
+          "requiredConcepts": ["natural thanks response"],
+          "forbiddenConcepts": ["route to Slack", "repeat unrelated policy"],
+          "evaluationStrata": ["naturalConversation", "thanks"],
+          "sourceIds": [],
+          "approvedBy": ["conversation behavior"]
+        },
+        {
+          "id": "v514-final-natural-turn-4",
+          "origin": "freshParaphrase",
+          "question": "Goodbye for now.",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Respond with a brief natural goodbye.",
+          "requiredConcepts": ["natural goodbye"],
+          "forbiddenConcepts": ["route to Slack", "invent policy"],
+          "evaluationStrata": ["naturalConversation", "goodbye"],
+          "sourceIds": [],
+          "approvedBy": ["conversation behavior"]
+        }
+      ]
+    },
+    {
+      "id": "v514-final-conversation-vip-followup",
+      "title": "VIP platform and benefit follow-ups",
+      "prompts": [
+        {
+          "id": "v514-final-vip-turn-1",
+          "origin": "production-007",
+          "question": "Is VIP submitted to just Amazon or all three Tier-1 platforms?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "VIP/Premium is submitted to one Tier-1 platform, not all three. The possible platforms are Amazon Prime Video, Apple TV, or Tubi, and placement is not guaranteed.",
+          "requiredConcepts": ["one Tier-1 platform", "not all three", "not guaranteed"],
+          "forbiddenConcepts": ["submitted to all three", "guaranteed placement"],
+          "evaluationStrata": ["productionLog", "naturalFollowups", "contentRightsPlatformsAndClaims"],
+          "sourceIds": ["claim_a67cbc990c0e81d9__a4"],
+          "approvedBy": ["Syed Moonis Haider"]
+        },
+        {
+          "id": "v514-final-vip-turn-2",
+          "origin": "production-008",
+          "question": "What else does it include?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "VIP/Premium is $30,000 and includes a 20-25 minute episode, 150,000 pre-promo views, the ISN app, and submission to one Tier-1 platform, plus the other currently approved VIP benefits.",
+          "requiredConcepts": ["VIP benefits", "20-25 minute episode", "150,000 pre-promo views"],
+          "forbiddenConcepts": ["answer about another package", "lose VIP referent"],
+          "evaluationStrata": ["productionLog", "naturalFollowups", "referent"],
+          "sourceIds": ["claim_c9e50172a4cd057b"],
+          "approvedBy": ["Syed Moonis Haider"]
+        },
+        {
+          "id": "v514-final-vip-turn-3",
+          "origin": "freshParaphrase",
+          "question": "Could they pay extra to guarantee Apple TV instead?",
+          "expectedDisposition": "answer",
+          "goldAnswer": "No. They cannot pay extra to force or guarantee Apple TV submission or placement.",
+          "requiredConcepts": ["cannot pay extra", "cannot guarantee Apple TV"],
+          "forbiddenConcepts": ["Apple TV can be guaranteed"],
+          "evaluationStrata": ["freshParaphrase", "naturalFollowups", "prohibition"],
+          "sourceIds": ["owner-vip-tier-one-platform-boundary"],
+          "approvedBy": ["Syed Moonis Haider"]
+        },
+        {
+          "id": "v514-final-vip-turn-4",
+          "origin": "freshParaphrase",
+          "question": "Got it, thanks.",
+          "expectedDisposition": "conversation",
+          "goldAnswer": "Acknowledge the thanks naturally without repeating the full policy.",
+          "requiredConcepts": ["natural thanks response"],
+          "forbiddenConcepts": ["route to Slack", "repeat unrelated policy"],
+          "evaluationStrata": ["naturalConversation", "thanks", "followup"],
+          "sourceIds": [],
+          "approvedBy": ["conversation behavior"]
+        }
+      ]
+    }
+  ]
+}

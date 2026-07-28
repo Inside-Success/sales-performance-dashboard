@@ -80,6 +80,13 @@ function providerUnavailable(result: RuntimeResult) {
     .test(JSON.stringify(result));
 }
 
+function deterministicValidatedOutput(result: RuntimeResult) {
+  if (!("runtimeMetadata" in result) || !result.runtimeMetadata || !("executionMode" in result.runtimeMetadata)) return false;
+  const mode = result.runtimeMetadata.executionMode;
+  return (mode.planning === "conversation" && mode.composition === "not_required" && mode.validation === "not_required") ||
+    (mode.planning === "deterministic_governed" && mode.composition === "exact_evidence" && mode.validation === "deterministic_exact_evidence");
+}
+
 function successfulProviderAttempts(result: RuntimeResult) {
   return providerAttempts(result).filter((attempt) => attempt.status === "success").length;
 }
@@ -205,6 +212,7 @@ function summary(cases: EvaluatedItem[], conversations: EvaluatedConversation[],
       providerAttempts: results.reduce((total, result) => total + providerAttempts(result).length, 0),
       successfulProviderAttempts: results.reduce((total, result) => total + successfulProviderAttempts(result), 0),
       providerBackedOutputs: results.filter((result) => successfulProviderAttempts(result) > 0).length,
+      deterministicValidatedOutputs: results.filter((result) => successfulProviderAttempts(result) === 0 && deterministicValidatedOutput(result)).length,
       unsuccessfulProviderAttempts: results.reduce((total, result) =>
         total + providerAttempts(result).filter((attempt) => attempt.status !== "success").length, 0),
       terminalProviderFailures: results.filter(terminalProviderFailure).length,
@@ -318,17 +326,18 @@ async function main() {
       completed: number;
       successfulProviderAttempts: number;
       providerBackedOutputs: number;
+      deterministicValidatedOutputs: number;
       terminalProviderFailures: number;
       providerUnavailableOutputs: number;
     };
     if (
       systemSummary.completed !== totalPrompts ||
       systemSummary.successfulProviderAttempts === 0 ||
-      systemSummary.providerBackedOutputs < Math.ceil(totalPrompts * 0.5) ||
+      systemSummary.providerBackedOutputs + systemSummary.deterministicValidatedOutputs !== totalPrompts ||
       systemSummary.terminalProviderFailures !== 0 ||
       systemSummary.providerUnavailableOutputs !== 0
     ) {
-      throw new Error(`${system} did not produce all ${totalPrompts} provider-backed terminally successful outputs`);
+      throw new Error(`${system} did not produce all ${totalPrompts} provider-backed or deterministically validated terminally successful outputs`);
     }
   }
   const answerItems = [...report.cases, ...report.conversations.flatMap((conversation) => conversation.prompts)]

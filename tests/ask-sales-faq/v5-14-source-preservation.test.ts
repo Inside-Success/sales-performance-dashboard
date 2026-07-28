@@ -5,6 +5,7 @@ import type { V4SystemicCandidate, V4SystemicNeed, V4SystemicPolicy, V4SystemicQ
 import { V513_CURRENT_STUDIO_ADDRESS_POLICY } from "@/lib/ask-sales-faq/v5-13/knowledge";
 import { recoverV514QuoteVerifiedAnswers, v514QuoteProjectable } from "@/lib/ask-sales-faq/v5-14/entailment";
 import { retrieveV514Policies } from "@/lib/ask-sales-faq/v5-14/retrieval";
+import { runAskSalesFaqV514, v514BoundedDirectDecision } from "@/lib/ask-sales-faq/v5-14/runtime";
 import { resolveV512Turn } from "@/lib/ask-sales-faq/v5-12/runtime";
 
 function need(text: string, relation: V4SystemicNeed["relation"] = "other"): V4SystemicNeed {
@@ -44,6 +45,83 @@ function routePlan(item: V4SystemicNeed): V4SystemicSourcePlan {
 }
 
 describe("Ask Sales V5.14 governed source preservation", () => {
+  it.each([
+    ["Hi team!", "Hi! I’m ready whenever you are."],
+    ["Thanks for everything.", "You’re welcome!"],
+    ["Talk to you later.", "Goodbye! Come back anytime you have another sales question."],
+  ])("handles the natural conversation turn %s without retrieval", async (question, answer) => {
+    const result = await runAskSalesFaqV514(question, [], {
+      provider: async () => { throw new Error("provider must not be called"); },
+    });
+    expect(result).toMatchObject({ lane: "conversation", answer, provider: null, selectedPolicyIds: [] });
+  });
+
+  it.each([
+    [
+      "Could you list the current Inside Success prices with the approved installment plans?",
+      "v514src-current-istv-prices-and-plans",
+      "Lite is $12,000, Standard is $20,000, and VIP/Premium is $30,000",
+    ],
+    [
+      "On our second call, which package price should lead before I move up or down?",
+      "v514src-call2-baseline-quote-sequence",
+      "$20,000 Standard package",
+    ],
+    [
+      "Can I start with the 20k license, work the price objection, and then show Lite if needed?",
+      "v514src-call2-baseline-quote-sequence",
+      "work and isolate the objection",
+    ],
+    [
+      "When do the weekly social media support calls begin during the six-month program?",
+      "v514src-weekly-support-discontinued",
+      "has been discontinued",
+    ],
+    [
+      "A prospect wants a lawyer to review the agreement. May I share a copy?",
+      "v512src-attorney-contract-review-sequence",
+      "First walk the prospect through the contract",
+    ],
+    [
+      "Can a customer pay more to force an Apple TV placement?",
+      "owner-vip-tier-one-platform-boundary",
+      "cannot pay extra to force or guarantee Apple TV",
+    ],
+    [
+      "For America's Best Doctors, can an employed MD without a practice qualify, and can an RN qualify too?",
+      "v514src-doctor-nurse-eligibility-boundary",
+      "A nurse or RN does not qualify",
+    ],
+  ])("projects the complete governed family for %s", async (question, policyId, expectedText) => {
+    const decision = v514BoundedDirectDecision(question);
+    expect(decision?.policies.map((policy) => policy.id)).toEqual([policyId]);
+    const result = await runAskSalesFaqV514(question, [], {
+      provider: async () => { throw new Error("provider must not be called"); },
+    });
+    expect(result.lane).toBe("answer");
+    expect(result.answer).toContain(expectedText);
+    expect(result.selectedPolicyIds).toEqual([policyId]);
+    expect(result.runtimeMetadata.executionMode.composition).toBe("exact_evidence");
+  });
+
+  it("uses the current follow-up question instead of repeating prior VIP package details", async () => {
+    const history = [
+      { role: "user" as const, content: "Is VIP submitted to one Tier-1 platform?" },
+      { role: "assistant" as const, content: "VIP includes submission to one Tier-1 platform." },
+      { role: "user" as const, content: "What else does it include?" },
+      { role: "assistant" as const, content: "VIP includes a 20-25 minute episode and 150,000 pre-promo views." },
+    ];
+    const result = await runAskSalesFaqV514("Could they pay extra to guarantee Apple TV instead?", history, {
+      provider: async () => { throw new Error("provider must not be called"); },
+    });
+    expect(result.answer).toContain("cannot pay extra to force or guarantee Apple TV");
+    expect(result.answer).not.toContain("$20,000 main ISTV Standard package");
+  });
+
+  it("does not consume a policy question merely because it begins with thanks", () => {
+    expect(v514BoundedDirectDecision("Thanks. Can I send the contract to their attorney?")?.kind).toBe("policy");
+  });
+
   it("restores a governed VIP-benefits record that V5.13 pruned behind the platform boundary", () => {
     const item = need("What else does VIP include besides Amazon Prime submission?", "inclusion");
     const plan: V4SystemicQueryPlan = { needs: [item], conversationIntent: "answer", reasoningSummary: "test" };

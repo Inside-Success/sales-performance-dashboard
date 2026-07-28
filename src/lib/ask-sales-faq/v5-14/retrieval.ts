@@ -5,14 +5,48 @@ import type { V4SystemicCandidate, V4SystemicNeed, V4SystemicQueryPlan, V4System
 import { v4SystemicNeedPolicyRelationErrors } from "@/lib/ask-sales-faq/v4/systemic/relations";
 import { v513DecisionContractErrors } from "@/lib/ask-sales-faq/v5-13/decision-contract";
 import { retrieveV513Policies } from "@/lib/ask-sales-faq/v5-13/retrieval";
-import { V514_ROI_BOUNDARY_POLICY, V514_WEEKLY_SUPPORT_DISCONTINUED_POLICY } from "@/lib/ask-sales-faq/v5-14/knowledge";
+import { V56_OWNER_CONFIRMED_POLICIES } from "@/lib/ask-sales-faq/v5-6/knowledge";
+import { V512_SOURCE_REVIEWED_POLICIES } from "@/lib/ask-sales-faq/v5-12/knowledge";
+import { V514_CALL2_QUOTE_SEQUENCE_POLICY, V514_CURRENT_PRICES_AND_PLANS_POLICY, V514_DOCTOR_NURSE_ELIGIBILITY_POLICY, V514_ROI_BOUNDARY_POLICY, V514_WEEKLY_SUPPORT_DISCONTINUED_POLICY } from "@/lib/ask-sales-faq/v5-14/knowledge";
 
-const systemicById = new Map([...getV4SystemicCorpus(), V514_ROI_BOUNDARY_POLICY, V514_WEEKLY_SUPPORT_DISCONTINUED_POLICY].map((policy) => [policy.id, policy]));
+const systemicById = new Map([
+  ...getV4SystemicCorpus(),
+  ...V56_OWNER_CONFIRMED_POLICIES,
+  ...V512_SOURCE_REVIEWED_POLICIES,
+  V514_ROI_BOUNDARY_POLICY,
+  V514_WEEKLY_SUPPORT_DISCONTINUED_POLICY,
+  V514_DOCTOR_NURSE_ELIGIBILITY_POLICY,
+  V514_CALL2_QUOTE_SEQUENCE_POLICY,
+  V514_CURRENT_PRICES_AND_PLANS_POLICY,
+].map((policy) => [policy.id, policy]));
 
 function exactFamilyIds(need: V4SystemicNeed) {
   const text = [need.originalRequestText, need.authorityText, need.text, ...need.actions, ...need.entities].filter(Boolean).join(" ");
   if (/\b(?:roi|return\s+on\s+investment)\b/i.test(text)) {
     return [V514_ROI_BOUNDARY_POLICY.id];
+  }
+  if (/\b(?:istv|inside\s+success)\b/i.test(text) && /\b(?:price|pricing|cost)\w*\b/i.test(text) &&
+    /\b(?:payment\s+plans?|installments?|split\s+payments?)\b/i.test(text)) {
+    return [V514_CURRENT_PRICES_AND_PLANS_POLICY.id];
+  }
+  if ((/\b(?:call\s*2|call\s*two|second\s+call)\b/i.test(text) ||
+      /(?:\b20k\b|\$20,?000\b)[\s\S]{0,180}\b(?:price\s+objection|too\s+expensive|lite)\b/i.test(text)) &&
+    /\b(?:package|pricing|prices?|quote|standard|vip|lite|upsell|downsell)\b/i.test(text) &&
+    /\b(?:present|show|offer|quote|start|lead|choose|choice|upsell|downsell|all\s+three|which\s+package|package\s+first)\b/i.test(text)) {
+    return [V514_CALL2_QUOTE_SEQUENCE_POLICY.id];
+  }
+  if (/\b(?:contract|agreement)\b/i.test(text) &&
+    /\b(?:attorney|lawyer|legal\s+(?:team|review))\b/i.test(text) &&
+    /\b(?:send|share|copy|review|walk\s+through)\b/i.test(text)) {
+    return ["v512src-attorney-contract-review-sequence"];
+  }
+  if (/\b(?:pay|paid|purchase)\b[\s\S]{0,80}\b(?:extra|more|additional)\b[\s\S]{0,100}\b(?:guarantee|force)\b[\s\S]{0,80}\b(?:apple\s*tv|tier[- ]?1|platform|placement|submission)\b|\b(?:guarantee|force)\b[\s\S]{0,80}\b(?:apple\s*tv|tier[- ]?1|platform|placement|submission)\b[\s\S]{0,100}\b(?:pay|paid|purchase)\b/i.test(text)) {
+    return ["owner-vip-tier-one-platform-boundary"];
+  }
+  if (/\b(?:america['’]?s\s+(?:best|top)\s+doctors?|doctors?\s+show)\b/i.test(text) &&
+    /\b(?:doctor|physician|m\.?d\.?)\b/i.test(text) && /\b(?:nurse|r\.?n\.?)\b/i.test(text) &&
+    /\b(?:qualif|eligible|eligibility|fit)\w*\b/i.test(text)) {
+    return [V514_DOCTOR_NURSE_ELIGIBILITY_POLICY.id];
   }
   if (/\b(?:call\s*1|first\s+call|audition)\b[\s\S]{0,120}\b(?:not\s+(?:on|there)|hasn['’]?t\s+joined|isn['’]?t\s+there|waiting|wait|no[- ]?show)\b|\b(?:not\s+(?:on|there)|hasn['’]?t\s+joined|isn['’]?t\s+there|waiting|wait|no[- ]?show)\b[\s\S]{0,120}\b(?:call\s*1|first\s+call|audition)\b/i.test(text)) {
     return ["v3src_no_show_attempts_and_late_join"];
@@ -34,7 +68,16 @@ function exactFamilyIds(need: V4SystemicNeed) {
 
 function exactFamilyCandidate(need: V4SystemicNeed, id: string): V4SystemicCandidate | null {
   const policy = systemicById.get(id);
-  if (!policy || policy.answerability !== "answer_evidence" || v513DecisionContractErrors(need, policy).length) return null;
+  if (!policy || policy.answerability !== "answer_evidence") return null;
+  // Exact families are activated by a complete relationship-specific guard.
+  // The later generic contract can reject valid negative answers (for example,
+  // "there is no start date because the program ended"), so only apply it to
+  // records that were not introduced as reviewed exact-family decisions.
+  const reviewedExactFamily = policy.id.startsWith("v514src-") ||
+    policy.id === "owner-call2-baseline-package-sequence" ||
+    policy.id === "owner-vip-tier-one-platform-boundary" ||
+    policy.id === "v512src-attorney-contract-review-sequence";
+  if (!reviewedExactFamily && v513DecisionContractErrors(need, policy).length) return null;
   const score = 1250 + policy.specificity_priority;
   const matchedDecisionId = `${policy.id}::v514-exact-material-family`;
   return {
