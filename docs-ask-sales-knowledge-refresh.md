@@ -20,6 +20,13 @@ The 9:20 PM quality-audit workflow `Flp8t7eNbHWu0z0O` was deactivated, not delet
 
 The quality audit may later be repaired and reintroduced as a weekly or manual quality-review tool. It is not part of the knowledge-publication authority chain and its pause does not stop daily source refreshes.
 
+Final release evidence:
+
+- Dashboard PR [#91](https://github.com/Inside-Success/sales-performance-dashboard/pull/91) merged as `1be3a2a698e58f54b6df4252fd833ebcf6a9d102` after governed run [30370914948](https://github.com/Inside-Success/sales-performance-dashboard/actions/runs/30370914948) passed on its unchanged rerun. The first attempt hit one existing V5.14 test's five-second timing limit; the unchanged rerun passed the entire suite and every subsequent gate.
+- Production deployment `dpl_DGq6zSUFCtvL3eBfXSDHaGghUhkp` is `READY`, targets production, contains exact merge `1be3a2a698e58f54b6df4252fd833ebcf6a9d102`, and owns `sales-performance-dashboard-rose.vercel.app`.
+- Post-deployment checks found no Vercel runtime errors. The protected Ask Sales and admin pages resolve to sign-in without an application session, and the knowledge-refresh ingest rejects a missing service token with `401`.
+- Local release verification passed 278/278 Ask Sales tests, 107/107 static safety checks, full Ask Sales ESLint with zero warnings, TypeScript, `git diff --check`, and the optimized Next.js production build. No local development server ran.
+
 ## 2026-07-21 release progress and governed-check repair
 
 The first three-draft show-catalog release stopped safely before any merge because the Dashboard runtime PR's governed check failed. The FAQ source PR passed. The compiled release content was valid; the dashboard check had two stale test assumptions: one compared the materialized registry version with the frozen base-registry version, and one selected the current-show catalog by changeable display-title wording instead of its stable `decision_key`.
