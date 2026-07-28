@@ -6,6 +6,11 @@ on:
       - "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json"
       - "src/lib/ask-sales-faq/v3/admin-approved-releases.ts"
       - "src/lib/ask-sales-faq/v3/retrieval.ts"
+      - "src/lib/ask-sales-faq/runtime-selector.ts"
+      - "src/lib/ask-sales-faq/types.ts"
+      - "src/lib/ask-sales-faq/v4/**"
+      - "src/lib/ask-sales-faq/v5*/**"
+      - "tests/ask-sales-faq/**"
       - "src/lib/ask-sales-faq/knowledge-refresh-governance.ts"
       - ".github/workflows/ask-sales-release-checks.yml"
 
