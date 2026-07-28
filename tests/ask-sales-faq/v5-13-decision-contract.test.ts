@@ -108,9 +108,33 @@ describe("V5.13 immutable final decision contract", () => {
     expect(v513DecisionContractErrors(item, wrong)).toContain("focus_mismatch:call_waiting_no_show_sop");
   });
 
+  it("rejects generic Call 2 timing as a price-objection response", () => {
+    const item = need("price objection", "procedure");
+    const wrong = policy("call2", "Call 2 pricing", "Price is discussed only on Call 2.");
+    expect(v513DecisionContractErrors(item, wrong)).toContain("focus_mismatch:price_objection");
+    const right = policy("objection", "Price objection handling", "Keep the response short; do not over-argue, and point only to approved public proof.");
+    expect(v513DecisionContractErrors(item, right)).toEqual([]);
+  });
+
   it("rejects a Keap note as the full outbound booking communication sequence", () => {
     const item = need("What communications do I have to send when someone books from outbound dialing?", "procedure");
     const wrong = policy("keap", "Update Keap", "Update Keap and leave a note about communication with the outbound lead.");
     expect(v513DecisionContractErrors(item, wrong)).toContain("focus_mismatch:outbound_booking_communications");
+  });
+
+  it("keeps the 20-percent offer discount separate from the 20-percent dialing recording SOP", () => {
+    const item = need("When can I offer the 20% discount, and what process do I follow?", "procedure");
+    const wrong = policy("recording", "20-percent outbound recording", "Record 20 percent outbound calls through Zoom and disclose that the call is recorded for training and quality.");
+    const right = policy("discount", "Same-day discount", "The $2,000 discount is available only on the day of Call 2 until 11:59 PM.");
+    expect(v513DecisionContractErrors(item, wrong)).toContain("relationship_mismatch:discount_vs_outbound_recording");
+    expect(v513DecisionContractErrors(item, right)).toEqual([]);
+  });
+
+  it("does not use a payer-only rule to approve a different contract signer", () => {
+    const item = need("If one business owner pays but the other owner signs the contract, is that allowed?", "permission");
+    const wrong = policy("payer", "Partner payment", "Either the business owner or a partner can make the payment when contact information is assigned correctly.");
+    const right = policy("payer-signer", "Owner payer and signer", "One business owner may make the payment while the other business owner signs the contract.");
+    expect(v513DecisionContractErrors(item, wrong)).toContain("relationship_mismatch:payer_vs_signer");
+    expect(v513DecisionContractErrors(item, right)).toEqual([]);
   });
 });

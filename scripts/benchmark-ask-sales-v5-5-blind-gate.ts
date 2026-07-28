@@ -14,8 +14,9 @@ import { runAskSalesFaqV510 } from "@/lib/ask-sales-faq/v5-10/runtime";
 import { runAskSalesFaqV511 } from "@/lib/ask-sales-faq/v5-11/runtime";
 import { runAskSalesFaqV512 } from "@/lib/ask-sales-faq/v5-12/runtime";
 import { runAskSalesFaqV513 } from "@/lib/ask-sales-faq/v5-13/runtime";
+import { runAskSalesFaqV514 } from "@/lib/ask-sales-faq/v5-14/runtime";
 
-type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59" | "v510" | "v511" | "v512" | "v513";
+type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59" | "v510" | "v511" | "v512" | "v513" | "v514";
 type GoldItem = {
   id: string;
   question: string;
@@ -48,7 +49,8 @@ type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> |
   Awaited<ReturnType<typeof runAskSalesFaqV510>> |
   Awaited<ReturnType<typeof runAskSalesFaqV511>> |
   Awaited<ReturnType<typeof runAskSalesFaqV512>> |
-  Awaited<ReturnType<typeof runAskSalesFaqV513>>;
+  Awaited<ReturnType<typeof runAskSalesFaqV513>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV514>>;
 type EvaluatedItem = GoldItem & { systems: Partial<Record<SystemName, RuntimeResult>> };
 type EvaluatedConversation = Omit<Conversation, "prompts"> & { prompts: EvaluatedItem[] };
 
@@ -149,6 +151,12 @@ function providerPreflight(systems: SystemName[]) {
       model: v4.model,
       transport: v4.transport,
     },
+    v514: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
   };
   const missing = systems.filter((system) => !preflight[system].configured);
   if (missing.length) {
@@ -172,7 +180,8 @@ async function run(system: SystemName, question: string, history: AskSalesFaqCha
   if (system === "v510") return runAskSalesFaqV510(question, history);
   if (system === "v511") return runAskSalesFaqV511(question, history);
   if (system === "v512") return runAskSalesFaqV512(question, history);
-  return runAskSalesFaqV513(question, history);
+  if (system === "v513") return runAskSalesFaqV513(question, history);
+  return runAskSalesFaqV514(question, history);
 }
 
 function systemOrder(key: string, reverse: boolean, systems: SystemName[]): SystemName[] {
@@ -225,8 +234,8 @@ async function main() {
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
   const systems = argument("systems", "v3,v55").split(",").map((value) => value.trim()).filter(Boolean) as SystemName[];
-  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59", "v510", "v511", "v512", "v513"]).has(system))) {
-    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59,v510,v511,v512,v513");
+  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59", "v510", "v511", "v512", "v513", "v514"]).has(system))) {
+    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59,v510,v511,v512,v513,v514");
   }
   const preflight = providerPreflight(systems);
   const selectedCases = mode === "repeatability" ? new Set(dataset.repeatability.caseIds) : null;
@@ -261,6 +270,7 @@ async function main() {
       v511: "@/lib/ask-sales-faq/v5-11/runtime#runAskSalesFaqV511",
       v512: "@/lib/ask-sales-faq/v5-12/runtime#runAskSalesFaqV512",
       v513: "@/lib/ask-sales-faq/v5-13/runtime#runAskSalesFaqV513",
+      v514: "@/lib/ask-sales-faq/v5-14/runtime#runAskSalesFaqV514",
     },
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,

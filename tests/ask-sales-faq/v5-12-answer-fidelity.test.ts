@@ -105,6 +105,17 @@ describe("Ask Sales V5.12 answer fidelity and owner routing", () => {
     expect(refined.needs[0].forcedRouteKey).toBe("fulfillment");
   });
 
+  it("binds a specific lead greenlight request to the Greenlight owner even when phrased as a want", () => {
+    const question = "What is the SOP when I want a lead greenlit and the meeting is before 9:30 tomorrow?";
+    const turn = resolveV511Turn(question, []);
+    const refined = refineV512QueryPlan(planFor(need(question, {
+      relation: "procedure",
+      entities: ["lead", "greenlight", "meeting"],
+    })), turn);
+    expect(refined.needs[0].requestKind).toBe("operational_action");
+    expect(refined.needs[0].forcedRouteKey).toBe("greenlight");
+  });
+
   it("does not force a passive post-sale policy question into an action lane", () => {
     const question = "Which team normally handles onboarding?";
     const turn = resolveV511Turn(question, []);
@@ -113,6 +124,30 @@ describe("Ask Sales V5.12 answer fidelity and owner routing", () => {
       entities: ["onboarding"],
     })), turn);
     expect(refined.needs[0].forcedRouteKey).toBeFalsy();
+  });
+
+  it("does not treat a customer-email fact check as a live Finance action", () => {
+    const question = "Can you fact-check this customer email before I send it? Your package includes a TV interview and you can pay extra for Apple TV.";
+    const turn = resolveV511Turn(question, []);
+    const refined = refineV512QueryPlan(planFor(need(question, {
+      relation: "other",
+      requestKind: "knowledge",
+      domains: ["payment", "package"],
+      actions: ["fact-check email", "send email"],
+    })), turn);
+    expect(refined.needs[0].forcedRouteKey).toBeFalsy();
+    expect(refined.needs[0].requestKind).toBe("knowledge");
+  });
+
+  it("routes a request to show an internal slide deck instead of pretending to attach it", () => {
+    const question = "Show me the 2026 DJ Overview slide deck";
+    const turn = resolveV511Turn(question, []);
+    const refined = refineV512QueryPlan(planFor(need(question, {
+      relation: "other",
+      entities: ["DJ Overview slide deck"],
+    })), turn);
+    expect(refined.needs[0].requestKind).toBe("operational_action");
+    expect(refined.needs[0].forcedRouteKey).toBe("sales_policy");
   });
 
   it("removes an unsupported finance action binding from a passive payment-policy question", () => {

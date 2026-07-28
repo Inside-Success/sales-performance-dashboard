@@ -18,11 +18,13 @@ import { retrieveV512Policies } from "@/lib/ask-sales-faq/v5-12/retrieval";
 export const ASK_SALES_V512_PIPELINE_VERSION = "v5.12-isolated" as const;
 export const ASK_SALES_V512_DECISION_LAYER_VERSION = "answer-fidelity-owner-routing-reviewed-slack-delta-r2";
 
-const EXPLICIT_LIVE_ACTION = /\b(?:please|can\s+(?:you|someone)|could\s+(?:you|someone)|need\s+(?:you|someone|the\s+team)\s+to|which\s+(?:person|vendor)|who\s+should\s+i\s+(?:ask|hire|contact))\b|^\s*(?:create|send|issue|change|update|fix|cancel|refund|reschedule|hire|replace|locate|trace)\b/i;
+const EXPLICIT_LIVE_ACTION = /\b(?:please|can\s+(?:you|someone)|could\s+(?:you|someone)|need\s+(?:you|someone|the\s+team)\s+to|want\s+(?:a|an|the|this|that|my)\s+(?:lead|prospect|applicant|case)\s+(?:greenlit|approved)|which\s+(?:person|vendor)|who\s+should\s+i\s+(?:ask|hire|contact))\b|^\s*(?:create|send|issue|change|update|fix|cancel|refund|reschedule|hire|replace|locate|trace)\b/i;
 const FULFILLMENT_ACTION = /\b(?:videographer|filming|film\s+date|studio\s+booking|onboarding|editing|edit\s+status|trailer|episode\s+delivery|production|post[- ]sale|ad\s+campaign|promotion\s+delivery|view\s+target|fulfillment)\b/i;
 const FINANCE_ACTION = /\b(?:payment|invoice|refund|charge|card|ach|wire|installment|payme|finance)\b/i;
 const GREENLIGHT_ACTION = /\b(?:green\s*light|approval\s+letter|eligibility\s+approval|approve\s+this\s+(?:lead|prospect|case))\b/i;
 const SALES_TECH_ACTION = /\b(?:keap|oncehub|calendar|zoom\s+link|crm|form|login|technical|recording\s+missing|automation|sales\s+tech)\b/i;
+const CONTENT_REVIEW_REQUEST = /\b(?:fact[- ]?check|review|rewrite|improve|correct|proofread)\b[\s\S]{0,100}\b(?:email|message|reply|script|wording)\b|\b(?:email|message|reply|script|wording)\b[\s\S]{0,100}\b(?:fact[- ]?check|review|rewrite|improve|correct|proofread)\b/i;
+const INTERNAL_ARTIFACT_REQUEST = /\b(?:show|send|give|provide)\s+me\b[\s\S]{0,100}\b(?:deck|slides?|pdf|document|file)\b/i;
 const BARE_CONTEXTUAL_DECISION = /^\s*Policy context:[\s\S]*?Decision evidence:\s*(?:yes|no)(?:\s+if)?[.!]?\s*$/i;
 const BARE_YES_NO = /^\s*(?:yes|no)(?:\s+if\b[\s\S]{0,100})?[.!]?\s*$/i;
 const ATTORNEY_ELLIPSIS = /^(?:(?:and|but|so)\s+)?(?:what\s+if|if)\b[\s\S]{0,100}\b(?:attorney|lawyer)\b[\s\S]{0,80}\b(?:it|that|this)\b/i;
@@ -36,6 +38,10 @@ function completeNeedText(need: V4SystemicNeed) {
 
 function liveOwnerForNeed(need: V4SystemicNeed, immutableQuestion: string) {
   const text = `${immutableQuestion} ${completeNeedText(need)}`;
+  // Reviewing content before the rep sends it is a knowledge/wording request,
+  // not a request for the chatbot to execute the payment or send action named
+  // inside that content.
+  if (CONTENT_REVIEW_REQUEST.test(text)) return null;
   const liveAction = EXPLICIT_LIVE_ACTION.test(text);
   if (!liveAction) return null;
   if (GREENLIGHT_ACTION.test(text)) return "greenlight" as const;
@@ -55,6 +61,10 @@ export function refineV512QueryPlan(
   let passiveRouteCorrections = 0;
   const needs = refined.needs.map((need) => {
     const owner = liveOwnerForNeed(need, immutableQuestion);
+    if (!owner && INTERNAL_ARTIFACT_REQUEST.test(`${immutableQuestion} ${completeNeedText(need)}`)) {
+      ownerBindings += 1;
+      return { ...need, requestKind: "operational_action" as const, forcedRouteKey: "sales_policy" as const };
+    }
     if (need.forcedRouteKey && !owner) {
       passiveRouteCorrections += 1;
       return { ...need, forcedRouteKey: null, requestKind: "knowledge" as const };

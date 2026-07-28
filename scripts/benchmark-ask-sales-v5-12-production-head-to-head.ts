@@ -6,8 +6,9 @@ import type { AskSalesFaqChatMessage } from "@/lib/ask-sales-faq/types";
 import { getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { runAskSalesFaqV512 } from "@/lib/ask-sales-faq/v5-12/runtime";
 import { runAskSalesFaqV513 } from "@/lib/ask-sales-faq/v5-13/runtime";
+import { runAskSalesFaqV514 } from "@/lib/ask-sales-faq/v5-14/runtime";
 
-type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV512>> | Awaited<ReturnType<typeof runAskSalesFaqV513>>;
+type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV512>> | Awaited<ReturnType<typeof runAskSalesFaqV513>> | Awaited<ReturnType<typeof runAskSalesFaqV514>>;
 
 type Item = {
   id: string;
@@ -80,8 +81,8 @@ function summarize(results: Array<Item & { candidate: RuntimeResult }>) {
 
 async function main() {
   const system = argument("system", "v512");
-  if (!new Set(["v512", "v513"]).has(system)) throw new Error("--system must be v512 or v513");
-  const runCandidate = system === "v513" ? runAskSalesFaqV513 : runAskSalesFaqV512;
+  if (!new Set(["v512", "v513", "v514"]).has(system)) throw new Error("--system must be v512, v513, or v514");
+  const runCandidate = system === "v514" ? runAskSalesFaqV514 : system === "v513" ? runAskSalesFaqV513 : runAskSalesFaqV512;
   const provider = getV4ProviderReadiness();
   if (!provider.modelConfigured) {
     throw new Error(`${system.toUpperCase()} provider preflight failed; no runtime output was generated`);
@@ -91,7 +92,9 @@ async function main() {
   const inputPath = path.resolve(inputArgument);
   const outputPath = path.resolve(argument(
     "output",
-    system === "v513"
+    system === "v514"
+      ? "artifacts/ask-sales-faq-v5-14-production-head-to-head/v5-14-runtime.json"
+      : system === "v513"
       ? "artifacts/ask-sales-faq-v5-13-production-head-to-head/v5-13-runtime.json"
       : "artifacts/ask-sales-faq-v5-12-production-head-to-head/v5-12-runtime.json",
   ));
