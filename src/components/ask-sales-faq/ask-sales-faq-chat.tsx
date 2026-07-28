@@ -36,7 +36,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { APPROVED_FAQ_ARTICLES, type ApprovedFaqArticle } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
-import { parseAnswerDisplayList, parseAnswerDisplaySegments, shouldShowPlainAnswerWithStructured } from "@/lib/ask-sales-faq/presentation";
+import {
+  parseAnswerDisplayList,
+  parseAnswerDisplaySegments,
+  removeStructuredSummaryDuplicates,
+  shouldShowPlainAnswerWithStructured,
+} from "@/lib/ask-sales-faq/presentation";
 import type {
   AskSalesFaqConversationSummary,
   AskSalesFaqResponse,
@@ -1445,8 +1450,9 @@ function shouldShowRouteNote(message: ChatMessage) {
 }
 
 function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer }) {
-  const showSummary = !isDuplicatedSummary(answer);
-  const summaryList = showSummary && answer.sections.length === 0 ? parseAnswerDisplayList(answer.summary) : null;
+  const sections = removeStructuredSummaryDuplicates(answer);
+  const showSummary = !isDuplicatedSummary({ ...answer, sections });
+  const summaryList = showSummary && sections.length === 0 ? parseAnswerDisplayList(answer.summary) : null;
 
   return (
     <div className="space-y-3">
@@ -1459,7 +1465,7 @@ function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer 
         <p className="text-[15.5px] font-semibold leading-[1.65] text-slate-800"><InlineAnswerText text={answer.summary} /></p>
       ) : null}
       <div className="space-y-2.5">
-        {answer.sections.map((section, index) => (
+        {sections.map((section, index) => (
           <AnswerSection key={`${section.title}-${index}`} section={section} />
         ))}
       </div>

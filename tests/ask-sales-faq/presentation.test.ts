@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parseAnswerDisplayList, parseAnswerDisplaySegments, shouldShowPlainAnswerWithStructured } from "@/lib/ask-sales-faq/presentation";
+import {
+  parseAnswerDisplayList,
+  parseAnswerDisplaySegments,
+  removeStructuredSummaryDuplicates,
+  shouldShowPlainAnswerWithStructured,
+} from "@/lib/ask-sales-faq/presentation";
 
 describe("Ask Sales FAQ answer presentation", () => {
   it("turns a flattened package enumeration into a real list", () => {
@@ -56,5 +61,42 @@ describe("Ask Sales FAQ answer presentation", () => {
         sourceMode: "evidence",
       },
     )).toBe(true);
+  });
+
+  it("removes a Guidance item that exactly repeats the visible summary", () => {
+    expect(removeStructuredSummaryDuplicates({
+      summary: "Do not guarantee Apple TV or any other Tier-1 placement.",
+      sections: [{
+        title: "Guidance",
+        items: ["Do not guarantee Apple TV or any other Tier-1 placement."],
+        tone: "good",
+      }],
+      confidenceLabel: "High",
+      confidenceScore: 100,
+      sourceMode: "evidence",
+    })).toEqual([]);
+  });
+
+  it("keeps additional Guidance while removing only the repeated summary", () => {
+    expect(removeStructuredSummaryDuplicates({
+      summary: "Use only the approved installment plans.",
+      sections: [{
+        title: "Guidance",
+        body: "Use only the approved installment plans.",
+        items: [
+          "Use only the approved installment plans.",
+          "Do not invent a custom payment split.",
+        ],
+        tone: "good",
+      }],
+      confidenceLabel: "High",
+      confidenceScore: 100,
+      sourceMode: "evidence",
+    })).toEqual([{
+      title: "Guidance",
+      body: undefined,
+      items: ["Do not invent a custom payment split."],
+      tone: "good",
+    }]);
   });
 });
