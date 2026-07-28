@@ -20,6 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import { ApprovedDraftCorrection } from "@/components/ask-sales-faq/approved-draft-correction";
 import { KnowledgeInboxCard } from "@/components/ask-sales-faq/knowledge-inbox-card";
 import { formatMiamiDateTime } from "@/lib/format";
+import {
+  getDailyRefreshHealth,
+  getKnowledgeRefreshNextStep,
+} from "@/lib/ask-sales-faq/knowledge-refresh-presentation";
 import type {
   KnowledgeRefreshCandidateRow,
   KnowledgeRefreshConflictResolution,
@@ -89,6 +93,19 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   const reviewable = overview.candidates.filter((candidate) => ["needs_review", "needs_owner", "deferred"].includes(candidate.status));
   const selectedCandidates = reviewable.filter((candidate) => reviewSelected.includes(candidate.id));
   const hasServerReleaseInProgress = overview.releases.some((release) => ["creating_pull_requests", "publishing"].includes(release.status));
+  const refreshHealth = getDailyRefreshHealth({
+    hasRun: Boolean(overview.latestRun),
+    unavailableSources: overview.latestRun?.unavailable_sources ?? unavailable,
+    totalSources: overview.sources.length,
+  });
+  const nextStep = getKnowledgeRefreshNextStep({
+    needsReview: overview.summary.needs_review,
+    needsOwner: overview.summary.needs_owner,
+    approvedReady: overview.filters.view === "approved" ? readyApproved.length : overview.summary.approved_content,
+    awaitingReleasePreparation: overview.releases.filter((release) => ["awaiting_final_publish", "publication_failed"].includes(release.status)).length,
+    readyToPublish: overview.releases.filter((release) => ["prs_ready", "deployment_failed"].includes(release.status)).length,
+    publishing: overview.releases.filter((release) => ["creating_pull_requests", "publishing"].includes(release.status)).length,
+  });
   const busyReleaseRow = busyReleaseAction
     ? overview.releases.find((release) => release.id === busyReleaseAction.releaseId)
     : null;
@@ -188,8 +205,8 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
   async function runReleaseAction(release: KnowledgeRefreshReleaseRow, action: ReleaseAction) {
     const publishing = action === "publish_verified_release";
     const prompt = publishing
-      ? "Publish this verified release? The publisher will recheck both repository release workflows, merge only passing pull requests, wait for the production deployment, and verify the exact knowledge version."
-      : "Create synchronized governed release pull requests? This prepares reviewed Git changes and runs release checks, but it will not change production.";
+      ? "Publish these approved updates? The system will recheck both protected repositories, merge only verified changes, wait for production deployment, and confirm the exact knowledge version."
+      : "Prepare this protected release? This creates reviewed repository changes and starts safety checks, but it will not change production.";
     if (!window.confirm(prompt)) return;
     setBusyReleaseAction({ releaseId: release.id, action, startedAt: Date.now() });
     setReleaseActionNotice(null);
@@ -219,27 +236,35 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
   return (
     <>
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        <Metric label="Needs review" value={overview.summary.needs_review} tone={overview.summary.needs_review ? "warning" : "good"} />
-        <Metric label="Needs owner" value={overview.summary.needs_owner} tone={overview.summary.needs_owner ? "warning" : "default"} />
-        <Metric label="Baseline screened" value={overview.summary.deferred} tone="good" />
-        <Metric label="Duplicates" value={overview.summary.duplicate} tone="good" />
-        <Metric label="Content approved" value={overview.summary.approved_content} tone="good" />
-        <Metric label="Sources healthy" value={`${available}/${overview.sources.length}`} tone={unavailable ? "warning" : "good"} />
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Metric label="Updates to review" value={overview.summary.needs_review + overview.summary.needs_owner} tone={overview.summary.needs_review + overview.summary.needs_owner ? "warning" : "good"} />
+        <Metric label="Approved updates" value={overview.summary.approved_content} tone="good" />
+        <Metric label="Sources available" value={`${available}/${overview.sources.length}`} tone={unavailable ? "warning" : "good"} />
+        <Metric label="Safely screened out" value={overview.summary.deferred + overview.summary.duplicate + overview.summary.rejected} tone="default" />
+      </section>
+
+      <section className="magic-card border-l-4 border-l-red-500 p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.14em] text-red-600">Your next step</div>
+            <h2 className="mt-1 text-lg font-extrabold text-slate-950">{nextStep.title}</h2>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{nextStep.description}</p>
+          </div>
+          {nextStep.href && nextStep.label ? <a href={nextStep.href} className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-extrabold text-white hover:bg-slate-800">{nextStep.label}</a> : null}
+        </div>
       </section>
 
       <section className="magic-card p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-5 text-emerald-600" />
-              <h2 className="text-lg font-extrabold text-slate-950">Latest daily refresh</h2>
+              {refreshHealth.tone === "warning" ? <AlertTriangle className="size-5 text-amber-600" /> : <CheckCircle2 className="size-5 text-emerald-600" />}
+              <h2 className="text-lg font-extrabold text-slate-950">{refreshHealth.title}</h2>
             </div>
             {overview.latestRun ? (
               <>
-                <p className="mt-2 text-sm font-semibold text-slate-700">
-                  Completed successfully at {formatMiamiDateTime(overview.latestRun.completed_at)}.
-                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-700">Finished at {formatMiamiDateTime(overview.latestRun.completed_at)}.</p>
+                <p className={`mt-1 text-sm leading-6 ${refreshHealth.tone === "warning" ? "font-semibold text-amber-700" : "text-slate-500"}`}>{refreshHealth.description}</p>
                 <p className="mt-1 text-sm leading-6 text-slate-500">
                   Older drafts were preserved in the archive. They were not deleted or silently merged.
                 </p>
@@ -263,11 +288,11 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
       <section className="magic-card p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2"><ShieldCheck className="size-5 text-emerald-600" /><h2 className="text-lg font-extrabold text-slate-950">Production safety boundary</h2></div>
-            <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">Screening, deferring, or marking duplicates only organizes preserved proposals. Approval is always individual. Even content approval creates only a release manifest; the live V3 registry still requires reviewed Git changes, tests, deployment checks, and production verification.</p>
+            <div className="flex items-center gap-2"><ShieldCheck className="size-5 text-emerald-600" /><h2 className="text-lg font-extrabold text-slate-950">Production safety remains automatic</h2></div>
+            <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">AI finds and organizes possible updates; it cannot approve or publish them. Your content decision is always individual. The live V5.14 chatbot changes only after the protected release checks, deployment, and exact knowledge-version verification all pass.</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Badge variant="outline" className="border-slate-200 bg-slate-50">V3 {overview.knowledgeVersion}</Badge>
+            <Badge variant="outline" className="border-slate-200 bg-slate-50">Live knowledge {overview.knowledgeVersion}</Badge>
             <Badge variant="outline" className={overview.publishEnabled ? "border-amber-200 bg-amber-50 text-amber-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}>{overview.publishEnabled ? "Publication integration enabled" : "Direct publication disabled"}</Badge>
             <button type="button" disabled={isPending} onClick={refresh} className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:opacity-50"><RefreshCw className={`size-3.5 ${isPending ? "animate-spin" : ""}`} /> Refresh</button>
           </div>
@@ -276,12 +301,12 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
       {message ? <div className={`rounded-xl border px-4 py-3 text-sm font-semibold ${message.tone === "good" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}`}>{message.text}</div> : null}
 
-      <details className="magic-card overflow-hidden">
-        <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">Daily source health <span className="ml-2 text-sm font-semibold text-slate-500">{available}/{overview.sources.length} healthy · 9:00 PM Miami</span></summary>
+      <details open={unavailable > 0} className="magic-card overflow-hidden">
+        <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">Source details <span className={`ml-2 text-sm font-semibold ${unavailable ? "text-amber-700" : "text-slate-500"}`}>{available}/{overview.sources.length} available · read-only · 9:00 PM Miami</span></summary>
         <div className="grid gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-2 xl:grid-cols-3">{overview.sources.map((source) => <SourceCard key={source.id} source={source} />)}</div>
       </details>
 
-      <section className="magic-card overflow-hidden">
+      {overview.filters.view !== "approved" ? <section className="magic-card overflow-hidden">
         <div className="border-b border-slate-100 p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
@@ -318,7 +343,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
           {cardsReady && !overview.candidates.length ? <div className="p-8 text-center text-sm text-slate-500">No proposals match these filters.</div> : null}
         </div>
         <Pagination overview={overview} />
-      </section>
+      </section> : null}
 
       {overview.filters.view === "approved" ? (
         <section className="magic-card overflow-hidden">
@@ -331,11 +356,10 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
               </div>
               <button type="button" aria-busy={preparingRelease} onClick={prepareRelease} disabled={!selectedReadyCount || preparingRelease} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#DC2626] px-4 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:bg-slate-300">{preparingRelease ? <LoaderCircle className="size-4 animate-spin" /> : <FileCheck2 className="size-4" />} {preparingRelease ? "Building and checking preview…" : selectedReadyCount ? `Build test preview (${selectedReadyCount})` : "Select a green draft"}</button>
             </div>
-            <ol className="mt-4 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-4">
-              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">1. Select green drafts</span><br />Red drafts stay out.</li>
-              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">2. Build preview</span><br />No production change.</li>
-              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">3. Create release PRs</span><br />Wait for both checks.</li>
-              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">4. Publish verified release</span><br />Live only after Production verified.</li>
+            <ol className="mt-4 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-3">
+              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">1. Approve the exact wording</span><br />Edit or reject anything uncertain.</li>
+              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">2. Compare one final preview</span><br />Production stays unchanged.</li>
+              <li className="rounded-lg bg-slate-50 p-3"><span className="font-extrabold text-slate-900">3. Follow the next release action</span><br />Automatic checks stop unsafe publication.</li>
             </ol>
             {releaseMessage ? <div aria-live="polite" className={`mt-4 rounded-xl border px-4 py-3 text-sm font-semibold ${releaseMessage.tone === "good" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}`}>{releaseMessage.text}</div> : null}
           </div>
@@ -367,13 +391,12 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
 function QueueFilters({ overview }: { overview: Overview }) {
   const views: Array<[KnowledgeRefreshQueueView, string, number]> = [
-    ["actionable", "New or changed", overview.summary.needs_review + overview.summary.needs_owner],
-    ["approved", "Approved", overview.summary.approved_content],
-    ["resolved", "Reviewed", overview.summary.deferred + overview.summary.duplicate + overview.summary.rejected],
-    ["stale", "Replaced archive", overview.summary.stale],
-    ["all", "All", overview.summary.total],
+    ["actionable", "Review updates", overview.summary.needs_review + overview.summary.needs_owner],
+    ["approved", "Approved updates", overview.summary.approved_content],
+    ["resolved", "Reviewed history", overview.summary.deferred + overview.summary.duplicate + overview.summary.rejected],
   ];
-  return <div className="mt-5 space-y-3"><nav className="flex flex-wrap gap-2">{views.map(([view, label, count]) => <a key={view} href={queueHref(overview, { view, page: 1 })} className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${overview.filters.view === view ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{label} ({count})</a>)}</nav><form method="get" className="grid gap-2 md:grid-cols-[minmax(0,1fr)_180px_180px_auto]"><input type="hidden" name="view" value={overview.filters.view} /><label className="relative"><Search className="absolute left-3 top-2.5 size-4 text-slate-400" /><input name="q" defaultValue={overview.filters.query} placeholder="Search title, policy, source…" className="h-9 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm text-slate-700" /></label><select name="source" defaultValue={overview.filters.sourceKind} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All sources</option><option value="slack_channel">Slack</option><option value="google_doc">Google Docs</option><option value="google_sheet">Google Sheets</option></select><select name="conflict" defaultValue={overview.filters.conflictLevel} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All conflict levels</option><option value="none">No conflict</option><option value="possible">Possible</option><option value="direct">Direct</option><option value="blocked">Blocked topic</option></select><button className="h-9 rounded-lg border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Apply filters</button></form></div>;
+  const advancedOpen = Boolean(overview.filters.query || overview.filters.sourceKind !== "all" || overview.filters.conflictLevel !== "all" || ["stale", "all"].includes(overview.filters.view));
+  return <div className="mt-5 space-y-3"><nav className="flex flex-wrap gap-2">{views.map(([view, label, count]) => <a key={view} href={queueHref(overview, { view, page: 1 })} className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${overview.filters.view === view ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}>{label} ({count})</a>)}</nav><details open={advancedOpen} className="rounded-xl border border-slate-200 bg-slate-50"><summary className="cursor-pointer px-4 py-3 text-xs font-extrabold text-slate-600">Search, filters, and archives</summary><div className="space-y-3 border-t border-slate-200 p-3"><div className="flex flex-wrap gap-2"><a href={queueHref(overview, { view: "stale", page: 1 })} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">Replaced archive ({overview.summary.stale})</a><a href={queueHref(overview, { view: "all", page: 1 })} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">All records ({overview.summary.total})</a></div><form method="get" className="grid gap-2 md:grid-cols-[minmax(0,1fr)_180px_180px_auto]"><input type="hidden" name="view" value={overview.filters.view} /><label className="relative"><Search className="absolute left-3 top-2.5 size-4 text-slate-400" /><input name="q" defaultValue={overview.filters.query} placeholder="Search title, answer, or source…" className="h-9 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm text-slate-700" /></label><select name="source" defaultValue={overview.filters.sourceKind} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All sources</option><option value="slack_channel">Slack</option><option value="google_doc">Google Docs</option><option value="google_sheet">Google Sheets</option></select><select name="conflict" defaultValue={overview.filters.conflictLevel} className="h-9 rounded-lg border border-slate-200 px-3 text-sm text-slate-700"><option value="all">All conflict levels</option><option value="none">No conflict</option><option value="possible">Possible</option><option value="direct">Direct</option><option value="blocked">Blocked topic</option></select><button className="h-9 rounded-lg border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 hover:bg-slate-50">Apply</button></form></div></details></div>;
 }
 
 // Preserved temporarily for audit-diff readability while the Daily Knowledge Inbox replaces the legacy card.
@@ -522,7 +545,7 @@ function ReleaseHistory({
   onAction: (release: KnowledgeRefreshReleaseRow, action: ReleaseAction) => void;
 }) {
   const anyReleaseBusy = Boolean(busyReleaseAction) || releases.some((release) => ["creating_pull_requests", "publishing"].includes(release.status));
-  return <section className="magic-card overflow-hidden"><div className="border-b border-slate-100 p-5"><h2 className="text-lg font-extrabold text-slate-950">Release history and test previews</h2><p className="mt-1 text-sm text-slate-500">Open a preview to compare the current official answer with the proposed replacement. A preview alone never changes production.</p></div><div className="divide-y divide-slate-100">{releases.map((release, index) => {
+  return <section id="release-status" className="magic-card scroll-mt-24 overflow-hidden"><div className="border-b border-slate-100 p-5"><h2 className="text-lg font-extrabold text-slate-950">Release status</h2><p className="mt-1 text-sm text-slate-500">Follow the single available next action. The protected checks remain automatic, and a preview alone never changes production.</p></div><div className="divide-y divide-slate-100">{releases.map((release, index) => {
     const faq = releasePr(release.publication, "faq");
     const dashboard = releasePr(release.publication, "dashboard");
     const preview = releasePreviewItems(release.manifest);
@@ -540,20 +563,20 @@ function ReleaseHistory({
     const errorGuidance = release.last_error ? friendlyReleaseError(release.last_error) : null;
     return <article key={release.id} className="p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0"><div className="font-extrabold text-slate-800">{release.id}</div><div className="mt-1 text-xs text-slate-500">{release.candidate_ids.length} accepted draft{release.candidate_ids.length === 1 ? "" : "s"} · created by {release.created_by} · {formatDate(release.created_at)}</div>{faq || dashboard ? <div className="mt-2 flex flex-wrap gap-3 text-xs font-bold">{faq ? <a href={faq.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">FAQ source PR #{faq.number}</a> : null}{dashboard ? <a href={dashboard.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">Dashboard runtime PR #{dashboard.number}</a> : null}</div> : null}</div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2"><StatusBadge status={release.status} />{publishEnabled && creatingAllowed ? <button type="button" aria-busy={activeAction === "create_pull_requests"} disabled={anyReleaseBusy} onClick={() => onAction(release, "create_pull_requests")} className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50">{activeAction === "create_pull_requests" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "create_pull_requests" ? "Creating PRs…" : "Create release PRs"}</button> : null}{publishEnabled && publishAllowed ? <button type="button" aria-busy={activeAction === "publish_verified_release"} disabled={anyReleaseBusy} onClick={() => onAction(release, "publish_verified_release")} className="inline-flex h-9 items-center gap-2 rounded-full bg-[#DC2626] px-3 text-xs font-extrabold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-50">{activeAction === "publish_verified_release" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "publish_verified_release" ? "Checking and publishing…" : release.last_error ? "Retry publish checks" : release.status === "deployment_failed" ? "Retry verification" : "Publish verified release"}</button> : null}</div>
+        <div className="min-w-0"><div className="font-extrabold text-slate-800">{release.candidate_ids.length} approved update{release.candidate_ids.length === 1 ? "" : "s"}</div><div className="mt-1 text-xs text-slate-500">Prepared {formatDate(release.created_at)} · release {release.id}</div>{faq || dashboard ? <details className="mt-2 text-xs"><summary className="cursor-pointer font-bold text-slate-500">Technical repository links</summary><div className="mt-2 flex flex-wrap gap-3">{faq ? <a href={faq.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">FAQ source change #{faq.number}</a> : null}{dashboard ? <a href={dashboard.url} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">Dashboard runtime change #{dashboard.number}</a> : null}</div></details> : null}</div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2"><StatusBadge status={release.status} />{publishEnabled && creatingAllowed ? <button type="button" aria-busy={activeAction === "create_pull_requests"} disabled={anyReleaseBusy} onClick={() => onAction(release, "create_pull_requests")} className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-300 bg-white px-3 text-xs font-extrabold text-slate-800 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50">{activeAction === "create_pull_requests" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "create_pull_requests" ? "Preparing protected release…" : "Prepare protected release"}</button> : null}{publishEnabled && publishAllowed ? <button type="button" aria-busy={activeAction === "publish_verified_release"} disabled={anyReleaseBusy} onClick={() => onAction(release, "publish_verified_release")} className="inline-flex h-9 items-center gap-2 rounded-full bg-[#DC2626] px-3 text-xs font-extrabold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-50">{activeAction === "publish_verified_release" ? <LoaderCircle className="size-3.5 animate-spin" /> : null}{activeAction === "publish_verified_release" ? "Checking and publishing…" : release.last_error ? "Retry protected checks" : release.status === "deployment_failed" ? "Retry verification" : "Publish approved updates"}</button> : null}</div>
       </div>
       {busy ? (
         <div aria-live="polite" aria-busy="true" className="mt-4 flex gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
           <LoaderCircle className="mt-0.5 size-5 shrink-0 animate-spin" />
-          <div><div className="font-extrabold">{activeAction === "create_pull_requests" ? "Creating release pull requests…" : "Verifying checks and publishing…"}</div><p className="mt-1">This can take a few minutes. Keep this page open; it refreshes automatically, and the button stays disabled until the step finishes.</p></div>
+          <div><div className="font-extrabold">{activeAction === "create_pull_requests" ? "Preparing the protected release…" : "Verifying checks and publishing…"}</div><p className="mt-1">This can take a few minutes. Keep this page open; it refreshes automatically, and the button stays disabled until the step finishes.</p></div>
         </div>
       ) : notice ? (
         <div role={notice.tone === "bad" ? "alert" : "status"} aria-live="polite" className={`mt-4 rounded-xl border p-4 text-sm font-semibold leading-6 ${notice.tone === "bad" ? "border-red-200 bg-red-50 text-red-800" : notice.tone === "good" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-blue-200 bg-blue-50 text-blue-900"}`}>{notice.text}</div>
       ) : errorGuidance ? (
         <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800"><div className="font-extrabold">This step stopped safely</div><p className="mt-1">{errorGuidance}</p><details className="mt-2 text-xs text-red-700"><summary className="cursor-pointer font-bold">Technical detail</summary><p className="mt-1">{release.last_error}</p></details></div>
       ) : release.status === "prs_ready" ? (
-        <div role="status" className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><span className="font-extrabold">Pull requests created.</span> Wait for both governed checks to turn green, then click Publish verified release. Production is unchanged until that final verification succeeds.</div>
+        <div role="status" className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><span className="font-extrabold">Protected release prepared.</span> The repository checks are running. When the final action becomes available, click Publish approved updates. Production remains unchanged until exact verification succeeds.</div>
       ) : release.status === "production_verified" ? (
         <div role="status" className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-800"><span className="font-extrabold">Production verified.</span> The exact approved knowledge version is live.</div>
       ) : null}
@@ -617,8 +640,8 @@ function ActionButton({ disabled, onClick, label }: { disabled: boolean; onClick
 function StatusBadge({ status }: { status: string }) {
   const labels: Record<string, string> = {
     awaiting_final_publish: "Preview ready",
-    creating_pull_requests: "Creating PRs",
-    prs_ready: "PRs created",
+    creating_pull_requests: "Preparing release",
+    prs_ready: "Ready for final decision",
     publishing: "Verifying release",
     production_verified: "Production verified",
     publication_failed: "PR creation failed",

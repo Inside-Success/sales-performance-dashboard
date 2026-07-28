@@ -184,8 +184,10 @@ if (missingFiles.length === 0) {
       knowledgeRefreshStore.includes("randomBytes(32)") &&
       knowledgeRefreshStore.includes("action_token_expires_at") &&
       knowledgeRefreshStore.includes("release_action_claimed") &&
-      knowledgeRefreshConsole.includes("Create release PRs") &&
-      knowledgeRefreshConsole.includes("Publish verified release"),
+      knowledgeRefreshConsole.includes('"create_pull_requests"') &&
+      knowledgeRefreshConsole.includes('"publish_verified_release"') &&
+      knowledgeRefreshConsole.includes("Prepare protected release") &&
+      knowledgeRefreshConsole.includes("Publish approved updates"),
     "content approval, Git PR creation, and final verified publication remain separate exact-admin events",
   );
 
@@ -195,7 +197,7 @@ if (missingFiles.length === 0) {
       knowledgeRefreshConsole.includes("LoaderCircle") &&
       knowledgeRefreshConsole.includes("it refreshes automatically") &&
       knowledgeRefreshConsole.includes("This step stopped safely") &&
-      knowledgeRefreshConsole.includes("Retry publish checks") &&
+      knowledgeRefreshConsole.includes("Retry protected checks") &&
       knowledgeInboxCard.includes("Saving decision…") &&
       approvedDraftCorrection.includes("Saving correction…"),
     "review, preview, PR, and publish controls visibly stay busy while release history refreshes and failures remain beside the affected release",
