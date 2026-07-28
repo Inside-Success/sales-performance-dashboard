@@ -1,0 +1,398 @@
+import { inferV4SystemicRelation, inferV4SystemicRequestKind } from "@/lib/ask-sales-faq/v4/systemic/relations";
+import type {
+  V4SystemicNeed,
+  V4SystemicNeedDecision,
+  V4SystemicQueryPlan,
+  V4SystemicRetrieval,
+} from "@/lib/ask-sales-faq/v4/systemic/types";
+import type { V3TurnResolution } from "@/lib/ask-sales-faq/v3/types";
+
+type RouteKey = NonNullable<V4SystemicNeedDecision["routeKey"]>;
+
+function completeText(need: V4SystemicNeed) {
+  return [
+    need.originalRequestText,
+    need.authorityText,
+    need.text,
+    ...need.domains,
+    ...need.actions,
+    ...need.entities,
+  ].filter(Boolean).join(" ");
+}
+
+const STABLE_NAVIGATION_QUESTION = /\bwhere\s+(?:do|should|can|would)\s+(?:i|we|reps?)\s+(?:send|post|submit|upload|attach|find|locate|access|check|verify)\b|\bwhich\s+(?:channel|thread|form|sheet|link|place)\b/i;
+const LIVE_MUTATION_REQUEST = /\b(?:can|could|would)\s+(?:someone|you|the\s+team)\b.{0,120}\b(?:fix|repair|change|update|correct|restore|rerun|reprocess|void|cancel|expedite|send|issue|process)\w*\b|\bplease\s+(?:fix|repair|change|update|correct|restore|rerun|reprocess|void|cancel|expedite|send|issue|process)\w*\b/i;
+const CURRENT_FAILURE_OR_STATUS = /\b(?:right\s+now|currently|specific|this\s+client|this\s+lead|this\s+prospect|pending|failed|failing|declined|not\s+working|did\s+not|didn't|does\s+not|doesn't)\b/i;
+const PERMISSION_TO_USE_EXISTING_RESOURCE = /\b(?:can|could|may|should|is|are)\s+(?:i|we|a|an|the|my|our|their|his|her|client|prospect|cast\s+member|family\s+member|mother|father|spouse|guest|attendee|they|he|she)\b.{0,160}\b(?:share|use|include|forward|give|join)\w*\b.{0,120}\b(?:same|existing|current|the)\b.{0,80}\b(?:link|url|form|document|recording|call)\b/i;
+const PERSONAL_ACTOR_DECISION = /\bdoes\s+[a-z][a-z .'-]{1,55}?\s+personally\s+(?:interview|create|record|host|meet|call|approve|review|send|provide)\w*\b/i;
+const GENERIC_ACTOR_REQUIREMENT = /\b(?:does|do)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\s+need\s+to\b|\b(?:must|should)\s+(?:the\s+)?(?:rep|representative|closer|salesperson|we|i)\b/i;
+const DEFINITION_SHAPED_REQUEST = /\bwhat\s+does\b.{0,180}\bmean\b|\bwhat\s+(?:is|are)\s+(?:the\s+)?(?:seo\s+benefit|social\s+promo(?:tional)?\s+assets?|swag(?:\s+package)?|promotional\s+activities)\b/i;
+const REFERENCED_CONTEXT_REVIEW = /\b(?:review|assess|analy[sz]e|look\s+at|read)\w*\b.{0,120}\b(?:this|the|attached|following)\b.{0,50}\b(?:message|email|text|screenshot|attachment|recording|document)\b/i;
+const PAYMENT_CHANGE_CONTRACT_REQUIREMENT = /\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment\s+(?:arrangement|plan|split|structure|terms?))\b.{0,180}\b(?:new|another|replacement)\s+(?:contract|agreement)\b|\b(?:new|another|replacement)\s+(?:contract|agreement)\b.{0,180}\b(?:payment\s+(?:arrangement|plan|split|structure|terms?)\s+(?:change|changes|changed)|change\w*\s+payment)\b/i;
+const SCRIPT_SELECTION_REQUIREMENT = /\b(?:which|what|same|separate|different|approved|existing|next\s+level\s+ceo|nlceo|built\s+for\s+more)\b.{0,180}\bscript\b|\bscript\b.{0,180}\b(?:which|what|same|separate|different|approved|existing|swap|change)\b/i;
+const CURRENT_CROSS_PRODUCT_REVIEW = /\b(?:current|currently|still|active|available)\b.{0,180}\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b|\b(?:show|program|istv|daymond\s+john|next\s+level\s+ceo|nlceo|love\s+experts)\b.{0,180}\b(?:current|currently|still|active|available)\b|\bnot\s+a\s+fit\b.{0,220}\b(?:move|transfer|pass)\b|\b(?:move|transfer|pass)\b.{0,220}\bnot\s+a\s+fit\b/i;
+const CURRENT_GOVERNED_REFERENCE_QUESTION = /\b(?:what|which|does|do|is|are)\b.{0,100}\b(?:current|approved|official)\b.{0,100}\b(?:price|pricing|cost|payment\s+plans?|installments?|policy|rule|process|package|offer)\b|\b(?:current|approved|official)\b.{0,100}\b(?:price|pricing|cost|payment\s+plans?|installments?|policy|rule|process|package|offer)\b/i;
+const QUALIFICATION_EXCEPTION_REVIEW = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,180}\b(?:approve|approval|eligible|greenlight|green\s+light)\b|\b(?:approve|approval|eligible|greenlight|green\s+light)\b.{0,180}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const QUALIFICATION_CASE_REVIEW_OVERLAY = /\b(?:illness|injury|relaunch|exception|special\s+case)\b.{0,220}\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b|\b(?:call\s*2|second\s+call|proceed|eligible|greenlight|green\s+light|close)\b.{0,220}\b(?:illness|injury|relaunch|exception|special\s+case)\b/i;
+const FINANCE_TIMING_LOOKUP = /\b(?:invoice|commission|refund|payment)\b.{0,180}\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|when\s+(?:will|does)|current\s+(?:timing|timeline|status))\b|\b(?:net\s*30|exactly\s+30\s+days|arrive\s+sooner|current\s+(?:timing|timeline|status))\b.{0,180}\b(?:invoice|commission|refund|payment)\b/i;
+const FULFILLMENT_TIMING_LOOKUP = /\b(?:filming|production|episode)\b.{0,180}\b(?:current|expected|how\s+long|timeline|timing)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b|\b(?:current|expected|how\s+long|timeline|timing)\b.{0,180}\b(?:filming|production|episode)\b.{0,100}\b(?:delivery|delivered|receive|ready)\b/i;
+const FULFILLMENT_OWNER_HELP = /\b(?:client|cast\s+member)\b.{0,180}\b(?:after|post)\s+onboard\w*\b.{0,160}\b(?:confused|help|speak|talk|contact|owner)\b|\b(?:speak|talk|contact)\b.{0,120}\b(?:onboarding|fulfillment|studio\s+executive)\b/i;
+const CASE_SPECIFIC_GREENLIGHT_SUBJECT = /\b(?:this|that|my|our|the|a|an)\s+(?:client|lead|prospect|applicant)\b/i;
+const GREENLIGHT_INTERRUPTION = /\b(?:greenlit|green\s*light)\b/i;
+const GREENLIGHT_INTERRUPTION_STATE = /\b(?:internet|connection|disconnect|dropped|congratulations\s+video)\b/i;
+const GREENLIGHT_LIVE_DECISION = /\b(?:should\s+i|now|today|tomorrow|wait|follow[- ]?up)\b/i;
+const CASE_SPECIFIC_SENSITIVE_BACKGROUND = /\b(?:this|that|a|an|the|my|our)\s+(?:[a-z0-9'-]+\s+){0,3}(?:client|lead|prospect|applicant)\b/i;
+const SENSITIVE_BACKGROUND_FACT = /\b(?:felon(?:y|ies)|criminal|conviction|charges?|lawsuit|sealed\s+record|media\s+coverage|background\s+check)\b/i;
+const SENSITIVE_ELIGIBILITY_DECISION = /\b(?:proceed|move\s+forward|attend\s+call\s*1|eligible|eligibility|approve|approval|greenlight|green\s+light|pass|reject|decide|unsure)\b/i;
+
+function isMissingReferencedContext(value: string) {
+  if (!REFERENCED_CONTEXT_REVIEW.test(value)) return false;
+  const suppliesInlineContext = /\b(?:message|email|text)\s+(?:says?|reads?)\s*[:“"]|\b(?:following|below)\s*[:“"]|[“"][^”"]{12,}[”"]|\n\s*\S.{20,}/i.test(value);
+  return !suppliesInlineContext;
+}
+
+function deterministicRouteOwner(text: string, requestKind: V4SystemicNeed["requestKind"]): RouteKey | null {
+  const supportingApprovalEvidence = /\b(?:supporting\s+)?(?:documents?|links?|evidence|proof)\b.{0,140}\b(?:greenlight|green\s+light|approval)\b|\b(?:greenlight|green\s+light|approval)\b.{0,140}\b(?:supporting\s+)?(?:documents?|links?|evidence|proof)\b/i.test(text) &&
+    /\b(?:lead|prospect|call\s*(?:1|one)|provided|supplied|sent|send)\b/i.test(text);
+  if (supportingApprovalEvidence) return "fulfillment";
+
+  const paymentContractAutomation = /\b(?:payment|paid)\b.{0,180}\b(?:contract|agreement)\b|\b(?:contract|agreement)\b.{0,180}\b(?:payment|paid)\b/i.test(text) &&
+    /\b(?:automation|automatic|redirect|integration|workflow|failed|missing|fix|repair|rerun|reprocess|did\s+not|didn't|does\s+not|doesn't)\b/i.test(text);
+  if (paymentContractAutomation) return "sales_tech";
+
+  const controlledSalesArtifact = /\b(?:current|latest|exact|approved|right)\b.{0,120}\b(?:link|form|sheet|spreadsheet|deck|file|document)\b|\b(?:link|form|sheet|spreadsheet|deck|file|document)\b.{0,120}\b(?:current|latest|exact|approved|right)\b/i.test(text) &&
+    /\b(?:package\s+upgrade|upgrade|sales\s+deck|slide\s+deck|payment|contract|crm|keap|oncehub)\b/i.test(text);
+  if (controlledSalesArtifact) return "sales_tech";
+
+  const technicalSystem = /\b(?:keap|hubspot|oncehub|zoom|crm|calendar|dashboard|leaderboard|rpc|rpct|automation|integration|redirect|technical|tech|record|attribution|referral\s+entry|self[- ]generated|self[- ]sourced)\b/i.test(text) &&
+    /\b(?:fix|repair|update|change|correct|merge|combine|replace|delete|remove|sync|populate|generate|enter|entry|submit|route|find|locate|access|link|workflow|failed|missing)\w*\b/i.test(text);
+  if (technicalSystem && requestKind !== "knowledge") return "sales_tech";
+
+  const specificGreenlightContractStatus = /\b(?:greenlight|green\s+light|greenlit)\b/i.test(text) &&
+    /\b(?:specific|this|that|status|sent|send|confirm|check|verify|letter|approval)\b/i.test(text) &&
+    !supportingApprovalEvidence;
+  if (specificGreenlightContractStatus) return "greenlight";
+
+  const financeOperation = /\b(?:amex|american\s+express|ach|wire|card|payment|transaction|invoice|billing|charge|refund|commission)\b/i.test(text) &&
+    /\b(?:confirm|verify|check|trace|process|issue|refund|reverse|cancel|void|replace|switch|update|correct|receive|clear|fail|declin|reject|not\s+work|status|why)\w*\b/i.test(text);
+  if (financeOperation) return "finance";
+
+  const greenlightOperation = /\b(?:greenlight|green\s+light|greenlit|approval\s+letter)\b/i.test(text) &&
+    /\b(?:specific|this|that|lead|prospect|applicant|letter|status|approval|confirm|check|verify|send|request|expedite)\b/i.test(text);
+  if (greenlightOperation) return "greenlight";
+
+  const fulfillmentOperation = /\b(?:filming|production|fulfillment|delivery|onboarding|scriptwriter|trailer)\b/i.test(text) &&
+    /\b(?:schedule|reschedule|change|update|send|request|deliver|missing|status|support)\w*\b/i.test(text);
+  if (fulfillmentOperation && requestKind !== "knowledge") return "fulfillment";
+
+  return null;
+}
+
+const LIVE_HELP_REQUEST = /\b(?:not\s+working|isn't\s+working|can't\s+(?:log\s*in|access|open|find)|cannot\s+(?:log\s*in|access|open|find)|failed|failing|missing|stuck|urgent|right\s+now|today|who\s+(?:can|should)\s+(?:help|handle|fix)|where\s+(?:do|should)\s+i\s+(?:ask|report)|need\s+(?:help|someone|support)|team\s+is\s+(?:away|unavailable|on\s+vacation))\b/i;
+const LIVE_OWNER_ACTION = /\b(?:please|can\s+someone|could\s+someone|would\s+someone|need\s+someone\s+to)\b.{0,140}\b(?:fix|check|confirm|trace|send|issue|process|change|update|correct|restore|rerun|reprocess|void|cancel|expedite|approve|review|schedule|reschedule)\w*\b/i;
+const STABLE_POLICY_SHAPE = /\b(?:what\s+is\s+the\s+(?:policy|rule|process)|are\s+reps?\s+allowed|can\s+reps?\s+generally|should\s+reps?\s+generally|where\s+should\s+reps?\s+(?:normally|generally)|how\s+should\s+reps?\s+generally)\b/i;
+const DEONTIC_REP_POLICY_SHAPE = /\b(?:may|can|should|must)\s+(?:a|the|our)?\s*(?:rep|representative|closer|salesperson)s?\s+(?:honor|offer|share|use|book|schedule|send|discuss|mention|move|transfer|reapply|continue|close|proceed)\b/i;
+
+/** Classifies clear live ownership before model request-kind inference. */
+export function deterministicV52ActionOwner(text: string): RouteKey | null {
+  if (STABLE_POLICY_SHAPE.test(text) && !LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text)) return null;
+  if (DEONTIC_REP_POLICY_SHAPE.test(text) && !LIVE_OWNER_ACTION.test(text) && !LIVE_MUTATION_REQUEST.test(text)) return null;
+  if (!LIVE_HELP_REQUEST.test(text) && !LIVE_OWNER_ACTION.test(text) && !LIVE_MUTATION_REQUEST.test(text)) return null;
+
+  if (/\b(?:keap|hubspot|oncehub|zoom|crm|calendar|dashboard|leaderboard|login|log\s*in|password|automation|integration|redirect|technical|tech)\b/i.test(text)) {
+    return "sales_tech";
+  }
+  if (/\b(?:greenlight|green\s+light|greenlit|approval\s+letter)\b/i.test(text)) return "greenlight";
+  if (/\b(?:payment|transaction|invoice|billing|charge|refund|commission|wire|ach|card|amex|american\s+express)\b/i.test(text)) return "finance";
+  if (/\b(?:filming|production|fulfillment|delivery|onboarding|scriptwriter|trailer|studio\s+executive)\b/i.test(text)) return "fulfillment";
+  return deterministicRouteOwner(text, "operational_action");
+}
+
+/** Five-owner classifier for explicit live/current work. Stable FAQ wording is
+ * deliberately left to evidence retrieval unless a current-state or exception
+ * signal makes a live owner necessary. */
+export function deterministicV53ActionOwner(text: string): RouteKey | null {
+  if ((CURRENT_CROSS_PRODUCT_REVIEW.test(text) && !CURRENT_GOVERNED_REFERENCE_QUESTION.test(text)) || QUALIFICATION_EXCEPTION_REVIEW.test(text)) return "sales_policy";
+  if (CASE_SPECIFIC_SENSITIVE_BACKGROUND.test(text) && SENSITIVE_BACKGROUND_FACT.test(text) && SENSITIVE_ELIGIBILITY_DECISION.test(text)) {
+    return /\b(?:greenlight|green\s+light)\b/i.test(text) ? "greenlight" : "sales_policy";
+  }
+  if (CASE_SPECIFIC_GREENLIGHT_SUBJECT.test(text) && GREENLIGHT_INTERRUPTION.test(text) &&
+    GREENLIGHT_INTERRUPTION_STATE.test(text) && GREENLIGHT_LIVE_DECISION.test(text)) return "greenlight";
+  if (FINANCE_TIMING_LOOKUP.test(text)) return "finance";
+  if (FULFILLMENT_TIMING_LOOKUP.test(text) || FULFILLMENT_OWNER_HELP.test(text)) return "fulfillment";
+  return deterministicV52ActionOwner(text);
+}
+
+const EXPLICIT_DESTINATION_REQUEST = /\b(?:where|which\s+channel|who)\b.{0,90}\b(?:send|post|submit|report|request|handle|fix|update|reschedule|register|process|ask|trace|verify|confirm)\w*\b|\b(?:send|post|submit|report|request|trace|verify|confirm)\w*\b.{0,90}\b(?:where|which\s+channel|who)\b/i;
+const SALES_TECH_WORK_OBJECT = /\b(?:payment\s+links?|contract\s+links?|contract\s+automation|crm|keap|oncehub|hubspot|zoom|calendar|dashboard|leaderboard|automation|integration|20[-\s]*(?:%|percent)|twenty[-\s]+percent|dial[- ]?out\s+(?:list|sheet)|tracking\s+(?:list|sheet)|custom\s+(?:payment|split)\s+links?)\b/i;
+const SALES_TECH_WORK_STATE = /\b(?:broken|missing|failed|failing|not\s+(?:working|prompting|generating|populating|syncing)|did\s+not|didn't|does\s+not|doesn't|update|change|correct|fix|repair|rerun|reprocess|generate|create|add|remove|merge|sync|access)\w*\b/i;
+const FULFILLMENT_STAGE_OBJECT = /\b(?:paid|post[- ]sale|after\s+(?:the\s+)?sale|closed|signed)\b.{0,150}\b(?:onboarding|mastermind|event\s+registration|filming|production|delivery|scriptwriter|trailer)\b|\b(?:onboarding|mastermind|event\s+registration|filming|production|delivery|scriptwriter|trailer)\b.{0,150}\b(?:paid|post[- ]sale|after\s+(?:the\s+)?sale|closed|signed)\b/i;
+const FULFILLMENT_WORK_STATE = /\b(?:schedule|reschedule|register|registration|book|move|change|support|help|status|missing|deliver|request)\w*\b/i;
+const FINANCE_TRANSACTION_WORK = /\b(?:ach|wire|refund|commission|transaction|charge|invoice|payment)\b.{0,140}\b(?:clear|arrive|receive|trace|refund|reverse|void|declin|fail|pending|process|status|verify|confirm)\w*\b|\b(?:clear|arrive|receive|trace|refund|reverse|void|declin|fail|pending|process|status|verify|confirm)\w*\b.{0,140}\b(?:ach|wire|refund|commission|transaction|charge|invoice|payment)\b/i;
+const GREENLIGHT_WORK = /\b(?:greenlight|green\s+light|approval\s+letter)\b.{0,140}\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b|\b(?:send|issue|request|status|confirm|check|verify|missing|expedite|receive|approve|generate)\w*\b.{0,140}\b(?:greenlight|green\s+light|approval\s+letter)\b/i;
+const SENSITIVE_POLICY_DECISION = /\b(?:criminal|felon|conviction|lawsuit|background\s+check|exception|not\s+a\s+fit|transfer\s+(?:the\s+)?prospect|switch\s+(?:the\s+)?prospect)\b.{0,150}\b(?:approve|proceed|eligible|move\s+forward|reject|transfer|switch|decide)\w*\b/i;
+const STABLE_REFUND_WINDOW_POLICY = /\b(?:refund|cooling[- ]?off)\s+window\b|\bthree[- ]day\b.{0,60}\brefund\b|\brefund\b.{0,60}\bthree[- ]day\b/i;
+const CUSTOM_PAYMENT_LINK_OR_SPLIT_WORK = /\b(?:build|create|generate|arrange|set\s*up|make)\b.{0,160}\b(?:custom\s+)?(?:payment\s+link|payment\s+split|split\s+payment)\b|\b(?:split|divide)\b.{0,120}\bpayment\b.{0,120}\b(?:across|between|using|half)\b.{0,80}\b(?:credit|debit|cards?)\b|\b(?:paid[- ]in[- ]full|pay\s+in\s+full)\b.{0,160}\b(?:half|split|credit\s+card|debit\s+card)\b/i;
+
+/**
+ * Classifies live work from the complete immutable request, using the work
+ * object and lifecycle stage before broad topic words. Stable policy questions
+ * deliberately remain in retrieval even when they mention payments or forms.
+ */
+export function deterministicV54ActionOwner(text: string): RouteKey | null {
+  const explicitlyOperational = EXPLICIT_DESTINATION_REQUEST.test(text) || LIVE_HELP_REQUEST.test(text) || LIVE_OWNER_ACTION.test(text) || LIVE_MUTATION_REQUEST.test(text);
+  if (SENSITIVE_POLICY_DECISION.test(text)) return "sales_policy";
+  if (CUSTOM_PAYMENT_LINK_OR_SPLIT_WORK.test(text)) return "sales_tech";
+  if (!explicitlyOperational && (STABLE_POLICY_SHAPE.test(text) || DEONTIC_REP_POLICY_SHAPE.test(text))) return null;
+
+  if (SALES_TECH_WORK_OBJECT.test(text) && (SALES_TECH_WORK_STATE.test(text) || explicitlyOperational)) return "sales_tech";
+  if (FULFILLMENT_STAGE_OBJECT.test(text) && (FULFILLMENT_WORK_STATE.test(text) || explicitlyOperational)) return "fulfillment";
+  if (GREENLIGHT_WORK.test(text) && (explicitlyOperational || /\b(?:same[- ]day|today|this|specific|chatbot)\b/i.test(text))) return "greenlight";
+  if (FINANCE_TRANSACTION_WORK.test(text) && explicitlyOperational) return "finance";
+  return deterministicV53ActionOwner(text);
+}
+
+function refineNeed(need: V4SystemicNeed): V4SystemicNeed {
+  const text = completeText(need);
+  const atomicRequest = need.authorityText || need.text || need.originalRequestText || "";
+  const missingReferencedContext = isMissingReferencedContext(need.originalRequestText || need.authorityText || need.text);
+  let relation = need.relation;
+  let requestKind = need.requestKind;
+  let refinedText = need.text;
+
+  const greenlightContractStatus = /\b(?:greenlight|green\s+light|greenlit)\b/i.test(text) &&
+    /\b(?:contract|agreement)\b/i.test(text) &&
+    /\b(?:sent|send|received|delivered|status|confirm|check|verify)\w*\b/i.test(text);
+
+  if (PAYMENT_CHANGE_CONTRACT_REQUIREMENT.test(atomicRequest)) {
+    // "Does a change require a new contract?" is a stable policy decision,
+    // not a request to locate or send the current contract artifact.
+    relation = "requirement";
+    requestKind = "knowledge";
+  } else if (greenlightContractStatus) {
+    relation = "status";
+    requestKind = "current_lookup";
+  } else if (PERMISSION_TO_USE_EXISTING_RESOURCE.test(text)) {
+    relation = "permission";
+    requestKind = "knowledge";
+  } else if (PERSONAL_ACTOR_DECISION.test(text)) {
+    relation = "owner";
+    requestKind = "knowledge";
+  } else if (DEFINITION_SHAPED_REQUEST.test(text)) {
+    relation = "definition";
+    requestKind = "knowledge";
+    // "What are the social promo assets?" asks what the term means. Keep an
+    // explicit request for the exact/current/specific package asset list in the
+    // stricter inclusion lane so a bounded definition cannot masquerade as an
+    // enumerated deliverables list.
+  } else if (STABLE_NAVIGATION_QUESTION.test(text) && !LIVE_MUTATION_REQUEST.test(text) && !CURRENT_FAILURE_OR_STATUS.test(text)) {
+    relation = inferV4SystemicRelation(need.originalRequestText || need.authorityText || need.text);
+    requestKind = "knowledge";
+  } else if (GENERIC_ACTOR_REQUIREMENT.test(need.originalRequestText || need.authorityText || need.text)) {
+    relation = "requirement";
+    requestKind = "knowledge";
+  } else if (LIVE_MUTATION_REQUEST.test(text)) {
+    requestKind = "operational_action";
+  } else if (CURRENT_FAILURE_OR_STATUS.test(text) && /\b(?:confirm|verify|check|trace|why|status|failed|failing|declined|sent|received)\b/i.test(text)) {
+    requestKind = "current_lookup";
+  } else {
+    requestKind = inferV4SystemicRequestKind(need.originalRequestText || need.authorityText || need.text);
+  }
+
+  const atomicNeedText = [need.text, ...need.entities].join(" ");
+  if (relation === "definition" && /\bsocial\s+promo(?:tional)?\s+assets?\b/i.test(atomicNeedText) &&
+    !/\b(?:exact|specific|complete|full|list|enumerate|which|current)\b/i.test(need.originalRequestText || need.authorityText || need.text)) {
+    refinedText = "Define social promotional assets and explain their purpose in the offer.";
+  }
+
+  const paymentChangeRequirement = PAYMENT_CHANGE_CONTRACT_REQUIREMENT.test(atomicRequest);
+  const dailyStatsCorrection = /\b(?:correct|correction|incorrect|wrong|mistake)\w*\b/i.test(atomicRequest) &&
+    /\b(?:daily|eod|end[- ]of[- ]day)\s+stats?\b/i.test(need.originalRequestText || text);
+  const refined = {
+    ...need,
+    text: refinedText,
+    relation,
+    requestKind,
+    domains: [
+      ...(paymentChangeRequirement
+        ? need.domains.filter((domain) => domain !== "controlled artifact")
+        : need.domains),
+      ...(dailyStatsCorrection ? ["daily stats"] : []),
+    ].filter((domain, index, all) => all.indexOf(domain) === index),
+    actions: paymentChangeRequirement
+      ? need.actions.filter((action) => action !== "locate current artifact")
+      : need.actions,
+  };
+  const referralIntakeOwner = /\b(?:self[- ]generated|self[- ]sourced|client\s+referral|referral)\b/i.test(text) &&
+    /\b(?:enter|entry|apply|application|submit\s+greenlight|intake|workflow)\b/i.test(text)
+    ? "sales_tech" as const
+    : null;
+  if (missingReferencedContext) requestKind = "current_lookup";
+  const forcedRouteKey = missingReferencedContext
+    ? "sales_policy" as const
+    : referralIntakeOwner || (requestKind === "knowledge" ? null : deterministicRouteOwner(text, requestKind));
+  return { ...refined, requestKind, forcedRouteKey };
+}
+
+export function refineV51QueryPlan(plan: V4SystemicQueryPlan, _turn: V3TurnResolution): V4SystemicQueryPlan {
+  void _turn;
+  const needs = plan.needs.map(refineNeed);
+  const changed = needs.some((need, index) =>
+    need.relation !== plan.needs[index].relation ||
+    need.requestKind !== plan.needs[index].requestKind ||
+    need.forcedRouteKey !== plan.needs[index].forcedRouteKey,
+  );
+  return {
+    ...plan,
+    needs,
+    reasoningSummary: changed
+      ? `${plan.reasoningSummary} V5.1 preserved stable navigation as knowledge and bound live work to its deterministic action owner.`
+      : plan.reasoningSummary,
+  };
+}
+
+export function refineV52QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v51 = refineV51QueryPlan(plan, turn);
+  const needs = v51.needs.map((need) => {
+    const owner = deterministicV52ActionOwner(completeText(need));
+    return owner
+      ? { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner }
+      : need;
+  });
+  const changed = needs.some((need, index) =>
+    need.requestKind !== v51.needs[index].requestKind || need.forcedRouteKey !== v51.needs[index].forcedRouteKey,
+  );
+  return {
+    ...v51,
+    needs,
+    reasoningSummary: changed
+      ? `${v51.reasoningSummary} V5.2 classified explicit live ownership from the original request before model knowledge labels could suppress routing.`
+      : v51.reasoningSummary,
+  };
+}
+
+export function refineV53QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v52 = refineV52QueryPlan(plan, turn);
+  const needs = v52.needs.flatMap((need) => {
+    const text = completeText(need);
+    let refined = need;
+    if (SCRIPT_SELECTION_REQUIREMENT.test(text)) {
+      refined = { ...need, relation: "requirement" as const, requestKind: "knowledge" as const, forcedRouteKey: null };
+    } else {
+      const owner = deterministicV53ActionOwner(text);
+      if (owner) refined = { ...need, requestKind: "operational_action" as const, forcedRouteKey: owner };
+    }
+
+    // A reusable qualification rule may answer the policy part, but facts such
+    // as illness/relaunch still require a human decision for the actual lead.
+    // Represent that as a separate route-only need so the useful boundary is
+    // retained without the chatbot approving the case.
+    if (!QUALIFICATION_CASE_REVIEW_OVERLAY.test(text) || refined.forcedRouteKey) return [refined];
+    return [
+      refined,
+      {
+        ...refined,
+        id: `${refined.id}__case_review`,
+        text: "Confirm the specific prospect's case-specific eligibility with the current sales-policy owner.",
+        retrievalQueries: [],
+        relation: "owner" as const,
+        requestKind: "operational_action" as const,
+        forcedRouteKey: "sales_policy" as const,
+        ambiguity: "none" as const,
+        clarificationQuestion: "",
+      },
+    ];
+  });
+  const changed = needs.length !== v52.needs.length || needs.some((need, index) => {
+    const prior = v52.needs[index];
+    return !prior || need.relation !== prior.relation || need.requestKind !== prior.requestKind || need.forcedRouteKey !== prior.forcedRouteKey;
+  });
+  return {
+    ...v52,
+    needs,
+    reasoningSummary: changed
+      ? `${v52.reasoningSummary} V5.3 corrected stable decision relationships and assigned explicit current work to one of the five operational owners.`
+      : v52.reasoningSummary,
+  };
+}
+
+export function refineV54QueryPlan(plan: V4SystemicQueryPlan, turn: V3TurnResolution): V4SystemicQueryPlan {
+  const v53 = refineV53QueryPlan(plan, turn);
+  const immutableRequest = [turn.currentQuestion, turn.standaloneQuestion].filter(Boolean).join(" ");
+  if (STABLE_REFUND_WINDOW_POLICY.test(immutableRequest) && !LIVE_OWNER_ACTION.test(immutableRequest) && !LIVE_MUTATION_REQUEST.test(immutableRequest)) {
+    return {
+      ...v53,
+      needs: v53.needs.map((need) => ({ ...need, requestKind: "knowledge" as const, forcedRouteKey: null })),
+      reasoningSummary: `${v53.reasoningSummary} V5.4 preserved a general refund-window question as policy knowledge rather than a live Finance action.`,
+    };
+  }
+  const owner = deterministicV54ActionOwner(immutableRequest);
+  if (!owner) return v53;
+  const needs = v53.needs.map((need) => ({
+    ...need,
+    requestKind: "operational_action" as const,
+    forcedRouteKey: owner,
+  }));
+  return {
+    ...v53,
+    needs,
+    reasoningSummary: `${v53.reasoningSummary} V5.4 bound the original live work object and lifecycle stage to ${owner} before retrieval could obscure ownership.`,
+  };
+}
+
+export function resolveV51RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const text = completeText(need);
+  if (need.forcedRouteKey) return need.forcedRouteKey;
+  const deterministic = deterministicRouteOwner(text, need.requestKind);
+  if (deterministic) return deterministic;
+
+  // A reusable policy question with no exact answer belongs to Sales
+  // Questions. Evidence or model hints cannot redirect it merely because a
+  // finance, greenlight, or tech word appeared in the topic.
+  if (need.requestKind === "knowledge") return "sales_policy";
+
+  const hinted = [
+    decision.routeKey,
+    ...decision.evidenceRefs.map((id) => retrieval.candidates.find((candidate) => candidate.policy.id === id)?.policy.route_key || null),
+  ].find((key): key is RouteKey => Boolean(key && ["sales_policy", "sales_tech", "finance", "fulfillment", "greenlight"].includes(key)));
+  return hinted || "sales_policy";
+}
+
+export function resolveV52RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const preModelOwner = deterministicV52ActionOwner(completeText(need));
+  if (preModelOwner) return preModelOwner;
+  return resolveV51RouteKey(need, decision, retrieval);
+}
+
+export function resolveV53RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const preModelOwner = deterministicV53ActionOwner(completeText(need));
+  if (preModelOwner) return preModelOwner;
+  return resolveV52RouteKey(need, decision, retrieval);
+}
+
+export function resolveV54RouteKey(
+  need: V4SystemicNeed,
+  decision: V4SystemicNeedDecision,
+  retrieval: V4SystemicRetrieval,
+): RouteKey {
+  const immutableRequest = [need.originalRequestText, completeText(need)].filter(Boolean).join(" ");
+  if (/\bself[- ]sourced\b/i.test(immutableRequest) && /\b(?:flow|process|procedure|booking|stays?\s+with|ownership)\b/i.test(immutableRequest)) {
+    return "sales_policy";
+  }
+  if (STABLE_REFUND_WINDOW_POLICY.test(immutableRequest) && need.requestKind === "knowledge") return "sales_policy";
+  const preModelOwner = deterministicV54ActionOwner(immutableRequest);
+  if (preModelOwner) return preModelOwner;
+  return resolveV53RouteKey(need, decision, retrieval);
+}
