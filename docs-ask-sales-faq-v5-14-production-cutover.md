@@ -1,7 +1,7 @@
 # Ask Sales FAQ V5.14 Production Cutover
 
 Date: 2026-07-28
-Status: implementation validated; production cutover in progress
+Status: V5.14 live in production; rollback remains available
 
 ## Scope
 
@@ -53,4 +53,28 @@ The daily knowledge-refresh simplification and the older saved policy-matching r
 
 ## Final production record
 
-To be completed after the two-stage deployment and post-cutover verification.
+- Focused release PR: `Inside-Success/sales-performance-dashboard#88`.
+- Governed exact-head CI: run `30358213867`, passed.
+- V5.14 feature head: `83c5bd520e6696d5b5a04fe6359a370cab2280ec`.
+- Merged production commit: `1e7fd8a28b8de05bc6354dd653c844f89c173fd8`.
+- Stage A production deployment with the selector still on V3: `dpl_B3cF4R7nEPpwbtVfx9YCyBnCcnBj`, `READY`.
+- Production selector changed only from V3 to `v5.14`; no other environment value was changed.
+- Live V5.14 deployment: `dpl_FLXZhHVwJ8py4TXcbHDazh69TVhK`, `READY`.
+- Production alias: `https://sales-performance-dashboard-rose.vercel.app`.
+- Deployment metadata confirms `main`, the exact merged commit, a verified GitHub commit, and no alias error.
+- Post-cutover page check returns the expected authentication redirect (`307`).
+- Post-cutover unauthenticated API check returns the expected safe rejection (`401`).
+- Post-cutover Vercel runtime-error query reports no errors; the observed logs contain only those two intentional access checks.
+- Production environment inventory confirms that `DEEPSEEK_API_KEY`, `FAQ_DEEPSEEK_MODEL`, authentication, database, feedback, and refresh variables remain assigned. Vercel intentionally does not expose sensitive production values to a local `vercel env run`, so that command cannot serve as an authenticated provider smoke test.
+- An authenticated browser/API exchange was not fabricated or bypassed. The first real signed-in question must be checked in the stored runtime metadata for `pipelineVersion=v5.14`; absence of that marker or provider failure is an immediate rollback trigger.
+
+## Exact rollback
+
+1. Set production `ASK_SALES_FAQ_RUNTIME_VERSION` back to `v3`.
+2. Redeploy the verified pre-release V3 deployment `dpl_8UxUBMivafKEQN7fiy5aVMdETEFw` (commit `1641c3fb9b410aa5a0d43c68b41edb0d04fbfc2b`), or redeploy the current code with the V3 selector if application code is healthy.
+3. Confirm the production alias, authentication redirect, unauthenticated API rejection, and a signed-in V3 exchange.
+4. Do not modify the daily refresh workflow or knowledge approvals during rollback.
+
+## Deferred work
+
+The daily refresh simplification, policy-matching replacement, and the separate quality-audit schema mismatch remain on hold until the V5.14 launch is accepted. None was changed during this release.
