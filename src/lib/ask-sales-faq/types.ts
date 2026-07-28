@@ -47,7 +47,7 @@ export type AskSalesFaqStructuredAnswer = {
 };
 
 export type AskSalesFaqRuntimeMetadata = {
-  pipelineVersion?: "v2" | "v3";
+  pipelineVersion?: "v2" | "v3" | "v5.14";
   knowledgeVersion?: string;
   providerAttempts?: Array<{
     provider: "deepseek" | "anthropic";
@@ -166,6 +166,7 @@ export type AskSalesFaqRuntimeMetadata = {
     };
     stageTimings: Record<string, number>;
   };
+  v5?: Record<string, unknown>;
 };
 
 export type AskSalesFaqResponse = {

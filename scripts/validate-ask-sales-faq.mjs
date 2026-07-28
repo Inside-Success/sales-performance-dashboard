@@ -41,6 +41,9 @@ const requiredFiles = [
   "src/lib/ask-sales-faq/v3/runtime.ts",
   "src/lib/ask-sales-faq/v3/turn-resolver.ts",
   "src/lib/ask-sales-faq/v3/types.ts",
+  "src/lib/ask-sales-faq/v4/provider.ts",
+  "src/lib/ask-sales-faq/v5-14/production.ts",
+  "src/lib/ask-sales-faq/v5-14/runtime.ts",
   "src/lib/ask-sales-faq/types.ts",
   "src/lib/ask-sales-faq/generated/approved-faq-bundle.ts",
   "src/lib/ask-sales-faq/generated/approved-policy-units.json",
@@ -257,15 +260,18 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "V3 is isolated behind an explicit rollback selector",
+    "V5.14 is explicit and preserves V3 as the safe rollback selector",
     chatRoute.includes("runSelectedAskSalesFaq") &&
-      runtimeSelector.includes('ASK_SALES_FAQ_RUNTIME_VERSION === "v3"') &&
+      runtimeSelector.includes('configured === "v5.14"') &&
+      runtimeSelector.includes('configured === "v2"') &&
+      runtimeSelector.includes('return "v3" as const') &&
+      runtimeSelector.includes("runAskSalesFaqV514Production") &&
       runtimeSelector.includes("runAskSalesFaqV3") &&
       runtimeSelector.includes("runAskSalesFaq") &&
       !v3Runtime.includes('from "@/lib/ask-sales-faq/runtime"') &&
       !v3Runtime.includes("APPROVED_FAQ_ARTICLES") &&
       !v3Runtime.includes("approved-claims.json"),
-    "V3 and V2 are selected once; V3 does not import V2 runtime data or fall through to V2",
+    "V5.14, V3, and explicit-only V2 are selected once; empty or invalid configuration returns V3 and no runtime falls through to another",
   );
 
   addCheck(
