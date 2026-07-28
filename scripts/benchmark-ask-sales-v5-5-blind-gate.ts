@@ -12,8 +12,11 @@ import { runAskSalesFaqV58 } from "@/lib/ask-sales-faq/v5-8/runtime";
 import { runAskSalesFaqV59 } from "@/lib/ask-sales-faq/v5-9/runtime";
 import { runAskSalesFaqV510 } from "@/lib/ask-sales-faq/v5-10/runtime";
 import { runAskSalesFaqV511 } from "@/lib/ask-sales-faq/v5-11/runtime";
+import { runAskSalesFaqV512 } from "@/lib/ask-sales-faq/v5-12/runtime";
+import { runAskSalesFaqV513 } from "@/lib/ask-sales-faq/v5-13/runtime";
+import { runAskSalesFaqV514 } from "@/lib/ask-sales-faq/v5-14/runtime";
 
-type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59" | "v510" | "v511";
+type SystemName = "v3" | "v55" | "v56" | "v57" | "v58" | "v59" | "v510" | "v511" | "v512" | "v513" | "v514";
 type GoldItem = {
   id: string;
   question: string;
@@ -44,7 +47,10 @@ type RuntimeResult = Awaited<ReturnType<typeof runAskSalesFaqV3>> |
   Awaited<ReturnType<typeof runAskSalesFaqV58>> |
   Awaited<ReturnType<typeof runAskSalesFaqV59>> |
   Awaited<ReturnType<typeof runAskSalesFaqV510>> |
-  Awaited<ReturnType<typeof runAskSalesFaqV511>>;
+  Awaited<ReturnType<typeof runAskSalesFaqV511>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV512>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV513>> |
+  Awaited<ReturnType<typeof runAskSalesFaqV514>>;
 type EvaluatedItem = GoldItem & { systems: Partial<Record<SystemName, RuntimeResult>> };
 type EvaluatedConversation = Omit<Conversation, "prompts"> & { prompts: EvaluatedItem[] };
 
@@ -70,8 +76,15 @@ function providerAttempts(result: RuntimeResult) {
 }
 
 function providerUnavailable(result: RuntimeResult) {
-  return /(?:no provider configured|provider succeeded|evidence selector was unavailable|source adjudicator was unavailable)/i
+  return successfulProviderAttempts(result) === 0 && /(?:no provider configured|provider succeeded|evidence selector was unavailable|source adjudicator was unavailable)/i
     .test(JSON.stringify(result));
+}
+
+function deterministicValidatedOutput(result: RuntimeResult) {
+  if (!("runtimeMetadata" in result) || !result.runtimeMetadata || !("executionMode" in result.runtimeMetadata)) return false;
+  const mode = result.runtimeMetadata.executionMode;
+  return (mode.planning === "conversation" && mode.composition === "not_required" && mode.validation === "not_required") ||
+    (mode.planning === "deterministic_governed" && mode.composition === "exact_evidence" && mode.validation === "deterministic_exact_evidence");
 }
 
 function successfulProviderAttempts(result: RuntimeResult) {
@@ -133,12 +146,30 @@ function providerPreflight(systems: SystemName[]) {
       model: v4.model,
       transport: v4.transport,
     },
+    v512: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
+    v513: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
+    v514: {
+      configured: v4.modelConfigured,
+      provider: v4.provider,
+      model: v4.model,
+      transport: v4.transport,
+    },
   };
   const missing = systems.filter((system) => !preflight[system].configured);
   if (missing.length) {
     throw new Error(`Provider preflight failed for ${missing.join(", ")}; no runtime output was generated`);
   }
-  const challengers = systems.filter((system): system is "v55" | "v56" | "v57" | "v58" | "v59" | "v510" | "v511" => system !== "v3");
+  const challengers = systems.filter((system): system is Exclude<SystemName, "v3"> => system !== "v3");
   if (systems.includes("v3") && challengers.some((system) =>
     preflight.v3.provider !== preflight[system].provider || preflight.v3.model !== preflight[system].model)) {
     throw new Error("Provider parity failed: V3 and every requested V5 candidate must use the same provider and model");
@@ -154,7 +185,10 @@ async function run(system: SystemName, question: string, history: AskSalesFaqCha
   if (system === "v58") return runAskSalesFaqV58(question, history);
   if (system === "v59") return runAskSalesFaqV59(question, history);
   if (system === "v510") return runAskSalesFaqV510(question, history);
-  return runAskSalesFaqV511(question, history);
+  if (system === "v511") return runAskSalesFaqV511(question, history);
+  if (system === "v512") return runAskSalesFaqV512(question, history);
+  if (system === "v513") return runAskSalesFaqV513(question, history);
+  return runAskSalesFaqV514(question, history);
 }
 
 function systemOrder(key: string, reverse: boolean, systems: SystemName[]): SystemName[] {
@@ -178,6 +212,7 @@ function summary(cases: EvaluatedItem[], conversations: EvaluatedConversation[],
       providerAttempts: results.reduce((total, result) => total + providerAttempts(result).length, 0),
       successfulProviderAttempts: results.reduce((total, result) => total + successfulProviderAttempts(result), 0),
       providerBackedOutputs: results.filter((result) => successfulProviderAttempts(result) > 0).length,
+      deterministicValidatedOutputs: results.filter((result) => successfulProviderAttempts(result) === 0 && deterministicValidatedOutput(result)).length,
       unsuccessfulProviderAttempts: results.reduce((total, result) =>
         total + providerAttempts(result).filter((attempt) => attempt.status !== "success").length, 0),
       terminalProviderFailures: results.filter(terminalProviderFailure).length,
@@ -207,8 +242,8 @@ async function main() {
   const expectedFreeze = argument("freeze-commit", dataset.runtimeFreezeCommit);
   if (expectedFreeze !== dataset.runtimeFreezeCommit) throw new Error("Runtime freeze argument does not match the sealed dataset");
   const systems = argument("systems", "v3,v55").split(",").map((value) => value.trim()).filter(Boolean) as SystemName[];
-  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59", "v510", "v511"]).has(system))) {
-    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59,v510,v511");
+  if (!systems.length || systems.some((system) => !new Set<SystemName>(["v3", "v55", "v56", "v57", "v58", "v59", "v510", "v511", "v512", "v513", "v514"]).has(system))) {
+    throw new Error("--systems must be a comma-separated subset of v3,v55,v56,v57,v58,v59,v510,v511,v512,v513,v514");
   }
   const preflight = providerPreflight(systems);
   const selectedCases = mode === "repeatability" ? new Set(dataset.repeatability.caseIds) : null;
@@ -241,6 +276,9 @@ async function main() {
       v59: "@/lib/ask-sales-faq/v5-9/runtime#runAskSalesFaqV59",
       v510: "@/lib/ask-sales-faq/v5-10/runtime#runAskSalesFaqV510",
       v511: "@/lib/ask-sales-faq/v5-11/runtime#runAskSalesFaqV511",
+      v512: "@/lib/ask-sales-faq/v5-12/runtime#runAskSalesFaqV512",
+      v513: "@/lib/ask-sales-faq/v5-13/runtime#runAskSalesFaqV513",
+      v514: "@/lib/ask-sales-faq/v5-14/runtime#runAskSalesFaqV514",
     },
     pairing: "deterministically alternated per standalone case or complete conversation",
     reverseOrder,
@@ -288,17 +326,18 @@ async function main() {
       completed: number;
       successfulProviderAttempts: number;
       providerBackedOutputs: number;
+      deterministicValidatedOutputs: number;
       terminalProviderFailures: number;
       providerUnavailableOutputs: number;
     };
     if (
       systemSummary.completed !== totalPrompts ||
       systemSummary.successfulProviderAttempts === 0 ||
-      systemSummary.providerBackedOutputs < Math.ceil(totalPrompts * 0.5) ||
+      systemSummary.providerBackedOutputs + systemSummary.deterministicValidatedOutputs !== totalPrompts ||
       systemSummary.terminalProviderFailures !== 0 ||
       systemSummary.providerUnavailableOutputs !== 0
     ) {
-      throw new Error(`${system} did not produce all ${totalPrompts} provider-backed terminally successful outputs`);
+      throw new Error(`${system} did not produce all ${totalPrompts} provider-backed or deterministically validated terminally successful outputs`);
     }
   }
   const answerItems = [...report.cases, ...report.conversations.flatMap((conversation) => conversation.prompts)]

@@ -59,7 +59,7 @@ import type {
 } from "@/lib/ask-sales-faq/v4/types";
 
 export type V4SystemicCandidateRuntimeProfile = {
-  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated" | "v5.6-isolated" | "v5.7-isolated" | "v5.8-isolated" | "v5.9-isolated" | "v5.10-isolated" | "v5.11-isolated";
+  pipelineVersion: "v4-hybrid" | "v5-isolated" | "v5.1-isolated" | "v5.2-isolated" | "v5.3-isolated" | "v5.4-isolated" | "v5.5-isolated" | "v5.6-isolated" | "v5.7-isolated" | "v5.8-isolated" | "v5.9-isolated" | "v5.10-isolated" | "v5.11-isolated" | "v5.12-isolated" | "v5.13-isolated" | "v5.14-isolated";
   knowledgeVersion: () => string;
   operationalPolicyCount: () => number;
   resolveTurn?: (question: string, messages: AskSalesFaqChatMessage[]) => V3TurnResolution;
@@ -98,6 +98,7 @@ export type V4SystemicCandidateRuntimeProfile = {
     preferredPolicyIds: string[],
     rejectedDeterministicErrors?: string[],
   ) => { text: string; policyId: string; evidence: string } | null;
+  disableDefaultExactSourceFallback?: boolean;
   preferredExactEvidenceSentence?: (
     need: V4SystemicNeed,
     plan: V4SystemicQueryPlan,
@@ -108,6 +109,8 @@ export type V4SystemicCandidateRuntimeProfile = {
   trustPreferredExactEvidence?: boolean;
   trustPreferredCollectiveEvidence?: boolean;
   precomposePreferredEvidence?: boolean;
+  evidenceDraftPurpose?: string;
+  evidenceDraftRetryPurpose?: string;
   appendRouteForAnsweredSupport?: boolean;
   fallbackLabel: string;
   fallbackOnEmptyRetrieval: boolean;
@@ -2670,7 +2673,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
   } else try {
     const prompt = evidenceAnswerPrompt(turn, queryPlan, adjudicatedRetrieval, sourcePlan);
     const result = await provider({
-      purpose: "v4_systemic_evidence_answer",
+        purpose: profile.evidenceDraftPurpose || "v4_systemic_evidence_answer",
       system: prompt.system,
       user: prompt.user,
       maxTokens: 3600,
@@ -2708,7 +2711,7 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
     try {
       const prompt = evidenceAnswerRetryPrompt(turn, queryPlan, adjudicatedRetrieval, sourcePlan, missedSourceAnswerNeedIds);
       const result = await provider({
-        purpose: "v4_systemic_evidence_answer_retry",
+          purpose: profile.evidenceDraftRetryPurpose || "v4_systemic_evidence_answer_retry",
         system: prompt.system,
         user: prompt.user,
         maxTokens: 3000,
@@ -2805,17 +2808,18 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       const need = queryPlan.needs.find((candidate) => candidate.id === decision.needId);
       const sourceDecision = sourcePlan.needs.find((candidate) => candidate.needId === decision.needId);
       if (!need || sourceDecision?.lane !== "answer") return decision;
-      const fallback = profile.exactSourceFallbackSentence?.(
-        need,
-        queryPlan,
-        adjudicatedRetrieval,
-        sourceDecision.preferredPolicyIds,
-      ) || v4SystemicExactDirectFallbackSentence(
+      const profileFallback = profile.exactSourceFallbackSentence?.(
         need,
         queryPlan,
         adjudicatedRetrieval,
         sourceDecision.preferredPolicyIds,
       );
+      const fallback = profileFallback || (!profile.disableDefaultExactSourceFallback ? v4SystemicExactDirectFallbackSentence(
+        need,
+        queryPlan,
+        adjudicatedRetrieval,
+        sourceDecision.preferredPolicyIds,
+      ) : null);
       if (!fallback) return decision;
       exactSourceRecoveries.push(decision.needId);
       return {
@@ -2931,19 +2935,22 @@ export async function runAskSalesFaqV4SystemicCandidateWithProfile(
       ? sourceDecision.preferredPolicyIds
       : sourceDecision.preferredPolicyIds.filter((id) => sentence.evidenceRefs.includes(id));
     const exactDirectFallback = fallbackPolicyIds
-      .map((id) => profile.exactSourceFallbackSentence?.(
+      .map((id) => {
+        const profileFallback = profile.exactSourceFallbackSentence?.(
         need,
         queryPlan,
         adjudicatedRetrieval,
         [id],
         sentence.deterministicErrors,
-      ) || v4SystemicExactDirectFallbackSentence(
+        );
+        return profileFallback || (!profile.disableDefaultExactSourceFallback ? v4SystemicExactDirectFallbackSentence(
         need,
         queryPlan,
         adjudicatedRetrieval,
         [id],
         sentence.deterministicErrors,
-      ))
+        ) : null);
+      })
       .filter((fallback): fallback is NonNullable<typeof fallback> => Boolean(fallback))
       .sort((left, right) =>
         v4SystemicClauseCoverage(right.text, [{ text: sentence.text, retrievalQueries: [] }]) -

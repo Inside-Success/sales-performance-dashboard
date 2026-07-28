@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-12-post-fix-newest-slack-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T22:46:00+05:00",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "d6fa487",
+  "knowledgeSnapshot": "V5.12 reviewed Slack delta r2 at d6fa487",
+  "counts": {
+    "standaloneCases": 1,
+    "conversations": 0,
+    "conversationPrompts": 0,
+    "totalPrompts": 1
+  },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedAfterRuntimeFreeze": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "aiJudgePromotionAuthority": false,
+    "fullyProjectWideSourceDisjointCaseIds": ["v512postfix-01"],
+    "notes": [
+      "This authoritative thread was posted after the prior fifteen-case Slack gate was sealed.",
+      "No V5.12 runtime or knowledge code was changed after this source was selected.",
+      "One case is useful directional evidence but is not a broad promotion sample."
+    ]
+  },
+  "repeatability": {
+    "caseIds": ["v512postfix-01"],
+    "conversationIds": [],
+    "runs": 3
+  },
+  "cases": [
+    {
+      "id": "v512postfix-01",
+      "question": "A lead on today's outbound list previously applied and worked with another rep. May I pass the lead back to that previous rep?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The current rep may pass the lead back to the rep who handled the previous application.",
+      "requiredConcepts": ["may pass the lead to the previous rep"],
+      "forbiddenConcepts": ["must keep the lead", "previous rep can never receive it"],
+      "evaluationStrata": ["lead-ownership", "outbound", "prior-application"],
+      "sourceIds": [
+        "slack:C0AUQKNR8CF:1785166102.386839",
+        "slack:C0AUQKNR8CF:1785166143.270379"
+      ],
+      "approvedBy": ["Madeline"]
+    }
+  ],
+  "conversations": []
+}

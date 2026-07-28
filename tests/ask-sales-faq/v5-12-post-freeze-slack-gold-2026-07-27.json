@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 3,
+  "name": "ask-sales-v5-12-post-freeze-slack-gold-2026-07-27",
+  "status": "sealed_before_runtime_evaluation",
+  "sealedAt": "2026-07-27T22:18:00+05:00",
+  "channelId": "C0AUQKNR8CF",
+  "channelName": "sales-questions-requests",
+  "runtimeFreezeCommit": "6d462b3",
+  "knowledgeSnapshot": "frozen V5.12 runtime and inherited knowledge at commit 6d462b3",
+  "counts": { "standaloneCases": 15, "conversations": 0, "conversationPrompts": 0, "totalPrompts": 15 },
+  "governance": {
+    "slackReadOnly": true,
+    "productionWrites": false,
+    "sourceRepliesReviewedAfterRuntimeFreeze": true,
+    "goldSealedBeforeRuntimeOutputs": true,
+    "candidateTuningAfterSourceReview": false,
+    "candidateTuningAfterOutputInspection": false,
+    "aiJudgePromotionAuthority": false,
+    "fullyProjectWideSourceDisjointCaseIds": ["v512fresh-01", "v512fresh-02", "v512fresh-03"],
+    "notes": [
+      "All fifteen questions and gold answers were sealed after the V5.12 runtime freeze and before any V3 or V5.12 output was generated.",
+      "The newest three source threads were absent from every earlier Ask Sales test and artifact at seal time.",
+      "The remaining twelve high-quality threads were not used to change V5.12 after freeze, but their source IDs appeared in older project evaluation material; they are a post-freeze challenge, not fully project-wide source-disjoint promotion evidence.",
+      "Weak, unresolved, screenshot-dependent, personally identifying, or non-authoritative threads were excluded."
+    ]
+  },
+  "repeatability": { "caseIds": ["v512fresh-01", "v512fresh-02", "v512fresh-03"], "conversationIds": [], "runs": 3 },
+  "cases": [
+    {
+      "id": "v512fresh-01",
+      "question": "How long does an episode remain on Amazon Prime, and can the client negotiate a longer platform term?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Do not claim a confirmed Amazon Prime duration unless the current agreement is verified. The standard contract terms are not open to negotiation, so do not promise an extension.",
+      "requiredConcepts": ["Amazon duration is not confirmed", "contract terms are not negotiable"],
+      "forbiddenConcepts": ["guaranteed five years on Amazon Prime", "client may negotiate an extension"],
+      "evaluationStrata": ["platform-duration", "contract", "partial-answer", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1785120401.016539", "slack:C0AUQKNR8CF:1785161878.173709"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512fresh-02",
+      "question": "A nurse was cast for America's Top Doctors. Is that automatically invalid because a nurse is not a doctor?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "A nurse is not a doctor, but this is not automatically invalid. Sales Ops can create a separate subcategory season for this type of situation; do not represent the nurse as a doctor.",
+      "requiredConcepts": ["nurse is not a doctor", "subcategory season can be created"],
+      "forbiddenConcepts": ["the nurse is a doctor", "automatic disqualification"],
+      "evaluationStrata": ["eligibility", "profession", "show-scope", "conditional"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1785106183.360149", "slack:C0AUQKNR8CF:1785161774.952569"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512fresh-03",
+      "question": "A VIP or Lite lead could not complete payment before the cohort closed because funds were still transferring. What is the minimum wait before trying again?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "The current minimum wait for this missed-payment-after-cohort-close situation is six months.",
+      "requiredConcepts": ["six months"],
+      "forbiddenConcepts": ["three months", "immediate rebooking"],
+      "evaluationStrata": ["deadline", "payment", "reapply", "time-sensitive", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784989044.710759", "slack:C0AUQKNR8CF:1785161510.163479"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-04",
+      "question": "An intake form says the applicant was in prison. Should the rep conduct the call, or reject them before the call, and must the reason be explained?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Reject them before the call and send the rejection letter. The rep does not have to explain the reason unless asked and may use judgment if the applicant asks why.",
+      "requiredConcepts": ["reject before the call", "send rejection letter", "reason is not required unless asked"],
+      "forbiddenConcepts": ["admit them to the call", "always disclose the reason"],
+      "evaluationStrata": ["eligibility", "criminal-history", "procedure", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784921916.034179", "slack:C0AUQKNR8CF:1784922115.044719", "slack:C0AUQKNR8CF:1784922130.057229"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-05",
+      "question": "Can a prospect require sponsor, refund, platform, or other custom amendments to the standard contract before signing?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. The standard contract is a prerequisite and is not customized with client-requested amendments.",
+      "requiredConcepts": ["no custom amendments", "standard contract is required"],
+      "forbiddenConcepts": ["sales may approve amendments", "send an amended contract"],
+      "evaluationStrata": ["contract", "amendments", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784915468.547709", "slack:C0AUQKNR8CF:1784918605.352599"],
+      "approvedBy": ["Rich"]
+    },
+    {
+      "id": "v512challenge-06",
+      "question": "May a sales rep use a personal CRM instead of HubSpot or Keap to track outreach?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "No. Reps must use the company CRM. The company is moving from Keap to HubSpot.",
+      "requiredConcepts": ["must use company CRM", "moving from Keap to HubSpot"],
+      "forbiddenConcepts": ["personal CRM is allowed"],
+      "evaluationStrata": ["crm", "sales-process", "current-system"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784859135.980459", "slack:C0AUQKNR8CF:1784903287.124709"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-07",
+      "question": "A prospect needs a morning Call 2 but only the master calendar shows availability. How should the rep book it?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Book the call in the rep's Google Calendar, create a new Zoom meeting, and email the prospect the Zoom link. Do not alter the master calendar.",
+      "requiredConcepts": ["book in Google Calendar", "create new Zoom meeting", "email the Zoom link"],
+      "forbiddenConcepts": ["edit the master calendar"],
+      "evaluationStrata": ["calendar", "Call-2", "manual-booking", "procedure"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784858333.344189", "slack:C0AUQKNR8CF:1784903240.964309"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-08",
+      "question": "If a normal payment link is flagged by the client's bank, may the rep use a listed emergency payment link?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The rep may use one of the approved emergency payment links listed in the spreadsheet.",
+      "requiredConcepts": ["yes", "approved emergency payment link"],
+      "forbiddenConcepts": ["create a custom payment link", "emergency links are prohibited"],
+      "evaluationStrata": ["payment-link", "exception", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784839254.159649", "slack:C0AUQKNR8CF:1784839331.349689"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-09",
+      "question": "After a missed outbound call, may the rep include their public OnceHub calendar link in the initial follow-up text or email?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. The public OnceHub calendar link may be included in the follow-up text, and Sales Ops also confirmed it is acceptable by email.",
+      "requiredConcepts": ["yes", "text or email", "public OnceHub link"],
+      "forbiddenConcepts": ["link is prohibited"],
+      "evaluationStrata": ["OnceHub", "outbound", "follow-up", "permission"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784814786.469689", "slack:C0AUQKNR8CF:1784819158.621339", "slack:C0AUQKNR8CF:1784820581.551149"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-10",
+      "question": "For an immediate fast-track outbound booking that cannot be placed through the public calendar, may the rep send the Zoom link directly?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes. Sales Ops confirmed that sending the Zoom link directly is acceptable when needed for this fast-track booking.",
+      "requiredConcepts": ["yes", "direct Zoom link is acceptable"],
+      "forbiddenConcepts": ["never send a Zoom link directly"],
+      "evaluationStrata": ["Zoom", "fast-track", "outbound", "permission"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784761955.078429", "slack:C0AUQKNR8CF:1784818675.198889"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-11",
+      "question": "How long may a Daymond John client delay filming before they need to audition again, and where should exact studio availability be confirmed?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "They must film within six months. If the delay is longer, they need to go through the process again for a future season. Confirm exact studio-date availability in the Sales Fulfillment Hotline.",
+      "requiredConcepts": ["within six months", "repeat process after six months", "Fulfillment for exact availability"],
+      "forbiddenConcepts": ["unlimited delay", "guaranteed date from Sales"],
+      "evaluationStrata": ["Daymond-John", "filming", "deadline", "owner-routing"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784758022.370399", "slack:C0AUQKNR8CF:1784818632.523199"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-12",
+      "question": "May a client's mother join the onboarding call, and does she need a separate onboarding link?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Yes, the mother may join. She can use the same onboarding link; no separate link or direct contact with the onboarding owner is required.",
+      "requiredConcepts": ["yes", "same onboarding link"],
+      "forbiddenConcepts": ["separate link is required", "family may not join"],
+      "evaluationStrata": ["onboarding", "guest", "link", "permission"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784747023.078829", "slack:C0AUQKNR8CF:1784747050.973239"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-13",
+      "question": "What is the wire-payment SOP for the contract, proof, welcome email, onboarding, and Pay Me timing?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Send the standard contract on Zoom and have it signed, obtain a screenshot of the wire as soon as possible, and continue the welcome-email and onboarding steps. Confirm with Finance that the wire was received within 24 to 48 hours before posting the sale in Pay Me.",
+      "requiredConcepts": ["sign contract", "obtain wire screenshot", "welcome email and onboarding", "confirm receipt before Pay Me"],
+      "forbiddenConcepts": ["post in Pay Me before receipt is confirmed", "skip the contract"],
+      "evaluationStrata": ["wire", "contract", "post-sale", "Finance", "high-impact"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784742185.568689", "slack:C0AUQKNR8CF:1784742303.607029", "slack:C0AUQKNR8CF:1784742734.190109"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-14",
+      "question": "For the Daymond John offer, what do SEO benefits, social promo assets, and the swag package mean?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "SEO benefits mean the client's name and business can rank higher in Google for relevant searches. Social promo assets are content created for the client to announce the feature on social media or a website. The swag package is branded merchandise or promotional material provided as a souvenir.",
+      "requiredConcepts": ["Google ranking", "content for social media or website", "branded merchandise"],
+      "forbiddenConcepts": ["guaranteed first-place Google ranking", "cash value for swag"],
+      "evaluationStrata": ["Daymond-John", "SEO", "social-assets", "swag", "multi-part"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784738661.915609", "slack:C0AUQKNR8CF:1784738782.244079", "slack:C0AUQKNR8CF:1784738816.318329", "slack:C0AUQKNR8CF:1784738926.518609"],
+      "approvedBy": ["Madeline"]
+    },
+    {
+      "id": "v512challenge-15",
+      "question": "Which process should a rep use when an existing client pays to upgrade their package?",
+      "expectedDisposition": "answer",
+      "goldAnswer": "Use the new upgrade form. Search Slack for the upgrade-form keywords to locate the current form rather than inventing a manual process.",
+      "requiredConcepts": ["use the new upgrade form", "find it through Slack search"],
+      "forbiddenConcepts": ["create a custom upgrade process"],
+      "evaluationStrata": ["upgrade", "form", "current-process"],
+      "sourceIds": ["slack:C0AUQKNR8CF:1784735503.466409", "slack:C0AUQKNR8CF:1784736303.498849"],
+      "approvedBy": ["Madeline"]
+    }
+  ],
+  "conversations": []
+}

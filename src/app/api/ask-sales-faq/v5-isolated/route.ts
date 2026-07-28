@@ -13,11 +13,8 @@ import { assertV4IsolatedRuntime, isV4IsolatedRuntimeEnabled, isV4LabTokenAuthor
 import { generateV4Json, generateV4ValidationJson, getV4ProviderReadiness } from "@/lib/ask-sales-faq/v4/provider";
 import { getV5KnowledgeSnapshot } from "@/lib/ask-sales-faq/v5/knowledge";
 import { findV55PublishCollisions } from "@/lib/ask-sales-faq/v5-5/publisher-collisions";
-import {
-  ASK_SALES_V511_PIPELINE_VERSION,
-  runAskSalesFaqV511,
-} from "@/lib/ask-sales-faq/v5-11/runtime";
-import { getV511KnowledgeVersion, getV511OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-11/knowledge";
+import { ASK_SALES_V514_PIPELINE_VERSION, runAskSalesFaqV514 } from "@/lib/ask-sales-faq/v5-14/runtime";
+import { getV514KnowledgeVersion, getV514OperationalPolicyCount } from "@/lib/ask-sales-faq/v5-14/knowledge";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -62,7 +59,7 @@ function json(payload: unknown, status = 200) {
   const response = NextResponse.json(payload, { status });
   response.headers.set("cache-control", "private, no-store, max-age=0");
   response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
-  response.headers.set("x-ask-sales-runtime", ASK_SALES_V511_PIPELINE_VERSION);
+  response.headers.set("x-ask-sales-runtime", ASK_SALES_V514_PIPELINE_VERSION);
   return response;
 }
 
@@ -77,19 +74,22 @@ export async function GET() {
   return json({
     ok: true,
     ready: accessTokenConfigured && historySigningConfigured && provider.modelConfigured && modelAccessConfirmed,
-    runtime: ASK_SALES_V511_PIPELINE_VERSION,
+    runtime: ASK_SALES_V514_PIPELINE_VERSION,
     persistence: false,
     productionSelectorChanged: false,
-    knowledgeVersion: getV511KnowledgeVersion(),
+    knowledgeVersion: getV514KnowledgeVersion(),
     sourceKnowledgeVersion: snapshot.sourceKnowledgeVersion,
     snapshotHash: snapshot.snapshotHash,
-    operationalPolicyCount: getV511OperationalPolicyCount(),
-    isolatedOwnerConfirmedOverlayCount: 2,
+    operationalPolicyCount: getV514OperationalPolicyCount(),
+    isolatedOwnerConfirmedOverlayCount: 3,
     claimScopedSourceResolutionVersion: "v57-r1",
     relationshipOwnerContextVersion: "v58-r1",
     fullRecordContextVersion: "v59-r1",
     decisionFamilyEvidenceControlVersion: "v510-r1",
     sourceReconciledBoundedControlVersion: "v511-r1",
+    answerFidelityOwnerRoutingVersion: "v512-r1",
+    immutableFinalDecisionContractVersion: "v513-r1",
+    governedSourcePreservationVersion: "v514-r1",
     stableOperationalPromotionCount: snapshot.stableOperationalPromotionCount,
     activeScopedOperationalPromotionCount: snapshot.activeScopedOperationalPromotionCount,
     activeScopedCollisionCount: snapshot.activeScopedCollisionReport.length,
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     assertV4IsolatedRuntime();
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) return json({ ok: false, error: "The isolated test request was malformed or too large." }, 400);
-    const knowledgeVersion = getV511KnowledgeVersion();
+    const knowledgeVersion = getV514KnowledgeVersion();
     let conversationId = parsed.data.conversationId || `v5_lab_${randomUUID()}`;
     let verifiedMessages: Array<{ role: "user" | "assistant"; content: string }> = [];
     if (parsed.data.historyToken) {
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const question = parsed.data.question;
-      const result = await runAskSalesFaqV511(question, [...verifiedMessages, { role: "user", content: question }], {
+      const result = await runAskSalesFaqV514(question, [...verifiedMessages, { role: "user", content: question }], {
         provider: generateV4Json,
         validatorProvider: generateV4ValidationJson,
       });
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       reservation.release();
     }
   } catch (error) {
-    console.error("Ask Sales V5.10 isolated request failed", error instanceof Error ? error.message : "unknown error");
-    return json({ ok: false, error: "The isolated V5.10 runtime failed safely. No production request or database write was attempted." }, 503);
+    console.error("Ask Sales V5.14 isolated request failed", error instanceof Error ? error.message : "unknown error");
+    return json({ ok: false, error: "The isolated V5.14 runtime failed safely. No production request or database write was attempted." }, 503);
   }
 }
