@@ -401,6 +401,8 @@ Read only what is relevant to the next task.
 - `docs-ask-sales-knowledge-refresh.md` — current governed refresh architecture and July 29 repairs
 - `docs-ask-sales-faq-admin-and-adoption.md` — current manual Quality & Operations and adoption UI
 - `docs-ask-sales-faq-policy-guard.md` — policy guard behavior
+- `../FAQ Chatbot/ask-sales-blind-review-feedback.json` — preserved owner feedback from the early blinded comparison
+- `../FAQ Chatbot/transcription/` — Zoom meeting transcript with Mike and Rich used for authoritative sales-rule interpretation
 - `../FAQ-Chatbot-quality-operations-final-record/CURRENT-PENDING-WORK.md` — chronological Ask Sales status through July 29
 - `../FAQ-Chatbot-quality-operations-final-record/ASK-SALES-MANUAL-QUALITY-OPERATIONS-2026-07-29.md` — final quality-operations record
 - `../FAQ-Chatbot-release-final-record/POLICY-MATCHING-REPLACEMENT-PLAN-2026-07-21.md` — intentionally pending historical plan
