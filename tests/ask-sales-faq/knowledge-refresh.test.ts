@@ -10,6 +10,7 @@ import { KNOWLEDGE_REFRESH_SOURCES, getKnowledgeRefreshSource } from "@/lib/ask-
 import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
+  doesKnowledgeRefreshEvidenceRemainCurrent,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 import {
   buildKnowledgeRefreshCandidateInsert,
@@ -92,6 +93,8 @@ describe("Ask Sales knowledge-refresh governance", () => {
     const context = buildKnowledgeRefreshAnalysisContext("Roku Fire Stick Apple TV availability");
     expect(context.knowledgeVersion).toBe(getKnowledgeRefreshRegistryVersion());
     expect(context.authorityRule).toContain("Human approval");
+    expect(context.slackAuthorityDirectory).toContainEqual(expect.objectContaining({ name: "Rich Allen", role: "Head of Sales" }));
+    expect(context.slackAuthorityDirectory).toContainEqual(expect.objectContaining({ name: "Michael Kumov", role: "Finance Lead" }));
   });
 
   it("materializes an exact-admin release without changing the frozen base registry", () => {
@@ -411,6 +414,35 @@ describe("Ask Sales knowledge-refresh governance", () => {
       currentContent: " Show A is active. \n\n Show B is off. ",
     });
     expect(result).toEqual({ mode: "delta", content: "", materialChange: false });
+  });
+
+  it("sends only a complete changed Slack thread instead of the whole channel window", () => {
+    const unchangedThread = `<SLACK_MESSAGE root_ts=1.000 ts=1.000>\n[date] user=U1\nQuestion one\n</SLACK_MESSAGE>\n\n<SLACK_MESSAGE root_ts=1.000 ts=1.100>\n[date] user=U2 thread=1.000\nAnswer one\n</SLACK_MESSAGE>`;
+    const changedThreadBefore = `<SLACK_MESSAGE root_ts=2.000 ts=2.000>\n[date] user=U3\nQuestion two\n</SLACK_MESSAGE>`;
+    const changedThreadAfter = `${changedThreadBefore}\n\n<SLACK_MESSAGE root_ts=2.000 ts=2.100>\n[date] user=U04960NQARM thread=2.000\nCurrent sales answer\n</SLACK_MESSAGE>`;
+    const result = buildKnowledgeRefreshAnalysisPayload({
+      kind: "slack_channel",
+      previousContent: `${unchangedThread}\n\n${changedThreadBefore}`,
+      currentContent: `${unchangedThread}\n\n${changedThreadAfter}`,
+    });
+    expect(result.mode).toBe("delta");
+    expect(result.materialChange).toBe(true);
+    expect(result.content).toContain("Question two");
+    expect(result.content).toContain("Current sales answer");
+    expect(result.content).not.toContain("Question one");
+  });
+
+  it("keeps a pending proposal current only when every substantive evidence quote remains present", () => {
+    const current = "The approved procedure says use the standard contract only. Custom contracts are not allowed.";
+    expect(doesKnowledgeRefreshEvidenceRemainCurrent(current, [
+      "use the standard contract only",
+      "Custom contracts are not allowed",
+    ])).toBe(true);
+    expect(doesKnowledgeRefreshEvidenceRemainCurrent(current, [
+      "use the standard contract only",
+      "Custom payment plans are allowed",
+    ])).toBe(false);
+    expect(doesKnowledgeRefreshEvidenceRemainCurrent(current, ["No"])).toBe(false);
   });
 
   it("marks a complete structured show row ready and derives governed release metadata", () => {

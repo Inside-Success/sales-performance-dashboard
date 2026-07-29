@@ -58,7 +58,9 @@ type Overview = {
     changed_sources: number;
     unchanged_sources: number;
     unavailable_sources: number;
+    analyzed_sources: number;
     new_proposals: number;
+    retained_proposals: number;
     prior_drafts_replaced: number;
   } | null;
 };
@@ -265,21 +267,25 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
               <>
                 <p className="mt-2 text-sm font-semibold text-slate-700">Finished at {formatMiamiDateTime(overview.latestRun.completed_at)}.</p>
                 <p className={`mt-1 text-sm leading-6 ${refreshHealth.tone === "warning" ? "font-semibold text-amber-700" : "text-slate-500"}`}>{refreshHealth.description}</p>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
-                  Older drafts were preserved in the archive. They were not deleted or silently merged.
-                </p>
+                {overview.latestRun.changed_sources > 0 && overview.latestRun.new_proposals === 0 ? (
+                  <p className="mt-1 text-sm leading-6 text-slate-500">Changed sources were analyzed, but no new reusable policy proposal passed the evidence and authority checks. This can be a valid quiet result.</p>
+                ) : null}
+                {overview.latestRun.retained_proposals > 0 ? (
+                  <p className="mt-1 text-sm leading-6 text-slate-500">Still-valid proposals stayed in your review queue because their exact supporting evidence remains in the current source.</p>
+                ) : null}
               </>
             ) : (
               <p className="mt-2 text-sm text-slate-500">No completed refresh run is available yet.</p>
             )}
           </div>
           {overview.latestRun ? (
-            <div className="grid min-w-0 gap-2 sm:grid-cols-3 xl:w-[44rem] xl:grid-cols-5">
+            <div className="grid min-w-0 gap-2 sm:grid-cols-3 xl:w-[52rem] xl:grid-cols-6">
               <RunStat label="Sources changed" value={overview.latestRun.changed_sources} />
               <RunStat label="Unchanged" value={overview.latestRun.unchanged_sources} />
               <RunStat label="Unavailable" value={overview.latestRun.unavailable_sources} tone={overview.latestRun.unavailable_sources ? "warning" : "default"} />
+              <RunStat label="Analyzed" value={overview.latestRun.analyzed_sources} />
               <RunStat label="New drafts" value={overview.latestRun.new_proposals} />
-              <RunStat label="Older drafts archived" value={overview.latestRun.prior_drafts_replaced} />
+              <RunStat label="Still valid" value={overview.latestRun.retained_proposals} />
             </div>
           ) : null}
         </div>
@@ -311,7 +317,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
           <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <h2 className="text-lg font-extrabold text-slate-950">Useful updates to review</h2>
-              <p className="mt-1 text-sm text-slate-500">Showing {start}-{end} of {overview.pagination.total}. Each card is one proposed answer. If it is not useful, choose Ignore.</p>
+              <p className="mt-1 text-sm text-slate-500">Showing the highest-priority {start}-{end} of {overview.pagination.total}. Each card is one proposed answer. Lower-priority proposals stay saved on later pages; if one is not useful, choose Ignore.</p>
             </div>
             <button type="button" aria-busy={governanceBusy} disabled={governanceBusy} onClick={recomputeGovernance} className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-slate-200 px-3 text-xs font-extrabold text-slate-700 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60">{governanceBusy ? <LoaderCircle className="size-3.5 animate-spin" /> : <ShieldAlert className="size-3.5" />} {governanceBusy ? "Rechecking…" : "Recheck conflict labels"}</button>
           </div>

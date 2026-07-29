@@ -2,7 +2,21 @@
 
 Date: 2026-07-14
 
-Last updated: 2026-07-28
+Last updated: 2026-07-29
+
+## 2026-07-29 retention and Slack-delta repair
+
+The empty Daily Knowledge Inbox was caused by two systemic defects, not only by quiet source activity. A whole Slack-channel hash change made every pending proposal from that channel stale even when its exact evidence remained present, and every changed Slack source was sent back to DeepSeek as one large recent-channel transcript without a verified user-ID authority mapping.
+
+The repair keeps the existing human-governed publication boundary and changes only discovery/staging behavior:
+
+- Slack now produces a deterministic change packet containing only complete added or changed root threads. Unchanged threads are excluded while each changed question and its replies remain together.
+- Pending `needs_review` and `needs_owner` drafts carry forward only when every substantive evidence quote remains in the current source. Missing or ambiguous evidence and approval/release-stage drafts fail closed. Resolved history is not reclassified on an unrelated source change.
+- The governance context supplies verified Slack identities and roles for Rudy, Rich, Mike, Raul, Madeline, and Finance Lead Michael Kumov. Unknown IDs remain unknown; role, scope, specificity, recency, and human review still determine authority.
+- The admin inbox defaults to ten highest-priority proposals and explicitly reports analyzed, new, and retained counts. Lower-priority proposals remain saved on later pages.
+- The analyzer remains discovery-only. Slack and Google remain read only, V5.14's answer path is unchanged, and no proposal can approve or publish itself.
+
+Local verification passed 280/280 Ask Sales tests, 107/107 static safety checks, TypeScript, scoped ESLint, and the optimized Next.js build. The active analyzer workflow `rNc9rWTBHRSEwM3P` validates with zero errors after its authority-context prompt update.
 
 ## 2026-07-28 owner workflow simplification
 
