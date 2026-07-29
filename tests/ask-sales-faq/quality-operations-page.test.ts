@@ -33,5 +33,6 @@ describe("Ask Sales quality and operations simplification", () => {
   it("keeps technical trace fields available but collapsed", () => {
     expect(pageSource).toContain("<summary className=\"cursor-pointer font-bold text-slate-600\">Technical details</summary>");
     expect(pageSource).toContain("Knowledge source");
+    expect(pageSource).toContain("Review category");
   });
 });

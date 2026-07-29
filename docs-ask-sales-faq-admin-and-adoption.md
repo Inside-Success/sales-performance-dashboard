@@ -81,6 +81,7 @@ The implementation adds no table, migration, API mutation, or background job. It
 - Scoped ESLint passed with no warnings or errors.
 - Complete Ask Sales Vitest suite: 19 files / 284 tests passed.
 - Focused Quality & Operations regression checks: 3/3 passed.
+- Ask Sales static safety validator: 107/107 checks passed.
 - Next.js 16.2.6 optimized production build passed.
 - No local development server ran.
 - No Slack, Google, source-refresh, governed knowledge, chat-runtime, authentication, adoption-page, or production-database write was introduced by the simplification.

@@ -191,6 +191,7 @@ function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "attenti
         <summary className="cursor-pointer font-bold text-slate-600">Technical details</summary>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           {item.provider ? <span>Provider: {item.provider}{item.model ? ` / ${item.model}` : ""}</span> : null}
+          {item.reviewCategory ? <span>Review category: {item.reviewCategory}</span> : null}
           {item.sourceMode ? <span>Source mode: {item.sourceMode}</span> : null}
           {typeof item.confidenceScore === "number" ? <span>Confidence: {item.confidenceScore}%</span> : null}
           {item.validationVerdict ? <span>Validation: {item.validationVerdict}</span> : null}
