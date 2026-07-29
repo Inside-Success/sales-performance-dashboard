@@ -145,6 +145,130 @@
       ],
       "resolved_blocked_topics": [],
       "expected_knowledge_version": "8c8c677c1209f2d7"
+    },
+    {
+      "status": "approved_for_publish",
+      "policies": [
+        {
+          "id": "kr_228ec25c70ffbd72",
+          "title": "20% dial-out sheet: leads must be dialed and updated by 8pm EST",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_147f6460-8476-4c3c-8509-01c898ee17cb:kc_2d691f98-df47-469c-a52d-47a3c3e5ed9f",
+              "slack_channel:C09AF0NQJE7"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "contact",
+            "report"
+          ],
+          "domains": [
+            "lead_ownership",
+            "communications"
+          ],
+          "decision": "All leads claimed from the 20% dial-out sheet must be dialed and the sheet updated by 8pm EST. No exceptions.",
+          "entities": [
+            "20_dial_out_sheet",
+            "dialed",
+            "updated",
+            "8pm_est"
+          ],
+          "authority": 118,
+          "route_key": null,
+          "policy_key": "admin-release-20-percent-dial-out-deadline-8pm-70ffbd72",
+          "risk_level": "high",
+          "search_text": "20 dial out sheet leads must be dialed and updated by 8pm est 20 dial out sheet leads must be dialed and updated by 8pm est all leads claimed from the 20 dial out sheet must be dialed and the sheet updated by 8pm est with no exceptions deadline for dialing and updating leads rep has claimed leads from the 20 dial out sheet all leads claimed from the 20 dial out sheet must be dialed and the sheet updated by 8pm est no exceptions product agnostic lead ownership communications contact report 20 dial out sheet dialed updated 8pm est",
+          "decision_key": "20-percent-dial-out-deadline-8pm",
+          "effective_at": "2026-07-15T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-07-29",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "20% dial-out sheet: leads must be dialed and updated by 8pm EST",
+            "All leads claimed from the 20% dial-out sheet must be dialed and the sheet updated by 8pm EST, with no exceptions.",
+            "Deadline for dialing and updating leads",
+            "Rep has claimed leads from the 20% dial-out sheet."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        },
+        {
+          "id": "kr_50efb5f8e2039bab",
+          "title": "20% dial-out sheet: do not change filters or cherry pick",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_147f6460-8476-4c3c-8509-01c898ee17cb:kc_dfb0272d-06a3-4f9f-8954-c6a1955f01d0",
+              "slack_channel:C09AF0NQJE7"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "route"
+          ],
+          "domains": [
+            "lead_ownership"
+          ],
+          "decision": "Reps must not change the filters on the 20% dial-out sheet or cherry-pick leads. They must take a contiguous block of leads as presented in the sheet.",
+          "entities": [
+            "20_dial_out_sheet",
+            "filters",
+            "cherry_pick"
+          ],
+          "authority": 118,
+          "route_key": null,
+          "policy_key": "admin-release-20-percent-dial-out-no-filter-cherry-pick-e2039bab",
+          "risk_level": "high",
+          "search_text": "20 dial out sheet do not change filters or cherry pick 20 dial out sheet do not change filters or cherry pick reps must not change the filters on the 20 dial out sheet or cherry pick leads they must take a block as presented prohibition on changing filters or cherry picking rep is using the 20 dial out sheet reps must not change the filters on the 20 dial out sheet or cherry pick leads they must take a contiguous block of leads as presented in the sheet product agnostic lead ownership route 20 dial out sheet filters cherry pick",
+          "decision_key": "20-percent-dial-out-no-filter-cherry-pick",
+          "effective_at": "2026-07-15T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-07-29",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "20% dial-out sheet: do not change filters or cherry pick",
+            "Reps must not change the filters on the 20% dial-out sheet or cherry-pick leads. They must take a block as presented.",
+            "Prohibition on changing filters or cherry-picking",
+            "Rep is using the 20% dial-out sheet."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        }
+      ],
+      "release_id": "kr_147f6460-8476-4c3c-8509-01c898ee17cb",
+      "prepared_at": "2026-07-29T13:20:10.578Z",
+      "prepared_by": "syed.haider@insidesuccess.com",
+      "candidate_ids": [
+        "kc_dfb0272d-06a3-4f9f-8954-c6a1955f01d0",
+        "kc_2d691f98-df47-469c-a52d-47a3c3e5ed9f"
+      ],
+      "supersessions": [],
+      "base_knowledge_version": "8c8c677c1209f2d7",
+      "source_snapshot_hashes": [
+        "f4c8c413b35d47bc4c7591959136d75cf7046922a2988319ea9cef58b31983f0"
+      ],
+      "resolved_blocked_topics": [],
+      "expected_knowledge_version": "cfc1a6ffc557e9b7"
     }
   ]
 }
