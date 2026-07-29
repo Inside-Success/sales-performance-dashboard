@@ -52,7 +52,7 @@ export function AskSalesAdminHeader({
           href="/ask-sales-faq/admin"
           icon={<Activity className="size-4" />}
           title="Quality & operations"
-          description="Answer quality, routes, feedback, and runtime health"
+          description="Simple production logs for manual review"
         />
         <AdminNavLink
           active={active === "usage"}
