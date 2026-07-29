@@ -7,6 +7,12 @@ export type KnowledgeRefreshNoiseDecision = {
   reason: string | null;
 };
 
+type SlackMessageBlock = {
+  rootTs: string;
+  ts: string;
+  raw: string;
+};
+
 const NO_CHANGE_PATTERNS = [
   /^\s*no change (?:is )?needed\b/i,
   /^\s*(?:the )?(?:existing |current )?(?:rule|policy|status) (?:is )?(?:still )?(?:active|inactive|unchanged|the same|on|off)(?:\.|;)?\s*$/i,
@@ -121,8 +127,12 @@ export function buildKnowledgeRefreshAnalysisPayload(input: {
   currentContent: string;
   previousContent?: string | null;
 }) {
-  if (input.kind === "slack_channel" || !input.previousContent) {
+  if (!input.previousContent) {
     return { mode: "full" as const, content: input.currentContent, materialChange: true };
+  }
+
+  if (input.kind === "slack_channel") {
+    return buildSlackThreadDelta(input.currentContent, input.previousContent);
   }
 
   const current = meaningfulSegments(input.currentContent, input.kind);
@@ -155,6 +165,88 @@ export function buildKnowledgeRefreshAnalysisPayload(input: {
     content: packet.slice(0, 120_000),
     materialChange: true,
   };
+}
+
+export function doesKnowledgeRefreshEvidenceRemainCurrent(content: string, evidenceQuotes: string[]) {
+  const normalizedContent = segmentKey(content);
+  const substantiveQuotes = evidenceQuotes
+    .map(segmentKey)
+    .filter((quote) => quote.length >= 12);
+
+  return substantiveQuotes.length > 0 && substantiveQuotes.every((quote) => normalizedContent.includes(quote));
+}
+
+function buildSlackThreadDelta(currentContent: string, previousContent: string) {
+  const currentThreads = groupSlackThreads(currentContent);
+  const previousThreads = groupSlackThreads(previousContent);
+  if (!currentThreads.size || !previousThreads.size) {
+    return buildGenericDelta(currentContent, previousContent, "slack_channel");
+  }
+
+  const addedOrChanged = Array.from(currentThreads.entries())
+    .filter(([rootTs, thread]) => segmentKey(thread) !== segmentKey(previousThreads.get(rootTs) || ""))
+    .map(([, thread]) => thread);
+  const removed = Array.from(previousThreads.entries())
+    .filter(([rootTs]) => !currentThreads.has(rootTs))
+    .map(([, thread]) => thread);
+
+  return buildDeltaPacket(addedOrChanged, removed);
+}
+
+function parseSlackMessages(content: string): SlackMessageBlock[] {
+  const blocks: SlackMessageBlock[] = [];
+  const pattern = /<SLACK_MESSAGE\s+root_ts=([^\s>]+)\s+ts=([^\s>]+)>[\s\S]*?<\/SLACK_MESSAGE>/g;
+  for (const match of content.matchAll(pattern)) {
+    blocks.push({ rootTs: match[1], ts: match[2], raw: match[0].trim() });
+  }
+  return blocks;
+}
+
+function groupSlackThreads(content: string) {
+  const grouped = new Map<string, SlackMessageBlock[]>();
+  for (const block of parseSlackMessages(content)) {
+    const thread = grouped.get(block.rootTs) || [];
+    thread.push(block);
+    grouped.set(block.rootTs, thread);
+  }
+  return new Map(Array.from(grouped.entries()).map(([rootTs, blocks]) => [
+    rootTs,
+    blocks.sort((left, right) => left.ts.localeCompare(right.ts)).map((block) => block.raw).join("\n\n"),
+  ]));
+}
+
+function buildGenericDelta(currentContent: string, previousContent: string, kind: KnowledgeRefreshSourceKind) {
+  const current = meaningfulSegments(currentContent, kind);
+  const previous = meaningfulSegments(previousContent, kind);
+  const currentKeys = new Set(current.map(segmentKey));
+  const previousKeys = new Set(previous.map(segmentKey));
+  return buildDeltaPacket(
+    current.filter((segment) => !previousKeys.has(segmentKey(segment))),
+    previous.filter((segment) => !currentKeys.has(segmentKey(segment))),
+  );
+}
+
+function buildDeltaPacket(added: string[], removed: string[]) {
+  if (!added.length && !removed.length) {
+    return { mode: "delta" as const, content: "", materialChange: false };
+  }
+
+  const packet = [
+    "This is a deterministic change-only packet, not the complete source.",
+    "For Slack, every included item contains one complete changed root thread so the question and replies stay together.",
+    "Only additions, removals, or replacements shown below may create candidates.",
+    "A removed rule is a candidate only when the removal clearly changes what reps should do.",
+    "",
+    "<ADDED_OR_CHANGED>",
+    added.length ? added.join("\n\n") : "[none]",
+    "</ADDED_OR_CHANGED>",
+    "",
+    "<REMOVED_OR_REPLACED>",
+    removed.length ? removed.join("\n\n") : "[none]",
+    "</REMOVED_OR_REPLACED>",
+  ].join("\n");
+
+  return { mode: "delta" as const, content: packet.slice(0, 120_000), materialChange: true };
 }
 
 function meaningfulSegments(value: string, kind: KnowledgeRefreshSourceKind) {

@@ -19,6 +19,7 @@ import {
 import {
   buildKnowledgeRefreshAnalysisPayload,
   classifyKnowledgeRefreshCandidateNoise,
+  doesKnowledgeRefreshEvidenceRemainCurrent,
 } from "@/lib/ask-sales-faq/knowledge-refresh-noise";
 import { buildKnowledgeRefreshCandidateInsert } from "@/lib/ask-sales-faq/knowledge-refresh-candidate-insert";
 import {
@@ -523,16 +524,16 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     ],
   );
 
-  if (!unchanged) {
-    await sql.query(
-      `update ask_sales_faq_refresh_candidates
-       set status = 'stale', version = version + 1, updated_at = now(),
-           review_note = coalesce(review_note || E'\n', '') || 'Source changed after this candidate was created.'
-       where source_id = $1 and snapshot_hash <> $2
-         and status in ('needs_review', 'needs_owner', 'approved_content', 'deferred', 'preparing_release', 'ready_to_publish')`,
-      [input.sourceId, contentHash],
-    );
-  }
+  const reconciliation = !unchanged
+    ? await reconcileKnowledgeRefreshCandidates({
+        sourceId: input.sourceId,
+        snapshotId: storedSnapshotId,
+        snapshotHash: contentHash,
+        sourceRevision: sanitizeOperationalText(input.sourceRevision || "", 200) || null,
+        content: redacted.text,
+        runId: sanitizeOperationalText(input.runId || "", 100) || null,
+      })
+    : { retainedCount: 0, staleCount: 0 };
 
   if (!analysisRequired && analysisWasIncomplete) {
     await sql.query(
@@ -554,6 +555,8 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     runId: input.runId || null,
     redactions: redacted.redactions,
     analysisRequired,
+    retainedCandidateCount: reconciliation.retainedCount,
+    staleCandidateCount: reconciliation.staleCount,
   });
 
   return {
@@ -566,7 +569,71 @@ export async function recordKnowledgeRefreshSnapshot(input: {
     governanceContext: analysisRequired ? buildKnowledgeRefreshAnalysisContext(redacted.text) : null,
     content: analysisRequired ? analysisPayload.content : null,
     redactions: redacted.redactions,
+    retainedCandidateCount: reconciliation.retainedCount,
+    staleCandidateCount: reconciliation.staleCount,
   };
+}
+
+async function reconcileKnowledgeRefreshCandidates(input: {
+  sourceId: string;
+  snapshotId: string;
+  snapshotHash: string;
+  sourceRevision: string | null;
+  content: string;
+  runId: string | null;
+}) {
+  const sql = getSql();
+  const rows = (await sql.query(
+    `select id, status, evidence_quotes
+     from ask_sales_faq_refresh_candidates
+     where source_id = $1 and snapshot_hash <> $2
+       and status in ('needs_review', 'needs_owner', 'approved_content', 'preparing_release', 'ready_to_publish')`,
+    [input.sourceId, input.snapshotHash],
+  )) as Array<{ id: string; status: KnowledgeRefreshCandidateStatus; evidence_quotes: string[] }>;
+
+  const retainedIds = rows
+    .filter((candidate) =>
+      ["needs_review", "needs_owner"].includes(candidate.status) &&
+      doesKnowledgeRefreshEvidenceRemainCurrent(input.content, candidate.evidence_quotes || []),
+    )
+    .map((candidate) => candidate.id);
+  const staleIds = rows.filter((candidate) => !retainedIds.includes(candidate.id)).map((candidate) => candidate.id);
+
+  if (retainedIds.length) {
+    await sql.query(
+      `update ask_sales_faq_refresh_candidates
+       set snapshot_id = $2, snapshot_hash = $3, source_revision = $4,
+           version = version + 1, updated_at = now()
+       where id = any($1::text[])`,
+      [retainedIds, input.snapshotId, input.snapshotHash, input.sourceRevision],
+    );
+    for (const candidateId of retainedIds) {
+      await writeAudit("candidate", candidateId, "candidate_evidence_reverified", "dashboard:evidence-retention", null, null, {
+        sourceId: input.sourceId,
+        snapshotId: input.snapshotId,
+        runId: input.runId,
+      });
+    }
+  }
+
+  if (staleIds.length) {
+    await sql.query(
+      `update ask_sales_faq_refresh_candidates
+       set status = 'stale', version = version + 1, updated_at = now(),
+           review_note = coalesce(review_note || E'\n', '') || 'The supporting evidence is no longer present in the current source snapshot, or this draft had already entered approval/release processing and must be rechecked.'
+       where id = any($1::text[])`,
+      [staleIds],
+    );
+    for (const candidateId of staleIds) {
+      await writeAudit("candidate", candidateId, "candidate_staled_after_source_change", "dashboard:evidence-retention", null, "stale", {
+        sourceId: input.sourceId,
+        snapshotId: input.snapshotId,
+        runId: input.runId,
+      });
+    }
+  }
+
+  return { retainedCount: retainedIds.length, staleCount: staleIds.length };
 }
 
 export async function recordKnowledgeRefreshCandidates(input: {
@@ -749,7 +816,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
   const query = sanitizeOperationalText(input.query || "", 160);
   const sourceKind = input.sourceKind || "all";
   const conflictLevel = input.conflictLevel || "all";
-  const pageSize = Math.max(10, Math.min(50, Math.trunc(input.pageSize || 20)));
+  const pageSize = Math.max(10, Math.min(50, Math.trunc(input.pageSize || 10)));
   const page = Math.max(1, Math.trunc(input.page || 1));
   const values: unknown[] = [];
   const clauses: string[] = [];
@@ -781,6 +848,10 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
        join ask_sales_faq_refresh_sources s on s.id = c.source_id
        ${where}
        order by case c.status when 'needs_review' then 0 when 'needs_owner' then 1 when 'approved_content' then 2 else 3 end,
+                case c.source_authority when 'owner_confirmed' then 0 when 'manager_guidance' then 1 else 2 end,
+                case c.answer_impact when 'material' then 0 when 'possible' then 1 else 2 end,
+                case c.conflict_level when 'direct' then 0 when 'blocked' then 1 when 'possible' then 2 else 3 end,
+                c.ai_confidence desc,
                 c.updated_at desc
        limit $${values.length - 1} offset $${values.length}`,
       values,
@@ -817,17 +888,18 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
           count(distinct audit.entity_id) filter (where audit.event_type = 'source_unavailable')::int as unavailable_sources,
           (
             select count(*)::int
+            from ask_sales_faq_refresh_snapshots snapshot
+            where snapshot.run_id = latest_run.run_id
+              and snapshot.analysis_completed_at is not null
+          ) as analyzed_sources,
+          (
+            select count(*)::int
             from ask_sales_faq_refresh_candidates candidate
             join ask_sales_faq_refresh_snapshots snapshot on snapshot.id = candidate.snapshot_id
             where snapshot.run_id = latest_run.run_id
           ) as new_proposals,
-          (
-            select count(*)::int
-            from ask_sales_faq_refresh_candidates candidate
-            where candidate.status = 'stale'
-              and candidate.updated_at >= latest_run.started_at - interval '1 minute'
-              and candidate.updated_at <= latest_run.completed_at + interval '5 minutes'
-          ) as prior_drafts_replaced
+          count(distinct audit.entity_id) filter (where audit.event_type = 'candidate_evidence_reverified')::int as retained_proposals,
+          count(distinct audit.entity_id) filter (where audit.event_type = 'candidate_staled_after_source_change')::int as prior_drafts_replaced
         from latest_run
         left join ask_sales_faq_refresh_audit audit
           on audit.details ->> 'runId' = latest_run.run_id
@@ -840,7 +912,9 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
       changed_sources: number;
       unchanged_sources: number;
       unavailable_sources: number;
+      analyzed_sources: number;
       new_proposals: number;
+      retained_proposals: number;
       prior_drafts_replaced: number;
     }>>,
   ]);

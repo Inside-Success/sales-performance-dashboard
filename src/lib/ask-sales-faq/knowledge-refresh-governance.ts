@@ -10,6 +10,16 @@ import { getMaterializedV3Registry } from "@/lib/ask-sales-faq/v3/admin-approved
 const registry = getMaterializedV3Registry() as V3PolicyRegistry;
 const ragIndex = ragIndexJson as KnowledgeRefreshRagIndex;
 
+export const KNOWLEDGE_REFRESH_SLACK_AUTHORITY_DIRECTORY = [
+  { userId: "U01K7SFHKT6", name: "Rudy", role: "CEO", authority: "company_owner" },
+  { userId: "U04960NQARM", name: "Rich Allen", role: "Head of Sales", authority: "sales_owner" },
+  { userId: "U01JYL9AYBF", name: "Mike Wisner", role: "COO", authority: "executive" },
+  { userId: "U097MUCC1PD", name: "Madeline Cary", role: "Sales Ops", authority: "sales_operations" },
+  { userId: "U0B033H2HLZ", name: "Raul Rios", role: "Sales", authority: "sales_guidance" },
+  { userId: "U04P5KM875L", name: "Raul Rios", role: "Sales Ops and Training", authority: "sales_operations" },
+  { userId: "U076GKSBAH3", name: "Michael Kumov", role: "Finance Lead", authority: "finance_owner" },
+] as const;
+
 type KnowledgeRefreshRagChunk = {
   id: string;
   heading: string;
@@ -291,8 +301,9 @@ export function buildKnowledgeRefreshAnalysisContext(content: string) {
     generatedAt: registry.generated_at,
     relatedPolicies: topPolicies(candidate),
     blockedTopicIds: topBlockedTopics(candidate),
+    slackAuthorityDirectory: KNOWLEDGE_REFRESH_SLACK_AUTHORITY_DIRECTORY,
     authorityRule:
-      "Raw Slack and Google content is discovery evidence only. Recency is a signal, not automatic authority. Human approval and explicit supersession are required before runtime use.",
+      "Raw Slack and Google content is discovery evidence only. Use the verified Slack directory to identify speakers, never guess a role from an unknown user ID. Authority is contextual: Rich owns sales policy and normally outranks Madeline on the same decision; a newer, more specific Madeline instruction may coexist when it does not contradict Rich. Michael is authoritative only for finance. Recency is a signal, not automatic authority. Human approval and explicit supersession are required before runtime use.",
   };
 }
 

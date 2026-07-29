@@ -229,12 +229,14 @@ if (missingFiles.length === 0) {
     "source review is Miami-timed, version-aware, and blocks combined policy approval",
     refreshAdminPage.includes('title="Daily Knowledge Inbox"') &&
       knowledgeRefreshConsole.includes("Updated from an earlier draft") &&
-      knowledgeRefreshConsole.includes("Older drafts archived") &&
+      knowledgeRefreshConsole.includes("Still-valid proposals stayed in your review queue") &&
       knowledgeInboxCard.includes("old automatic comparison is not reliable") &&
       knowledgeInboxCard.includes("Accept update") &&
       knowledgeRefreshStore.includes("combines more than one governed policy decision") &&
+      knowledgeRefreshStore.includes("candidate_evidence_reverified") &&
+      knowledgeRefreshStore.includes("candidate_staled_after_source_change") &&
       knowledgeRefreshConsole.includes("formatMiamiDateTime"),
-    "the queue explains refresh results and replacement lineage while one approval cannot cover several policy decisions",
+    "the queue explains refresh results, preserves evidence-current drafts, and keeps one approval from covering several policy decisions",
   );
 
   addCheck(
