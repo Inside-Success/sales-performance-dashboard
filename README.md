@@ -77,6 +77,7 @@ The endpoint upserts dashboard rows and returns:
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
 - `/ask-sales-faq/admin/knowledge-refresh` admin-only daily source review, conflict resolution, and governed release preparation
+- `/ask-sales-faq/admin` admin-only production conversation logs for manual quality review on request
 
 ## Current Behavior Notes
 
@@ -123,3 +124,5 @@ Do not wire the active n8n workflow until the Vercel deployment URL and `INGEST_
 Enhanced report feedback is a separate active n8n workflow and does not modify the Magic Mike generation workflows. See `docs-n8n-dashboard-ingest.md` for workflow ID, feedback Sheet URL, and verification notes.
 
 Ask Sales knowledge refresh is a separate read-only source-monitoring system. It never writes to Slack or Google and never changes the runtime registry directly. Both allowlisted private Slack channels, the governed Google corpus, and the admin review path are live. The queue separates actionable changes from preserved baseline, duplicate, stale, and resolved records; bulk approval is intentionally unavailable. See `docs-ask-sales-knowledge-refresh.md` for the source allowlist, workflow IDs, verified run state, noise controls, human-review rules, and release boundary.
+
+Ask Sales quality review is manual and on demand. The old nightly AI quality audit is retired and inactive; its historical records are preserved. The Quality & Operations page shows production conversations, safe routes, feedback, and genuine runtime/negative-feedback attention signals without automatically treating a safe route as a defect. See `docs-ask-sales-faq-admin-and-adoption.md`.

@@ -3099,8 +3099,7 @@ export async function getAskSalesFaqAdminOverview(
           )::int as failures,
           count(*) filter (
             where error_class is not null
-               or needs_route
-               or outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only', 'safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+               or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
                or exists (select 1 from feedback f where f.message_id = assistant.id and f.rating = 'down')
           )::int as review_items,
           (select count(*)::int from feedback) as feedback_count,
@@ -3198,8 +3197,7 @@ export async function getAskSalesFaqAdminOverview(
         where a.role = 'assistant'
           and (
             a.error_class is not null
-            or a.needs_route
-            or a.outcome in ('route_from_approved_article', 'route_from_evidence', 'low_confidence_route', 'abstain_unapproved', 'admin_only', 'safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+            or a.outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
             or f.rating = 'down'
           )
         order by a.created_at desc

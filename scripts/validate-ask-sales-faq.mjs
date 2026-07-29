@@ -1239,14 +1239,17 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "admin review items are categorized without mutating Neon",
+    "manual admin review stays simple, categorized, and read-only",
     db.includes("classifyAskSalesFaqReview") &&
       db.includes("reviewCategory: classification.category") &&
       db.includes("reviewAction: classification.action") &&
       adminPage.includes("reviewCategory") &&
-      adminPage.includes("Review next") &&
+      adminPage.includes("Suggested review") &&
+      adminPage.includes("Manual review only") &&
+      adminPage.includes("Safe routes remain in the conversation log below") &&
+      !adminPage.includes("QualityReviewConsole") &&
       !adminPage.includes("export async function POST"),
-    "read-only admin review labels separate feedback, reliability, coverage, safe routes, and answer audits",
+    "production logs stay manually reviewed, safe routes are not mislabeled as defects, and audit metadata remains collapsed and read-only",
   );
 
   addCheck(

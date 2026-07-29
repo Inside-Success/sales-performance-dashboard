@@ -77,7 +77,7 @@ The daily knowledge-refresh simplification and the older saved policy-matching r
 
 ## Deferred work
 
-The daily refresh simplification, policy-matching replacement, and the separate quality-audit schema mismatch remain on hold until the V5.14 launch is accepted. None was changed during this release.
+The older saved policy-matching replacement remains intentionally pending. It was not mixed into the production cutover.
 
 ## Post-launch health and presentation follow-up
 
@@ -90,3 +90,15 @@ Date: 2026-07-28
 - A narrow presentation fix removes a structured body or item when it exactly repeats the already-visible summary. Additional steps, caveats, and non-duplicate structured content remain visible.
 - Focused presentation checks pass 7/7; the complete Ask Sales suite passes 17 files / 273 tests; static safety passes 107/107; TypeScript, zero-warning scoped ESLint, and the optimized production build pass.
 - The rude/poor-fit test response was source-grounded and safe but did not directly settle whether the rep should end the live call immediately. This is an answer-completeness watch item, not a runtime or deployment failure.
+
+## Admin operations completion
+
+Date: 2026-07-29
+
+- The 9 PM read-only source refresh, human approval, protected publication, and production verification path is operational and has published an approved release successfully.
+- The noisy 9:20 PM AI quality-audit workflow remains inactive. Its six historical failed executions and stored review history are preserved; no production log or historical record was deleted.
+- Quality review is now manual and requested only after enough real production data has accumulated.
+- `/ask-sales-faq/admin` is reduced to four understandable counts, a precise attention list, recent conversations, and collapsible feedback/technical details.
+- Safe routes remain visible but no longer appear as defects. Only runtime failures and thumbs-down answers enter **Needs attention**.
+- Rep adoption and Source Updates were not changed by the Quality & Operations cleanup.
+- The build phase is operationally complete. Continuing source approvals and periodic log reviews are normal maintenance, not unfinished implementation.

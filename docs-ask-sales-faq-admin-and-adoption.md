@@ -2,11 +2,12 @@
 
 ## Purpose
 
-Ask Sales has two admin-only measurement surfaces with intentionally separate responsibilities:
+Ask Sales has three admin-only surfaces with intentionally separate responsibilities:
 
-- `/ask-sales-faq/admin` — answer quality, routing, feedback, provider/runtime health, and investigation.
+- `/ask-sales-faq/admin` — simple production conversation logs for manual quality review on request.
 - `/ask-sales-faq/admin/usage` — rep activation, repeat usage, question volume, and per-user adoption.
 - `/ask-sales-faq/admin/usage/[repKey]` — a rep-specific, read-only question-and-answer audit reached only from an activated row on the adoption page.
+- `/ask-sales-faq/admin/knowledge-refresh` — human approval and governed publication of useful source updates.
 
 The existing coaching `/manager/usage` page and its metrics are not changed or reused. Coaching engagement and Ask Sales adoption remain separate datasets and concepts.
 
@@ -20,18 +21,25 @@ Every Ask Sales admin page requires:
 
 Normal Ask Sales users cannot access any admin page. Rep drill-down URLs use an HMAC-based opaque key derived with the existing server-side `AUTH_SECRET`; the rep email is never placed in the URL. Invalid, stale, non-admin, and unresolvable keys return 404. All admin pages remain unlinked from rep navigation and retain `noindex, nofollow` metadata.
 
-## Quality And Operations Definitions
+## Quality And Operations
+
+The Quality & Operations page is intentionally a passive log viewer. The retired nightly AI quality audit is inactive and its historical records remain preserved in the database; they are not deleted or presented as a current review queue. When enough production traffic has accumulated, the project owner asks Codex to perform a bounded manual review of the stored logs.
+
+The main page has only four summary counts, a precise attention list, the latest conversations, and collapsible rep feedback. Provider, model, confidence, validation, knowledge-version, pipeline, and latency fields remain available under each row's collapsed **Technical details** section instead of dominating the page.
+
+### Definitions
 
 - **Questions**: saved Ask Sales assistant exchanges in the selected 7, 30, or 90 day window.
 - **Grounded answers**: `answer_from_approved_article` or `answer_from_evidence` outcomes.
 - **Conversation replies**: natural conversational/rewrite responses stored as `conversation_reply`.
+- **Answered**: grounded answers plus conversation replies.
 - **Safe routes**: route, abstention, or admin-only outcomes. A safe route is not counted as a runtime failure.
 - **Failures**: explicit error classes or technical outcomes such as safe fallback, rate limiting, duplicate-in-progress, authentication/feature blocking, or validation failure.
-- **Investigation queue**: negative feedback, safe routes, coverage boundaries, and runtime failures. Successful V3 evidence answers are not automatically treated as misses.
-- **Grounded rate**: observed answer mode, not a claim of independently reviewed factual accuracy.
-- **Confidence**: displayed on the normalized 0–100 scale and not presented as factual accuracy.
+- **Needs attention**: only a technical failure or an answer with thumbs-down feedback. Safe routes are visible in Recent conversations but are not mislabeled as defects.
+- **Recent conversations**: the latest real answered, conversational, and safely routed exchanges.
+- **Recent rep feedback**: thumbs-up, thumbs-down, and written comments; collapsed by default.
 
-New miss creation follows the same state-based rule as the dashboard. Direct approved/evidence answers and normal conversation replies do not create miss rows.
+The counts describe system behavior and are not presented as independently reviewed factual accuracy. Source and technical trace fields remain available for a human reviewer.
 
 ## Rep Adoption Population
 
@@ -69,12 +77,13 @@ The implementation adds no table, migration, API mutation, or background job. It
 
 ## Verification
 
-- TypeScript: `npx tsc --noEmit`
-- Scoped ESLint: Ask Sales admin pages, rep-key/cursor helpers, DB analytics, validator, and tests
-- Ask Sales Vitest suite: 192 tests
-- Independent Ask Sales safety validator: 94/94 checks
-- TypeScript: passed
-- Production build: `npm run build`
-- Live read-only data smoke check: 195 known non-admin users and seven activated users were available at the checked point in time; a selected retained exchange returned a paired question, answer, and V3 stage timings through the new query without exposing identity in command output.
+- TypeScript: `tsc --noEmit` passed.
+- Scoped ESLint passed with no warnings or errors.
+- Complete Ask Sales Vitest suite: 19 files / 284 tests passed.
+- Focused Quality & Operations regression checks: 3/3 passed.
+- Ask Sales static safety validator: 107/107 checks passed.
+- Next.js 16.2.6 optimized production build passed.
+- No local development server ran.
+- No Slack, Google, source-refresh, governed knowledge, chat-runtime, authentication, adoption-page, or production-database write was introduced by the simplification.
 
 No local development server is required or permitted for this project.
