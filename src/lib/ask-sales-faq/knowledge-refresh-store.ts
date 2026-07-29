@@ -893,10 +893,12 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
               and snapshot.analysis_completed_at is not null
           ) as analyzed_sources,
           (
-            select count(*)::int
-            from ask_sales_faq_refresh_candidates candidate
-            join ask_sales_faq_refresh_snapshots snapshot on snapshot.id = candidate.snapshot_id
+            select coalesce(sum((completed.details ->> 'candidateCount')::int), 0)::int
+            from ask_sales_faq_refresh_audit completed
+            join ask_sales_faq_refresh_snapshots snapshot on snapshot.id = completed.entity_id
             where snapshot.run_id = latest_run.run_id
+              and completed.entity_type = 'snapshot'
+              and completed.event_type = 'analysis_completed'
           ) as new_proposals,
           count(distinct audit.entity_id) filter (where audit.event_type = 'candidate_evidence_reverified')::int as retained_proposals,
           count(distinct audit.entity_id) filter (where audit.event_type = 'candidate_staled_after_source_change')::int as prior_drafts_replaced

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
 import {
   buildKnowledgeRefreshAnalysisContext,
@@ -62,6 +63,12 @@ function releaseReadinessFixture(overrides: Record<string, unknown> = {}) {
 }
 
 describe("Ask Sales knowledge-refresh governance", () => {
+  it("reports analyzer insertions without counting later retained or recovered drafts as new", () => {
+    const store = readFileSync("src/lib/ask-sales-faq/knowledge-refresh-store.ts", "utf8");
+    expect(store).toContain("sum((completed.details ->> 'candidateCount')::int)");
+    expect(store).toContain("completed.event_type = 'analysis_completed'");
+  });
+
   it("keeps candidate insert columns, placeholders, casts, and parameters in lockstep", () => {
     const values = Object.fromEntries(
       KNOWLEDGE_REFRESH_CANDIDATE_INSERT_COLUMNS.map((column) => [column, `${column}-value`]),
