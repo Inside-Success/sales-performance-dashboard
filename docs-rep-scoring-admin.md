@@ -19,7 +19,9 @@ Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shado
 
 The workflow reads a rolling seven-day source window, processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
 
-Before applying the 10-call cap, each run reads all eligible calls in the rolling seven-day source window, collapses that multi-record read to one ledger request, and removes v3 idempotency keys that are completed or actively leased. This lets later hourly schedules advance through the backlog without multiplying Airtable reads or repeatedly selecting the same oldest rows. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+Before applying the 15-call cap, each run reads all eligible calls in the rolling seven-day source window, collapses that multi-record read to one ledger request, and removes v3 idempotency keys that are completed or actively leased. This lets later hourly schedules advance through the backlog without multiplying Airtable reads or repeatedly selecting the same oldest rows. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+
+Every scheduled run now writes a separate coverage snapshot to `scoring_runs`. The snapshot records the exact seven-day candidate count, completed ledger count, active leases, waiting calls, selected batch size, and cutoff. It is a fan-out telemetry branch: it does not modify source calls or the existing score/quarantine/ledger path. The manager page uses the latest snapshot to state explicitly how much of the rolling week has and has not been processed.
 
 V3 also treats a missing or `null` critical-event score cap as no cap. V2 is retained as immutable audit history but is excluded from the live manager view because JavaScript numeric coercion could turn a model-returned `null` cap into an incorrect zero composite.
 
@@ -34,7 +36,7 @@ Current scorer contract:
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
 - Invalid dimension or critical-event evidence quarantines the call.
-- A claimed met behavior with invalid evidence is downgraded to `not_observed` and the assessment is marked internally inconsistent.
+- A claimed met behavior with invalid evidence now fails closed as `internal_inconsistency` and the call is quarantined. Older inconsistent v3 rows remain immutable audit history but are excluded from manager rollups.
 
 One-time setup workflows are retained inactive as rollback/audit records:
 
@@ -53,7 +55,30 @@ One-time setup workflows are retained inactive as rollback/audit records:
 - `formal_reports`: `tbllnZTrnReUVQfy7`
 - `scoring_runs`: `tblPadsfFbjxcCQz2`
 
-The dashboard can derive safe provisional rollups directly from current-version immutable scores until the materialized `rep_rollups` table is populated. Call 1 and Call 2+ remain separate.
+The dashboard derives current seven-day rollups directly from current-version immutable scores and excludes internally inconsistent assessments. Call 1 and Call 2+ remain separate.
+
+## Manager experience
+
+The hidden page is intentionally a score-and-coaching hybrid:
+
+- The factual 0–100 score and its band remain prominent.
+- The page states that a call card is one call, not a weekly rep conclusion.
+- Weekly coverage appears before performance metrics: eligible, completed, active, and waiting.
+- Valid scores and unable-to-score calls are separate metrics.
+- One or two calls are labeled exactly as limited evidence; a supported manager review signal requires at least three scored calls of the same type.
+- Each rep row identifies the lowest-scoring coaching priority and strongest dimension.
+- `/manager/rep-scoring/rep/[repKey]` provides a rep drill-down without pooling Call 1 and Call 2+.
+- Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
+
+Display bands for the current v3 scorer are factual labels for the assessed call:
+
+- 0–24: Unacceptable
+- 25–49: Needs Improvement
+- 50–69: Developing
+- 70–84: Meets Expectations
+- 85–100: Excellent
+
+The workflow, not DeepSeek, calculates the final numeric score from the stored band points and weights.
 
 ## Vercel environment
 
@@ -78,6 +103,8 @@ The initial administrator is exactly `syed.haider@insidesuccess.com`. That addre
 Verified without running a local development server:
 
 - n8n workflow validation: zero errors
+- Rep-scoring presentation unit tests: four passing tests covering contribution math, readable labels, evidence confidence, and strongest/weakest dimension selection
+- Dashboard lint and Next.js production build after the manager-experience redesign
 - Source Airtable and isolated store credential access
 - DeepSeek V4 Pro request using the task-specific credential
 - Exact-quote failure quarantine
@@ -89,6 +116,8 @@ Verified without running a local development server:
 - Corrected v3 batch execution `413852`: 1,108 eligible source rows, 10 selected calls, 3 valid v3 scores, 4 evidence quarantines, and 3 calls safely skipped after a concurrent run completed them first
 - Dashboard lint and production build
 - Production Vercel deployment `dpl_FsiWwGNtTgfPynFZQyNE5TjUWnfL` reached `READY` and the hidden route returned the protected Magic Mike sign-in boundary
+
+The one-time human calibration is intentionally separate from normal manager use. See `REP-SCORING-CALIBRATION.md`. Rubric weights or thresholds must not be changed merely to make current scores look better; calibration evidence controls any later scoring-contract revision.
 
 Rollback is independent by layer:
 
