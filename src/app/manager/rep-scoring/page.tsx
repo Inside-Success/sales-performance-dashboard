@@ -85,7 +85,7 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard icon={CheckCircle2} title="Valid scores available" value={data.summary.scoredCalls} description="Calls with verified evidence in the current 7-day view" tone="green" />
-          <MetricCard icon={FileWarning} title="Unable to score" value={data.summary.quarantinedCalls} description="Separate calls excluded for evidence or data-quality reasons" tone="amber" />
+          <MetricCard icon={FileWarning} title="Unable to score during validation" value={data.summary.quarantinedCalls} description="Quarantined attempts since validation began; excluded from scores and coverage completion" tone="amber" />
           <MetricCard icon={AlertTriangle} title="Needs review" value={data.summary.needsReview} description="Reps with at least 3 calls and a supported review signal" tone="red" />
           <MetricCard icon={Hourglass} title="Early low-score signals" value={data.summary.earlySignals} description="Below 60, but based on fewer than 3 calls" tone="amber" />
         </section>
@@ -147,10 +147,11 @@ function CoveragePanel({ coverage }: { coverage: RepScoringCoverage }) {
         <div className="h-3 overflow-hidden rounded-full bg-slate-100" aria-label="Weekly processing progress">
           <div className="h-full rounded-full bg-red-600" style={{ width: `${Math.min(100, Math.max(0, coverage.percentComplete ?? 0))}%` }} />
         </div>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <CoverageStat label="Eligible calls found" value={coverage.sourceCandidates} helper="Current rolling 7-day source window" />
-          <CoverageStat label="Processing completed" value={coverage.completed} helper="Final ledger state in this window" />
+          <CoverageStat label="Completed before this run" value={coverage.completed} helper="Final ledger state when this run started" />
           <CoverageStat label="Processing now" value={coverage.inProgress} helper="Actively leased by the workflow" />
+          <CoverageStat label="Selected this run" value={coverage.selectedForRun} helper="New calls admitted by the safe batch limit" />
           <CoverageStat label="Still waiting" value={coverage.awaiting} helper="Not a final weekly result yet" emphasis />
         </div>
       </CardContent>
