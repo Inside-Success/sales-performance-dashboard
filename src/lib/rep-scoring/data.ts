@@ -107,14 +107,21 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       fetchAllRecords(process.env.REP_SCORING_CONFIG_TABLE || "config", 20),
     ]);
 
-    const recentCalls = scoreRecords
+    const currentCalls = scoreRecords
       .map(normalizeCall)
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
+    const recentCalls = dedupeCalls(currentCalls);
+    const currentQuarantines = dedupeRecords(
+      quarantineRecords.filter(
+        (record) => readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION,
+      ),
+      "Quarantine ID",
+    );
     const materializedRollups = rollupRecords.map(normalizeRollup);
     const rollups = (materializedRollups.length
       ? materializedRollups
-      : deriveRollups(recentCalls, quarantineRecords)
+      : deriveRollups(recentCalls, currentQuarantines)
     ).sort(sortRollups);
     const activeConfig = configRecords
       .filter((record) => readBoolean(record.fields.Active))
@@ -129,8 +136,8 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         repsTracked: new Set(rollups.map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean)).size,
         needsReview: new Set(rollups.filter((rollup) => isReviewPriority(rollup.priority)).map((rollup) => rollup.repId || rollup.repEmail)).size,
         declining: new Set(rollups.filter((rollup) => rollup.declineConcern).map((rollup) => rollup.repId || rollup.repEmail)).size,
-        scoredCalls: scoreRecords.length,
-        quarantinedCalls: quarantineRecords.filter((record) => !readBoolean(record.fields.Resolved)).length,
+        scoredCalls: recentCalls.length,
+        quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
       },
       rollups,
       recentCalls,
@@ -142,6 +149,26 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       error: error instanceof Error ? error.message : "The isolated scoring store could not be read.",
     };
   }
+}
+
+function dedupeCalls(calls: RepScoreCall[]) {
+  const seen = new Set<string>();
+  return calls.filter((call) => {
+    const key = call.assessmentId || call.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function dedupeRecords(records: AirtableRecord[], field: string) {
+  const seen = new Set<string>();
+  return records.filter((record) => {
+    const key = readString(record.fields[field]) || record.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function fetchAllRecords(table: string, maxRecords: number) {
