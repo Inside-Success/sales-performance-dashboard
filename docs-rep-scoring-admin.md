@@ -79,8 +79,10 @@ Verified without running a local development server:
 - Reasoning-token exhaustion quarantine
 - Valid v2 Call 2+ score written with exact evidence
 - One-week shadow backfill execution `413452`: 10 eligible calls examined, 7 new v2 scores, 1 quarantine, and 2 previously completed calls skipped
+- Corrected v3 smoke execution `413836`: 1,106 eligible source rows collapsed to one ledger request, 1 new call selected, and a 70-point `Meets Expectations` score written despite a `null` critical-event cap
+- Corrected v3 batch execution `413852`: 1,108 eligible source rows, 10 selected calls, 3 valid v3 scores, 4 evidence quarantines, and 3 calls safely skipped after a concurrent run completed them first
 - Dashboard lint and production build
-- Production Vercel deployment `dpl_VxUxmgzY8zmype1Noyn3j6CheC7P` reached `READY` and the hidden route returned the protected Magic Mike sign-in boundary
+- Production Vercel deployment `dpl_FsiWwGNtTgfPynFZQyNE5TjUWnfL` reached `READY` and the hidden route returned the protected Magic Mike sign-in boundary
 
 Rollback is independent by layer:
 
