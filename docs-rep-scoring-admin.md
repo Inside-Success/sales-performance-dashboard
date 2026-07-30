@@ -21,6 +21,8 @@ The workflow reads a rolling seven-day source window, processes one call at a ti
 
 Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
 
+Manager quarantine counts begin at the controlled backfill launch (`2026-07-30T17:09:57Z`) and exclude a quarantine when the same idempotency key later has a valid score. Earlier validation rows remain in Airtable for audit history but are not presented as live rep-performance problems.
+
 Current scorer contract:
 
 - Scorer: `rep-reviewer-v2`

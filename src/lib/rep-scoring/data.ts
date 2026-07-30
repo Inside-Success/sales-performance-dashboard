@@ -3,6 +3,7 @@ import "server-only";
 const FETCH_TIMEOUT_MS = 10_000;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const CURRENT_SCORER_VERSION = "rep-reviewer-v2";
+const QUARANTINE_REPORTING_START_AT = Date.parse("2026-07-30T17:09:57Z");
 
 type AirtableRecord = {
   id: string;
@@ -19,6 +20,7 @@ type AirtableListResponse = {
 export type RepScoreCall = {
   id: string;
   assessmentId: string;
+  idempotencyKey: string;
   repId: string;
   repEmail: string;
   repName: string;
@@ -112,9 +114,13 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
     const recentCalls = dedupeCalls(currentCalls);
+    const scoredKeys = new Set(recentCalls.map((call) => call.idempotencyKey).filter(Boolean));
     const currentQuarantines = dedupeRecords(
       quarantineRecords.filter(
-        (record) => readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION,
+        (record) =>
+          readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION
+          && dateValue(readString(record.fields["Quarantined At"])) >= QUARANTINE_REPORTING_START_AT
+          && !scoredKeys.has(readString(record.fields["Idempotency Key"])),
       ),
       "Quarantine ID",
     );
@@ -226,6 +232,7 @@ function normalizeCall(record: AirtableRecord): RepScoreCall {
   return {
     id: record.id,
     assessmentId: readString(fields["Assessment ID"]) || record.id,
+    idempotencyKey: readString(fields["Idempotency Key"]),
     repId: readString(fields["Scored Rep ID"]),
     repEmail: readString(fields["Scored Rep Email"]),
     repName: readString(fields["Scored Rep Label"]) || readString(fields["Scored Rep Email"]) || "Unknown rep",
