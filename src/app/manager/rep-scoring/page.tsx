@@ -154,7 +154,7 @@ function EvidenceStatusPanel({ coverage, readyReps, gatheringReps }: { coverage:
           <div className="h-full rounded-full bg-red-600" style={{ width: `${Math.min(100, Math.max(0, readinessPercent))}%` }} />
         </div>
         <p className="mt-4 text-sm leading-6 text-slate-700">
-          A rep is ready only after at least three valid scores for the same call type. One or two calls remain clearly labeled as an early signal. New batches are spread across the team and use each group&apos;s newest calls first.
+          A rep is ready only after at least three valid scores for the same call type. One or two calls remain clearly labeled as an early signal. New batches finish reps closest to three valid calls first, then rotate to other reps using each group&apos;s newest calls.
         </p>
       </CardContent>
     </Card>
