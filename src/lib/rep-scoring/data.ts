@@ -136,7 +136,11 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       fetchAllRecords(process.env.REP_SCORING_RUNS_TABLE || "scoring_runs", 200),
     ]);
 
-    const reportingCutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const coverage = normalizeCoverage(scoringRunRecords);
+    // Keep every metric on the exact source window recorded by the workflow.
+    // Using a new Date.now() here made boundary calls disappear between the
+    // workflow snapshot and a manager opening the page a few minutes later.
+    const reportingCutoff = dateValue(coverage.cutoff) || Date.now() - 7 * 24 * 60 * 60 * 1000;
     const currentCalls = scoreRecords
       .map(normalizeCall)
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
@@ -174,7 +178,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
         inconsistentCalls: recentCalls.length - consistentCalls.length,
       },
-      coverage: normalizeCoverage(scoringRunRecords),
+      coverage,
       rollups,
       recentCalls,
     };

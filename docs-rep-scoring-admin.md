@@ -115,7 +115,10 @@ Verified without running a local development server:
 - Corrected v3 smoke execution `413836`: 1,106 eligible source rows collapsed to one ledger request, 1 new call selected, and a 70-point `Meets Expectations` score written despite a `null` critical-event cap
 - Corrected v3 batch execution `413852`: 1,108 eligible source rows, 10 selected calls, 3 valid v3 scores, 4 evidence quarantines, and 3 calls safely skipped after a concurrent run completed them first
 - Dashboard lint and production build
-- Production Vercel deployment `dpl_FsiWwGNtTgfPynFZQyNE5TjUWnfL` reached `READY` and the hidden route returned the protected Magic Mike sign-in boundary
+- Production Vercel deployment `dpl_EiyerGTXVmNBcMMrGuRCmhGskKkV` reached `READY` from merge commit `7ae76e4abfdac5080269f5a610f73dfc871d8a4b` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias
+- Isolated n8n execution `414998` completed successfully in 103.5 seconds: the source read found 1,119 exact rolling-seven-day candidates, wrote coverage snapshot record `recPbMNNKqHoLLdC3`, admitted one controlled test call, wrote one immutable score, and completed its ledger record
+- The controlled webhook was disabled again after verification; the active workflow validates with 27 nodes, 31 valid connections, zero invalid connections, and zero errors. Workflow version `353` (version 45) remains the pre-change rollback point
+- The manager dashboard now uses the workflow snapshot cutoff for its score window, preventing a boundary call from disappearing merely because the page was opened a few minutes after the snapshot
 
 The one-time human calibration is intentionally separate from normal manager use. See `REP-SCORING-CALIBRATION.md`. Rubric weights or thresholds must not be changed merely to make current scores look better; calibration evidence controls any later scoring-contract revision.
 
