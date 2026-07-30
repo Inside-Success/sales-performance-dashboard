@@ -20,6 +20,7 @@ export default async function SignInPage({
   const callbackUrl = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const redirectTo = getSafeRedirect(callbackUrl);
+  const errorMessage = getAuthErrorMessage(error);
 
   return (
     <main className="magic-auth-page flex min-h-screen items-center justify-center px-5 py-10">
@@ -43,9 +44,9 @@ export default async function SignInPage({
             </p>
           </div>
 
-          {error ? (
+          {errorMessage ? (
             <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium leading-6 text-red-700">
-              This Google account is not approved for Magic Mike. Use an approved company email.
+              {errorMessage}
             </div>
           ) : null}
 
@@ -66,6 +67,20 @@ export default async function SignInPage({
       </div>
     </main>
   );
+}
+
+function getAuthErrorMessage(error: string | undefined) {
+  if (!error) return null;
+
+  if (error === "AccessDenied") {
+    return "This Google account is not approved for Magic Mike. Use syed.haider@insidesuccess.com for rep scoring review.";
+  }
+
+  if (error === "Configuration") {
+    return "This deployment is not configured for Google sign-in. Open the production Magic Mike dashboard instead of a preview link.";
+  }
+
+  return "Google sign-in did not complete. Please try again with syed.haider@insidesuccess.com.";
 }
 
 function getSafeRedirect(value: string | undefined) {

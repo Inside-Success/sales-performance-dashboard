@@ -140,6 +140,10 @@
     font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
   }
 
+  body:has(> .magic-auth-page) > .magic-app-header {
+    display: none;
+  }
+
   .magic-auth-page {
     position: relative;
     overflow: hidden;
