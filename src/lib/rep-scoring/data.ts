@@ -1,5 +1,7 @@
 import "server-only";
 
+import { evidenceConfidence, normalizeDimensions } from "@/lib/rep-scoring/presentation";
+
 const FETCH_TIMEOUT_MS = 10_000;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const CURRENT_SCORER_VERSION = "rep-reviewer-v3";
@@ -38,9 +40,15 @@ export type RepScoreCall = {
   criticalEvents: unknown[];
   observations: unknown[];
   evidence: unknown[];
+  callContext: Record<string, unknown>;
   internalInconsistency: boolean;
   scoredAt: string;
   scorerVersion: string;
+  promptVersion: string;
+  rubricVersion: string;
+  weightsVersion: string;
+  configVersion: string;
+  model: string;
 };
 
 export type RepRollup = {
@@ -61,7 +69,21 @@ export type RepRollup = {
   relativeConcern: boolean;
   declineConcern: boolean;
   priority: string;
+  coachingPriority: string;
+  strongestArea: string;
   computedAt: string;
+};
+
+export type RepScoringCoverage = {
+  available: boolean;
+  measuredAt: string;
+  cutoff: string;
+  sourceCandidates: number | null;
+  completed: number | null;
+  inProgress: number | null;
+  awaiting: number | null;
+  selectedForRun: number | null;
+  percentComplete: number | null;
 };
 
 export type RepScoringDashboardData = {
@@ -73,9 +95,13 @@ export type RepScoringDashboardData = {
     repsTracked: number;
     needsReview: number;
     declining: number;
+    earlySignals: number;
+    enoughEvidence: number;
     scoredCalls: number;
     quarantinedCalls: number;
+    inconsistentCalls: number;
   };
+  coverage: RepScoringCoverage;
   rollups: RepRollup[];
   recentCalls: RepScoreCall[];
   error?: string;
@@ -88,7 +114,8 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     generatedAt,
     shadowMode: true,
     killSwitch: true,
-    summary: { repsTracked: 0, needsReview: 0, declining: 0, scoredCalls: 0, quarantinedCalls: 0 },
+    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
+    coverage: emptyCoverage(),
     rollups: [],
     recentCalls: [],
   };
@@ -102,18 +129,21 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
   }
 
   try {
-    const [rollupRecords, scoreRecords, quarantineRecords, configRecords] = await Promise.all([
-      fetchAllRecords(process.env.REP_SCORING_ROLLUPS_TABLE || "rep_rollups", 200),
-      fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", 100),
-      fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", 100),
+    const [scoreRecords, quarantineRecords, configRecords, scoringRunRecords] = await Promise.all([
+      fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", 3000),
+      fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", 3000),
       fetchAllRecords(process.env.REP_SCORING_CONFIG_TABLE || "config", 20),
+      fetchAllRecords(process.env.REP_SCORING_RUNS_TABLE || "scoring_runs", 200),
     ]);
 
+    const reportingCutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
     const currentCalls = scoreRecords
       .map(normalizeCall)
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
+      .filter((call) => dateValue(call.meetingStartAt || call.scoredAt) >= reportingCutoff)
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
     const recentCalls = dedupeCalls(currentCalls);
+    const consistentCalls = recentCalls.filter((call) => !call.internalInconsistency);
     const scoredKeys = new Set(recentCalls.map((call) => call.idempotencyKey).filter(Boolean));
     const currentQuarantines = dedupeRecords(
       quarantineRecords.filter(
@@ -124,11 +154,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       ),
       "Quarantine ID",
     );
-    const materializedRollups = rollupRecords.map(normalizeRollup);
-    const rollups = (materializedRollups.length
-      ? materializedRollups
-      : deriveRollups(recentCalls, currentQuarantines)
-    ).sort(sortRollups);
+    const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
     const activeConfig = configRecords
       .filter((record) => readBoolean(record.fields.Active))
       .sort((a, b) => dateValue(readString(b.fields["Effective From"])) - dateValue(readString(a.fields["Effective From"])))[0];
@@ -142,9 +168,13 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         repsTracked: new Set(rollups.map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean)).size,
         needsReview: new Set(rollups.filter((rollup) => isReviewPriority(rollup.priority)).map((rollup) => rollup.repId || rollup.repEmail)).size,
         declining: new Set(rollups.filter((rollup) => rollup.declineConcern).map((rollup) => rollup.repId || rollup.repEmail)).size,
-        scoredCalls: recentCalls.length,
+        earlySignals: new Set(rollups.filter((rollup) => rollup.nScored < 3 && rollup.rollingMean !== null && rollup.rollingMean < 60).map((rollup) => rollup.repId || rollup.repEmail)).size,
+        enoughEvidence: new Set(rollups.filter((rollup) => rollup.nScored >= 3).map((rollup) => rollup.repId || rollup.repEmail)).size,
+        scoredCalls: consistentCalls.length,
         quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
+        inconsistentCalls: recentCalls.length - consistentCalls.length,
       },
+      coverage: normalizeCoverage(scoringRunRecords),
       rollups,
       recentCalls,
     };
@@ -203,30 +233,6 @@ async function fetchAllRecords(table: string, maxRecords: number) {
   return records.slice(0, maxRecords);
 }
 
-function normalizeRollup(record: AirtableRecord): RepRollup {
-  const fields = record.fields;
-  return {
-    id: record.id,
-    repId: readString(fields["Rep ID"]),
-    repEmail: readString(fields["Rep Email"]),
-    repName: readString(fields["Rep Display Name"]) || readString(fields["Rep Email"]) || "Unknown rep",
-    callType: readString(fields["Call Type"]) || "Unknown",
-    tenureBand: readString(fields["Tenure Band"]) || "Not established",
-    nScored: readNumber(fields["N Scored"]) || 0,
-    nQuarantined: readNumber(fields["N Quarantined"]) || 0,
-    quarantineRate: readNumber(fields["Quarantine Rate"]) || 0,
-    rollingMean: readNumber(fields["Rolling Mean"]),
-    baselineMean: readNumber(fields["Baseline Mean"]),
-    delta: readNumber(fields.Delta),
-    confidence: readString(fields["Confidence Label"]) || "Building",
-    absoluteConcern: readBoolean(fields["Absolute Concern"]),
-    relativeConcern: readBoolean(fields["Relative Concern"]),
-    declineConcern: readBoolean(fields["Decline Concern"]),
-    priority: readString(fields["Combined Review Priority"]) || "Monitor",
-    computedAt: readString(fields["Computed At"]),
-  };
-}
-
 function normalizeCall(record: AirtableRecord): RepScoreCall {
   const fields = record.fields;
   return {
@@ -250,9 +256,15 @@ function normalizeCall(record: AirtableRecord): RepScoreCall {
     criticalEvents: readJsonArray(fields["Critical Events JSON"]),
     observations: readJsonArray(fields["Observations JSON"]),
     evidence: readJsonArray(fields["Evidence JSON"]),
+    callContext: readJsonObject(fields["Call Context JSON"]),
     internalInconsistency: readBoolean(fields["Internal Inconsistency"]),
     scoredAt: readString(fields["Scored At"]) || readString(fields["Created At"]) || record.createdTime || "",
     scorerVersion: readString(fields["Scorer Version"]),
+    promptVersion: readString(fields["Prompt Version"]),
+    rubricVersion: readString(fields["Rubric Version"]),
+    weightsVersion: readString(fields["Weights Version"]),
+    configVersion: readString(fields["Config Version"]),
+    model: readString(fields.Model),
   };
 }
 
@@ -277,9 +289,10 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
         && readString(fields["Call Type"]) === first.callType
         && !readBoolean(fields.Resolved);
     }).length;
-    const confidence = sorted.length >= 15 ? "High" : sorted.length >= 8 ? "Medium" : sorted.length >= 3 ? "Low" : "Building";
+    const confidence = evidenceConfidence(sorted.length);
     const absoluteConcern = sorted.length >= 3 && rollingMean !== null && rollingMean < 60;
     const declineConcern = baseline.length >= 3 && delta !== null && delta <= -10;
+    const insights = getGroupInsights(sorted);
 
     return {
       id: `derived-${key}`,
@@ -298,7 +311,9 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
       absoluteConcern,
       relativeConcern: false,
       declineConcern,
-      priority: absoluteConcern && declineConcern ? "High review" : absoluteConcern || declineConcern ? "Review" : confidence === "Building" ? "Building sample" : "Monitor",
+      priority: absoluteConcern && declineConcern ? "High review" : absoluteConcern || declineConcern ? "Review" : sorted.length < 3 ? "Gathering evidence" : "Monitor",
+      coachingPriority: insights.coachingPriority,
+      strongestArea: insights.strongestArea,
       computedAt: new Date().toISOString(),
     };
   });
@@ -315,6 +330,52 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
   }
 
   return rows;
+}
+
+function getGroupInsights(calls: RepScoreCall[]) {
+  const grouped = new Map<string, { label: string; points: number[] }>();
+  for (const call of calls.slice(0, 10)) {
+    for (const dimension of normalizeDimensions(call.callType, call.dimensions)) {
+      if (dimension.points === null || dimension.applicability === "not_applicable") continue;
+      const entry = grouped.get(dimension.key) || { label: dimension.label, points: [] };
+      entry.points.push(dimension.points);
+      grouped.set(dimension.key, entry);
+    }
+  }
+  const ranked = [...grouped.values()]
+    .map((entry) => ({ label: entry.label, mean: mean(entry.points) ?? 0 }))
+    .sort((a, b) => a.mean - b.mean);
+  return {
+    coachingPriority: ranked[0]?.label || "Not enough evidence",
+    strongestArea: ranked.at(-1)?.label || "Not enough evidence",
+  };
+}
+
+function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
+  const latest = records
+    .filter((record) => readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION)
+    .sort((a, b) => dateValue(readString(b.fields["Started At"]) || b.createdTime || "") - dateValue(readString(a.fields["Started At"]) || a.createdTime || ""))[0];
+  if (!latest) return emptyCoverage();
+  const details = readJsonObject(latest.fields["Error Summary JSON"]);
+  const sourceCandidates = readNumber(details.sourceCandidates) ?? readNumber(latest.fields["Source Records Read"]);
+  const completed = readNumber(details.completedInWindow);
+  const inProgress = readNumber(details.activeInWindow);
+  const awaiting = readNumber(details.awaitingBeforeRun) ?? readNumber(latest.fields.Eligible);
+  return {
+    available: sourceCandidates !== null,
+    measuredAt: readString(latest.fields["Started At"]) || latest.createdTime || "",
+    cutoff: readString(details.cutoff),
+    sourceCandidates,
+    completed,
+    inProgress,
+    awaiting,
+    selectedForRun: readNumber(details.selectedForRun),
+    percentComplete: sourceCandidates && completed !== null ? round((completed / sourceCandidates) * 100) : null,
+  };
+}
+
+function emptyCoverage(): RepScoringCoverage {
+  return { available: false, measuredAt: "", cutoff: "", sourceCandidates: null, completed: null, inProgress: null, awaiting: null, selectedForRun: null, percentComplete: null };
 }
 
 function readString(value: unknown): string {
@@ -361,6 +422,18 @@ function readJsonArray(value: unknown) {
   }
 }
 
+function readJsonObject(value: unknown): Record<string, unknown> {
+  if (value && typeof value === "object" && !Array.isArray(value)) return value as Record<string, unknown>;
+  const text = readString(value);
+  if (!text) return {};
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : {};
+  } catch {
+    return {};
+  }
+}
+
 function safeHttpUrl(value: string) {
   try {
     const url = new URL(value);
@@ -380,6 +453,11 @@ function isReviewPriority(value: string) {
 }
 
 function sortRollups(a: RepRollup, b: RepRollup) {
-  const rank = (row: RepRollup) => (isReviewPriority(row.priority) ? 0 : row.declineConcern ? 1 : row.absoluteConcern || row.relativeConcern ? 2 : 3);
+  const rank = (row: RepRollup) => {
+    if (isReviewPriority(row.priority)) return 0;
+    if (row.nScored < 3 && row.rollingMean !== null && row.rollingMean < 60) return 1;
+    if (row.nScored >= 3) return 2;
+    return 3;
+  };
   return rank(a) - rank(b) || (a.rollingMean ?? 101) - (b.rollingMean ?? 101) || a.repName.localeCompare(b.repName);
 }
