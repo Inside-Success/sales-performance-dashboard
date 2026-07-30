@@ -19,13 +19,15 @@ Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shado
 
 The workflow reads a rolling seven-day source window, processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
 
-Before applying the 10-call cap, each run reads all eligible calls in the rolling seven-day source window and removes idempotency keys that are completed or actively leased in the isolated ledger. This lets later schedules advance through the backlog instead of repeatedly selecting the same oldest rows. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+Before applying the 10-call cap, each run reads all eligible calls in the rolling seven-day source window, collapses that multi-record read to one ledger request, and removes v3 idempotency keys that are completed or actively leased. This lets later hourly schedules advance through the backlog without multiplying Airtable reads or repeatedly selecting the same oldest rows. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+
+V3 also treats a missing or `null` critical-event score cap as no cap. V2 is retained as immutable audit history but is excluded from the live manager view because JavaScript numeric coercion could turn a model-returned `null` cap into an incorrect zero composite.
 
 Manager quarantine counts begin at the controlled backfill launch (`2026-07-30T17:09:57Z`) and exclude a quarantine when the same idempotency key later has a valid score. Earlier validation rows remain in Airtable for audit history but are not presented as live rep-performance problems.
 
 Current scorer contract:
 
-- Scorer: `rep-reviewer-v2`
+- Scorer: `rep-reviewer-v3`
 - Prompt: `rep-prompt-v2`
 - Config: `rep-scoring-config-v2`
 - Model: `deepseek-v4-pro`, thinking enabled, medium reasoning

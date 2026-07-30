@@ -2,7 +2,7 @@ import "server-only";
 
 const FETCH_TIMEOUT_MS = 10_000;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
-const CURRENT_SCORER_VERSION = "rep-reviewer-v2";
+const CURRENT_SCORER_VERSION = "rep-reviewer-v3";
 const QUARANTINE_REPORTING_START_AT = Date.parse("2026-07-30T17:09:57Z");
 
 type AirtableRecord = {
