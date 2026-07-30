@@ -19,6 +19,8 @@ Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shado
 
 The workflow reads a rolling seven-day source window, processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
 
+Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+
 Current scorer contract:
 
 - Scorer: `rep-reviewer-v2`
@@ -72,7 +74,9 @@ Verified without running a local development server:
 - Call 1 invalid applicability quarantine
 - Reasoning-token exhaustion quarantine
 - Valid v2 Call 2+ score written with exact evidence
+- One-week shadow backfill execution `413452`: 10 eligible calls examined, 7 new v2 scores, 1 quarantine, and 2 previously completed calls skipped
 - Dashboard lint and production build
+- Production Vercel deployment `dpl_VxUxmgzY8zmype1Noyn3j6CheC7P` reached `READY` and the hidden route returned the protected Magic Mike sign-in boundary
 
 Rollback is independent by layer:
 
