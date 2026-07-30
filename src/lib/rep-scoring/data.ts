@@ -84,7 +84,7 @@ export type RepScoringCoverage = {
   sourceCandidates: number | null;
   sourceReps: number | null;
   assessmentGroups: number | null;
-  groupsWithMinimumAttempts: number | null;
+  groupsWithMinimumScores: number | null;
   completed: number | null;
   inProgress: number | null;
   awaiting: number | null;
@@ -389,7 +389,7 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     sourceCandidates,
     sourceReps: readNumber(details.sourceReps),
     assessmentGroups: readNumber(details.assessmentGroups),
-    groupsWithMinimumAttempts: readNumber(details.groupsWithMinimumAttempts),
+    groupsWithMinimumScores: readNumber(details.groupsWithMinimumScores) ?? readNumber(details.groupsWithMinimumAttempts),
     completed,
     inProgress,
     awaiting,
@@ -411,7 +411,7 @@ function emptyCoverage(): RepScoringCoverage {
     sourceCandidates: null,
     sourceReps: null,
     assessmentGroups: null,
-    groupsWithMinimumAttempts: null,
+    groupsWithMinimumScores: null,
     completed: null,
     inProgress: null,
     awaiting: null,
