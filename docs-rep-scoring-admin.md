@@ -17,21 +17,21 @@ Production implementation record for the hidden Magic Mike manager page and its 
 
 Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shadow`).
 
-The workflow reads a rolling seven-day source window, processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
+The workflow reads a fixed seven-calendar-day source window in `America/New_York` (today plus the prior six days), processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record. The window changes once at local midnight rather than moving every hour, so a score cannot disappear merely because its call crossed an hourly cutoff.
 
-Before applying the 15-call cap, each run reads all eligible calls in the rolling seven-day source window, collapses that multi-record read to one ledger request, and removes v3 idempotency keys that are completed or actively leased. This lets later hourly schedules advance through the backlog without multiplying Airtable reads or repeatedly selecting the same oldest rows. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+Before applying the 15-call cap, each run reads all eligible calls in the fixed period, collapses that multi-record read to one ledger request, and removes v3 idempotency keys that are completed or actively leased. Selection is `balanced_newest_first_v1`: calls are grouped by rep and call type, groups with the fewest prior attempts are selected first, and the newest call inside each group is used. This spreads useful evidence across the team instead of consuming the oldest backlog from a few reps. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
 
-Every scheduled run now writes a separate coverage snapshot to `scoring_runs`. The snapshot records the exact seven-day candidate count, completed ledger count, active leases, waiting calls, selected batch size, and cutoff. It is a fan-out telemetry branch: it does not modify source calls or the existing score/quarantine/ledger path. The manager page uses the latest snapshot to state explicitly how much of the rolling week has and has not been processed.
+Every scheduled run writes a separate coverage snapshot to `scoring_runs`. The snapshot records the exact start/end boundaries, source reps, rep/call-type groups, candidate count, completed attempts, active leases, waiting calls, selected batch size, and a reconciliation flag. It is a fan-out telemetry branch: it does not modify source calls or the existing score/quarantine/ledger path. Raw queue counts are kept in a collapsed technical section instead of being presented as performance results.
 
 V3 also treats a missing or `null` critical-event score cap as no cap. V2 is retained as immutable audit history but is excluded from the live manager view because JavaScript numeric coercion could turn a model-returned `null` cap into an incorrect zero composite.
 
-Manager quarantine counts begin at the controlled backfill launch (`2026-07-30T17:09:57Z`) and exclude a quarantine when the same idempotency key later has a valid score. Earlier validation rows remain in Airtable for audit history but are not presented as live rep-performance problems.
+Every new quarantine diagnostic includes the source call's meeting date. The manager view counts an unresolved quarantine only when that call belongs to the same fixed reporting period as the displayed scores, and excludes it when the same idempotency key has a valid score. Older validation rows without a reliable source date remain in Airtable for audit history but are not mixed into the current manager metrics.
 
 Current scorer contract:
 
 - Scorer: `rep-reviewer-v3`
 - Prompt: `rep-prompt-v2`
-- Config: `rep-scoring-config-v2`
+- Config: `rep-scoring-config-v3`
 - Model: `deepseek-v4-pro`, thinking enabled, medium reasoning
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
@@ -55,7 +55,7 @@ One-time setup workflows are retained inactive as rollback/audit records:
 - `formal_reports`: `tbllnZTrnReUVQfy7`
 - `scoring_runs`: `tblPadsfFbjxcCQz2`
 
-The dashboard derives current seven-day rollups directly from current-version immutable scores and excludes internally inconsistent assessments. Call 1 and Call 2+ remain separate.
+The dashboard derives current fixed-period rollups directly from current-version immutable scores and excludes internally inconsistent assessments. Call 1 and Call 2+ remain separate.
 
 ## Manager experience
 
@@ -63,8 +63,9 @@ The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
 - The page states that a call card is one call, not a weekly rep conclusion.
-- Weekly coverage appears before performance metrics: eligible, completed, active, and waiting.
-- Valid scores and unable-to-score calls are separate metrics.
+- The first cards answer manager questions: needs review, reps ready to assess, reps still gathering evidence, and valid calls analyzed.
+- Evidence readiness is measured by reps, not by the percentage of all raw calls processed.
+- Raw source, completed, processing, waiting, next-batch, and excluded counts remain available in a collapsed `Data processing details` section and reconcile to one fixed period.
 - One or two calls are labeled exactly as limited evidence; a supported manager review signal requires at least three scored calls of the same type.
 - Each rep row identifies the lowest-scoring coaching priority and strongest dimension.
 - `/manager/rep-scoring/rep/[repKey]` provides a rep drill-down without pooling Call 1 and Call 2+.
@@ -119,6 +120,8 @@ Verified without running a local development server:
 - Isolated n8n execution `414998` completed successfully in 103.5 seconds: the source read found 1,119 exact rolling-seven-day candidates, wrote coverage snapshot record `recPbMNNKqHoLLdC3`, admitted one controlled test call, wrote one immutable score, and completed its ledger record
 - The controlled webhook was disabled again after verification; the active workflow validates with 27 nodes, 31 valid connections, zero invalid connections, and zero errors. Workflow version `353` (version 45) remains the pre-change rollback point
 - The manager dashboard now uses the workflow snapshot cutoff for its score window, preventing a boundary call from disappearing merely because the page was opened a few minutes after the snapshot
+- Fixed-window and balanced-selection execution `415361` completed successfully in 70.0 seconds: 1,102 source candidates across 105 source rep emails and 184 rep/call-type groups reconciled exactly as `0 completed + 0 active + 1,102 waiting`; the workflow admitted one newest-first balanced Call 1, wrote a valid 78.8 `Meets Expectations` assessment using `rep-scoring-config-v3`, completed its ledger row, and restored the controlled webhook to disabled
+- Workflow version `358` is the pre-fixed-window rollback point. Version history also retains the intermediate verified releases, and disabling the schedule remains the fastest operational stop
 
 The one-time human calibration is intentionally separate from normal manager use. See `REP-SCORING-CALIBRATION.md`. Rubric weights or thresholds must not be changed merely to make current scores look better; calibration evidence controls any later scoring-contract revision.
 
