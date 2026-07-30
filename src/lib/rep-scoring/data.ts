@@ -5,7 +5,6 @@ import { evidenceConfidence, normalizeDimensions } from "@/lib/rep-scoring/prese
 const FETCH_TIMEOUT_MS = 10_000;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const CURRENT_SCORER_VERSION = "rep-reviewer-v3";
-const QUARANTINE_REPORTING_START_AT = Date.parse("2026-07-30T17:09:57Z");
 
 type AirtableRecord = {
   id: string;
@@ -78,12 +77,20 @@ export type RepScoringCoverage = {
   available: boolean;
   measuredAt: string;
   cutoff: string;
+  windowStart: string;
+  windowEnd: string;
+  windowLabel: string;
+  reportingTimezone: string;
   sourceCandidates: number | null;
+  sourceReps: number | null;
+  assessmentGroups: number | null;
+  groupsWithMinimumAttempts: number | null;
   completed: number | null;
   inProgress: number | null;
   awaiting: number | null;
   selectedForRun: number | null;
   percentComplete: number | null;
+  reconciled: boolean;
 };
 
 export type RepScoringDashboardData = {
@@ -97,6 +104,7 @@ export type RepScoringDashboardData = {
     declining: number;
     earlySignals: number;
     enoughEvidence: number;
+    gatheringEvidence: number;
     scoredCalls: number;
     quarantinedCalls: number;
     inconsistentCalls: number;
@@ -114,7 +122,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     generatedAt,
     shadowMode: true,
     killSwitch: true,
-    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
+    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
     coverage: emptyCoverage(),
     rollups: [],
     recentCalls: [],
@@ -137,28 +145,30 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     ]);
 
     const coverage = normalizeCoverage(scoringRunRecords);
-    // Keep every metric on the exact source window recorded by the workflow.
-    // Using a new Date.now() here made boundary calls disappear between the
-    // workflow snapshot and a manager opening the page a few minutes later.
-    const reportingCutoff = dateValue(coverage.cutoff) || Date.now() - 7 * 24 * 60 * 60 * 1000;
+    // Keep every manager metric on the workflow's fixed New York calendar
+    // window. A moving Date.now() cutoff made boundary calls disappear hourly.
+    const reportingStart = dateValue(coverage.windowStart || coverage.cutoff) || Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const reportingEnd = dateValue(coverage.windowEnd) || Date.now() + 24 * 60 * 60 * 1000;
     const currentCalls = scoreRecords
       .map(normalizeCall)
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
-      .filter((call) => dateValue(call.meetingStartAt || call.scoredAt) >= reportingCutoff)
+      .filter((call) => isWithinWindow(call.meetingStartAt || call.scoredAt, reportingStart, reportingEnd))
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
     const recentCalls = dedupeCalls(currentCalls);
     const consistentCalls = recentCalls.filter((call) => !call.internalInconsistency);
     const scoredKeys = new Set(recentCalls.map((call) => call.idempotencyKey).filter(Boolean));
     const currentQuarantines = dedupeRecords(
-      quarantineRecords.filter(
-        (record) =>
-          readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION
-          && dateValue(readString(record.fields["Quarantined At"])) >= QUARANTINE_REPORTING_START_AT
-          && !scoredKeys.has(readString(record.fields["Idempotency Key"])),
-      ),
+      quarantineRecords.filter((record) => {
+        const diagnostic = readJsonObject(record.fields["Diagnostic JSON"]);
+        return readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION
+          && isWithinWindow(readString(diagnostic.meetingStartAt), reportingStart, reportingEnd)
+          && !scoredKeys.has(readString(record.fields["Idempotency Key"]));
+      }),
       "Quarantine ID",
     );
     const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
+    const readyRepIds = new Set(rollups.filter((rollup) => rollup.nScored >= 3).map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean));
+    const sourceRepCount = coverage.sourceReps ?? new Set(rollups.map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean)).size;
     const activeConfig = configRecords
       .filter((record) => readBoolean(record.fields.Active))
       .sort((a, b) => dateValue(readString(b.fields["Effective From"])) - dateValue(readString(a.fields["Effective From"])))[0];
@@ -173,7 +183,8 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         needsReview: new Set(rollups.filter((rollup) => isReviewPriority(rollup.priority)).map((rollup) => rollup.repId || rollup.repEmail)).size,
         declining: new Set(rollups.filter((rollup) => rollup.declineConcern).map((rollup) => rollup.repId || rollup.repEmail)).size,
         earlySignals: new Set(rollups.filter((rollup) => rollup.nScored < 3 && rollup.rollingMean !== null && rollup.rollingMean < 60).map((rollup) => rollup.repId || rollup.repEmail)).size,
-        enoughEvidence: new Set(rollups.filter((rollup) => rollup.nScored >= 3).map((rollup) => rollup.repId || rollup.repEmail)).size,
+        enoughEvidence: readyRepIds.size,
+        gatheringEvidence: Math.max(0, sourceRepCount - readyRepIds.size),
         scoredCalls: consistentCalls.length,
         quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
         inconsistentCalls: recentCalls.length - consistentCalls.length,
@@ -365,21 +376,54 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
   const completed = readNumber(details.completedInWindow);
   const inProgress = readNumber(details.activeInWindow);
   const awaiting = readNumber(details.awaitingBeforeRun) ?? readNumber(latest.fields.Eligible);
+  const reconciled = readBoolean(details.reconciled)
+    || (sourceCandidates !== null && completed !== null && inProgress !== null && awaiting !== null && sourceCandidates === completed + inProgress + awaiting);
   return {
     available: sourceCandidates !== null,
     measuredAt: readString(latest.fields["Started At"]) || latest.createdTime || "",
-    cutoff: readString(details.cutoff),
+    cutoff: readString(details.cutoff) || readString(details.windowStart),
+    windowStart: readString(details.windowStart) || readString(details.cutoff),
+    windowEnd: readString(details.windowEnd),
+    windowLabel: readString(details.windowLabel),
+    reportingTimezone: readString(details.reportingTimezone) || "America/New_York",
     sourceCandidates,
+    sourceReps: readNumber(details.sourceReps),
+    assessmentGroups: readNumber(details.assessmentGroups),
+    groupsWithMinimumAttempts: readNumber(details.groupsWithMinimumAttempts),
     completed,
     inProgress,
     awaiting,
     selectedForRun: readNumber(details.selectedForRun),
     percentComplete: sourceCandidates && completed !== null ? round((completed / sourceCandidates) * 100) : null,
+    reconciled,
   };
 }
 
 function emptyCoverage(): RepScoringCoverage {
-  return { available: false, measuredAt: "", cutoff: "", sourceCandidates: null, completed: null, inProgress: null, awaiting: null, selectedForRun: null, percentComplete: null };
+  return {
+    available: false,
+    measuredAt: "",
+    cutoff: "",
+    windowStart: "",
+    windowEnd: "",
+    windowLabel: "",
+    reportingTimezone: "America/New_York",
+    sourceCandidates: null,
+    sourceReps: null,
+    assessmentGroups: null,
+    groupsWithMinimumAttempts: null,
+    completed: null,
+    inProgress: null,
+    awaiting: null,
+    selectedForRun: null,
+    percentComplete: null,
+    reconciled: false,
+  };
+}
+
+function isWithinWindow(value: string, start: number, end: number) {
+  const timestamp = dateValue(value);
+  return timestamp >= start && timestamp < end;
 }
 
 function readString(value: unknown): string {

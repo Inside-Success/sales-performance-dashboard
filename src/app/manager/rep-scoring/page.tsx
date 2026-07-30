@@ -6,9 +6,10 @@ import {
   Clock3,
   ExternalLink,
   FileWarning,
-  Gauge,
   Hourglass,
   ShieldCheck,
+  UserCheck,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,7 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
   const calls = (callType === "All" ? data.recentCalls : data.recentCalls.filter((call) => call.callType === callType))
     .filter((call) => !call.internalInconsistency)
     .slice(0, 20);
+  const sourceReps = data.coverage.sourceReps ?? data.summary.repsTracked;
 
   return (
     <main className="magic-page">
@@ -71,7 +73,7 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
 
         {data.shadowMode ? (
           <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-            <strong>Validation in progress.</strong> Scores are factual AI assessments of the calls processed so far, but they are not yet a complete weekly view and must not be used alone for personnel decisions.
+            <strong>Validation in progress.</strong> Each score is tied to exact call evidence. A rep enters “Needs manager review” only after at least three valid calls of the same type; this view is still a supporting signal, not a personnel decision.
           </div>
         ) : null}
 
@@ -81,14 +83,14 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
           </div>
         ) : null}
 
-        <CoveragePanel coverage={data.coverage} />
-
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard icon={CheckCircle2} title="Valid scores available" value={data.summary.scoredCalls} description="Calls with verified evidence in the current 7-day view" tone="green" />
-          <MetricCard icon={FileWarning} title="Unable to score during validation" value={data.summary.quarantinedCalls} description="Quarantined attempts since validation began; excluded from scores and coverage completion" tone="amber" />
-          <MetricCard icon={AlertTriangle} title="Needs review" value={data.summary.needsReview} description="Reps with at least 3 calls and a supported review signal" tone="red" />
-          <MetricCard icon={Hourglass} title="Early low-score signals" value={data.summary.earlySignals} description="Below 60, but based on fewer than 3 calls" tone="amber" />
+          <MetricCard icon={AlertTriangle} title="Needs manager review" value={data.summary.needsReview} description="Enough evidence plus a supported low or declining signal" tone="red" />
+          <MetricCard icon={UserCheck} title="Reps ready to assess" value={data.summary.enoughEvidence} description="At least 3 valid calls of the same type" tone="green" />
+          <MetricCard icon={Users} title="Still gathering evidence" value={data.summary.gatheringEvidence} description={`Of ${numberFormatter.format(sourceReps)} reps with eligible calls`} tone="amber" />
+          <MetricCard icon={CheckCircle2} title="Valid calls analyzed" value={data.summary.scoredCalls} description="Evidence-verified calls in the fixed reporting period" tone="green" />
         </section>
+
+        <EvidenceStatusPanel coverage={data.coverage} readyReps={data.summary.enoughEvidence} gatheringReps={data.summary.gatheringEvidence} />
 
         <HowToRead />
 
@@ -109,6 +111,7 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
 
         <RepReviewTable rollups={rollups} />
         <RecentCalls calls={calls} />
+        <ProcessingDetails coverage={data.coverage} excludedCalls={data.summary.quarantinedCalls} />
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">
           This private page reads only the isolated rep-scoring base. It does not edit Magic Mike reports, source call records, Slack, Google Docs, or employment decisions.
@@ -118,49 +121,69 @@ export default async function ManagerRepScoringPage({ searchParams }: PageProps<
   );
 }
 
-function CoveragePanel({ coverage }: { coverage: RepScoringCoverage }) {
+function EvidenceStatusPanel({ coverage, readyReps, gatheringReps }: { coverage: RepScoringCoverage; readyReps: number; gatheringReps: number }) {
   if (!coverage.available) {
     return (
       <Card className="magic-card border-blue-100 bg-blue-50/80">
         <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950">
-          <Gauge className="mt-0.5 size-5 shrink-0" />
-          <div><strong>Weekly processing coverage is being initialized.</strong><br />The score cards below describe only completed calls currently stored—not the entire week.</div>
+          <Hourglass className="mt-0.5 size-5 shrink-0" />
+          <div><strong>Evidence collection is being initialized.</strong><br />Rows will appear only after a call has a valid score backed by exact transcript evidence.</div>
         </CardContent>
       </Card>
     );
   }
+
+  const sourceReps = coverage.sourceReps ?? readyReps + gatheringReps;
+  const readinessPercent = sourceReps ? Math.round((readyReps / sourceReps) * 1000) / 10 : 0;
 
   return (
     <Card className="magic-card overflow-hidden border-white/80 bg-white/95">
       <CardHeader className="gap-1 border-b border-slate-100">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-xl text-slate-950">How much of the week has been analyzed?</CardTitle>
-            <p className="mt-1 text-sm leading-6 text-slate-500">Latest workflow snapshot · {formatDateTime(coverage.measuredAt)}</p>
+            <CardTitle className="text-xl text-slate-950">Is there enough evidence to assess each rep?</CardTitle>
+            <p className="mt-1 text-sm leading-6 text-slate-500">Reporting period: {formatWindow(coverage.windowStart, coverage.windowEnd)} · updated {formatDateTime(coverage.measuredAt)}</p>
           </div>
-          <Badge variant="outline" className={cn("rounded-full px-3 py-1", (coverage.percentComplete ?? 0) >= 95 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-900")}>
-            {coverage.percentComplete === null ? "Coverage unavailable" : `${coverage.percentComplete.toFixed(1)}% complete`}
+          <Badge variant="outline" className={cn("rounded-full px-3 py-1", readinessPercent >= 95 ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-900")}>
+            {numberFormatter.format(readyReps)} of {numberFormatter.format(sourceReps)} reps ready
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="p-5">
-        <div className="h-3 overflow-hidden rounded-full bg-slate-100" aria-label="Weekly processing progress">
-          <div className="h-full rounded-full bg-red-600" style={{ width: `${Math.min(100, Math.max(0, coverage.percentComplete ?? 0))}%` }} />
+        <div className="h-3 overflow-hidden rounded-full bg-slate-100" aria-label="Rep evidence readiness">
+          <div className="h-full rounded-full bg-red-600" style={{ width: `${Math.min(100, Math.max(0, readinessPercent))}%` }} />
         </div>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <CoverageStat label="Eligible calls found" value={coverage.sourceCandidates} helper="Current rolling 7-day source window" />
-          <CoverageStat label="Completed before this run" value={coverage.completed} helper="Final ledger state when this run started" />
-          <CoverageStat label="Processing now" value={coverage.inProgress} helper="Actively leased by the workflow" />
-          <CoverageStat label="Selected this run" value={coverage.selectedForRun} helper="New calls admitted by the safe batch limit" />
-          <CoverageStat label="Still waiting" value={coverage.awaiting} helper="Not a final weekly result yet" emphasis />
-        </div>
+        <p className="mt-4 text-sm leading-6 text-slate-700">
+          A rep is ready only after at least three valid scores for the same call type. One or two calls remain clearly labeled as an early signal. New batches are spread across the team and use each group&apos;s newest calls first.
+        </p>
       </CardContent>
     </Card>
   );
 }
 
-function CoverageStat({ label, value, helper, emphasis = false }: { label: string; value: number | null; helper: string; emphasis?: boolean }) {
-  return <div className={cn("rounded-xl border p-4", emphasis ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50/70")}><div className="text-2xl font-extrabold text-slate-950">{value === null ? "—" : numberFormatter.format(value)}</div><div className="mt-1 text-sm font-bold text-slate-800">{label}</div><div className="mt-1 text-xs leading-5 text-slate-500">{helper}</div></div>;
+function ProcessingDetails({ coverage, excludedCalls }: { coverage: RepScoringCoverage; excludedCalls: number }) {
+  if (!coverage.available) return null;
+  return (
+    <details className="magic-card rounded-2xl border border-slate-200 bg-white/90 p-5 text-sm text-slate-700">
+      <summary className="cursor-pointer font-bold text-slate-900">Data processing details</summary>
+      <p className="mt-3 leading-6 text-slate-600">These figures explain the pipeline; managers do not need them to rank reps. Every count below uses the same fixed reporting period.</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <CoverageStat label="Source calls found" value={coverage.sourceCandidates} helper="Passed the source quality gates" />
+        <CoverageStat label="Attempts completed" value={coverage.completed} helper="Scored or safely excluded before this run" />
+        <CoverageStat label="Processing" value={coverage.inProgress} helper="Currently held by an active workflow lease" />
+        <CoverageStat label="Waiting" value={coverage.awaiting} helper="Eligible calls not attempted yet" />
+        <CoverageStat label="Next balanced batch" value={coverage.selectedForRun} helper="Spread across least-assessed rep and call-type groups" />
+        <CoverageStat label="Excluded from scores" value={excludedCalls} helper="Calls in this period that failed evidence validation" />
+      </div>
+      <p className={cn("mt-4 text-xs leading-5", coverage.reconciled ? "text-emerald-700" : "text-amber-800")}>
+        {coverage.reconciled ? "Reconciled: source calls = completed attempts + processing + waiting." : "The latest snapshot did not reconcile; treat it as diagnostic only until the next successful run."}
+      </p>
+    </details>
+  );
+}
+
+function CoverageStat({ label, value, helper }: { label: string; value: number | null; helper: string }) {
+  return <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4"><div className="text-2xl font-extrabold text-slate-950">{value === null ? "—" : numberFormatter.format(value)}</div><div className="mt-1 text-sm font-bold text-slate-800">{label}</div><div className="mt-1 text-xs leading-5 text-slate-500">{helper}</div></div>;
 }
 
 function HowToRead() {
@@ -250,3 +273,11 @@ function formatScore(value: number | null) { return value === null ? "—" : val
 function formatDelta(value: number | null) { return value === null ? "—" : `${value > 0 ? "+" : ""}${value.toFixed(1)}`; }
 function scoreBand(value: number | null) { if (value === null) return "Not scored"; if (value < 25) return "Unacceptable"; if (value < 50) return "Needs Improvement"; if (value < 70) return "Developing"; if (value < 85) return "Meets Expectations"; return "Excellent"; }
 function formatDateTime(value: string) { if (!value) return "Not available"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date); }
+function formatWindow(start: string, end: string) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return "Current seven-day period";
+  const formatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" });
+  const endInclusive = new Date(endDate.getTime() - 1);
+  return `${formatter.format(startDate)}–${formatter.format(endInclusive)}`;
+}
