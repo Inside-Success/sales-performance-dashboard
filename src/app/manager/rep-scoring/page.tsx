@@ -62,6 +62,7 @@ export default async function ManagerRepScoringPage() {
           <Metric title="Calls waiting" value={waiting} helper="The isolated workflow processes another safe batch each hour" tone="amber" icon={Clock3} />
         </section>
 
+        <CatchUpProgress coverage={data.coverage} />
         <MethodSummary coverage={data.coverage} />
         <RepTable reps={data.repSummaries} />
         <ProcessingDetails coverage={data.coverage} excludedCalls={data.summary.quarantinedCalls} />
@@ -70,6 +71,40 @@ export default async function ManagerRepScoringPage() {
       </div>
     </main>
   );
+}
+
+function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
+  if (!coverage.available) return null;
+  const waiting = Math.max(0, coverage.awaiting ?? 0);
+  const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
+  const observedRate = Math.max(0, coverage.processedLastHour);
+  const processingNow = Math.max(0, (coverage.inProgress ?? 0) + (coverage.selectedForRun ?? 0));
+  const estimatedHours = waiting > 0 && observedRate > 0 ? Math.ceil(waiting / observedRate) : null;
+
+  if (waiting === 0) {
+    return <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-950"><div className="flex items-center gap-2 font-extrabold"><CheckCircle2 className="size-5" />Call analysis is up to date</div><p className="mt-1 leading-6">New eligible calls will continue to be collected and analyzed automatically each hour.</p></div>;
+  }
+
+  return (
+    <Card className="magic-card border-amber-200 bg-gradient-to-br from-amber-50 to-white">
+      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />Historical call catch-up</CardTitle><p className="text-sm leading-6 text-slate-600">The system is working through the existing call queue in isolated background batches. You do not need to keep this page open.</p></CardHeader>
+      <CardContent>
+        <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600 transition-[width]" style={{ width: `${complete}%` }} /></div>
+        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% complete</span><span>{numberFormatter.format(waiting)} calls remaining</span></div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ProgressStat label="Analyzed" value={coverage.completed} helper="Completed attempts" />
+          <ProgressStat label="Valid scores last hour" value={observedRate} helper="Evidence-verified calls" />
+          <ProgressStat label="Processing now" value={processingNow} helper="Safely leased or newly released" />
+          <ProgressStat label="Estimated finish" value={estimatedHours === null ? "Calculating" : estimatedHours <= 1 ? "Within an hour" : `About ${estimatedHours} hours`} helper={observedRate ? "Based on valid scores in the latest hour" : "Available after workers complete"} />
+        </div>
+        <p className="mt-4 text-xs leading-5 text-slate-500">One coordinator starts each hour and can release up to {numberFormatter.format(coverage.hourlyBatchLimit ?? 200)} calls to failure-isolated workers. Individual failures are retried or quarantined without stopping other batches.</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProgressStat({ label, value, helper }: { label: string; value: number | string | null; helper: string }) {
+  return <div className="rounded-xl border border-white bg-white/90 p-4"><div className="text-xl font-extrabold text-slate-950">{typeof value === "number" ? numberFormatter.format(value) : value ?? "—"}</div><div className="mt-1 text-sm font-bold text-slate-800">{label}</div><div className="mt-1 text-xs text-slate-500">{helper}</div></div>;
 }
 
 function MethodSummary({ coverage }: { coverage: RepScoringCoverage }) {

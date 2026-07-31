@@ -119,6 +119,12 @@ export type RepScoringCoverage = {
   awaiting: number | null;
   selectedForRun: number | null;
   percentComplete: number | null;
+  processedLastHour: number;
+  processingMode: string;
+  hourlyBatchLimit: number | null;
+  workerBatchSize: number | null;
+  maximumWorkers: number | null;
+  targetDailyCapacity: number | null;
   reconciled: boolean;
 };
 
@@ -187,6 +193,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
     const recentCalls = dedupeCalls(currentCalls);
     const consistentCalls = recentCalls.filter((call) => !call.internalInconsistency);
+    coverage.processedLastHour = consistentCalls.filter((call) => dateValue(call.scoredAt) >= Date.now() - 60 * 60 * 1000).length;
     const scoredKeys = new Set(recentCalls.map((call) => call.idempotencyKey).filter(Boolean));
     const currentQuarantines = dedupeRecords(
       quarantineRecords.filter((record) => {
@@ -504,6 +511,12 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     awaiting,
     selectedForRun: readNumber(details.selectedForRun),
     percentComplete: sourceCandidates && completed !== null ? round((completed / sourceCandidates) * 100) : null,
+    processedLastHour: 0,
+    processingMode: readString(details.processingMode),
+    hourlyBatchLimit: readNumber(details.hourlyBatchLimit),
+    workerBatchSize: readNumber(details.workerBatchSize),
+    maximumWorkers: readNumber(details.maximumWorkers),
+    targetDailyCapacity: readNumber(details.targetDailyCapacity),
     reconciled,
   };
 }
@@ -526,6 +539,12 @@ function emptyCoverage(): RepScoringCoverage {
     awaiting: null,
     selectedForRun: null,
     percentComplete: null,
+    processedLastHour: 0,
+    processingMode: "",
+    hourlyBatchLimit: null,
+    workerBatchSize: null,
+    maximumWorkers: null,
+    targetDailyCapacity: null,
     reconciled: false,
   };
 }
