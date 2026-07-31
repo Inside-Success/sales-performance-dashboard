@@ -73,6 +73,35 @@ export type RepRollup = {
   computedAt: string;
 };
 
+export type RepDimensionPattern = {
+  key: string;
+  label: string;
+  average: number;
+  observations: number;
+};
+
+export type RepPerformanceSummary = {
+  id: string;
+  repId: string;
+  repEmail: string;
+  repName: string;
+  overallScore: number | null;
+  nScored: number;
+  call1Score: number | null;
+  call1Count: number;
+  call2Score: number | null;
+  call2Count: number;
+  coverageLabel: string;
+  confidence: string;
+  delta: number | null;
+  trendLabel: string;
+  needsReview: boolean;
+  reviewReason: string;
+  coachingPriorities: RepDimensionPattern[];
+  strengths: RepDimensionPattern[];
+  rank: number | null;
+};
+
 export type RepScoringCoverage = {
   available: boolean;
   measuredAt: string;
@@ -110,6 +139,7 @@ export type RepScoringDashboardData = {
     inconsistentCalls: number;
   };
   coverage: RepScoringCoverage;
+  repSummaries: RepPerformanceSummary[];
   rollups: RepRollup[];
   recentCalls: RepScoreCall[];
   error?: string;
@@ -124,6 +154,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     killSwitch: true,
     summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
     coverage: emptyCoverage(),
+    repSummaries: [],
     rollups: [],
     recentCalls: [],
   };
@@ -145,10 +176,10 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     ]);
 
     const coverage = normalizeCoverage(scoringRunRecords);
-    // Keep every manager metric on the workflow's fixed New York calendar
-    // window. A moving Date.now() cutoff made boundary calls disappear hourly.
-    const reportingStart = dateValue(coverage.windowStart || coverage.cutoff) || Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const reportingEnd = dateValue(coverage.windowEnd) || Date.now() + 24 * 60 * 60 * 1000;
+    // The workflow owns a fixed analysis start. New calls accumulate from that
+    // point instead of disappearing when a rolling weekly window advances.
+    const reportingStart = dateValue(coverage.windowStart || coverage.cutoff) || Date.parse("2026-07-18T04:00:00.000Z");
+    const reportingEnd = Math.max(dateValue(coverage.windowEnd), Date.now()) + 60_000;
     const currentCalls = scoreRecords
       .map(normalizeCall)
       .filter((call) => call.scorerVersion === CURRENT_SCORER_VERSION)
@@ -167,8 +198,9 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       "Quarantine ID",
     );
     const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
-    const readyRepIds = new Set(rollups.filter((rollup) => rollup.nScored >= 3).map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean));
-    const sourceRepCount = coverage.sourceReps ?? new Set(rollups.map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean)).size;
+    const repSummaries = deriveRepSummaries(consistentCalls);
+    const readyRepIds = new Set(repSummaries.filter((rep) => rep.nScored >= 3).map((rep) => rep.id));
+    const sourceRepCount = coverage.sourceReps ?? repSummaries.length;
     const activeConfig = configRecords
       .filter((record) => readBoolean(record.fields.Active))
       .sort((a, b) => dateValue(readString(b.fields["Effective From"])) - dateValue(readString(a.fields["Effective From"])))[0];
@@ -179,10 +211,10 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       shadowMode: activeConfig ? readBoolean(activeConfig.fields["Shadow Mode"], true) : true,
       killSwitch: activeConfig ? readBoolean(activeConfig.fields["Kill Switch"], true) : true,
       summary: {
-        repsTracked: new Set(rollups.map((rollup) => rollup.repId || rollup.repEmail).filter(Boolean)).size,
-        needsReview: new Set(rollups.filter((rollup) => isReviewPriority(rollup.priority)).map((rollup) => rollup.repId || rollup.repEmail)).size,
-        declining: new Set(rollups.filter((rollup) => rollup.declineConcern).map((rollup) => rollup.repId || rollup.repEmail)).size,
-        earlySignals: new Set(rollups.filter((rollup) => rollup.nScored < 3 && rollup.rollingMean !== null && rollup.rollingMean < 60).map((rollup) => rollup.repId || rollup.repEmail)).size,
+        repsTracked: repSummaries.length,
+        needsReview: repSummaries.filter((rep) => rep.needsReview).length,
+        declining: repSummaries.filter((rep) => rep.delta !== null && rep.delta <= -10 && rep.nScored >= 6).length,
+        earlySignals: repSummaries.filter((rep) => rep.nScored < 3 && rep.overallScore !== null && rep.overallScore < 60).length,
         enoughEvidence: readyRepIds.size,
         gatheringEvidence: Math.max(0, sourceRepCount - readyRepIds.size),
         scoredCalls: consistentCalls.length,
@@ -190,6 +222,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         inconsistentCalls: recentCalls.length - consistentCalls.length,
       },
       coverage,
+      repSummaries,
       rollups,
       recentCalls,
     };
@@ -292,11 +325,13 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
 
   const rows = [...grouped.entries()].map(([key, group]): RepRollup => {
     const sorted = [...group].sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
-    const recent = sorted.slice(0, 10).map((call) => call.score).filter(isNumber);
-    const baseline = sorted.slice(10, 30).map((call) => call.score).filter(isNumber);
-    const rollingMean = mean(recent);
+    const allScores = sorted.map((call) => call.score).filter(isNumber);
+    const recent = sorted.slice(0, 5).map((call) => call.score).filter(isNumber);
+    const baseline = sorted.slice(5, 10).map((call) => call.score).filter(isNumber);
+    const rollingMean = mean(allScores);
+    const recentMean = mean(recent);
     const baselineMean = mean(baseline);
-    const delta = rollingMean !== null && baselineMean !== null ? round(rollingMean - baselineMean) : null;
+    const delta = recentMean !== null && baselineMean !== null ? round(recentMean - baselineMean) : null;
     const first = sorted[0];
     const nQuarantined = quarantineRecords.filter((record) => {
       const fields = record.fields;
@@ -306,7 +341,7 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
     }).length;
     const confidence = evidenceConfidence(sorted.length);
     const absoluteConcern = sorted.length >= 3 && rollingMean !== null && rollingMean < 60;
-    const declineConcern = baseline.length >= 3 && delta !== null && delta <= -10;
+    const declineConcern = recent.length >= 3 && baseline.length >= 3 && delta !== null && delta <= -10;
     const insights = getGroupInsights(sorted);
 
     return {
@@ -333,18 +368,92 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
     };
   });
 
-  for (const callType of new Set(rows.map((row) => row.callType))) {
-    const comparable = rows
-      .filter((row) => row.callType === callType && row.nScored >= 3 && row.rollingMean !== null)
-      .sort((a, b) => (a.rollingMean ?? 101) - (b.rollingMean ?? 101));
-    const bottomCount = Math.max(1, Math.ceil(comparable.length * 0.15));
-    for (const row of comparable.slice(0, bottomCount)) {
-      row.relativeConcern = true;
-      if (row.priority === "Monitor") row.priority = "Review";
-    }
+  return rows;
+}
+
+export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary[] {
+  const grouped = new Map<string, RepScoreCall[]>();
+  for (const call of calls) {
+    const key = (call.repId || call.repEmail).toLowerCase();
+    if (!key) continue;
+    grouped.set(key, [...(grouped.get(key) || []), call]);
   }
 
-  return rows;
+  const summaries = [...grouped.entries()].map(([key, group]): RepPerformanceSummary => {
+    const sorted = [...group].sort((a, b) => dateValue(b.meetingStartAt || b.scoredAt) - dateValue(a.meetingStartAt || a.scoredAt));
+    const first = sorted[0];
+    const call1 = sorted.filter((call) => call.callType === "Call 1");
+    const call2 = sorted.filter((call) => call.callType === "Call 2+");
+    const call1Score = mean(call1.map((call) => call.score).filter(isNumber));
+    const call2Score = mean(call2.map((call) => call.score).filter(isNumber));
+    const availableTypeScores = [call1Score, call2Score].filter(isNumber);
+    // Each call type carries equal weight when both are available. This avoids
+    // a high-volume call type overpowering the other half of the sales process.
+    const overallScore = mean(availableTypeScores);
+    const recent = sorted.slice(0, 5).map((call) => call.score).filter(isNumber);
+    const previous = sorted.slice(5, 10).map((call) => call.score).filter(isNumber);
+    const recentMean = mean(recent);
+    const previousMean = mean(previous);
+    const delta = recent.length >= 3 && previous.length >= 3 && recentMean !== null && previousMean !== null
+      ? round(recentMean - previousMean)
+      : null;
+    const patterns = getDimensionPatterns(sorted);
+    const enoughEvidence = sorted.length >= 3;
+    const lowScore = enoughEvidence && overallScore !== null && overallScore < 60;
+    const declining = sorted.length >= 6 && delta !== null && delta <= -10;
+    const needsReview = lowScore || declining;
+    const coverageLabel = call1.length && call2.length ? "Both call types" : call1.length ? "Call 1 only" : "Call 2+ only";
+    const reviewReason = !enoughEvidence
+      ? "Not enough calls for a stable conclusion"
+      : lowScore && declining
+        ? "Low overall score and recent decline"
+        : lowScore
+          ? "Overall score is below 60"
+          : declining
+            ? "Recent calls fell by at least 10 points"
+            : "No supported concern";
+
+    return {
+      id: key,
+      repId: first.repId,
+      repEmail: first.repEmail,
+      repName: first.repName,
+      overallScore,
+      nScored: sorted.length,
+      call1Score,
+      call1Count: call1.length,
+      call2Score,
+      call2Count: call2.length,
+      coverageLabel,
+      confidence: evidenceConfidence(sorted.length),
+      delta,
+      trendLabel: delta === null ? "Not enough history" : delta <= -10 ? "Declining" : delta >= 10 ? "Improving" : "Stable",
+      needsReview,
+      reviewReason,
+      coachingPriorities: patterns.slice(0, 3),
+      strengths: [...patterns].reverse().slice(0, 2),
+      rank: null,
+    };
+  });
+
+  summaries.sort((a, b) => (a.overallScore ?? 101) - (b.overallScore ?? 101) || b.nScored - a.nScored || a.repName.localeCompare(b.repName));
+  summaries.forEach((summary, index) => { summary.rank = summary.overallScore === null ? null : index + 1; });
+  return summaries;
+}
+
+function getDimensionPatterns(calls: RepScoreCall[]): RepDimensionPattern[] {
+  const grouped = new Map<string, { label: string; points: number[] }>();
+  for (const call of calls) {
+    for (const dimension of normalizeDimensions(call.callType, call.dimensions)) {
+      if (dimension.points === null || dimension.applicability === "not_applicable") continue;
+      const entry = grouped.get(dimension.key) || { label: dimension.label, points: [] };
+      entry.points.push(dimension.points);
+      grouped.set(dimension.key, entry);
+    }
+  }
+  return [...grouped.entries()]
+    .map(([key, entry]) => ({ key, label: entry.label, average: mean(entry.points) ?? 0, observations: entry.points.length }))
+    .sort((a, b) => a.average - b.average || b.observations - a.observations || a.label.localeCompare(b.label));
 }
 
 function getGroupInsights(calls: RepScoreCall[]) {

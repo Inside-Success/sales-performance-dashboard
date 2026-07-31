@@ -17,9 +17,11 @@ Production implementation record for the hidden Magic Mike manager page and its 
 
 Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shadow`).
 
-The workflow reads a fixed seven-calendar-day source window in `America/New_York` (today plus the prior six days), processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record. The window changes once at local midnight rather than moving every hour, so a score cannot disappear merely because its call crossed an hourly cutoff.
+The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. This initial period includes the requested extra week, and it never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. The workflow processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
 
-Before applying the 15-call cap, each run reads all eligible calls in the fixed period, collapses that multi-record read to one ledger request, reads the current-period valid-score snapshot, and removes v3 idempotency keys that are completed or actively leased. Selection is `evidence_fill_newest_first_v1`: calls remain grouped by rep and call type, but groups with one or two valid scores are completed to the three-call manager-review threshold first; untouched groups then rotate fairly by prior attempts. The newest available call inside the chosen group is used. This produces useful manager evidence sooner without lowering the evidence requirement or letting one rep consume the entire backlog. Active processing leases are treated as owned work and skipped by overlapping retries. The dashboard also de-duplicates immutable assessments and quarantine rows by their stable IDs, so a retried request cannot inflate manager metrics.
+The only automatic trigger is the hourly schedule. Each normal run admits at most 10 unprocessed calls. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active leases and completed idempotency keys are skipped.
+
+The ledger and score reads are deliberately collapsed between Airtable nodes. Before this correction, the score snapshot ran once per ledger record, multiplying roughly 90 real score rows into more than 20,000 execution items and causing 30-minute cancellations. The corrected graph reads each snapshot once; controlled execution `418910` read 234 ledger rows, collapsed them to one item, and read 122 score rows exactly once.
 
 Every scheduled run writes a separate coverage snapshot to `scoring_runs`. The snapshot records the exact start/end boundaries, source reps, rep/call-type groups, current-period valid scores, groups and reps at the three-score threshold, candidate count, completed attempts, active leases, waiting calls, selected batch size, and a reconciliation flag. It is a fan-out telemetry branch: it does not modify source calls or the existing score/quarantine/ledger path. Raw queue counts are kept in a collapsed technical section instead of being presented as performance results.
 
@@ -31,7 +33,7 @@ Current scorer contract:
 
 - Scorer: `rep-reviewer-v3`
 - Prompt: `rep-prompt-v2`
-- Config: `rep-scoring-config-v3`
+- Config: `rep-scoring-config-v4-cumulative`
 - Model: `deepseek-v4-pro`, thinking enabled, medium reasoning
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
@@ -55,7 +57,7 @@ One-time setup workflows are retained inactive as rollback/audit records:
 - `formal_reports`: `tbllnZTrnReUVQfy7`
 - `scoring_runs`: `tblPadsfFbjxcCQz2`
 
-The dashboard derives current fixed-period rollups directly from current-version immutable scores and excludes internally inconsistent assessments. Call 1 and Call 2+ remain separate.
+The dashboard derives cumulative rep results directly from current-version immutable scores and excludes internally inconsistent assessments. Call-type scores remain separately visible. When both types exist, the overall rep score is the equal-weight mean of the Call 1 mean and Call 2+ mean; call volume cannot make one type dominate the other. When only one type exists, its score is shown with a partial-coverage label.
 
 ## Manager experience
 
@@ -63,12 +65,12 @@ The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
 - The page states that a call card is one call, not a weekly rep conclusion.
-- The first cards answer manager questions: needs review, reps ready to assess, reps still gathering evidence, and valid calls analyzed.
-- Evidence readiness is measured by reps, not by the percentage of all raw calls processed.
-- Raw source, completed, processing, waiting, next-batch, and excluded counts remain available in a collapsed `Data processing details` section and reconcile to one fixed period.
-- One or two calls are labeled exactly as limited evidence; a supported manager review signal requires at least three scored calls of the same type.
-- Each rep row identifies the lowest-scoring coaching priority and strongest dimension.
-- `/manager/rep-scoring/rep/[repKey]` provides a rep drill-down without pooling Call 1 and Call 2+.
+- The overview contains one row per scored rep, ordered by the lowest cumulative overall score first.
+- The first cards answer plain operational questions: who needs attention, how many reps have scores, how many calls have been analyzed, and how many calls are waiting.
+- One or two total calls are labeled as an early result; three total valid calls support an initial assessment.
+- Each row shows the overall score, both call-type scores and call counts, evidence strength, the first coaching priority, and recent direction.
+- Raw source, completed, processing, waiting, next-batch, and excluded counts remain available only in collapsed technical details.
+- `/manager/rep-scoring/rep/[repKey]` now shows overall score and rank, both call-type summaries, three recurring coaching priorities, quoted supporting examples, strongest recurring areas, a recent score sequence, and up to 24 underlying calls.
 - Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
 
 Display bands for the current v3 scorer are factual labels for the assessed call:
@@ -102,6 +104,13 @@ The initial administrator is exactly `syed.haider@insidesuccess.com`. That addre
 ## Verification and rollback
 
 Verified without running a local development server:
+
+- Cumulative workflow release versions `376` and `377` preserve workflow version `375` as the immediate pre-change rollback.
+- Controlled cumulative executions `418904` and `418910` both completed successfully. Execution `418910` used the exact fixed start `2026-07-18T04:00:00.000Z`, found 2,113 eligible calls across 114 reps, reconciled 233 completed + 1 active + 1,879 waiting, and wrote a valid v4-config score.
+- The fan-out correction reduced the score snapshot from more than 20,000 multiplied execution items to 122 real score rows read once.
+- The controlled webhook was disabled again after the verification runs; hourly schedule remains the only enabled trigger.
+- Cumulative aggregation tests verify equal call-type weighting and lowest-score-first ranking, alongside the existing score-presentation tests.
+- Scoped ESLint and the full Next.js production build pass without starting a local server.
 
 - n8n workflow validation: zero errors
 - Rep-scoring presentation unit tests: four passing tests covering contribution math, readable labels, evidence confidence, and strongest/weakest dimension selection
