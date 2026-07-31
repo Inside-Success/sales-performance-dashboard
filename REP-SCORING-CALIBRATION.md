@@ -32,6 +32,12 @@ Expected time: approximately 20–30 minutes for 12 calls. Do not re-score every
 | 11 | Call 2+ |  | Fair / Too high / Too low | Supported / Weak |  |
 | 12 | Call 2+ |  | Fair / Too high / Too low | Supported / Weak |  |
 
+## Processing safeguards
+
+- The only scheduled trigger is the hourly coordinator. It leases calls before releasing bounded background worker batches, preventing overlapping hourly runs from selecting the same call.
+- The catch-up ceiling is 200 calls per hour in batches of at most 10. This is a ceiling rather than a forced volume: after catch-up, the coordinator dispatches only newly waiting calls.
+- Provider and transcript failures retry inside an isolated worker. Coordinator leases last four hours while batches wait for worker capacity; an active worker refreshes each call to a one-hour lease. A failed worker cannot stop the coordinator or unrelated worker batches; uncompleted leases become eligible again after expiry.
+
 ## What happens afterward
 
 The responses will be compared by call type and dimension. A scoring-contract change is justified only when the calibration shows a repeatable problem, such as pricing being consistently too harsh or evidence repeatedly failing to support a high band. Any revised scorer must use a new version and preserve the existing rows as audit history.

@@ -17,9 +17,27 @@ Production implementation record for the hidden Magic Mike manager page and its 
 
 Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shadow`).
 
-The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. This initial period includes the requested extra week, and it never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. The workflow processes one call at a time, uses a processing ledger for idempotency, reads the transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
+The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. This initial period includes the requested extra week, and it never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. One hourly coordinator leases up to 200 unprocessed calls before dispatching them in batches of at most 10 to the isolated `MM Rep Scoring: Process Leased Call Batch - Isolated` worker. The worker reads each transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
 
-The only automatic trigger is the hourly schedule. Each normal run admits at most 10 unprocessed calls. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active leases and completed idempotency keys are skipped.
+The coordinator is the only scheduled trigger. Worker executions are internal sub-workflow runs rather than per-call schedules or webhooks. Calls are leased before dispatch so queued workers cannot be selected again by the next hourly coordinator. The normal incoming-call requirement is covered by the same 200-call hourly ceiling; when fewer calls are waiting, only the available calls are dispatched.
+
+Coordinator leases last four hours so queued batches remain protected across hourly runs. When a worker starts a call, it refreshes that call to a one-hour lease. DeepSeek requests use a ten-minute timeout with three attempts; this accommodates the provider's documented keep-alive scheduling behavior while keeping each failure contained to its worker.
+
+Workflow IDs and rollback:
+
+- Coordinator: `JQgSOlzomtjBotYJ`
+- Internal worker: `lXXiUGvoWk18dNFk`
+- Durable pre-parallel rollback workflow: `4b8UPCDEDwubFBnX` (`MM Rep Performance Reviewer - PRE-PARALLEL ROLLBACK 2026-07-31 (INACTIVE)`). It is a validated clone of pre-parallel version `384`; the workflow and both triggers are disabled.
+- To restore the prior single-workflow path, deactivate the parallel coordinator and worker, review the rollback clone, enable only its hourly schedule, and then activate it. Existing immutable scores and ledger history are retained.
+- The controlled test webhook remains disabled in the published coordinator; the hourly schedule is the only enabled external trigger.
+
+Production canaries on July 31, 2026:
+
+- Coordinator execution `419487` leased four calls and dispatched two isolated two-call workers, executions `419490` and `419491`. The workers started concurrently and independently reached the transcript and DeepSeek path. This canary also exposed that a provider node could return no item after exhausting its old timeout, safely leaving a lease recoverable but ending that batch early.
+- The worker was corrected to preserve an item after transcript/provider failure, use the provider-aligned timeout, and continue the batch through quarantine and ledger completion.
+- Final coordinator execution `419608` dispatched two calls to worker execution `419619`. The worker finished successfully with two DeepSeek outputs, one valid immutable score, one evidence-validation quarantine, and two completed ledger entries. This proves that a rejected assessment no longer stops the next call in the batch.
+
+The only automatic trigger is the hourly schedule. Each normal run admits at most 200 unprocessed calls and divides them into worker batches of at most 10. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active leases and completed idempotency keys are skipped.
 
 The ledger and score reads are deliberately collapsed between Airtable nodes. Before this correction, the score snapshot ran once per ledger record, multiplying roughly 90 real score rows into more than 20,000 execution items and causing 30-minute cancellations. The corrected graph reads each snapshot once; controlled execution `418910` read 234 ledger rows, collapsed them to one item, and read 122 score rows exactly once.
 
@@ -33,7 +51,7 @@ Current scorer contract:
 
 - Scorer: `rep-reviewer-v3`
 - Prompt: `rep-prompt-v2`
-- Config: `rep-scoring-config-v4-cumulative`
+- Config: `rep-scoring-config-v5-parallel`
 - Model: `deepseek-v4-pro`, thinking enabled, medium reasoning
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
@@ -70,6 +88,7 @@ The hidden page is intentionally a score-and-coaching hybrid:
 - One or two total calls are labeled as an early result; three total valid calls support an initial assessment.
 - Each row shows the overall score, both call-type scores and call counts, evidence strength, the first coaching priority, and recent direction.
 - Raw source, completed, processing, waiting, next-batch, and excluded counts remain available only in collapsed technical details.
+- While a backlog exists, a plain-language progress panel shows completion percentage, remaining calls, observed hourly throughput, active leases, and an evidence-based ETA. It automatically changes to an up-to-date message when the queue is empty.
 - `/manager/rep-scoring/rep/[repKey]` now shows overall score and rank, both call-type summaries, three recurring coaching priorities, quoted supporting examples, strongest recurring areas, a recent score sequence, and up to 24 underlying calls.
 - Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
 
