@@ -5,8 +5,8 @@ This is a short one-time check for Syed. It is not an ongoing manager task and d
 ## What to do
 
 1. Open the hidden **Sales rep performance** page.
-2. Choose **Call 1**.
-3. Open three lower-scoring and three higher-scoring calls.
+2. Open two lower-ranked, two middle-ranked, and two higher-ranked reps.
+3. From those rep pages, open three lower-scoring and three higher-scoring **Call 1** calls.
 4. Repeat for **Call 2+**.
 5. For each call, record only:
    - whether the overall label feels fair;
