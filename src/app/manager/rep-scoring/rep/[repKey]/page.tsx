@@ -38,7 +38,7 @@ export default async function RepDetailPage({ params }: PageProps<"/manager/rep-
             <div>
               <div className="mb-3 flex flex-wrap gap-2"><Badge variant="outline" className="gap-1 rounded-full border-red-100 bg-red-50 text-red-700"><ShieldCheck className="size-3.5" />Admin only</Badge><StatusBadge summary={summary} /></div>
               <h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Cumulative performance since {formatStart(data.coverage.windowStart)}. Call 1 and Call 2+ count equally when both are available.</p>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Cumulative call-execution evidence since {formatStart(data.coverage.windowStart)}. Call 1 and Call 2+ count equally when both are available.</p>
             </div>
             <div className="grid min-w-[14rem] grid-cols-2 gap-2">
               <HeroStat label="Overall" value={formatScore(summary.overallScore)} />
@@ -48,6 +48,8 @@ export default async function RepDetailPage({ params }: PageProps<"/manager/rep-
         </header>
 
         <ManagerSummary summary={summary} />
+
+        {summary.excludedCalls ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Coverage note:</strong> {summary.excludedCalls} of {summary.attemptedCalls} attempted calls were excluded because identity or evidence could not be verified. The score uses only the {summary.nScored} valid calls.</div> : null}
 
         <section className="grid gap-4 lg:grid-cols-2">
           <CallTypeSummary title="Call 1" score={summary.call1Score} count={summary.call1Count} />
@@ -143,8 +145,13 @@ function PriorityCard({ pattern, example }: { pattern: RepDimensionPattern; exam
 }
 
 function TrendCard({ summary, calls }: { summary: RepPerformanceSummary; calls: RepScoreCall[] }) {
-  const Icon = summary.trendLabel === "Declining" ? TrendingDown : TrendingUp;
-  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Icon className={cn("size-5", summary.trendLabel === "Declining" ? "text-red-600" : "text-emerald-700")} />Recent direction: {summary.trendLabel}</CardTitle><p className="text-sm leading-6 text-slate-500">Latest five calls compared with the previous five when both groups contain enough evidence.</p></CardHeader><CardContent className="space-y-2">{calls.slice(0, 10).map((call) => <div key={call.assessmentId} className="grid grid-cols-[5rem_1fr_3rem] items-center gap-3 text-xs"><span className="font-semibold text-slate-600">{call.callType}</span><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-red-500" style={{ width: `${Math.max(0, Math.min(100, call.score ?? 0))}%` }} /></div><span className="text-right font-bold text-slate-900">{formatScore(call.score)}</span></div>)}</CardContent></Card>;
+  const declining = summary.call1Trend.label === "Declining" || summary.call2Trend.label === "Declining";
+  const Icon = declining ? TrendingDown : TrendingUp;
+  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Icon className={cn("size-5", declining ? "text-red-600" : "text-emerald-700")} />Recent direction by call type</CardTitle><p className="text-sm leading-6 text-slate-500">Call 1 and Call 2+ are never mixed. Each compares its latest five valid calls with its previous five.</p></CardHeader><CardContent className="space-y-4"><TrendSummary label="Call 1" trend={summary.call1Trend} /><TrendSummary label="Call 2+" trend={summary.call2Trend} /><div className="space-y-2 border-t border-slate-100 pt-4">{calls.slice(0, 10).map((call) => <div key={call.assessmentId} className="grid grid-cols-[5rem_1fr_3rem] items-center gap-3 text-xs"><span className="font-semibold text-slate-600">{call.callType}</span><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-red-500" style={{ width: `${Math.max(0, Math.min(100, call.score ?? 0))}%` }} /></div><span className="text-right font-bold text-slate-900">{formatScore(call.score)}</span></div>)}</div></CardContent></Card>;
+}
+
+function TrendSummary({ label, trend }: { label: string; trend: RepPerformanceSummary["call1Trend"] }) {
+  return <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"><span className="font-bold text-slate-900">{label}</span><span className={trend.label === "Declining" ? "font-bold text-red-700" : "font-semibold text-slate-600"}>{trend.label}{trend.delta === null ? "" : ` (${trend.delta > 0 ? "+" : ""}${trend.delta.toFixed(1)})`}</span></div>;
 }
 
 function CallCard({ call }: { call: RepScoreCall }) { return <Link href={`/manager/rep-scoring/call/${encodeURIComponent(call.assessmentId)}`} className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-red-200 hover:bg-red-50/30"><div className="flex items-start justify-between gap-3"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge><div className="mt-3 text-2xl font-extrabold text-slate-950">{formatScore(call.score)} <span className="text-sm font-semibold text-slate-500">{call.band}</span></div><div className="mt-2 text-xs text-slate-500">{formatDateTime(call.meetingStartAt || call.scoredAt)}{call.showName ? ` · ${call.showName}` : ""}</div></div><ExternalLink className="size-4 text-slate-400 group-hover:text-red-600" /></div></Link>; }
@@ -168,7 +175,7 @@ function summarySentence(summary: RepPerformanceSummary) {
   const concern = summary.coachingPriorities[0]?.label;
   if (summary.needsReview && concern) return `The overall result needs manager review. The clearest recurring concern is ${concern.toLowerCase()}, supported by ${summary.nScored} valid calls.`;
   if (summary.needsReview) return `The overall score or recent decline needs manager review, but no recurring skill weakness meets the evidence rule yet.`;
-  if (concern) return `The overall result is not below the review threshold. ${concern} is a supported coaching opportunity, not a performance verdict.`;
+  if (concern) return `The overall result is not below the review threshold. ${concern} is a supported coaching opportunity, not a complete judgment of the rep.`;
   return `No recurring weakness is currently supported across ${summary.nScored} valid calls. Continue normal monitoring as new evidence arrives.`;
 }
 

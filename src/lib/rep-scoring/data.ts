@@ -4,7 +4,7 @@ import { evidenceConfidence, normalizeDimensions } from "@/lib/rep-scoring/prese
 
 const FETCH_TIMEOUT_MS = 10_000;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
-const CURRENT_SCORER_VERSION = "rep-reviewer-v3";
+const CURRENT_SCORER_VERSION = process.env.REP_SCORING_SCORER_VERSION || "rep-reviewer-v3";
 
 type AirtableRecord = {
   id: string;
@@ -25,6 +25,10 @@ export type RepScoreCall = {
   repId: string;
   repEmail: string;
   repName: string;
+  assignedRepEmail: string;
+  assignedRepName: string;
+  attributionSubstituted: boolean;
+  speakerResolutionMethod: string;
   callType: string;
   callStage: string;
   meetingStartAt: string;
@@ -93,13 +97,22 @@ export type RepPerformanceSummary = {
   call2Count: number;
   coverageLabel: string;
   confidence: string;
-  delta: number | null;
-  trendLabel: string;
+  excludedCalls: number;
+  attemptedCalls: number;
+  validCoverageRate: number;
+  call1Trend: RepCallTypeTrend;
+  call2Trend: RepCallTypeTrend;
   needsReview: boolean;
   reviewReason: string;
   coachingPriorities: RepDimensionPattern[];
   strengths: RepDimensionPattern[];
   rank: number | null;
+};
+
+export type RepCallTypeTrend = {
+  label: "Improving" | "Declining" | "Stable" | "Not enough history" | "Calibration pending";
+  delta: number | null;
+  supported: boolean;
 };
 
 export type RepScoringCoverage = {
@@ -133,6 +146,7 @@ export type RepScoringDashboardData = {
   generatedAt: string;
   shadowMode: boolean;
   killSwitch: boolean;
+  scorerVersion: string;
   summary: {
     repsTracked: number;
     needsReview: number;
@@ -158,6 +172,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     generatedAt,
     shadowMode: true,
     killSwitch: true,
+    scorerVersion: CURRENT_SCORER_VERSION,
     summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
     coverage: emptyCoverage(),
     repSummaries: [],
@@ -175,10 +190,10 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
 
   try {
     const [scoreRecords, quarantineRecords, configRecords, scoringRunRecords] = await Promise.all([
-      fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", 3000),
-      fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", 3000),
+      fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", 5000, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
+      fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", 5000, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
       fetchAllRecords(process.env.REP_SCORING_CONFIG_TABLE || "config", 20),
-      fetchAllRecords(process.env.REP_SCORING_RUNS_TABLE || "scoring_runs", 200),
+      fetchAllRecords(process.env.REP_SCORING_RUNS_TABLE || "scoring_runs", 200, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
     ]);
 
     const coverage = normalizeCoverage(scoringRunRecords);
@@ -205,7 +220,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       "Quarantine ID",
     );
     const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
-    const repSummaries = deriveRepSummaries(consistentCalls);
+    const repSummaries = deriveRepSummaries(consistentCalls, currentQuarantines);
     const readyRepIds = new Set(repSummaries.filter((rep) => rep.nScored >= 3).map((rep) => rep.id));
     const sourceRepCount = coverage.sourceReps ?? repSummaries.length;
     const activeConfig = configRecords
@@ -217,10 +232,11 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       generatedAt,
       shadowMode: activeConfig ? readBoolean(activeConfig.fields["Shadow Mode"], true) : true,
       killSwitch: activeConfig ? readBoolean(activeConfig.fields["Kill Switch"], true) : true,
+      scorerVersion: CURRENT_SCORER_VERSION,
       summary: {
         repsTracked: repSummaries.length,
         needsReview: repSummaries.filter((rep) => rep.needsReview).length,
-        declining: repSummaries.filter((rep) => rep.delta !== null && rep.delta <= -10 && rep.nScored >= 6).length,
+        declining: repSummaries.filter((rep) => rep.call1Trend.label === "Declining" || rep.call2Trend.label === "Declining").length,
         earlySignals: repSummaries.filter((rep) => rep.nScored < 3 && rep.overallScore !== null && rep.overallScore < 60).length,
         enoughEvidence: readyRepIds.size,
         gatheringEvidence: Math.max(0, sourceRepCount - readyRepIds.size),
@@ -262,7 +278,7 @@ function dedupeRecords(records: AirtableRecord[], field: string) {
   });
 }
 
-async function fetchAllRecords(table: string, maxRecords: number) {
+async function fetchAllRecords(table: string, maxRecords: number, filterByFormula = "") {
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   const baseId = process.env.REP_SCORING_AIRTABLE_BASE_ID || DEFAULT_BASE_ID;
   const records: AirtableRecord[] = [];
@@ -271,6 +287,7 @@ async function fetchAllRecords(table: string, maxRecords: number) {
   do {
     const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`);
     url.searchParams.set("pageSize", "100");
+    if (filterByFormula) url.searchParams.set("filterByFormula", filterByFormula);
     if (offset) url.searchParams.set("offset", offset);
 
     const response = await fetch(url, {
@@ -288,6 +305,10 @@ async function fetchAllRecords(table: string, maxRecords: number) {
   return records.slice(0, maxRecords);
 }
 
+function airtableStringLiteral(value: string) {
+  return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+}
+
 function normalizeCall(record: AirtableRecord): RepScoreCall {
   const fields = record.fields;
   return {
@@ -297,6 +318,10 @@ function normalizeCall(record: AirtableRecord): RepScoreCall {
     repId: readString(fields["Scored Rep ID"]),
     repEmail: readString(fields["Scored Rep Email"]),
     repName: readString(fields["Scored Rep Label"]) || readString(fields["Scored Rep Email"]) || "Unknown rep",
+    assignedRepEmail: readString(fields["Airtable Rep Email"]),
+    assignedRepName: readString(fields["Airtable Rep Name"]),
+    attributionSubstituted: readBoolean(fields["Attribution Substituted"]),
+    speakerResolutionMethod: readString(fields["Speaker Resolution Method"]),
     callType: readString(fields["Call Type"]) || "Unknown",
     callStage: readString(fields["Call Stage"]) || "Unknown",
     meetingStartAt: readString(fields["Meeting Start At"]),
@@ -378,7 +403,7 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
   return rows;
 }
 
-export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary[] {
+export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: AirtableRecord[] = []): RepPerformanceSummary[] {
   const grouped = new Map<string, RepScoreCall[]>();
   for (const call of calls) {
     const key = (call.repId || call.repEmail).toLowerCase();
@@ -397,13 +422,9 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
     // Each call type carries equal weight when both are available. This avoids
     // a high-volume call type overpowering the other half of the sales process.
     const overallScore = mean(availableTypeScores);
-    const recent = sorted.slice(0, 5).map((call) => call.score).filter(isNumber);
-    const previous = sorted.slice(5, 10).map((call) => call.score).filter(isNumber);
-    const recentMean = mean(recent);
-    const previousMean = mean(previous);
-    const delta = recent.length >= 3 && previous.length >= 3 && recentMean !== null && previousMean !== null
-      ? round(recentMean - previousMean)
-      : null;
+    const declineThreshold = readNumber(process.env.REP_SCORING_DECLINE_THRESHOLD);
+    const call1Trend = deriveCallTypeTrend(call1, declineThreshold);
+    const call2Trend = deriveCallTypeTrend(call2, declineThreshold);
     const patterns = getDimensionPatterns(sorted);
     // A manager-facing weakness must be both recurring and below the factual
     // Meets Expectations boundary. Do not manufacture a fixed number of
@@ -416,10 +437,13 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
       .filter((pattern) => pattern.observations >= 3 && pattern.average >= 70)
       .sort((a, b) => b.average - a.average || b.observations - a.observations || a.label.localeCompare(b.label))
       .slice(0, 2);
-    const enoughEvidence = sorted.length >= 3;
-    const lowScore = enoughEvidence && overallScore !== null && overallScore < 60;
-    const declining = sorted.length >= 6 && delta !== null && delta <= -10;
+    const enoughEvidence = call1.length >= 3 || call2.length >= 3;
+    const lowScore = (call1.length >= 3 && call1Score !== null && call1Score < 60)
+      || (call2.length >= 3 && call2Score !== null && call2Score < 60);
+    const declining = call1Trend.label === "Declining" || call2Trend.label === "Declining";
     const needsReview = lowScore || declining;
+    const excludedCalls = quarantineRecords.filter((record) => readString(record.fields["Assigned Rep Email"]).toLowerCase() === first.repEmail.toLowerCase()).length;
+    const attemptedCalls = sorted.length + excludedCalls;
     const coverageLabel = call1.length && call2.length ? "Both call types" : call1.length ? "Call 1 only" : "Call 2+ only";
     const reviewReason = !enoughEvidence
       ? "Not enough calls for a stable conclusion"
@@ -444,8 +468,11 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
       call2Count: call2.length,
       coverageLabel,
       confidence: evidenceConfidence(sorted.length),
-      delta,
-      trendLabel: delta === null ? "Not enough history" : delta <= -10 ? "Declining" : delta >= 10 ? "Improving" : "Stable",
+      excludedCalls,
+      attemptedCalls,
+      validCoverageRate: attemptedCalls ? round(sorted.length / attemptedCalls) : 0,
+      call1Trend,
+      call2Trend,
       needsReview,
       reviewReason,
       coachingPriorities: supportedConcerns,
@@ -457,6 +484,21 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
   summaries.sort((a, b) => (a.overallScore ?? 101) - (b.overallScore ?? 101) || b.nScored - a.nScored || a.repName.localeCompare(b.repName));
   summaries.forEach((summary, index) => { summary.rank = summary.overallScore === null ? null : index + 1; });
   return summaries;
+}
+
+function deriveCallTypeTrend(calls: RepScoreCall[], declineThreshold: number | null): RepCallTypeTrend {
+  const sorted = [...calls].sort((a, b) => dateValue(b.meetingStartAt || b.scoredAt) - dateValue(a.meetingStartAt || a.scoredAt));
+  const recent = sorted.slice(0, 5).map((call) => call.score).filter(isNumber);
+  const previous = sorted.slice(5, 10).map((call) => call.score).filter(isNumber);
+  if (recent.length < 3 || previous.length < 3) return { label: "Not enough history", delta: null, supported: false };
+  const recentMean = mean(recent);
+  const previousMean = mean(previous);
+  const delta = recentMean !== null && previousMean !== null ? round(recentMean - previousMean) : null;
+  if (delta === null) return { label: "Not enough history", delta: null, supported: false };
+  if (declineThreshold === null || declineThreshold <= 0) return { label: "Calibration pending", delta, supported: false };
+  if (delta <= -declineThreshold) return { label: "Declining", delta, supported: true };
+  if (delta >= declineThreshold) return { label: "Improving", delta, supported: true };
+  return { label: "Stable", delta, supported: true };
 }
 
 function getDimensionPatterns(calls: RepScoreCall[]): RepDimensionPattern[] {

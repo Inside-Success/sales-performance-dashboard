@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Rep Performance Review | Magic Mike Bot",
+  title: "Sales Call Execution Review | Magic Mike Bot",
   description: "Private evidence-backed sales rep review for authorized managers.",
   robots: { index: false, follow: false },
 };
@@ -22,8 +22,8 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 export default async function ManagerRepScoringPage() {
   await requireRepScoringAdmin();
   const data = await getRepScoringDashboardData();
-  const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15);
-  const strongEvidenceConcerns = strongEvidenceReps.filter((rep) => rep.needsReview).length;
+  const reviewReadyReps = data.repSummaries.filter((rep) => rep.nScored >= 3);
+  const supportedConcerns = reviewReadyReps.filter((rep) => rep.needsReview).length;
 
   return (
     <main className="magic-page">
@@ -36,8 +36,8 @@ export default async function ManagerRepScoringPage() {
                 <Badge variant="outline" className="rounded-full border-slate-200 bg-white/80 text-slate-700">Manager review</Badge>
                 {data.killSwitch ? <Badge variant="destructive">Scoring paused</Badge> : null}
               </div>
-              <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">Sales rep performance</h1>
-              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Start with the lowest supported scores, then open a rep to see the exact concern, strengths and call evidence behind the result.</p>
+              <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">Sales call execution review</h1>
+              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Start with the lowest evidence-supported results, then open a rep to verify the recurring findings and exact call evidence.</p>
             </div>
             <div className="flex flex-col gap-2 text-sm text-slate-500 lg:items-end">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-2"><Clock3 className="size-4 text-red-600" />Updated {formatDateTime(data.coverage.measuredAt || data.generatedAt)}</div>
@@ -49,13 +49,17 @@ export default async function ManagerRepScoringPage() {
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
         <section className="grid gap-3 md:grid-cols-3">
-          <Metric title="Review first" value={strongEvidenceConcerns} helper="Supported concern with at least 15 valid calls" tone="red" icon={AlertTriangle} />
-          <Metric title="Strong-evidence reps" value={strongEvidenceReps.length} helper="At least 15 valid calls; shown by default below" tone="green" icon={Users} />
-          <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Cumulative since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
+          <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
+          <Metric title="Ready to review" value={reviewReadyReps.length} helper="At least 3 valid calls; use the 8+ or 15+ filter for stronger evidence" tone="green" icon={Users} />
+          <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Speaker-verified assessments since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
         </section>
 
         <CatchUpProgress coverage={data.coverage} />
         <RepRankingTable reps={data.repSummaries} />
+
+        <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm leading-6 text-slate-600">
+          <strong className="text-slate-900">What this measures:</strong> observable sales-call execution in available transcripts. It does not measure lead quality, territory, attendance outside the recorded call, revenue attribution, or every part of a rep&apos;s job. Calls with unresolved speaker identity or unsupported evidence are excluded, not converted into low scores.
+        </section>
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">Scores support manager investigation; they are not automatic employment decisions. This page reads only the isolated rep-scoring base and does not edit source calls, coaching reports, Slack, Google content or employment records.</p>
       </div>
