@@ -12,7 +12,7 @@ import type { RepPerformanceSummary } from "@/lib/rep-scoring/data";
 import { cn } from "@/lib/utils";
 
 type EvidenceFilter = "strong" | "moderate" | "initial" | "all";
-type StatusFilter = "all" | "attention" | "clear";
+type StatusFilter = "all" | "attention" | "opportunity" | "clear";
 
 const evidenceOptions: Array<{ value: EvidenceFilter; label: string; minimum: number }> = [
   { value: "strong", label: "15+ calls", minimum: 15 },
@@ -31,7 +31,8 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
   const visibleReps = useMemo(() => reps.filter((rep) => {
     if (rep.nScored < minimumCalls) return false;
     if (status === "attention" && !rep.needsReview) return false;
-    if (status === "clear" && rep.needsReview) return false;
+    if (status === "opportunity" && (rep.needsReview || !rep.coachingPriorities.length)) return false;
+    if (status === "clear" && (rep.needsReview || rep.coachingPriorities.length > 0)) return false;
     if (normalizedQuery && !`${rep.repName} ${rep.repEmail}`.toLowerCase().includes(normalizedQuery)) return false;
     return true;
   }), [minimumCalls, normalizedQuery, reps, status]);
@@ -63,7 +64,8 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
             <div className="flex flex-wrap gap-2">
               <FilterButton active={status === "all"} onClick={() => setStatus("all")}>All results</FilterButton>
               <FilterButton active={status === "attention"} onClick={() => setStatus("attention")}>Needs attention</FilterButton>
-              <FilterButton active={status === "clear"} onClick={() => setStatus("clear")}>No supported concern</FilterButton>
+              <FilterButton active={status === "opportunity"} onClick={() => setStatus("opportunity")}>Coaching opportunity</FilterButton>
+              <FilterButton active={status === "clear"} onClick={() => setStatus("clear")}>No recurring weakness</FilterButton>
             </div>
           </div>
         </div>
