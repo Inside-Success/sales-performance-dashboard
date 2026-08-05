@@ -67,9 +67,12 @@ V3 remains the independent rollback path. V4.2 uses distinct idempotency keys an
 - The Samantha Forcash regression audit selected 45 assigned calls. Ten calls that were not already protected by a completed/active V4.2 ledger reached a final audit outcome: five valid scores where Samantha was the verified speaker and five safe quarantines. Two of those quarantines correctly resolved the actual speaker as Ezekiel Campbell and Alonso de Obaldia instead of assigning their speech to Samantha. No substitute call was scored as Samantha, and no score used an unverified speaker.
 - Coverage telemetry now treats a quarantine as unresolved only when the same idempotency key has no valid score. It separately records shadowed quarantine attempts, completed-ledger keys without an outcome, and outcomes missing a completed ledger, preventing retries from inflating the manager-facing exclusion count.
 
-## Release gates before dashboard cutover
+## Production cutover status
 
-The following still must be recorded before V4.2 becomes the manager default:
-
-- first unattended hourly execution and backlog-progress health;
-- production deployment, authentication, browser, console, and runtime verification.
+- GitHub PR `#118` merged as `5edbfa2b105aa2e8f91c3cda479b7c72d5351802`.
+- Production deployment `dpl_AcRV6815DnMdUegXHW7HpQ3sQDk5` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias. Independent preview deployment `dpl_CpjzdxtQLr884zJhQ4KYGydtDLV8` also reached `READY`; the GitHub-created preview failed during Vercel resource provisioning before an application build began.
+- Production uses `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.2` and `REP_SCORING_DECLINE_THRESHOLD=10` as server-only variables.
+- Authenticated browser verification passed for the overview, a rep detail, and an exact call-evidence page. The account was `syed.haider@insidesuccess.com`; no browser console warning or error was present.
+- Vercel reported no runtime error clusters for the reviewed rep-scoring routes. The only recent 404s were optional Apple touch-icon requests.
+- The n8n auto-deactivation email received during release corresponded to the earlier intentionally over-capacity 20-worker probe. The worker was republished with the eight-worker cap and active-lease protection, then reactivated. The next 20 worker executions all succeeded with no later crash in that verification window.
+- The controlled test webhook remains disabled. The hourly schedule is the coordinator's only enabled trigger; V3 remains intact as rollback.

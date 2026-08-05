@@ -109,7 +109,16 @@ Release verification on Aug 5, 2026:
 - A real supported-clear case showed no recurring weakness without inventing one; a real strong-evidence concern case showed only its evidence-backed recurring dimensions. Early evidence displayed the neutral insufficient-evidence state.
 - Browser console warnings/errors and Vercel runtime errors for the reviewed manager routes were empty. Eight rep-scoring tests, scoped ESLint, TypeScript, and repeated full production builds passed without starting a local development server.
 
-Display bands for the current v3 scorer are factual labels for the assessed call:
+Release verification on Aug 6, 2026:
+
+- GitHub PR `#118` introduced the speaker-safe V4.2 scoring contract, consensus calibration, cumulative manager aggregation, safer parallel coordinator/worker pair, isolated telemetry, and the simplified manager experience. It merged as `5edbfa2b105aa2e8f91c3cda479b7c72d5351802`.
+- Production deployment `dpl_AcRV6815DnMdUegXHW7HpQ3sQDk5` reached `READY` and the canonical production alias served the V4.2 manager view. Independent preview deployment `dpl_CpjzdxtQLr884zJhQ4KYGydtDLV8` also reached `READY`; the GitHub-created preview failed during Vercel resource provisioning before any application build began.
+- The authenticated production overview loaded for `syed.haider@insidesuccess.com`, defaulted to the 3+ evidence view, sorted lowest score first, and exposed stronger 8+ and 15+ evidence filters. Rep and call drill-downs showed the stored reasons, exact timestamped quotes, score contributions, context, and scorer provenance.
+- Vercel reported no runtime error clusters for the rep-scoring routes. The only observed 404 requests were optional Apple touch icons and were unrelated to the manager page.
+- An n8n auto-deactivation email corresponded to the earlier intentionally over-capacity 20-worker probe. After the eight-worker cap and active-lease protection were published and the worker reactivated, the next 20 worker executions all succeeded; no later worker crash was observed in that verification window.
+- Fifteen rep-scoring tests, TypeScript, scoped ESLint, and a clean Next.js production build passed without starting a local development server.
+
+Display bands for the current V4.2 scorer are factual labels for the assessed call:
 
 - 0–24: Unacceptable
 - 25–49: Needs Improvement
@@ -127,6 +136,8 @@ All values are server-only; none use the `NEXT_PUBLIC_` prefix.
 - `REP_SCORING_ADMIN_EMAILS`
 - `REP_SCORING_AIRTABLE_TOKEN`
 - `REP_SCORING_AIRTABLE_BASE_ID`
+- `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.2`
+- `REP_SCORING_DECLINE_THRESHOLD=10`
 - Optional table overrides: `REP_SCORING_ROLLUPS_TABLE`, `REP_SCORING_CALL_SCORES_TABLE`, `REP_SCORING_QUARANTINE_TABLE`, `REP_SCORING_CONFIG_TABLE`
 
 If the feature flag or token is missing, the page renders a clear safe-unavailable state and performs no writes.
@@ -176,7 +187,7 @@ The one-time human calibration is intentionally separate from normal manager use
 
 Rollback is independent by layer:
 
-1. Disable the n8n schedule or deactivate `JQgSOlzomtjBotYJ`.
+1. Disable the n8n schedule or deactivate V4.2 coordinator `53txJ8KuCRGim8LB`.
 2. Set `REP_SCORING_ENABLED=false` or remove the Vercel variable.
 3. Revert the dashboard release commit.
 

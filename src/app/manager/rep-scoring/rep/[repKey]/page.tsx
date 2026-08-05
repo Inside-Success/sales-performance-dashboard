@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ArrowLeft, CheckCircle2, ExternalLink, Quote, ShieldCheck, Target, TrendingDown, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, ExternalLink, ShieldCheck, Target, TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
@@ -141,7 +141,7 @@ function CallTypeSummary({ title, score, count }: { title: string; score: number
 }
 
 function PriorityCard({ pattern, example }: { pattern: RepDimensionPattern; example?: PriorityExample }) {
-  return <div className="rounded-2xl border border-red-100 bg-red-50/60 p-4"><div className="flex items-center gap-2"><AlertTriangle className="size-5 text-red-600" /><div className="font-extrabold text-slate-900">{pattern.label}</div></div><p className="mt-3 text-sm text-slate-600">Average {pattern.average.toFixed(1)} across {pattern.observations} scored observations.</p>{example ? <div className="mt-3 rounded-xl bg-white/80 p-3 text-xs leading-5 text-slate-600"><Quote className="mb-2 size-4 text-red-500" />{example.quote || example.reason}<Link href={`/manager/rep-scoring/call/${encodeURIComponent(example.assessmentId)}`} className="mt-2 block font-bold text-red-700 hover:underline">Open supporting call</Link></div> : null}</div>;
+  return <div className="rounded-2xl border border-red-100 bg-red-50/60 p-4"><div className="flex items-center gap-2"><AlertTriangle className="size-5 text-red-600" /><div className="font-extrabold text-slate-900">{pattern.label}</div></div><p className="mt-3 text-sm text-slate-600">Average {pattern.average.toFixed(1)} across {pattern.observations} scored observations.</p>{example ? <div className="mt-3 rounded-xl bg-white/80 p-3 text-xs leading-5 text-slate-600"><div className="mb-1 font-bold text-slate-800">Why this is flagged</div>{example.reason || example.quote}<Link href={`/manager/rep-scoring/call/${encodeURIComponent(example.assessmentId)}`} className="mt-2 block font-bold text-red-700 hover:underline">Open supporting call</Link></div> : null}</div>;
 }
 
 function TrendCard({ summary, calls }: { summary: RepPerformanceSummary; calls: RepScoreCall[] }) {
