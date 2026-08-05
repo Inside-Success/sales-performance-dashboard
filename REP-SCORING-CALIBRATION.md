@@ -1,6 +1,8 @@
-# Rep Scoring One-Time Calibration
+# Rep Scoring Optional Calibration
 
-This is a short one-time check for Syed. It is not an ongoing manager task and does not change production data.
+This is an optional scoring-quality exercise. It is not a gate for showing Tyler or other managers the complete manager system, and it does not change production data.
+
+Managers should receive the full authorized dashboard after release verification. They can review any rep and provide ordinary feedback on the complete experience. The bounded exercise below is useful only if a later scoring-contract revision needs a consistent comparison sample.
 
 ## What to do
 

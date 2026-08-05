@@ -54,4 +54,41 @@ describe("rep scoring aggregation", () => {
     expect(summaries[0]).toMatchObject({ overallScore: 50, needsReview: true, rank: 1 });
     expect(summaries[1]).toMatchObject({ overallScore: 85, needsReview: false, rank: 2 });
   });
+
+  it("does not manufacture weaknesses for a rep whose recurring dimensions meet expectations", () => {
+    const calls = [0, 1, 2].map((index) => call({
+      assessmentId: `strong-${index}`,
+      repEmail: "strong@example.com",
+      repName: "Strong Rep",
+      callType: "Call 1",
+      score: 90,
+      dimensions: [
+        { key: "discovery", band: "Excellent" },
+        { key: "qualification", band: "Meets Expectations" },
+      ],
+    }));
+
+    const summary = deriveRepSummaries(calls)[0];
+    expect(summary.coachingPriorities).toEqual([]);
+    expect(summary.strengths.map((pattern) => pattern.key)).toEqual(["discovery", "qualification"]);
+  });
+
+  it("shows only recurring below-expectation dimensions as coaching concerns", () => {
+    const calls = [0, 1, 2].map((index) => call({
+      assessmentId: `mixed-${index}`,
+      repEmail: "mixed@example.com",
+      repName: "Mixed Rep",
+      callType: "Call 1",
+      score: 72,
+      dimensions: [
+        { key: "discovery", band: "Needs Improvement" },
+        { key: "qualification", band: "Excellent" },
+        { key: "authority", band: "Excellent" },
+      ],
+    }));
+
+    const summary = deriveRepSummaries(calls)[0];
+    expect(summary.coachingPriorities.map((pattern) => pattern.key)).toEqual(["discovery"]);
+    expect(summary.strengths.map((pattern) => pattern.key)).toEqual(["authority", "qualification"]);
+  });
 });
