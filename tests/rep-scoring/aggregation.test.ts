@@ -6,6 +6,10 @@ function call(overrides: Partial<RepScoreCall> & Pick<RepScoreCall, "assessmentI
     id: overrides.assessmentId,
     idempotencyKey: overrides.assessmentId,
     repId: overrides.repEmail,
+    assignedRepEmail: overrides.repEmail,
+    assignedRepName: overrides.repName,
+    attributionSubstituted: false,
+    speakerResolutionMethod: "transcript_roster_assigned_v1",
     callStage: "",
     meetingStartAt: overrides.meetingStartAt || "2026-07-30T12:00:00.000Z",
     showName: "",
@@ -90,5 +94,35 @@ describe("rep scoring aggregation", () => {
     const summary = deriveRepSummaries(calls)[0];
     expect(summary.coachingPriorities.map((pattern) => pattern.key)).toEqual(["discovery"]);
     expect(summary.strengths.map((pattern) => pattern.key)).toEqual(["authority", "qualification"]);
+  });
+
+  it("does not mix Call 1 and Call 2+ when calculating recent direction", () => {
+    const calls = [
+      ...[40, 40, 40, 40, 40, 80, 80, 80, 80, 80].map((score, index) => call({ assessmentId: `call1-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 1", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T12:00:00.000Z` })),
+      ...[90, 90, 90, 90, 90, 50, 50, 50, 50, 50].map((score, index) => call({ assessmentId: `call2-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 2+", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T13:00:00.000Z` })),
+    ];
+    const summary = deriveRepSummaries(calls)[0];
+    expect(summary.call1Trend.delta).toBe(40);
+    expect(summary.call2Trend.delta).toBe(-40);
+    expect(summary.call1Trend.label).toBe("Calibration pending");
+    expect(summary.call2Trend.label).toBe("Calibration pending");
+  });
+
+  it("uses the measured threshold only within each call type", () => {
+    const previousThreshold = process.env.REP_SCORING_DECLINE_THRESHOLD;
+    process.env.REP_SCORING_DECLINE_THRESHOLD = "12";
+    try {
+      const calls = [
+        ...[80, 80, 80, 80, 80, 60, 60, 60, 60, 60].map((score, index) => call({ assessmentId: `call1-threshold-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 1", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T12:00:00.000Z` })),
+        ...[70, 70, 70, 70, 70, 75, 75, 75, 75, 75].map((score, index) => call({ assessmentId: `call2-threshold-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 2+", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T13:00:00.000Z` })),
+      ];
+      const summary = deriveRepSummaries(calls)[0];
+      expect(summary.call1Trend).toMatchObject({ label: "Declining", delta: -20, supported: true });
+      expect(summary.call2Trend).toMatchObject({ label: "Stable", delta: 5, supported: true });
+      expect(summary.needsReview).toBe(true);
+    } finally {
+      if (previousThreshold === undefined) delete process.env.REP_SCORING_DECLINE_THRESHOLD;
+      else process.env.REP_SCORING_DECLINE_THRESHOLD = previousThreshold;
+    }
   });
 });

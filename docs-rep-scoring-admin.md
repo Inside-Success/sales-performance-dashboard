@@ -2,6 +2,8 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
+V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4-RELEASE-2026-08-06.md`. V3 remains an immutable rollback path; the release record states the exact cutover status.
+
 ## Production boundaries
 
 - Page: `/manager/rep-scoring`
@@ -15,21 +17,23 @@ Production implementation record for the hidden Magic Mike manager page and its 
 
 ## n8n
 
-Main workflow: `JQgSOlzomtjBotYJ` (`MM Rep Performance Reviewer - Isolated Shadow`).
+V4.2 coordinator: `53txJ8KuCRGim8LB`. V4.2 worker: `MZv9GY5l5HDikIql`. V3 coordinator `JQgSOlzomtjBotYJ` and worker `lXXiUGvoWk18dNFk` remain the rollback pair.
 
-The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. This initial period includes the requested extra week, and it never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. One hourly coordinator leases up to 200 unprocessed calls before dispatching them in batches of at most 10 to the isolated `MM Rep Scoring: Process Leased Call Batch - Isolated` worker. The worker reads each transcript, calls `deepseek-v4-pro`, validates exact timestamp/speaker/quote evidence, computes the weighted score in code, and writes either an immutable assessment or a quarantine record.
+The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. The window never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. One hourly coordinator selects up to 160 unprocessed calls and dispatches at most eight execution-local batches of at most 20 calls. Each isolated worker acquires or refreshes the call lease before reading the transcript or calling the model. It resolves the transcript speaker against the rep roster, requests three independent `deepseek-v4-pro` reviews, validates exact timestamp/speaker/quote evidence, computes dimension-level median consensus in code, and writes either an immutable assessment or a quarantine record.
 
-The coordinator is the only scheduled trigger. Worker executions are internal sub-workflow runs rather than per-call schedules or webhooks. Calls are leased before dispatch so queued workers cannot be selected again by the next hourly coordinator. The normal incoming-call requirement is covered by the same 200-call hourly ceiling; when fewer calls are waiting, only the available calls are dispatched.
+The coordinator is the only enabled trigger in the live graph; its controlled-test webhook was disabled after acceptance. Worker executions are internal sub-workflow runs rather than per-call schedules or webhooks. Active worker leases and completed V4.2 idempotency keys are excluded from later hourly selection. The 160-call hourly ceiling provides 3,840-call daily headroom for the stated 750–1,000-call daily volume; when fewer calls are waiting, only the available calls are dispatched.
 
-Coordinator leases last four hours so queued batches remain protected across hourly runs. When a worker starts a call, it refreshes that call to a one-hour lease. DeepSeek requests use a ten-minute timeout with three attempts; this accommodates the provider's documented keep-alive scheduling behavior while keeping each failure contained to its worker.
+An active worker lease is treated as already in progress, so overlapping or delayed triggers cannot score the same call twice. Provider and storage operations retry within the isolated worker; a failed call cannot stop another batch, and a safely completed quarantine is never presented as a score.
 
 Workflow IDs and rollback:
 
-- Coordinator: `JQgSOlzomtjBotYJ`
-- Internal worker: `lXXiUGvoWk18dNFk`
+- V4.2 coordinator: `53txJ8KuCRGim8LB`
+- V4.2 internal worker: `MZv9GY5l5HDikIql`
+- V3 rollback coordinator: `JQgSOlzomtjBotYJ`
+- V3 rollback worker: `lXXiUGvoWk18dNFk`
 - Durable pre-parallel rollback workflow: `4b8UPCDEDwubFBnX` (`MM Rep Performance Reviewer - PRE-PARALLEL ROLLBACK 2026-07-31 (INACTIVE)`). It is a validated clone of pre-parallel version `384`; the workflow and both triggers are disabled.
 - To restore the prior single-workflow path, deactivate the parallel coordinator and worker, review the rollback clone, enable only its hourly schedule, and then activate it. Existing immutable scores and ledger history are retained.
-- The controlled test webhook remains disabled in the published coordinator; the hourly schedule is the only enabled external trigger.
+- The controlled test webhook is disabled in the published coordinator; the hourly schedule is the only enabled trigger.
 
 Production canaries on July 31, 2026:
 
@@ -37,7 +41,7 @@ Production canaries on July 31, 2026:
 - The worker was corrected to preserve an item after transcript/provider failure, use the provider-aligned timeout, and continue the batch through quarantine and ledger completion.
 - Final coordinator execution `419608` dispatched two calls to worker execution `419619`. The worker finished successfully with two DeepSeek outputs, one valid immutable score, one evidence-validation quarantine, and two completed ledger entries. This proves that a rejected assessment no longer stops the next call in the batch.
 
-The only automatic trigger is the hourly schedule. Each normal run admits at most 200 unprocessed calls and divides them into worker batches of at most 10. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active leases and completed idempotency keys are skipped.
+The only enabled trigger is the hourly schedule. Each normal run admits at most 160 unprocessed calls and divides them into no more than eight worker batches of at most 20. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active V4.2 leases and completed V4.2 idempotency keys are skipped. Coordinator state is execution-local; concurrent contexts cannot overwrite a shared batch array.
 
 The ledger and score reads are deliberately collapsed between Airtable nodes. Before this correction, the score snapshot ran once per ledger record, multiplying roughly 90 real score rows into more than 20,000 execution items and causing 30-minute cancellations. The corrected graph reads each snapshot once; controlled execution `418910` read 234 ledger rows, collapsed them to one item, and read 122 score rows exactly once.
 
@@ -49,14 +53,14 @@ Every new quarantine diagnostic includes the source call's meeting date. The man
 
 Current scorer contract:
 
-- Scorer: `rep-reviewer-v3`
-- Prompt: `rep-prompt-v2`
-- Config: `rep-scoring-config-v5-parallel`
-- Model: `deepseek-v4-pro`, thinking enabled, medium reasoning
+- Scorer: `rep-reviewer-v4.2`
+- Prompt: `rep-prompt-v4-deterministic-speaker-safe`
+- Config: `rep-scoring-config-v8-consensus3-speaker-safe`
+- Model: `deepseek-v4-pro`, three-review consensus in non-thinking mode at temperature zero
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
 - Invalid dimension or critical-event evidence quarantines the call.
-- A claimed met behavior with invalid evidence now fails closed as `internal_inconsistency` and the call is quarantined. Older inconsistent v3 rows remain immutable audit history but are excluded from manager rollups.
+- At least two of three reviews must pass evidence validation. Invalid scoring dimensions or critical events quarantine the call. Invalid non-scoring behavior evidence is downgraded and disclosed in the audit context instead of invalidating an otherwise supported score.
 
 One-time setup workflows are retained inactive as rollback/audit records:
 
@@ -82,10 +86,10 @@ The dashboard derives cumulative rep results directly from current-version immut
 The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
-- The overview defaults to reps with at least 15 valid calls and remains ordered from lowest cumulative overall score to highest. Managers can broaden the evidence filter to 8+, 3+, or all scored calls.
+- The overview defaults to reps with at least 3 valid calls and remains ordered from lowest cumulative overall score to highest. This provides the rough, evidence-backed result Tyler requested without waiting for a 15-call sample. Managers can narrow the evidence filter to 8+ or 15+, or broaden it to all scored calls.
 - Search and status controls let a manager show all results, needs-attention results, supported coaching opportunities, or reps with no recurring weakness without changing the underlying score.
 - The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
-- The headline `Review first` count includes only supported concerns with at least 15 valid calls. Low-volume signals remain available but are not presented as equally reliable conclusions.
+- The headline `Needs attention` count includes only supported low or declining signals; one- and two-call samples cannot enter it. The adjacent `Ready to review` card states the three-call floor, and the table makes stronger 8+ and 15+ evidence filters explicit.
 - Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
 - While a backlog exists, a plain-language progress panel shows completion percentage, remaining calls, observed hourly throughput, active leases, and an evidence-based ETA. It automatically changes to an up-to-date message when the queue is empty.
 - `/manager/rep-scoring/rep/[repKey]` opens with a one-sentence manager summary, the overall score and evidence amount, compact Call 1 and Call 2+ summaries, supported concerns, supported strengths, recent direction, and a specific next action.

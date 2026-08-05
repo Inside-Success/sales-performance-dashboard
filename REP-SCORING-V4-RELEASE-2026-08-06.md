@@ -1,0 +1,75 @@
+# Rep Scoring V4.2 Release Record
+
+Date: August 6, 2026
+
+## Why V4.2 exists
+
+V3 could score the Airtable-assigned rep even when the transcript showed that a different rep handled the call. That made the result unfair to an absent assigned rep and could give the substitute's work to the wrong person. The first V4 candidate fixed attribution but failed the predeclared stability gate while DeepSeek thinking mode was enabled. V4.1 moved to non-thinking temperature-zero requests, but a single model review still failed the band-stability and repeat-completeness gates. V4.2 preserves the attribution fix and forms one result from three independent evidence-valid reviews. None of these versions edits or deletes V3 history.
+
+## V4.2 scoring contract
+
+- Scorer: `rep-reviewer-v4.2`
+- Prompt: `rep-prompt-v4-deterministic-speaker-safe`
+- Rubric: `rep-rubric-v2-attribution`
+- Config: `rep-scoring-config-v8-consensus3-speaker-safe`
+- Model: `deepseek-v4-pro`
+- Fixed analysis start: July 18, 2026 at midnight America/New_York
+- Source remains read-only; scores, quarantines, ledgers, and calibration rows remain in the isolated rep-scoring Airtable base.
+- DeepSeek runs in non-thinking mode at temperature zero. Three independent reviews are evidence-validated, then code calculates dimension-by-dimension median consensus. At least two reviews must be valid; critical events require support from at least two reviews. The V4 and V4.1 calibration rows remain isolated audit history and are not eligible for manager calculations.
+
+Before DeepSeek receives a transcript, code resolves the rep who actually speaks:
+
+1. Speaker labels are matched against the approved rep roster derived from the source calls.
+2. Unique role suffixes and unique shortened first names are supported; ambiguous nicknames are not guessed.
+3. If the assigned rep is the primary speaker, the assigned identity is retained.
+4. If a known substitute clearly handles the call, the substitute receives the score and both assigned and resolved identities are stored.
+5. Ambiguous multi-rep calls, generic identities, unmapped speakers, and low-confidence substitutions are quarantined.
+6. Scoring evidence and critical events must use an exact resolved-rep speaker label, timestamp, and transcript quote.
+7. Invalid auxiliary behavior evidence is downgraded and recorded as a validation correction. It cannot affect the score. Invalid dimension or critical-event evidence still quarantines the call.
+
+## Manager calculation changes
+
+- The manager view can select its scorer through the server-only `REP_SCORING_SCORER_VERSION` variable. This allows V4.2 to backfill without exposing partial results or replacing V3 prematurely.
+- Call 1 and Call 2+ trends are calculated separately. They are never pooled into one recent-direction number.
+- Decline labels remain disabled until stability calibration supplies a measured threshold through `REP_SCORING_DECLINE_THRESHOLD`.
+- A low-score review signal requires at least three valid calls for the affected call type. A one-off result from another call type cannot create a supported concern.
+- Each rep page shows excluded-call coverage and a verified-substitution notice when applicable.
+- The page is explicitly labeled **Sales call execution review** and states that it does not measure lead quality, territory, revenue attribution, or every part of a rep's job.
+
+## n8n workflows and rollback
+
+- V4.2 worker: `MZv9GY5l5HDikIql`
+- V4.2 coordinator: `53txJ8KuCRGim8LB`
+- Stability calibration: `MUXLy0pQJKY7YjRh` (controlled webhook deactivated immediately after dispatch)
+- V3 coordinator: `JQgSOlzomtjBotYJ`
+- V3 worker: `lXXiUGvoWk18dNFk`
+
+V3 remains the independent rollback path. V4.2 uses distinct idempotency keys and immutable scorer versions, so V4.2 can be stopped without altering V3 history.
+
+## Verification record
+
+- Local speaker-attribution tests cover assigned rep, known substitute, ambiguous multi-rep, generic identity, and unique shortened-name cases.
+- Aggregation tests cover equal call-type weighting, lowest-score-first ranking, evidence-backed concerns/strengths, and separate Call 1/Call 2+ trends.
+- Controlled coordinator canary `444451` dispatched worker `444457`.
+- Worker `444457` completed successfully in 116.5 seconds and wrote V4 score record `rec0bZ21OWBSoi00w` for the resolved assigned speaker, with exact evidence and attribution diagnostics.
+- The first canary exposed an unmapped nickname and safely quarantined it. The resolver was corrected and regression-tested.
+- The next canary exposed unsupported auxiliary behavior evidence and safely quarantined it. V4 now downgrades non-scoring behavior claims while preserving strict dimension and critical-event validation.
+- Fifteen rep-scoring tests, TypeScript, scoped ESLint, and the full Next.js production build pass without starting a local development server.
+- The V4 thinking-mode calibration was rejected before release: at 12 complete triples, Call 1 had an 11.2-point median spread, a 27.5-point 90th-percentile spread, a 33.7-point maximum spread, and a 60% display-band flip rate. This failed the fixed release criteria and triggered the V4.1 deterministic contract.
+- The completed V4.1 single-review calibration was also rejected: only 17 of 40 repeat groups completed, display-band flips were 50.0% for Call 1 and 27.3% for Call 2+, and pairwise rank correlation fell to 0.712. This triggered the V4.2 three-review consensus contract.
+- V4.2 controlled canary coordinator `444714` dispatched worker `444721`. The worker completed in 50.0 seconds and wrote score record `recjtwO1AqpCpnGIi`: all three evidence-valid reviews agreed on 75.0, the assigned and resolved speaker were both Aidan Whytock, and the stored record was internally consistent.
+- The final automated stability report contained 41 complete repeat pairs: 22 Call 1 and 19 Call 2+. Call 1 median/p90 spread was 0.0/4.4 points; Call 2+ was 1.9/7.5. Manager review-signal flips were 0.0% and 10.5%, and rank correlation was 0.93. The release gate passed. Raw adjacent display-band changes were also retained in the audit (4.5% and 21.1%) because a label boundary is less stable than the underlying manager action signal.
+- The first volume probe exposed two coordinator defects before cutover: its score snapshot still filtered the short-lived `rep-reviewer-v4` version, and leased calls were accumulated in workflow-global static memory. The selector now uses `rep-reviewer-v4.2`; execution-local aggregation replaces shared mutable state so overlapping trigger contexts cannot overwrite a batch.
+- A later 200-call/20-worker probe deliberately exceeded the safe concurrency envelope and produced worker crashes. The live design was therefore reduced to a hard maximum of eight workers, and the worker now treats an unexpired processing lease as already in progress instead of refreshing it from a competing execution.
+- Post-fix canary coordinator `445245` dispatched four five-call workers (`445271`–`445274`); all four succeeded. It produced two valid scores and one safe quarantine while seventeen already-completed or actively leased calls were skipped.
+- Eight-worker load-acceptance coordinator `445330` selected 80 calls and dispatched exactly eight ten-call workers (`445366`–`445373`). All eight succeeded with zero crashes. Twenty-five previously unprocessed calls reached final ledger state: fifteen valid scores and ten safe quarantines; fifty-five overlapping/completed calls were skipped without duplicate scoring.
+- The live coordinator is capped at 160 calls/hour in at most eight 20-call workers. This is 3,840 calls/day of headroom for the 1,000-call/day target. The hourly schedule is enabled; the controlled webhook is disabled.
+- The Samantha Forcash regression audit selected 45 assigned calls. Ten calls that were not already protected by a completed/active V4.2 ledger reached a final audit outcome: five valid scores where Samantha was the verified speaker and five safe quarantines. Two of those quarantines correctly resolved the actual speaker as Ezekiel Campbell and Alonso de Obaldia instead of assigning their speech to Samantha. No substitute call was scored as Samantha, and no score used an unverified speaker.
+- Coverage telemetry now treats a quarantine as unresolved only when the same idempotency key has no valid score. It separately records shadowed quarantine attempts, completed-ledger keys without an outcome, and outcomes missing a completed ledger, preventing retries from inflating the manager-facing exclusion count.
+
+## Release gates before dashboard cutover
+
+The following still must be recorded before V4.2 becomes the manager default:
+
+- first unattended hourly execution and backlog-progress health;
+- production deployment, authentication, browser, console, and runtime verification.

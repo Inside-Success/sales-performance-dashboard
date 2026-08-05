@@ -22,11 +22,11 @@ const evidenceOptions: Array<{ value: EvidenceFilter; label: string; minimum: nu
 ];
 
 export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
-  const [evidence, setEvidence] = useState<EvidenceFilter>("strong");
+  const [evidence, setEvidence] = useState<EvidenceFilter>("initial");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [query, setQuery] = useState("");
   const evidenceCounts = useMemo(() => Object.fromEntries(evidenceOptions.map((option) => [option.value, reps.filter((rep) => rep.nScored >= option.minimum).length])), [reps]);
-  const minimumCalls = evidenceOptions.find((option) => option.value === evidence)?.minimum ?? 15;
+  const minimumCalls = evidenceOptions.find((option) => option.value === evidence)?.minimum ?? 3;
   const normalizedQuery = query.trim().toLowerCase();
   const visibleReps = useMemo(() => reps.filter((rep) => {
     if (rep.nScored < minimumCalls) return false;
@@ -40,8 +40,8 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
   return (
     <Card className="magic-card border-white/80 bg-white/95">
       <CardHeader className="gap-1">
-        <CardTitle className="text-xl text-slate-950">Rep performance</CardTitle>
-        <p className="text-sm leading-6 text-slate-500">Lowest supported score first. The default view uses at least 15 valid calls so managers can start with the most reliable comparisons.</p>
+        <CardTitle className="text-xl text-slate-950">Rep call-execution results</CardTitle>
+        <p className="text-sm leading-6 text-slate-500">Lowest supported score first. Start with reps who have at least 3 valid calls; switch to 8+ or 15+ when you want stronger evidence.</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
@@ -101,15 +101,13 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
                     </TableCell>
                     <TableCell>
                       <div className="font-bold text-slate-900">{rep.nScored} calls</div>
-                      <div className="text-xs text-slate-500">{rep.confidence}</div>
+                      <div className="text-xs text-slate-500">{rep.confidence}{rep.excludedCalls ? ` · ${rep.excludedCalls} excluded` : ""}</div>
                     </TableCell>
                     <TableCell>
                       <FindingBadge rep={rep} />
                       <div className="mt-2 max-w-[18rem] text-sm font-semibold text-slate-800">{mainFinding(rep)}</div>
                     </TableCell>
-                    <TableCell className={rep.trendLabel === "Declining" ? "font-semibold text-red-700" : "text-slate-600"}>
-                      {rep.trendLabel}{rep.delta === null ? "" : ` (${rep.delta > 0 ? "+" : ""}${rep.delta.toFixed(1)})`}
-                    </TableCell>
+                    <TableCell><RecentDirection rep={rep} /></TableCell>
                     <TableCell>
                       <Link href={`/manager/rep-scoring/rep/${encodeURIComponent(rep.repId || rep.repEmail)}`} className="inline-flex items-center gap-1 whitespace-nowrap text-sm font-bold text-red-700 hover:underline">Review <ExternalLink className="size-3.5" /></Link>
                     </TableCell>
@@ -124,6 +122,15 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
       </CardContent>
     </Card>
   );
+}
+
+function RecentDirection({ rep }: { rep: RepPerformanceSummary }) {
+  return <div className="space-y-1 text-xs"><TrendLine label="Call 1" trend={rep.call1Trend} /><TrendLine label="Call 2+" trend={rep.call2Trend} /></div>;
+}
+
+function TrendLine({ label, trend }: { label: string; trend: RepPerformanceSummary["call1Trend"] }) {
+  const delta = trend.delta === null ? "" : ` ${trend.delta > 0 ? "+" : ""}${trend.delta.toFixed(1)}`;
+  return <div className={trend.label === "Declining" ? "font-bold text-red-700" : "text-slate-600"}><span className="font-semibold text-slate-800">{label}:</span> {trend.label}{delta}</div>;
 }
 
 function FilterButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {

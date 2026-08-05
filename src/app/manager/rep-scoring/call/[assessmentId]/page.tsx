@@ -29,7 +29,7 @@ export default async function RepScoringCallPage({ params }: PageProps<"/manager
   return (
     <main className="magic-page">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <Link href="/manager/rep-scoring" className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to rep performance</Link>
+        <Link href="/manager/rep-scoring" className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to call-execution review</Link>
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div>
@@ -42,6 +42,7 @@ export default async function RepScoringCallPage({ params }: PageProps<"/manager
         </header>
 
         {call.internalInconsistency ? <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-950"><strong>Excluded from rep averages:</strong> this older assessment contains an internal evidence inconsistency and must not be used as a performance result.</div> : null}
+        {call.attributionSubstituted ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Rep substitution verified:</strong> Airtable assigned this call to {call.assignedRepName || call.assignedRepEmail}, but transcript speaker evidence shows {call.repName} handled it. The score belongs to {call.repName}; the absent assigned rep is not penalized.</div> : null}
 
         <section className="grid gap-4 md:grid-cols-2">
           <InsightCard icon={Target} label="Coach first" value={insights.coachingPriority} description="Lowest-scoring dimension on this call" tone="red" />
