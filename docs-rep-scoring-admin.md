@@ -96,6 +96,15 @@ The hidden page is intentionally a score-and-coaching hybrid:
 
 The Aug 5, 2026 manager-UX release changes presentation and aggregation labels only. It does not change the n8n coordinator, worker, DeepSeek prompt, scoring weights, evidence validation, Airtable schema, source intake, Coaching, Ask Sales, Slack, or Google content.
 
+Release verification on Aug 5, 2026:
+
+- GitHub PR `#114` shipped the manager-first overview, evidence filters, adaptive concern/strength rules, concise rep summary, recommended action, and collapsed call evidence.
+- Production verification found and corrected two presentation edge cases through PRs `#115` and `#116`: coaching opportunities are separate from no-recurring-weakness results, and fewer-than-three-call samples cannot appear as clear results.
+- Final production commit `bf5d8f1abae07f854a447752965e0b5f6ee36441` deployed as `dpl_DikYBKmr4Mkce3eNEucpGNz4m7yf`, reached `READY`, and owns the canonical production alias.
+- Authenticated production verification showed 45 reps in the default 15+ call view, 67 at 8+, 97 at 3+, and 112 total scored reps. Evidence, status, and search filters reconciled with their visible row counts.
+- A real supported-clear case showed no recurring weakness without inventing one; a real strong-evidence concern case showed only its evidence-backed recurring dimensions. Early evidence displayed the neutral insufficient-evidence state.
+- Browser console warnings/errors and Vercel runtime errors for the reviewed manager routes were empty. Eight rep-scoring tests, scoped ESLint, TypeScript, and repeated full production builds passed without starting a local development server.
+
 Display bands for the current v3 scorer are factual labels for the assessed call:
 
 - 0–24: Unacceptable
