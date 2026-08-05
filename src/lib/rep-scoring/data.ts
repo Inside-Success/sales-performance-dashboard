@@ -405,6 +405,17 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
       ? round(recentMean - previousMean)
       : null;
     const patterns = getDimensionPatterns(sorted);
+    // A manager-facing weakness must be both recurring and below the factual
+    // Meets Expectations boundary. Do not manufacture a fixed number of
+    // weaknesses for a strong rep, and do not label one-off observations as a
+    // recurring pattern.
+    const supportedConcerns = patterns
+      .filter((pattern) => pattern.observations >= 3 && pattern.average < 70)
+      .slice(0, 3);
+    const supportedStrengths = [...patterns]
+      .filter((pattern) => pattern.observations >= 3 && pattern.average >= 70)
+      .sort((a, b) => b.average - a.average || b.observations - a.observations || a.label.localeCompare(b.label))
+      .slice(0, 2);
     const enoughEvidence = sorted.length >= 3;
     const lowScore = enoughEvidence && overallScore !== null && overallScore < 60;
     const declining = sorted.length >= 6 && delta !== null && delta <= -10;
@@ -437,8 +448,8 @@ export function deriveRepSummaries(calls: RepScoreCall[]): RepPerformanceSummary
       trendLabel: delta === null ? "Not enough history" : delta <= -10 ? "Declining" : delta >= 10 ? "Improving" : "Stable",
       needsReview,
       reviewReason,
-      coachingPriorities: patterns.slice(0, 3),
-      strengths: [...patterns].reverse().slice(0, 2),
+      coachingPriorities: supportedConcerns,
+      strengths: supportedStrengths,
       rank: null,
     };
   });

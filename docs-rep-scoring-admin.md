@@ -82,15 +82,19 @@ The dashboard derives cumulative rep results directly from current-version immut
 The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
-- The page states that a call card is one call, not a weekly rep conclusion.
-- The overview contains one row per scored rep, ordered by the lowest cumulative overall score first.
-- The first cards answer plain operational questions: who needs attention, how many reps have scores, how many calls have been analyzed, and how many calls are waiting.
-- One or two total calls are labeled as an early result; three total valid calls support an initial assessment.
-- Each row shows the overall score, both call-type scores and call counts, evidence strength, the first coaching priority, and recent direction.
-- Raw source, completed, processing, waiting, next-batch, and excluded counts remain available only in collapsed technical details.
+- The overview defaults to reps with at least 15 valid calls and remains ordered from lowest cumulative overall score to highest. Managers can broaden the evidence filter to 8+, 3+, or all scored calls.
+- Search and status controls let a manager show all results, supported concerns, or reps without a supported concern without changing the underlying score.
+- The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
+- The headline `Review first` count includes only supported concerns with at least 15 valid calls. Low-volume signals remain available but are not presented as equally reliable conclusions.
+- Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
 - While a backlog exists, a plain-language progress panel shows completion percentage, remaining calls, observed hourly throughput, active leases, and an evidence-based ETA. It automatically changes to an up-to-date message when the queue is empty.
-- `/manager/rep-scoring/rep/[repKey]` now shows overall score and rank, both call-type summaries, three recurring coaching priorities, quoted supporting examples, strongest recurring areas, a recent score sequence, and up to 24 underlying calls.
+- `/manager/rep-scoring/rep/[repKey]` opens with a one-sentence manager summary, the overall score and evidence amount, compact Call 1 and Call 2+ summaries, supported concerns, supported strengths, recent direction, and a specific next action.
+- A concern is shown only when the same dimension has at least three scored observations and averages below the factual Meets Expectations boundary. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
+- A strength is shown only when it has at least three scored observations and meets or exceeds expectations. Strong reps can correctly display no supported recurring weakness.
+- Up to 24 recent call cards remain available in a collapsed evidence section so managers can verify the result without facing the raw audit trail by default.
 - Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
+
+The Aug 5, 2026 manager-UX release changes presentation and aggregation labels only. It does not change the n8n coordinator, worker, DeepSeek prompt, scoring weights, evidence validation, Airtable schema, source intake, Coaching, Ask Sales, Slack, or Google content.
 
 Display bands for the current v3 scorer are factual labels for the assessed call:
 
