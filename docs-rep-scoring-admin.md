@@ -83,7 +83,7 @@ The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
 - The overview defaults to reps with at least 15 valid calls and remains ordered from lowest cumulative overall score to highest. Managers can broaden the evidence filter to 8+, 3+, or all scored calls.
-- Search and status controls let a manager show all results, supported concerns, or reps without a supported concern without changing the underlying score.
+- Search and status controls let a manager show all results, needs-attention results, supported coaching opportunities, or reps with no recurring weakness without changing the underlying score.
 - The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
 - The headline `Review first` count includes only supported concerns with at least 15 valid calls. Low-volume signals remain available but are not presented as equally reliable conclusions.
 - Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
