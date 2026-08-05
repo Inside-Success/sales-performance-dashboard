@@ -72,9 +72,8 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
   const waiting = Math.max(0, coverage.awaiting ?? 0);
   if (waiting === 0) return null;
   const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
-  const observedRate = Math.max(0, coverage.processedLastHour);
   const processingNow = Math.max(0, (coverage.inProgress ?? 0) + (coverage.selectedForRun ?? 0));
-  const estimatedHours = observedRate > 0 ? Math.ceil(waiting / observedRate) : null;
+  const hourlyBatchLimit = Math.max(1, coverage.hourlyBatchLimit ?? 160);
 
   return (
     <Card className="magic-card border-amber-200 bg-gradient-to-br from-amber-50 to-white">
@@ -82,7 +81,7 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
       <CardContent>
         <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600" style={{ width: `${complete}%` }} /></div>
         <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% complete</span><span>{numberFormatter.format(waiting)} calls remaining</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">{processingNow ? `${numberFormatter.format(processingNow)} calls are currently leased or selected. ` : ""}{estimatedHours === null ? "An estimate will appear after new valid scores complete." : estimatedHours <= 1 ? "Estimated to catch up within an hour at the latest observed rate." : `Estimated catch-up: about ${estimatedHours} hours at the latest observed rate.`}</p>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{processingNow ? `${numberFormatter.format(processingNow)} calls are in the current hourly batch. ` : `The next hourly batch can admit up to ${numberFormatter.format(hourlyBatchLimit)} calls. `}Progress updates automatically; no manager action is needed.</p>
       </CardContent>
     </Card>
   );
