@@ -19,9 +19,9 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 
 V4.2 coordinator: `53txJ8KuCRGim8LB`. V4.2 worker: `MZv9GY5l5HDikIql`. V3 coordinator `JQgSOlzomtjBotYJ` and worker `lXXiUGvoWk18dNFk` remain the rollback pair.
 
-The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. The window never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. One hourly coordinator selects up to 160 unprocessed calls and dispatches at most eight execution-local batches of at most 20 calls. Each isolated worker acquires or refreshes the call lease before reading the transcript or calling the model. It resolves the transcript speaker against the rep roster, requests three independent `deepseek-v4-pro` reviews, validates exact timestamp/speaker/quote evidence, computes dimension-level median consensus in code, and writes either an immutable assessment or a quarantine record.
+The workflow reads every eligible source call from the fixed start `2026-07-18 00:00 America/New_York` onward. The window never rolls forward: new calls accumulate while older valid scores remain part of each rep's result. During the temporary catch-up period, one coordinator run starts every 30 minutes, selects up to 160 unprocessed calls, and dispatches at most eight execution-local batches of at most 20 calls. Each isolated worker acquires or refreshes the call lease before reading the transcript or calling the model. It resolves the transcript speaker against the rep roster, requests three independent `deepseek-v4-pro` reviews, validates exact timestamp/speaker/quote evidence, computes dimension-level median consensus in code, and writes either an immutable assessment or a quarantine record.
 
-The coordinator is the only enabled trigger in the live graph; its controlled-test webhook was disabled after acceptance. Worker executions are internal sub-workflow runs rather than per-call schedules or webhooks. Active worker leases and completed V4.2 idempotency keys are excluded from later hourly selection. The 160-call hourly ceiling provides 3,840-call daily headroom for the stated 750–1,000-call daily volume; when fewer calls are waiting, only the available calls are dispatched.
+The coordinator's 30-minute schedule is the only enabled trigger in the live graph; its controlled-test webhook was disabled after acceptance. Worker executions are internal sub-workflow runs rather than per-call schedules or webhooks. Active worker leases and completed V4.2 idempotency keys are excluded from later selection. The temporary 160-call twice-hourly ceiling provides up to 7,680 calls/day of dispatch headroom; when fewer calls are waiting, only the available calls are dispatched. Restore the one-hour interval after the backlog reaches zero and normal live-call volume is confirmed sustainable.
 
 An active worker lease is treated as already in progress, so overlapping or delayed triggers cannot score the same call twice. Provider and storage operations retry within the isolated worker; a failed call cannot stop another batch, and a safely completed quarantine is never presented as a score.
 
@@ -33,7 +33,7 @@ Workflow IDs and rollback:
 - V3 rollback worker: `lXXiUGvoWk18dNFk`
 - Durable pre-parallel rollback workflow: `4b8UPCDEDwubFBnX` (`MM Rep Performance Reviewer - PRE-PARALLEL ROLLBACK 2026-07-31 (INACTIVE)`). It is a validated clone of pre-parallel version `384`; the workflow and both triggers are disabled.
 - To restore the prior single-workflow path, deactivate the parallel coordinator and worker, review the rollback clone, enable only its hourly schedule, and then activate it. Existing immutable scores and ledger history are retained.
-- The controlled test webhook is disabled in the published coordinator; the hourly schedule is the only enabled trigger.
+- The controlled test webhook is disabled in the published coordinator; the 30-minute schedule is the only enabled trigger during catch-up.
 
 Production canaries on July 31, 2026:
 
@@ -41,7 +41,7 @@ Production canaries on July 31, 2026:
 - The worker was corrected to preserve an item after transcript/provider failure, use the provider-aligned timeout, and continue the batch through quarantine and ledger completion.
 - Final coordinator execution `419608` dispatched two calls to worker execution `419619`. The worker finished successfully with two DeepSeek outputs, one valid immutable score, one evidence-validation quarantine, and two completed ledger entries. This proves that a rejected assessment no longer stops the next call in the batch.
 
-The only enabled trigger is the hourly schedule. Each normal run admits at most 160 unprocessed calls and divides them into no more than eight worker batches of at most 20. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active V4.2 leases and completed V4.2 idempotency keys are skipped. Coordinator state is execution-local; concurrent contexts cannot overwrite a shared batch array.
+The only enabled trigger is the temporary 30-minute schedule. Each normal run admits at most 160 unprocessed calls and divides them into no more than eight worker batches of at most 20. Selection is `cumulative_evidence_fill_v2`: it first completes reps closest to three total valid calls, then fills a missing call type, and finally rotates by prior attempts. Within a chosen rep/call-type group, the newest available call is used. Active V4.2 leases and completed V4.2 idempotency keys are skipped. Coordinator state is execution-local; concurrent contexts cannot overwrite a shared batch array.
 
 The ledger and score reads are deliberately collapsed between Airtable nodes. Before this correction, the score snapshot ran once per ledger record, multiplying roughly 90 real score rows into more than 20,000 execution items and causing 30-minute cancellations. The corrected graph reads each snapshot once; controlled execution `418910` read 234 ledger rows, collapsed them to one item, and read 122 score rows exactly once.
 
@@ -91,7 +91,7 @@ The hidden page is intentionally a score-and-coaching hybrid:
 - The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
 - The headline `Needs attention` count includes only supported low or declining signals; one- and two-call samples cannot enter it. The adjacent `Ready to review` card states the three-call floor, and the table makes stronger 8+ and 15+ evidence filters explicit.
 - Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
-- While a backlog exists, a plain-language progress panel shows completion percentage, remaining calls, and the active hourly batch. It does not estimate completion from valid scores alone because quarantined outcomes also reduce the queue; that shortcut produced a misleading ETA. It automatically changes to an up-to-date message when the queue is empty.
+- While a backlog exists, a plain-language progress panel shows completion percentage, remaining calls, and the active processing batch. It does not estimate completion from valid scores alone because quarantined outcomes also reduce the queue; that shortcut produced a misleading ETA. It automatically changes to an up-to-date message when the queue is empty.
 - `/manager/rep-scoring/rep/[repKey]` opens with a one-sentence manager summary, the overall score and evidence amount, compact Call 1 and Call 2+ summaries, supported concerns, supported strengths, recent direction, and a specific next action.
 - A concern is shown only when the same dimension has at least three scored observations and averages below the factual Meets Expectations boundary. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
 - A strength is shown only when it has at least three scored observations and meets or exceeds expectations. Strong reps can correctly display no supported recurring weakness.
@@ -158,7 +158,14 @@ Verified without running a local development server:
 - Cumulative workflow release versions `376` and `377` preserve workflow version `375` as the immediate pre-change rollback.
 - Controlled cumulative executions `418904` and `418910` both completed successfully. Execution `418910` used the exact fixed start `2026-07-18T04:00:00.000Z`, found 2,113 eligible calls across 114 reps, reconciled 233 completed + 1 active + 1,879 waiting, and wrote a valid v4-config score.
 - The fan-out correction reduced the score snapshot from more than 20,000 multiplied execution items to 122 real score rows read once.
-- The controlled webhook was disabled again after the verification runs; hourly schedule remains the only enabled trigger.
+- The controlled webhook was disabled again after the verification runs; the scheduled coordinator remains the only enabled trigger.
+
+### Temporary twice-hourly catch-up — 2026-08-06
+
+- Live coordinator `53txJ8KuCRGim8LB` now runs every 30 minutes. The 160-call run cap, eight-worker ceiling, 20-call worker batch size, V4.2 leases, and immutable idempotency keys were not changed.
+- The published workflow name is `MM Rep Performance Reviewer V4.2 - Speaker Safe (LIVE 30-MIN CATCH-UP)`. Runtime validation passed with zero errors; the controlled webhook remains disabled.
+- Published version `36eec3d3-9e6e-42ca-92fd-1da91e3eef00` is the accelerated graph. Workflow-history version `478` is the verified pre-change hourly rollback point.
+- This acceleration is intentionally temporary. After the backlog reaches zero, change only `Shadow Schedule` back to `{ field: "hours", hoursInterval: 1 }`, validate, publish, and confirm the active graph before considering catch-up complete.
 - Cumulative aggregation tests verify equal call-type weighting and lowest-score-first ranking, alongside the existing score-presentation tests.
 - Scoped ESLint and the full Next.js production build pass without starting a local server.
 
