@@ -67,6 +67,12 @@ The final identical-call passes used isolated versions `rep-reviewer-v4.3-calibr
 
 This is a bounded operational and directional gate, not proof that every human judgment is correct. The short human review in `REP-SCORING-CALIBRATION.md` remains the correct way to challenge individual labels or evidence after the initial release.
 
+The production dashboard was built and deployed as Vercel deployment `dpl_FiYEuzfvtW8fWfdUh9BLrEd8T4L2`, which reported `READY` and is aliased at `https://sales-performance-dashboard-rose.vercel.app`. Authenticated browser verification with the approved Inside Success account confirmed the overview, rep detail, and exact call-evidence routes load without browser console errors. Manager call context retains useful outcome and summary text while workflow-internal ensemble, validation-correction, attribution, and provenance payloads are hidden from the normal view; those records remain stored for audit.
+
+The controlled 36-call production batch finished in two successful workers. The first scheduled 30-minute execution (`452606`) detected the two active leases and completed as the intended `skipped_active_batch` no-op instead of overlapping them. At the final release observation, the live dashboard showed 43 valid V4.3 calls, 49.5% of the fixed launch backlog finalized, approximately 48 launch calls remaining, 24 reps with some evidence, and 4 reps with at least 3 calls. No rep had reached the default 15-call evidence view yet. The remaining backfill is deliberately autonomous; this release process did not wait for it to finish.
+
+Local verification passed: production build, TypeScript, scoped ESLint, `git diff --check`, credential-pattern scan, and all 19 rep-scoring tests. GitHub's automatic Vercel preview check failed during external preview provisioning, but the explicit production build and deployment succeeded and the production routes were verified directly.
+
 ## Release checklist
 
 - [x] V4.2 and V3 rollback paths preserved.
@@ -77,5 +83,5 @@ This is a bounded operational and directional gate, not proof that every human j
 - [x] Controlled 12-call load completed without a worker crash.
 - [x] Dashboard policy has unit coverage for low results, sustained borderline results, recurring coaching opportunities, clear results, critical events, call-type weighting, and separate trends.
 - [x] Repeatability result recorded.
-- [ ] Production build, GitHub, Vercel, authenticated browser, and runtime-log checks recorded.
+- [x] Production build, GitHub, Vercel, authenticated browser, and runtime-log checks recorded.
 - [x] V4.3 backfill started; controlled production coordinator `452585` safely dispatched 36 calls in two isolated workers before the schedule resumed.
