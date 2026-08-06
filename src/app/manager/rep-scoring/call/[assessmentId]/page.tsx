@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import { getRepScoringDashboardData } from "@/lib/rep-scoring/data";
-import { getCallInsights, humanize, normalizeBehaviours, normalizeDimensions, type EvidenceQuote, type ScoreDimension } from "@/lib/rep-scoring/presentation";
+import { getCallInsights, getManagerCallContextEntries, humanize, normalizeBehaviours, normalizeDimensions, type EvidenceQuote, type ScoreDimension } from "@/lib/rep-scoring/presentation";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -106,7 +106,7 @@ function EvidenceBlock({ evidence }: { evidence: EvidenceQuote }) {
 }
 
 function CallContext({ context }: { context: Record<string, unknown> }) {
-  const entries = Object.entries(context).filter(([, value]) => value !== null && value !== undefined && String(value).trim());
+  const entries = getManagerCallContextEntries(context);
   return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Call context</CardTitle><p className="text-sm leading-6 text-slate-500">Facts that help a manager interpret the score.</p></CardHeader><CardContent className="grid gap-3">{entries.length ? entries.map(([key, value]) => <div key={key} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{humanize(key)}</div><p className="mt-2 text-sm leading-6 text-slate-700">{formatValue(value)}</p></div>) : <p className="text-sm leading-6 text-slate-500">No additional call context was stored. Treat this as a data limitation.</p>}</CardContent></Card>;
 }
 

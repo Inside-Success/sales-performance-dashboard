@@ -22,7 +22,7 @@ const evidenceOptions: Array<{ value: EvidenceFilter; label: string; minimum: nu
 ];
 
 export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
-  const [evidence, setEvidence] = useState<EvidenceFilter>("initial");
+  const [evidence, setEvidence] = useState<EvidenceFilter>("strong");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [query, setQuery] = useState("");
   const evidenceCounts = useMemo(() => Object.fromEntries(evidenceOptions.map((option) => [option.value, reps.filter((rep) => rep.nScored >= option.minimum).length])), [reps]);
@@ -30,9 +30,9 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
   const normalizedQuery = query.trim().toLowerCase();
   const visibleReps = useMemo(() => reps.filter((rep) => {
     if (rep.nScored < minimumCalls) return false;
-    if (status === "attention" && !rep.needsReview) return false;
-    if (status === "opportunity" && (rep.needsReview || !rep.coachingPriorities.length)) return false;
-    if (status === "clear" && (rep.nScored < 3 || rep.needsReview || rep.coachingPriorities.length > 0)) return false;
+    if (status === "attention" && rep.reviewStatus !== "needs_attention") return false;
+    if (status === "opportunity" && rep.reviewStatus !== "coaching_opportunity") return false;
+    if (status === "clear" && rep.reviewStatus !== "no_recurring_concern") return false;
     if (normalizedQuery && !`${rep.repName} ${rep.repEmail}`.toLowerCase().includes(normalizedQuery)) return false;
     return true;
   }), [minimumCalls, normalizedQuery, reps, status]);
@@ -41,7 +41,7 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
     <Card className="magic-card border-white/80 bg-white/95">
       <CardHeader className="gap-1">
         <CardTitle className="text-xl text-slate-950">Rep call-execution results</CardTitle>
-        <p className="text-sm leading-6 text-slate-500">Lowest supported score first. Start with reps who have at least 3 valid calls; switch to 8+ or 15+ when you want stronger evidence.</p>
+        <p className="text-sm leading-6 text-slate-500">Lowest score first. The default shows reps with at least 15 valid calls; broaden the evidence filter when you need earlier signals.</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
@@ -138,15 +138,16 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 }
 
 function FindingBadge({ rep }: { rep: RepPerformanceSummary }) {
-  if (rep.needsReview) return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
-  if (rep.coachingPriorities.length) return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
+  if (rep.reviewStatus === "early_evidence") return <Badge variant="outline" className="rounded-full border-slate-200 bg-slate-50 text-slate-700">Early evidence</Badge>;
+  if (rep.reviewStatus === "needs_attention") return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
+  if (rep.reviewStatus === "coaching_opportunity") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
   return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No supported concern</Badge>;
 }
 
 function mainFinding(rep: RepPerformanceSummary) {
+  if (rep.needsReview) return rep.reviewReason;
   const concern = rep.coachingPriorities[0]?.label;
   if (concern) return concern;
-  if (rep.needsReview) return rep.reviewReason;
   return rep.strengths[0] ? `Strongest area: ${rep.strengths[0].label}` : "Continue normal monitoring";
 }
 

@@ -94,7 +94,7 @@ function ManagerSummary({ summary }: { summary: RepPerformanceSummary }) {
 function SupportedConcerns({ summary, examples }: { summary: RepPerformanceSummary; examples: Map<string, PriorityExample> }) {
   return (
     <Card className="magic-card border-white/80 bg-white/95">
-      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">Only recurring dimensions below expectations are shown. The list is not forced to contain a fixed number.</p></CardHeader>
+      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">Only dimensions averaging below 60 across at least five valid observations are shown. The list is never forced to contain a fixed number.</p></CardHeader>
       <CardContent className="space-y-3">
         {summary.coachingPriorities.length ? summary.coachingPriorities.map((pattern) => <PriorityCard key={pattern.key} pattern={pattern} example={examples.get(pattern.key)} />) : summary.nScored < 3 ? <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><AlertTriangle className="size-5 text-amber-700" />Not enough evidence to establish a recurring concern</div><p className="mt-2 text-sm leading-6 text-slate-600">Wait for at least three valid calls before drawing a recurring skill conclusion.</p></div> : <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><CheckCircle2 className="size-5 text-emerald-700" />No recurring weakness is currently supported</div><p className="mt-2 text-sm leading-6 text-slate-600">This does not mean the rep is perfect; it means the analyzed calls do not justify labeling a recurring weakness.</p></div>}
       </CardContent>
@@ -130,9 +130,9 @@ function NextAction({ summary, examples }: { summary: RepPerformanceSummary; exa
 function HeroStat({ label, value }: { label: string; value: string }) { return <div className="rounded-2xl border border-slate-200 bg-white/90 p-3 text-center"><div className="text-2xl font-extrabold text-slate-950">{value}</div><div className="text-xs font-semibold text-slate-500">{label}</div></div>; }
 
 function StatusBadge({ summary }: { summary: RepPerformanceSummary }) {
-  if (summary.nScored < 3) return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Early evidence</Badge>;
-  if (summary.needsReview) return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
-  if (summary.coachingPriorities.length) return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
+  if (summary.reviewStatus === "early_evidence") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Early evidence</Badge>;
+  if (summary.reviewStatus === "needs_attention") return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
+  if (summary.reviewStatus === "coaching_opportunity") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
   return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No supported concern</Badge>;
 }
 
@@ -173,6 +173,7 @@ function getPriorityExamples(calls: RepScoreCall[], priorities: RepDimensionPatt
 function summarySentence(summary: RepPerformanceSummary) {
   if (summary.nScored < 3) return `Only ${summary.nScored} valid ${summary.nScored === 1 ? "call is" : "calls are"} available, so no stable conclusion should be made yet.`;
   const concern = summary.coachingPriorities[0]?.label;
+  if (summary.criticalConcern) return `A verified high-severity call event needs manager review. Open the supporting call before deciding what happened or what action is appropriate.`;
   if (summary.needsReview && concern) return `The overall result needs manager review. The clearest recurring concern is ${concern.toLowerCase()}, supported by ${summary.nScored} valid calls.`;
   if (summary.needsReview) return `The overall score or recent decline needs manager review, but no recurring skill weakness meets the evidence rule yet.`;
   if (concern) return `The overall result is not below the review threshold. ${concern} is a supported coaching opportunity, not a complete judgment of the rep.`;
@@ -181,6 +182,7 @@ function summarySentence(summary: RepPerformanceSummary) {
 
 function nextAction(summary: RepPerformanceSummary) {
   if (summary.nScored < 3) return "Wait for more valid calls before assigning a corrective coaching priority.";
+  if (summary.criticalConcern) return "Open the supporting call and verify the exact quoted event in context before taking any action.";
   const concern = summary.coachingPriorities[0]?.label;
   if (concern) return `Review the supporting evidence for ${concern.toLowerCase()}, coach only what the call evidence confirms, and compare the next five valid calls.`;
   if (summary.needsReview) return "Review the score and recent calls before coaching. The current data does not support naming a recurring skill weakness.";

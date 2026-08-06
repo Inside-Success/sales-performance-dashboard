@@ -66,6 +66,18 @@ export type BehaviourCheck = {
   validationNote: string;
 };
 
+const INTERNAL_CALL_CONTEXT_KEYS = new Set([
+  "attribution",
+  "configversion",
+  "ensemble",
+  "model",
+  "promptversion",
+  "rubricversion",
+  "scorerversion",
+  "validationcorrections",
+  "weightsversion",
+]);
+
 export function normalizeDimensions(callType: string, values: unknown[]): ScoreDimension[] {
   return values.flatMap((value) => {
     const object = asObject(value);
@@ -124,6 +136,16 @@ export function evidenceConfidence(nScored: number) {
 
 export function isEnoughEvidence(nScored: number) {
   return nScored >= 3;
+}
+
+export function getManagerCallContextEntries(context: Record<string, unknown>) {
+  return Object.entries(context).filter(([key, value]) => {
+    const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return !INTERNAL_CALL_CONTEXT_KEYS.has(normalizedKey)
+      && value !== null
+      && value !== undefined
+      && String(value).trim().length > 0;
+  });
 }
 
 export function humanize(value: string) {

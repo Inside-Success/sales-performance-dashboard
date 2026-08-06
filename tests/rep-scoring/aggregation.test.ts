@@ -49,18 +49,18 @@ describe("rep scoring aggregation", () => {
 
   it("orders the lowest cumulative rep score first and marks supported low results", () => {
     const calls = [
-      ...[50, 55, 45].map((score, index) => call({ assessmentId: `low-${index}`, repEmail: "low@example.com", repName: "Low", callType: "Call 1", score })),
-      ...[80, 85, 90].map((score, index) => call({ assessmentId: `high-${index}`, repEmail: "high@example.com", repName: "High", callType: "Call 1", score })),
+      ...[45, 45, 45, 45, 45, 45, 45, 45].map((score, index) => call({ assessmentId: `low-${index}`, repEmail: "low@example.com", repName: "Low", callType: "Call 1", score })),
+      ...[80, 85, 90, 90, 85, 80, 90, 85].map((score, index) => call({ assessmentId: `high-${index}`, repEmail: "high@example.com", repName: "High", callType: "Call 1", score })),
     ];
 
     const summaries = deriveRepSummaries(calls);
     expect(summaries.map((summary) => summary.repName)).toEqual(["Low", "High"]);
-    expect(summaries[0]).toMatchObject({ overallScore: 50, needsReview: true, rank: 1 });
-    expect(summaries[1]).toMatchObject({ overallScore: 85, needsReview: false, rank: 2 });
+    expect(summaries[0]).toMatchObject({ overallScore: 45, needsReview: true, reviewStatus: "needs_attention", rank: 1 });
+    expect(summaries[1]).toMatchObject({ overallScore: 85.63, needsReview: false, reviewStatus: "no_recurring_concern", rank: 2 });
   });
 
   it("does not manufacture weaknesses for a rep whose recurring dimensions meet expectations", () => {
-    const calls = [0, 1, 2].map((index) => call({
+    const calls = [0, 1, 2, 3, 4].map((index) => call({
       assessmentId: `strong-${index}`,
       repEmail: "strong@example.com",
       repName: "Strong Rep",
@@ -78,7 +78,7 @@ describe("rep scoring aggregation", () => {
   });
 
   it("shows only recurring below-expectation dimensions as coaching concerns", () => {
-    const calls = [0, 1, 2].map((index) => call({
+    const calls = [0, 1, 2, 3, 4].map((index) => call({
       assessmentId: `mixed-${index}`,
       repEmail: "mixed@example.com",
       repName: "Mixed Rep",
@@ -94,6 +94,47 @@ describe("rep scoring aggregation", () => {
     const summary = deriveRepSummaries(calls)[0];
     expect(summary.coachingPriorities.map((pattern) => pattern.key)).toEqual(["discovery"]);
     expect(summary.strengths.map((pattern) => pattern.key)).toEqual(["authority", "qualification"]);
+    expect(summary.reviewStatus).toBe("coaching_opportunity");
+  });
+
+  it("does not label an ordinary Developing result as needs attention without strong evidence", () => {
+    const calls = [0, 1, 2, 3, 4, 5, 6, 7].map((index) => call({
+      assessmentId: `developing-${index}`,
+      repEmail: "developing@example.com",
+      repName: "Developing Rep",
+      callType: "Call 1",
+      score: 55,
+      dimensions: [{ key: "discovery", band: "Developing" }],
+    }));
+
+    expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: false, reviewStatus: "coaching_opportunity" });
+  });
+
+  it("uses the stronger 15-call rule for a sustained score below 60", () => {
+    const calls = Array.from({ length: 15 }, (_, index) => call({
+      assessmentId: `sustained-${index}`,
+      repEmail: "sustained@example.com",
+      repName: "Sustained Rep",
+      callType: "Call 2+",
+      score: 55,
+    }));
+
+    expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: true, reviewStatus: "needs_attention" });
+  });
+
+  it("surfaces an evidence-validated high-severity call event without manufacturing a skill weakness", () => {
+    const calls = [0, 1, 2].map((index) => call({
+      assessmentId: `event-${index}`,
+      repEmail: "event@example.com",
+      repName: "Event Rep",
+      callType: "Call 2+",
+      score: 80,
+      criticalEvents: index === 0 ? [{ name: "Material pricing error", severity: "high" }] : [],
+    }));
+
+    const summary = deriveRepSummaries(calls)[0];
+    expect(summary).toMatchObject({ needsReview: true, criticalConcern: true, reviewStatus: "needs_attention" });
+    expect(summary.coachingPriorities).toEqual([]);
   });
 
   it("does not mix Call 1 and Call 2+ when calculating recent direction", () => {

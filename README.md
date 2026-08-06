@@ -72,6 +72,7 @@ The endpoint upserts dashboard rows and returns:
 - `/self-report/[publicId]` manual report status/detail page
 - `/manager/usage` hidden manager usage analytics
 - `/manager/sales-correlation?days=7|14|30|90` hidden manager sales-impact analytics
+- `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
 - `/api/usage-events` browser usage event ingest
 - `/api/report-chat` gated DeepSeek report Q&A
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
@@ -91,6 +92,7 @@ The endpoint upserts dashboard rows and returns:
 - Manual reports stuck in `pending` or `processing` for more than 5 minutes are treated as stale/timed out instead of showing an endless generation state.
 - `/manager/usage` tracks official and manual usage separately. Usage tracking starts from the deployment that added events; older visits are not backfilled.
 - `/manager/sales-correlation` reads the company sales Google Sheet as CSV, validates the read, stores a dashboard-owned last-good snapshot in Postgres, and falls back to that snapshot if the live CSV looks filtered/incomplete or fails. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
+- `/manager/rep-scoring` defaults to the lowest-scoring reps with at least 15 valid calls. V4.3 requires repeated evidence, a material decline, or a verified high-severity event before showing `Needs attention`; it never forces a quota of weak reps or weaknesses.
 - Sales-impact matching canonicalizes known rep-name issues such as suffix `Success` and alias `ollie-mcfarl` -> `ollie-mcfarlane`.
 - Report chat sends visible coaching fields and mandatory transcript text to DeepSeek only after the user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
 - Sales-impact chat answers only from the current analytics snapshot and must not claim Magic Mike caused sales increases.

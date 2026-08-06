@@ -2,12 +2,27 @@ import { describe, expect, it } from "vitest";
 import {
   evidenceConfidence,
   getCallInsights,
+  getManagerCallContextEntries,
   humanize,
   normalizeBehaviours,
   normalizeDimensions,
 } from "@/lib/rep-scoring/presentation";
 
 describe("rep scoring presentation", () => {
+  it("keeps manager context while hiding workflow-internal audit payloads", () => {
+    expect(getManagerCallContextEntries({
+      Outcome: "Follow-up booked",
+      Summary: "Prospect requested the contract.",
+      Ensemble: { reviews: 3 },
+      validation_corrections: ["Removed unsupported quote"],
+      Attribution: { speakingRep: "Rep" },
+      "Scorer Version": "rep-reviewer-v4.3",
+    })).toEqual([
+      ["Outcome", "Follow-up booked"],
+      ["Summary", "Prospect requested the contract."],
+    ]);
+  });
+
   it("explains the deterministic contribution behind a score", () => {
     const dimensions = normalizeDimensions("Call 1", [
       { key: "discovery", applicability: "applicable", band: "Unacceptable", reason: "No discovery", evidence: [] },

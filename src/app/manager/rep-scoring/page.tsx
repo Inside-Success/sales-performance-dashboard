@@ -23,7 +23,8 @@ export default async function ManagerRepScoringPage() {
   await requireRepScoringAdmin();
   const data = await getRepScoringDashboardData();
   const reviewReadyReps = data.repSummaries.filter((rep) => rep.nScored >= 3);
-  const supportedConcerns = reviewReadyReps.filter((rep) => rep.needsReview).length;
+  const supportedConcerns = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention").length;
+  const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15).length;
 
   return (
     <main className="magic-page">
@@ -50,7 +51,7 @@ export default async function ManagerRepScoringPage() {
 
         <section className="grid gap-3 md:grid-cols-3">
           <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
-          <Metric title="Ready to review" value={reviewReadyReps.length} helper="At least 3 valid calls; use the 8+ or 15+ filter for stronger evidence" tone="green" icon={Users} />
+          <Metric title="Strong evidence" value={strongEvidenceReps} helper="At least 15 valid calls; this is the default manager view" tone="green" icon={Users} />
           <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Speaker-verified assessments since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
         </section>
 
@@ -58,7 +59,8 @@ export default async function ManagerRepScoringPage() {
         <RepRankingTable reps={data.repSummaries} />
 
         <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm leading-6 text-slate-600">
-          <strong className="text-slate-900">What this measures:</strong> observable sales-call execution in available transcripts. It does not measure lead quality, territory, attendance outside the recorded call, revenue attribution, or every part of a rep&apos;s job. Calls with unresolved speaker identity or unsupported evidence are excluded, not converted into low scores.
+          <strong className="text-slate-900">How to use it:</strong> begin with the 15+ call list, review the reason beside the lowest results, then open only the reps you need to investigate. A score alone does not create a concern: the page also requires enough repeated evidence, a material decline, or a verified high-severity call event.
+          <span className="mt-2 block"><strong className="text-slate-900">What this measures:</strong> observable sales-call execution in available transcripts. It does not measure lead quality, territory, attendance outside the recorded call, revenue attribution, or every part of a rep&apos;s job. Calls with unresolved speaker identity or unsupported evidence are excluded, not converted into low scores.</span>
         </section>
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">Scores support manager investigation; they are not automatic employment decisions. This page reads only the isolated rep-scoring base and does not edit source calls, coaching reports, Slack, Google content or employment records.</p>
