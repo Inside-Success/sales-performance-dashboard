@@ -80,8 +80,9 @@ V3 remains the independent rollback path. V4.2 uses distinct idempotency keys an
 - The unattended run exposed a stale coordinator-only ledger filter for `rep-reviewer-v4`. The coordinator was paused, the filter was changed to `rep-reviewer-v4.2`, zero-error workflow validation passed, and the published active graph was read back before the hourly schedule resumed. Immutable score/quarantine outcomes had already prevented duplicate final results; the correction adds visibility of active V4.2 leases and repairs ledger reconciliation telemetry for future snapshots.
 - The controlled test webhook remains disabled. The scheduled coordinator is its only enabled trigger; V3 remains intact as rollback.
 
-### 2026-08-06 temporary catch-up acceleration
+### 2026-08-06 adaptive catch-up and crash recovery
 
-- Coordinator `53txJ8KuCRGim8LB` was changed from hourly to every 30 minutes without changing the 160-call run cap, eight-worker ceiling, 20-call worker size, model, source window, credentials, leasing, or idempotency behavior.
-- The active workflow is `MM Rep Performance Reviewer V4.2 - Speaker Safe (LIVE 30-MIN CATCH-UP)`, published as version `36eec3d3-9e6e-42ca-92fd-1da91e3eef00`. Runtime validation returned zero errors, and the controlled webhook remained disabled.
-- Workflow-history version `478` is the immediate verified hourly rollback point. Restore the one-hour schedule after the backlog reaches zero and normal live-call throughput is confirmed.
+- The first unguarded twice-hourly version exposed a real overlap: successful coordinator `446148` dispatched workers whose final execution ended roughly 32 minutes after the parent began. Coordinators `446252`, `446311`, and `446433` subsequently crashed and n8n auto-deactivated the coordinator.
+- Coordinator `53txJ8KuCRGim8LB` now keeps 30-minute opportunities but first reads only unexpired V4.2 worker leases. A busy slot exits successfully as `skipped_active_batch`; a clear slot continues into the existing heavy scan and dispatch. A failed preflight retries three times and then fails closed.
+- The coordinator execution ceiling is 25 minutes, preventing a heavy parent from surviving into the next 30-minute boundary. The 160-call run cap, eight-worker ceiling, 20-call worker size, model, source window, credentials, leasing, and immutable idempotency behavior are unchanged.
+- The active workflow is `MM Rep Performance Reviewer V4.2 - Speaker Safe (LIVE ADAPTIVE 30-MIN)`, active version `634f3f19-2142-4cbc-a53a-5edaf62477a3`. Runtime validation returned zero errors, and the controlled webhook remains disabled. Workflow-history version `483` is the verified hourly safe-mode rollback; version `478` remains the pre-acceleration hourly rollback.
