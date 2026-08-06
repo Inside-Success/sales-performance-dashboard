@@ -72,16 +72,15 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
   const waiting = Math.max(0, coverage.awaiting ?? 0);
   if (waiting === 0) return null;
   const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
-  const processingNow = Math.max(0, (coverage.inProgress ?? 0) + (coverage.selectedForRun ?? 0));
   const scheduledBatchLimit = Math.max(1, coverage.hourlyBatchLimit ?? 160);
 
   return (
     <Card className="magic-card border-amber-200 bg-gradient-to-br from-amber-50 to-white">
-      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />Call analysis is catching up</CardTitle><p className="text-sm leading-6 text-slate-600">Existing results remain available while isolated background workers process the remaining calls.</p></CardHeader>
+      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />Historical call analysis is catching up</CardTitle><p className="text-sm leading-6 text-slate-600">This progress uses the last complete all-call inventory, so rotating daily workflow scans cannot make the percentage jump backward.</p></CardHeader>
       <CardContent>
         <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600" style={{ width: `${complete}%` }} /></div>
-        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% complete</span><span>{numberFormatter.format(waiting)} calls remaining</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">{processingNow ? `${numberFormatter.format(processingNow)} calls are in the current processing batch. ` : `The next scheduled batch can admit up to ${numberFormatter.format(scheduledBatchLimit)} calls. `}Progress updates automatically; no manager action is needed.</p>
+        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>Approximately {complete.toFixed(1)}% of the launch backlog finalized</span><span>About {numberFormatter.format(waiting)} launch calls remaining</span></div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "Workers continue checking for unfinished calls every 30 minutes. "}Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls. New live calls continue separately and do not make this historical bar move backward.</p>
       </CardContent>
     </Card>
   );

@@ -123,6 +123,8 @@ export type RepScoringCoverage = {
   windowEnd: string;
   windowLabel: string;
   reportingTimezone: string;
+  progressBaselineAt: string;
+  progressBaselineEnd: string;
   sourceCandidates: number | null;
   sourceReps: number | null;
   assessmentGroups: number | null;
@@ -217,8 +219,9 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
           && isWithinWindow(readString(diagnostic.meetingStartAt), reportingStart, reportingEnd)
           && !scoredKeys.has(readString(record.fields["Idempotency Key"]));
       }),
-      "Quarantine ID",
+      "Idempotency Key",
     );
+    reconcileCumulativeProgress(coverage, recentCalls, currentQuarantines);
     const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
     const repSummaries = deriveRepSummaries(consistentCalls, currentQuarantines);
     const readyRepIds = new Set(repSummaries.filter((rep) => rep.nScored >= 3).map((rep) => rep.id));
@@ -536,12 +539,31 @@ function getGroupInsights(calls: RepScoreCall[]) {
 }
 
 function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
-  const latest = records
+  const versionRecords = records
     .filter((record) => readString(record.fields["Scorer Version"]) === CURRENT_SCORER_VERSION)
-    .sort((a, b) => dateValue(readString(b.fields["Started At"]) || b.createdTime || "") - dateValue(readString(a.fields["Started At"]) || a.createdTime || ""))[0];
+    .sort((a, b) => dateValue(readString(b.fields["Started At"]) || b.createdTime || "") - dateValue(readString(a.fields["Started At"]) || a.createdTime || ""));
+  const latest = versionRecords[0];
   if (!latest) return emptyCoverage();
   const details = readJsonObject(latest.fields["Error Summary JSON"]);
-  const sourceCandidates = readNumber(details.sourceCandidates) ?? readNumber(latest.fields["Source Records Read"]);
+  // The live coordinator now reads one daily shard at a time to stay below
+  // n8n's memory ceiling. A shard's candidate count must not become the
+  // manager-facing denominator. Keep the largest reconciled all-window
+  // inventory already recorded as the stable catch-up baseline instead.
+  const baseline = versionRecords
+    .map((record) => {
+      const recordDetails = readJsonObject(record.fields["Error Summary JSON"]);
+      return {
+        record,
+        details: recordDetails,
+        sourceCandidates: readNumber(recordDetails.sourceCandidates) ?? readNumber(record.fields["Source Records Read"]),
+        reconciled: readBoolean(recordDetails.reconciled),
+      };
+    })
+    .filter((snapshot) => snapshot.sourceCandidates !== null && snapshot.reconciled)
+    .sort((a, b) => (b.sourceCandidates ?? 0) - (a.sourceCandidates ?? 0)
+      || dateValue(readString(b.record.fields["Started At"]) || b.record.createdTime || "") - dateValue(readString(a.record.fields["Started At"]) || a.record.createdTime || ""))[0];
+  const sourceCandidates = baseline?.sourceCandidates ?? readNumber(details.sourceCandidates) ?? readNumber(latest.fields["Source Records Read"]);
+  const baselineDetails = baseline?.details || details;
   const completed = readNumber(details.completedInWindow);
   const inProgress = readNumber(details.activeInWindow);
   const awaiting = readNumber(details.awaitingBeforeRun) ?? readNumber(latest.fields.Eligible);
@@ -555,8 +577,10 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     windowEnd: readString(details.windowEnd),
     windowLabel: readString(details.windowLabel),
     reportingTimezone: readString(details.reportingTimezone) || "America/New_York",
+    progressBaselineAt: baseline ? readString(baseline.record.fields["Started At"]) || baseline.record.createdTime || "" : "",
+    progressBaselineEnd: readString(baselineDetails.windowEnd),
     sourceCandidates,
-    sourceReps: readNumber(details.sourceReps),
+    sourceReps: readNumber(baselineDetails.sourceReps) ?? readNumber(details.sourceReps),
     assessmentGroups: readNumber(details.assessmentGroups),
     groupsWithMinimumScores: readNumber(details.groupsWithMinimumScores) ?? readNumber(details.groupsWithMinimumAttempts),
     completed,
@@ -583,6 +607,8 @@ function emptyCoverage(): RepScoringCoverage {
     windowEnd: "",
     windowLabel: "",
     reportingTimezone: "America/New_York",
+    progressBaselineAt: "",
+    progressBaselineEnd: "",
     sourceCandidates: null,
     sourceReps: null,
     assessmentGroups: null,
@@ -600,6 +626,29 @@ function emptyCoverage(): RepScoringCoverage {
     targetDailyCapacity: null,
     reconciled: false,
   };
+}
+
+function reconcileCumulativeProgress(coverage: RepScoringCoverage, calls: RepScoreCall[], quarantines: AirtableRecord[]) {
+  const total = coverage.sourceCandidates;
+  const baselineEnd = dateValue(coverage.progressBaselineEnd);
+  if (!total || !baselineEnd) return;
+
+  const finalizedKeys = new Set<string>();
+  for (const call of calls) {
+    const occurredAt = dateValue(call.meetingStartAt || call.scoredAt);
+    if (occurredAt && occurredAt < baselineEnd) finalizedKeys.add(call.idempotencyKey || call.assessmentId || call.id);
+  }
+  for (const record of quarantines) {
+    const diagnostic = readJsonObject(record.fields["Diagnostic JSON"]);
+    const occurredAt = dateValue(readString(diagnostic.meetingStartAt));
+    if (occurredAt && occurredAt < baselineEnd) finalizedKeys.add(readString(record.fields["Idempotency Key"]) || record.id);
+  }
+
+  const completed = Math.min(total, finalizedKeys.size);
+  coverage.completed = completed;
+  coverage.awaiting = Math.max(0, total - completed);
+  coverage.percentComplete = round((completed / total) * 100);
+  coverage.reconciled = true;
 }
 
 function isWithinWindow(value: string, start: number, end: number) {
