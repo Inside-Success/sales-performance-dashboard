@@ -103,6 +103,8 @@ export type RepPerformanceSummary = {
   call1Trend: RepCallTypeTrend;
   call2Trend: RepCallTypeTrend;
   needsReview: boolean;
+  reviewStatus: "needs_attention" | "coaching_opportunity" | "no_recurring_concern" | "early_evidence";
+  criticalConcern: boolean;
   reviewReason: string;
   coachingPriorities: RepDimensionPattern[];
   strengths: RepDimensionPattern[];
@@ -375,7 +377,7 @@ function deriveRollups(calls: RepScoreCall[], quarantineRecords: AirtableRecord[
         && !readBoolean(fields.Resolved);
     }).length;
     const confidence = evidenceConfidence(sorted.length);
-    const absoluteConcern = sorted.length >= 3 && rollingMean !== null && rollingMean < 60;
+    const absoluteConcern = hasSupportedLowResult(sorted.length, rollingMean);
     const declineConcern = recent.length >= 3 && baseline.length >= 3 && delta !== null && delta <= -10;
     const insights = getGroupInsights(sorted);
 
@@ -429,31 +431,41 @@ export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: Air
     const call1Trend = deriveCallTypeTrend(call1, declineThreshold);
     const call2Trend = deriveCallTypeTrend(call2, declineThreshold);
     const patterns = getDimensionPatterns(sorted);
-    // A manager-facing weakness must be both recurring and below the factual
-    // Meets Expectations boundary. Do not manufacture a fixed number of
-    // weaknesses for a strong rep, and do not label one-off observations as a
-    // recurring pattern.
+    // V4.3 separates a recurring coaching pattern from an ordinary imperfect
+    // call. A dimension needs five observations and an average below 60 before
+    // it is named as a concern. This keeps a few Developing ratings from making
+    // every rep look weak while preserving evidence-backed issues.
     const supportedConcerns = patterns
-      .filter((pattern) => pattern.observations >= 3 && pattern.average < 70)
+      .filter((pattern) => pattern.observations >= recurringConcernMinimumCalls() && pattern.average < recurringConcernScore())
       .slice(0, 3);
     const supportedStrengths = [...patterns]
-      .filter((pattern) => pattern.observations >= 3 && pattern.average >= 70)
+      .filter((pattern) => pattern.observations >= recurringConcernMinimumCalls() && pattern.average >= 75)
       .sort((a, b) => b.average - a.average || b.observations - a.observations || a.label.localeCompare(b.label))
       .slice(0, 2);
     const enoughEvidence = call1.length >= 3 || call2.length >= 3;
-    const lowScore = (call1.length >= 3 && call1Score !== null && call1Score < 60)
-      || (call2.length >= 3 && call2Score !== null && call2Score < 60);
+    const lowScore = hasSupportedLowResult(call1.length, call1Score)
+      || hasSupportedLowResult(call2.length, call2Score);
     const declining = call1Trend.label === "Declining" || call2Trend.label === "Declining";
-    const needsReview = lowScore || declining;
+    const criticalConcern = sorted.some(hasSupportedCriticalEvent);
+    const needsReview = lowScore || declining || criticalConcern;
+    const reviewStatus: RepPerformanceSummary["reviewStatus"] = !enoughEvidence
+      ? "early_evidence"
+      : needsReview
+        ? "needs_attention"
+        : supportedConcerns.length
+          ? "coaching_opportunity"
+          : "no_recurring_concern";
     const excludedCalls = quarantineRecords.filter((record) => readString(record.fields["Assigned Rep Email"]).toLowerCase() === first.repEmail.toLowerCase()).length;
     const attemptedCalls = sorted.length + excludedCalls;
     const coverageLabel = call1.length && call2.length ? "Both call types" : call1.length ? "Call 1 only" : "Call 2+ only";
     const reviewReason = !enoughEvidence
       ? "Not enough calls for a stable conclusion"
-      : lowScore && declining
+      : criticalConcern
+        ? "A high-severity call event needs verification"
+        : lowScore && declining
         ? "Low overall score and recent decline"
         : lowScore
-          ? "Overall score is below 60"
+          ? "A call-type score crossed the evidence-supported review threshold"
           : declining
             ? "Recent calls fell by at least 10 points"
             : "No supported concern";
@@ -477,6 +489,8 @@ export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: Air
       call1Trend,
       call2Trend,
       needsReview,
+      reviewStatus,
+      criticalConcern,
       reviewReason,
       coachingPriorities: supportedConcerns,
       strengths: supportedStrengths,
@@ -487,6 +501,37 @@ export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: Air
   summaries.sort((a, b) => (a.overallScore ?? 101) - (b.overallScore ?? 101) || b.nScored - a.nScored || a.repName.localeCompare(b.repName));
   summaries.forEach((summary, index) => { summary.rank = summary.overallScore === null ? null : index + 1; });
   return summaries;
+}
+
+function hasSupportedLowResult(callCount: number, score: number | null) {
+  if (score === null) return false;
+  const standardMinimum = readConfiguredNumber("REP_SCORING_ATTENTION_MIN_CALLS", 8);
+  const strongMinimum = readConfiguredNumber("REP_SCORING_STRONG_EVIDENCE_CALLS", 15);
+  const lowerBandBoundary = readConfiguredNumber("REP_SCORING_ATTENTION_SCORE", 50);
+  const strongEvidenceBoundary = readConfiguredNumber("REP_SCORING_STRONG_EVIDENCE_ATTENTION_SCORE", 60);
+  return (callCount >= standardMinimum && score < lowerBandBoundary)
+    || (callCount >= strongMinimum && score < strongEvidenceBoundary);
+}
+
+function recurringConcernMinimumCalls() {
+  return readConfiguredNumber("REP_SCORING_RECURRING_CONCERN_MIN_CALLS", 5);
+}
+
+function recurringConcernScore() {
+  return readConfiguredNumber("REP_SCORING_RECURRING_CONCERN_SCORE", 60);
+}
+
+function readConfiguredNumber(name: string, fallback: number) {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value >= 0 ? value : fallback;
+}
+
+function hasSupportedCriticalEvent(call: RepScoreCall) {
+  return call.criticalEvents.some((event) => {
+    if (!event || typeof event !== "object" || Array.isArray(event)) return false;
+    const severity = readString((event as Record<string, unknown>).severity).toLowerCase();
+    return severity === "high" || severity === "critical";
+  });
 }
 
 function deriveCallTypeTrend(calls: RepScoreCall[], declineThreshold: number | null): RepCallTypeTrend {

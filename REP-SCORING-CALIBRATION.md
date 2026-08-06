@@ -1,5 +1,30 @@
 # Rep Scoring Calibration
 
+## V4.3 calibration
+
+V4.3 changes the rubric anchors, evidence-validator recovery behavior, and manager classification policy, not the model, consensus count, dimensions, or weights. Its first bounded run processed 12 calls in four isolated workers: every worker succeeded, all 12 calls finalized, 9 became valid scores, and 3 were safely quarantined. The valid scores ranged from 44.9 to 70.3. Six calls had a directly comparable V4.2 result; V4.3 changed those scores by an average of +7.1 points, with individual changes from -3.7 to +20.0. This confirms the correction is material and is not a blanket uplift.
+
+The final repeatability check uses identical calls under isolated calibration-only scorer versions after the validator correction. Calibration rows are excluded from the dashboard. The human exercise in this file is recommended before treating individual labels as settled truth; it should be used to identify repeatable rubric errors, not to force a preferred distribution.
+
+The V4.3 manager policy is intentionally stricter than a display band: a rep needs at least 8 same-type calls below 50, at least 15 same-type calls below 60, a supported material decline, or a verified high-severity event to enter `Needs attention`. A coaching opportunity needs five observations in a dimension averaging below 60. No status quota exists.
+
+### Final V4.3 repeatability result
+
+Two post-correction passes assessed the same 10 source calls under isolated scorer versions `rep-reviewer-v4.3-calibration-d` and `rep-reviewer-v4.3-calibration-e`. All four workers in each pass succeeded. Both passes produced 10 valid scores and zero quarantines, so there were 10 complete score pairs and no score/quarantine route flips.
+
+| Metric | Result | Preliminary gate |
+|---|---:|---:|
+| Complete identical-call pairs | 10 | at least 6 |
+| Median score spread | 2.5 | at most 5 |
+| 90th-percentile spread | 6.2 | at most 10 |
+| Maximum spread | 10.0 | investigate if above 10 |
+| Score/quarantine route flips | 0 | at most 25% |
+| Raw display-band flips | 2 | reported, not a manager-action gate |
+
+This bounded test passes the preliminary V4.3 operational gate. It is smaller than the historical V4.2 calibration and does not prove that every individual judgment is correct. The dashboard's manager status is based on repeated multi-call evidence, not a single call's adjacent band, and the optional human review below remains the correct feedback loop for challenging rubric judgments.
+
+## V4.2 stability history
+
 The automated stability sample is a V4.2 release gate. It targets 30 Call 1 and 30 Call 2+ transcripts twice under calibration-only scorer versions. Each score is itself a three-review consensus. Calls that cannot pass speaker or evidence validation are excluded rather than converted into scores. The report measures consensus-score spread, raw display-band changes, manager review-signal changes, and rank consistency. Calibration rows are isolated from manager calculations.
 
 ## Automated release criteria
@@ -64,8 +89,8 @@ Expected time: approximately 20–30 minutes for 12 calls. Do not re-score every
 
 ## Processing safeguards
 
-- The only scheduled trigger is the hourly coordinator. It leases calls before releasing bounded background worker batches, preventing overlapping hourly runs from selecting the same call.
-- The catch-up ceiling is 160 calls per hour in no more than eight batches of at most 20. This is a ceiling rather than a forced volume: after catch-up, the coordinator dispatches only newly waiting calls. It provides 3,840 calls/day of theoretical headroom against the 1,000-call/day operating target.
+- The only scheduled trigger is the adaptive 30-minute coordinator. A lightweight preflight skips a slot successfully whenever an earlier worker lease is still active, so overlapping runs cannot select the same call.
+- Each clear slot can admit at most 160 calls in no more than eight batches of 20. This is a ceiling rather than a forced volume: after catch-up, the coordinator dispatches only newly waiting calls. The theoretical maximum is 7,680 calls/day when every slot is clear; real throughput is intentionally lower whenever a prior batch is still running.
 - Provider and transcript failures retry inside an isolated worker. An active lease is excluded from selection, completed idempotency keys remain skipped, and uncompleted leases become eligible again after expiry. A failed worker cannot stop the coordinator or unrelated worker batches.
 
 ## What happens afterward

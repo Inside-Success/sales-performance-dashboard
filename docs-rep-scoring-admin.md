@@ -2,6 +2,8 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
+V4.3 scoring and release evidence are recorded in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate rollback path and V3 remains preserved behind it.
+
 V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4-RELEASE-2026-08-06.md`. V3 remains an immutable rollback path; the release record states the exact cutover status.
 
 ## Production boundaries
@@ -16,6 +18,14 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 - The output is a coaching and review signal, never an automated employment verdict.
 
 ## n8n
+
+V4.3 coordinator: `dSULjXP2oh1kXeRb`. V4.3 worker: `KncPcmxT0xDQcEds`. V4.2 coordinator `53txJ8KuCRGim8LB` and worker `MZv9GY5l5HDikIql` are the immediate rollback pair.
+
+The V4.3 scheduler keeps the proven adaptive 30-minute architecture: it checks for an unexpired V4.3 worker lease before scanning, skips a busy slot successfully, rotates one completed historical day through the current day, always adds the newest two hours, and admits at most 160 calls in no more than eight workers of 20. V4.3 uses independent immutable scorer-version keys, so it can backfill or roll back without editing V4.2 history.
+
+V4.3 keeps three-review evidence-valid consensus but replaces the generic strict rubric with dimension-specific Inside Success TV anchors. A prospect-controlled early ending or unreachable topic can be not applicable; a call with fewer than three fairly observable dimensions is excluded rather than converted into artificial low scores.
+
+### V4.2 retained architecture history
 
 V4.2 coordinator: `53txJ8KuCRGim8LB`. V4.2 worker: `MZv9GY5l5HDikIql`. V3 coordinator `JQgSOlzomtjBotYJ` and worker `lXXiUGvoWk18dNFk` remain the rollback pair.
 
@@ -53,14 +63,15 @@ Every new quarantine diagnostic includes the source call's meeting date. The man
 
 Current scorer contract:
 
-- Scorer: `rep-reviewer-v4.2`
-- Prompt: `rep-prompt-v4-deterministic-speaker-safe`
-- Config: `rep-scoring-config-v8-consensus3-speaker-safe`
+- Scorer: `rep-reviewer-v4.3`
+- Prompt: `rep-prompt-v4.3-istv-anchored`
+- Rubric: `rep-rubric-v4.3-istv-anchored`
+- Config: `rep-scoring-config-v9-istv-anchored`
 - Model: `deepseek-v4-pro`, three-review consensus in non-thinking mode at temperature zero
 - Call 1 and Call 2+ use separate dimensions and weights.
 - Prerecorded video statements do not earn rep-performance credit.
-- Invalid dimension or critical-event evidence quarantines the call.
-- At least two of three reviews must pass evidence validation. Invalid scoring dimensions or critical events quarantine the call. Invalid non-scoring behavior evidence is downgraded and disclosed in the audit context instead of invalidating an otherwise supported score.
+- An applicable dimension contributes only when its timestamp, rep speaker, and exact quote pass validation. An invalid dimension is excluded from that review's consensus input instead of silently contributing points or discarding unrelated valid evidence.
+- At least two of three reviews must retain at least three evidence-valid applicable dimensions. Unsupported critical events are removed, invalid non-scoring behavior evidence is downgraded, and every correction is disclosed in the call audit context. Calls that still lack enough supported evidence are quarantined.
 
 One-time setup workflows are retained inactive as rollback/audit records:
 
@@ -86,15 +97,17 @@ The dashboard derives cumulative rep results directly from current-version immut
 The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
-- The overview defaults to reps with at least 3 valid calls and remains ordered from lowest cumulative overall score to highest. This provides the rough, evidence-backed result Tyler requested without waiting for a 15-call sample. Managers can narrow the evidence filter to 8+ or 15+, or broaden it to all scored calls.
+- The default table now shows the strongest 15+ call evidence and remains sorted lowest score first. Managers can broaden it to 8+, 3+, or all evidence.
+- `Needs attention` is not assigned from one arbitrary cutoff. It requires a sub-50 call-type result with at least eight valid calls, a sub-60 call-type result with at least fifteen valid calls, a supported material decline, or a verified high-severity call event.
+- A recurring coaching concern requires at least five observations in the same dimension and an average below 60. A rep may correctly have no recurring weakness.
 - Search and status controls let a manager show all results, needs-attention results, supported coaching opportunities, or reps with no recurring weakness without changing the underlying score.
 - The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
-- The headline `Needs attention` count includes only supported low or declining signals; one- and two-call samples cannot enter it. The adjacent `Ready to review` card states the three-call floor, and the table makes stronger 8+ and 15+ evidence filters explicit.
+- The headline `Needs attention` count includes only supported low, declining, or verified high-severity signals. The adjacent `Strong evidence` card states the 15-call default, and the table makes 8+, 3+, and all-evidence views explicit.
 - Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
 - While a backlog exists, a plain-language progress panel compares unique finalized outcomes (valid scores plus unresolved evidence quarantines) with the largest trusted all-window source inventory already recorded. The rotating one-day safety shards are operational inputs, not progress denominators, so the manager-facing percentage cannot fall merely because the next shard contains more calls. The panel labels this as an approximate launch-backlog measure; new live calls continue separately.
 - `/manager/rep-scoring/rep/[repKey]` opens with a one-sentence manager summary, the overall score and evidence amount, compact Call 1 and Call 2+ summaries, supported concerns, supported strengths, recent direction, and a specific next action.
-- A concern is shown only when the same dimension has at least three scored observations and averages below the factual Meets Expectations boundary. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
-- A strength is shown only when it has at least three scored observations and meets or exceeds expectations. Strong reps can correctly display no supported recurring weakness.
+- A concern is shown only when the same dimension has at least five scored observations and averages below 60. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
+- A strength is shown only when it has at least five scored observations and averages at least 75. Strong reps can correctly display no supported recurring weakness.
 - Up to 24 recent call cards remain available in a collapsed evidence section so managers can verify the result without facing the raw audit trail by default.
 - Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
 
@@ -121,7 +134,7 @@ Release verification on Aug 6, 2026:
 - Final authenticated production verification showed 248 valid scores, 41 review-ready reps, 95 scored reps in the all-evidence view, and six supported needs-attention signals while the remaining workers continued. The progress panel showed the factual 160-call active batch without a speculative ETA; browser console and Vercel runtime errors were empty.
 - Fifteen rep-scoring tests, TypeScript, scoped ESLint, and a clean Next.js production build passed without starting a local development server.
 
-Display bands for the current V4.2 scorer are factual labels for the assessed call:
+Display bands for the current V4.3 scorer are factual labels for the assessed call:
 
 - 0–24: Unacceptable
 - 25–49: Needs Improvement
@@ -139,8 +152,14 @@ All values are server-only; none use the `NEXT_PUBLIC_` prefix.
 - `REP_SCORING_ADMIN_EMAILS`
 - `REP_SCORING_AIRTABLE_TOKEN`
 - `REP_SCORING_AIRTABLE_BASE_ID`
-- `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.2`
+- `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.3`
 - `REP_SCORING_DECLINE_THRESHOLD=10`
+- `REP_SCORING_ATTENTION_MIN_CALLS=8`
+- `REP_SCORING_ATTENTION_SCORE=50`
+- `REP_SCORING_STRONG_EVIDENCE_CALLS=15`
+- `REP_SCORING_STRONG_EVIDENCE_ATTENTION_SCORE=60`
+- `REP_SCORING_RECURRING_CONCERN_MIN_CALLS=5`
+- `REP_SCORING_RECURRING_CONCERN_SCORE=60`
 - Optional table overrides: `REP_SCORING_ROLLUPS_TABLE`, `REP_SCORING_CALL_SCORES_TABLE`, `REP_SCORING_QUARANTINE_TABLE`, `REP_SCORING_CONFIG_TABLE`
 
 If the feature flag or token is missing, the page renders a clear safe-unavailable state and performs no writes.
@@ -199,8 +218,8 @@ The one-time human calibration is intentionally separate from normal manager use
 
 Rollback is independent by layer:
 
-1. Disable the n8n schedule or deactivate V4.2 coordinator `53txJ8KuCRGim8LB`.
-2. Set `REP_SCORING_ENABLED=false` or remove the Vercel variable.
-3. Revert the dashboard release commit.
+1. Deactivate V4.3 coordinator `dSULjXP2oh1kXeRb`.
+2. Restore `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.2` and redeploy the last known-good dashboard artifact.
+3. Reactivate V4.2 coordinator `53txJ8KuCRGim8LB`.
 
 No rollback step modifies the production coaching intake, official scorer, source Airtable records, Slack, or Google content.
