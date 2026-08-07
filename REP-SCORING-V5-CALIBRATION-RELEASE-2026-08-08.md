@@ -82,6 +82,14 @@ The page uses the existing `REP_SCORING_ADMIN_EMAILS` gate. It groups exactly si
 - Vercel preview deployment `dpl_8Vx73iewHt9AFFmrZpiy8d4Byuk3` reached `READY`; its remote build completed compilation, TypeScript, static generation, and route emission successfully for Git commit `9c572d398fc96e0bca69fdec451fcf938d78b5a1`.
 - The preview environment does not contain the production Auth.js secret, so it correctly cannot be used for an authenticated manager-session test. Authentication is not weakened or bypassed; the final authenticated route and data verification must use the production environment after release.
 
+## Production publication
+
+- GitHub pull request [#132](https://github.com/Inside-Success/sales-performance-dashboard/pull/132) merged to `main` as `a16e0403ba60bf4d827cdd3ed036b57a2dcd7d31`.
+- Production deployment `dpl_EPuEECbj1tTNFdnz1i2UAgCHc5DU` reached `READY` and is aliased to `https://sales-performance-dashboard-rose.vercel.app`.
+- An authenticated production check confirmed that `/manager/rep-scoring/v5-calibration` renders exactly six Call 1 and six Call 2+ assessments and that an evidence-detail route renders transcript reliability, opportunity context, external factors, weighted checkpoints, exact quotes, adaptive strengths/improvements, and provenance without browser errors.
+- An unauthenticated production request is redirected to the existing sign-in flow, confirming that the hidden page is not publicly exposed. Production runtime logs showed no errors for the verification window.
+- Final n8n verification confirmed that both V5 workflows are inactive, both V4.3 production workflows remain active, and all four workflows validate with zero errors and zero invalid connections. Validator warnings are non-blocking Code-node and workflow-shape guidance; no V5 full backfill or schedule was enabled.
+
 ## Human gate before backfill
 
 The V5 scoring contract is not yet approved for full history. Syed must review the 12 supplied assessments and identify repeatable errors. Any correction must use a new prompt/config version and preserve these rows. A full backfill begins only after that feedback and explicit approval.
