@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function RepDetailPage({ params }: PageProps<"/manager/rep-scoring/rep/[repKey]">) {
+type RepDetailPageProps = {
+  params: Promise<{ repKey: string }>;
+};
+
+export default async function RepDetailPage({ params }: RepDetailPageProps) {
   await requireRepScoringAdmin();
   const { repKey: encodedRepKey } = await params;
   const repKey = decodeURIComponent(encodedRepKey).toLowerCase();

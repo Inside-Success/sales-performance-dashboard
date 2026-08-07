@@ -20,6 +20,14 @@ describe("Magic Mike authentication allowlist", () => {
     expect(isAllowedAuthEmail("rep@another-company.com")).toBe(false);
   });
 
+  it("keeps Tyler approved through an exact entry even if domain policy changes", () => {
+    vi.stubEnv("AUTH_ALLOWED_DOMAINS", "example.com");
+    vi.stubEnv("AUTH_ALLOWED_EMAILS", "tyler@mawercapital.com");
+
+    expect(isAllowedAuthEmail("TYLER@MAWERCAPITAL.COM")).toBe(true);
+    expect(isAllowedAuthEmail("rep@mawercapital.com")).toBe(false);
+  });
+
   it("retains approved company-domain access", () => {
     vi.stubEnv("AUTH_ALLOWED_DOMAINS", "insidesuccess.com");
 

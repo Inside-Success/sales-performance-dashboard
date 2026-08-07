@@ -72,6 +72,9 @@ The endpoint upserts dashboard rows and returns:
 - `/self-report/[publicId]` manual report status/detail page
 - `/manager/usage` hidden manager usage analytics
 - `/manager/sales-correlation?days=7|14|30|90` hidden manager sales-impact analytics
+- `/manager/compliance` hidden manager compliance review
+- `/manager/rep-no-show` hidden manager rep no-show impact review
+- `/manager/prompt-benchmark` and `/manager/prompt-benchmark/submit` hidden isolated prompt benchmark
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
 - `/api/usage-events` browser usage event ingest
 - `/api/report-chat` gated DeepSeek report Q&A
@@ -79,6 +82,7 @@ The endpoint upserts dashboard rows and returns:
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
 - `/ask-sales-faq/admin/knowledge-refresh` admin-only daily source review, conflict resolution, and governed release preparation
 - `/ask-sales-faq/admin` admin-only production conversation logs for manual quality review on request
+- `/ask-sales-faq/admin/usage` admin-only rep adoption and usage review
 
 ## Current Behavior Notes
 
@@ -91,7 +95,7 @@ The endpoint upserts dashboard rows and returns:
 - Enhanced report feedback is forwarded to n8n workflow `Vt1Ze3LiWynk7mao` and stored in the production Google Sheet tabs `Positive Reviews` and `Negative Reviews`.
 - Manual reports stuck in `pending` or `processing` for more than 5 minutes are treated as stale/timed out instead of showing an endless generation state.
 - `/manager/usage` tracks official and manual usage separately. Usage tracking starts from the deployment that added events; older visits are not backfilled.
-- `/manager/sales-correlation` reads the company sales Google Sheet as CSV, validates the read, stores a dashboard-owned last-good snapshot in Postgres, and falls back to that snapshot if the live CSV looks filtered/incomplete or fails. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
+- `/manager/sales-correlation` reads the company sales Google Sheet as CSV on every page request. A structurally valid live read is authoritative even when row counts change. The dashboard stores a last-good copy in Postgres only as an availability fallback for a failed, empty, or structurally invalid live read. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
 - `/manager/rep-scoring` defaults to the lowest-scoring reps with at least 15 valid calls. V4.3 requires repeated evidence, a material decline, or a verified high-severity event before showing `Needs attention`; it never forces a quota of weak reps or weaknesses.
 - Sales-impact matching canonicalizes known rep-name issues such as suffix `Success` and alias `ollie-mcfarl` -> `ollie-mcfarlane`.
 - Report chat sends visible coaching fields and mandatory transcript text to DeepSeek only after the user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
@@ -111,7 +115,7 @@ REPORT_FEEDBACK_WEBHOOK_SECRET="..."
 ASK_SALES_KNOWLEDGE_REFRESH_TOKEN="long-random-server-only-secret"
 ```
 
-`SALES_PERFORMANCE_CSV_URL` is optional because a default read-only Google Sheet CSV URL exists in the app. Sales-impact snapshot protection uses the dashboard `DATABASE_URL` and the `sales_performance_snapshots` table; it never writes to Google Sheets.
+`SALES_PERFORMANCE_CSV_URL` is optional because a default read-only Google Sheet CSV URL exists in the app. Sales Impact treats a structurally valid live read as current truth. Its dashboard-owned `sales_performance_snapshots` record is used only if the live request fails or returns unusable data; it never writes to Google Sheets.
 
 Never commit API keys or secrets. Never modify the sales Google Sheet from this app.
 

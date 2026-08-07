@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function RepScoringCallPage({ params }: PageProps<"/manager/rep-scoring/call/[assessmentId]">) {
+type RepScoringCallPageProps = {
+  params: Promise<{ assessmentId: string }>;
+};
+
+export default async function RepScoringCallPage({ params }: RepScoringCallPageProps) {
   await requireRepScoringAdmin();
   const { assessmentId } = await params;
   const data = await getRepScoringDashboardData();

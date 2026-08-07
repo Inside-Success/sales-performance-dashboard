@@ -4,10 +4,10 @@ import {
   saveSalesPerformanceSnapshot,
 } from "@/lib/db";
 import { slugify } from "@/lib/slug";
+import { getLiveSalesReadErrors } from "@/lib/sales-sheet-health";
 import type {
   SalesCorrelationUsageEvent,
   SalesCorrelationUsageRow,
-  SalesSnapshotRecord,
   SalesSnapshotRow,
 } from "@/lib/types";
 
@@ -16,11 +16,6 @@ const DEFAULT_SALES_CSV_URL =
 const SALES_SOURCE_SHEET = "Main";
 const HISTORY_DAYS = 120;
 const LAG_DAYS = 14;
-const MIN_ROW_RETENTION_RATIO = 0.95;
-const MIN_PAID_ROW_RETENTION_RATIO = 0.95;
-const MIN_INITIAL_ROW_COUNT = 500;
-const MIN_INITIAL_PAID_ROW_COUNT = 100;
-const LATEST_DATE_BACKSLIDE_DAYS = 2;
 const REP_SLUG_ALIASES: Record<string, string> = {
   "ollie-mcfarl": "ollie-mcfarlane",
 };
@@ -452,7 +447,7 @@ async function getSalesRows(): Promise<{
 
     const parsed = parseSalesCsv(await response.text());
     const stats = getSalesRowStats(parsed.rows);
-    const rejectionReasons = getSnapshotRejectionReasons(stats, latestSnapshot);
+    const rejectionReasons = getLiveSalesReadErrors(stats);
 
     if (rejectionReasons.length && latestSnapshot) {
       return {
@@ -460,7 +455,7 @@ async function getSalesRows(): Promise<{
         rows: deserializeSnapshotRows(latestSnapshot.rows),
         dataSource: "cached_snapshot",
         snapshotCreatedAt: latestSnapshot.created_at,
-        snapshotWarning: `Live sales sheet read looked incomplete, so the page is using the last good snapshot from ${latestSnapshot.created_at}. ${rejectionReasons.join(" ")}`,
+        snapshotWarning: `The live sales Sheet could not be used, so the page is temporarily showing the fallback snapshot from ${latestSnapshot.created_at}. ${rejectionReasons.join(" ")}`,
       };
     }
 
@@ -480,7 +475,7 @@ async function getSalesRows(): Promise<{
       latest_sales_date: stats.latestSalesDate ? stats.latestSalesDate.toISOString() : null,
       validation_notes: rejectionReasons.length
         ? rejectionReasons
-        : ["Accepted live read after required-header and row-quality validation."],
+        : ["Accepted the current live Google Sheet read as authoritative after structural validation."],
     });
 
     return {
@@ -497,7 +492,7 @@ async function getSalesRows(): Promise<{
         rows: deserializeSnapshotRows(latestSnapshot.rows),
         dataSource: "cached_snapshot",
         snapshotCreatedAt: latestSnapshot.created_at,
-        snapshotWarning: `Live sales sheet could not be read, so the page is using the last good snapshot from ${latestSnapshot.created_at}.`,
+        snapshotWarning: `The live sales Sheet could not be read, so the page is temporarily showing the fallback snapshot from ${latestSnapshot.created_at}.`,
       };
     }
 
@@ -561,74 +556,6 @@ function getSalesRowStats(rows: SalesPaymentRow[]) {
     newPaidRowCount: newPaidRows.length,
     latestSalesDate: getLatestSalesDate(rows),
   };
-}
-
-function getSnapshotRejectionReasons(
-  stats: ReturnType<typeof getSalesRowStats>,
-  latestSnapshot: SalesSnapshotRecord | null,
-) {
-  const reasons: string[] = [];
-
-  if (stats.rowCount === 0) {
-    reasons.push("The live read returned zero valid sales rows.");
-  }
-
-  if (stats.rowCount > 0 && stats.paidRowCount === 0) {
-    reasons.push("The live read returned zero paid sales rows.");
-  }
-
-  if (stats.rowCount > 0 && stats.rowCount < MIN_INITIAL_ROW_COUNT) {
-    reasons.push(`The live read returned only ${stats.rowCount} valid sales rows.`);
-  }
-
-  if (stats.paidRowCount > 0 && stats.paidRowCount < MIN_INITIAL_PAID_ROW_COUNT) {
-    reasons.push(`The live read returned only ${stats.paidRowCount} paid sales rows.`);
-  }
-
-  if (!latestSnapshot) return reasons;
-
-  if (
-    latestSnapshot.row_count > 50 &&
-    stats.rowCount < Math.floor(latestSnapshot.row_count * MIN_ROW_RETENTION_RATIO)
-  ) {
-    reasons.push(
-      `Valid row count dropped from ${latestSnapshot.row_count} to ${stats.rowCount}.`,
-    );
-  }
-
-  if (
-    latestSnapshot.paid_row_count > 20 &&
-    stats.paidRowCount < Math.floor(latestSnapshot.paid_row_count * MIN_PAID_ROW_RETENTION_RATIO)
-  ) {
-    reasons.push(
-      `Paid row count dropped from ${latestSnapshot.paid_row_count} to ${stats.paidRowCount}.`,
-    );
-  }
-
-  if (
-    latestSnapshot.new_paid_row_count > 20 &&
-    stats.newPaidRowCount < Math.floor(latestSnapshot.new_paid_row_count * MIN_PAID_ROW_RETENTION_RATIO)
-  ) {
-    reasons.push(
-      `New-paid row count dropped from ${latestSnapshot.new_paid_row_count} to ${stats.newPaidRowCount}.`,
-    );
-  }
-
-  const latestSnapshotDate = parseDate(latestSnapshot.latest_sales_date);
-  if (latestSnapshotDate && stats.latestSalesDate) {
-    const allowedBackslide = addDays(latestSnapshotDate, -LATEST_DATE_BACKSLIDE_DAYS);
-    if (stats.latestSalesDate < allowedBackslide) {
-      reasons.push(
-        `Latest sales date moved backward from ${toDateKey(latestSnapshotDate)} to ${toDateKey(stats.latestSalesDate)}.`,
-      );
-    }
-  }
-
-  if (latestSnapshotDate && !stats.latestSalesDate) {
-    reasons.push("The live read did not include any parseable sales dates.");
-  }
-
-  return reasons;
 }
 
 function serializeSnapshotRows(rows: SalesPaymentRow[]): SalesSnapshotRow[] {
