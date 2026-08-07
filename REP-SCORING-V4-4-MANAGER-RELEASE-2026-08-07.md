@@ -60,3 +60,5 @@ The existing V4.3 n8n coordinator and worker were inspected before implementatio
 ## August 7 table-layout hotfix
 
 The manager table now uses explicit, stable column widths and wraps long main-finding explanations inside their own column. All row content is top-aligned, and narrower viewports use horizontal scrolling instead of allowing findings to overlap the recent-direction column. This presentation-only fix does not alter scores, statuses, evidence, or workflow behavior.
+
+GitHub PR `#130` merged as `c030193f0362ac95f0c3edfb676f201cc005417d`. Production deployment `dpl_GDvhNGPJXHERazni7UcujSBVJDY5` reached `READY` and owns the canonical alias. The authenticated Rachel McKay row was measured after deployment: every cell's scroll width matched its visible width, the finding and recent-direction cells had separate non-overlapping boundaries, and the browser console and Vercel error-log scan were empty.
