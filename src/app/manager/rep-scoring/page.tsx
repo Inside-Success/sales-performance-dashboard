@@ -96,7 +96,7 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
       <CardContent>
         <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600" style={{ width: `${complete}%` }} /></div>
         <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>Approximately {complete.toFixed(1)}% of the launch backlog finalized</span><span>About {numberFormatter.format(waiting)} launch calls remaining</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "Workers check for unfinished calls every 30 minutes. "}Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls across eight isolated workers. If a prior batch is still active, the next slot skips safely instead of overlapping.</p>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "Workers check for unfinished calls every 15 minutes. "}Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls across eight isolated workers. If a prior batch is still active, the next slot skips safely instead of overlapping.</p>
       </CardContent>
     </Card>
   );

@@ -105,8 +105,8 @@ Expected time: approximately 20–30 minutes for 12 calls. Do not re-score every
 
 ## Processing safeguards
 
-- The only scheduled trigger is the adaptive 30-minute coordinator. A lightweight preflight skips a slot successfully whenever an earlier worker lease is still active, so overlapping runs cannot select the same call.
-- Each clear slot can admit at most 160 calls in no more than eight batches of 20. This is a ceiling rather than a forced volume: after catch-up, the coordinator dispatches only newly waiting calls. The theoretical maximum is 7,680 calls/day when every slot is clear; real throughput is intentionally lower whenever a prior batch is still running.
+- The only scheduled trigger is the adaptive 15-minute coordinator. A lightweight preflight skips a slot successfully whenever an earlier worker lease is still active, so overlapping runs cannot select the same call.
+- Each clear slot can admit at most 80 calls in no more than eight batches of 10. This is a ceiling rather than a forced volume: after catch-up, the coordinator dispatches only newly waiting calls. The theoretical maximum is 7,680 calls/day when every 15-minute slot is clear; real throughput is intentionally lower whenever a prior batch is still running.
 - Provider and transcript failures retry inside an isolated worker. An active lease is excluded from selection, completed idempotency keys remain skipped, and uncompleted leases become eligible again after expiry. A failed worker cannot stop the coordinator or unrelated worker batches.
 
 ## What happens afterward
