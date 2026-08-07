@@ -2,6 +2,8 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
+V5 fairness-first calibration is recorded in `REP-SCORING-V5-CALIBRATION-RELEASE-2026-08-08.md`. V5 is intentionally not the live manager scorer yet. It produced a bounded, immutable review set of exactly six Call 1 and six Call 2+ assessments under `rep-reviewer-v5-calibration-1`; both V5 workflows were deactivated after that run and no V5 backfill was started. The private review route is `/manager/rep-scoring/v5-calibration` and uses the same exact admin allowlist as the existing manager page.
+
 V4.4 manager-policy changes and release evidence are recorded in `REP-SCORING-V4-4-MANAGER-RELEASE-2026-08-07.md`. V4.4 deliberately reuses the completed, immutable V4.3 call assessments; it does not create another backfill. V4.3 workflow evidence remains in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate workflow rollback path and V3 remains preserved behind it.
 
 V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4-RELEASE-2026-08-06.md`. V3 remains an immutable rollback path; the release record states the exact cutover status.
@@ -18,6 +20,10 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 - The output is a coaching and review signal, never an automated employment verdict.
 
 ## n8n
+
+V5 calibration worker: `Ypg69KeD1401mNDg`. One-time V5 launcher: `PFmOzEFTgOl2R4Qy`. Both are inactive after the completed 12-call run. Neither workflow has a schedule. The launcher reads only immutable V4.3 scores to choose a stratified sample; the worker reads the linked Google transcript and writes only new versioned rows in the isolated scoring base.
+
+The V5 contract evaluates transcript reliability before performance, separates prospect opportunity from rep-controlled execution, treats correct Call 1 advancement or rejection as a successful progression decision, and judges difficult prospects, repetition, and call length contextually. It uses script-aligned functional checkpoints rather than word-for-word script compliance. A primary DeepSeek review is checked by an independent verifier; deterministic code validates exact transcript evidence and computes `completed=100`, `partial=60`, and `missed=20` over only applicable verified checkpoints. Material verifier disagreement withholds the numeric score for human review instead of manufacturing a low result.
 
 V4.3 coordinator: `dSULjXP2oh1kXeRb`. V4.3 worker: `KncPcmxT0xDQcEds`. V4.2 coordinator `53txJ8KuCRGim8LB` and worker `MZv9GY5l5HDikIql` are the immediate rollback pair.
 
