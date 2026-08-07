@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import { getRepScoringDashboardData } from "@/lib/rep-scoring/data";
-import { getCallInsights, getManagerCallContextEntries, humanize, normalizeBehaviours, normalizeDimensions, type EvidenceQuote, type ScoreDimension } from "@/lib/rep-scoring/presentation";
+import { getCallInsights, getManagerCallContextEntries, humanize, isApplicableDimension, normalizeBehaviours, normalizeDimensions, type EvidenceQuote, type ScoreDimension } from "@/lib/rep-scoring/presentation";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +29,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
   const dimensions = normalizeDimensions(call.callType, call.dimensions);
   const behaviours = normalizeBehaviours(call.behaviours);
   const insights = getCallInsights(call.callType, call.dimensions);
+  const v5Fairness = readV5FairnessContext(call.callContext);
 
   return (
     <main className="magic-page">
@@ -46,15 +47,18 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
         </header>
 
         {call.internalInconsistency ? <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-950"><strong>Excluded from rep averages:</strong> this older assessment contains an internal evidence inconsistency and must not be used as a performance result.</div> : null}
+        {call.score === null ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Score withheld:</strong> V5 did not produce a defensible numeric result for this call. It remains visible for audit, but it is excluded from the rep&apos;s averages and ranking.</div> : null}
         {call.attributionSubstituted ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Rep substitution verified:</strong> Airtable assigned this call to {call.assignedRepName || call.assignedRepEmail}, but transcript speaker evidence shows {call.repName} handled it. The score belongs to {call.repName}; the absent assigned rep is not penalized.</div> : null}
 
+        {v5Fairness ? <V5FairnessContext context={v5Fairness} /> : null}
+
         <section className="grid gap-4 md:grid-cols-2">
-          <InsightCard icon={Target} label="Coach first" value={insights.coachingPriority} description="Lowest-scoring dimension on this call" tone="red" />
+          <InsightCard icon={Target} label="Lowest checkpoint" value={insights.coachingPriority} description="Relative low point on this call; not automatically a weakness" tone="red" />
           <InsightCard icon={TrendingUp} label="Strongest area" value={insights.strongestArea} description="Highest-scoring dimension on this call" tone="green" />
         </section>
 
         <Card className="magic-card border-blue-100 bg-blue-50/70">
-          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How the score was calculated:</strong> DeepSeek assigned a factual level to every applicable dimension. The workflow converted those levels to points and applied the weights shown below. DeepSeek did not choose the final number.</div></CardContent>
+          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How V5 calculated this score:</strong> only fairly observable checkpoints are included. Completed, partial and missed checkpoints convert to 100, 60 and 20 points, then the workflow applies the visible weights. DeepSeek provides evidence judgments; deterministic code calculates the final number.</div></CardContent>
         </Card>
 
         <Card className="magic-card border-white/80 bg-white/95">
@@ -90,7 +94,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
 }
 
 function DimensionCard({ dimension }: { dimension: ScoreDimension }) {
-  if (dimension.applicability === "not_applicable") return <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="flex justify-between gap-3"><div className="font-extrabold text-slate-900">{dimension.label}</div><Badge variant="outline" className="rounded-full">Not applicable</Badge></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>;
+  if (!isApplicableDimension(dimension.applicability)) return <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="flex justify-between gap-3"><div className="font-extrabold text-slate-900">{dimension.label}</div><Badge variant="outline" className="rounded-full">Not fairly observable</Badge></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>;
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -104,6 +108,43 @@ function DimensionCard({ dimension }: { dimension: ScoreDimension }) {
     </article>
   );
 }
+
+type V5FairnessContextValue = {
+  reliabilityGrade: string;
+  reliabilityReason: string;
+  opportunityClassification: string;
+  opportunityReason: string;
+  progressionDecision: string;
+  externalFactors: string[];
+};
+
+function V5FairnessContext({ context }: { context: V5FairnessContextValue }) {
+  return <section className="grid gap-4 md:grid-cols-3"><ContextSummary title="Transcript reliability" value={humanize(context.reliabilityGrade)} detail={context.reliabilityReason} /><ContextSummary title="Prospect opportunity" value={humanize(context.opportunityClassification)} detail={context.opportunityReason} /><ContextSummary title="Correct progression" value={humanize(context.progressionDecision)} detail={context.externalFactors.length ? `External factors: ${context.externalFactors.join("; ")}` : "No material external factor was recorded."} /></section>;
+}
+
+function ContextSummary({ title, value, detail }: { title: string; value: string; detail: string }) {
+  return <Card className="magic-card border-white/80 bg-white/95"><CardContent className="p-5"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{title}</div><div className="mt-2 text-lg font-extrabold text-slate-950">{value}</div><p className="mt-2 text-sm leading-6 text-slate-600">{detail || "No additional explanation was stored."}</p></CardContent></Card>;
+}
+
+function readV5FairnessContext(context: Record<string, unknown>): V5FairnessContextValue | null {
+  const reliability = object(context.transcript_reliability);
+  const opportunity = object(context.opportunity);
+  if (!reliability && !opportunity) return null;
+  const factors = Array.isArray(context.external_factors) ? context.external_factors.map((value) => {
+    const item = object(value);
+    return text(item?.reason || item?.factor || item?.label || value);
+  }).filter(Boolean) : [];
+  return {
+    reliabilityGrade: text(reliability?.grade || reliability?.status),
+    reliabilityReason: text(reliability?.reason),
+    opportunityClassification: text(opportunity?.classification || opportunity?.status),
+    opportunityReason: text(opportunity?.reason),
+    progressionDecision: text(opportunity?.correct_progression_decision || opportunity?.progression_decision || opportunity?.correct_disposition),
+    externalFactors: factors,
+  };
+}
+
+function object(value: unknown) { return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null; }
 
 function EvidenceBlock({ evidence }: { evidence: EvidenceQuote }) {
   return <blockquote className="rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-700"><div className="mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">{evidence.timestamp ? <Badge variant="outline" className="rounded-full bg-white">{evidence.timestamp}</Badge> : null}{evidence.speaker ? <span>{evidence.speaker}</span> : null}</div><div className="flex gap-2"><Quote className="mt-1 size-4 shrink-0 text-red-500" /><span className="italic">{evidence.quote}</span></div></blockquote>;

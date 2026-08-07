@@ -76,19 +76,41 @@ const INTERNAL_CALL_CONTEXT_KEYS = new Set([
   "scorerversion",
   "validationcorrections",
   "weightsversion",
+  "transcriptreliability",
+  "opportunity",
+  "externalfactors",
+  "findings",
+  "validation",
+  "callcontext",
+  "sourcev43",
 ]);
+
+const V5_STATUS_POINTS: Record<string, number> = {
+  completed: 100,
+  partial: 60,
+  missed: 20,
+};
+
+const V5_STATUS_BANDS: Record<string, string> = {
+  completed: "Excellent",
+  partial: "Developing",
+  missed: "Needs Improvement",
+};
 
 export function normalizeDimensions(callType: string, values: unknown[]): ScoreDimension[] {
   return values.flatMap((value) => {
     const object = asObject(value);
     if (!object) return [];
     const key = text(object.key || object.dimension || object.name);
-    const band = text(object.band);
-    const weight = DIMENSION_WEIGHTS[callType]?.[key] ?? null;
-    const points = BAND_POINTS[band] ?? null;
+    const status = text(object.status).toLowerCase();
+    const band = text(object.band) || V5_STATUS_BANDS[status] || "";
+    const storedWeight = number(object.weight);
+    const storedPoints = number(object.points);
+    const weight = storedWeight ?? DIMENSION_WEIGHTS[callType]?.[key] ?? null;
+    const points = storedPoints ?? V5_STATUS_POINTS[status] ?? BAND_POINTS[band] ?? null;
     return [{
       key,
-      label: DIMENSION_LABELS[key] || humanize(key || "dimension"),
+      label: text(object.label) || DIMENSION_LABELS[key] || humanize(key || "dimension"),
       applicability: text(object.applicability) || "applicable",
       band,
       reason: text(object.reason || object.rationale || object.explanation),
@@ -119,12 +141,16 @@ export function normalizeBehaviours(values: unknown[]): BehaviourCheck[] {
 
 export function getCallInsights(callType: string, dimensions: unknown[]) {
   const normalized = normalizeDimensions(callType, dimensions)
-    .filter((dimension) => dimension.applicability !== "not_applicable" && dimension.points !== null);
+    .filter((dimension) => isApplicableDimension(dimension.applicability) && dimension.points !== null);
   const sorted = [...normalized].sort((a, b) => (a.points ?? 101) - (b.points ?? 101));
   return {
     coachingPriority: sorted[0]?.label || "Not enough evidence",
     strongestArea: sorted.at(-1)?.label || "Not enough evidence",
   };
+}
+
+export function isApplicableDimension(value: string) {
+  return !["not_applicable", "not_observable", "unobservable"].includes(value.toLowerCase());
 }
 
 export function evidenceConfidence(nScored: number) {
@@ -177,6 +203,12 @@ function array(value: unknown): unknown[] {
 
 function text(value: unknown) {
   return value === null || value === undefined ? "" : String(value).trim();
+}
+
+function number(value: unknown) {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function round(value: number) {

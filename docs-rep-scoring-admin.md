@@ -2,7 +2,7 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
-V5 fairness-first calibration is recorded in `REP-SCORING-V5-CALIBRATION-RELEASE-2026-08-08.md`. V5 is intentionally not the live manager scorer yet. It produced a bounded, immutable review set of exactly six Call 1 and six Call 2+ assessments under `rep-reviewer-v5-calibration-1`; both V5 workflows were deactivated after that run and no V5 backfill was started. The private review route is `/manager/rep-scoring/v5-calibration` and uses the same exact admin allowlist as the existing manager page.
+V5 fairness-first calibration is recorded in `REP-SCORING-V5-CALIBRATION-RELEASE-2026-08-08.md`. The approved shadow backfill is recorded in `REP-SCORING-V5-SHADOW-BACKFILL-RELEASE-2026-08-08.md`. The main manager page now reads separately versioned `rep-reviewer-v5-shadow-1` results while explicitly labeling them as validation evidence rather than final personnel verdicts. The original 6+6 review route remains available at `/manager/rep-scoring/v5-calibration`.
 
 V4.4 manager-policy changes and release evidence are recorded in `REP-SCORING-V4-4-MANAGER-RELEASE-2026-08-07.md`. V4.4 deliberately reuses the completed, immutable V4.3 call assessments; it does not create another backfill. V4.3 workflow evidence remains in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate workflow rollback path and V3 remains preserved behind it.
 
@@ -22,6 +22,8 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 ## n8n
 
 V5 calibration worker: `Ypg69KeD1401mNDg`. One-time V5 launcher: `PFmOzEFTgOl2R4Qy`. Both are inactive after the completed 12-call run. Neither workflow has a schedule. The launcher reads only immutable V4.3 scores to choose a stratified sample; the worker reads the linked Google transcript and writes only new versioned rows in the isolated scoring base.
+
+V5 shadow coordinator: `uWfyXPrNDzQ2Eixe`. V5 shadow worker: `XPFqJlWGRRCiNqDn`. The coordinator runs every 30 minutes with a no-overlap lease gate and admits up to 80 calls per clear slot across eight sequential ten-call workers. The stable fixed-date inventory is 3,328 eligible calls since July 18, 2026. The one-time inventory workflow `0N7dBA07pMToS76S` is inactive after recording that denominator.
 
 The V5 contract evaluates transcript reliability before performance, separates prospect opportunity from rep-controlled execution, treats correct Call 1 advancement or rejection as a successful progression decision, and judges difficult prospects, repetition, and call length contextually. It uses script-aligned functional checkpoints rather than word-for-word script compliance. A primary DeepSeek review is checked by an independent verifier; deterministic code validates exact transcript evidence and computes `completed=100`, `partial=60`, and `missed=20` over only applicable verified checkpoints. Material verifier disagreement withholds the numeric score for human review instead of manufacturing a low result.
 
