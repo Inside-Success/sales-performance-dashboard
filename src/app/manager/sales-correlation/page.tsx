@@ -94,12 +94,12 @@ export default async function SalesCorrelationPage({
                 {analytics.summary.salesDataSource === "cached_snapshot" ? (
                   <Badge variant="outline" className="gap-1 rounded-full border-amber-200 bg-amber-50 text-amber-700">
                     <ShieldCheck className="size-3.5" />
-                    Protected snapshot
+                    Fallback snapshot
                   </Badge>
                 ) : analytics.summary.salesDataSource === "live_sheet" ? (
                   <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
                     <ShieldCheck className="size-3.5" />
-                    Live read captured
+                    Live Google Sheet
                   </Badge>
                 ) : null}
               </div>
@@ -837,8 +837,8 @@ function formatSalesRowsDescription(analytics: SalesCorrelationAnalytics) {
     : "No sales rows";
   if (analytics.summary.salesDataSource === "cached_snapshot") {
     return analytics.summary.salesSnapshotCreatedAt
-      ? `Snapshot ${formatShortDate(analytics.summary.salesSnapshotCreatedAt)}`
-      : "Using saved snapshot";
+      ? `Fallback ${formatShortDate(analytics.summary.salesSnapshotCreatedAt)}`
+      : "Using fallback snapshot";
   }
   return latest;
 }
@@ -846,10 +846,10 @@ function formatSalesRowsDescription(analytics: SalesCorrelationAnalytics) {
 function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {
   if (analytics.summary.salesDataSource === "cached_snapshot") {
     return analytics.summary.salesSnapshotCreatedAt
-      ? `Last good snapshot (${formatShortDate(analytics.summary.salesSnapshotCreatedAt)})`
-      : "Last good snapshot";
+      ? `Fallback snapshot (${formatShortDate(analytics.summary.salesSnapshotCreatedAt)})`
+      : "Fallback snapshot";
   }
-  if (analytics.summary.salesDataSource === "live_sheet") return "Validated live read";
+  if (analytics.summary.salesDataSource === "live_sheet") return "Current live Google Sheet";
   return "Unavailable";
 }
 

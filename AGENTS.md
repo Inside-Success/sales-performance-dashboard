@@ -24,7 +24,7 @@ For dashboard/web changes:
 - Hidden manager pages are `/manager/usage` and `/manager/sales-correlation?days=7|14|30|90`.
 - Additional hidden manager pages include `/manager/compliance`, `/manager/rep-no-show`, `/manager/prompt-benchmark`, and `/manager/prompt-benchmark/submit`.
 - The admin-only rep performance reviewer is `/manager/rep-scoring`. It reads the isolated Airtable scoring base, is exact-email allowlisted, and must never write to source calls, Slack, or Google content.
-- `/manager/sales-correlation` reads the company sales Google Sheet as CSV, validates the live read, and stores only dashboard-owned last-good snapshots in Postgres. It must never write to the company sales spreadsheet.
+- `/manager/sales-correlation` reads the company sales Google Sheet as CSV. A structurally valid live read is authoritative; the dashboard-owned Postgres snapshot is only an availability fallback for a failed or unusable live read. It must never write to the company sales spreadsheet.
 - Official coaching usage, manual self-submitted feedback usage, and compliance feedback must stay separate.
 - Report chat and sales-impact chat use `deepseek-v4-pro` through env var `DEEPSEEK_API_KEY`; do not commit keys.
 - Report chat is coaching-only and must not answer compliance/legal/red-flag questions.

@@ -15,8 +15,11 @@ Required Vercel Production env vars:
 - `AUTH_GOOGLE_ID`
 - `AUTH_GOOGLE_SECRET`
 - `AUTH_ALLOWED_DOMAINS=insidesuccesstv.com,insidesuccess.com,mawercapital.com,nextlevelceotv.com`
+- `AUTH_ALLOWED_EMAILS=tyler@mawercapital.com` keeps Tyler explicitly approved even if the broader domain policy changes later.
 
 Only Google accounts from the allowed domains can sign in. Human dashboard pages are protected through `src/proxy.ts`; `/api/*` routes remain public so n8n/webhook/API traffic is not blocked.
+
+The rep-scoring and Ask Sales admin pages also use separate exact-email allowlists. Production includes `syed.haider@insidesuccess.com` and `tyler@mawercapital.com` in both lists. See `docs-hidden-pages-access.md` for the complete route and access matrix.
 
 ## Verified Usage Rules
 

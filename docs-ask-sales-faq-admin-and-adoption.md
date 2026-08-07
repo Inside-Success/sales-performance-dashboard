@@ -19,6 +19,8 @@ Every Ask Sales admin page requires:
 2. Ask Sales feature access.
 3. Membership in `ASK_SALES_FAQ_ADMIN_EMAILS`.
 
+Production administrators are `syed.haider@insidesuccess.com` and `tyler@mawercapital.com`. This exact list is intentionally narrower than ordinary company-domain access.
+
 Normal Ask Sales users cannot access any admin page. Rep drill-down URLs use an HMAC-based opaque key derived with the existing server-side `AUTH_SECRET`; the rep email is never placed in the URL. Invalid, stale, non-admin, and unresolvable keys return 404. All admin pages remain unlinked from rep navigation and retain `noindex, nofollow` metadata.
 
 ## Quality And Operations

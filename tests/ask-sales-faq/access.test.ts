@@ -45,8 +45,11 @@ describe("Ask Sales FAQ access", () => {
   });
 
   it("keeps administration on a separate exact-email allowlist", () => {
-    vi.stubEnv("ASK_SALES_FAQ_ADMIN_EMAILS", "admin@insidesuccess.com");
-    expect(isAskSalesFaqAdmin("admin@insidesuccess.com")).toBe(true);
+    vi.stubEnv(
+      "ASK_SALES_FAQ_ADMIN_EMAILS",
+      "syed.haider@insidesuccess.com,tyler@mawercapital.com",
+    );
+    expect(isAskSalesFaqAdmin(" TYLER@MAWERCAPITAL.COM ")).toBe(true);
     expect(isAskSalesFaqAdmin("rep@insidesuccess.com")).toBe(false);
   });
 });
