@@ -41,6 +41,17 @@ describe("rep scoring presentation", () => {
     });
   });
 
+  it("normalizes V5 checkpoint statuses and stored weights", () => {
+    const dimensions = normalizeDimensions("Call 1", [
+      { key: "progression_decision", label: "Correct progression decision", weight: 0.15, applicability: "applicable", status: "completed", reason: "Correctly rejected an unsuitable prospect." },
+      { key: "next_steps_prework", label: "Concrete next step", weight: 0.1, applicability: "not_observable", status: "missed" },
+    ]);
+
+    expect(dimensions[0]).toMatchObject({ label: "Correct progression decision", weight: 0.15, points: 100, contribution: 15 });
+    expect(dimensions[1]).toMatchObject({ applicability: "not_observable", weight: 0.1, points: 20 });
+    expect(getCallInsights("Call 1", dimensions)).toEqual({ coachingPriority: "Correct progression decision", strongestArea: "Correct progression decision" });
+  });
+
   it("keeps sample confidence factual", () => {
     expect(evidenceConfidence(1)).toBe("1 call only");
     expect(evidenceConfidence(3)).toBe("Early evidence");

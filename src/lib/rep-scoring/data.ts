@@ -178,6 +178,7 @@ export type RepScoringDashboardData = {
     scoredCalls: number;
     quarantinedCalls: number;
     inconsistentCalls: number;
+    withheldCalls: number;
   };
   coverage: RepScoringCoverage;
   repSummaries: RepPerformanceSummary[];
@@ -194,7 +195,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     shadowMode: true,
     killSwitch: true,
     scorerVersion: CURRENT_SCORER_VERSION,
-    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0 },
+    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0, withheldCalls: 0 },
     coverage: emptyCoverage(),
     repSummaries: [],
     rollups: [],
@@ -228,7 +229,8 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       .filter((call) => isWithinWindow(call.meetingStartAt || call.scoredAt, reportingStart, reportingEnd))
       .sort((a, b) => dateValue(b.scoredAt) - dateValue(a.scoredAt));
     const recentCalls = dedupeCalls(currentCalls);
-    const consistentCalls = recentCalls.filter((call) => !call.internalInconsistency);
+    const consistentCalls = recentCalls.filter((call) => !call.internalInconsistency && call.score !== null);
+    const withheldCalls = recentCalls.filter((call) => !call.internalInconsistency && call.score === null);
     coverage.processedLastHour = consistentCalls.filter((call) => dateValue(call.scoredAt) >= Date.now() - 60 * 60 * 1000).length;
     const scoredKeys = new Set(recentCalls.map((call) => call.idempotencyKey).filter(Boolean));
     const currentQuarantines = dedupeRecords(
@@ -264,7 +266,8 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         gatheringEvidence: Math.max(0, sourceRepCount - readyRepIds.size),
         scoredCalls: consistentCalls.length,
         quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
-        inconsistentCalls: recentCalls.length - consistentCalls.length,
+        inconsistentCalls: recentCalls.filter((call) => call.internalInconsistency).length,
+        withheldCalls: withheldCalls.length,
       },
       coverage,
       repSummaries,
@@ -588,7 +591,7 @@ function getDimensionPatterns(calls: RepScoreCall[]): RepDimensionPattern[] {
   const grouped = new Map<string, { label: string; points: number[] }>();
   for (const call of calls) {
     for (const dimension of normalizeDimensions(call.callType, call.dimensions)) {
-      if (dimension.points === null || dimension.applicability === "not_applicable") continue;
+      if (dimension.points === null || !isApplicableDimensionValue(dimension.applicability)) continue;
       const entry = grouped.get(dimension.key) || { label: dimension.label, points: [] };
       entry.points.push(dimension.points);
       grouped.set(dimension.key, entry);
@@ -613,7 +616,7 @@ function getGroupInsights(calls: RepScoreCall[]) {
   const grouped = new Map<string, { label: string; points: number[] }>();
   for (const call of calls.slice(0, 10)) {
     for (const dimension of normalizeDimensions(call.callType, call.dimensions)) {
-      if (dimension.points === null || dimension.applicability === "not_applicable") continue;
+      if (dimension.points === null || !isApplicableDimensionValue(dimension.applicability)) continue;
       const entry = grouped.get(dimension.key) || { label: dimension.label, points: [] };
       entry.points.push(dimension.points);
       grouped.set(dimension.key, entry);
@@ -680,12 +683,16 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     percentComplete: sourceCandidates && completed !== null ? round((completed / sourceCandidates) * 100) : null,
     processedLastHour: 0,
     processingMode: readString(details.processingMode),
-    hourlyBatchLimit: readNumber(details.hourlyBatchLimit),
+    hourlyBatchLimit: readNumber(details.admissionLimitPerRun) ?? readNumber(details.hourlyBatchLimit),
     workerBatchSize: readNumber(details.workerBatchSize),
     maximumWorkers: readNumber(details.maximumWorkers),
     targetDailyCapacity: readNumber(details.targetDailyCapacity),
     reconciled,
   };
+}
+
+function isApplicableDimensionValue(value: string) {
+  return !["not_applicable", "not_observable", "unobservable"].includes(value.toLowerCase());
 }
 
 function emptyCoverage(): RepScoringCoverage {
