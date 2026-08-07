@@ -74,7 +74,6 @@ The endpoint upserts dashboard rows and returns:
 - `/manager/sales-correlation?days=7|14|30|90` hidden manager sales-impact analytics
 - `/manager/compliance` hidden manager compliance review
 - `/manager/rep-no-show` hidden manager rep no-show impact review
-- `/manager/prompt-benchmark` and `/manager/prompt-benchmark/submit` hidden isolated prompt benchmark
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
 - `/api/usage-events` browser usage event ingest
 - `/api/report-chat` gated DeepSeek report Q&A

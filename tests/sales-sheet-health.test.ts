@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getSalesSheetColumnIndexes } from "@/lib/sales-sheet-columns";
 import { getLiveSalesReadErrors } from "@/lib/sales-sheet-health";
 
 describe("Sales Impact live Sheet selection", () => {
@@ -26,5 +27,32 @@ describe("Sales Impact live Sheet selection", () => {
         latestSalesDate: new Date("2026-08-07T12:00:00.000Z"),
       }),
     ).toContain("The live read returned zero paid sales rows.");
+  });
+});
+
+describe("Sales Impact Sheet headers", () => {
+  const commonHeaders = [
+    "Date",
+    "Payment Status",
+    "Amount",
+    "Sales Rep",
+    "Show Name",
+    "Contract Signed",
+  ];
+
+  it("accepts the current live Payment Type header", () => {
+    const headers = [...commonHeaders, "Payment Type (New/Recurring/Initial Remaining)"];
+    expect(getSalesSheetColumnIndexes(headers).paymentType).toBe(6);
+  });
+
+  it("continues to accept the historical Payment Type header", () => {
+    const headers = [...commonHeaders, "Payment Type (New/Recurring)"];
+    expect(getSalesSheetColumnIndexes(headers).paymentType).toBe(6);
+  });
+
+  it("still fails closed when the Payment Type column is genuinely missing", () => {
+    expect(() => getSalesSheetColumnIndexes(commonHeaders)).toThrow(
+      "Missing required sales sheet column",
+    );
   });
 });

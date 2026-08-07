@@ -4,6 +4,7 @@ import {
   saveSalesPerformanceSnapshot,
 } from "@/lib/db";
 import { slugify } from "@/lib/slug";
+import { getSalesSheetColumnIndexes } from "@/lib/sales-sheet-columns";
 import { getLiveSalesReadErrors } from "@/lib/sales-sheet-health";
 import type {
   SalesCorrelationUsageEvent,
@@ -513,34 +514,29 @@ function parseSalesCsv(csv: string): { headers: string[]; rows: SalesPaymentRow[
     throw new Error("Sales sheet returned no header row.");
   }
 
-  const headerMap = new Map(headers.map((header, index) => [normalizeHeader(header), index]));
-  const dateIndex = requireColumn(headerMap, "date");
-  const statusIndex = requireColumn(headerMap, "payment status");
-  const typeIndex = requireColumn(headerMap, "payment type (new/recurring)");
-  const amountIndex = requireColumn(headerMap, "amount");
-  const repIndex = requireColumn(headerMap, "sales rep");
-  const showIndex = headerMap.get("show name") ?? -1;
-  const contractIndex = headerMap.get("contract signed") ?? -1;
+  const columns = getSalesSheetColumnIndexes(headers);
 
   return {
     headers,
     rows: rows.flatMap((row) => {
-      const repName = (row[repIndex] || "").trim();
-      const date = parseSheetDate(row[dateIndex] || "");
-      const amount = parseMoney(row[amountIndex] || "");
+      const repName = (row[columns.salesRep] || "").trim();
+      const date = parseSheetDate(row[columns.date] || "");
+      const amount = parseMoney(row[columns.amount] || "");
 
       if (!repName || !date || amount <= 0) return [];
 
       return {
         date,
         dateKey: toDateKey(date),
-        paymentStatus: (row[statusIndex] || "").trim(),
-        paymentType: (row[typeIndex] || "").trim(),
+        paymentStatus: (row[columns.paymentStatus] || "").trim(),
+        paymentType: (row[columns.paymentType] || "").trim(),
         amount,
         repName,
         repSlug: getCanonicalRepSlug(repName),
-        showName: showIndex >= 0 ? (row[showIndex] || "").trim() : "",
-        contractSigned: contractIndex >= 0 ? /^true$/i.test((row[contractIndex] || "").trim()) : false,
+        showName: columns.showName >= 0 ? (row[columns.showName] || "").trim() : "",
+        contractSigned: columns.contractSigned >= 0
+          ? /^true$/i.test((row[columns.contractSigned] || "").trim())
+          : false,
       };
     }),
   };
@@ -635,18 +631,6 @@ function parseCsv(csv: string) {
   }
 
   return rows;
-}
-
-function requireColumn(headerMap: Map<string, number>, columnName: string) {
-  const index = headerMap.get(columnName);
-  if (typeof index !== "number") {
-    throw new Error(`Missing required sales sheet column: ${columnName}`);
-  }
-  return index;
-}
-
-function normalizeHeader(value: string) {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function parseSheetDate(value: string) {

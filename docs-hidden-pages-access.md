@@ -17,11 +17,6 @@ These pages use the main Magic Mike authentication policy. Tyler is explicitly a
 - [Sales Impact - 90 days](https://sales-performance-dashboard-rose.vercel.app/manager/sales-correlation?days=90)
 - [Compliance review](https://sales-performance-dashboard-rose.vercel.app/manager/compliance)
 - [Rep no-show impact](https://sales-performance-dashboard-rose.vercel.app/manager/rep-no-show)
-- [Prompt benchmark results](https://sales-performance-dashboard-rose.vercel.app/manager/prompt-benchmark)
-- [Run a prompt benchmark](https://sales-performance-dashboard-rose.vercel.app/manager/prompt-benchmark/submit)
-
-Individual prompt benchmark reviews use `/manager/prompt-benchmark/review/[runId]` and should be opened from the benchmark results page so a valid run ID is used.
-
 ## Coaching rep-scoring admin pages
 
 These pages require both normal Magic Mike sign-in and exact membership in `REP_SCORING_ADMIN_EMAILS`. Production includes Syed and Tyler.
