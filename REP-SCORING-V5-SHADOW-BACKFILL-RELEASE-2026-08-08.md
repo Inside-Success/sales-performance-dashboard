@@ -8,14 +8,14 @@ V5 is now running against the complete eligible call population from the fixed J
 
 ## Live architecture
 
-- Coordinator: `uWfyXPrNDzQ2Eixe` — active, scheduled every 30 minutes.
+- Coordinator: `uWfyXPrNDzQ2Eixe` — active, scheduled every 15 minutes.
 - Worker: `XPFqJlWGRRCiNqDn` — active only as a published sub-workflow; it has no independent schedule.
 - One-time inventory workflow: `0N7dBA07pMToS76S` — inactive after recording the baseline.
 - Scorer version: `rep-reviewer-v5-shadow-1`.
 - Fixed source start: July 18, 2026. Calls before that date are excluded.
 - Stable launch inventory: 3,328 eligible calls under the existing processed-transcript, valid-sales-call, normal-attendance and confidence rules.
 
-Each clear coordinator run admits at most 80 calls. It creates no more than eight worker executions, with ten calls processed sequentially inside each worker. The coordinator reads a rotating two-day historical shard plus the newest two hours. The next 30-minute slot performs a lightweight lease check first; if any prior V5 worker is still active, that slot succeeds as a safe no-op instead of starting an overlapping batch.
+Each clear coordinator run admits at most 80 calls. It creates no more than eight worker executions, with ten calls processed sequentially inside each worker. The coordinator reads a rotating two-day historical shard plus the newest two hours. The next 15-minute slot performs a lightweight lease check first; if any prior V5 worker is still active, that slot succeeds as a safe no-op instead of starting an overlapping batch. With every slot clear, the dispatch ceiling is 320 calls per hour; skipped busy slots intentionally reduce that rate to protect n8n and prevent duplicate work.
 
 Every call keeps an immutable scorer-version idempotency key and a one-hour recoverable lease. Network reads and writes use bounded retries. A worker failure therefore cannot duplicate a completed assessment, and an abandoned lease becomes eligible for a later retry.
 
@@ -37,7 +37,7 @@ The production manager route remains `/manager/rep-scoring`. It now supports V5 
 - The worker and coordinator both validated with zero errors and zero invalid connections.
 - A two-call batch completed sequentially in one worker execution in 74 seconds; both leases reached a terminal state and two assessment outcomes were written.
 - The first full 80-call wave was dispatched as eight isolated ten-call workers.
-- The temporary coordinator webhook was disabled after launch, leaving only the 30-minute schedule active.
+- The temporary coordinator webhook was disabled after launch, leaving only the 15-minute schedule active.
 - The one-time inventory webhook was deactivated after recording the stable baseline.
 - Rep-scoring tests passed 26/26, focused ESLint passed, and the production Next.js build passed without running a local server.
 
