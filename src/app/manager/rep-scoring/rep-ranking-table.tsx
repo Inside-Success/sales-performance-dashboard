@@ -79,39 +79,39 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
 
         {visibleReps.length ? (
           <div className="overflow-x-auto rounded-xl border border-slate-200">
-            <Table>
+            <Table className="min-w-[1120px] table-fixed">
               <TableHeader>
                 <TableRow className="bg-slate-50/80">
-                  <TableHead>Rep</TableHead>
-                  <TableHead>Overall score</TableHead>
-                  <TableHead>Evidence</TableHead>
-                  <TableHead>Main finding</TableHead>
-                  <TableHead>Recent direction</TableHead>
-                  <TableHead><span className="sr-only">Open</span></TableHead>
+                  <TableHead className="w-[17%]">Rep</TableHead>
+                  <TableHead className="w-[12%]">Overall score</TableHead>
+                  <TableHead className="w-[17%]">Evidence</TableHead>
+                  <TableHead className="w-[29%]">Main finding</TableHead>
+                  <TableHead className="w-[17%]">Recent direction</TableHead>
+                  <TableHead className="w-[8%]"><span className="sr-only">Open</span></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {visibleReps.map((rep) => (
                   <TableRow key={rep.id} className={rep.needsReview ? "bg-red-50/30" : rep.criticalEvents.length ? "bg-amber-50/30" : undefined}>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <div className="font-semibold text-slate-950">{rep.repName}</div>
                       <div className="text-xs text-slate-500">{rep.coverageLabel}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <div className="text-xl font-extrabold text-slate-950">{formatScore(rep.overallScore)}</div>
                       <div className="text-xs font-semibold text-slate-500">{scoreBand(rep.overallScore)}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <div className="font-bold text-slate-900">{rep.nScored} calls</div>
                       <div className="text-xs text-slate-500">{rep.confidence}{rep.excludedCalls ? ` · ${rep.excludedCalls} excluded` : ""}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="align-top">
                       <FindingBadge rep={rep} />
                       {rep.criticalEvents.length ? <Badge variant="outline" className="ml-1 rounded-full border-amber-200 bg-amber-50 text-amber-900">{rep.criticalEvents.length} critical {rep.criticalEvents.length === 1 ? "call" : "calls"}</Badge> : null}
-                      <div className="mt-2 max-w-[18rem] text-sm font-semibold text-slate-800">{mainFinding(rep)}</div>
+                      <div className="mt-2 whitespace-normal break-words text-sm font-semibold leading-5 text-slate-800">{mainFinding(rep)}</div>
                     </TableCell>
-                    <TableCell><RecentDirection rep={rep} /></TableCell>
-                    <TableCell>
+                    <TableCell className="align-top"><RecentDirection rep={rep} /></TableCell>
+                    <TableCell className="align-top">
                       <Link href={`/manager/rep-scoring/rep/${encodeURIComponent(rep.repId || rep.repEmail)}`} className="inline-flex items-center gap-1 whitespace-nowrap text-sm font-bold text-red-700 hover:underline">Review <ExternalLink className="size-3.5" /></Link>
                     </TableCell>
                   </TableRow>

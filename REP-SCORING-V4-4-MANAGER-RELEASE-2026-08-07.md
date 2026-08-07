@@ -56,3 +56,7 @@ At the production verification snapshot, the page contained 2,572 valid V4.3 cal
 Sarah Matte verified the corrected separation: her 77.5 overall score and 39 valid calls show `No priority concern`, while a separate `Pricing omission` card opens the exact July 31 Call 2+ assessment containing the stored quote and timestamp. Jackeline Medina verified a supported coaching-focus path: `Contract and close` averaged 37.5 across 8 observations, 6 were genuinely weak, and both coaching links open the same exact weakest supporting assessment.
 
 The existing V4.3 n8n coordinator and worker were inspected before implementation and were not edited. The V4.4 deployment reads the same immutable call evidence, so no backlog, reprocessing window, or new workflow concurrency was introduced.
+
+## August 7 table-layout hotfix
+
+The manager table now uses explicit, stable column widths and wraps long main-finding explanations inside their own column. All row content is top-aligned, and narrower viewports use horizontal scrolling instead of allowing findings to overlap the recent-direction column. This presentation-only fix does not alter scores, statuses, evidence, or workflow behavior.
