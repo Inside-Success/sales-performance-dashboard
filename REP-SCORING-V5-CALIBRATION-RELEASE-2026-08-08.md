@@ -78,7 +78,9 @@ The page uses the existing `REP_SCORING_ADMIN_EMAILS` gate. It groups exactly si
 - The V5 launcher and worker were deactivated after completion.
 - Five scoped Vitest tests pass.
 - TypeScript and scoped ESLint pass.
-- The first local Next.js build compiled successfully, then the local type-check worker exceeded the laptop's default 2 GB Node heap. No local server was started. The authoritative clean production build is therefore the remote Vercel build for the Git commit recorded below after deployment.
+- The first local Next.js build compiled successfully, then the local type-check worker exceeded the laptop's default 2 GB Node heap. No local server was started.
+- Vercel preview deployment `dpl_8Vx73iewHt9AFFmrZpiy8d4Byuk3` reached `READY`; its remote build completed compilation, TypeScript, static generation, and route emission successfully for Git commit `9c572d398fc96e0bca69fdec451fcf938d78b5a1`.
+- The preview environment does not contain the production Auth.js secret, so it correctly cannot be used for an authenticated manager-session test. Authentication is not weakened or bypassed; the final authenticated route and data verification must use the production environment after release.
 
 ## Human gate before backfill
 
