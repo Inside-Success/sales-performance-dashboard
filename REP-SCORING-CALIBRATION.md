@@ -1,5 +1,21 @@
 # Rep Scoring Calibration
 
+## V5 fairness-first human calibration
+
+The private review page is `/manager/rep-scoring/v5-calibration`. It contains exactly six Call 1 and six Call 2+ calls. These are immutable `rep-reviewer-v5-calibration-1` assessments selected across the prior V4.3 score range; V4.3 scores were used only to diversify the sample and are not treated as ground truth.
+
+The bounded run completed all 12 worker executions. Ten assessments received verifier-approved numeric calibration scores. Two Call 2+ assessments deliberately received no numeric score: one independent verifier found that the primary review punished a rep for respecting a firm prospect decline, and one found material disagreement about how prerecorded material and the rep's framing/follow-up should be attributed. Those are useful calibration cases, not workflow failures. No V5 schedule or backfill is active.
+
+Review each call in the order shown. For each one, reply with:
+
+- Fair / too high / too low / should not be scored
+- Whether the transcript reliability decision is correct
+- Whether the prospect opportunity decision is correct
+- The checkpoint that looks most wrong, if any
+- One short note
+
+After this feedback, repeated errors will be corrected under a new immutable V5 prompt/config version. Only then can a full V5 backfill be considered.
+
 ## V4.3 calibration
 
 V4.3 changes the rubric anchors, evidence-validator recovery behavior, and manager classification policy, not the model, consensus count, dimensions, or weights. Its first bounded run processed 12 calls in four isolated workers: every worker succeeded, all 12 calls finalized, 9 became valid scores, and 3 were safely quarantined. The valid scores ranged from 44.9 to 70.3. Six calls had a directly comparable V4.2 result; V4.3 changed those scores by an average of +7.1 points, with individual changes from -3.7 to +20.0. This confirms the correction is material and is not a blanket uplift.
