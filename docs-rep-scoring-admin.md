@@ -2,7 +2,7 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
-V4.3 scoring and release evidence are recorded in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate rollback path and V3 remains preserved behind it.
+V4.4 manager-policy changes and release evidence are recorded in `REP-SCORING-V4-4-MANAGER-RELEASE-2026-08-07.md`. V4.4 deliberately reuses the completed, immutable V4.3 call assessments; it does not create another backfill. V4.3 workflow evidence remains in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate workflow rollback path and V3 remains preserved behind it.
 
 V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4-RELEASE-2026-08-06.md`. V3 remains an immutable rollback path; the release record states the exact cutover status.
 
@@ -98,16 +98,18 @@ The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
 - The default table now shows the strongest 15+ call evidence and remains sorted lowest score first. Managers can broaden it to 8+, 3+, or all evidence.
-- `Needs attention` is not assigned from one arbitrary cutoff. It requires a sub-50 call-type result with at least eight valid calls, a sub-60 call-type result with at least fifteen valid calls, a supported material decline, or a verified high-severity call event.
-- A recurring coaching concern requires at least five observations in the same dimension and an average below 60. A rep may correctly have no recurring weakness.
-- Search and status controls let a manager show all results, needs-attention results, supported coaching opportunities, or reps with no recurring weakness without changing the underlying score.
+- `Needs attention` requires a call-type result below 45 with at least eight valid calls, a result below 55 with at least fifteen valid calls, or a decline of at least 15 points whose current five-call mean is below 60.
+- A high-severity event is a separate `Critical call to verify`. It links to the exact call and never turns one call into a rep-performance verdict.
+- A recurring coaching concern requires at least eight observations in the same dimension, an average below 55, and at least three Needs Improvement or Unacceptable observations representing at least 30% of its evidence. A rep may correctly have no recurring weakness.
+- Search and status controls let a manager show all results, needs-attention results, supported coaching focuses, critical calls, or reps with no priority concern without changing the underlying score.
 - The overview is reduced to six decision fields: rep, overall score, evidence amount, main finding, recent direction, and the review link. Call-type details remain on the rep page instead of competing with the first decision.
-- The headline `Needs attention` count includes only supported low, declining, or verified high-severity signals. The adjacent `Strong evidence` card states the 15-call default, and the table makes 8+, 3+, and all-evidence views explicit.
+- The headline `Needs attention` count includes only supported low or declining rep-level signals. A separate `Critical calls to verify` card prevents call-level events from inflating the underperformance count. The adjacent `Strong evidence` card states the 15-call default, and the table makes 8+, 3+, and all-evidence views explicit.
 - Processing details disappear from normal manager use when the queue is current. A compact catch-up panel appears only when calls are genuinely waiting.
 - While a backlog exists, a plain-language progress panel compares unique finalized outcomes (valid scores plus unresolved evidence quarantines) with the largest trusted all-window source inventory already recorded. The rotating one-day safety shards are operational inputs, not progress denominators, so the manager-facing percentage cannot fall merely because the next shard contains more calls. The panel labels this as an approximate launch-backlog measure; new live calls continue separately.
 - `/manager/rep-scoring/rep/[repKey]` opens with a one-sentence manager summary, the overall score and evidence amount, compact Call 1 and Call 2+ summaries, supported concerns, supported strengths, recent direction, and a specific next action.
-- A concern is shown only when the same dimension has at least five scored observations and averages below 60. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
-- A strength is shown only when it has at least five scored observations and averages at least 75. Strong reps can correctly display no supported recurring weakness.
+- A concern is shown only when the same dimension passes all three V4.4 recurrence tests: evidence amount, low average, and repeated genuinely weak observations. The page may therefore show zero, one, two, or three concerns; it never invents a fixed number of weaknesses.
+- A strength is shown only when it has at least eight scored observations and averages at least 75. Strong reps can correctly display no supported recurring weakness.
+- Coaching evidence links select the weakest supported example for that exact dimension. Critical-event cards link to the exact assessment that contains the event, fixing the V4.3 cross-linking defect.
 - Up to 24 recent call cards remain available in a collapsed evidence section so managers can verify the result without facing the raw audit trail by default.
 - Call evidence pages show dimension names, weights, band points, score contribution, reasons, quotes, timestamps, behavior status, call context, and technical provenance.
 
@@ -153,13 +155,17 @@ All values are server-only; none use the `NEXT_PUBLIC_` prefix.
 - `REP_SCORING_AIRTABLE_TOKEN`
 - `REP_SCORING_AIRTABLE_BASE_ID`
 - `REP_SCORING_SCORER_VERSION=rep-reviewer-v4.3`
-- `REP_SCORING_DECLINE_THRESHOLD=10`
-- `REP_SCORING_ATTENTION_MIN_CALLS=8`
-- `REP_SCORING_ATTENTION_SCORE=50`
-- `REP_SCORING_STRONG_EVIDENCE_CALLS=15`
-- `REP_SCORING_STRONG_EVIDENCE_ATTENTION_SCORE=60`
-- `REP_SCORING_RECURRING_CONCERN_MIN_CALLS=5`
-- `REP_SCORING_RECURRING_CONCERN_SCORE=60`
+- Existing V4.3 threshold variables may remain set for rollback compatibility. V4.4 uses separate optional server-only overrides and safe defaults:
+  - `REP_SCORING_V44_ATTENTION_MIN_CALLS=8`
+  - `REP_SCORING_V44_ATTENTION_SCORE=45`
+  - `REP_SCORING_V44_STRONG_EVIDENCE_CALLS=15`
+  - `REP_SCORING_V44_STRONG_EVIDENCE_ATTENTION_SCORE=55`
+  - `REP_SCORING_V44_DECLINE_THRESHOLD=15`
+  - `REP_SCORING_V44_DECLINE_CURRENT_SCORE=60`
+  - `REP_SCORING_V44_RECURRING_MIN_OBSERVATIONS=8`
+  - `REP_SCORING_V44_RECURRING_AVERAGE=55`
+  - `REP_SCORING_V44_RECURRING_WEAK_OBSERVATIONS=3`
+  - `REP_SCORING_V44_RECURRING_WEAK_RATE=0.3`
 - Optional table overrides: `REP_SCORING_ROLLUPS_TABLE`, `REP_SCORING_CALL_SCORES_TABLE`, `REP_SCORING_QUARANTINE_TABLE`, `REP_SCORING_CONFIG_TABLE`
 
 If the feature flag or token is missing, the page renders a clear safe-unavailable state and performs no writes.

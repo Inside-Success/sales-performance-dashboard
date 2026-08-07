@@ -12,7 +12,7 @@ import type { RepPerformanceSummary } from "@/lib/rep-scoring/data";
 import { cn } from "@/lib/utils";
 
 type EvidenceFilter = "strong" | "moderate" | "initial" | "all";
-type StatusFilter = "all" | "attention" | "opportunity" | "clear";
+type StatusFilter = "all" | "attention" | "focus" | "event" | "clear";
 
 const evidenceOptions: Array<{ value: EvidenceFilter; label: string; minimum: number }> = [
   { value: "strong", label: "15+ calls", minimum: 15 },
@@ -31,7 +31,8 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
   const visibleReps = useMemo(() => reps.filter((rep) => {
     if (rep.nScored < minimumCalls) return false;
     if (status === "attention" && rep.reviewStatus !== "needs_attention") return false;
-    if (status === "opportunity" && rep.reviewStatus !== "coaching_opportunity") return false;
+    if (status === "focus" && rep.reviewStatus !== "coaching_focus") return false;
+    if (status === "event" && !rep.criticalEvents.length) return false;
     if (status === "clear" && rep.reviewStatus !== "no_recurring_concern") return false;
     if (normalizedQuery && !`${rep.repName} ${rep.repEmail}`.toLowerCase().includes(normalizedQuery)) return false;
     return true;
@@ -64,8 +65,9 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
             <div className="flex flex-wrap gap-2">
               <FilterButton active={status === "all"} onClick={() => setStatus("all")}>All results</FilterButton>
               <FilterButton active={status === "attention"} onClick={() => setStatus("attention")}>Needs attention</FilterButton>
-              <FilterButton active={status === "opportunity"} onClick={() => setStatus("opportunity")}>Coaching opportunity</FilterButton>
-              <FilterButton active={status === "clear"} onClick={() => setStatus("clear")}>No recurring weakness</FilterButton>
+              <FilterButton active={status === "focus"} onClick={() => setStatus("focus")}>Coaching focus</FilterButton>
+              <FilterButton active={status === "event"} onClick={() => setStatus("event")}>Critical call</FilterButton>
+              <FilterButton active={status === "clear"} onClick={() => setStatus("clear")}>No priority concern</FilterButton>
             </div>
           </div>
         </div>
@@ -90,7 +92,7 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
               </TableHeader>
               <TableBody>
                 {visibleReps.map((rep) => (
-                  <TableRow key={rep.id} className={rep.needsReview ? "bg-red-50/30" : undefined}>
+                  <TableRow key={rep.id} className={rep.needsReview ? "bg-red-50/30" : rep.criticalEvents.length ? "bg-amber-50/30" : undefined}>
                     <TableCell>
                       <div className="font-semibold text-slate-950">{rep.repName}</div>
                       <div className="text-xs text-slate-500">{rep.coverageLabel}</div>
@@ -105,6 +107,7 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
                     </TableCell>
                     <TableCell>
                       <FindingBadge rep={rep} />
+                      {rep.criticalEvents.length ? <Badge variant="outline" className="ml-1 rounded-full border-amber-200 bg-amber-50 text-amber-900">{rep.criticalEvents.length} critical {rep.criticalEvents.length === 1 ? "call" : "calls"}</Badge> : null}
                       <div className="mt-2 max-w-[18rem] text-sm font-semibold text-slate-800">{mainFinding(rep)}</div>
                     </TableCell>
                     <TableCell><RecentDirection rep={rep} /></TableCell>
@@ -140,14 +143,15 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
 function FindingBadge({ rep }: { rep: RepPerformanceSummary }) {
   if (rep.reviewStatus === "early_evidence") return <Badge variant="outline" className="rounded-full border-slate-200 bg-slate-50 text-slate-700">Early evidence</Badge>;
   if (rep.reviewStatus === "needs_attention") return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
-  if (rep.reviewStatus === "coaching_opportunity") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
-  return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No supported concern</Badge>;
+  if (rep.reviewStatus === "coaching_focus") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching focus</Badge>;
+  return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No priority concern</Badge>;
 }
 
 function mainFinding(rep: RepPerformanceSummary) {
   if (rep.needsReview) return rep.reviewReason;
   const concern = rep.coachingPriorities[0]?.label;
   if (concern) return concern;
+  if (rep.criticalEvents.length) return "Performance is not flagged; verify the separate call event";
   return rep.strengths[0] ? `Strongest area: ${rep.strengths[0].label}` : "Continue normal monitoring";
 }
 

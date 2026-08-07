@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Clock3, ShieldCheck, Users } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, Flag, ShieldCheck, Users } from "lucide-react";
 import { RepRankingTable } from "@/app/manager/rep-scoring/rep-ranking-table";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export default async function ManagerRepScoringPage() {
   const data = await getRepScoringDashboardData();
   const reviewReadyReps = data.repSummaries.filter((rep) => rep.nScored >= 3);
   const supportedConcerns = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention").length;
+  const criticalCalls = data.repSummaries.reduce((total, rep) => total + rep.criticalEvents.length, 0);
   const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15).length;
 
   return (
@@ -49,8 +50,9 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
-        <section className="grid gap-3 md:grid-cols-3">
+        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
+          <Metric title="Critical calls to verify" value={criticalCalls} helper="Separate call-level flags; not a rep-performance verdict" tone="amber" icon={Flag} />
           <Metric title="Strong evidence" value={strongEvidenceReps} helper="At least 15 valid calls; this is the default manager view" tone="green" icon={Users} />
           <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Speaker-verified assessments since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
         </section>
@@ -59,7 +61,7 @@ export default async function ManagerRepScoringPage() {
         <RepRankingTable reps={data.repSummaries} />
 
         <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm leading-6 text-slate-600">
-          <strong className="text-slate-900">How to use it:</strong> begin with the 15+ call list, review the reason beside the lowest results, then open only the reps you need to investigate. A score alone does not create a concern: the page also requires enough repeated evidence, a material decline, or a verified high-severity call event.
+          <strong className="text-slate-900">How to use it:</strong> begin with the 15+ call list, review the reason beside the lowest results, then open only the reps you need to investigate. A score alone does not create a concern. Critical call flags are shown separately because one call is not proof of overall rep performance.
           <span className="mt-2 block"><strong className="text-slate-900">What this measures:</strong> observable sales-call execution in available transcripts. It does not measure lead quality, territory, attendance outside the recorded call, revenue attribution, or every part of a rep&apos;s job. Calls with unresolved speaker identity or unsupported evidence are excluded, not converted into low scores.</span>
         </section>
 
@@ -88,8 +90,8 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
   );
 }
 
-function Metric({ icon: Icon, title, value, helper, tone }: { icon: typeof Users; title: string; value: number; helper: string; tone: "red" | "green" }) {
-  const style = tone === "red" ? "border-red-100 bg-red-50 text-red-700" : "border-emerald-100 bg-emerald-50 text-emerald-700";
+function Metric({ icon: Icon, title, value, helper, tone }: { icon: typeof Users; title: string; value: number; helper: string; tone: "red" | "amber" | "green" }) {
+  const style = tone === "red" ? "border-red-100 bg-red-50 text-red-700" : tone === "amber" ? "border-amber-100 bg-amber-50 text-amber-800" : "border-emerald-100 bg-emerald-50 text-emerald-700";
   return <Card className="magic-card border-white/80 bg-white/95"><CardContent className="pt-1"><div className={cn("mb-4 inline-flex size-10 items-center justify-center rounded-xl border", style)}><Icon className="size-5" /></div><div className="text-3xl font-extrabold text-slate-950">{numberFormatter.format(value)}</div><div className="mt-1 font-semibold text-slate-800">{title}</div><p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p></CardContent></Card>;
 }
 
