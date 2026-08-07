@@ -44,7 +44,15 @@ The live audit found 2,501 evidence-valid V4.3 calls across 114 reps, including 
 
 - [x] Aggregation tests cover conservative low-score thresholds, recurring weak-evidence requirements, healthy declines, and exact critical-call linkage.
 - [x] TypeScript, scoped lint, production build, `git diff --check`, and credential-pattern scan pass without a local development server.
-- [ ] GitHub change is scoped to rep-scoring code and documentation.
-- [ ] Production deployment reaches `READY` on the canonical alias.
-- [ ] Authenticated overview, rep detail, and exact call routes load without console errors.
-- [ ] Live counts and representative clear, coaching-focus, needs-attention, and critical-event cases are checked after deployment.
+- [x] GitHub PR `#128` merged as `dd6f54604f51af3eeeb54870cbc99b16a578d4cc`; its change is scoped to rep-scoring code and documentation.
+- [x] Production deployment `dpl_7hDpPYncQvBqtUx3K2qsoQMdMsJN` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias.
+- [x] Authenticated overview, rep detail, and exact call routes loaded without browser console warnings/errors; the deployment error-log scan was empty.
+- [x] Live counts and representative clear, coaching-focus, needs-attention, and critical-event cases were checked after deployment.
+
+## Production result
+
+At the production verification snapshot, the page contained 2,572 valid V4.3 calls across 114 reps; 65 reps had at least 15 calls. That strong-evidence cohort now contained 8 Needs attention, 23 Coaching focus, and 34 No priority concern results. These groups reconcile exactly to the 65 displayed reps and replace the V4.3 saturated result. Twelve strong-evidence reps had separate critical-call alerts; 17 critical calls existed across the complete cohort.
+
+Sarah Matte verified the corrected separation: her 77.5 overall score and 39 valid calls show `No priority concern`, while a separate `Pricing omission` card opens the exact July 31 Call 2+ assessment containing the stored quote and timestamp. Jackeline Medina verified a supported coaching-focus path: `Contract and close` averaged 37.5 across 8 observations, 6 were genuinely weak, and both coaching links open the same exact weakest supporting assessment.
+
+The existing V4.3 n8n coordinator and worker were inspected before implementation and were not edited. The V4.4 deployment reads the same immutable call evidence, so no backlog, reprocessing window, or new workflow concurrency was introduced.

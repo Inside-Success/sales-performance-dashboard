@@ -136,6 +136,15 @@ Release verification on Aug 6, 2026:
 - Final authenticated production verification showed 248 valid scores, 41 review-ready reps, 95 scored reps in the all-evidence view, and six supported needs-attention signals while the remaining workers continued. The progress panel showed the factual 160-call active batch without a speculative ETA; browser console and Vercel runtime errors were empty.
 - Fifteen rep-scoring tests, TypeScript, scoped ESLint, and a clean Next.js production build passed without starting a local development server.
 
+Release verification on Aug 7, 2026 (V4.4 manager policy):
+
+- GitHub PR `#128` merged as `dd6f54604f51af3eeeb54870cbc99b16a578d4cc`; production deployment `dpl_7hDpPYncQvBqtUx3K2qsoQMdMsJN` reached `READY` and owns the canonical alias.
+- The authenticated page read 2,572 immutable V4.3 calls across 114 reps. Its 65-rep strong-evidence cohort reconciled to 8 Needs attention, 23 Coaching focus, and 34 No priority concern results.
+- Seventeen critical calls were separated from rep-performance status. Twelve strong-evidence reps had at least one such alert.
+- Sarah Matte verified the corrected event path: her 77.5 result remains No priority concern, while the separate pricing-omission alert opens the exact flagged call and matching timestamped evidence.
+- Jackeline Medina verified the coaching path: the visible recurrence counts pass every V4.4 rule and both manager links open the same exact weakest supporting call.
+- Browser console warnings/errors and deployment error logs were empty. Twenty-two rep-scoring tests, TypeScript, scoped ESLint, two production builds, diff checks, and credential scans passed without starting a local development server.
+
 Display bands for the current V4.3 scorer are factual labels for the assessed call:
 
 - 0–24: Unacceptable
