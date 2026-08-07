@@ -49,18 +49,18 @@ describe("rep scoring aggregation", () => {
 
   it("orders the lowest cumulative rep score first and marks supported low results", () => {
     const calls = [
-      ...[45, 45, 45, 45, 45, 45, 45, 45].map((score, index) => call({ assessmentId: `low-${index}`, repEmail: "low@example.com", repName: "Low", callType: "Call 1", score })),
+      ...[44, 44, 44, 44, 44, 44, 44, 44].map((score, index) => call({ assessmentId: `low-${index}`, repEmail: "low@example.com", repName: "Low", callType: "Call 1", score })),
       ...[80, 85, 90, 90, 85, 80, 90, 85].map((score, index) => call({ assessmentId: `high-${index}`, repEmail: "high@example.com", repName: "High", callType: "Call 1", score })),
     ];
 
     const summaries = deriveRepSummaries(calls);
     expect(summaries.map((summary) => summary.repName)).toEqual(["Low", "High"]);
-    expect(summaries[0]).toMatchObject({ overallScore: 45, needsReview: true, reviewStatus: "needs_attention", rank: 1 });
+    expect(summaries[0]).toMatchObject({ overallScore: 44, needsReview: true, reviewStatus: "needs_attention", rank: 1 });
     expect(summaries[1]).toMatchObject({ overallScore: 85.63, needsReview: false, reviewStatus: "no_recurring_concern", rank: 2 });
   });
 
   it("does not manufacture weaknesses for a rep whose recurring dimensions meet expectations", () => {
-    const calls = [0, 1, 2, 3, 4].map((index) => call({
+    const calls = Array.from({ length: 10 }, (_, index) => call({
       assessmentId: `strong-${index}`,
       repEmail: "strong@example.com",
       repName: "Strong Rep",
@@ -78,14 +78,14 @@ describe("rep scoring aggregation", () => {
   });
 
   it("shows only recurring below-expectation dimensions as coaching concerns", () => {
-    const calls = [0, 1, 2, 3, 4].map((index) => call({
+    const calls = Array.from({ length: 10 }, (_, index) => call({
       assessmentId: `mixed-${index}`,
       repEmail: "mixed@example.com",
       repName: "Mixed Rep",
       callType: "Call 1",
       score: 72,
       dimensions: [
-        { key: "discovery", band: "Needs Improvement" },
+        { key: "discovery", band: index < 3 ? "Needs Improvement" : "Developing" },
         { key: "qualification", band: "Excellent" },
         { key: "authority", band: "Excellent" },
       ],
@@ -94,7 +94,8 @@ describe("rep scoring aggregation", () => {
     const summary = deriveRepSummaries(calls)[0];
     expect(summary.coachingPriorities.map((pattern) => pattern.key)).toEqual(["discovery"]);
     expect(summary.strengths.map((pattern) => pattern.key)).toEqual(["authority", "qualification"]);
-    expect(summary.reviewStatus).toBe("coaching_opportunity");
+    expect(summary.reviewStatus).toBe("coaching_focus");
+    expect(summary.coachingPriorities[0]).toMatchObject({ weakObservations: 3, weakRate: 0.3 });
   });
 
   it("does not label an ordinary Developing result as needs attention without strong evidence", () => {
@@ -107,33 +108,38 @@ describe("rep scoring aggregation", () => {
       dimensions: [{ key: "discovery", band: "Developing" }],
     }));
 
-    expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: false, reviewStatus: "coaching_opportunity" });
+    expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: false, reviewStatus: "no_recurring_concern", coachingPriorities: [] });
   });
 
-  it("uses the stronger 15-call rule for a sustained score below 60", () => {
+  it("uses the stronger 15-call rule for a sustained score below 55", () => {
     const calls = Array.from({ length: 15 }, (_, index) => call({
       assessmentId: `sustained-${index}`,
       repEmail: "sustained@example.com",
       repName: "Sustained Rep",
       callType: "Call 2+",
-      score: 55,
+      score: 54,
     }));
 
     expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: true, reviewStatus: "needs_attention" });
   });
 
-  it("surfaces an evidence-validated high-severity call event without manufacturing a skill weakness", () => {
+  it("separates a high-severity call event from the rep performance verdict and links the exact call", () => {
     const calls = [0, 1, 2].map((index) => call({
       assessmentId: `event-${index}`,
       repEmail: "event@example.com",
       repName: "Event Rep",
       callType: "Call 2+",
       score: 80,
-      criticalEvents: index === 0 ? [{ name: "Material pricing error", severity: "high" }] : [],
+      criticalEvents: index === 0 ? [{ name: "Material pricing error", severity: "high", reason: "Incorrect amount stated", timestamp: "00:04:12", speaker: "Rep", quote: "The price is..." }] : [],
     }));
 
     const summary = deriveRepSummaries(calls)[0];
-    expect(summary).toMatchObject({ needsReview: true, criticalConcern: true, reviewStatus: "needs_attention" });
+    expect(summary).toMatchObject({
+      needsReview: false,
+      criticalConcern: true,
+      reviewStatus: "no_recurring_concern",
+      criticalEvents: [{ assessmentId: "event-0", name: "Material pricing error", severity: "high", timestamp: "00:04:12" }],
+    });
     expect(summary.coachingPriorities).toEqual([]);
   });
 
@@ -145,8 +151,8 @@ describe("rep scoring aggregation", () => {
     const summary = deriveRepSummaries(calls)[0];
     expect(summary.call1Trend.delta).toBe(40);
     expect(summary.call2Trend.delta).toBe(-40);
-    expect(summary.call1Trend.label).toBe("Calibration pending");
-    expect(summary.call2Trend.label).toBe("Calibration pending");
+    expect(summary.call1Trend).toMatchObject({ label: "Improving", recentMean: 80, previousMean: 40 });
+    expect(summary.call2Trend).toMatchObject({ label: "Declining", recentMean: 50, previousMean: 90 });
   });
 
   it("uses the measured threshold only within each call type", () => {
@@ -154,16 +160,31 @@ describe("rep scoring aggregation", () => {
     process.env.REP_SCORING_DECLINE_THRESHOLD = "12";
     try {
       const calls = [
-        ...[80, 80, 80, 80, 80, 60, 60, 60, 60, 60].map((score, index) => call({ assessmentId: `call1-threshold-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 1", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T12:00:00.000Z` })),
+        ...[80, 80, 80, 80, 80, 55, 55, 55, 55, 55].map((score, index) => call({ assessmentId: `call1-threshold-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 1", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T12:00:00.000Z` })),
         ...[70, 70, 70, 70, 70, 75, 75, 75, 75, 75].map((score, index) => call({ assessmentId: `call2-threshold-${index}`, repEmail: "rep@example.com", repName: "Rep", callType: "Call 2+", score, meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T13:00:00.000Z` })),
       ];
       const summary = deriveRepSummaries(calls)[0];
-      expect(summary.call1Trend).toMatchObject({ label: "Declining", delta: -20, supported: true });
+      expect(summary.call1Trend).toMatchObject({ label: "Declining", delta: -25, recentMean: 55, previousMean: 80, supported: true });
       expect(summary.call2Trend).toMatchObject({ label: "Stable", delta: 5, supported: true });
       expect(summary.needsReview).toBe(true);
     } finally {
       if (previousThreshold === undefined) delete process.env.REP_SCORING_DECLINE_THRESHOLD;
       else process.env.REP_SCORING_DECLINE_THRESHOLD = previousThreshold;
     }
+  });
+
+  it("does not turn a material decline into needs attention while the recent result remains healthy", () => {
+    const calls = [90, 90, 90, 90, 90, 70, 70, 70, 70, 70].map((score, index) => call({
+      assessmentId: `healthy-decline-${index}`,
+      repEmail: "healthy@example.com",
+      repName: "Healthy Rep",
+      callType: "Call 1",
+      score,
+      meetingStartAt: `2026-07-${String(10 + index).padStart(2, "0")}T12:00:00.000Z`,
+    }));
+
+    const summary = deriveRepSummaries(calls)[0];
+    expect(summary.call1Trend).toMatchObject({ label: "Stable", delta: -20, recentMean: 70 });
+    expect(summary.needsReview).toBe(false);
   });
 });

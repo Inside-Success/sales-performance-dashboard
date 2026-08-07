@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ArrowLeft, CheckCircle2, ExternalLink, ShieldCheck, Target, TrendingDown, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, ExternalLink, Flag, ShieldCheck, Target, TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
@@ -53,6 +53,8 @@ export default async function RepDetailPage({ params }: RepDetailPageProps) {
 
         <ManagerSummary summary={summary} />
 
+        {summary.criticalEvents.map((event) => <CriticalEventCard key={`${event.assessmentId}:${event.name}`} event={event} />)}
+
         {summary.excludedCalls ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Coverage note:</strong> {summary.excludedCalls} of {summary.attemptedCalls} attempted calls were excluded because identity or evidence could not be verified. The score uses only the {summary.nScored} valid calls.</div> : null}
 
         <section className="grid gap-4 lg:grid-cols-2">
@@ -98,7 +100,7 @@ function ManagerSummary({ summary }: { summary: RepPerformanceSummary }) {
 function SupportedConcerns({ summary, examples }: { summary: RepPerformanceSummary; examples: Map<string, PriorityExample> }) {
   return (
     <Card className="magic-card border-white/80 bg-white/95">
-      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">Only dimensions averaging below 60 across at least five valid observations are shown. The list is never forced to contain a fixed number.</p></CardHeader>
+      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">A concern requires at least 8 observations, an average below 55, and at least 3 genuinely weak results representing 30% or more of the evidence. The list is never forced to contain a fixed number.</p></CardHeader>
       <CardContent className="space-y-3">
         {summary.coachingPriorities.length ? summary.coachingPriorities.map((pattern) => <PriorityCard key={pattern.key} pattern={pattern} example={examples.get(pattern.key)} />) : summary.nScored < 3 ? <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><AlertTriangle className="size-5 text-amber-700" />Not enough evidence to establish a recurring concern</div><p className="mt-2 text-sm leading-6 text-slate-600">Wait for at least three valid calls before drawing a recurring skill conclusion.</p></div> : <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><CheckCircle2 className="size-5 text-emerald-700" />No recurring weakness is currently supported</div><p className="mt-2 text-sm leading-6 text-slate-600">This does not mean the rep is perfect; it means the analyzed calls do not justify labeling a recurring weakness.</p></div>}
       </CardContent>
@@ -136,8 +138,8 @@ function HeroStat({ label, value }: { label: string; value: string }) { return <
 function StatusBadge({ summary }: { summary: RepPerformanceSummary }) {
   if (summary.reviewStatus === "early_evidence") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Early evidence</Badge>;
   if (summary.reviewStatus === "needs_attention") return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
-  if (summary.reviewStatus === "coaching_opportunity") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching opportunity</Badge>;
-  return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No supported concern</Badge>;
+  if (summary.reviewStatus === "coaching_focus") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching focus</Badge>;
+  return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No priority concern</Badge>;
 }
 
 function CallTypeSummary({ title, score, count }: { title: string; score: number | null; count: number }) {
@@ -145,7 +147,25 @@ function CallTypeSummary({ title, score, count }: { title: string; score: number
 }
 
 function PriorityCard({ pattern, example }: { pattern: RepDimensionPattern; example?: PriorityExample }) {
-  return <div className="rounded-2xl border border-red-100 bg-red-50/60 p-4"><div className="flex items-center gap-2"><AlertTriangle className="size-5 text-red-600" /><div className="font-extrabold text-slate-900">{pattern.label}</div></div><p className="mt-3 text-sm text-slate-600">Average {pattern.average.toFixed(1)} across {pattern.observations} scored observations.</p>{example ? <div className="mt-3 rounded-xl bg-white/80 p-3 text-xs leading-5 text-slate-600"><div className="mb-1 font-bold text-slate-800">Why this is flagged</div>{example.reason || example.quote}<Link href={`/manager/rep-scoring/call/${encodeURIComponent(example.assessmentId)}`} className="mt-2 block font-bold text-red-700 hover:underline">Open supporting call</Link></div> : null}</div>;
+  return <div className="rounded-2xl border border-red-100 bg-red-50/60 p-4"><div className="flex items-center gap-2"><AlertTriangle className="size-5 text-red-600" /><div className="font-extrabold text-slate-900">{pattern.label}</div></div><p className="mt-3 text-sm text-slate-600">Average {pattern.average.toFixed(1)} across {pattern.observations} observations; {pattern.weakObservations} were Needs Improvement or Unacceptable.</p>{example ? <div className="mt-3 rounded-xl bg-white/80 p-3 text-xs leading-5 text-slate-600"><div className="mb-1 font-bold text-slate-800">Weakest supporting example</div>{example.reason || example.quote}<Link href={`/manager/rep-scoring/call/${encodeURIComponent(example.assessmentId)}`} className="mt-2 block font-bold text-red-700 hover:underline">Open this exact call</Link></div> : null}</div>;
+}
+
+function CriticalEventCard({ event }: { event: RepPerformanceSummary["criticalEvents"][number] }) {
+  return (
+    <Card className="magic-card border-amber-200 bg-amber-50/80">
+      <CardContent className="p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-2 font-extrabold text-amber-950"><Flag className="size-5" />Critical call to verify</div>
+            <p className="mt-2 text-sm font-semibold text-slate-900">{event.name}</p>
+            <p className="mt-1 text-sm leading-6 text-slate-600">This is a separate call-level flag, not proof that the rep is underperforming overall.{event.reason ? ` ${event.reason}` : ""}</p>
+            {event.quote ? <blockquote className="mt-3 rounded-xl bg-white/80 p-3 text-sm italic leading-6 text-slate-700">{event.speaker ? `${event.speaker}: ` : ""}{event.quote}{event.timestamp ? ` (${event.timestamp})` : ""}</blockquote> : null}
+          </div>
+          <Link href={`/manager/rep-scoring/call/${encodeURIComponent(event.assessmentId)}`} className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-amber-900 hover:underline">Open exact flagged call <ExternalLink className="size-3.5" /></Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function TrendCard({ summary, calls }: { summary: RepPerformanceSummary; calls: RepScoreCall[] }) {
@@ -160,15 +180,16 @@ function TrendSummary({ label, trend }: { label: string; trend: RepPerformanceSu
 
 function CallCard({ call }: { call: RepScoreCall }) { return <Link href={`/manager/rep-scoring/call/${encodeURIComponent(call.assessmentId)}`} className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-red-200 hover:bg-red-50/30"><div className="flex items-start justify-between gap-3"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge><div className="mt-3 text-2xl font-extrabold text-slate-950">{formatScore(call.score)} <span className="text-sm font-semibold text-slate-500">{call.band}</span></div><div className="mt-2 text-xs text-slate-500">{formatDateTime(call.meetingStartAt || call.scoredAt)}{call.showName ? ` · ${call.showName}` : ""}</div></div><ExternalLink className="size-4 text-slate-400 group-hover:text-red-600" /></div></Link>; }
 
-type PriorityExample = { assessmentId: string; quote: string; reason: string };
+type PriorityExample = { assessmentId: string; quote: string; reason: string; points: number };
 function getPriorityExamples(calls: RepScoreCall[], priorities: RepDimensionPattern[]) {
   const wanted = new Set(priorities.map((pattern) => pattern.key));
   const examples = new Map<string, PriorityExample>();
   for (const call of calls) {
     for (const dimension of normalizeDimensions(call.callType, call.dimensions)) {
-      if (!wanted.has(dimension.key) || examples.has(dimension.key)) continue;
+      if (!wanted.has(dimension.key) || dimension.points === null) continue;
       const evidence = dimension.evidence[0];
-      if (evidence?.quote || dimension.reason) examples.set(dimension.key, { assessmentId: call.assessmentId, quote: evidence?.quote || "", reason: dimension.reason });
+      const current = examples.get(dimension.key);
+      if ((evidence?.quote || dimension.reason) && (!current || dimension.points < current.points)) examples.set(dimension.key, { assessmentId: call.assessmentId, quote: evidence?.quote || "", reason: dimension.reason, points: dimension.points });
     }
   }
   return examples;
@@ -177,16 +198,14 @@ function getPriorityExamples(calls: RepScoreCall[], priorities: RepDimensionPatt
 function summarySentence(summary: RepPerformanceSummary) {
   if (summary.nScored < 3) return `Only ${summary.nScored} valid ${summary.nScored === 1 ? "call is" : "calls are"} available, so no stable conclusion should be made yet.`;
   const concern = summary.coachingPriorities[0]?.label;
-  if (summary.criticalConcern) return `A verified high-severity call event needs manager review. Open the supporting call before deciding what happened or what action is appropriate.`;
   if (summary.needsReview && concern) return `The overall result needs manager review. The clearest recurring concern is ${concern.toLowerCase()}, supported by ${summary.nScored} valid calls.`;
   if (summary.needsReview) return `The overall score or recent decline needs manager review, but no recurring skill weakness meets the evidence rule yet.`;
-  if (concern) return `The overall result is not below the review threshold. ${concern} is a supported coaching opportunity, not a complete judgment of the rep.`;
+  if (concern) return `The overall result is not below the review threshold. ${concern} is a supported coaching focus, not a complete judgment of the rep.`;
   return `No recurring weakness is currently supported across ${summary.nScored} valid calls. Continue normal monitoring as new evidence arrives.`;
 }
 
 function nextAction(summary: RepPerformanceSummary) {
   if (summary.nScored < 3) return "Wait for more valid calls before assigning a corrective coaching priority.";
-  if (summary.criticalConcern) return "Open the supporting call and verify the exact quoted event in context before taking any action.";
   const concern = summary.coachingPriorities[0]?.label;
   if (concern) return `Review the supporting evidence for ${concern.toLowerCase()}, coach only what the call evidence confirms, and compare the next five valid calls.`;
   if (summary.needsReview) return "Review the score and recent calls before coaching. The current data does not support naming a recurring skill weakness.";
