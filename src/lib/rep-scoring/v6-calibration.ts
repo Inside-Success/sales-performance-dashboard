@@ -6,6 +6,7 @@ const ROUND_TWO_VERSION = "rep-reviewer-v6-calibration-r2";
 const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1d";
 const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2d";
 const V62_FINAL_VERSION = "rep-reviewer-v6.2-calibration-final-1";
+const V63_BALANCED_VERSION = "rep-reviewer-v6.3-realistic-fair-1";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type AirtableRecord = { id: string; fields: Record<string, unknown> };
@@ -95,6 +96,8 @@ export type V6CalibrationData = {
   generatedAt: string;
   pairs: V6CalibrationPair[];
   assessments: V6Assessment[];
+  quarantined: number;
+  quarantineReasons: Record<string, number>;
   error?: string;
 };
 
@@ -110,9 +113,32 @@ export async function getV62CalibrationData(): Promise<V6CalibrationData> {
   return getCalibrationData(V62_FINAL_VERSION, "rep-reviewer-v6.2-no-second-round", "V6.2");
 }
 
+export async function getV63CalibrationData(): Promise<V6CalibrationData> {
+  const generatedAt = new Date().toISOString();
+  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {} };
+  const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
+  if (process.env.REP_SCORING_ENABLED !== "true" || !token) return { ...fallback, error: "The isolated calibration store is not connected for this deployment." };
+  try {
+    const filter = `{Scorer Version}='${V63_BALANCED_VERSION}'`;
+    const [scoreRecords, quarantineRecords] = await Promise.all([
+      fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, filter),
+      fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", token, filter),
+    ]);
+    const assessments = scoreRecords.map((record) => normalizeAssessment(record, "rep-reviewer-v6.3-no-second-round")).sort(compareAssessments);
+    const quarantineReasons = quarantineRecords.reduce<Record<string, number>>((counts, record) => {
+      const reason = text(record.fields.Reason) || "unknown";
+      counts[reason] = (counts[reason] || 0) + 1;
+      return counts;
+    }, {});
+    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: quarantineRecords.length, quarantineReasons };
+  } catch (error) {
+    return { ...fallback, configured: true, error: error instanceof Error ? error.message : "Unable to load V6.3 calibration results." };
+  }
+}
+
 async function getCalibrationData(roundOneVersion: string, roundTwoVersion: string, label: string): Promise<V6CalibrationData> {
   const generatedAt = new Date().toISOString();
-  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [] };
+  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {} };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) {
     return { ...fallback, error: "The isolated calibration store is not connected for this deployment." };
@@ -122,7 +148,7 @@ async function getCalibrationData(roundOneVersion: string, roundTwoVersion: stri
     const filter = `OR({Scorer Version}='${roundOneVersion}',{Scorer Version}='${roundTwoVersion}')`;
     const records = await fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, filter);
     const assessments = records.map((record) => normalizeAssessment(record, roundTwoVersion)).sort(compareAssessments);
-    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments) };
+    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: 0, quarantineReasons: {} };
   } catch (error) {
     return { ...fallback, configured: true, error: error instanceof Error ? error.message : `Unable to load ${label} calibration results.` };
   }
