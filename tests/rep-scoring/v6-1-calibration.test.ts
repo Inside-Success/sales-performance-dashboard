@@ -11,8 +11,8 @@ describe("V6.1 calibration release boundaries", () => {
 
   it("loads only the two immutable V6.1 scorer versions", () => {
     const data = readFileSync("src/lib/rep-scoring/v6-calibration.ts", "utf8");
-    expect(data).toContain("rep-reviewer-v6.1-calibration-r1b");
-    expect(data).toContain("rep-reviewer-v6.1-calibration-r2b");
+    expect(data).toContain("rep-reviewer-v6.1-calibration-r1c");
+    expect(data).toContain("rep-reviewer-v6.1-calibration-r2c");
     expect(data).toContain("getV61CalibrationData");
     expect(data).toContain('cache: "no-store"');
   });
@@ -26,6 +26,8 @@ describe("V6.1 calibration release boundaries", () => {
     expect(data).toContain("actionStable");
     expect(page).toContain("Action stable");
     expect(page).toContain("at least 11 of 12");
+    expect(page).toContain("decisionsAgree === 12");
+    expect(page).toContain("criticalDecisionsAgree === 12");
   });
 
   it("shows criteria and second-judgment provenance on every call", () => {

@@ -3,8 +3,8 @@ import "server-only";
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const ROUND_ONE_VERSION = "rep-reviewer-v6-calibration-r1";
 const ROUND_TWO_VERSION = "rep-reviewer-v6-calibration-r2";
-const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1b";
-const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2b";
+const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1c";
+const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2c";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type AirtableRecord = { id: string; fields: Record<string, unknown> };
@@ -137,7 +137,9 @@ export function pairAssessments(assessments: V6Assessment[]): V6CalibrationPair[
       ? Math.round(Math.abs(round1.score - round2.score) * 10) / 10
       : null;
     const bandMatch = round1 && round2 ? round1.band === round2.band : null;
-    const outcomeMatch = round1 && round2 ? decisionValue(round1) === decisionValue(round2) : null;
+    const firstDecision = round1 ? decisionValue(round1) : "";
+    const secondDecision = round2 ? decisionValue(round2) : "";
+    const outcomeMatch = round1 && round2 ? Boolean(firstDecision && secondDecision && firstDecision !== "unknown" && secondDecision !== "unknown" && firstDecision === secondDecision) : null;
     const criticalMatch = round1 && round2 ? findingSignature(round1.criticalFindings) === findingSignature(round2.criticalFindings) : null;
     const stable = delta === null ? null : delta <= 10 && bandMatch;
     return { sourceRecordId, round1, round2, representative, delta, bandMatch, outcomeMatch, criticalMatch, stable, actionStable: stable === null ? null : stable && outcomeMatch && criticalMatch };
