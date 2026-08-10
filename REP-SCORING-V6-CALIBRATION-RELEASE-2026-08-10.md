@@ -85,6 +85,10 @@ The current `/manager/rep-scoring` page remains unchanged. V6 cannot influence m
 - Scoped ESLint passed.
 - The Next.js production build compiled successfully without running a local development server.
 - `git diff --check` passed.
+- GitHub PR `#139` merged as `0ddbe7a721ec66609d6d78d0303ecafa8da8881d`.
+- Production deployment `dpl_9rh9WTqasj4BonuigVwVa6qya7Ta` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias.
+- The canonical V6 route returned HTTP 200 and correctly redirected an unauthenticated request to Google sign-in rather than returning 404.
+- Vercel reported no runtime errors for `/manager/rep-scoring/v6-calibration` in the post-deployment verification window.
 
 ## Remaining approval gate
 
