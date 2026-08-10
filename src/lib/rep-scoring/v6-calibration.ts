@@ -3,6 +3,8 @@ import "server-only";
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const ROUND_ONE_VERSION = "rep-reviewer-v6-calibration-r1";
 const ROUND_TWO_VERSION = "rep-reviewer-v6-calibration-r2";
+const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1b";
+const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2b";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type AirtableRecord = { id: string; fields: Record<string, unknown> };
@@ -10,6 +12,16 @@ type AirtableListResponse = { records?: AirtableRecord[]; offset?: string; error
 
 export type V6Evidence = { timestamp: string; speaker: string; quote: string };
 export type V6Finding = { label: string; reason: string; evidence: V6Evidence[] };
+export type V6Criterion = {
+  id: string;
+  label: string;
+  weight: number | null;
+  status: string;
+  confidence: string;
+  reason: string;
+  evidence: V6Evidence[];
+  counterevidence: V6Evidence[];
+};
 export type V6Dimension = {
   key: string;
   label: string;
@@ -22,6 +34,7 @@ export type V6Dimension = {
   reason: string;
   evidence: V6Evidence[];
   counterevidence: V6Evidence[];
+  criteria: V6Criterion[];
 };
 
 export type V6Assessment = {
@@ -58,6 +71,9 @@ export type V6Assessment = {
   repairAttempted: boolean;
   scoredAt: string;
   scorerVersion: string;
+  materialReviewRequired: boolean;
+  materialReviewApplied: boolean;
+  materialReviewReason: string;
 };
 
 export type V6CalibrationPair = {
@@ -68,6 +84,9 @@ export type V6CalibrationPair = {
   delta: number | null;
   stable: boolean | null;
   bandMatch: boolean | null;
+  outcomeMatch: boolean | null;
+  criticalMatch: boolean | null;
+  actionStable: boolean | null;
 };
 
 export type V6CalibrationData = {
@@ -79,6 +98,14 @@ export type V6CalibrationData = {
 };
 
 export async function getV6CalibrationData(): Promise<V6CalibrationData> {
+  return getCalibrationData(ROUND_ONE_VERSION, ROUND_TWO_VERSION, "V6");
+}
+
+export async function getV61CalibrationData(): Promise<V6CalibrationData> {
+  return getCalibrationData(V61_ROUND_ONE_VERSION, V61_ROUND_TWO_VERSION, "V6.1");
+}
+
+async function getCalibrationData(roundOneVersion: string, roundTwoVersion: string, label: string): Promise<V6CalibrationData> {
   const generatedAt = new Date().toISOString();
   const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [] };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
@@ -87,12 +114,12 @@ export async function getV6CalibrationData(): Promise<V6CalibrationData> {
   }
 
   try {
-    const filter = `OR({Scorer Version}='${ROUND_ONE_VERSION}',{Scorer Version}='${ROUND_TWO_VERSION}')`;
+    const filter = `OR({Scorer Version}='${roundOneVersion}',{Scorer Version}='${roundTwoVersion}')`;
     const records = await fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, filter);
-    const assessments = records.map(normalizeAssessment).sort(compareAssessments);
+    const assessments = records.map((record) => normalizeAssessment(record, roundTwoVersion)).sort(compareAssessments);
     return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments) };
   } catch (error) {
-    return { ...fallback, configured: true, error: error instanceof Error ? error.message : "Unable to load V6 calibration results." };
+    return { ...fallback, configured: true, error: error instanceof Error ? error.message : `Unable to load ${label} calibration results.` };
   }
 }
 
@@ -110,7 +137,10 @@ export function pairAssessments(assessments: V6Assessment[]): V6CalibrationPair[
       ? Math.round(Math.abs(round1.score - round2.score) * 10) / 10
       : null;
     const bandMatch = round1 && round2 ? round1.band === round2.band : null;
-    return { sourceRecordId, round1, round2, representative, delta, bandMatch, stable: delta === null ? null : delta <= 10 && bandMatch };
+    const outcomeMatch = round1 && round2 ? decisionValue(round1) === decisionValue(round2) : null;
+    const criticalMatch = round1 && round2 ? findingSignature(round1.criticalFindings) === findingSignature(round2.criticalFindings) : null;
+    const stable = delta === null ? null : delta <= 10 && bandMatch;
+    return { sourceRecordId, round1, round2, representative, delta, bandMatch, outcomeMatch, criticalMatch, stable, actionStable: stable === null ? null : stable && outcomeMatch && criticalMatch };
   }).sort(comparePairs);
 }
 
@@ -126,7 +156,7 @@ function compareAssessments(a: V6Assessment, b: V6Assessment) {
   return a.callType.localeCompare(b.callType) || a.repName.localeCompare(b.repName) || a.round - b.round;
 }
 
-function normalizeAssessment(record: AirtableRecord): V6Assessment {
+function normalizeAssessment(record: AirtableRecord, roundTwoVersion: string): V6Assessment {
   const fields = record.fields;
   const context = jsonObject(fields["Call Context JSON"]);
   const reliability = jsonObject(context.transcript_reliability);
@@ -135,6 +165,7 @@ function normalizeAssessment(record: AirtableRecord): V6Assessment {
   const validation = jsonObject(context.validation);
   const findings = jsonObject(context.findings);
   const calibration = jsonObject(context.calibration);
+  const materialReview = jsonObject(context.material_adjudication);
   const sourceV5 = jsonObject(calibration.sourceV5);
   const scorerVersion = text(fields["Scorer Version"]);
   const score = numberOrNull(fields["Composite Score"]);
@@ -142,7 +173,7 @@ function normalizeAssessment(record: AirtableRecord): V6Assessment {
     id: record.id,
     assessmentId: text(fields["Assessment ID"]) || record.id,
     sourceRecordId: text(fields["Source Record ID"]),
-    round: scorerVersion === ROUND_TWO_VERSION ? 2 : 1,
+    round: scorerVersion === roundTwoVersion ? 2 : 1,
     repName: text(fields["Scored Rep Label"]) || text(fields["Scored Rep Email"]) || "Unknown rep",
     repEmail: text(fields["Scored Rep Email"]),
     callType: text(fields["Call Type"]) === "Call 1" ? "Call 1" : "Call 2+",
@@ -172,6 +203,9 @@ function normalizeAssessment(record: AirtableRecord): V6Assessment {
     repairAttempted: validation.repairAttempted === true,
     scoredAt: text(fields["Scored At"]) || text(fields["Created At"]),
     scorerVersion,
+    materialReviewRequired: materialReview.required === true,
+    materialReviewApplied: materialReview.applied === true,
+    materialReviewReason: text(materialReview.reason),
   };
 }
 
@@ -197,8 +231,25 @@ function dimensionList(value: unknown): V6Dimension[] {
   return jsonArray(value).flatMap((item) => {
     const row = objectValue(item);
     if (!row) return [];
-    return [{ key: text(row.key), label: text(row.label) || humanize(text(row.key)), weight: numberOrNull(row.weight), applicability: text(row.applicability), rating: text(row.rating), points: numberOrNull(row.points), controllability: text(row.controllability), confidence: text(row.confidence), reason: text(row.reason), evidence: evidenceList(row.evidence), counterevidence: evidenceList(row.counterevidence) }];
+    return [{ key: text(row.key), label: text(row.label) || humanize(text(row.key)), weight: numberOrNull(row.weight), applicability: text(row.applicability), rating: text(row.rating), points: numberOrNull(row.points), controllability: text(row.controllability), confidence: text(row.confidence), reason: text(row.reason), evidence: evidenceList(row.evidence), counterevidence: evidenceList(row.counterevidence), criteria: criterionList(row.criteria) }];
   });
+}
+
+function criterionList(value: unknown): V6Criterion[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    const row = objectValue(item);
+    if (!row) return [];
+    return [{ id: text(row.id), label: text(row.label) || humanize(text(row.id)), weight: numberOrNull(row.weight), status: text(row.status), confidence: text(row.confidence), reason: text(row.reason), evidence: evidenceList(row.evidence), counterevidence: evidenceList(row.counterevidence) }];
+  });
+}
+
+function findingSignature(findings: V6Finding[]) {
+  return findings.map((finding) => finding.label.toLowerCase().replace(/\s+/g, " ").trim()).sort().join("|");
+}
+
+function decisionValue(assessment: V6Assessment) {
+  return assessment.callType === "Call 1" ? assessment.disposition : assessment.outcome;
 }
 
 function findingList(value: unknown): V6Finding[] {
