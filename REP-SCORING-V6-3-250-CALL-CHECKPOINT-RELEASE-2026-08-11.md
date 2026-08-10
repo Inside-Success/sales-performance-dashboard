@@ -65,6 +65,10 @@ The launcher and lane coordinator validated with zero errors and zero invalid co
 
 The launcher was disabled immediately after execution `470533` returned exactly five lane dispatches and 250 selected calls. The first observation window verifies that five lane executions and five V6.3 workers started concurrently. Final quality approval and any remaining backfill require a later read-only audit and explicit authorization.
 
+Local verification completed without starting a development server: all 38 rep-scoring tests passed, scoped ESLint passed, and the Next.js production build passed with both protected V6.3 routes present. GitHub PR `#152` merged as `65af58b79d75193179745f401ce178b72bb22d3b`. Production deployment `dpl_9SWbhNP3EepsLa95TnVJFN8WW57j` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias. The protected checkpoint route returned the expected sign-in redirect when requested without a session.
+
+The branch preview failed at Vercel resource provisioning before an application build began (`0ms` build). The same code passed the local production build and the subsequent Git-triggered production deployment completed successfully.
+
 ## Stop and recovery
 
 To stop admission, deactivate lane coordinator `jWbarQK4Bmw1u6pN`. In-flight V6.3 workers remain bounded to ten calls and can finish safely. Re-running this checkpoint is not an approved recovery step; inspect the failed lane and ledger first, then construct only the missing-call recovery scope.
