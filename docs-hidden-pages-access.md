@@ -22,8 +22,12 @@ These pages use the main Magic Mike authentication policy. Tyler is explicitly a
 These pages require both normal Magic Mike sign-in and exact membership in `REP_SCORING_ADMIN_EMAILS`. Production includes Syed and Tyler.
 
 - [Sales call execution review](https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring)
+- [V6 preserved calibration](https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring/v6-calibration)
+- [V6.1 criteria-first calibration](https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring/v6-1-calibration)
 
 Individual rep and call pages use `/manager/rep-scoring/rep/[repKey]` and `/manager/rep-scoring/call/[assessmentId]`. Open them from the main scoring table so the opaque key or assessment ID is valid.
+
+The V6 and V6.1 pages are calibration-only. They read immutable rows from the isolated scoring base and do not start a backfill or publish scores to Coaching.
 
 ## Ask Sales admin pages
 

@@ -251,6 +251,10 @@ Verified without running a local development server:
 
 The one-time human calibration is intentionally separate from normal manager use. See `REP-SCORING-CALIBRATION.md`. Rubric weights or thresholds must not be changed merely to make current scores look better; calibration evidence controls any later scoring-contract revision.
 
+## V6.1 criteria-first calibration — 2026-08-10
+
+The isolated V6.1 candidate is documented in `REP-SCORING-V6-1-CALIBRATION-RELEASE-2026-08-10.md` and reviewed at `/manager/rep-scoring/v6-1-calibration`. It reruns the exact V6 sample twice using script-derived criteria, two complete evidence judgments per run, deterministic consensus and score calculation, deterministic Call 2 outcome rules, and a demonstrated-impact gate for critical findings. V5 remains the live manager view; V6/V6.1 cannot start a backfill or publish Coaching scores without a separate explicit approval.
+
 Rollback is independent by layer:
 
 1. Deactivate V4.3 coordinator `dSULjXP2oh1kXeRb`.
