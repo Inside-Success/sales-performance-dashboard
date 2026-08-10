@@ -70,7 +70,7 @@ Before any one-week backfill:
 
 ## Final calibration evidence
 
-The exact 12-call final rerun is in progress. This section will be updated with the verified completed counts, score distribution, stability result, n8n execution IDs, GitHub commit, and production deployment before handoff.
+The `r1b/r2b` bounded rerun completed with 24 immutable scores and zero quarantines. Launcher execution `469301` dispatched worker executions `469305`, `469306`, `469307`, and `469308`; all five executions finished successfully. The first completed pair still crossed a score band with a 15.2-point difference, so `r1b/r2b` is retained as failed calibration evidence rather than approved for backfill. The final consistency correction and its verified metrics will be recorded here before handoff.
 
 ## Rollback
 
