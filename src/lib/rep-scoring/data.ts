@@ -6,6 +6,7 @@ const FETCH_TIMEOUT_MS = 20_000;
 const FETCH_MAX_ATTEMPTS = 3;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const CURRENT_SCORER_VERSION = process.env.REP_SCORING_SCORER_VERSION || "rep-reviewer-v3";
+const DEFAULT_V5_HISTORICAL_SAMPLE_END = "2026-08-10T13:00:00.000Z";
 
 type AirtableRecord = {
   id: string;
@@ -161,8 +162,11 @@ export type RepScoringCoverage = {
   maximumWorkers: number | null;
   targetDailyCapacity: number | null;
   targetFinalizedCalls: number | null;
+  historicalSampleEnd: string;
   finalizedForTarget: number | null;
   remainingToTarget: number | null;
+  liveValidScores: number;
+  liveTerminalQuarantines: number;
   retryableProviderFailures: number;
   reconciled: boolean;
 };
@@ -721,8 +725,11 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     maximumWorkers: readNumber(details.maximumWorkers),
     targetDailyCapacity: readNumber(details.targetDailyCapacity),
     targetFinalizedCalls: readNumber(details.targetFinalizedCalls) ?? (CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? 1_500 : null),
+    historicalSampleEnd: readString(details.historicalSampleEnd) || (CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? DEFAULT_V5_HISTORICAL_SAMPLE_END : ""),
     finalizedForTarget: readNumber(details.finalizedForTarget),
     remainingToTarget: readNumber(details.remainingToTarget),
+    liveValidScores: readNumber(details.liveValidScores) ?? 0,
+    liveTerminalQuarantines: readNumber(details.liveTerminalQuarantines) ?? 0,
     retryableProviderFailures: readNumber(details.retryableProviderFailures) ?? 0,
     reconciled,
   };
@@ -759,8 +766,11 @@ function emptyCoverage(): RepScoringCoverage {
     maximumWorkers: null,
     targetDailyCapacity: null,
     targetFinalizedCalls: CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? 1_500 : null,
+    historicalSampleEnd: CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? DEFAULT_V5_HISTORICAL_SAMPLE_END : "",
     finalizedForTarget: null,
     remainingToTarget: null,
+    liveValidScores: 0,
+    liveTerminalQuarantines: 0,
     retryableProviderFailures: 0,
     reconciled: false,
   };
@@ -770,13 +780,14 @@ function reconcileCumulativeProgress(coverage: RepScoringCoverage, calls: RepSco
   const total = coverage.targetFinalizedCalls ?? coverage.sourceCandidates;
   const baselineEnd = dateValue(coverage.progressBaselineEnd);
   const usesFixedTarget = coverage.targetFinalizedCalls !== null;
+  const historicalSampleEnd = dateValue(coverage.historicalSampleEnd);
   if (!total || (!usesFixedTarget && !baselineEnd)) return;
 
   const finalizedKeys = new Set<string>();
   let retryableProviderFailures = 0;
   for (const call of calls) {
     const occurredAt = dateValue(call.meetingStartAt || call.scoredAt);
-    if (occurredAt && (usesFixedTarget || occurredAt < baselineEnd)) finalizedKeys.add(call.idempotencyKey || call.assessmentId || call.id);
+    if (occurredAt && (usesFixedTarget ? occurredAt <= historicalSampleEnd : occurredAt < baselineEnd)) finalizedKeys.add(call.idempotencyKey || call.assessmentId || call.id);
   }
   for (const record of quarantines) {
     const diagnostic = readJsonObject(record.fields["Diagnostic JSON"]);
@@ -786,7 +797,7 @@ function reconcileCumulativeProgress(coverage: RepScoringCoverage, calls: RepSco
       continue;
     }
     const occurredAt = dateValue(readString(diagnostic.meetingStartAt));
-    if (occurredAt && (usesFixedTarget || occurredAt < baselineEnd)) finalizedKeys.add(readString(record.fields["Idempotency Key"]) || record.id);
+    if (occurredAt && (usesFixedTarget ? occurredAt <= historicalSampleEnd : occurredAt < baselineEnd)) finalizedKeys.add(readString(record.fields["Idempotency Key"]) || record.id);
   }
 
   const completed = Math.min(total, finalizedKeys.size);
