@@ -2,6 +2,8 @@
 
 Production implementation record for the hidden Magic Mike manager page and its isolated scoring pipeline.
 
+V6 dimension-first calibration is recorded in `REP-SCORING-V6-CALIBRATION-RELEASE-2026-08-10.md` and exposed only at `/manager/rep-scoring/v6-calibration`. It uses two immutable scorer versions to score the same six Call 1 and six Call 2 calls twice. V6 does not replace the current manager page, start a backfill, or publish scores into Coaching until the owner reviews and approves the 12-call calibration. The Aug 10 launch was safely stopped before dispatch because the dedicated DeepSeek account reported an unavailable balance; this is a truthful external blocker, not a workflow or dashboard failure.
+
 V5 fairness-first calibration is recorded in `REP-SCORING-V5-CALIBRATION-RELEASE-2026-08-08.md`. The approved shadow backfill is recorded in `REP-SCORING-V5-SHADOW-BACKFILL-RELEASE-2026-08-08.md`. The main manager page now reads separately versioned `rep-reviewer-v5-shadow-1` results while explicitly labeling them as validation evidence rather than final personnel verdicts. The original 6+6 review route remains available at `/manager/rep-scoring/v5-calibration`.
 
 V4.4 manager-policy changes and release evidence are recorded in `REP-SCORING-V4-4-MANAGER-RELEASE-2026-08-07.md`. V4.4 deliberately reuses the completed, immutable V4.3 call assessments; it does not create another backfill. V4.3 workflow evidence remains in `REP-SCORING-V4-3-RELEASE-2026-08-07.md`. V4.2 remains the immediate workflow rollback path and V3 remains preserved behind it.
@@ -20,6 +22,12 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 - The output is a coaching and review signal, never an automated employment verdict.
 
 ## n8n
+
+V6 calibration worker: `lfyLHukUvx9887it`. One-time V6 launcher: `KCh1MiSacbFMge5I`. The worker is published but has only an Execute Workflow Trigger; the external one-time launcher is inactive. The launcher checks the dedicated DeepSeek balance before reading candidates or dispatching work. Execution `468131` stopped at that gate when DeepSeek returned `is_available: false` and a `-0.11 USD` balance, so no calibration calls, model spend, or score rows were created. When the balance is restored, the controlled launcher may be enabled and invoked exactly once, then disabled immediately.
+
+The V6 launcher selects six Call 1 and six Call 2 calls from immutable V5 shadow results across low, lower-quartile, middle, high, difficult-prospect, and evidence-limitation cases. It dispatches four bounded sequential workers: Call 1 and Call 2 for round 1, then the same calls for round 2. The immutable scorer versions are `rep-reviewer-v6-calibration-r1` and `rep-reviewer-v6-calibration-r2`; no schedule or backfill is attached.
+
+The V6 worker uses one DeepSeek V4 Pro primary assessment at temperature zero. It retries the model only to repair malformed JSON syntax, never to obtain a second judgment. A deterministic validator checks each dimension's exact quote, timestamp, speaker, controllability, and confidence independently; unsupported dimensions are excluded rather than allowing a second model to veto the entire call. Rating anchors are 100, 85, 70, 50, 25, and 0, and the workflow computes the weighted 0–100 score. Transcript defects and external prospect factors are context rather than rep penalties. Call 1 judges the correct progression decision; Call 2 records the outcome separately from execution quality.
 
 V5 calibration worker: `Ypg69KeD1401mNDg`. One-time V5 launcher: `PFmOzEFTgOl2R4Qy`. Both are inactive after the completed 12-call run. Neither workflow has a schedule. The launcher reads only immutable V4.3 scores to choose a stratified sample; the worker reads the linked Google transcript and writes only new versioned rows in the isolated scoring base.
 
