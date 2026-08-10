@@ -255,6 +255,10 @@ The one-time human calibration is intentionally separate from normal manager use
 
 The isolated V6.1 candidate is documented in `REP-SCORING-V6-1-CALIBRATION-RELEASE-2026-08-10.md` and reviewed at `/manager/rep-scoring/v6-1-calibration`. It reruns the exact V6 sample twice using script-derived criteria, two complete evidence judgments per run, deterministic consensus and score calculation, deterministic Call 2 outcome rules, and a demonstrated-impact gate for critical findings. V5 remains the live manager view; V6/V6.1 cannot start a backfill or publish Coaching scores without a separate explicit approval.
 
+## V6.2 single-primary final calibration — 2026-08-11
+
+The isolated V6.2 candidate is documented in `REP-SCORING-V6-2-FINAL-CALIBRATION-RELEASE-2026-08-11.md` and reviewed at `/manager/rep-scoring/v6-2-calibration`. It processes the same 12 calls once. One primary AI assessment supplies evidence-backed criterion statuses and decision facts; deterministic code calculates the score, Call 1 disposition, and Call 2 outcome. A smaller second verification runs only behind a material-risk or contradiction gate and never produces a second score. V5 remains the live manager view; no V6.2 backfill or Coaching publication is authorized.
+
 Rollback is independent by layer:
 
 1. Deactivate V4.3 coordinator `dSULjXP2oh1kXeRb`.

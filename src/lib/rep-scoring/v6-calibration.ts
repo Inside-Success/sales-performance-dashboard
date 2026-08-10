@@ -5,6 +5,7 @@ const ROUND_ONE_VERSION = "rep-reviewer-v6-calibration-r1";
 const ROUND_TWO_VERSION = "rep-reviewer-v6-calibration-r2";
 const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1d";
 const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2d";
+const V62_FINAL_VERSION = "rep-reviewer-v6.2-calibration-final-1";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type AirtableRecord = { id: string; fields: Record<string, unknown> };
@@ -103,6 +104,10 @@ export async function getV6CalibrationData(): Promise<V6CalibrationData> {
 
 export async function getV61CalibrationData(): Promise<V6CalibrationData> {
   return getCalibrationData(V61_ROUND_ONE_VERSION, V61_ROUND_TWO_VERSION, "V6.1");
+}
+
+export async function getV62CalibrationData(): Promise<V6CalibrationData> {
+  return getCalibrationData(V62_FINAL_VERSION, "rep-reviewer-v6.2-no-second-round", "V6.2");
 }
 
 async function getCalibrationData(roundOneVersion: string, roundTwoVersion: string, label: string): Promise<V6CalibrationData> {
