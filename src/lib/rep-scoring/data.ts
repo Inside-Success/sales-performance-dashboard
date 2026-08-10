@@ -2,7 +2,8 @@ import "server-only";
 
 import { evidenceConfidence, normalizeDimensions } from "@/lib/rep-scoring/presentation";
 
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 20_000;
+const FETCH_MAX_ATTEMPTS = 3;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const CURRENT_SCORER_VERSION = process.env.REP_SCORING_SCORER_VERSION || "rep-reviewer-v3";
 
@@ -309,6 +310,7 @@ function dedupeRecords(records: AirtableRecord[], field: string) {
 
 async function fetchAllRecords(table: string, maxRecords: number, filterByFormula = "") {
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
+  if (!token) throw new Error("The isolated scoring store is not connected.");
   const baseId = process.env.REP_SCORING_AIRTABLE_BASE_ID || DEFAULT_BASE_ID;
   const records: AirtableRecord[] = [];
   let offset = "";
@@ -319,19 +321,46 @@ async function fetchAllRecords(table: string, maxRecords: number, filterByFormul
     if (filterByFormula) url.searchParams.set("filterByFormula", filterByFormula);
     if (offset) url.searchParams.set("offset", offset);
 
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    });
-    const payload = (await response.json()) as AirtableListResponse;
-    if (!response.ok) throw new Error(payload.error?.message || `Airtable read failed (${response.status}).`);
+    const payload = await fetchAirtablePage(url, token);
 
     records.push(...(payload.records || []));
     offset = payload.offset || "";
   } while (offset && records.length < maxRecords);
 
   return records.slice(0, maxRecords);
+}
+
+async function fetchAirtablePage(url: URL, token: string): Promise<AirtableListResponse> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= FETCH_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+      const payload = (await response.json()) as AirtableListResponse;
+
+      if (response.ok) return payload;
+      if (response.status !== 429 && response.status < 500) {
+        throw new Error(payload.error?.message || `Airtable read failed (${response.status}).`);
+      }
+
+      lastError = new Error(payload.error?.message || `Airtable read failed (${response.status}).`);
+    } catch (error) {
+      lastError = error;
+      if (error instanceof Error && error.message.startsWith("Airtable read failed (4")) throw error;
+    }
+
+    if (attempt < FETCH_MAX_ATTEMPTS) await delay(250 * attempt);
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("The isolated scoring store could not be read.");
+}
+
+function delay(milliseconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function airtableStringLiteral(value: string) {
