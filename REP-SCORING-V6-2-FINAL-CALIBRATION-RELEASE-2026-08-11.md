@@ -57,6 +57,19 @@ The page shows the exact 12 calls once, the deterministic score and decision, wh
 - ESLint: passed with zero warnings.
 - Production Next.js build: passed, including both V6.2 hidden routes.
 
+## Completed exact-12 result
+
+- 12 of 12 immutable assessments completed successfully.
+- 6 Call 1 and 6 Call 2 results were created.
+- 0 calls were quarantined.
+- The selective verifier ran on 3 of 12 calls; 9 calls used only the primary assessment.
+- Score range: 60.0–98.0.
+- One corroborated critical concern was retained. Its raw 80.2 score was deterministically capped at 69.0 so the displayed score and demonstrated material concern do not contradict each other.
+- The Call 2 outcomes include sale, concrete follow-up, lost, and unknown; they are derived from validated decision facts.
+- The two bounded worker executions both completed successfully.
+
+One internal `Model Params Hash` label inherited the `v6.1` prefix in this isolated 12-row run even though the value already described the V6.2 selective-verifier architecture. The active V6.2 worker was corrected to use the `v6.2` prefix for any future authorized run. This metadata label did not participate in prompts, scoring, outcomes, routing, or the dashboard query.
+
 ## Approval boundary
 
 The 12-call output is still calibration evidence, not authorization for backfill or Coaching publication. A broader run requires a separate explicit decision after the completed results and selective-review rate are inspected.
