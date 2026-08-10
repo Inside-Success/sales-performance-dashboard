@@ -59,7 +59,7 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
-        {isV5Shadow ? <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950"><strong>V5 validation is running.</strong> These results use the script-aligned, fairness-first scorer. Transcript reliability, lead opportunity and external factors are checked before rep execution is scored. Use this page to inspect the distribution and evidence while the 3,328-call launch inventory fills; do not treat early rankings as final manager verdicts.</div> : null}
+        {isV5Shadow ? <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950"><strong>V5 validation is cost-capped.</strong> These results use the script-aligned, fairness-first scorer. Transcript reliability, lead opportunity and external factors are checked before rep execution is scored. The testing sample stops at 1,500 finalized calls; provider and balance failures remain retryable and do not count as completed evidence.</div> : null}
 
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
@@ -85,18 +85,18 @@ export default async function ManagerRepScoringPage() {
 
 function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
   if (!coverage.available) return null;
-  const waiting = Math.max(0, coverage.awaiting ?? 0);
+  const waiting = Math.max(0, coverage.remainingToTarget ?? coverage.awaiting ?? 0);
   if (waiting === 0) return null;
   const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
   const scheduledBatchLimit = Math.max(1, coverage.hourlyBatchLimit ?? 80);
 
   return (
     <Card className="magic-card border-amber-200 bg-gradient-to-br from-amber-50 to-white">
-      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />V5 call analysis is catching up</CardTitle><p className="text-sm leading-6 text-slate-600">The denominator is the complete eligible-call inventory since July 18, so rotating source scans cannot make this percentage jump backward.</p></CardHeader>
+      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />V5 testing sample progress</CardTitle><p className="text-sm leading-6 text-slate-600">The workflow is configured to stop at 1,500 finalized calls. Provider and balance failures stay retryable and are excluded from this progress.</p></CardHeader>
       <CardContent>
         <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600" style={{ width: `${complete}%` }} /></div>
-        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>Approximately {complete.toFixed(1)}% of the launch backlog finalized</span><span>About {numberFormatter.format(waiting)} launch calls remaining</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "Workers check for unfinished calls every 15 minutes. "}Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls across eight isolated workers. If a prior batch is still active, the next slot skips safely instead of overlapping.</p>
+        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>Approximately {complete.toFixed(1)}% of the 1,500-call test sample finalized</span><span>About {numberFormatter.format(waiting)} calls remaining to the test target</span></div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "When active, workers check for unfinished calls every 15 minutes. "}Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls across eight isolated workers. The balance gate, no-overlap guard and hard target prevent unsafe or unnecessary dispatches.{coverage.retryableProviderFailures ? ` ${numberFormatter.format(coverage.retryableProviderFailures)} provider-failed attempts remain eligible for a later retry.` : ""}</p>
       </CardContent>
     </Card>
   );
