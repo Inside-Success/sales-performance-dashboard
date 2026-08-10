@@ -159,6 +159,10 @@ export type RepScoringCoverage = {
   workerBatchSize: number | null;
   maximumWorkers: number | null;
   targetDailyCapacity: number | null;
+  targetFinalizedCalls: number | null;
+  finalizedForTarget: number | null;
+  remainingToTarget: number | null;
+  retryableProviderFailures: number;
   reconciled: boolean;
 };
 
@@ -687,6 +691,10 @@ function normalizeCoverage(records: AirtableRecord[]): RepScoringCoverage {
     workerBatchSize: readNumber(details.workerBatchSize),
     maximumWorkers: readNumber(details.maximumWorkers),
     targetDailyCapacity: readNumber(details.targetDailyCapacity),
+    targetFinalizedCalls: readNumber(details.targetFinalizedCalls) ?? (CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? 1_500 : null),
+    finalizedForTarget: readNumber(details.finalizedForTarget),
+    remainingToTarget: readNumber(details.remainingToTarget),
+    retryableProviderFailures: readNumber(details.retryableProviderFailures) ?? 0,
     reconciled,
   };
 }
@@ -721,30 +729,44 @@ function emptyCoverage(): RepScoringCoverage {
     workerBatchSize: null,
     maximumWorkers: null,
     targetDailyCapacity: null,
+    targetFinalizedCalls: CURRENT_SCORER_VERSION.startsWith("rep-reviewer-v5-shadow") ? 1_500 : null,
+    finalizedForTarget: null,
+    remainingToTarget: null,
+    retryableProviderFailures: 0,
     reconciled: false,
   };
 }
 
 function reconcileCumulativeProgress(coverage: RepScoringCoverage, calls: RepScoreCall[], quarantines: AirtableRecord[]) {
-  const total = coverage.sourceCandidates;
+  const total = coverage.targetFinalizedCalls ?? coverage.sourceCandidates;
   const baselineEnd = dateValue(coverage.progressBaselineEnd);
-  if (!total || !baselineEnd) return;
+  const usesFixedTarget = coverage.targetFinalizedCalls !== null;
+  if (!total || (!usesFixedTarget && !baselineEnd)) return;
 
   const finalizedKeys = new Set<string>();
+  let retryableProviderFailures = 0;
   for (const call of calls) {
     const occurredAt = dateValue(call.meetingStartAt || call.scoredAt);
-    if (occurredAt && occurredAt < baselineEnd) finalizedKeys.add(call.idempotencyKey || call.assessmentId || call.id);
+    if (occurredAt && (usesFixedTarget || occurredAt < baselineEnd)) finalizedKeys.add(call.idempotencyKey || call.assessmentId || call.id);
   }
   for (const record of quarantines) {
     const diagnostic = readJsonObject(record.fields["Diagnostic JSON"]);
+    const diagnosticText = JSON.stringify(diagnostic);
+    if (/(?:primary|verifier)_provider_error:|insufficient balance/i.test(diagnosticText)) {
+      retryableProviderFailures += 1;
+      continue;
+    }
     const occurredAt = dateValue(readString(diagnostic.meetingStartAt));
-    if (occurredAt && occurredAt < baselineEnd) finalizedKeys.add(readString(record.fields["Idempotency Key"]) || record.id);
+    if (occurredAt && (usesFixedTarget || occurredAt < baselineEnd)) finalizedKeys.add(readString(record.fields["Idempotency Key"]) || record.id);
   }
 
   const completed = Math.min(total, finalizedKeys.size);
   coverage.completed = completed;
   coverage.awaiting = Math.max(0, total - completed);
   coverage.percentComplete = round((completed / total) * 100);
+  coverage.finalizedForTarget = completed;
+  coverage.remainingToTarget = Math.max(0, total - completed);
+  coverage.retryableProviderFailures = retryableProviderFailures;
   coverage.reconciled = true;
 }
 

@@ -8,14 +8,20 @@ V5 is now running against the complete eligible call population from the fixed J
 
 ## Live architecture
 
-- Coordinator: `uWfyXPrNDzQ2Eixe` — active, scheduled every 15 minutes.
-- Worker: `XPFqJlWGRRCiNqDn` — active only as a published sub-workflow; it has no independent schedule.
+- Coordinator: `uWfyXPrNDzQ2Eixe` — intentionally inactive pending DeepSeek recharge; its prepared schedule is every 15 minutes.
+- Worker: `XPFqJlWGRRCiNqDn` — published as the cost-safe sub-workflow; it has no independent schedule.
 - One-time inventory workflow: `0N7dBA07pMToS76S` — inactive after recording the baseline.
 - Scorer version: `rep-reviewer-v5-shadow-1`.
 - Fixed source start: July 18, 2026. Calls before that date are excluded.
 - Stable launch inventory: 3,328 eligible calls under the existing processed-transcript, valid-sales-call, normal-attendance and confidence rules.
 
 Each clear coordinator run admits at most 80 calls. It creates no more than eight worker executions, with ten calls processed sequentially inside each worker. The coordinator reads a rotating two-day historical shard plus the newest two hours. The next 15-minute slot performs a lightweight lease check first; if any prior V5 worker is still active, that slot succeeds as a safe no-op instead of starting an overlapping batch. With every slot clear, the dispatch ceiling is 320 calls per hour; skipped busy slots intentionally reduce that rate to protect n8n and prevent duplicate work.
+
+## Cost-control update — August 10, 2026
+
+The coordinator is intentionally inactive while the dedicated DeepSeek balance is unavailable. The validation backfill now has a hard ceiling of 1,500 finalized calls rather than attempting the complete 3,328-call inventory. Before any future dispatch, the coordinator checks the official DeepSeek balance endpoint, the latest coverage snapshot and active leases. Unavailable balance, unavailable coverage, an active worker wave or a reached target all fail closed without dispatching calls.
+
+Provider failures are retryable outcomes and no longer inflate completed progress. A primary provider failure bypasses the verifier, preventing a second unnecessary model request. Existing provider-error quarantine records remain available for diagnosis but their calls become eligible again after recharge; a later valid score safely shadows the earlier failed attempt.
 
 Every call keeps an immutable scorer-version idempotency key and a one-hour recoverable lease. Network reads and writes use bounded retries. A worker failure therefore cannot duplicate a completed assessment, and an abandoned lease becomes eligible for a later retry.
 
