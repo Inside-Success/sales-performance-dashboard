@@ -34,6 +34,7 @@ The final review rows use scorer versions `rep-reviewer-v6.1-calibration-r1d` an
 - Source transcript access: Google Docs read-only
 - Storage: immutable V6.1 rows in isolated Airtable base `appEQQkTlJnc7tJgi`
 - DeepSeek credential: the dedicated Syed-owned rep reviewer credential already used by V6
+- JSON safety: both the primary and independent reviews have syntax-only repair paths; repair preserves the judgment and never rescores or invents evidence
 - Schedule/webhook: none
 
 ### One-time launcher
@@ -79,7 +80,11 @@ Before any one-week backfill:
 
 ## Final calibration evidence
 
-The `r1b/r2b` bounded rerun completed with 24 immutable scores and zero quarantines. Launcher execution `469301` dispatched worker executions `469305`, `469306`, `469307`, and `469308`; all five executions finished successfully. The first completed pair still crossed a score band with a 15.2-point difference, so `r1b/r2b` is retained as failed calibration evidence rather than approved for backfill. The final consistency correction and its verified metrics will be recorded here before handoff.
+The `r1b/r2b` bounded rerun completed with 24 immutable scores and zero quarantines. Launcher execution `469301` dispatched worker executions `469305`, `469306`, `469307`, and `469308`; all five executions finished successfully. The first completed pair still crossed a score band with a 15.2-point difference, so `r1b/r2b` is retained as failed calibration evidence rather than approved for backfill.
+
+The independent `r1d/r2d` run used launcher execution `469501` and worker executions `469502` through `469505`. It produced 23 scores and safely quarantined one malformed independent-review response. That defect exposed a missing syntax-only repair path. The worker now gives both judgments the same repair protection, and a bounded idempotent recovery processed only the failed Layla Call 1 round in execution `469652`; completed calls were skipped. The final candidate therefore contains all 24 expected immutable scores. The failed quarantine rows remain preserved as audit evidence.
+
+The complete manager page shows all 12 pairs. Nine of 12 retain the same score band with no more than a 10-point difference, but only three of 12 retain the same complete manager action. Call 1 disposition or Call 2 outcome agrees on five of 12 calls, and the critical-call decision agrees on 10 of 12. The candidate therefore **does not pass the backfill approval gate**. It is ready for the owner's evidence review of the 12 calls, not for backfill or Coaching publication.
 
 ## Rollback
 
