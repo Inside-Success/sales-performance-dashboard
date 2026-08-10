@@ -4,7 +4,7 @@ Status: live shadow validation and cumulative backfill started on 2026-08-08
 
 ## Purpose
 
-V5 is now running against the complete eligible call population from the fixed July 18, 2026 launch date. It remains a shadow validation system while its score distribution and manager usefulness are evaluated. V4 data and workflows are retained as rollback evidence; the V5 idempotency and scorer version keep all new results isolated.
+V5 uses a bounded historical validation sample beginning at the fixed July 18, 2026 launch date and an uncapped stream for every eligible new call. It remains a shadow validation system while its score distribution and manager usefulness are evaluated. V4 data and workflows are retained as rollback evidence; the V5 idempotency and scorer version keep all new results isolated.
 
 ## Live architecture
 
@@ -15,11 +15,11 @@ V5 is now running against the complete eligible call population from the fixed J
 - Fixed source start: July 18, 2026. Calls before that date are excluded.
 - Stable launch inventory: 3,328 eligible calls under the existing processed-transcript, valid-sales-call, normal-attendance and confidence rules.
 
-Each clear coordinator run admits at most 80 calls. It creates no more than eight worker executions, with ten calls processed sequentially inside each worker. The coordinator reads a rotating two-day historical shard plus the newest two hours. The next 15-minute slot performs a lightweight lease check first; if any prior V5 worker is still active, that slot succeeds as a safe no-op instead of starting an overlapping batch. With every slot clear, the dispatch ceiling is 320 calls per hour; skipped busy slots intentionally reduce that rate to protect n8n and prevent duplicate work.
+Each clear coordinator run admits at most 80 calls. It creates no more than eight worker executions, with ten calls processed sequentially inside each worker. The coordinator reads the newest seven historical days, a rotating older two-day shard and a rolling 26-hour live window. The next 15-minute slot performs a lightweight lease check first; if any prior V5 worker is still active, that slot succeeds as a safe no-op instead of starting an overlapping batch. With every slot clear, the dispatch ceiling is 320 calls per hour; skipped busy slots intentionally reduce that rate to protect n8n and prevent duplicate work.
 
 ## Cost-control update — August 10, 2026
 
-The coordinator is intentionally inactive while the dedicated DeepSeek balance is unavailable. The validation backfill now has a hard ceiling of 1,500 finalized calls rather than attempting the complete 3,328-call inventory. Before any future dispatch, the coordinator checks the official DeepSeek balance endpoint, the latest coverage snapshot and active leases. Unavailable balance, unavailable coverage, an active worker wave or a reached target all fail closed without dispatching calls.
+The coordinator checks the dedicated DeepSeek balance before dispatching work. The historical validation sample has a hard ceiling of 1,500 finalized calls rather than attempting the complete 3,328-call inventory. That ceiling applies only to calls at or before `2026-08-10T13:00:00.000Z`; every eligible newer call remains in the uncapped live stream. New live calls are selected before historical work, and unused capacity fills the sample. The newest seven historical days are always included in the source scan while an older two-day shard rotates across the rest of the launch period. Unavailable balance, unavailable coverage, or an active worker wave fails closed without dispatching calls.
 
 Provider failures are retryable outcomes and no longer inflate completed progress. A primary provider failure bypasses the verifier, preventing a second unnecessary model request. Existing provider-error quarantine records remain available for diagnosis but their calls become eligible again after recharge; a later valid score safely shadows the earlier failed attempt.
 
@@ -38,7 +38,7 @@ Every call keeps an immutable scorer-version idempotency key and a one-hour reco
 
 ## Main manager page
 
-The production manager route remains `/manager/rep-scoring`. It now supports V5 checkpoint fields, excludes withheld results from averages, exposes the full 3,328-call progress denominator, and adds a visible score-distribution check. The page labels V5 as shadow validation until the accumulated evidence shows that the scorer separates stronger and weaker calls credibly.
+The production manager route remains `/manager/rep-scoring`. It supports V5 checkpoint fields, excludes withheld results from averages, shows the bounded historical-sample progress separately from the continuing live stream, and includes a visible score-distribution check. The page labels V5 as shadow validation until the accumulated evidence shows that the scorer separates stronger and weaker calls credibly.
 
 ## Verification completed before launch
 
