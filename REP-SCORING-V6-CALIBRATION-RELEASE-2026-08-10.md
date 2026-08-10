@@ -4,7 +4,9 @@
 
 V6 is implemented as an isolated, rollback-safe calibration candidate. It is not the live manager scoring contract yet. The current V5 manager view, production Coaching workflow, intake, Ask Sales, source calls, Slack, and Google content were not changed.
 
-The 12-call calibration has not been dispatched because the dedicated DeepSeek balance gate returned unavailable with a balance of `-0.11 USD`. This deliberate fail-closed result prevented partial scoring and further API spend. Recharge is the only external prerequisite for generating the calibration results.
+After the organization balance was funded, the balance gate passed and the full calibration completed. The hidden review page now contains six Call 1 and six Call 2 calls, each scored twice: 12 unique calls and 24 immutable assessments. The score range is `45.0–85.0`, so the sample includes low, developing, meeting-expectations, and excellent results rather than clustering at 100.
+
+The calibration also did its intended job of exposing remaining judgment variability before a backfill. Nine of twelve pairs meet the strict stability rule (same display band and no more than 10 points apart). Three require human review because they crossed a band boundary; the largest difference is 22.2 points. Therefore V6 is ready for the owner's 12-call calibration review, but it is not approved for backfill or Coaching display yet.
 
 ## Approved scoring contract
 
@@ -41,7 +43,7 @@ The Call 2 rubric follows the provided `INSIDE SUCCESS TV - CALL SCRIPT #2 .docx
 
 - ID: `KCh1MiSacbFMge5I`
 - Name: `MM Rep Scoring V6 - One-Time 12-Call Double Calibration Launcher`
-- Controlled webhook: disabled after the attempted launch
+- Controlled webhook: disabled after the completed launch
 - DeepSeek balance gate: must report available and at least the configured safe minimum before candidate selection or dispatch
 - Dispatch: exactly four workers, each with six sequential calls
 - Current state: inactive
@@ -56,7 +58,12 @@ The Call 2 rubric follows the provided `INSIDE SUCCESS TV - CALL SCRIPT #2 .docx
 
 ### Safe launch evidence
 
-Launcher execution `468131` reached the balance check, received `is_available: false` with `total_balance: -0.11 USD`, and stopped at `Require Safe Calibration Balance`. No worker was dispatched. The controlled launcher was immediately disabled again.
+- Earlier execution `468131` reached the balance check, received `is_available: false` with `total_balance: -0.11 USD`, and stopped before candidate selection. This confirmed the fail-closed spend guard.
+- The first funded attempt, execution `468664`, passed the balance gate but stopped in candidate selection on a local variable-name defect before any model call or Airtable write. The selector was corrected from the undefined `row` reference to the selected candidate and revalidated with zero errors.
+- Corrected launcher execution `468673` dispatched four bounded workers: `468680`, `468681`, `468682`, and `468683`. All four finished successfully.
+- One selected Call 2 contained two recognized company reps with a 74%/26% speech split. Both rounds deterministically quarantined it as `speaker_resolution_ambiguous_multiple_reps`; V6 did not guess which employee to score.
+- The launcher selector now excludes that exact ambiguous source call. Completion execution `468876` reused idempotency to skip the 22 existing assessments and processed one replacement Call 2 in workers `468880` and `468882`. The replacement scored `74.6` and `79.3`, remained in the same band, and completed the promised 12 paired calls.
+- The controlled launcher was deactivated immediately after each dispatch and remains inactive. No schedule or backfill was enabled.
 
 ## Dashboard release
 
@@ -77,9 +84,15 @@ The current `/manager/rep-scoring` page remains unchanged. V6 cannot influence m
 
 ## Verification completed
 
-- Both n8n workflows validated with zero runtime errors before launch.
-- The worker was successfully published; the launcher was published, called once, and immediately disabled.
-- The balance failure was inspected at the exact failing node and confirmed to occur before candidate selection, worker dispatch, model calls, or Airtable writes.
+- Both n8n workflows validated with zero runtime errors after the funded launch and replacement selection correction. The remaining validator warnings are advisory heuristics, not graph or expression failures.
+- The worker remains published with an internal Execute Workflow Trigger only. The external launcher is inactive.
+- All six worker executions used for the final calibration finished successfully. The store contains 24 V6 score rows for 12 unique calls and two audit-preserved quarantine rows for the excluded two-rep recording.
+- All 24 visible assessments are gradeable, evidence-verified dimension by dimension, contain zero validation warnings, and required no JSON-repair request.
+- Score distribution: minimum `45.0`, maximum `85.0`, mean `69.6`, median `76.1`; Call 1 mean `74.4`, Call 2 mean `64.8`.
+- Stability: `9/12` strict passes, `9/12` band matches, eight exact score matches, and three review pairs. The review deltas are `7.3` with a band boundary, `11.7`, and `22.2`.
+- Authenticated Chrome verification confirmed the production overview shows `12/12` unique calls, `12/12` double-scored, `9/12` stable, and `Backfill: Not started`.
+- The production comparison page was inspected on a review-marked 22.2-point pair and correctly displayed both rounds, every dimension, exact evidence, counterevidence, prospect opportunity, outcome, and the explicit human-approval gate.
+- No browser console warnings or errors were present during the final production verification.
 - Three scoped V6 dashboard tests passed.
 - TypeScript passed.
 - Scoped ESLint passed.
@@ -92,15 +105,11 @@ The current `/manager/rep-scoring` page remains unchanged. V6 cannot influence m
 
 ## Remaining approval gate
 
-After the dedicated DeepSeek balance is restored:
-
-1. Enable the one-time launcher.
-2. Trigger it exactly once.
-3. Disable it immediately after dispatch.
-4. Confirm 12 unique calls and 24 immutable assessments.
-5. Review score stability, fairness, evidence accuracy, and outcome treatment on the hidden V6 page.
-6. Obtain the owner's explicit approval before creating or starting a one-week V6 backfill.
-7. Keep the separate Coaching score-display integration on hold until V6 itself is approved.
+1. The owner reviews all 12 call pairs on the hidden V6 page, with particular attention to the three review-marked pairs.
+2. The owner records whether each score, dimension rating, prospect classification, outcome, and main finding is fair.
+3. Any rubric correction is made as a new immutable scorer version and recalibrated before backfill; existing V6 rows remain audit history.
+4. A one-week V6 backfill is created or started only after the owner's explicit approval.
+5. The separate Coaching score-display integration stays on hold until V6 itself is approved.
 
 ## Rollback
 
