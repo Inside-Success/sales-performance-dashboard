@@ -23,6 +23,8 @@ The coordinator is intentionally inactive while the dedicated DeepSeek balance i
 
 Provider failures are retryable outcomes and no longer inflate completed progress. A primary provider failure bypasses the verifier, preventing a second unnecessary model request. Existing provider-error quarantine records remain available for diagnosis but their calls become eligible again after recharge; a later valid score safely shadows the earlier failed attempt.
 
+The manager page retries transient Airtable timeouts and rate-limit responses so a slow read does not replace valid results with zeroes.
+
 Every call keeps an immutable scorer-version idempotency key and a one-hour recoverable lease. Network reads and writes use bounded retries. A worker failure therefore cannot duplicate a completed assessment, and an abandoned lease becomes eligible for a later retry.
 
 ## V5 fairness contract
