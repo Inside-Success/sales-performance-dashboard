@@ -70,9 +70,29 @@ The page shows the exact 12 calls once, the deterministic score and decision, wh
 
 One internal `Model Params Hash` label inherited the `v6.1` prefix in this isolated 12-row run even though the value already described the V6.2 selective-verifier architecture. The active V6.2 worker was corrected to use the `v6.2` prefix for any future authorized run. This metadata label did not participate in prompts, scoring, outcomes, routing, or the dashboard query.
 
+## Approved 100-call backfill validation — 2026-08-11
+
+The owner separately approved a bounded validation run of 50–100 calls and authorized the upper bound of 100. This is the first slice of the intended recent backfill, not a disposable test: successful V6.2 assessments use the production V6.2 idempotency key and are automatically excluded from any later continuation, avoiding repeat model cost.
+
+- One-time launcher ID: `a9WVd99pVvcNLgzU`
+- Launcher name: `MM Rep Scoring V6.2 - One-Time 100-Call Backfill Validation Launcher`
+- Source window: the latest seven days in `America/New_York`
+- Selection: 100 unprocessed eligible calls, round-robin across reps and balanced by call type where the bounded source inventory permits
+- Actual selected mix: 88 Call 1 and 12 Call 2; the source inventory available to this bounded launch contained only 12 eligible unprocessed Call 2 calls, so the remaining approved capacity was filled with Call 1 calls instead of buying calls outside the approved window or exceeding 100
+- Dispatch: five isolated workers of 20 calls each
+- Cost boundary: one primary model request per call, selective short verification only behind V6.2's material gate, syntax repair only on malformed JSON
+- Safety gates: dedicated balance preflight, active V6.2 lease rejection, completed-key exclusion, hard 100-call ceiling, duplicate detection, and minimum 50-call fail-closed threshold
+- Launcher execution: `470014`, successful; selected exactly 100 calls and dispatched exactly five workers
+- Worker executions: `470016`–`470020`; all five were confirmed running through the ledger, transcript-read, and evidence-request path during the initial observation window
+- Launcher state after dispatch: inactive; it cannot fire again without an explicit reactivation
+
+The dashboard route `/manager/rep-scoring/v6-2-calibration` now switches to the 100-call validation cohort as results arrive, reports the actual Call 1/Call 2 mix, median and range, and explains that successful calls count toward the later backfill. The original 12-call calibration remains preserved in a collapsed audit section.
+
+This authorization does not publish V6.2 into Magic Mike Coaching, replace the current manager production view, or authorize additional calls beyond the dispatched 100.
+
 ## Approval boundary
 
-The 12-call output is still calibration evidence, not authorization for backfill or Coaching publication. A broader run requires a separate explicit decision after the completed results and selective-review rate are inspected.
+The 100-call output remains validation evidence, not authorization for Coaching publication or an unlimited backfill. Continuing beyond these 100 calls requires a separate explicit decision after the results, score distribution, selective-review rate, and failure rate are inspected.
 
 ## Rollback
 

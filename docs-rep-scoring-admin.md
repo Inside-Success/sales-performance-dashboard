@@ -257,7 +257,9 @@ The isolated V6.1 candidate is documented in `REP-SCORING-V6-1-CALIBRATION-RELEA
 
 ## V6.2 single-primary final calibration — 2026-08-11
 
-The isolated V6.2 candidate is documented in `REP-SCORING-V6-2-FINAL-CALIBRATION-RELEASE-2026-08-11.md` and reviewed at `/manager/rep-scoring/v6-2-calibration`. It processes the same 12 calls once. One primary AI assessment supplies evidence-backed criterion statuses and decision facts; deterministic code calculates the score, Call 1 disposition, and Call 2 outcome. A smaller second verification runs only behind a material-risk or contradiction gate and never produces a second score. V5 remains the live manager view; no V6.2 backfill or Coaching publication is authorized.
+The isolated V6.2 candidate is documented in `REP-SCORING-V6-2-FINAL-CALIBRATION-RELEASE-2026-08-11.md` and reviewed at `/manager/rep-scoring/v6-2-calibration`. It first processed the same 12 calls once. One primary AI assessment supplies evidence-backed criterion statuses and decision facts; deterministic code calculates the score, Call 1 disposition, and Call 2 outcome. A smaller second verification runs only behind a material-risk or contradiction gate and never produces a second score.
+
+The owner subsequently authorized one bounded 100-call validation slice from the latest seven-day backfill population. Launcher `a9WVd99pVvcNLgzU` selected exactly 100 unprocessed calls, dispatched five 20-call workers, and was immediately deactivated. The actual bounded-source mix was 88 Call 1 and 12 Call 2. Every successful result uses the same V6.2 idempotency key, so it is already part of a later authorized backfill and will not incur duplicate model cost. This does not authorize further backfill calls or publication into Magic Mike Coaching.
 
 Rollback is independent by layer:
 
