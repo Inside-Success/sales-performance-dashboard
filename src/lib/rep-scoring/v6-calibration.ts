@@ -98,6 +98,7 @@ export type V6CalibrationData = {
   assessments: V6Assessment[];
   quarantined: number;
   quarantineReasons: Record<string, number>;
+  quarantineRows: Array<{ createdAt: string; reason: string }>;
   error?: string;
 };
 
@@ -115,7 +116,7 @@ export async function getV62CalibrationData(): Promise<V6CalibrationData> {
 
 export async function getV63CalibrationData(): Promise<V6CalibrationData> {
   const generatedAt = new Date().toISOString();
-  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {} };
+  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {}, quarantineRows: [] };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return { ...fallback, error: "The isolated calibration store is not connected for this deployment." };
   try {
@@ -130,7 +131,11 @@ export async function getV63CalibrationData(): Promise<V6CalibrationData> {
       counts[reason] = (counts[reason] || 0) + 1;
       return counts;
     }, {});
-    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: quarantineRecords.length, quarantineReasons };
+    const quarantineRows = quarantineRecords.map((record) => ({
+      createdAt: text(record.fields["Created At"]) || text(record.fields["Quarantined At"]) || "",
+      reason: text(record.fields.Reason) || "unknown",
+    }));
+    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: quarantineRecords.length, quarantineReasons, quarantineRows };
   } catch (error) {
     return { ...fallback, configured: true, error: error instanceof Error ? error.message : "Unable to load V6.3 calibration results." };
   }
@@ -138,7 +143,7 @@ export async function getV63CalibrationData(): Promise<V6CalibrationData> {
 
 async function getCalibrationData(roundOneVersion: string, roundTwoVersion: string, label: string): Promise<V6CalibrationData> {
   const generatedAt = new Date().toISOString();
-  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {} };
+  const fallback: V6CalibrationData = { configured: false, generatedAt, pairs: [], assessments: [], quarantined: 0, quarantineReasons: {}, quarantineRows: [] };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) {
     return { ...fallback, error: "The isolated calibration store is not connected for this deployment." };
@@ -148,7 +153,7 @@ async function getCalibrationData(roundOneVersion: string, roundTwoVersion: stri
     const filter = `OR({Scorer Version}='${roundOneVersion}',{Scorer Version}='${roundTwoVersion}')`;
     const records = await fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, filter);
     const assessments = records.map((record) => normalizeAssessment(record, roundTwoVersion)).sort(compareAssessments);
-    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: 0, quarantineReasons: {} };
+    return { configured: true, generatedAt, assessments, pairs: pairAssessments(assessments), quarantined: 0, quarantineReasons: {}, quarantineRows: [] };
   } catch (error) {
     return { ...fallback, configured: true, error: error instanceof Error ? error.message : `Unable to load ${label} calibration results.` };
   }

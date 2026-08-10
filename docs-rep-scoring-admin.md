@@ -265,6 +265,12 @@ The isolated V6.3 candidate is documented in `REP-SCORING-V6-3-BALANCED-CALIBRAT
 
 The one-time V6.3 launcher dispatched exactly 30 calls: 15 Call 1 and 15 Call 2+, with both types spanning Aug 3–10. The launcher is inactive after its single dispatch, the worker has no schedule or webhook, and no wider backfill or Coaching publication is attached. The hidden page reports completed scores and quarantines separately so a transcript exclusion cannot leave the progress display permanently incomplete.
 
+### V6.3 bounded 250-call checkpoint — 2026-08-11
+
+The owner subsequently approved exactly 250 additional V6.3 calls as a cost-controlled quality checkpoint. The release is documented in `REP-SCORING-V6-3-250-CALL-CHECKPOINT-RELEASE-2026-08-11.md`. Launcher `tR8o0NOmYvg1SDCz` selected 180 Call 1 and 70 Call 2+ calls, dispatched exactly five isolated lanes, and was immediately deactivated. Lane runner `jWbarQK4Bmw1u6pN` admits one 10-call worker at a time in each lane, capping total concurrency at five while allowing all five lanes to progress independently.
+
+The hidden V6.3 page now reports checkpoint progress out of 250 and separates checkpoint scores and quarantines from the original 30-call calibration. This checkpoint does not authorize any remaining backlog or publication into Magic Mike Coaching.
+
 The owner subsequently authorized one bounded 100-call validation slice from the latest seven-day backfill population. Launcher `a9WVd99pVvcNLgzU` selected exactly 100 unprocessed calls, dispatched five 20-call workers, and was immediately deactivated. The actual bounded-source mix was 88 Call 1 and 12 Call 2. Every successful result uses the same V6.2 idempotency key, so it is already part of a later authorized backfill and will not incur duplicate model cost. This does not authorize further backfill calls or publication into Magic Mike Coaching.
 
 Rollback is independent by layer:
