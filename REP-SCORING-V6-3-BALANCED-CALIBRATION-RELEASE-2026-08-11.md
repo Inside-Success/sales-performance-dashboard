@@ -47,6 +47,17 @@ Hidden admin route: `/manager/rep-scoring/v6-3-calibration`
 
 The page reports scored calls, Call 1/Call 2 mix, score median/range, exact-100 rate, selective-verifier rate, criterion-status distribution, and terminal quarantines. Each scored call links to a protected evidence page with the action/outcome, opportunity context, dimension scores, criterion statuses, reasons, exact quotes, timestamps, and source transcript link.
 
+## Production release
+
+- GitHub pull request: `#150`
+- Merge commit: `3002fb761460f6a7a8082b3ce51eab74306b9d10`
+- Production deployment: `dpl_6bKXKYz4FHyCDhnFVyitGRGWcQDm`
+- Canonical URL: `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring/v6-3-calibration`
+- Deployment state: `READY`
+- The unauthenticated route returned HTTP 200 and the protected Google sign-in page, confirming that the route exists and preserves the access boundary.
+- Vercel reported no runtime errors for the route during the post-deployment verification window.
+- The pull-request preview failed before the application build with `Resource provisioning failed`; its build log contained no application error. The same commit passed the local production build and the Git-triggered production deployment completed successfully.
+
 ## Verification
 
 - The launcher returned `30 selected`, `15 Call 1`, `15 Call 2+`, `3 worker dispatches`, and eight distinct source dates for each type.
@@ -57,6 +68,7 @@ The page reports scored calls, Call 1/Call 2 mix, score median/range, exact-100 
 - ESLint passed with zero warnings.
 - The Next.js production build passed and included both V6.3 hidden routes. No local development server was started.
 - The scoped build helper contains workflow construction rules but no credentials or secret values.
+- GitHub PR `#150` was merged and its Git-triggered production deployment reached `READY` on the canonical domain.
 
 ## Decision boundary
 
