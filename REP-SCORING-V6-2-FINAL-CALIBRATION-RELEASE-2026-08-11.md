@@ -88,6 +88,14 @@ The owner separately approved a bounded validation run of 50–100 calls and aut
 
 The dashboard route `/manager/rep-scoring/v6-2-calibration` now switches to the 100-call validation cohort as results arrive, reports the actual Call 1/Call 2 mix, median and range, and explains that successful calls count toward the later backfill. The original 12-call calibration remains preserved in a collapsed audit section.
 
+Release verification:
+
+- GitHub PR `#148` merged as `091e302fd71edff8e12b9b7cc34962a79aed7f20`.
+- Production deployment `dpl_fEBaDEfyYaXgikJa23crKZAwS5DT` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias.
+- The protected production route returned the expected Google sign-in flow rather than a 404.
+- Thirty-five rep-scoring tests, ESLint with zero warnings, a full Next.js production build, diff checks, and a scoped credential-pattern scan passed without starting a local development server.
+- The branch preview failed before an application build with Vercel `Resource provisioning failed`; Vercel returned no application build error lines. The production deployment of the same commit built successfully.
+
 This authorization does not publish V6.2 into Magic Mike Coaching, replace the current manager production view, or authorize additional calls beyond the dispatched 100.
 
 ## Approval boundary
