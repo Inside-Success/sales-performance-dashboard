@@ -22,7 +22,7 @@ The initial V6.1 attempt correctly exposed a coverage threshold that was too str
 
 The threshold-corrected `r1a/r2a` attempt then exposed a second defect: independent primary judgments still alternated between missed and partial/met on the same criteria, producing early 17–21 point pair differences. Those rows are also retained as failed calibration evidence and are not shown as the final candidate.
 
-The final immutable rerun uses scorer versions `rep-reviewer-v6.1-calibration-r1b` and `rep-reviewer-v6.1-calibration-r2b`. A dimension can be calculated when at least 30% of its criterion weight has exact validated evidence; the whole call still requires at least three dimensions and 35% of total call weight. Missing evidence is excluded rather than converted into a low score. Every final call also requires a complete second criterion judgment; an unavailable or incomplete second judgment fails closed.
+The final review rows use scorer versions `rep-reviewer-v6.1-calibration-r1c` and `rep-reviewer-v6.1-calibration-r2c`. They reuse the two complete, already-paid judgments stored by `r1b/r2b`; no additional model request is made. Each observable criterion receives the arithmetic mean of the two judgment point values. Missing evidence remains excluded, a critical finding requires both judgments to corroborate the same risk type, and a Call 2 sale, deposit, concrete follow-up, rejection, or loss must be corroborated by both judgments. A dimension still requires 30% observable criterion weight, and the call still requires three dimensions and 35% total call weight.
 
 ## n8n release
 
@@ -44,6 +44,15 @@ The final immutable rerun uses scorer versions `rep-reviewer-v6.1-calibration-r1
 - Dispatch: four bounded workers, each processing six calls sequentially
 - Balance gate: fails closed before dispatch if DeepSeek is unavailable or below the configured floor
 - External state after dispatch: inactive
+
+### Deterministic consensus recalibrator
+
+- ID: `wMYUam17Jzr4U57S`
+- Name: `MM Rep Scoring V6.1c - Deterministic Consensus Recalibrator (NO AI / NO BACKFILL)`
+- Input: the 24 immutable `r1b/r2b` calibration rows only
+- Output: 24 new immutable `r1c/r2c` rows
+- Model calls: none
+- External state after the bounded run: inactive
 
 ## Dashboard release
 
