@@ -3,8 +3,8 @@ import "server-only";
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const ROUND_ONE_VERSION = "rep-reviewer-v6-calibration-r1";
 const ROUND_TWO_VERSION = "rep-reviewer-v6-calibration-r2";
-const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1c";
-const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2c";
+const V61_ROUND_ONE_VERSION = "rep-reviewer-v6.1-calibration-r1d";
+const V61_ROUND_TWO_VERSION = "rep-reviewer-v6.1-calibration-r2d";
 const FETCH_TIMEOUT_MS = 10_000;
 
 type AirtableRecord = { id: string; fields: Record<string, unknown> };
