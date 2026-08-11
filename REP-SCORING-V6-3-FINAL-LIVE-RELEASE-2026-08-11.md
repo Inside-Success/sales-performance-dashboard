@@ -46,8 +46,15 @@ The release does not start a redundant paid historical replay. Calls missed whil
 
 - Exact-match unit coverage includes correct match, source-ID mismatch, automation-key mismatch, Call 1, old scorer version, quarantine status, internal inconsistency, null score, and duplicate records.
 - Aggregation coverage verifies that only the lowest 15% of a sufficiently large strong-evidence cohort receives the comparative manager-priority flag.
-- ESLint and the Next.js production build pass without a local development server.
-- Production browser and deployment checks must confirm the protected manager route, a matched Call 2+ Coaching score, and an unchanged ordinary Coaching report before final sign-off.
+- All 343 tests in 31 files passed. ESLint and the Next.js production build passed without a local development server.
+- Pull request `#156` merged as `fa3a843bd932063bcff9e4227afeb05e29723cb8`.
+- Production deployment `dpl_7gXaB4iB2rwGcJeiHdQFPS7A5Cfz` reached `READY` and owns the canonical `sales-performance-dashboard-rose.vercel.app` alias.
+- The signed-in production manager page showed 1,268 of 1,268 historical calls terminal, 1,163 valid scores including the latest live score, 33 strong-evidence reps, and five comparative `Manager priority` rows.
+- Production Coaching report `/call/4914` displayed the exact matched score `79.8 / 100` while retaining all existing feedback sections.
+- A pre-window unmatched Coaching report `/call/3904` rendered normally with no score, confirming that an unavailable score does not break or create a false zero.
+- Vercel reported no runtime errors for the manager and Coaching routes in the post-deployment verification window.
+- The V6.3 coordinator and worker both validated with zero errors and zero invalid connections. The coordinator's next clean scan returned `historical_target_complete`, 1,268 historical terminal calls, zero active leases, and no calls needing dispatch.
+- The official Coaching workflow was not edited and its five most recent executions were successful.
 
 ## Rollback
 
