@@ -138,7 +138,7 @@ function HeroStat({ label, value }: { label: string; value: string }) { return <
 function StatusBadge({ summary }: { summary: RepPerformanceSummary }) {
   if (summary.reviewStatus === "early_evidence") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Early evidence</Badge>;
   if (summary.reviewStatus === "needs_attention") return <Badge variant="outline" className="rounded-full border-red-200 bg-red-50 text-red-700">Needs attention</Badge>;
-  if (summary.reviewStatus === "coaching_focus") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Coaching focus</Badge>;
+  if (summary.reviewStatus === "coaching_focus") return <Badge variant="outline" className="rounded-full border-amber-200 bg-amber-50 text-amber-900">Manager priority</Badge>;
   return <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">No priority concern</Badge>;
 }
 
