@@ -93,3 +93,20 @@ Final read-only audit workflow `tsXL87GX0C22DScl` is inactive and has no schedul
 - 89 reps represented, but only 11 rep-and-call-type groups currently have at least three scored calls and none have ten.
 
 The checkpoint supports proceeding to a bounded V6.3 backfill without another scoring-rubric iteration. Future backfill admission must use independent short workers or short waves rather than long-lived parents that wait across five sequential workers. Low-coverage scores must remain excluded or clearly withheld from rep-level decisions, quarantines must remain fail-closed, and score publication into Magic Mike Coaching remains a separate approval gate.
+
+## Overnight bounded backfill launch
+
+The approved unattended continuation is active in workflow `EghbY2jr86yjJl4d`, named `MM Rep Scoring V6.3 - Overnight 1500 Backfill + Live Refill (BALANCE-GATED)`.
+
+- It scans only the approved source window beginning `2026-08-03T04:00:00.000Z`.
+- Calls before the fixed launch cutoff `2026-08-11T00:59:55.000Z` count toward a maximum of 1,500 terminal historical V6.3 calls. If the approved source window contains fewer eligible calls, it stops when that source scope is exhausted.
+- Calls arriving after the cutoff are prioritized and remain uncapped so live coverage continues independently of the historical limit.
+- A clear wave admits at most 50 calls as five independent workers of at most ten calls each. The schedule checks every five minutes, but any active V6.3 lease causes a successful no-op; overlapping waves cannot be admitted.
+- DeepSeek availability and an $8 balance floor are checked before source admission. Source, balance, and ledger failures fail closed and retry on a later scheduled slot.
+- Completed idempotency keys are excluded, active leases are excluded, and stale or failed attempts remain safely recoverable.
+- Historical selection balances rep and call-type coverage; it does not select by score or outcome.
+- The existing V6.3 scoring worker, rubric, model, deterministic calculation, selective-review gate, quarantine behavior, and isolated Airtable destination are unchanged. V6.3 scores are not published into Magic Mike Coaching.
+
+Workflow validation returned zero errors and zero invalid connections. The remaining warnings are reviewed Code-node, IF-branch, and long-chain advisories; the published graph contains 15 valid connections.
+
+The first scheduled execution, `471271`, succeeded in about 16 seconds. It found 1,268 eligible source calls, observed 280 existing terminal V6.3 records, selected 50 unique historical calls, and asynchronously dispatched worker executions `471272` through `471276` as five batches of ten. Scheduler executions `471287` and `471300` each detected five active leases and exited successfully with `skip_active_wave`, proving the single-flight guard prevented overlap across two consecutive checks. During the ten-minute supervised launch window, all five workers remained healthy and had finalized 30 calls: 29 valid scores and one intentional fail-closed quarantine.
