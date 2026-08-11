@@ -110,3 +110,9 @@ The approved unattended continuation is active in workflow `EghbY2jr86yjJl4d`, n
 Workflow validation returned zero errors and zero invalid connections. The remaining warnings are reviewed Code-node, IF-branch, and long-chain advisories; the published graph contains 15 valid connections.
 
 The first scheduled execution, `471271`, succeeded in about 16 seconds. It found 1,268 eligible source calls, observed 280 existing terminal V6.3 records, selected 50 unique historical calls, and asynchronously dispatched worker executions `471272` through `471276` as five batches of ten. Scheduler executions `471287` and `471300` each detected five active leases and exited successfully with `skip_active_wave`, proving the single-flight guard prevented overlap across two consecutive checks. During the ten-minute supervised launch window, all five workers remained healthy and had finalized 30 calls: 29 valid scores and one intentional fail-closed quarantine.
+
+## Manager dashboard promotion
+
+After the dispatcher reached `historical_target_complete` with 1,268 unique terminal V6.3 ledger records and no active leases or execution errors, the hidden manager route was promoted from the stale V5 selector to the completed V6.3 dataset. The manager loader now reconciles immutable V6.3 score, quarantine, and ledger records against the fixed approved source period. The historical denominator is the 1,268 calls actually found and finalized, not the earlier 1,500 maximum safety cap.
+
+This is a presentation and read-path release only. Magic Mike Coaching remains unchanged and does not receive V6.3 scores. The source call store, Slack, Google content, n8n scoring logic, isolated Airtable records, and employee records are not modified by the dashboard cutover.

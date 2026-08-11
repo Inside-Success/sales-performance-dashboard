@@ -5,7 +5,13 @@ import { evidenceConfidence, normalizeDimensions } from "@/lib/rep-scoring/prese
 const FETCH_TIMEOUT_MS = 20_000;
 const FETCH_MAX_ATTEMPTS = 3;
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
-const CURRENT_SCORER_VERSION = process.env.REP_SCORING_SCORER_VERSION || "rep-reviewer-v3";
+const V6_3_SCORER_VERSION = "rep-reviewer-v6.3-realistic-fair-1";
+const V6_3_WINDOW_START = "2026-08-03T04:00:00.000Z";
+const V6_3_HISTORICAL_END = "2026-08-11T00:59:55.000Z";
+const V6_3_HISTORICAL_TARGET = 1_268;
+// The hidden manager surface has its own explicit release selector. Keeping it
+// separate prevents a dashboard cutover from publishing scores into Coaching.
+const CURRENT_SCORER_VERSION = process.env.REP_SCORING_MANAGER_SCORER_VERSION || V6_3_SCORER_VERSION;
 const DEFAULT_V5_HISTORICAL_SAMPLE_END = "2026-08-10T13:00:00.000Z";
 
 type AirtableRecord = {
@@ -184,6 +190,7 @@ export type RepScoringDashboardData = {
     earlySignals: number;
     enoughEvidence: number;
     gatheringEvidence: number;
+    finalizedCalls: number;
     scoredCalls: number;
     quarantinedCalls: number;
     inconsistentCalls: number;
@@ -204,7 +211,7 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
     shadowMode: true,
     killSwitch: true,
     scorerVersion: CURRENT_SCORER_VERSION,
-    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0, withheldCalls: 0 },
+    summary: { repsTracked: 0, needsReview: 0, declining: 0, earlySignals: 0, enoughEvidence: 0, gatheringEvidence: 0, finalizedCalls: 0, scoredCalls: 0, quarantinedCalls: 0, inconsistentCalls: 0, withheldCalls: 0 },
     coverage: emptyCoverage(),
     repSummaries: [],
     rollups: [],
@@ -220,17 +227,20 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
   }
 
   try {
-    const [scoreRecords, quarantineRecords, configRecords, scoringRunRecords] = await Promise.all([
+    const [scoreRecords, quarantineRecords, configRecords, scoringRunRecords, ledgerRecords] = await Promise.all([
       fetchAllRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", 5000, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
       fetchAllRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", 5000, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
       fetchAllRecords(process.env.REP_SCORING_CONFIG_TABLE || "config", 20),
       fetchAllRecords(process.env.REP_SCORING_RUNS_TABLE || "scoring_runs", 200, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
+      fetchAllRecords(process.env.REP_SCORING_LEDGER_TABLE || "processing_ledger", 5000, `{Scorer Version}=${airtableStringLiteral(CURRENT_SCORER_VERSION)}`),
     ]);
 
-    const coverage = normalizeCoverage(scoringRunRecords);
+    const isV63Manager = CURRENT_SCORER_VERSION === V6_3_SCORER_VERSION;
+    const coverage = isV63Manager ? normalizeV63Coverage(ledgerRecords) : normalizeCoverage(scoringRunRecords);
     // The workflow owns a fixed analysis start. New calls accumulate from that
     // point instead of disappearing when a rolling weekly window advances.
-    const reportingStart = dateValue(coverage.windowStart || coverage.cutoff) || Date.parse("2026-07-18T04:00:00.000Z");
+    const reportingStart = dateValue(coverage.windowStart || coverage.cutoff)
+      || Date.parse(isV63Manager ? V6_3_WINDOW_START : "2026-07-18T04:00:00.000Z");
     const reportingEnd = Math.max(dateValue(coverage.windowEnd), Date.now()) + 60_000;
     const currentCalls = scoreRecords
       .map(normalizeCall)
@@ -252,6 +262,11 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
       "Idempotency Key",
     );
     reconcileCumulativeProgress(coverage, recentCalls, currentQuarantines);
+    if (isV63Manager) {
+      const historicalEnd = dateValue(V6_3_HISTORICAL_END);
+      coverage.liveValidScores = consistentCalls.filter((call) => dateValue(call.meetingStartAt || call.scoredAt) > historicalEnd).length;
+      coverage.liveTerminalQuarantines = currentQuarantines.filter((record) => dateValue(readString(readJsonObject(record.fields["Diagnostic JSON"]).meetingStartAt)) > historicalEnd).length;
+    }
     const rollups = deriveRollups(consistentCalls, currentQuarantines).sort(sortRollups);
     const repSummaries = deriveRepSummaries(consistentCalls, currentQuarantines);
     const readyRepIds = new Set(repSummaries.filter((rep) => rep.nScored >= 3).map((rep) => rep.id));
@@ -273,6 +288,9 @@ export async function getRepScoringDashboardData(): Promise<RepScoringDashboardD
         earlySignals: repSummaries.filter((rep) => rep.nScored < 3 && rep.overallScore !== null && rep.overallScore < 60).length,
         enoughEvidence: readyRepIds.size,
         gatheringEvidence: Math.max(0, sourceRepCount - readyRepIds.size),
+        finalizedCalls: isV63Manager
+          ? terminalLedgerCount(ledgerRecords)
+          : consistentCalls.length + withheldCalls.length + currentQuarantines.length + recentCalls.filter((call) => call.internalInconsistency).length,
         scoredCalls: consistentCalls.length,
         quarantinedCalls: currentQuarantines.filter((record) => !readBoolean(record.fields.Resolved)).length,
         inconsistentCalls: recentCalls.filter((call) => call.internalInconsistency).length,
@@ -665,6 +683,70 @@ function getGroupInsights(calls: RepScoreCall[]) {
   return {
     coachingPriority: ranked[0]?.label || "Not enough evidence",
     strongestArea: ranked.at(-1)?.label || "Not enough evidence",
+  };
+}
+
+function v63LedgerRows(records: AirtableRecord[]) {
+  const latestByKey = new Map<string, AirtableRecord>();
+  for (const record of records) {
+    if (readString(record.fields["Scorer Version"]) !== V6_3_SCORER_VERSION) continue;
+    const key = readString(record.fields["Idempotency Key"]) || record.id;
+    const current = latestByKey.get(key);
+    const updatedAt = dateValue(readString(record.fields["Updated At"]) || readString(record.fields["Completed At"]) || record.createdTime || "");
+    const currentUpdatedAt = current ? dateValue(readString(current.fields["Updated At"]) || readString(current.fields["Completed At"]) || current.createdTime || "") : 0;
+    if (!current || updatedAt >= currentUpdatedAt) latestByKey.set(key, record);
+  }
+  return [...latestByKey.values()];
+}
+
+function terminalLedgerCount(records: AirtableRecord[]) {
+  return v63LedgerRows(records).filter((record) => readString(record.fields.State).toLowerCase() === "completed").length;
+}
+
+function normalizeV63Coverage(records: AirtableRecord[]): RepScoringCoverage {
+  const rows = v63LedgerRows(records);
+  const now = Date.now();
+  const terminal = rows.filter((record) => readString(record.fields.State).toLowerCase() === "completed").length;
+  const active = rows.filter((record) => readString(record.fields.State).toLowerCase() === "processing"
+    && dateValue(readString(record.fields["Lease Expires At"])) > now).length;
+  const measuredAt = rows
+    .map((record) => readString(record.fields["Updated At"]) || readString(record.fields["Completed At"]) || record.createdTime || "")
+    .sort((a, b) => dateValue(b) - dateValue(a))[0] || "";
+  const historicalFinalized = Math.min(V6_3_HISTORICAL_TARGET, terminal);
+
+  return {
+    available: rows.length > 0,
+    measuredAt,
+    cutoff: V6_3_WINDOW_START,
+    windowStart: V6_3_WINDOW_START,
+    windowEnd: new Date().toISOString(),
+    windowLabel: "V6.3 cumulative manager evidence",
+    reportingTimezone: "America/New_York",
+    progressBaselineAt: measuredAt,
+    progressBaselineEnd: V6_3_HISTORICAL_END,
+    sourceCandidates: Math.max(V6_3_HISTORICAL_TARGET, terminal + active),
+    sourceReps: null,
+    assessmentGroups: null,
+    groupsWithMinimumScores: null,
+    completed: historicalFinalized,
+    inProgress: active,
+    awaiting: Math.max(0, V6_3_HISTORICAL_TARGET - historicalFinalized),
+    selectedForRun: active,
+    percentComplete: round((historicalFinalized / V6_3_HISTORICAL_TARGET) * 100),
+    processedLastHour: 0,
+    processingMode: "v6_3_overnight_bounded_backfill_and_live_refill",
+    hourlyBatchLimit: 50,
+    workerBatchSize: 10,
+    maximumWorkers: 5,
+    targetDailyCapacity: null,
+    targetFinalizedCalls: V6_3_HISTORICAL_TARGET,
+    historicalSampleEnd: V6_3_HISTORICAL_END,
+    finalizedForTarget: historicalFinalized,
+    remainingToTarget: Math.max(0, V6_3_HISTORICAL_TARGET - historicalFinalized),
+    liveValidScores: 0,
+    liveTerminalQuarantines: 0,
+    retryableProviderFailures: 0,
+    reconciled: terminal >= V6_3_HISTORICAL_TARGET,
   };
 }
 
