@@ -72,3 +72,24 @@ The branch preview failed at Vercel resource provisioning before an application 
 ## Stop and recovery
 
 To stop admission, deactivate lane coordinator `jWbarQK4Bmw1u6pN`. In-flight V6.3 workers remain bounded to ten calls and can finish safely. Re-running this checkpoint is not an approved recovery step; inspect the failed lane and ledger first, then construct only the missing-call recovery scope.
+
+## Final recovery and checkpoint audit
+
+The initial five lanes each reached the effective n8n execution ceiling after roughly 40 minutes. Twenty complete ten-call workers and partial fifth workers safely finalized 217 calls: 194 scores and 23 quarantines. The failed parents did not duplicate or corrupt stored results, but 33 selected calls remained unfinished.
+
+The one-time launcher `tR8o0NOmYvg1SDCz` was converted into an exact recovery launcher with a preserved workflow-version rollback path. It reconciled the original 250 idempotency keys against the current ledger, hard-stopped while five stale leases were still active, and then dispatched only the 33 unresolved calls as four independent worker batches of 10, 10, 10, and 3. The successful launcher execution was `470988`; worker executions `470989`, `470990`, `470991`, and `470992` all completed successfully. The launcher was deactivated immediately after dispatch.
+
+Final read-only audit workflow `tsXL87GX0C22DScl` is inactive and has no schedule. Its completed audit confirmed:
+
+- 250 terminal calls: 226 scored and 24 quarantined;
+- 160 scored Call 1 calls and 66 scored Call 2+ calls;
+- mean score `80.5`, median `83.1`, range `49.0–88.2`, and 22 calls below 70;
+- no scores at or above 95 and no exact 100s;
+- no duplicate score keys, duplicate source records, score/quarantine overlap, or internal inconsistencies;
+- high speaker-resolution confidence on all 226 scored calls;
+- 17 selective reviews required and all 17 applied;
+- six scores below a 0.60 weight denominator;
+- 24 quarantines, primarily ambiguous multiple-rep attribution (16) or insufficient speaker mapping (5);
+- 89 reps represented, but only 11 rep-and-call-type groups currently have at least three scored calls and none have ten.
+
+The checkpoint supports proceeding to a bounded V6.3 backfill without another scoring-rubric iteration. Future backfill admission must use independent short workers or short waves rather than long-lived parents that wait across five sequential workers. Low-coverage scores must remain excluded or clearly withheld from rep-level decisions, quarantines must remain fail-closed, and score publication into Magic Mike Coaching remains a separate approval gate.
