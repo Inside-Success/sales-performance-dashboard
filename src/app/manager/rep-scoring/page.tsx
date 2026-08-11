@@ -26,14 +26,14 @@ export default async function ManagerRepScoringPage() {
   const supportedConcerns = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention").length;
   const criticalCalls = data.repSummaries.reduce((total, rep) => total + rep.criticalEvents.length, 0);
   const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15).length;
-  const isV5Shadow = data.scorerVersion.startsWith("rep-reviewer-v5-shadow");
+  const isV63Manager = data.scorerVersion === "rep-reviewer-v6.3-realistic-fair-1";
   const numericScores = data.recentCalls.flatMap((call) => call.score === null || call.internalInconsistency ? [] : [call.score]);
   const scoreDistribution = [
-    { label: "Below 40", count: numericScores.filter((score) => score < 40).length, tone: "bg-red-600" },
-    { label: "40–59", count: numericScores.filter((score) => score >= 40 && score < 60).length, tone: "bg-orange-500" },
-    { label: "60–74", count: numericScores.filter((score) => score >= 60 && score < 75).length, tone: "bg-amber-500" },
-    { label: "75–89", count: numericScores.filter((score) => score >= 75 && score < 90).length, tone: "bg-blue-500" },
-    { label: "90–100", count: numericScores.filter((score) => score >= 90).length, tone: "bg-emerald-600" },
+    { label: "Below 50", count: numericScores.filter((score) => score < 50).length, tone: "bg-red-600" },
+    { label: "50–69", count: numericScores.filter((score) => score >= 50 && score < 70).length, tone: "bg-orange-500" },
+    { label: "70–84", count: numericScores.filter((score) => score >= 70 && score < 85).length, tone: "bg-amber-500" },
+    { label: "85–94", count: numericScores.filter((score) => score >= 85 && score < 95).length, tone: "bg-blue-500" },
+    { label: "95–100", count: numericScores.filter((score) => score >= 95).length, tone: "bg-emerald-600" },
   ];
 
   return (
@@ -44,8 +44,7 @@ export default async function ManagerRepScoringPage() {
             <div className="max-w-3xl">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="magic-kicker"><ShieldCheck className="size-3.5" />Admin only</span>
-                <Badge variant="outline" className="rounded-full border-slate-200 bg-white/80 text-slate-700">{isV5Shadow ? "V5 shadow validation" : "Manager review"}</Badge>
-                {!isV5Shadow && data.killSwitch ? <Badge variant="destructive">Scoring paused</Badge> : null}
+                <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">{isV63Manager ? "V6.3 manager results" : "Manager review"}</Badge>
               </div>
               <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">Sales call execution review</h1>
               <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Start with the lowest evidence-supported results, then open a rep to verify the recurring findings and exact call evidence.</p>
@@ -59,7 +58,7 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
-        {isV5Shadow ? <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-950"><strong>V5 historical validation is cost-capped; live scoring is not.</strong> Calls through {formatStart(data.coverage.historicalSampleEnd)} can fill the 1,500-call testing sample. Every eligible newer call remains in the live stream. Transcript reliability, lead opportunity and external factors are checked before rep execution is scored, while provider and balance failures stay retryable.</div> : null}
+        {isV63Manager ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950"><strong>V6.3 is now the manager view.</strong> It uses the completed fair-attribution scoring architecture, keeps Call 1 and Call 2+ separate, excludes unsupported transcripts instead of lowering a rep&apos;s score, and does not publish scores into Magic Mike Coaching.</div> : null}
 
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
@@ -69,7 +68,7 @@ export default async function ManagerRepScoringPage() {
         </section>
 
         <CatchUpProgress coverage={data.coverage} />
-        {isV5Shadow ? <ScoreDistribution buckets={scoreDistribution} total={numericScores.length} withheld={data.summary.withheldCalls} /> : null}
+        {isV63Manager ? <ScoreDistribution buckets={scoreDistribution} total={numericScores.length} withheld={data.summary.withheldCalls} /> : null}
         <RepRankingTable reps={data.repSummaries} />
 
         <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm leading-6 text-slate-600">
@@ -88,15 +87,15 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
   const waiting = Math.max(0, coverage.remainingToTarget ?? coverage.awaiting ?? 0);
   if (waiting === 0 && coverage.targetFinalizedCalls === null) return null;
   const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
-  const scheduledBatchLimit = Math.max(1, coverage.hourlyBatchLimit ?? 80);
+  const historicalComplete = waiting === 0 && complete >= 100;
 
   return (
-    <Card className="magic-card border-amber-200 bg-gradient-to-br from-amber-50 to-white">
-      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950"><Clock3 className="size-5 text-amber-700" />V5 historical testing sample</CardTitle><p className="text-sm leading-6 text-slate-600">Historical backfill stops at 1,500 finalized calls through {formatStart(coverage.historicalSampleEnd)}. Eligible calls after that boundary continue live and do not consume this limit. Provider and balance failures stay retryable and are excluded from this progress.</p></CardHeader>
+    <Card className={cn("magic-card bg-gradient-to-br to-white", historicalComplete ? "border-emerald-200 from-emerald-50" : "border-amber-200 from-amber-50")}>
+      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950">{historicalComplete ? <CheckCircle2 className="size-5 text-emerald-700" /> : <Clock3 className="size-5 text-amber-700" />}{historicalComplete ? "Historical V6.3 analysis is complete" : "Historical V6.3 analysis is catching up"}</CardTitle><p className="text-sm leading-6 text-slate-600">The approved source period began {formatStart(coverage.windowStart)}. {historicalComplete ? `All ${numberFormatter.format(coverage.targetFinalizedCalls ?? 0)} calls found in the completed historical inventory reached a terminal result.` : `${numberFormatter.format(coverage.finalizedForTarget ?? 0)} of ${numberFormatter.format(coverage.targetFinalizedCalls ?? 0)} historical calls have reached a terminal result.`} New eligible calls continue through the live workflow.</p></CardHeader>
       <CardContent>
-        <div className="h-3 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-red-600" style={{ width: `${complete}%` }} /></div>
-        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>Approximately {complete.toFixed(1)}% of the 1,500-call test sample finalized</span><span>About {numberFormatter.format(waiting)} calls remaining to the test target</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">{coverage.processedLastHour ? `${numberFormatter.format(coverage.processedLastHour)} valid scores were added in the last hour. ` : "When active, workers check for unfinished calls every 15 minutes. "}New live calls are selected first; unused capacity then fills the historical sample. Each clear run can admit up to {numberFormatter.format(scheduledBatchLimit)} calls across eight isolated workers. The balance gate and no-overlap guard prevent unsafe dispatches.{coverage.retryableProviderFailures ? ` ${numberFormatter.format(coverage.retryableProviderFailures)} provider-failed attempts remain eligible for a later retry.` : ""}</p>
+        <div className={cn("h-3 overflow-hidden rounded-full", historicalComplete ? "bg-emerald-100" : "bg-amber-100")}><div className={cn("h-full rounded-full", historicalComplete ? "bg-emerald-600" : "bg-red-600")} style={{ width: `${complete}%` }} /></div>
+        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% of the historical inventory finalized</span><span>{historicalComplete ? "0 historical calls waiting" : `${numberFormatter.format(waiting)} historical calls waiting`}</span></div>
+        <p className="mt-3 text-xs leading-5 text-slate-500">A terminal result is either a valid evidence-backed score or a fair exclusion when identity, transcript reliability, or evidence cannot be verified. Excluded calls never become artificial low scores. Live scoring remains isolated from Magic Mike Coaching.</p>
       </CardContent>
     </Card>
   );
@@ -104,7 +103,7 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
 
 function ScoreDistribution({ buckets, total, withheld }: { buckets: Array<{ label: string; count: number; tone: string }>; total: number; withheld: number }) {
   const largest = Math.max(1, ...buckets.map((bucket) => bucket.count));
-  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1 pb-3"><CardTitle className="text-xl text-slate-950">Is V5 separating stronger and weaker calls?</CardTitle><p className="text-sm leading-6 text-slate-600">This distribution is the calibration check. A useful system should not force every call into the same narrow score range.</p></CardHeader><CardContent><div className="grid gap-3 sm:grid-cols-5">{buckets.map((bucket) => <div key={bucket.label} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="text-2xl font-extrabold text-slate-950">{numberFormatter.format(bucket.count)}</div><div className="mt-1 text-xs font-semibold text-slate-600">{bucket.label}</div><div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200"><div className={`h-full rounded-full ${bucket.tone}`} style={{ width: `${(bucket.count / largest) * 100}%` }} /></div></div>)}</div><p className="mt-3 text-xs leading-5 text-slate-500">{numberFormatter.format(total)} numeric V5 scores are visible. {numberFormatter.format(withheld)} additional calls were withheld from rep averages because reliability or verifier agreement was insufficient.</p></CardContent></Card>;
+  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1 pb-3"><CardTitle className="text-xl text-slate-950">Call-score distribution</CardTitle><p className="text-sm leading-6 text-slate-600">This shows how the valid V6.3 calls are distributed across the 0–100 scale. It describes the analyzed calls; it does not rank reps by itself.</p></CardHeader><CardContent><div className="grid gap-3 sm:grid-cols-5">{buckets.map((bucket) => <div key={bucket.label} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="text-2xl font-extrabold text-slate-950">{numberFormatter.format(bucket.count)}</div><div className="mt-1 text-xs font-semibold text-slate-600">{bucket.label}</div><div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200"><div className={`h-full rounded-full ${bucket.tone}`} style={{ width: `${(bucket.count / largest) * 100}%` }} /></div></div>)}</div><p className="mt-3 text-xs leading-5 text-slate-500">{numberFormatter.format(total)} evidence-backed V6.3 scores are included in rep results. {numberFormatter.format(withheld)} score records are withheld because they do not meet the consistency rule; transcript and identity exclusions are counted separately in the completion status.</p></CardContent></Card>;
 }
 
 function Metric({ icon: Icon, title, value, helper, tone }: { icon: typeof Users; title: string; value: number; helper: string; tone: "red" | "amber" | "green" }) {

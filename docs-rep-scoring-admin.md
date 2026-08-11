@@ -114,6 +114,22 @@ The dashboard derives cumulative rep results directly from current-version immut
 
 ## Manager experience
 
+### V6.3 manager cutover — 2026-08-11
+
+The hidden manager route `/manager/rep-scoring` now selects `rep-reviewer-v6.3-realistic-fair-1` through the manager-only `REP_SCORING_MANAGER_SCORER_VERSION` selector, whose production-safe default is V6.3. This selector is deliberately separate from Magic Mike Coaching; the cutover does not add scores to Coaching and does not change the Coaching workflow.
+
+The dashboard reads V6.3 immutable scores, evidence quarantines, and the isolated `processing_ledger`. The approved historical source period begins `2026-08-03T04:00:00.000Z`. Its completed inventory contains 1,268 eligible calls; this exact completed inventory replaces the earlier 1,500 safety cap as the manager-facing denominator. New calls after `2026-08-11T00:59:55.000Z` remain live and are reported separately from historical completion.
+
+The manager page now:
+
+- labels the active dataset as V6.3 rather than V5;
+- reconciles the 1,268 terminal ledger records instead of showing the stale 535-call V5 count;
+- distinguishes evidence-backed scores from fair transcript or identity exclusions;
+- shows a V6.3 score distribution using the factual score bands;
+- keeps the lowest-performing evidence-supported reps first with the existing 15+, 8+, 3+, and all-evidence controls;
+- preserves the detailed rep and exact-call evidence routes; and
+- states explicitly that this manager release does not publish scores into Magic Mike Coaching.
+
 The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.

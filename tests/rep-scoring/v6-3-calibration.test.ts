@@ -23,4 +23,15 @@ describe("V6.3 250-call checkpoint boundaries", () => {
     expect(loader).toContain('REP_SCORING_QUARANTINE_TABLE');
     expect(loader).toContain('quarantineRows');
   });
+
+  it("promotes V6.3 only into the hidden manager view and keeps Coaching separate", () => {
+    const loader = readFileSync("src/lib/rep-scoring/data.ts", "utf8");
+    const page = readFileSync("src/app/manager/rep-scoring/page.tsx", "utf8");
+    expect(loader).toContain('REP_SCORING_MANAGER_SCORER_VERSION || V6_3_SCORER_VERSION');
+    expect(loader).toContain('REP_SCORING_LEDGER_TABLE || "processing_ledger"');
+    expect(loader).toContain('V6_3_HISTORICAL_TARGET = 1_268');
+    expect(page).toContain("V6.3 is now the manager view");
+    expect(page).toContain("does not publish scores into Magic Mike Coaching");
+    expect(page).not.toContain("V5 historical validation");
+  });
 });
