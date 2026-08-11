@@ -28,6 +28,7 @@ import {
 } from "@/components/dashboard/usage-tracker";
 import { resolveCloseSection } from "@/lib/close-section";
 import { getPerformanceCall } from "@/lib/db";
+import { getCoachingCallScore } from "@/lib/rep-scoring/coaching-score";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime } from "@/lib/format";
 import { isReportChatEnabledForCall } from "@/lib/report-chat";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,8 @@ export default async function CallPage({
   const call = await getPerformanceCall(id);
 
   if (!call) notFound();
+
+  const callScore = await getCoachingCallScore(call);
 
   const reportChatEnabled = isReportChatEnabledForCall(call);
   const closeSection = resolveCloseSection({
@@ -129,6 +132,9 @@ export default async function CallPage({
                   value={meetingMeta.value}
                   icon={<Clock3 className="size-4" />}
                 />
+                {callScore ? (
+                  <MetaItem label="Call score" value={`${callScore.score.toFixed(1)} / 100`} icon={<Award className="size-4" />} />
+                ) : null}
               </div>
 
               <div className="mt-5 flex flex-wrap items-center gap-2">

@@ -24,6 +24,7 @@ export default async function ManagerRepScoringPage() {
   const data = await getRepScoringDashboardData();
   const reviewReadyReps = data.repSummaries.filter((rep) => rep.nScored >= 3);
   const supportedConcerns = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention").length;
+  const managerPriorities = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention" || rep.reviewStatus === "coaching_focus").length;
   const criticalCalls = data.repSummaries.reduce((total, rep) => total + rep.criticalEvents.length, 0);
   const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15).length;
   const isV63Manager = data.scorerVersion === "rep-reviewer-v6.3-realistic-fair-1";
@@ -58,10 +59,10 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
-        {isV63Manager ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950"><strong>V6.3 is now the manager view.</strong> It uses the completed fair-attribution scoring architecture, keeps Call 1 and Call 2+ separate, excludes unsupported transcripts instead of lowering a rep&apos;s score, and does not publish scores into Magic Mike Coaching.</div> : null}
+        {isV63Manager ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950"><strong>V6.3 is now the manager view.</strong> It uses the completed fair-attribution scoring architecture, keeps Call 1 and Call 2+ separate, excludes unsupported transcripts instead of lowering a rep&apos;s score, and publishes only an exact-match Call 2+ score into its existing Coaching report.</div> : null}
 
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <Metric title="Needs attention" value={supportedConcerns} helper="Supported low or declining signal; open the evidence before acting" tone="red" icon={AlertTriangle} />
+          <Metric title="Review first" value={managerPriorities} helper={`${supportedConcerns} supported concerns; remaining priorities are comparative review starting points`} tone="red" icon={AlertTriangle} />
           <Metric title="Critical calls to verify" value={criticalCalls} helper="Separate call-level flags; not a rep-performance verdict" tone="amber" icon={Flag} />
           <Metric title="Strong evidence" value={strongEvidenceReps} helper="At least 15 valid calls; this is the default manager view" tone="green" icon={Users} />
           <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Speaker-verified assessments since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
@@ -95,7 +96,7 @@ function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
       <CardContent>
         <div className={cn("h-3 overflow-hidden rounded-full", historicalComplete ? "bg-emerald-100" : "bg-amber-100")}><div className={cn("h-full rounded-full", historicalComplete ? "bg-emerald-600" : "bg-red-600")} style={{ width: `${complete}%` }} /></div>
         <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% of the historical inventory finalized</span><span>{historicalComplete ? "0 historical calls waiting" : `${numberFormatter.format(waiting)} historical calls waiting`}</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">A terminal result is either a valid evidence-backed score or a fair exclusion when identity, transcript reliability, or evidence cannot be verified. Excluded calls never become artificial low scores. Live scoring remains isolated from Magic Mike Coaching.</p>
+        <p className="mt-3 text-xs leading-5 text-slate-500">A terminal result is either a valid evidence-backed score or a fair exclusion when identity, transcript reliability, or evidence cannot be verified. Excluded calls never become artificial low scores. The scoring workflow remains isolated; Coaching reads only an exact matching Call 2+ score.</p>
       </CardContent>
     </Card>
   );

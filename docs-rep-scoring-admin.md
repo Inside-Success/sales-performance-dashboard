@@ -18,7 +18,7 @@ V4.2 correction work and its acceptance evidence are recorded in `REP-SCORING-V4
 - Storage: separate Airtable base `appEQQkTlJnc7tJgi`.
 - Google Docs: transcript reads only. No Docs or Drive writes.
 - Slack: no credential and no reads or writes.
-- Existing Magic Mike workflows `qMQYNQtQbRZWjtG2` and `L8Nn7xncA9ZPDdWA` are unchanged.
+- Existing Magic Mike generation workflows `qMQYNQtQbRZWjtG2` and `L8Nn7xncA9ZPDdWA` are unchanged. The dashboard now performs a read-only, exact-match V6.3 score lookup when an existing Call 2+ Coaching report is opened.
 - The output is a coaching and review signal, never an automated employment verdict.
 
 ## n8n
@@ -116,7 +116,7 @@ The dashboard derives cumulative rep results directly from current-version immut
 
 ### V6.3 manager cutover — 2026-08-11
 
-The hidden manager route `/manager/rep-scoring` now selects `rep-reviewer-v6.3-realistic-fair-1` through the manager-only `REP_SCORING_MANAGER_SCORER_VERSION` selector, whose production-safe default is V6.3. This selector is deliberately separate from Magic Mike Coaching; the cutover does not add scores to Coaching and does not change the Coaching workflow.
+The hidden manager route `/manager/rep-scoring` now selects `rep-reviewer-v6.3-realistic-fair-1` through the manager-only `REP_SCORING_MANAGER_SCORER_VERSION` selector, whose production-safe default is V6.3. The scoring and Coaching generation workflows remain separate. After the final release, an existing Coaching Call 2+ report displays the V6.3 score only when both its source Airtable record ID and automation key identify exactly one valid immutable score row.
 
 The dashboard reads V6.3 immutable scores, evidence quarantines, and the isolated `processing_ledger`. The approved historical source period begins `2026-08-03T04:00:00.000Z`. Its completed inventory contains 1,268 eligible calls; this exact completed inventory replaces the earlier 1,500 safety cap as the manager-facing denominator. New calls after `2026-08-11T00:59:55.000Z` remain live and are reported separately from historical completion.
 
@@ -128,11 +128,12 @@ The manager page now:
 - shows a V6.3 score distribution using the factual score bands;
 - keeps the lowest-performing evidence-supported reps first with the existing 15+, 8+, 3+, and all-evidence controls;
 - preserves the detailed rep and exact-call evidence routes; and
-- states explicitly that this manager release does not publish scores into Magic Mike Coaching.
+- states explicitly that only an exact-match Call 2+ score is displayed in Magic Mike Coaching; no scoring reasoning or manager-only evidence is published there.
 
 The hidden page is intentionally a score-and-coaching hybrid:
 
 - The factual 0–100 score and its band remain prominent.
+- The manager queue adds a deterministic comparative starting point: the lowest 15% of reps with at least 15 valid calls are marked `Manager priority` when no stronger supported concern already applies. This is not an underperformance verdict and does not manufacture a weakness.
 - The default table now shows the strongest 15+ call evidence and remains sorted lowest score first. Managers can broaden it to 8+, 3+, or all evidence.
 - `Needs attention` requires a call-type result below 45 with at least eight valid calls, a result below 55 with at least fifteen valid calls, or a decline of at least 15 points whose current five-call mean is below 60.
 - A high-severity event is a separate `Critical call to verify`. It links to the exact call and never turns one call into a rep-performance verdict.

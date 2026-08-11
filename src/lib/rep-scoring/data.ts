@@ -129,6 +129,7 @@ export type RepPerformanceSummary = {
   criticalConcern: boolean;
   criticalEvents: RepCriticalEvent[];
   reviewReason: string;
+  relativeReviewPriority: boolean;
   coachingPriorities: RepDimensionPattern[];
   strengths: RepDimensionPattern[];
   rank: number | null;
@@ -571,6 +572,7 @@ export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: Air
       criticalConcern,
       criticalEvents,
       reviewReason,
+      relativeReviewPriority: false,
       coachingPriorities: supportedConcerns,
       strengths: supportedStrengths,
       rank: null,
@@ -579,6 +581,22 @@ export function deriveRepSummaries(calls: RepScoreCall[], quarantineRecords: Air
 
   summaries.sort((a, b) => (a.overallScore ?? 101) - (b.overallScore ?? 101) || b.nScored - a.nScored || a.repName.localeCompare(b.repName));
   summaries.forEach((summary, index) => { summary.rank = summary.overallScore === null ? null : index + 1; });
+
+  // Absolute concerns remain evidence-based. Separately, give managers a
+  // deterministic starting point by marking the lowest 15% of the strong-
+  // evidence cohort for comparative review. This is deliberately not a claim
+  // that the rep is underperforming, and it never overwrites a supported
+  // absolute concern or a recurring dimension finding.
+  const strongEvidenceCohort = summaries.filter((summary) => summary.nScored >= 15 && summary.overallScore !== null);
+  const relativePriorityCount = strongEvidenceCohort.length >= 5
+    ? Math.max(1, Math.ceil(strongEvidenceCohort.length * 0.15))
+    : 0;
+  for (const summary of strongEvidenceCohort.slice(0, relativePriorityCount)) {
+    if (summary.reviewStatus !== "no_recurring_concern") continue;
+    summary.reviewStatus = "coaching_focus";
+    summary.relativeReviewPriority = true;
+    summary.reviewReason = "Lower relative score within the strong-evidence group; review the calls before deciding whether coaching is needed";
+  }
   return summaries;
 }
 

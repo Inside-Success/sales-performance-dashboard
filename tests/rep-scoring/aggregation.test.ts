@@ -123,6 +123,24 @@ describe("rep scoring aggregation", () => {
     expect(deriveRepSummaries(calls)[0]).toMatchObject({ needsReview: true, reviewStatus: "needs_attention" });
   });
 
+  it("marks only the lowest 15 percent of a strong-evidence cohort as a comparative manager priority", () => {
+    const calls = Array.from({ length: 20 }, (_, repIndex) =>
+      Array.from({ length: 15 }, (_, callIndex) => call({
+        assessmentId: `relative-${repIndex}-${callIndex}`,
+        repEmail: `rep-${repIndex}@example.com`,
+        repName: `Rep ${repIndex}`,
+        callType: "Call 1",
+        score: 70 + repIndex,
+      })),
+    ).flat();
+
+    const summaries = deriveRepSummaries(calls);
+    const priorities = summaries.filter((summary) => summary.relativeReviewPriority);
+    expect(priorities).toHaveLength(3);
+    expect(priorities.map((summary) => summary.overallScore)).toEqual([70, 71, 72]);
+    expect(priorities.every((summary) => !summary.needsReview && summary.reviewStatus === "coaching_focus")).toBe(true);
+  });
+
   it("separates a high-severity call event from the rep performance verdict and links the exact call", () => {
     const calls = [0, 1, 2].map((index) => call({
       assessmentId: `event-${index}`,
