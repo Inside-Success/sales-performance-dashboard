@@ -47,7 +47,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
         </header>
 
         {call.internalInconsistency ? <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-950"><strong>Excluded from rep averages:</strong> this older assessment contains an internal evidence inconsistency and must not be used as a performance result.</div> : null}
-        {call.score === null ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Score withheld:</strong> V5 did not produce a defensible numeric result for this call. It remains visible for audit, but it is excluded from the rep&apos;s averages and ranking.</div> : null}
+        {call.score === null ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Score withheld:</strong> the active scorer did not produce a defensible numeric result for this call. It remains visible for audit, but it is excluded from the rep&apos;s averages and ranking.</div> : null}
         {call.attributionSubstituted ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Rep substitution verified:</strong> Airtable assigned this call to {call.assignedRepName || call.assignedRepEmail}, but transcript speaker evidence shows {call.repName} handled it. The score belongs to {call.repName}; the absent assigned rep is not penalized.</div> : null}
 
         {v5Fairness ? <V5FairnessContext context={v5Fairness} /> : null}
@@ -58,7 +58,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
         </section>
 
         <Card className="magic-card border-blue-100 bg-blue-50/70">
-          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How V5 calculated this score:</strong> only fairly observable checkpoints are included. Completed, partial and missed checkpoints convert to 100, 60 and 20 points, then the workflow applies the visible weights. DeepSeek provides evidence judgments; deterministic code calculates the final number.</div></CardContent>
+          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How V6.3 calculated this score:</strong> only fairly observable checkpoints are included. DeepSeek records evidence-bound judgments for each applicable checkpoint; deterministic code applies the visible weights and calculates the final number.</div></CardContent>
         </Card>
 
         <Card className="magic-card border-white/80 bg-white/95">
@@ -99,7 +99,7 @@ function DimensionCard({ dimension }: { dimension: ScoreDimension }) {
     <article className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div><h2 className="text-lg font-extrabold text-slate-950">{dimension.label}</h2>{dimension.reason ? <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2"><BandBadge band={dimension.band} /><Badge variant="outline" className="rounded-full">{dimension.weight === null ? "Weight unavailable" : `${Math.round(dimension.weight * 100)}% weight`}</Badge></div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2"><BandBadge band={dimension.band || scoreBand(dimension.points)} /><Badge variant="outline" className="rounded-full">{dimension.weight === null ? "Weight unavailable" : `${Math.round(dimension.weight * 100)}% weight`}</Badge></div>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="grid gap-2">{dimension.evidence.length ? dimension.evidence.map((evidence, index) => <EvidenceBlock key={`${evidence.timestamp}-${index}`} evidence={evidence} />) : <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">No verified evidence quote was stored.</p>}</div>
@@ -185,6 +185,15 @@ function StatusBadge({ status }: { status: string }) {
 function BandBadge({ band }: { band: string }) {
   const style = band === "Excellent" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : band === "Meets Expectations" ? "border-blue-200 bg-blue-50 text-blue-800" : band === "Developing" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-red-200 bg-red-50 text-red-700";
   return <Badge variant="outline" className={cn("rounded-full", style)}>{band || "Not scored"}</Badge>;
+}
+
+function scoreBand(points: number | null) {
+  if (points === null) return "Not scored";
+  if (points < 25) return "Unacceptable";
+  if (points < 50) return "Needs Improvement";
+  if (points < 70) return "Developing";
+  if (points < 85) return "Meets Expectations";
+  return "Excellent";
 }
 
 function text(value: unknown) { return value === null || value === undefined ? "" : String(value).trim(); }
