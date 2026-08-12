@@ -25,6 +25,7 @@ V7 rebuilds rep scoring around exact transcript evidence, call-specific scripts,
 - 100-call launcher: `ctcEC3Xh0lsIxIQO`
 - Optional 50-call extension launcher: `mPrT274OgANkEPol`
 - Read-only audit: `FcCLQflWU6uhiZZe`
+- Adaptive admission controller: `xtJzNO93c0Tckv2W` (inactive; decision-only; no dispatcher)
 - Scorer version: `rep-reviewer-v7-shadow-1`
 
 The worker can only be called as a sub-workflow. All launchers and audit workflows are inactive outside a bounded validation operation. V6.3 production scoring and Magic Mike Coaching were not changed.
@@ -47,10 +48,36 @@ The worker can only be called as a sub-workflow. All launchers and audit workflo
 
 The two lowest calls were supported by concrete execution gaps rather than outcome alone: arbitrary urgency/dismissal of a time request and missing personalized value. Appropriate rejections remained eligible to score well.
 
+## 50-call extension and combined result
+
+The optional extension was run only after the first 100-call result passed its safety and quality gates. It admitted 50 additional calls, producing 44 scores and 6 fair exclusions.
+
+- Extension mix: 22 Call 1 and 22 Call 2+
+- Extension range: 62.9–88.0
+- Extension median: 84.6
+- Extension mean: 82.3
+- Extension below 75: 7
+- Extension exact 100 or at least 90: 0
+- Extension selective second reviews: 7 of 44 (15.9%)
+- Extension exclusions: 4 unresolved speaker mappings, 1 multi-rep ambiguity, and 1 insufficient-dimension result
+
+Combined across the full 150-call validation:
+
+- Final: 140 scores and 10 fair exclusions
+- Scored mix: 69 Call 1 and 71 Call 2+
+- Range: 59.0–89.1
+- Median: 84.7
+- Mean: 82.1
+- Below 75: 23
+- Below 60: 2
+- Exact 100 or at least 90: 0
+
+The 50-call extension is the valid cost signal for the revised selective-review gate. The original 100 calls used the earlier, broader review gate and therefore must not be used to estimate steady-state second-review cost.
+
 ## Evidence and usability gates
 
-- Balanced call coverage: passed
-- At least 90 final results: passed
+- Balanced call coverage: passed (69 Call 1 and 71 Call 2+ scored)
+- All 150 admitted calls reached a final scored or fair-exclusion state: passed
 - No high-score inflation to 100: passed
 - Low scores exist and are evidence-supported: passed
 - Provider or evidence failures are not rep penalties: passed
@@ -58,11 +85,15 @@ The two lowest calls were supported by concrete execution gaps rather than outco
 - Full backfill: intentionally not authorized
 - Coaching score publication: intentionally not authorized
 
-## Future aggressive backfill design — not deployed
+## Future aggressive backfill design — controller deployed inactive, dispatch not deployed
 
 The approved target is 15–20 top-level scoring executions, with each top-level execution processing up to 10 calls. This means a theoretical admission wave of 150–200 calls, but it is an adaptive ceiling rather than a fixed load.
 
-Before any backfill, the coordinator must reserve capacity below the organization limit of roughly 50 concurrent n8n executions, ramp gradually, reduce concurrency on timeout/rate-limit/crash signals, use immutable idempotency keys and renewable leases, separate live calls from backlog capacity, and stop admission when provider health or balance is unsafe. The target is complete backfill in one to two hours without crowding out unrelated production workflows.
+The decision-only admission controller implements the approved load model without starting work. It begins at 15 top-level executions, increases by two on a healthy observation window up to 20, and allows at most 10 calls per execution. It reserves 30 of the approximate 50 organization execution slots, refills only free V7 slots, halves the target on timeout, rate-limit, material failure-rate, or stale-lease evidence, and opens the circuit when provider health or balance is unsafe.
+
+Three live, bounded controller probes passed before its temporary webhook was removed: a healthy snapshot selected 17 executions / 170 calls; a timeout snapshot backed off to 10 executions / 100 calls; and an unavailable-balance snapshot admitted zero work. The controller is inactive, has no dispatch node, and cannot start a backfill by itself.
+
+Before an approved backfill, the final coordinator must add immutable idempotency keys, renewable leases, live-call capacity separation, bounded retries, and authoritative active-execution/provider-health inputs. It must also remove the validation launcher's inefficient full V6.3 reference-score scan: that scan read about 145,824 Airtable rows and delayed the extension launcher by roughly 703 seconds even though it was unnecessary to V7 scoring. The full-backfill target remains one to two hours, but speed cannot override organization capacity or safety backpressure.
 
 ## Rollback
 
@@ -70,4 +101,8 @@ No existing production workflow was replaced. Rollback is therefore to leave the
 
 ## Honest release assessment
 
-The 100-call evidence is strong enough to say that V7 is materially fairer, more discriminating, and more auditable than the prior architecture. It is ready for stakeholder review in its isolated validation view. It is not approved for a full backfill or for publishing scores into Magic Mike Coaching until the user gives explicit approval after reviewing the evidence.
+The 150-call evidence is strong enough to say that V7 is materially fairer, more discriminating, more cost-controlled, and more auditable than the prior architecture. The score distribution is not top-capped, low calls exist with concrete evidence, and ordinary extension calls used only one model request in 84.1% of cases.
+
+Three reps had enough repeated-call evidence for aggregation in this bounded sample; none met the absolute repeated-concern threshold. That is an honest result rather than a manufactured bottom group. The manager-priority logic is covered deterministically by tests, but a positive real rep-priority example was not present in this sample and should be rechecked during an explicitly approved broader backfill.
+
+Recommendation: **GO for an explicitly approved, monitored full backfill using the adaptive architecture; GO for isolated stakeholder review now; NO-GO for production cutover or Coaching score publication until the backfill is reviewed and separately approved.**

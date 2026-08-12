@@ -3,7 +3,7 @@ import "server-only";
 import { buildV7ManagerSummaries, type V7ManagerCall, type V7RepSummary } from "@/lib/rep-scoring/v7-manager";
 
 export const V7_SCORER_VERSION = "rep-reviewer-v7-shadow-1";
-export const V7_VALIDATION_TARGET = 100;
+export const V7_VALIDATION_TARGET = 150;
 
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const FETCH_TIMEOUT_MS = 12_000;
