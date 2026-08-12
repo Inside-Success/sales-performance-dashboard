@@ -8,6 +8,7 @@ V7 is an isolated validation architecture. It does not replace the live V6.3 sco
 - One-time 100-call launcher: `ctcEC3Xh0lsIxIQO`
 - Optional one-time 50-call extension launcher: `mPrT274OgANkEPol`
 - Read-only validation audit: `FcCLQflWU6uhiZZe`
+- Adaptive admission controller: `xtJzNO93c0Tckv2W` (inactive and decision-only)
 - Scorer version: `rep-reviewer-v7-shadow-1`
 
 The launcher is inactive except during an explicitly approved bounded validation dispatch. The worker has no schedule or public webhook and can only be called as a sub-workflow.
@@ -34,11 +35,11 @@ The rep page explains the reason, evidence amount, suggested manager action, rep
 
 ## Validation gate
 
-The completed validation admitted exactly 100 stratified calls: 50 Call 1 and 50 Call 2+. It produced 96 evidence-supported scores and four fair evidence exclusions. The scored distribution was 59.0–89.1 with an 84.7 median, no exact 100s, 16 calls below 75, and two calls below 60. Full backfill and Coaching publication remain blocked until the user explicitly approves them.
+The completed validation admitted exactly 150 calls. It produced 140 evidence-supported scores and ten fair evidence exclusions, with 69 scored Call 1 and 71 scored Call 2+ results. The scored distribution was 59.0–89.1 with an 84.7 median, no score at or above 90, 23 calls below 75, and two calls below 60. Full backfill and Coaching publication remain blocked until the user explicitly approves them.
 
-The optional extension launcher and the audit workflow are inactive. They have no schedule. The extension exists only to test the narrower selective-review gate and concentrated rep-level evidence if another bounded sample is genuinely needed.
+Both launchers, the audit workflow, and the admission controller are inactive. They have no schedule. The narrower selective-review gate used a second model call for 7 of 44 extension scores (15.9%).
 
-## Future backfill design (not deployed)
+## Future backfill design (safe control plane prepared; dispatch not deployed)
 
 The approved speed target is 15–20 top-level scoring executions, each processing up to 10 calls. This is a ceiling, not a blind fixed load. The future coordinator must:
 
@@ -50,4 +51,6 @@ The approved speed target is 15–20 top-level scoring executions, each processi
 - stop admission when provider balance or health is unsafe;
 - expose progress based only on final scores and non-retryable evidence exclusions.
 
-No future backfill coordinator is active in V7.
+`adaptive-admission-controller.js` contains the tested admission policy. `backfill-control-plane.sql` defines the un-applied Postgres control plane for atomic `SKIP LOCKED` leases, immutable scorer-version keys, lease-token settlement, bounded retries, fair exclusions, and dead-letter state. The deterministic application policy is covered by `v7-adaptive-backfill.test.ts` and `v7-backfill-safety.test.ts`.
+
+No future backfill coordinator or dispatcher is active in V7, and the control-plane migration has not been applied. Activation and the complete backfill both require explicit approval.
