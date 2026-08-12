@@ -47,7 +47,7 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
           <div>
-            <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Evidence</div>
+            <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Calls reviewed</div>
             <div className="mt-2 flex flex-wrap gap-2">
               {evidenceOptions.map((option) => (
                 <Button key={option.value} type="button" size="sm" variant={evidence === option.value ? "default" : "outline"} onClick={() => setEvidence(option.value)} className={cn("rounded-full", evidence === option.value && "bg-red-600 hover:bg-red-700")}>
@@ -74,7 +74,6 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
 
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-600">
           <span><strong className="text-slate-900">{visibleReps.length}</strong> reps shown</span>
-          <span>Scores are cumulative from the fixed launch date.</span>
         </div>
 
         {visibleReps.length ? (
@@ -84,7 +83,7 @@ export function RepRankingTable({ reps }: { reps: RepPerformanceSummary[] }) {
                 <TableRow className="bg-slate-50/80">
                   <TableHead className="w-[17%]">Rep</TableHead>
                   <TableHead className="w-[12%]">Overall score</TableHead>
-                  <TableHead className="w-[17%]">Evidence</TableHead>
+                  <TableHead className="w-[17%]">Calls reviewed</TableHead>
                   <TableHead className="w-[29%]">Main finding</TableHead>
                   <TableHead className="w-[17%]">Recent direction</TableHead>
                   <TableHead className="w-[8%]"><span className="sr-only">Open</span></TableHead>

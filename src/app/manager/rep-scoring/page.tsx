@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, Clock3, Flag, ShieldCheck, Users } from "lucide-react";
 import { RepRankingTable } from "@/app/manager/rep-scoring/rep-ranking-table";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
-import { getRepScoringDashboardData, type RepScoringCoverage } from "@/lib/rep-scoring/data";
+import { getRepScoringDashboardData } from "@/lib/rep-scoring/data";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -27,15 +26,6 @@ export default async function ManagerRepScoringPage() {
   const managerPriorities = reviewReadyReps.filter((rep) => rep.reviewStatus === "needs_attention" || rep.reviewStatus === "coaching_focus").length;
   const criticalCalls = data.repSummaries.reduce((total, rep) => total + rep.criticalEvents.length, 0);
   const strongEvidenceReps = data.repSummaries.filter((rep) => rep.nScored >= 15).length;
-  const isV63Manager = data.scorerVersion === "rep-reviewer-v6.3-realistic-fair-1";
-  const numericScores = data.recentCalls.flatMap((call) => call.score === null || call.internalInconsistency ? [] : [call.score]);
-  const scoreDistribution = [
-    { label: "Below 50", count: numericScores.filter((score) => score < 50).length, tone: "bg-red-600" },
-    { label: "50–69", count: numericScores.filter((score) => score >= 50 && score < 70).length, tone: "bg-orange-500" },
-    { label: "70–84", count: numericScores.filter((score) => score >= 70 && score < 85).length, tone: "bg-amber-500" },
-    { label: "85–94", count: numericScores.filter((score) => score >= 85 && score < 95).length, tone: "bg-blue-500" },
-    { label: "95–100", count: numericScores.filter((score) => score >= 95).length, tone: "bg-emerald-600" },
-  ];
 
   return (
     <main className="magic-page">
@@ -45,10 +35,9 @@ export default async function ManagerRepScoringPage() {
             <div className="max-w-3xl">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="magic-kicker"><ShieldCheck className="size-3.5" />Admin only</span>
-                <Badge variant="outline" className="rounded-full border-emerald-200 bg-emerald-50 text-emerald-800">{isV63Manager ? "V6.3 manager results" : "Manager review"}</Badge>
               </div>
-              <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">Sales call execution review</h1>
-              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Start with the lowest evidence-supported results, then open a rep to verify the recurring findings and exact call evidence.</p>
+              <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">Sales rep performance</h1>
+              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Start with the reps at the top. Open a rep to see what needs attention and the calls that support it.</p>
             </div>
             <div className="flex flex-col gap-2 text-sm text-slate-500 lg:items-end">
               <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-2"><Clock3 className="size-4 text-red-600" />Updated {formatDateTime(data.coverage.measuredAt || data.generatedAt)}</div>
@@ -59,52 +48,23 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Data unavailable:</strong> {data.error}</div> : null}
 
-        {isV63Manager ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950"><strong>V6.3 is now the manager view.</strong> It uses the completed fair-attribution scoring architecture, keeps Call 1 and Call 2+ separate, excludes unsupported transcripts instead of lowering a rep&apos;s score, and publishes only an exact-match Call 2+ score into its existing Coaching report.</div> : null}
-
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <Metric title="Review first" value={managerPriorities} helper={`${supportedConcerns} supported concerns; remaining priorities are comparative review starting points`} tone="red" icon={AlertTriangle} />
-          <Metric title="Critical calls to verify" value={criticalCalls} helper="Separate call-level flags; not a rep-performance verdict" tone="amber" icon={Flag} />
-          <Metric title="Strong evidence" value={strongEvidenceReps} helper="At least 15 valid calls; this is the default manager view" tone="green" icon={Users} />
-          <Metric title="Valid calls analyzed" value={data.summary.scoredCalls} helper={`Speaker-verified assessments since ${formatStart(data.coverage.windowStart)}`} tone="green" icon={CheckCircle2} />
+          <Metric title="Reps to review" value={managerPriorities} helper={`${supportedConcerns} have a repeated concern; review the remaining priorities before acting`} tone="red" icon={AlertTriangle} />
+          <Metric title="Critical calls" value={criticalCalls} helper="Individual calls that should be checked by a manager" tone="amber" icon={Flag} />
+          <Metric title="Reps with 15+ calls" value={strongEvidenceReps} helper="The default view uses the reps with the most evidence" tone="green" icon={Users} />
+          <Metric title="Calls reviewed" value={data.summary.scoredCalls} helper="Calls with enough verified evidence to assess" tone="green" icon={CheckCircle2} />
         </section>
 
-        <CatchUpProgress coverage={data.coverage} />
-        {isV63Manager ? <ScoreDistribution buckets={scoreDistribution} total={numericScores.length} withheld={data.summary.withheldCalls} /> : null}
         <RepRankingTable reps={data.repSummaries} />
 
         <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-sm leading-6 text-slate-600">
-          <strong className="text-slate-900">How to use it:</strong> begin with the 15+ call list, review the reason beside the lowest results, then open only the reps you need to investigate. A score alone does not create a concern. Critical call flags are shown separately because one call is not proof of overall rep performance.
-          <span className="mt-2 block"><strong className="text-slate-900">What this measures:</strong> observable sales-call execution in available transcripts. It does not measure lead quality, territory, attendance outside the recorded call, revenue attribution, or every part of a rep&apos;s job. Calls with unresolved speaker identity or unsupported evidence are excluded, not converted into low scores.</span>
+          <strong className="text-slate-900">How to use this page:</strong> start with the lowest-ranked reps, read the main finding, then open the rep before deciding what coaching or follow-up is needed. A score is a starting point, not a decision by itself.
         </section>
 
-        <p className="max-w-4xl text-xs leading-5 text-slate-500">Scores support manager investigation; they are not automatic employment decisions. This page reads only the isolated rep-scoring base and does not edit source calls, coaching reports, Slack, Google content or employment records.</p>
+        <p className="max-w-4xl text-xs leading-5 text-slate-500">Use the call evidence to confirm any concern. Lead quality and circumstances outside the recorded call may also affect the outcome.</p>
       </div>
     </main>
   );
-}
-
-function CatchUpProgress({ coverage }: { coverage: RepScoringCoverage }) {
-  if (!coverage.available) return null;
-  const waiting = Math.max(0, coverage.remainingToTarget ?? coverage.awaiting ?? 0);
-  if (waiting === 0 && coverage.targetFinalizedCalls === null) return null;
-  const complete = Math.max(0, Math.min(100, coverage.percentComplete ?? 0));
-  const historicalComplete = waiting === 0 && complete >= 100;
-
-  return (
-    <Card className={cn("magic-card bg-gradient-to-br to-white", historicalComplete ? "border-emerald-200 from-emerald-50" : "border-amber-200 from-amber-50")}>
-      <CardHeader className="gap-1 pb-3"><CardTitle className="flex items-center gap-2 text-xl text-slate-950">{historicalComplete ? <CheckCircle2 className="size-5 text-emerald-700" /> : <Clock3 className="size-5 text-amber-700" />}{historicalComplete ? "Historical V6.3 analysis is complete" : "Historical V6.3 analysis is catching up"}</CardTitle><p className="text-sm leading-6 text-slate-600">The approved source period began {formatStart(coverage.windowStart)}. {historicalComplete ? `All ${numberFormatter.format(coverage.targetFinalizedCalls ?? 0)} calls found in the completed historical inventory reached a terminal result.` : `${numberFormatter.format(coverage.finalizedForTarget ?? 0)} of ${numberFormatter.format(coverage.targetFinalizedCalls ?? 0)} historical calls have reached a terminal result.`} New eligible calls continue through the live workflow.</p></CardHeader>
-      <CardContent>
-        <div className={cn("h-3 overflow-hidden rounded-full", historicalComplete ? "bg-emerald-100" : "bg-amber-100")}><div className={cn("h-full rounded-full", historicalComplete ? "bg-emerald-600" : "bg-red-600")} style={{ width: `${complete}%` }} /></div>
-        <div className="mt-2 flex flex-wrap justify-between gap-2 text-xs font-semibold text-slate-600"><span>{complete.toFixed(1)}% of the historical inventory finalized</span><span>{historicalComplete ? "0 historical calls waiting" : `${numberFormatter.format(waiting)} historical calls waiting`}</span></div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">A terminal result is either a valid evidence-backed score or a fair exclusion when identity, transcript reliability, or evidence cannot be verified. Excluded calls never become artificial low scores. The scoring workflow remains isolated; Coaching reads only an exact matching Call 2+ score.</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ScoreDistribution({ buckets, total, withheld }: { buckets: Array<{ label: string; count: number; tone: string }>; total: number; withheld: number }) {
-  const largest = Math.max(1, ...buckets.map((bucket) => bucket.count));
-  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1 pb-3"><CardTitle className="text-xl text-slate-950">Call-score distribution</CardTitle><p className="text-sm leading-6 text-slate-600">This shows how the valid V6.3 calls are distributed across the 0–100 scale. It describes the analyzed calls; it does not rank reps by itself.</p></CardHeader><CardContent><div className="grid gap-3 sm:grid-cols-5">{buckets.map((bucket) => <div key={bucket.label} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="text-2xl font-extrabold text-slate-950">{numberFormatter.format(bucket.count)}</div><div className="mt-1 text-xs font-semibold text-slate-600">{bucket.label}</div><div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200"><div className={`h-full rounded-full ${bucket.tone}`} style={{ width: `${(bucket.count / largest) * 100}%` }} /></div></div>)}</div><p className="mt-3 text-xs leading-5 text-slate-500">{numberFormatter.format(total)} evidence-backed V6.3 scores are included in rep results. {numberFormatter.format(withheld)} score records are withheld because they do not meet the consistency rule; transcript and identity exclusions are counted separately in the completion status.</p></CardContent></Card>;
 }
 
 function Metric({ icon: Icon, title, value, helper, tone }: { icon: typeof Users; title: string; value: number; helper: string; tone: "red" | "amber" | "green" }) {
@@ -112,5 +72,4 @@ function Metric({ icon: Icon, title, value, helper, tone }: { icon: typeof Users
   return <Card className="magic-card border-white/80 bg-white/95"><CardContent className="pt-1"><div className={cn("mb-4 inline-flex size-10 items-center justify-center rounded-xl border", style)}><Icon className="size-5" /></div><div className="text-3xl font-extrabold text-slate-950">{numberFormatter.format(value)}</div><div className="mt-1 font-semibold text-slate-800">{title}</div><p className="mt-1 text-xs leading-5 text-slate-500">{helper}</p></CardContent></Card>;
 }
 
-function formatStart(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "the fixed launch date" : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/New_York" }).format(date); }
 function formatDateTime(value: string) { if (!value) return "not available"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date); }

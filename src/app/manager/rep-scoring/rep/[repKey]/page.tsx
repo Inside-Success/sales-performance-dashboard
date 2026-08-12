@@ -42,7 +42,7 @@ export default async function RepDetailPage({ params }: RepDetailPageProps) {
             <div>
               <div className="mb-3 flex flex-wrap gap-2"><Badge variant="outline" className="gap-1 rounded-full border-red-100 bg-red-50 text-red-700"><ShieldCheck className="size-3.5" />Admin only</Badge><StatusBadge summary={summary} /></div>
               <h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Cumulative call-execution evidence since {formatStart(data.coverage.windowStart)}. Call 1 and Call 2+ count equally when both are available.</p>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Overall performance across the valid calls reviewed. Call 1 and Call 2+ count equally when both are available.</p>
             </div>
             <div className="grid min-w-[14rem] grid-cols-2 gap-2">
               <HeroStat label="Overall" value={formatScore(summary.overallScore)} />
@@ -100,7 +100,7 @@ function ManagerSummary({ summary }: { summary: RepPerformanceSummary }) {
 function SupportedConcerns({ summary, examples }: { summary: RepPerformanceSummary; examples: Map<string, PriorityExample> }) {
   return (
     <Card className="magic-card border-white/80 bg-white/95">
-      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">A concern requires at least 8 observations, an average below 55, and at least 3 genuinely weak results representing 30% or more of the evidence. The list is never forced to contain a fixed number.</p></CardHeader>
+      <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Supported coaching concerns</CardTitle><p className="text-sm leading-6 text-slate-500">Only concerns that repeat across enough calls appear here. The list is never forced to contain a fixed number.</p></CardHeader>
       <CardContent className="space-y-3">
         {summary.coachingPriorities.length ? summary.coachingPriorities.map((pattern) => <PriorityCard key={pattern.key} pattern={pattern} example={examples.get(pattern.key)} />) : summary.nScored < 3 ? <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><AlertTriangle className="size-5 text-amber-700" />Not enough evidence to establish a recurring concern</div><p className="mt-2 text-sm leading-6 text-slate-600">Wait for at least three valid calls before drawing a recurring skill conclusion.</p></div> : <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4"><div className="flex items-center gap-2 font-extrabold text-slate-900"><CheckCircle2 className="size-5 text-emerald-700" />No recurring weakness is currently supported</div><p className="mt-2 text-sm leading-6 text-slate-600">This does not mean the rep is perfect; it means the analyzed calls do not justify labeling a recurring weakness.</p></div>}
       </CardContent>
@@ -214,5 +214,4 @@ function nextAction(summary: RepPerformanceSummary) {
 
 function formatScore(value: number | null) { return value === null ? "—" : value.toFixed(1); }
 function scoreBand(value: number | null) { if (value === null) return "Not scored"; if (value < 25) return "Unacceptable"; if (value < 50) return "Needs Improvement"; if (value < 70) return "Developing"; if (value < 85) return "Meets Expectations"; return "Excellent"; }
-function formatStart(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "the fixed launch period" : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/New_York" }).format(date); }
 function formatDateTime(value: string) { if (!value) return "Not available"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date); }
