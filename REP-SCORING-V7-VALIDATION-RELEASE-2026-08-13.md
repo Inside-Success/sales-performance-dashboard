@@ -27,8 +27,12 @@ V7 rebuilds rep scoring around exact transcript evidence, call-specific scripts,
 - Read-only audit: `FcCLQflWU6uhiZZe`
 - Adaptive admission controller: `xtJzNO93c0Tckv2W` (inactive; decision-only; no dispatcher)
 - Scorer version: `rep-reviewer-v7-shadow-1`
+- Draft PR: `https://github.com/Inside-Success/sales-performance-dashboard/pull/159`
+- Isolated Vercel preview: `https://sales-performance-dashboard-8yomm4g0x-admin-88375990s-projects.vercel.app/manager/rep-scoring/v7-validation`
 
 The worker can only be called as a sub-workflow. All launchers and audit workflows are inactive outside a bounded validation operation. V6.3 production scoring and Magic Mike Coaching were not changed.
+
+The Vercel preview completed its remote production build and reached `READY`. An unauthenticated request to the hidden route returns the expected `307` redirect to `/sign-in` with the original callback URL and `noindex`; no production deployment was promoted.
 
 ## 100-call validation result
 
