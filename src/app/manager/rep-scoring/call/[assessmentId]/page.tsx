@@ -58,7 +58,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
         </section>
 
         <Card className="magic-card border-blue-100 bg-blue-50/70">
-          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How V6.3 calculated this score:</strong> only fairly observable checkpoints are included. DeepSeek records evidence-bound judgments for each applicable checkpoint; deterministic code applies the visible weights and calculates the final number.</div></CardContent>
+          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How this score works:</strong> only behaviors that can be verified in the call are included. Missing or unclear evidence is excluded rather than treated as poor performance.</div></CardContent>
         </Card>
 
         <Card className="magic-card border-white/80 bg-white/95">
@@ -84,10 +84,7 @@ export default async function RepScoringCallPage({ params }: RepScoringCallPageP
           <GenericEvidenceCard title="Other factual observations" items={call.observations} empty="No separate observations were recorded." />
         </section>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {call.transcriptUrl ? <a href={call.transcriptUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-red-200 hover:text-red-700">Open source transcript <ExternalLink className="size-4" /></a> : null}
-          <details className="text-xs text-slate-500"><summary className="cursor-pointer font-semibold">Technical audit details</summary><div className="mt-2 rounded-xl bg-slate-950 p-3 font-mono leading-5 text-slate-200">Scorer: {call.scorerVersion || "—"}<br />Prompt: {call.promptVersion || "—"}<br />Rubric: {call.rubricVersion || "—"}<br />Weights: {call.weightsVersion || "—"}<br />Config: {call.configVersion || "—"}<br />Model: {call.model || "—"}</div></details>
-        </div>
+        {call.transcriptUrl ? <a href={call.transcriptUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-red-200 hover:text-red-700">Open source transcript <ExternalLink className="size-4" /></a> : null}
       </div>
     </main>
   );
