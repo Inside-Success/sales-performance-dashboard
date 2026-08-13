@@ -74,6 +74,18 @@ The final cohort exceeded the intended 150-call target by 11 final calls. After 
 
 This was not a 3× scoring charge: the duplicate workers skipped calls already processing or completed. The avoidable incremental scoring exposure was 11 primary calls plus any selective checks those calls legitimately triggered. The launchers were deactivated, and this launcher must not be reused for backfill. The future coordinator requires a database-level run lock acquired before any source scan, then atomic call claims.
 
+## Final verification
+
+- Targeted V7.1 tests: 10 of 10 passed.
+- Targeted lint: passed.
+- Production build: passed without starting a local development server.
+- Final manual Vercel preview: `dpl_C2pFUC8LKCUTYNfrLiMDTySasZpV`, status `READY`.
+- Protected manager route: signed-out access returns the expected `/sign-in` redirect and `x-robots-tag: noindex`.
+- All four V7.1 workflows validate with zero structural errors and are inactive.
+- The latest worker executions completed successfully; no validation execution remains intentionally scheduled.
+- V6.3 production scoring and Magic Mike Coaching retained their pre-validation workflow versions and active state.
+- The Git-integrated Vercel status check failed without application build logs, while the same branch built successfully through the Vercel CLI preview. This is recorded as a deployment-integration check issue, not hidden as a passing check.
+
 ## Final recommendation
 
 - **GO** for reviewing this isolated result with the user and for showing the validation UX to a stakeholder as a shadow demonstration.
