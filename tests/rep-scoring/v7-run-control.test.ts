@@ -26,4 +26,9 @@ describe("V7 atomic checkpoint contract", () => {
     expect(source).toContain("batch.batchSize > 10");
     expect(source).toContain("batches.length < context.firstWaveBatches ? 1 : 2");
   });
+  it("allows one atomic run to reserve the complete approved source window", () => {
+    const source = readFileSync("src/lib/rep-scoring/v7-run-lock.ts", "utf8");
+    expect(source).toContain("input.targetCalls > 2000");
+    expect(source).toContain("targetCalls must be an integer from 1 to 2000");
+  });
 });
