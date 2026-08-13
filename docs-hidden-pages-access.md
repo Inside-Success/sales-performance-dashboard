@@ -1,6 +1,6 @@
 # Magic Mike Hidden Pages And Access
 
-Updated: 2026-08-07
+Updated: 2026-08-13
 
 Canonical production host: `https://sales-performance-dashboard-rose.vercel.app`
 
@@ -19,7 +19,7 @@ These pages use the main Magic Mike authentication policy. Tyler is explicitly a
 - [Rep no-show impact](https://sales-performance-dashboard-rose.vercel.app/manager/rep-no-show)
 ## Coaching rep-scoring admin pages
 
-These pages require both normal Magic Mike sign-in and exact membership in `REP_SCORING_ADMIN_EMAILS`. Production includes Syed and Tyler.
+These pages require both normal Magic Mike sign-in and exact membership in `REP_SCORING_ADMIN_EMAILS`. Production includes Syed, Tyler, Jawad Saghir, Raul Rios, Rich Allen, and Mike (`mike@insidesuccesstv.com`).
 
 - [Sales call execution review](https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring)
 - [V6 preserved calibration](https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring/v6-calibration)
