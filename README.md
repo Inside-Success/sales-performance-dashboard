@@ -75,6 +75,7 @@ The endpoint upserts dashboard rows and returns:
 - `/manager/compliance` hidden manager compliance review
 - `/manager/rep-no-show` hidden manager rep no-show impact review
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
+- `/manager/rep-scoring/v7-validation` exact-email-admin V7 scoring validation; isolated from the current manager dashboard and Coaching publication
 - `/api/usage-events` browser usage event ingest
 - `/api/report-chat` gated DeepSeek report Q&A
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
