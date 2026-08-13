@@ -45,6 +45,8 @@ describe("V7 manager presentation safeguards", () => {
     expect(data).toContain("{Scored Rep Email}");
     expect(data).not.toContain("processing_ledger");
     expect(data).not.toContain("scoring_runs");
+    expect(data).toContain("canonicalScoreRecords");
+    expect(data).toContain("if (identities.size !== 1 || scores.size !== 1) continue");
   });
 
   it("provides immediate route loading and link prefetching", () => {

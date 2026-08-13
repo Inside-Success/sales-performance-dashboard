@@ -74,7 +74,7 @@ export type V7ScorecardData = {
 };
 
 const SCORECARD_FIELDS = [
-  "Assessment ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version",
+  "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version", "Scored At",
 ];
 
 export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
@@ -84,7 +84,7 @@ export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
   try {
     const formula = `{Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)}`;
     const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORECARD_FIELDS, 5000);
-    const calls = records.flatMap((record): V7ManagerCall[] => {
+    const calls = canonicalScoreRecords(records).flatMap((record): V7ManagerCall[] => {
       const fields = record.fields;
       const score = number(fields["Composite Score"]);
       const repEmail = text(fields["Scored Rep Email"]);
@@ -131,8 +131,9 @@ export async function getV7Assessment(assessmentId: string): Promise<V7Assessmen
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return null;
   const formula = `AND({Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)},{Assessment ID}=${airtableLiteral(assessmentId)})`;
-  const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 1);
-  return records[0] ? normalizeAssessment(records[0]) : null;
+  const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 20);
+  const canonical = canonicalScoreRecords(records);
+  return canonical[0] ? normalizeAssessment(canonical[0]) : null;
 }
 
 export async function getV7Rep(repKey: string): Promise<{ summary: V7RepSummary; calls: V7Assessment[] } | null> {
@@ -144,13 +145,13 @@ export async function getV7Rep(repKey: string): Promise<{ summary: V7RepSummary;
     : `LOWER({Scored Rep Label})=${airtableLiteral(normalized)}`;
   const formula = `AND({Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)},${repFormula})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 600);
-  const calls = records.map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
+  const calls = canonicalScoreRecords(records).map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
   const summaries = buildV7ManagerSummaries(calls.map(managerCall));
   return summaries[0] ? { summary: summaries[0], calls } : null;
 }
 
 function validationData(scoreRecords: AirtableRecord[], quarantineRecords: AirtableRecord[]): V7ValidationData {
-  const assessments = scoreRecords.map(normalizeAssessment).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
+  const assessments = canonicalScoreRecords(scoreRecords).map(normalizeAssessment).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
   const quarantines = quarantineRecords.map((record) => {
     const diagnostic = JSON.stringify(objectFromJson(record.fields["Diagnostic JSON"]));
     return {
@@ -169,6 +170,46 @@ function validationData(scoreRecords: AirtableRecord[], quarantineRecords: Airta
     quarantines,
     repSummaries: buildV7ManagerSummaries(assessments.filter((call) => call.score !== null).map(managerCall)),
   };
+}
+
+function canonicalScoreRecords(records: AirtableRecord[]) {
+  const groups = new Map<string, AirtableRecord[]>();
+  for (const record of records) {
+    const fields = record.fields;
+    const key = text(fields["Source Record ID"]) || text(fields["Assessment ID"]) || record.id;
+    const group = groups.get(key) || [];
+    group.push(record);
+    groups.set(key, group);
+  }
+
+  const canonical: AirtableRecord[] = [];
+  for (const group of groups.values()) {
+    if (group.length === 1) {
+      canonical.push(group[0]);
+      continue;
+    }
+
+    const identities = new Set(group.map((record) => {
+      const fields = record.fields;
+      return [
+        text(fields["Assessment ID"]),
+        text(fields["Source Record ID"]),
+        text(fields["Scored Rep Email"]).toLowerCase(),
+        text(fields["Call Type"]),
+      ].join("|");
+    }));
+    const scores = new Set(group.map((record) => number(record.fields["Composite Score"])).filter((score) => score !== null));
+
+    // Identical retry rows are safe to collapse. Conflicting identity or score
+    // is withheld instead of letting an arbitrary Airtable row affect a rep.
+    if (identities.size !== 1 || scores.size !== 1) continue;
+    canonical.push([...group].sort((a, b) => scoreRecordTime(b) - scoreRecordTime(a))[0]);
+  }
+  return canonical;
+}
+
+function scoreRecordTime(record: AirtableRecord) {
+  return dateValue(text(record.fields["Scored At"]) || record.createdTime || "");
 }
 
 function normalizeAssessment(record: AirtableRecord): V7Assessment {

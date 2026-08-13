@@ -35,8 +35,17 @@ describe("Coaching Call 2 score matching", () => {
     [{ ...valid, internalInconsistency: true }],
     [{ ...valid, score: null }],
     [valid, { ...valid, id: "duplicate" }],
+    [valid, { ...valid, score: 76 }],
   ])("fails closed for mismatched, ineligible, or duplicate candidates", (...candidates) => {
     expect(selectExactCoachingCallScore({ sourceRecordId: valid.sourceRecordId, automationKey: valid.automationKey, candidates }))
       .toBeNull();
+  });
+
+  it("collapses retry rows only when immutable identity and score agree", () => {
+    expect(selectExactCoachingCallScore({
+      sourceRecordId: valid.sourceRecordId,
+      automationKey: valid.automationKey,
+      candidates: [valid, { ...valid }],
+    })).toEqual({ assessmentId: "assessment-1", score: 82.5 });
   });
 });
