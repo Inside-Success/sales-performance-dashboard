@@ -220,7 +220,7 @@ If the feature flag or token is missing, the page renders a clear safe-unavailab
 
 Use the canonical production route: `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring`.
 
-The production administrators are exactly `syed.haider@insidesuccess.com` and `tyler@mawercapital.com`. Both addresses pass the global Google sign-in gate and are separately required by the rep-scoring page allowlist. Preview deployments do not inherit production authentication secrets and are not valid review links. The sign-in page distinguishes an unconfigured preview from a genuine email rejection so infrastructure failures do not appear to be allowlist decisions.
+The production administrators are exactly `syed.haider@insidesuccess.com`, `tyler@mawercapital.com`, `jawad.saghir@insidesuccess.com`, `raul.rios@mawercapital.com`, `rich.allen@mawercapital.com`, and `mike@insidesuccesstv.com`. All six addresses pass the global Google sign-in domain gate and are separately required by the rep-scoring page allowlist. Preview deployments do not inherit production authentication secrets and are not valid review links. The sign-in page distinguishes an unconfigured preview from a genuine email rejection so infrastructure failures do not appear to be allowlist decisions.
 
 ## Verification and rollback
 
