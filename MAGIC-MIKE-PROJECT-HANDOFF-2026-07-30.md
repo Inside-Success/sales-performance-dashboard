@@ -444,3 +444,111 @@ Before any future implementation:
 ## Change log
 
 - `v1` — 2026-07-30: created the first canonical project-wide handoff spanning Coaching, Ask Sales, production architecture, governance, July operations, health state, and safe continuation rules.
+- `v2` — 2026-07-30: added the isolated Rep Performance Reviewer production implementation recorded below.
+- `v3` — 2026-07-31: guaranteed the initial administrator through the global Google sign-in gate, corrected misleading preview-auth error handling, and recorded the final production review path.
+- `v4` — 2026-08-11: recorded the final V6.3 manager-priority release, completed live/catch-up state, and exact-match Call 2+ score display in Coaching.
+- `v5` — 2026-08-13: recorded the isolated V7.1 structured-criteria calibration; V6.3 production and Coaching remain unchanged.
+- `v6` — 2026-08-13: recorded the completed atomic additional-250 checkpoint, simplified manager UX, combined 411-call audit, and restoration of normal production pace.
+
+## Rep Performance Reviewer production addendum — 2026-07-30
+
+This feature is now live as a hidden, server-authorized manager page at `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring`. The initial exact allowlist contains only `syed.haider@insidesuccess.com`. It is intentionally absent from normal navigation.
+
+Production boundaries:
+
+- Existing Coaching intake `qMQYNQtQbRZWjtG2`, official coaching workflow `L8Nn7xncA9ZPDdWA`, Ask Sales workflows, source Airtable records, Slack, and Google content were not modified.
+- The new scorer reads eligible calls from the existing Zoom Closer source and reads transcript Docs, but writes only to the separate Airtable base `appEQQkTlJnc7tJgi`.
+- The result is a coaching/review signal, never an autonomous employment decision.
+- Call 1 and Call 2+ dimensions remain separate. Relative bottom-15-percent review is a supporting signal rather than an exclusive gate.
+
+Live components:
+
+- n8n workflow `JQgSOlzomtjBotYJ`, `MM Rep Performance Reviewer - Isolated Shadow`, is active on a one-hour schedule with a 10-call cap. Its controlled webhook is disabled.
+- Current contracts are scorer `rep-reviewer-v3`, prompt `rep-prompt-v2`, config `rep-scoring-config-v2`, and model `deepseek-v4-pro` with thinking enabled and medium reasoning. V3 corrects null critical-event score-cap handling; V2 remains audit history and is excluded from the live manager view.
+- A task-specific DeepSeek credential and separate source/store Airtable credentials were created in n8n. Credential values are not recorded here.
+- The Airtable base contains `processing_ledger`, `call_scores`, `quarantine`, `rep_identity`, `rep_rollups`, `config`, `formal_reports`, and `scoring_runs`. The dashboard derives provisional rollups from immutable current-version scores until materialized rollups are populated.
+- Each run reads the rolling seven-day eligible set, collapses the source output to one ledger lookup, removes completed and actively leased v3 idempotency keys, and only then applies the 10-call cap. The schedule is hourly so it can advance through the observed source volume while each sequential batch remains inside the 30-minute timeout. Active leases are also rechecked per item to prevent overlapping retries from rescoring owned work. The dashboard de-duplicates immutable retry rows and excludes pre-launch/superseded quarantine rows from live manager metrics while retaining audit history.
+
+Release and verification:
+
+- GitHub implementation PRs `#99` through `#105` are merged to `main`; current production head is `acc4f19`.
+- Production deployment `dpl_3mxdyVxVMUWFmira47W6ZGgopWyL` reached `READY` and owns the canonical production alias.
+- The unauthenticated hidden route returns the protected Magic Mike sign-in boundary with `noindex, nofollow`. `syed.haider@insidesuccess.com` is explicitly permitted by the global authentication gate and separately required by the rep-scoring page allowlist.
+- Preview deployment `dpl_9QeTkGBvPztj3AZw7X8KP7QsRQD2` lacked production Auth.js secrets and produced the misleading generic email-rejection screen. PR `#105` makes configuration failures distinct from genuine `AccessDenied` responses and keeps the dashboard header hidden on the sign-in screen even when authentication cannot initialize. Preview URLs remain invalid review links; use only the canonical production route.
+- The dashboard passed ESLint, TypeScript, and repeated production builds. No local development server was started.
+- n8n validation reports zero errors and zero invalid connections. Existing warnings are advisory Code-node/error-output/long-chain suggestions.
+- Controlled backfill execution `413452` completed successfully after examining 10 eligible calls: 7 new v2 scores, 1 evidence quarantine, and 2 already-completed records skipped. Two confirmation requests also completed successfully; immutable overlaps are retained for audit and reconciled by stable IDs in the manager view.
+- Corrected v3 smoke execution `413836` collapsed 1,106 eligible source rows to one ledger request and wrote a 70-point score with one `null` critical-event cap, proving the cap no longer becomes zero. Corrected v3 batch `413852` selected 10 calls and completed with 3 v3 scores, 4 evidence quarantines, and 3 safe per-item skips after a concurrent scheduled run completed those keys first.
+- Latest checked scheduled scorer execution `413947` completed successfully, including immutable scores, evidence quarantines, completed ledger records, and a successful `Run Complete` result. The latest checked intake and official Coaching executions were also successful.
+- Production Vercel runtime error/fatal logs were empty in the post-release check.
+
+The production Google chooser in the connected Chrome profile did not contain the company account; it contained only personal Gmail accounts. The review tab was therefore left at Google's password prompt for `syed.haider@insidesuccess.com`. After the user completes that Google sign-in, OAuth will return to the canonical hidden page; Codex did not request, read, or enter the password.
+
+Operational record and rollback details are in `docs-rep-scoring-admin.md` in the dashboard repository. To stop this feature without affecting Magic Mike, deactivate n8n workflow `JQgSOlzomtjBotYJ` and/or set `REP_SCORING_ENABLED=false`; reverting the dashboard release is independent of existing Coaching and Ask Sales paths.
+
+## Rep Performance Reviewer V6.3 final-live addendum — 2026-08-11
+
+The earlier July addendum above is retained as historical architecture only. Current production uses:
+
+- manager scorer `rep-reviewer-v6.3-realistic-fair-1` at `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring`;
+- active five-minute, balance-gated, single-flight coordinator `EghbY2jr86yjJl4d`;
+- active internal V6.3 worker `w8JaLibcm8zqVGP1`;
+- completed historical inventory of 1,268 terminal calls from the approved Aug 3 launch window; and
+- uncapped live admission for eligible calls after the fixed historical cutoff.
+
+Final manager behavior:
+
+- Existing absolute concern and recurring weakness rules remain unchanged.
+- The lowest 15% of reps with at least 15 valid calls are marked `Manager priority` when no stronger supported concern applies. This is a comparative review starting point, not an underperformance verdict, and it does not change any score.
+- Production verification showed five comparative priorities among 33 strong-evidence reps, 1,163 valid scores, and zero historical calls waiting.
+
+Final Coaching behavior:
+
+- The official Coaching-generation workflow `L8Nn7xncA9ZPDdWA` was not edited.
+- An existing Call 2+ Coaching report displays only the numeric V6.3 score when source Airtable record ID and automation key both match exactly one valid immutable score row.
+- Missing, mismatched, duplicate, Call 1, old-version, quarantined, inconsistent, or invalid records display no score. A lookup failure never blocks Coaching feedback.
+- Production report `/call/4914` showed its matched `79.8 / 100` score and all existing feedback. Pre-window report `/call/3904` rendered normally without a score.
+
+Release evidence:
+
+- GitHub PR `#156` merged as `fa3a843bd932063bcff9e4227afeb05e29723cb8`; documentation PR `#157` merged as `8e705f4f73c586739499341e7efb06a1d02e4234`.
+- Final production deployment `dpl_9gbKjC9bbq46qM9LuwXS4EbWXMdD` reached `READY` and owns the canonical alias.
+- All 343 tests, ESLint, and the production build passed without a local development server.
+- Vercel returned no runtime errors after signed-in verification of manager and Coaching routes.
+- Both V6.3 n8n workflows validate with zero errors and zero invalid connections. Their remaining warnings are advisory static-analysis findings on proven Code/IF/loop patterns.
+- The latest verified coordinator scan returned `historical_target_complete`, zero active leases, and no calls needing dispatch. A new live call was admitted and scored successfully immediately before that clean scan.
+
+Rollback is code-only for the manager-priority and Coaching-score presentation: revert PR `#156`, or set `REP_SCORING_COACHING_SCORE_ENABLED=false` to hide only the Coaching score lookup. The isolated score store, live scorer, and Coaching-generation workflow remain independent.
+
+## Rep Performance Reviewer V7.1 isolated-calibration addendum — 2026-08-13
+
+V6.3 remains the current live manager scorer and the exact-match Call 2+ score source for Coaching. V7.1 is an isolated shadow calibration only. It has not started a historical backfill, replaced a production workflow, or changed a Coaching score.
+
+V7.1 components:
+
+- structured worker `QPUh149BvYlqhKOq` using scorer `rep-reviewer-v7.1-shadow-1`;
+- focused 30-call launcher `Y2M5YOqxwuqpg6Hw`;
+- additional 120-call launcher `AMDHxcR2stfvFixj`; and
+- read-only audit workflow `U1qAFJ92IjypX5jv`.
+
+The focused calibration finalized 28 evidence-supported scores and two fair speaker-resolution exclusions. Its distribution was 51.3–85.4 with a 79.7 median, no score at or above 90, ten calls below 75, and three below 60. An evidence audit of low, middle, and high calls found that low scores were tied to exact missed or weak checkpoints while high scores retained competent or strong evidence. One genuine repeated manager concern appeared; no percentile rule was used.
+
+Only after that focused audit passed, the extension admitted 120 new calls balanced 60 Call 1 and 60 Call 2+ across twelve reps. The completed isolated cohort contains 155 scores and six fair exclusions, ranging 17.0–85.4 with an 80.6 median, 54 calls below 75, 27 below 60, and none at or above 90. Seven reps have evidence-supported needs-attention signals, one has a routine coaching opportunity, and five have enough evidence without a priority concern.
+
+The validation cohort exceeded its 150-call target by 11 final calls. Two extra launch requests overlapped the launcher's slow source/reference scan before the first run established leases. Per-call idempotency prevented a second 120-call purchase, but 11 additional unique calls finalized. Both launchers are inactive. This validation launcher must not be reused for a backfill; any future backfill requires a database-level run lock before source reads and atomic per-call claims.
+
+V7.1 asks the model for structured coverage, specificity, material-gap, confidence, and evidence facts. Deterministic code derives criterion status and score using 0/20/45/68/84/100 anchors. Ordinary script completion is competent; strong requires complete and specific execution; exceptional remains rare. Transcript failures remain exclusions, a fair Call 1 rejection may still score well, and Call 2+ outcome never substitutes for execution quality.
+
+The isolated validation UI is documented in `REP-SCORING-V7-1-CALIBRATION-RELEASE-2026-08-13.md` in the dashboard repository. Scoring quality is a GO for user/stakeholder shadow review and a future approved backfill. Operational backfill remains NO-GO until the atomic controller is wired. Promotion to the live manager route or Coaching requires separate explicit approval.
+
+## Rep Performance Reviewer V7.1 atomic-250 and manager addendum — 2026-08-13
+
+The atomic control plane is now implemented and proven. One-time coordinator `aVvWQpt1vuN9ljf4` acquired a database-backed lock before reading source calls, selected exactly 250 unique V7.1 calls from the approved `2026-08-03T04:00:00.000Z` boundary, and dispatched 25 workers of ten calls in guarded waves of 20 and 5. The selection was balanced 125 Call 1 and 125 Call 2+. A dispatched run cannot reopen, while per-call V7.1 leases and idempotency provide an independent duplicate-cost guard.
+
+All 25 top-level workers completed successfully. The checkpoint finalized exactly 250 calls: 228 scores and 22 fair exclusions. The new score mix was 108 Call 1 and 120 Call 2+; the exclusions were 17 Call 1 and 5 Call 2+. New selective second review ran on 51 of 228 scores, or 22.4%, rather than double-scoring every call.
+
+The combined evidence set now contains 383 scores and 28 fair exclusions. Its score range is 17.0–85.4, median 81.5, and mean 75.2, with 12 Unacceptable, 41 Needs Improvement, 62 Developing, and 268 Meets Expectations calls. There are 115 calls below 75, 53 below 60, and no call at or above 90. Among 26 reps with enough evidence, the deterministic manager aggregation returns 13 Needs attention, 2 Coaching focus, and 11 No priority concern. The concern group is evidence-driven, not a forced percentile; repeated Call 1 discovery gaps and a smaller set of Call 2+ outcome-execution gaps have exact supporting calls.
+
+The hidden manager page was simplified for non-technical use. Technical version/backfill mechanics were removed from the primary view; immediate manager priorities appear first; lower-priority and early-evidence records are collapsed; rep pages show a concise summary and next action; and call pages show a manager takeaway and only useful evidence sections. Navigation now gives immediate loading feedback and scrolls deterministically to the top.
+
+Production deployment `dpl_32D17Hv6X6z65hXRZgR2iByzWcDv` is `READY` at the canonical alias. V7.1 coordinator, worker, audit, and temporary finalizer are inactive after the checkpoint. Existing V6.3 coordinator `EghbY2jr86yjJl4d`, V6.3 worker `w8JaLibcm8zqVGP1`, and Coaching `L8Nn7xncA9ZPDdWA` remain active at their prior versions and normal pace. The remaining historical backfill is explicitly not authorized until the user reviews this combined result and gives separate approval.
