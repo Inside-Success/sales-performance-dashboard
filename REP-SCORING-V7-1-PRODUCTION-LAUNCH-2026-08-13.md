@@ -1,7 +1,7 @@
 # AI Closer Scorecard V7.1 — Production Launch
 
 Date: 2026-08-13
-Status: release verification in progress
+Status: live production cutover complete
 
 ## Approved outcome
 
@@ -19,7 +19,7 @@ This release replaces the V6.3 manager and live-scoring path with the validated 
 - Final continuation admission: exactly 460 previously unfinished calls
 - Dispatch: 46 batches of at most ten calls, in guarded waves of 20, 20, and 6 workers
 
-Execution `494026` successfully dispatched all three waves and finished at `2026-08-13T12:14:16.602Z`. The one-time coordinator was then deactivated. Wave 1's 20 workers all completed successfully; the remaining bounded workers are reconciled before production cutover.
+Execution `494026` successfully dispatched all three waves and finished at `2026-08-13T12:14:16.602Z`. The one-time coordinator was then deactivated. All 46 workers completed successfully. The final reconciliation found all 1,660 unique source calls in a terminal V7.1 state: 1,483 scored calls and 188 fair terminal exclusions, with 11 extra stored rows caused by earlier calibration retries. The application collapses identical retries and excludes conflicting duplicates from manager and Coaching output; no historical row was deleted.
 
 The continuation is webhook-only and protected by a database-backed atomic run key, exact per-call idempotency keys, active-lease checks, and a DeepSeek balance check. It cannot admit the cohort a second time after dispatch.
 
@@ -59,7 +59,7 @@ The existing Coaching workflow and feedback generation are unchanged. The applic
 4. call type is exactly `Call 2+`;
 5. status is scored and the numeric score is valid;
 6. the assessment is not internally inconsistent;
-7. exactly one matching assessment exists.
+7. any retry rows agree on the assessment identity and score; a conflicting duplicate hides the score.
 
 Any lookup error or ambiguous result fails open: Coaching renders normally without a score.
 
@@ -72,6 +72,15 @@ Any lookup error or ambiguous result fails open: Coaching renders normally witho
 
 ## Completion evidence
 
-Final cohort reconciliation, production deployment, live schedule proof, V6.3 deactivation, and production-alias verification are recorded here after the cutover gates pass.
+- Historical completion: all 46 final-continuation workers succeeded; no provider, balance, timeout, or worker-error cluster remained.
+- Final score distribution: 12.3–85.4, median 80.6, mean 75.1; 428 scores are below 75 and 206 are below 60. No score is 90 or higher.
+- Manager signals with sufficient evidence: 57 needs-attention, 1 coaching-focus, and 12 monitor results. These are absolute evidence rules, not a forced bottom percentile.
+- Fair exclusions: 71 unmapped/insufficient speaker-resolution cases, 82 ambiguous multi-rep cases, and 35 calls with too few valid dimensions.
+- Selective verification: all 246 calls which crossed the material-risk gate received the short verifier; ordinary calls were not double-scored.
+- Live schedule proof: coordinator execution `494326` succeeded and admitted two post-cutoff live calls while admitting zero historical calls. Worker execution `494328` scored both calls successfully and finished in 139 seconds.
+- Cutover state: V7.1 coordinator `gXGkKGtsXPudAePR`, V7.1 worker `QPUh149BvYlqhKOq`, and Coaching `L8Nn7xncA9ZPDdWA` are active. Preserved V6.3 coordinator `EghbY2jr86yjJl4d` and worker `w8JaLibcm8zqVGP1` are inactive. One-time launch and audit workflows are inactive.
+- Application verification: 36 test files and 372 tests passed, ESLint passed, and the Next.js production build passed without starting a local server.
+- GitHub: PR `#162` merged as `b82f0cfff9135eb539595606ad51a20432d37581`; duplicate fail-closed PR `#163` merged as `d0df69af92d8ef72291f160527787600ba63bf36`.
+- Production: deployment `dpl_21Ak9JzkPWjmhZXu6p3QFgPkNHA5` is `READY` at `https://sales-performance-dashboard-rose.vercel.app`. The protected manager route redirects unauthenticated traffic to sign-in, and the post-deployment runtime-error query returned no errors.
 
-Pre-cutover application verification: all 76 rep-scoring tests, ESLint, and the Next.js production build passed without a local development server. Draft PR `#162` contains the intended application and documentation scope. Vercel's Git integration returned an infrastructure-level preview error without build output, while an explicit deployment of the same commit built successfully and reached `READY` as `dpl_B2n27WiAwQECw8gU4sh6PwRjvNgU`; production is not promoted until cohort reconciliation passes.
+The manager scorecard is ready for evidence-led review. It is useful for deciding whom to inspect and what to coach, but it remains supporting evidence rather than a standalone personnel-decision system.

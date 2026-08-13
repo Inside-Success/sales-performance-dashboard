@@ -11,7 +11,7 @@ V7.1 began as an isolated validation architecture. The approved production relea
 - Fixed inventory: 1,660 eligible calls
 - Scorer version: `rep-reviewer-v7.1-shadow-1`
 
-The final continuation admits exactly the 460 calls that remained after the earlier bounded waves. It uses 46 batches of at most ten calls, dispatched in three guarded waves of 20, 20, and 6 workers. The live coordinator is created inactive and is activated only after the fixed cohort is reconciled. It reads the V7.1 ledger, fails closed on provider or snapshot errors, skips while an unexpired V7.1 lease exists, and dispatches no more than five workers of ten calls per scheduled slot.
+The final continuation admitted exactly the 460 calls that remained after the earlier bounded waves. It used 46 batches of at most ten calls, dispatched in three guarded waves of 20, 20, and 6 workers; all workers succeeded. The live coordinator was activated only after the fixed cohort reconciled. It reads the V7.1 ledger, fails closed on provider or snapshot errors, skips while an unexpired V7.1 lease exists, and dispatches no more than five workers of ten calls per scheduled slot.
 
 Magic Mike Coaching is not modified at the workflow layer. Its existing report page performs a fail-open, read-only lookup and shows a score only when one V7.1 `Call 2+` assessment uniquely matches both the source Airtable record ID and automation key. Missing, ambiguous, duplicate, quarantined, or inconsistent assessments remain hidden and never block Coaching.
 
@@ -73,4 +73,4 @@ The first authorized 120-call request dispatched twenty bounded workers of six c
 
 ## Rollback and safety
 
-Production rollback is trivial because no production workflow was edited: keep both V7.1 launchers inactive, leave the worker unattached to schedules, and remove or hide the isolated validation route. Do not promote V7.1 into V6.3 or Coaching without separate explicit approval.
+Production is now cut over to V7.1. The live coordinator and worker are active; the V6.3 coordinator and worker are preserved but inactive. Coaching uses the V7.1 score only through the application's exact-match, fail-open overlay and its workflow remains unchanged. To roll back a material live-scoring fault, deactivate the V7.1 coordinator and worker, reactivate the preserved V6.3 pair, and revert the application release. Do not delete historical assessments during rollback.
