@@ -9,14 +9,14 @@ We are continuing the complete Magic Mike project inside:
 
 Use the relevant skills and MCP tools, and treat this as a continuation rather than a cold start. Your first turn is read-only orientation only. Do not implement, deploy, edit files, trigger workflows, or write to any connected service.
 
-Read these files completely, in order:
-1. sales-performance-dashboard/SESSION-HANDOFF-2026-08-13.md
-2. sales-performance-dashboard/AI-CLOSER-SCORECARD-HANDOFF-2026-08-13.md
-3. sales-performance-dashboard/MAGIC-MIKE-PROJECT-HANDOFF-2026-07-30.md
-4. sales-performance-dashboard/REP-SCORING-V7-1-PRODUCTION-LAUNCH-2026-08-13.md
-5. sales-performance-dashboard/docs-hidden-pages-access.md
+Read these files completely, in order. Prefer the canonical dashboard checkout after PR #167 is merged; until then, the same new files are available in the clean worktree `sales-performance-dashboard-rep-scoring-v7-2026-08-13`:
+1. `SESSION-HANDOFF-2026-08-13.md`
+2. `AI-CLOSER-SCORECARD-HANDOFF-2026-08-13.md`
+3. `MAGIC-MIKE-PROJECT-HANDOFF-2026-07-30.md`
+4. `REP-SCORING-V7-1-PRODUCTION-LAUNCH-2026-08-13.md`
+5. `docs-hidden-pages-access.md`
 
-If the canonical dashboard checkout does not yet contain the new files, locate the current clean worktree or pull current `origin/main` without overwriting unrelated work. Inspect `AGENTS.md`, both relevant Git repositories, their current status, and the latest production state before relying on snapshots.
+Do not overwrite unrelated work while locating or updating the checkout. Inspect `AGENTS.md`, both relevant Git repositories, their current status, and the latest production state before relying on snapshots.
 
 Non-negotiable rules:
 - Treat Coaching, AI Closer Scorecard, Ask Sales, hidden pages, n8n, Airtable, Vercel, and connected systems as live production.
