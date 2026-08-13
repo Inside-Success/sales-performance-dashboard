@@ -146,7 +146,7 @@ function assertRunDefinition(input: { runKey: string; scorerVersion: string; bou
   if (!/^[a-z0-9][a-z0-9._:-]{7,119}$/i.test(input.runKey)) throw new Error("Invalid runKey");
   if (!input.scorerVersion.trim()) throw new Error("scorerVersion is required");
   if (!Number.isFinite(Date.parse(input.boundaryStart))) throw new Error("boundaryStart must be an ISO timestamp");
-  if (!Number.isInteger(input.targetCalls) || input.targetCalls <= 0 || input.targetCalls > 1000) throw new Error("targetCalls must be an integer from 1 to 1000");
+  if (!Number.isInteger(input.targetCalls) || input.targetCalls <= 0 || input.targetCalls > 2000) throw new Error("targetCalls must be an integer from 1 to 2000");
 }
 function hashToken(token: string) { if (!token) throw new Error("Run token is required"); return createHash("sha256").update(token).digest("hex"); }
 function normalize(row: RunRow): V7RunStatus { return {
