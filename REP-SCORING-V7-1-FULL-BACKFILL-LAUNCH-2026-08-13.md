@@ -1,7 +1,7 @@
 # Magic Mike Rep Scoring V7.1 — Full Backfill Launch
 
 Date: 2026-08-13
-Status: final continuation dispatched; reconciliation pending
+Status: completed and reconciled
 
 ## Authorized cohort
 
@@ -25,7 +25,7 @@ The first 200-call wave was supervised to completion before the remaining run wa
 
 The earlier coordinator is webhook-only and has no schedule. It was deactivated immediately after the one-time launch so a second request could not be admitted. After it was cancelled, an exact continuation re-read the fixed inventory and V7.1 ledger and found 460 unfinished calls.
 
-The final continuation is workflow `80MLVQW3SdmxZzNH`, execution `494026`, and database run key `v7.1-final-460-continuation-2026-08-13`. It selected exactly 460 calls, built 46 batches, and successfully dispatched guarded waves of 20, 20, and 6 workers. Execution `494026` completed successfully at `2026-08-13T12:14:16.602Z`; the webhook-only coordinator was then deactivated. The V7.1 worker remains active so the dispatched calls can settle and, after reconciliation, serve the separately isolated live coordinator.
+The final continuation is workflow `80MLVQW3SdmxZzNH`, execution `494026`, and database run key `v7.1-final-460-continuation-2026-08-13`. It selected exactly 460 calls, built 46 batches, and successfully dispatched guarded waves of 20, 20, and 6 workers. Execution `494026` completed successfully at `2026-08-13T12:14:16.602Z`; all 46 workers subsequently completed successfully and the webhook-only coordinator was deactivated. The V7.1 worker remains active as the bounded worker for the separately isolated live coordinator.
 
 ## Initial verification
 
@@ -41,15 +41,14 @@ The final continuation is workflow `80MLVQW3SdmxZzNH`, execution `494026`, and d
 
 The first launcher layout exposed an n8n branch-order issue during the observation window. Its untouched waiting execution was cancelled after its initial bounded wave, before later waves could dispatch. A replacement attempt was then blocked by the active-lease guard, preventing duplicate scoring. The corrected coordinator uses a strict sequential chain and was launched only after the first wave reached zero active leases.
 
-## Required completion check
+## Completion check
 
-After the expected processing window, verify all of the following before calling the backfill complete:
+1. The fixed inventory contains 1,660 unique source calls and all 1,660 have a terminal V7.1 result.
+2. Final continuation execution `494026` dispatched all three waves without an error.
+3. All 46 final-continuation workers succeeded.
+4. The terminal result contains 1,483 scores and 188 fair exclusions; earlier retry activity created 11 additional stored rows without leaving any source unfinished.
+5. Duplicate reads now fail closed: identical retries collapse, while conflicting retries are omitted from manager and Coaching output. Historical evidence was preserved rather than deleted.
+6. No provider, balance, timeout, or worker-error cluster remained.
+7. The one-time coordinator and audit workflow are inactive. The V7.1 worker remains active only because it now serves the approved live coordinator.
 
-1. The fixed inventory reports 1,660 settled calls, zero active leases, and zero remaining eligible calls.
-2. Final continuation execution `494026` has dispatched all three waves without an error.
-3. All 46 final-continuation workers have reached a terminal state; fair transcript exclusions count as finalized, not failures.
-4. No provider, balance, timeout, or duplicate-write failure cluster occurred.
-5. The one-time coordinator and inventory workflow remain inactive.
-6. Deactivate the V7.1 worker after the backfill is fully settled unless it is explicitly retained for a separate approved live path.
-
-This launch record is operational evidence only. Final manager-readiness and score-distribution conclusions must wait for the completion audit.
+The completion audit supports manager use: scores span 12.3–85.4, 428 are below 75, 206 are below 60, and sufficient-evidence aggregation produces 57 needs-attention results without forcing a percentile rule.
