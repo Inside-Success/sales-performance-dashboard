@@ -51,7 +51,9 @@ The scorecard never forces a bottom percentile to look bad. Ordering is relative
 
 ## Magic Mike Coaching score overlay
 
-The existing Coaching workflow and feedback generation are unchanged. The application performs a read-only lookup for Call 2+ and shows a V7.1 score only if all of these are true:
+The existing Coaching workflow and feedback generation are unchanged. On 2026-08-13 the owner temporarily hid the numeric Coaching score by setting the server-side production toggle `REP_SCORING_COACHING_SCORE_ENABLED=false`. V7.1 scoring and the manager scorecard continue normally. Setting the toggle to `true` and redeploying restores the read-only Call 2+ overlay without changing either workflow.
+
+When enabled, the application performs a read-only lookup for Call 2+ and shows a V7.1 score only if all of these are true:
 
 1. source Airtable record ID matches;
 2. automation key matches;
