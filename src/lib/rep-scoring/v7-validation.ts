@@ -65,6 +65,52 @@ export type V7ValidationData = {
   error?: string;
 };
 
+export type V7ScorecardData = {
+  configured: boolean;
+  generatedAt: string;
+  callsReviewed: number;
+  repSummaries: V7RepSummary[];
+  error?: string;
+};
+
+const SCORECARD_FIELDS = [
+  "Assessment ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version",
+];
+
+export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
+  const fallback: V7ScorecardData = { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [] };
+  const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
+  if (process.env.REP_SCORING_ENABLED !== "true" || !token) return { ...fallback, error: "The scorecard data source is not connected." };
+  try {
+    const formula = `{Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)}`;
+    const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORECARD_FIELDS, 5000);
+    const calls = records.flatMap((record): V7ManagerCall[] => {
+      const fields = record.fields;
+      const score = number(fields["Composite Score"]);
+      const repEmail = text(fields["Scored Rep Email"]);
+      const repName = text(fields["Scored Rep Label"]) || repEmail || "Unknown rep";
+      if (score === null || !repEmail) return [];
+      return [{
+        assessmentId: text(fields["Assessment ID"]) || record.id,
+        repEmail,
+        repName,
+        callType: text(fields["Call Type"]) === "Call 1" ? "Call 1" : "Call 2+",
+        meetingStartAt: text(fields["Meeting Start At"]),
+        score,
+        dimensions: [],
+      }];
+    });
+    return {
+      configured: true,
+      generatedAt: new Date().toISOString(),
+      callsReviewed: calls.length,
+      repSummaries: buildV7ManagerSummaries(calls).sort((a, b) => a.overallScore - b.overallScore || b.totalCalls - a.totalCalls || a.repName.localeCompare(b.repName)),
+    };
+  } catch (error) {
+    return { ...fallback, configured: true, error: message(error, "Unable to load the scorecard.") };
+  }
+}
+
 export async function getV7ValidationOverview(): Promise<V7ValidationData> {
   const fallback = emptyData();
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
@@ -72,8 +118,8 @@ export async function getV7ValidationOverview(): Promise<V7ValidationData> {
   try {
     const formula = `{Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)}`;
     const [scores, quarantines] = await Promise.all([
-      fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 1200),
-      fetchRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", token, formula, ["Source Record ID", "Call Type", "Reason", "Diagnostic JSON", "Quarantined At", "Created At"], 1200),
+      fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 5000),
+      fetchRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", token, formula, ["Source Record ID", "Call Type", "Reason", "Diagnostic JSON", "Quarantined At", "Created At"], 5000),
     ]);
     return validationData(scores, quarantines);
   } catch (error) {

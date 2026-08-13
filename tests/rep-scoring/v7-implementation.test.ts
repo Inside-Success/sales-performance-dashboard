@@ -61,4 +61,22 @@ describe("V7 manager presentation safeguards", () => {
     expect(call).toContain("call.strengths.length ?");
     expect(call).not.toContain("No behavior checks were stored");
   });
+
+  it("uses a simple production scorecard sorted from lowest score with details behind each row", () => {
+    const production = read("src/app/manager/rep-scoring/page.tsx");
+    const table = read("src/app/manager/rep-scoring/closer-scorecard-table.tsx");
+    const progress = read("src/app/manager/rep-scoring/v7-validation/route-progress.tsx");
+    const productionRep = read("src/app/manager/rep-scoring/rep/[repKey]/page.tsx");
+    const productionCall = read("src/app/manager/rep-scoring/call/[assessmentId]/page.tsx");
+    expect(production).toContain("AI Closer Scorecard");
+    expect(production).toContain("getV7ScorecardOverview");
+    expect(table).toContain("a.overallScore - b.overallScore");
+    expect(table).toContain("15+ calls");
+    expect(table).not.toContain("V7 shadow validation");
+    expect(table).not.toContain("Historical backfill");
+    expect(progress).toContain('startsWith("/manager/rep-scoring")');
+    expect(productionRep).toContain("Calls behind this score");
+    expect(productionCall).toContain("Manager takeaway");
+    expect(productionCall).not.toMatch(/JSON\.stringify|raw JSON/i);
+  });
 });

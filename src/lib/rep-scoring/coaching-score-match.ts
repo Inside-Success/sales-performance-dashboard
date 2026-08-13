@@ -1,4 +1,4 @@
-export const COACHING_SCORE_SCORER_VERSION = "rep-reviewer-v6.3-realistic-fair-1";
+export const COACHING_SCORE_SCORER_VERSION = "rep-reviewer-v7.1-shadow-1";
 
 export type CoachingScoreCandidate = {
   id: string;

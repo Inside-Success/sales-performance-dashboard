@@ -1,6 +1,19 @@
 # Magic Mike Rep Scoring V7.1
 
-V7.1 is an isolated validation architecture. It does not replace the live V6.3 scorer, publish scores to Magic Mike Coaching, or start a historical backfill.
+V7.1 began as an isolated validation architecture. The approved production release keeps the validated worker and immutable scorer version, completes the fixed historical cohort, and then promotes V7.1 to the manager scorecard, live refill, and exact-match Call 2+ Coaching score overlay.
+
+## Production release architecture
+
+- Scoring worker: `QPUh149BvYlqhKOq`
+- Final fixed-cohort continuation: `80MLVQW3SdmxZzNH` (one-time, webhook-only)
+- Live refill coordinator: `gXGkKGtsXPudAePR` (schedule, balance-gated, single-flight)
+- Fixed historical window: `2026-08-03T04:00:00.000Z` through `2026-08-13T07:14:07.298Z`
+- Fixed inventory: 1,660 eligible calls
+- Scorer version: `rep-reviewer-v7.1-shadow-1`
+
+The final continuation admits exactly the 460 calls that remained after the earlier bounded waves. It uses 46 batches of at most ten calls, dispatched in three guarded waves of 20, 20, and 6 workers. The live coordinator is created inactive and is activated only after the fixed cohort is reconciled. It reads the V7.1 ledger, fails closed on provider or snapshot errors, skips while an unexpired V7.1 lease exists, and dispatches no more than five workers of ten calls per scheduled slot.
+
+Magic Mike Coaching is not modified at the workflow layer. Its existing report page performs a fail-open, read-only lookup and shows a score only when one V7.1 `Call 2+` assessment uniquely matches both the source Airtable record ID and automation key. Missing, ambiguous, duplicate, quarantined, or inconsistent assessments remain hidden and never block Coaching.
 
 ## Deployed validation workflows
 
