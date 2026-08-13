@@ -59,7 +59,7 @@ describe("V7 manager aggregation", () => {
 
     const [summary] = buildV7ManagerSummaries(calls);
 
-    expect(summary.priority).toBe("not_enough_evidence");
+    expect(summary.priority).toBe("needs_attention");
     expect(summary.call1Direction.label).toBe("Declining");
     expect(summary.call1Direction.delta).toBeLessThanOrEqual(-12);
   });

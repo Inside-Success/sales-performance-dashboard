@@ -17,7 +17,9 @@ describe("V7 scorer safeguards", () => {
   });
 
   it("uses deterministic criterion anchors after evidence validation", () => {
-    expect(scoring).toContain("exceptional:100,strong:88,competent:72,partial:50,weak:25,missed:0,harmful:0");
+    expect(scoring).toContain("exceptional:100,strong:84,competent:68,partial:45,weak:20,missed:0,harmful:0");
+    expect(scoring).toContain("coverage+specificity+material_gap+confidence+evidence");
+    expect(primary).toContain("Ordinary script compliance is competent, not strong");
     expect(scoring).toContain("transcriptNorm.includes(quote)");
     expect(scoring).toContain("minimumDimensions=source.callType==='Call 1'?4:5");
   });

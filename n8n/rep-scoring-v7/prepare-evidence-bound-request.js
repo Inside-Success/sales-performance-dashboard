@@ -221,7 +221,7 @@ const call2 = [
 ];
 const dimensions = source.callType === 'Call 1' ? call1 : call2;
 const system = [
-  'You are the evidence-bound primary assessor for Magic Mike V7 shadow validation.',
+  'You are the evidence-bound primary assessor for Magic Mike V7.1 shadow calibration.',
   'Assess facts and observable criteria first. Never choose an overall or dimension score. Deterministic code calculates every score after validating your evidence.',
   'Judge the resolved sales rep fairly against the real purpose of this specific call and the Inside Success TV Call 1 or Call 2 script.',
   'The scripts are the operating source of truth, but real calls need not follow them word for word. Functional equivalents count.',
@@ -269,6 +269,11 @@ const system = [
   '- Judge every required criterion independently. Do not copy one positive exchange across several criteria unless it directly proves each distinct function.',
   '- When evidence supports two adjacent statuses, choose the lower status unless the higher anchor is clearly demonstrated.',
   '- Include counterevidence when present. Do not hide evidence that weakens the classification.',
+  '- Ordinary script compliance is competent, not strong. Strong requires complete, specific or tailored execution with no material controllable gap. Exceptional is rare and requires unusually complete execution across more than one exact evidence moment.',
+  '- For every scored criterion, separately classify coverage, specificity, and material_gap. These factual fields are used by deterministic code and must agree with the written reason and evidence.',
+  '- coverage complete means the full practical purpose was achieved; mostly_complete means the core purpose was achieved with a noticeable but non-material omission; partial means an important part was incomplete; missed means a fair opportunity was not used.',
+  '- specificity tailored means the rep clearly adapted to this prospect; specific means concrete and responsive; generic means routine or script-like; absent means no meaningful execution.',
+  '- material_gap none means no controllable deficiency is supported; minor means a noticeable coaching improvement that did not undermine the purpose; major means an important controllable deficiency; harmful means materially counterproductive conduct.',
   '',
   'FINDINGS:',
   '- Strengths, improvements, and critical findings may be empty. Never manufacture a fixed number.',
@@ -284,7 +289,7 @@ const schema = {
     pressure:{truthful_deadline:false,arbitrary_urgency:false,ignored_clear_refusal:false,unsupported_claim:false,dismissed_time_request:false,material_negative_reaction:false,evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]},
   },
   external_factors:['supported factor outside rep control'],
-  dimensions:[{key:'required key',label:'required label',applicability:'applicable|not_applicable|not_observable',reason:'brief dimension summary',criteria:[{id:'required criterion id',status:'exceptional|strong|competent|partial|weak|missed|harmful|not_applicable|not_observable',confidence:'high|medium|low',reason:'brief factual reason',evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}],counterevidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]}]}],
+  dimensions:[{key:'required key',label:'required label',applicability:'applicable|not_applicable|not_observable',reason:'brief dimension summary',criteria:[{id:'required criterion id',status:'exceptional|strong|competent|partial|weak|missed|harmful|not_applicable|not_observable',coverage:'complete|mostly_complete|partial|missed|not_applicable|not_observable',specificity:'tailored|specific|generic|absent|not_applicable|not_observable',material_gap:'none|minor|major|harmful|not_applicable|not_observable',confidence:'high|medium|low',reason:'brief factual reason',evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}],counterevidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]}]}],
   findings:{main_finding:'single most useful fair summary',strengths:[{label:'supported strength',reason:'why',evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]}],improvements:[{label:'supported improvement',reason:'why',evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]}],critical_findings:[{label:'material verified concern',risk_type:'deception|coercion|clear_refusal_ignored|material_terms_misrepresented|other',material_impact:'demonstrated',reason:'why critical',rep_evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}],prospect_reaction_evidence:[{timestamp:'exact',speaker:'exact',quote:'exact'}]}]},
   call_context:{summary:'brief factual summary'}
 };

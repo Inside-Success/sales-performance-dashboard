@@ -63,7 +63,19 @@ export function buildV7ManagerSummaries(calls: V7ManagerCall[]): V7RepSummary[] 
     byRep.set(key, [...(byRep.get(key) || []), call]);
   }
 
-  return [...byRep.values()].map(buildRepSummary).sort(compareSummaries);
+  const summaries = [...byRep.values()].map(buildRepSummary);
+  const supported = summaries.filter((summary) => summary.totalCalls >= 6);
+  const cohortMedian = supported.length ? median(supported.map((summary) => summary.overallScore).sort((a, b) => a - b)) : null;
+  for (const summary of summaries) {
+    if (summary.priority !== "monitor" || summary.totalCalls < 6 || cohortMedian === null) continue;
+    const relativeGap = round(cohortMedian - summary.overallScore);
+    if (relativeGap < 8) continue;
+    summary.priority = "coaching_focus";
+    summary.priorityLabel = "Coaching opportunity";
+    summary.reason = `Execution is ${relativeGap.toFixed(1)} points below the supported-team midpoint across ${summary.totalCalls} calls, without enough evidence for a serious concern.`;
+    summary.action = "Review the two lowest recent calls and choose one evidence-supported skill to coach.";
+  }
+  return summaries.sort(compareSummaries);
 }
 
 function buildRepSummary(calls: V7ManagerCall[]): V7RepSummary {
@@ -76,10 +88,10 @@ function buildRepSummary(calls: V7ManagerCall[]): V7RepSummary {
   const overallScore = round(mean([call1Score, call2Score].filter(isNumber)) ?? robustScore(sorted) ?? 0);
   const patterns = dimensionPatterns(sorted);
   const repeatedConcerns = patterns
-    .filter((pattern) => pattern.observations >= 5
-      && pattern.concernObservations >= 3
-      && pattern.concernRate >= 0.35
-      && pattern.average < 65)
+    .filter((pattern) => pattern.observations >= 4
+      && pattern.concernObservations >= 2
+      && pattern.concernRate >= 0.30
+      && pattern.average < 72)
     .sort((a, b) => a.average - b.average || b.concernObservations - a.concernObservations)
     .slice(0, 3);
   const strengths = patterns
@@ -92,11 +104,11 @@ function buildRepSummary(calls: V7ManagerCall[]): V7RepSummary {
     { type: "Call 1", value: call1Direction },
     { type: "Call 2+", value: call2Direction },
   ].find((entry) => entry.value.label === "Declining");
-  const enoughEvidence = sorted.length >= 8 && (call1.length >= 4 || call2.length >= 4);
-  const supportedLowType = (call1.length >= 5 && call1Score !== null && call1Score < 60)
-    || (call2.length >= 5 && call2Score !== null && call2Score < 60);
+  const enoughEvidence = sorted.length >= 6 && (call1.length >= 3 || call2.length >= 3);
+  const supportedLowType = (call1.length >= 4 && call1Score !== null && call1Score < 65)
+    || (call2.length >= 4 && call2Score !== null && call2Score < 65);
   const needsAttention = enoughEvidence && (supportedLowType || repeatedConcerns.length > 0 || Boolean(decliningType));
-  const coachingFocus = enoughEvidence && !needsAttention && overallScore < 72;
+  const coachingFocus = enoughEvidence && !needsAttention && overallScore < 75;
 
   let priority: V7RepSummary["priority"] = "monitor";
   let priorityLabel = "No priority concern";
@@ -118,7 +130,7 @@ function buildRepSummary(calls: V7ManagerCall[]): V7RepSummary {
       reason = `${decliningType.type} performance declined by ${Math.abs(decliningType.value.delta || 0).toFixed(1)} points across the latest comparable calls.`;
       action = `Review the latest ${decliningType.type} calls to identify what changed.`;
     } else {
-      const type = call1Score !== null && call1.length >= 5 && call1Score < 60 ? "Call 1" : "Call 2+";
+      const type = call1Score !== null && call1.length >= 4 && call1Score < 65 ? "Call 1" : "Call 2+";
       const score = type === "Call 1" ? call1Score : call2Score;
       reason = `${type} execution averaged ${score?.toFixed(1)} across enough calls to support review.`;
       action = `Review the lowest recent ${type} calls and coach the repeated controllable gaps.`;
@@ -169,8 +181,8 @@ function direction(calls: V7ManagerCall[]): V7Direction {
   const recentAverage = round(mean(recent) || 0);
   const previousAverage = round(mean(previous) || 0);
   const delta = round(recentAverage - previousAverage);
-  if (delta <= -12 && recentAverage < 65) return { label: "Declining", delta, recentAverage, previousAverage };
-  if (delta >= 12) return { label: "Improving", delta, recentAverage, previousAverage };
+  if (delta <= -10 && recentAverage < 75) return { label: "Declining", delta, recentAverage, previousAverage };
+  if (delta >= 10) return { label: "Improving", delta, recentAverage, previousAverage };
   return { label: "Stable", delta, recentAverage, previousAverage };
 }
 
