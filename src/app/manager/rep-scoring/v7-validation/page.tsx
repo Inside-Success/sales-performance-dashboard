@@ -18,8 +18,9 @@ export default async function V7ValidationPage() {
   const call2 = calls.filter((call) => call.callType === "Call 2+");
   const finalQuarantines = data.quarantines.filter((row) => !row.retryable);
   const retryableFailures = data.quarantines.filter((row) => row.retryable);
-  const terminal = Math.min(V7_VALIDATION_TARGET, calls.length + finalQuarantines.length);
-  const progress = Math.round((terminal / V7_VALIDATION_TARGET) * 1000) / 10;
+  const terminal = calls.length + finalQuarantines.length;
+  const progress = Math.min(100, Math.round((terminal / V7_VALIDATION_TARGET) * 1000) / 10);
+  const remaining = Math.max(0, V7_VALIDATION_TARGET - terminal);
   const scores = calls.flatMap((call) => call.score === null ? [] : [call.score]);
   const exactHundreds = scores.filter((score) => score === 100).length;
   const scoreRange = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
@@ -33,7 +34,7 @@ export default async function V7ValidationPage() {
 
     {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-950"><strong>Results unavailable:</strong> {data.error}</div> : null}
 
-    <section className={`rounded-2xl border p-5 ${terminal >= V7_VALIDATION_TARGET ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div className="w-full"><div className="font-extrabold text-slate-950">{terminal} of {V7_VALIDATION_TARGET} calls have a final validation result</div><p className="mt-1 text-sm leading-6 text-slate-600">{calls.length} scored · {finalQuarantines.length} fairly excluded · {V7_VALIDATION_TARGET - terminal} remaining{retryableFailures.length ? ` · ${retryableFailures.length} temporary failures will retry` : ""}</p><div className="mt-3 h-2 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-red-600 transition-all" style={{ width: `${progress}%` }} /></div><div className="mt-2 text-xs font-bold text-slate-600">{progress.toFixed(1)}% complete</div></div></div></section>
+    <section className={`rounded-2xl border p-5 ${terminal >= V7_VALIDATION_TARGET ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}><div className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div className="w-full"><div className="font-extrabold text-slate-950">{terminal >= V7_VALIDATION_TARGET ? `${terminal} final results; ${V7_VALIDATION_TARGET}-call target reached` : `${terminal} of ${V7_VALIDATION_TARGET} calls have a final validation result`}</div><p className="mt-1 text-sm leading-6 text-slate-600">{calls.length} scored · {finalQuarantines.length} fairly excluded · {remaining} remaining{retryableFailures.length ? ` · ${retryableFailures.length} temporary failures will retry` : ""}</p><div className="mt-3 h-2 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-red-600 transition-all" style={{ width: `${progress}%` }} /></div><div className="mt-2 text-xs font-bold text-slate-600">{progress.toFixed(1)}% complete</div></div></div></section>
 
     <section className="grid gap-3 md:grid-cols-3"><Metric value={`${call1.length} / ${call2.length}`} label="Call 1 / Call 2+" detail="Both call types must be represented before approval." /><Metric value={scores.length ? `${median(scores).toFixed(1)}` : "—"} label="Median score" detail={scores.length ? `Range ${Math.min(...scores).toFixed(1)}–${Math.max(...scores).toFixed(1)} · ${exactHundreds} exact 100s` : "Waiting for results."} /><Metric value={String(needsAttention.length)} label="Supported rep concerns" detail="Absolute evidence only; no forced bottom percentage." /></section>
 

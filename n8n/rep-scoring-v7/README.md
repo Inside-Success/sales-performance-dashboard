@@ -41,7 +41,9 @@ Priority remains deterministic and absolute. It never forces a bottom percentile
 
 The focused result ranged from 51.3 to 85.4, with a 79.7 median, no score at or above 90, ten calls below 75, and three below 60. Exact evidence supported the low, middle, and high audit calls. One rep produced a genuine repeated manager concern; no rank-based concern was manufactured.
 
-The 120-call extension was dispatched as twenty bounded workers of six calls. The launcher was deactivated immediately after the one approved dispatch. Final extension statistics belong in `REP-SCORING-V7-1-CALIBRATION-RELEASE-2026-08-13.md`.
+The final isolated cohort contains 155 scored calls and six fair exclusions. Its distribution is 17.0–85.4 with an 80.6 median, 54 calls below 75, 27 below 60, and no score at or above 90. Seven reps have absolute evidence-supported needs-attention signals, one has a routine coaching opportunity, and five have enough evidence without a priority concern.
+
+The first authorized 120-call request dispatched twenty bounded workers of six calls. Two additional launch requests overlapped the launcher's slow reference read before the first run created leases. Per-call idempotency prevented a second 120-call purchase, but the race finalized 11 additional unique calls, so the cohort reached 161 rather than 150. All launchers are inactive. A future backfill must use the prepared database-level run lock and must not reuse this validation launcher.
 
 ## Rollback and safety
 
