@@ -40,8 +40,11 @@ export function selectExactCoachingCallScore({
       && candidate.score <= 100,
   );
 
-  // Duplicate rows are withheld even when they agree. One source call must
-  // resolve to one immutable assessment before anything is shown to a rep.
-  if (matches.length !== 1) return null;
+  if (!matches.length) return null;
+  const assessmentIds = new Set(matches.map((candidate) => candidate.id));
+  const scores = new Set(matches.map((candidate) => candidate.score));
+  // Exact duplicate retry rows may collapse only when both immutable identity
+  // and score agree. Any conflict stays withheld from Coaching.
+  if (assessmentIds.size !== 1 || scores.size !== 1) return null;
   return { assessmentId: matches[0].id, score: matches[0].score as number };
 }
