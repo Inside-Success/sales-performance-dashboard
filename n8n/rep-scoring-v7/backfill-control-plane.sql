@@ -2,6 +2,33 @@
 -- Postgres is the control plane because a primary key plus row locks provide true
 -- atomic leases; Airtable remains the scoring evidence store and is not used as a lock.
 
+-- One run-level row is acquired before source discovery. The primary key is the
+-- atomic guard against overlapping launchers; a dispatched run is never reopened
+-- automatically even if its lease timestamp passes.
+CREATE TABLE IF NOT EXISTS rep_scoring_v7_runs (
+  run_key text PRIMARY KEY,
+  scorer_version text NOT NULL,
+  boundary_start timestamptz NOT NULL,
+  target_calls integer NOT NULL CHECK (target_calls > 0),
+  state text NOT NULL CHECK (state IN ('active', 'dispatched', 'completed', 'failed')),
+  token_hash text NOT NULL,
+  selected_calls integer NOT NULL DEFAULT 0 CHECK (selected_calls >= 0),
+  worker_batches integer NOT NULL DEFAULT 0 CHECK (worker_batches >= 0),
+  finalized_calls integer NOT NULL DEFAULT 0 CHECK (finalized_calls >= 0),
+  scored_calls integer NOT NULL DEFAULT 0 CHECK (scored_calls >= 0),
+  fair_exclusions integer NOT NULL DEFAULT 0 CHECK (fair_exclusions >= 0),
+  attempt integer NOT NULL DEFAULT 1 CHECK (attempt > 0),
+  lease_expires_at timestamptz NOT NULL,
+  dispatched_at timestamptz,
+  completed_at timestamptz,
+  failure_reason text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CHECK (selected_calls <= target_calls),
+  CHECK (finalized_calls <= target_calls),
+  CHECK (scored_calls + fair_exclusions <= finalized_calls)
+);
+
 CREATE TABLE IF NOT EXISTS rep_scoring_v7_work (
   idempotency_key text PRIMARY KEY,
   source_record_id text NOT NULL,

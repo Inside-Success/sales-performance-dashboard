@@ -3,7 +3,7 @@ import "server-only";
 import { buildV7ManagerSummaries, type V7ManagerCall, type V7RepSummary } from "@/lib/rep-scoring/v7-manager";
 
 export const V7_SCORER_VERSION = "rep-reviewer-v7.1-shadow-1";
-export const V7_VALIDATION_TARGET = 150;
+export const V7_VALIDATION_TARGET = 405;
 
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
 const FETCH_TIMEOUT_MS = 12_000;
@@ -72,8 +72,8 @@ export async function getV7ValidationOverview(): Promise<V7ValidationData> {
   try {
     const formula = `{Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)}`;
     const [scores, quarantines] = await Promise.all([
-      fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 180),
-      fetchRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", token, formula, ["Source Record ID", "Call Type", "Reason", "Diagnostic JSON", "Quarantined At", "Created At"], 180),
+      fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 1200),
+      fetchRecords(process.env.REP_SCORING_QUARANTINE_TABLE || "quarantine", token, formula, ["Source Record ID", "Call Type", "Reason", "Diagnostic JSON", "Quarantined At", "Created At"], 1200),
     ]);
     return validationData(scores, quarantines);
   } catch (error) {
@@ -97,7 +97,7 @@ export async function getV7Rep(repKey: string): Promise<{ summary: V7RepSummary;
     ? `LOWER({Scored Rep Email})=${airtableLiteral(normalized)}`
     : `LOWER({Scored Rep Label})=${airtableLiteral(normalized)}`;
   const formula = `AND({Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)},${repFormula})`;
-  const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 180);
+  const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 600);
   const calls = records.map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
   const summaries = buildV7ManagerSummaries(calls.map(managerCall));
   return summaries[0] ? { summary: summaries[0], calls } : null;
