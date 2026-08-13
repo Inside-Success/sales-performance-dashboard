@@ -20,4 +20,10 @@ describe("V7 atomic checkpoint contract", () => {
     expect(source).toContain("rep_scoring_v7_runs.state = 'failed'");
     expect(source).not.toContain("rep_scoring_v7_runs.state = 'dispatched' and rep_scoring_v7_runs.lease_expires_at < now()");
   });
+  it("keeps each top-level scoring execution at ten calls and splits 20 plus 5 waves", () => {
+    const source = readFileSync("n8n/rep-scoring-v7/build-checkpoint-manifest.js", "utf8");
+    expect(source).toContain("context.workerBatchSize");
+    expect(source).toContain("batch.batchSize > 10");
+    expect(source).toContain("batches.length < context.firstWaveBatches ? 1 : 2");
+  });
 });

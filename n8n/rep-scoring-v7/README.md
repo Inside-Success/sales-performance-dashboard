@@ -10,6 +10,19 @@ V7.1 is an isolated validation architecture. It does not replace the live V6.3 s
 - Read-only validation audit: `U1qAFJ92IjypX5jv`
 - Scorer version: `rep-reviewer-v7.1-shadow-1`
 
+## Atomic additional-250 checkpoint
+
+- One-time coordinator: `aVvWQpt1vuN9ljf4`
+- Run key: `v7.1-checkpoint-250-2026-08-13`
+- Approved source boundary: calls on or after `2026-08-03T04:00:00.000Z`
+- Admission: exactly 250 calls not already finalized or actively leased by V7.1
+- Mix: 125 Call 1 and 125 Call 2+, rotated across rep/day groups
+- Dispatch: 25 top-level workers of at most 10 calls; 20 in the first wave and 5 after an eight-minute guard
+
+The coordinator acquires a database-backed run lock before reading the source inventory. The same run key cannot admit a second batch after it is marked dispatched. It checks provider balance, existing call leases, exact selection count, unique source IDs, unique idempotency keys, and batch-size invariants before dispatch. It has no schedule and must be deactivated after the one-time checkpoint. V6.3 production and Coaching remain outside this graph.
+
+The manager dashboard uses the same database run-control endpoint but does not expose run mechanics to managers. The operational endpoint is authenticated with the existing ingestion secret and is not a public control surface.
+
 The two launchers are one-time, bounded dispatchers. The worker has no schedule or public webhook and can only be called as a sub-workflow. Existing V6.3 and Coaching workflows are outside this graph.
 
 ## What V7.1 changes
