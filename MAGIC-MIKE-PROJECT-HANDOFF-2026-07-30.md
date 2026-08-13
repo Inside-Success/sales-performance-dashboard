@@ -449,6 +449,7 @@ Before any future implementation:
 - `v4` — 2026-08-11: recorded the final V6.3 manager-priority release, completed live/catch-up state, and exact-match Call 2+ score display in Coaching.
 - `v5` — 2026-08-13: recorded the isolated V7.1 structured-criteria calibration; V6.3 production and Coaching remain unchanged.
 - `v6` — 2026-08-13: recorded the completed atomic additional-250 checkpoint, simplified manager UX, combined 411-call audit, and restoration of normal production pace.
+- `v7` — 2026-08-13: records the authorized V7.1 production launch, fixed-cohort completion, simple AI Closer Scorecard, live refill, and exact-match Call 2+ Coaching score cutover.
 
 ## Rep Performance Reviewer production addendum — 2026-07-30
 
@@ -552,3 +553,17 @@ The combined evidence set now contains 383 scores and 28 fair exclusions. Its sc
 The hidden manager page was simplified for non-technical use. Technical version/backfill mechanics were removed from the primary view; immediate manager priorities appear first; lower-priority and early-evidence records are collapsed; rep pages show a concise summary and next action; and call pages show a manager takeaway and only useful evidence sections. Navigation now gives immediate loading feedback and scrolls deterministically to the top.
 
 Production deployment `dpl_32D17Hv6X6z65hXRZgR2iByzWcDv` is `READY` at the canonical alias. V7.1 coordinator, worker, audit, and temporary finalizer are inactive after the checkpoint. Existing V6.3 coordinator `EghbY2jr86yjJl4d`, V6.3 worker `w8JaLibcm8zqVGP1`, and Coaching `L8Nn7xncA9ZPDdWA` remain active at their prior versions and normal pace. The remaining historical backfill is explicitly not authorized until the user reviews this combined result and gives separate approval.
+
+## AI Closer Scorecard V7.1 production addendum — 2026-08-13
+
+The user subsequently authorized the complete V7.1 production launch. The fixed historical cohort is 1,660 eligible calls from `2026-08-03T04:00:00.000Z` through `2026-08-13T07:14:07.298Z`. V7.1 continues to use isolated worker `QPUh149BvYlqhKOq` and immutable scorer `rep-reviewer-v7.1-shadow-1`.
+
+The final 460 unfinished calls are handled by webhook-only continuation `80MLVQW3SdmxZzNH`, protected by database run key `v7.1-final-460-continuation-2026-08-13`, exact per-call idempotency, active leases, provider balance checks, and bounded batches. It dispatches 46 workers of at most ten calls in guarded waves of 20, 20, and 6. It cannot reopen the same cohort after dispatch.
+
+The production live path is separate schedule coordinator `gXGkKGtsXPudAePR`. It reads only the V7.1 ledger, gives post-cutoff live calls priority, dispatches at most five workers of ten calls per safe slot, and fails closed on a provider, source, ledger, lease, or invariant failure. A five-minute schedule does not mean overlapping execution: any unexpired V7.1 processing lease causes that slot to skip.
+
+The manager route is now a simple scorecard sorted lowest score first. The primary table contains only closer, 0–100 score, reviewed-call count, and review action, with 15+, 8+, 3+, and all-rep filters. Technical versions, backfill mechanics, validation counters, priority labels, and raw JSON are absent from the manager-facing path. Rep detail retains only evidence-supported summary, Call 1/Call 2+ split, recurring areas, and lowest-scoring calls; call detail keeps a concise takeaway and an optional collapsed scoring audit. Route progress and scroll restoration cover the full manager scorecard subtree.
+
+Magic Mike Coaching remains fail-open and read-only. Its workflow is not edited. A numeric Call 2+ score appears only when exactly one V7.1 score matches both source Airtable record ID and automation key and passes scorer, call-type, status, consistency, and numeric validity checks. Lookup failure or ambiguity hides the score without affecting the feedback report.
+
+The detailed launch, verification, rollback, workflow IDs, deployment, and final data audit are recorded in `REP-SCORING-V7-1-PRODUCTION-LAUNCH-2026-08-13.md`.

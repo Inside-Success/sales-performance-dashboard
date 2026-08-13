@@ -17,6 +17,10 @@ const valid: CoachingScoreCandidate = {
 };
 
 describe("Coaching Call 2 score matching", () => {
+  it("reads only the approved V7.1 production scorer", () => {
+    expect(COACHING_SCORE_SCORER_VERSION).toBe("rep-reviewer-v7.1-shadow-1");
+  });
+
   it("returns the score only for one exact dual-identifier match", () => {
     expect(selectExactCoachingCallScore({ sourceRecordId: valid.sourceRecordId, automationKey: valid.automationKey, candidates: [valid] }))
       .toEqual({ assessmentId: "assessment-1", score: 82.5 });

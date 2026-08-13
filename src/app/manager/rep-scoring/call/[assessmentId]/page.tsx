@@ -1,198 +1,60 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft, CheckCircle2, ExternalLink, Quote, TriangleAlert } from "lucide-react";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, ExternalLink, Info, Quote, ShieldCheck, Target, TrendingUp, XCircle } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
-import { getRepScoringDashboardData } from "@/lib/rep-scoring/data";
-import { getCallInsights, getManagerCallContextEntries, humanize, isApplicableDimension, normalizeBehaviours, normalizeDimensions, type EvidenceQuote, type ScoreDimension } from "@/lib/rep-scoring/presentation";
-import { cn } from "@/lib/utils";
+import { getV7Assessment, type V7Evidence, type V7Finding } from "@/lib/rep-scoring/v7-validation";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Call Score Review | Magic Mike Bot", robots: { index: false, follow: false } };
 
-export const metadata: Metadata = {
-  title: "Call Evidence | Magic Mike Bot",
-  robots: { index: false, follow: false },
-};
-
-type RepScoringCallPageProps = {
-  params: Promise<{ assessmentId: string }>;
-};
-
-export default async function RepScoringCallPage({ params }: RepScoringCallPageProps) {
+export default async function CallScorePage({ params }: { params: Promise<{ assessmentId: string }> }) {
   await requireRepScoringAdmin();
   const { assessmentId } = await params;
-  const data = await getRepScoringDashboardData();
-  const call = data.recentCalls.find((candidate) => candidate.assessmentId === decodeURIComponent(assessmentId));
+  const call = await getV7Assessment(decodeURIComponent(assessmentId));
   if (!call) notFound();
-  const dimensions = normalizeDimensions(call.callType, call.dimensions);
-  const behaviours = normalizeBehaviours(call.behaviours);
-  const insights = getCallInsights(call.callType, call.dimensions);
-  const v5Fairness = readV5FairnessContext(call.callContext);
+  const concerns = call.improvements.length ? call.improvements : call.dimensions.flatMap((dimension) => {
+    const criterion = dimension.criteria.find((item) => ["partial", "weak", "missed", "harmful"].includes(item.status));
+    return criterion ? [{ label: dimension.label, reason: criterion.reason, evidence: criterion.evidence }] : [];
+  });
 
   return (
     <main className="magic-page">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <Link href="/manager/rep-scoring" className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to call-execution review</Link>
-        <header className="magic-card magic-hero p-5 md:p-7">
-          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div>
-              <div className="mb-3 flex flex-wrap gap-2"><Badge variant="outline" className="gap-1 rounded-full border-red-100 bg-red-50 text-red-700"><ShieldCheck className="size-3.5" />Admin evidence</Badge><Badge variant="outline" className="rounded-full">{call.callType}</Badge><Badge variant="outline" className="rounded-full">{humanize(call.callStage)}</Badge></div>
-              <h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{call.repName}</h1>
-              <p className="mt-2 text-sm text-slate-500">One call · {formatDateTime(call.meetingStartAt || call.scoredAt)}{call.showName ? ` · ${call.showName}` : ""}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 text-right"><div className="text-4xl font-extrabold text-slate-950">{call.score === null ? "—" : call.score.toFixed(1)}</div><div className="mt-1 text-sm font-bold text-slate-700">{call.band}</div><div className="mt-1 text-xs text-slate-500">This call only</div></div>
-          </div>
-        </header>
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
+        <Link prefetch href={`/manager/rep-scoring/rep/${encodeURIComponent(call.repEmail || call.repName)}`} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to {call.repName}</Link>
 
-        {call.internalInconsistency ? <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-950"><strong>Excluded from rep averages:</strong> this older assessment contains an internal evidence inconsistency and must not be used as a performance result.</div> : null}
-        {call.score === null ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Score withheld:</strong> the active scorer did not produce a defensible numeric result for this call. It remains visible for audit, but it is excluded from the rep&apos;s averages and ranking.</div> : null}
-        {call.attributionSubstituted ? <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Rep substitution verified:</strong> Airtable assigned this call to {call.assignedRepName || call.assignedRepEmail}, but transcript speaker evidence shows {call.repName} handled it. The score belongs to {call.repName}; the absent assigned rep is not penalized.</div> : null}
+        <header className="magic-card magic-hero p-5 md:p-7"><div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge><h1 className="mt-3 text-3xl font-extrabold text-slate-950 md:text-4xl">{call.repName}</h1><p className="mt-2 text-sm text-slate-500">{formatDate(call.meetingStartAt)}{call.showName ? ` · ${call.showName}` : ""}</p></div><div className="rounded-2xl border border-slate-200 bg-white px-7 py-4 text-center"><div className="text-4xl font-extrabold text-slate-950">{call.score?.toFixed(1) ?? "—"}</div><div className="text-sm font-semibold text-slate-500">Call score</div></div></div></header>
 
-        {v5Fairness ? <V5FairnessContext context={v5Fairness} /> : null}
+        <Card className="magic-card bg-white"><CardContent className="p-5"><div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Manager takeaway</div><p className="mt-2 text-lg font-semibold leading-7 text-slate-900">{call.mainFinding}</p></CardContent></Card>
 
-        <section className="grid gap-4 md:grid-cols-2">
-          <InsightCard icon={Target} label="Lowest checkpoint" value={insights.coachingPriority} description="Relative low point on this call; not automatically a weakness" tone="red" />
-          <InsightCard icon={TrendingUp} label="Strongest area" value={insights.strongestArea} description="Highest-scoring dimension on this call" tone="green" />
-        </section>
+        <section className="grid gap-4 md:grid-cols-2"><ContextCard label="Prospect opportunity" value={humanize(call.opportunity)} detail={call.opportunityReason} /><ContextCard label={call.callType === "Call 1" ? "Correct progression" : "Recorded outcome"} value={humanize(call.callType === "Call 1" ? call.disposition : call.outcome)} detail={call.outcomeReason || "Based on verified call evidence."} /></section>
 
-        <Card className="magic-card border-blue-100 bg-blue-50/70">
-          <CardContent className="flex gap-3 p-5 text-sm leading-6 text-blue-950"><Info className="mt-0.5 size-5 shrink-0" /><div><strong>How this score works:</strong> only behaviors that can be verified in the call are included. Missing or unclear evidence is excluded rather than treated as poor performance.</div></CardContent>
-        </Card>
+        {concerns.length ? <FindingSection title="What needs improvement" findings={concerns} concern /> : <Card className="magic-card border-emerald-100 bg-emerald-50/70"><CardContent className="flex gap-3 p-5"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div><div className="font-extrabold text-slate-950">No material weakness was supported on this call</div><p className="mt-1 text-sm leading-6 text-slate-600">This does not mean perfect execution; it means the transcript did not support a material deficiency.</p></div></CardContent></Card>}
+        {call.strengths.length ? <FindingSection title="What was done well" findings={call.strengths} /> : null}
 
-        <Card className="magic-card border-white/80 bg-white/95">
-          <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Dimension scoring</CardTitle><p className="text-sm leading-6 text-slate-500">Every contribution is visible, so the total can be checked.</p></CardHeader>
-          <CardContent className="grid gap-4">
-            {dimensions.length ? dimensions.map((dimension) => <DimensionCard key={dimension.key} dimension={dimension} />) : <p className="text-sm text-slate-500">No dimension evidence was stored.</p>}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-950 px-4 py-3 text-white"><span className="text-sm font-bold">Weighted total</span><span className="text-2xl font-extrabold">{call.score === null ? "—" : call.score.toFixed(1)} / 100</span></div>
-          </CardContent>
-        </Card>
+        <details className="magic-card rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-extrabold text-slate-950">View complete scoring breakdown</summary><p className="mt-2 text-sm leading-6 text-slate-500">Open this only when you need to audit how the score was calculated.</p><div className="mt-4 space-y-3">{call.dimensions.map((dimension) => <div key={dimension.key} className="rounded-xl border border-slate-200 p-4"><div className="flex items-center justify-between gap-3"><div className="font-extrabold text-slate-950">{dimension.label}</div><div className="text-xl font-extrabold text-slate-950">{dimension.points?.toFixed(1) ?? "Not scored"}</div></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>)}</div></details>
 
-        <section className="grid gap-5 lg:grid-cols-2">
-          <Card className="magic-card border-white/80 bg-white/95">
-            <CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Behavior checks</CardTitle><p className="text-sm leading-6 text-slate-500">Specific actions observed—or not observed—in the transcript.</p></CardHeader>
-            <CardContent className="grid gap-3">
-              {behaviours.length ? behaviours.map((behaviour, index) => <div key={`${behaviour.name}-${index}`} className="rounded-xl border border-slate-200 bg-white p-4"><div className="flex flex-wrap items-start justify-between gap-2"><div className="font-bold text-slate-900">{behaviour.label}</div><StatusBadge status={behaviour.status} /></div>{behaviour.validationNote ? <p className="mt-2 text-xs font-semibold text-red-700">Evidence validation: {humanize(behaviour.validationNote)}</p> : null}{behaviour.quote ? <EvidenceBlock evidence={{ timestamp: behaviour.timestamp, speaker: behaviour.speaker, quote: behaviour.quote }} /> : <p className="mt-2 text-sm text-slate-500">No verified supporting quote was recorded.</p>}</div>) : <p className="text-sm text-slate-500">No behavior checks were stored.</p>}
-            </CardContent>
-          </Card>
-          <CallContext context={call.callContext} />
-        </section>
-
-        <section className="grid gap-5 lg:grid-cols-2">
-          <GenericEvidenceCard title="Critical events" items={call.criticalEvents} empty="No critical event was detected." />
-          <GenericEvidenceCard title="Other factual observations" items={call.observations} empty="No separate observations were recorded." />
-        </section>
-
-        {call.transcriptUrl ? <a href={call.transcriptUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-red-200 hover:text-red-700">Open source transcript <ExternalLink className="size-4" /></a> : null}
+        {call.transcriptUrl ? <a href={call.transcriptUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:border-red-200 hover:text-red-700">Open source transcript <ExternalLink className="size-4" /></a> : null}
       </div>
     </main>
   );
 }
 
-function DimensionCard({ dimension }: { dimension: ScoreDimension }) {
-  if (!isApplicableDimension(dimension.applicability)) return <div className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="flex justify-between gap-3"><div className="font-extrabold text-slate-900">{dimension.label}</div><Badge variant="outline" className="rounded-full">Not fairly observable</Badge></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>;
-  return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 md:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div><h2 className="text-lg font-extrabold text-slate-950">{dimension.label}</h2>{dimension.reason ? <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2"><BandBadge band={dimension.band || scoreBand(dimension.points)} /><Badge variant="outline" className="rounded-full">{dimension.weight === null ? "Weight unavailable" : `${Math.round(dimension.weight * 100)}% weight`}</Badge></div>
-      </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-        <div className="grid gap-2">{dimension.evidence.length ? dimension.evidence.map((evidence, index) => <EvidenceBlock key={`${evidence.timestamp}-${index}`} evidence={evidence} />) : <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">No verified evidence quote was stored.</p>}</div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-right"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Score contribution</div><div className="mt-1 text-xl font-extrabold text-slate-950">{dimension.contribution === null ? "—" : dimension.contribution.toFixed(1)}</div><div className="text-xs text-slate-500">{dimension.points ?? "—"} points × {dimension.weight === null ? "—" : `${Math.round(dimension.weight * 100)}%`}</div></div>
-      </div>
-    </article>
-  );
+function ContextCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return <Card className="magic-card bg-white"><CardContent className="p-5"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{label}</div><div className="mt-2 text-lg font-extrabold text-slate-950">{value}</div>{detail ? <p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p> : null}</CardContent></Card>;
 }
 
-type V5FairnessContextValue = {
-  reliabilityGrade: string;
-  reliabilityReason: string;
-  opportunityClassification: string;
-  opportunityReason: string;
-  progressionDecision: string;
-  externalFactors: string[];
-};
-
-function V5FairnessContext({ context }: { context: V5FairnessContextValue }) {
-  return <section className="grid gap-4 md:grid-cols-3"><ContextSummary title="Transcript reliability" value={humanize(context.reliabilityGrade)} detail={context.reliabilityReason} /><ContextSummary title="Prospect opportunity" value={humanize(context.opportunityClassification)} detail={context.opportunityReason} /><ContextSummary title="Correct progression" value={humanize(context.progressionDecision)} detail={context.externalFactors.length ? `External factors: ${context.externalFactors.join("; ")}` : "No material external factor was recorded."} /></section>;
+function FindingSection({ title, findings, concern = false }: { title: string; findings: V7Finding[]; concern?: boolean }) {
+  const Icon = concern ? TriangleAlert : CheckCircle2;
+  return <Card className="magic-card bg-white"><CardHeader><CardTitle className="flex items-center gap-2"><Icon className={concern ? "size-5 text-red-600" : "size-5 text-emerald-700"} />{title}</CardTitle></CardHeader><CardContent className="grid gap-3 md:grid-cols-2">{findings.map((finding, index) => <div key={`${finding.label}:${index}`} className={concern ? "rounded-xl border border-red-100 bg-red-50/50 p-4" : "rounded-xl border border-emerald-100 bg-emerald-50/50 p-4"}><div className="font-extrabold text-slate-950">{finding.label}</div>{finding.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{finding.reason}</p> : null}{finding.evidence.slice(0, 2).map((evidence, evidenceIndex) => <Evidence key={evidenceIndex} value={evidence} />)}</div>)}</CardContent></Card>;
 }
 
-function ContextSummary({ title, value, detail }: { title: string; value: string; detail: string }) {
-  return <Card className="magic-card border-white/80 bg-white/95"><CardContent className="p-5"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{title}</div><div className="mt-2 text-lg font-extrabold text-slate-950">{value}</div><p className="mt-2 text-sm leading-6 text-slate-600">{detail || "No additional explanation was stored."}</p></CardContent></Card>;
+function Evidence({ value }: { value: V7Evidence }) {
+  return <blockquote className="mt-3 rounded-lg bg-white p-3 text-sm leading-6 text-slate-700"><div className="mb-1 text-xs font-bold text-slate-500">{value.timestamp}{value.speaker ? ` · ${value.speaker}` : ""}</div><div className="flex gap-2"><Quote className="mt-1 size-4 shrink-0 text-red-500" /><span className="italic">{value.quote}</span></div></blockquote>;
 }
 
-function readV5FairnessContext(context: Record<string, unknown>): V5FairnessContextValue | null {
-  const reliability = object(context.transcript_reliability);
-  const opportunity = object(context.opportunity);
-  if (!reliability && !opportunity) return null;
-  const factors = Array.isArray(context.external_factors) ? context.external_factors.map((value) => {
-    const item = object(value);
-    return text(item?.reason || item?.factor || item?.label || value);
-  }).filter(Boolean) : [];
-  return {
-    reliabilityGrade: text(reliability?.grade || reliability?.status),
-    reliabilityReason: text(reliability?.reason),
-    opportunityClassification: text(opportunity?.classification || opportunity?.status),
-    opportunityReason: text(opportunity?.reason),
-    progressionDecision: text(opportunity?.correct_progression_decision || opportunity?.progression_decision || opportunity?.correct_disposition),
-    externalFactors: factors,
-  };
-}
-
-function object(value: unknown) { return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null; }
-
-function EvidenceBlock({ evidence }: { evidence: EvidenceQuote }) {
-  return <blockquote className="rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-700"><div className="mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">{evidence.timestamp ? <Badge variant="outline" className="rounded-full bg-white">{evidence.timestamp}</Badge> : null}{evidence.speaker ? <span>{evidence.speaker}</span> : null}</div><div className="flex gap-2"><Quote className="mt-1 size-4 shrink-0 text-red-500" /><span className="italic">{evidence.quote}</span></div></blockquote>;
-}
-
-function CallContext({ context }: { context: Record<string, unknown> }) {
-  const entries = getManagerCallContextEntries(context);
-  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader className="gap-1"><CardTitle className="text-xl text-slate-950">Call context</CardTitle><p className="text-sm leading-6 text-slate-500">Facts that help a manager interpret the score.</p></CardHeader><CardContent className="grid gap-3">{entries.length ? entries.map(([key, value]) => <div key={key} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><div className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{humanize(key)}</div><p className="mt-2 text-sm leading-6 text-slate-700">{formatValue(value)}</p></div>) : <p className="text-sm leading-6 text-slate-500">No additional call context was stored. Treat this as a data limitation.</p>}</CardContent></Card>;
-}
-
-function GenericEvidenceCard({ title, items, empty }: { title: string; items: unknown[]; empty: string }) {
-  return <Card className="magic-card border-white/80 bg-white/95"><CardHeader><CardTitle className="text-xl text-slate-950">{title}</CardTitle></CardHeader><CardContent className="grid gap-3">{items.length ? items.map((item, index) => <GenericEvidenceItem key={index} value={item} />) : <p className="text-sm leading-6 text-slate-500">{empty}</p>}</CardContent></Card>;
-}
-
-function GenericEvidenceItem({ value }: { value: unknown }) {
-  if (typeof value === "string") return <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-6 text-slate-700">{value}</div>;
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const object = value as Record<string, unknown>;
-  const title = text(object.name || object.type || object.event || object.label || "Observation");
-  const detail = text(object.summary || object.reason || object.explanation || object.notes || object.observation);
-  const quote = text(object.quote || object.evidence_quote || object.excerpt);
-  const timestamp = text(object.timestamp || object.time);
-  const speaker = text(object.speaker);
-  return <div className="rounded-xl border border-slate-200 bg-white p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div className="font-bold text-slate-900">{humanize(title)}</div>{timestamp ? <Badge variant="outline" className="rounded-full">{timestamp}</Badge> : null}</div>{detail ? <p className="mt-2 text-sm leading-6 text-slate-600">{detail}</p> : null}{quote ? <EvidenceBlock evidence={{ timestamp, speaker, quote }} /> : null}</div>;
-}
-
-function InsightCard({ icon: Icon, label, value, description, tone }: { icon: typeof Target; label: string; value: string; description: string; tone: "red" | "green" }) {
-  return <Card className={cn("magic-card", tone === "red" ? "border-red-100 bg-red-50/80" : "border-emerald-100 bg-emerald-50/80")}><CardContent className="p-5"><Icon className={cn("size-5", tone === "red" ? "text-red-600" : "text-emerald-700")} /><div className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</div><div className="mt-1 text-lg font-extrabold text-slate-950">{value}</div><p className="mt-1 text-xs leading-5 text-slate-500">{description}</p></CardContent></Card>;
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const normalized = status.toLowerCase();
-  const met = normalized === "met";
-  const notMet = normalized === "not_met";
-  return <Badge variant="outline" className={cn("gap-1 rounded-full", met ? "border-emerald-200 bg-emerald-50 text-emerald-800" : notMet ? "border-red-200 bg-red-50 text-red-700" : "border-slate-200 bg-slate-50 text-slate-700")}>{met ? <CheckCircle2 className="size-3" /> : notMet ? <XCircle className="size-3" /> : <Info className="size-3" />}{humanize(status)}</Badge>;
-}
-
-function BandBadge({ band }: { band: string }) {
-  const style = band === "Excellent" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : band === "Meets Expectations" ? "border-blue-200 bg-blue-50 text-blue-800" : band === "Developing" ? "border-amber-200 bg-amber-50 text-amber-900" : "border-red-200 bg-red-50 text-red-700";
-  return <Badge variant="outline" className={cn("rounded-full", style)}>{band || "Not scored"}</Badge>;
-}
-
-function scoreBand(points: number | null) {
-  if (points === null) return "Not scored";
-  if (points < 25) return "Unacceptable";
-  if (points < 50) return "Needs Improvement";
-  if (points < 70) return "Developing";
-  if (points < 85) return "Meets Expectations";
-  return "Excellent";
-}
-
-function text(value: unknown) { return value === null || value === undefined ? "" : String(value).trim(); }
-function formatValue(value: unknown) { if (typeof value === "string") return value; try { return JSON.stringify(value); } catch { return String(value); } }
-function formatDateTime(value: string) { if (!value) return "Date not available"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date); }
+function humanize(value: string) { return (value || "Not available").replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? "Date unavailable" : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(date); }

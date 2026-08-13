@@ -13,7 +13,7 @@ export function RouteProgress() {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const anchor = (event.target as HTMLElement | null)?.closest("a[href]") as HTMLAnchorElement | null;
       if (!anchor || anchor.target === "_blank" || anchor.origin !== window.location.origin) return;
-      if (!anchor.pathname.startsWith("/manager/rep-scoring/v7-validation") || anchor.pathname === window.location.pathname) return;
+      if (!anchor.pathname.startsWith("/manager/rep-scoring") || anchor.pathname === window.location.pathname) return;
       setTargetPath(anchor.pathname);
     };
     document.addEventListener("click", begin, true);
