@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
-import { getV7Rep } from "@/lib/rep-scoring/v7-validation";
+import { getV7Rep, V7_SCORER_VERSION } from "@/lib/rep-scoring/v7-validation";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Rep Validation Review | Magic Mike Bot", robots: { index: false, follow: false } };
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Rep Validation Review | Magic Mike B
 export default async function V7RepPage({ params }: { params: Promise<{ repKey: string }> }) {
   await requireRepScoringAdmin();
   const { repKey } = await params;
-  const data = await getV7Rep(decodeURIComponent(repKey));
+  const data = await getV7Rep(decodeURIComponent(repKey), V7_SCORER_VERSION);
   if (!data) notFound();
   const { summary, calls } = data;
 

@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
-import { getV7Assessment, type V7Criterion, type V7Evidence, type V7Finding } from "@/lib/rep-scoring/v7-validation";
+import { getV7Assessment, V7_SCORER_VERSION, type V7Criterion, type V7Evidence, type V7Finding } from "@/lib/rep-scoring/v7-validation";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Call Validation Evidence | Magic Mike Bot", robots: { index: false, follow: false } };
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Call Validation Evidence | Magic Mik
 export default async function V7CallPage({ params }: { params: Promise<{ assessmentId: string }> }) {
   await requireRepScoringAdmin();
   const { assessmentId } = await params;
-  const call = await getV7Assessment(decodeURIComponent(assessmentId));
+  const call = await getV7Assessment(decodeURIComponent(assessmentId), V7_SCORER_VERSION);
   if (!call) notFound();
   const concerns = call.improvements.length ? call.improvements : call.dimensions.flatMap((dimension) => {
     const criterion = dimension.criteria.find((item) => ["partial", "weak", "missed", "harmful"].includes(item.status));

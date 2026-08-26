@@ -16,7 +16,7 @@ export default async function CloserReviewPage({ params }: { params: Promise<{ r
   const { repKey } = await params;
   const data = await getV7Rep(decodeURIComponent(repKey));
   if (!data) notFound();
-  const { summary, calls } = data;
+  const { summary, calls, call2Only } = data;
   const lowestCalls = [...calls].sort((a, b) => (a.score ?? 101) - (b.score ?? 101));
 
   return (
@@ -26,14 +26,14 @@ export default async function CloserReviewPage({ params }: { params: Promise<{ r
 
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div><h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1><p className="mt-2 text-sm text-slate-600">Score based on {summary.totalCalls} reviewed calls.</p></div>
+            <div><h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1><p className="mt-2 text-sm text-slate-600">{call2Only ? "Call 2 score" : "Score"} based on {summary.totalCalls} reviewed calls.</p></div>
             <div className="rounded-2xl border border-slate-200 bg-white px-7 py-4 text-center"><div className="text-4xl font-extrabold text-slate-950">{summary.overallScore.toFixed(1)}</div><div className="text-sm font-semibold text-slate-500">Overall score</div></div>
           </div>
         </header>
 
         <Card className="magic-card bg-white"><CardContent className="p-5"><div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Manager summary</div><p className="mt-2 text-lg font-semibold leading-7 text-slate-900">{summary.reason}</p><p className="mt-3 rounded-xl bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-800">{summary.action}</p></CardContent></Card>
 
-        <section className="grid gap-4 md:grid-cols-2"><CallType title="Call 1" score={summary.call1Score} count={summary.call1Calls} /><CallType title="Call 2+" score={summary.call2Score} count={summary.call2Calls} /></section>
+        <section className={`grid gap-4 ${call2Only ? "" : "md:grid-cols-2"}`}>{call2Only ? null : <CallType title="Call 1" score={summary.call1Score} count={summary.call1Calls} />}<CallType title="Call 2+" score={summary.call2Score} count={summary.call2Calls} /></section>
 
         <section className="grid gap-4 lg:grid-cols-2">
           <Card className="magic-card bg-white"><CardHeader><CardTitle>Recurring areas to improve</CardTitle></CardHeader><CardContent className="space-y-3">{summary.repeatedConcerns.length ? summary.repeatedConcerns.map((pattern) => <div key={pattern.key} className="rounded-xl border border-red-100 bg-red-50/60 p-4"><div className="font-extrabold text-slate-950">{pattern.label}</div><p className="mt-2 text-sm leading-6 text-slate-600">Below standard in {pattern.concernObservations} of {pattern.observations} {pattern.callType} calls.</p></div>) : <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4"><div className="flex items-center gap-2 font-extrabold text-emerald-950"><CheckCircle2 className="size-5" />No recurring weakness is supported</div><p className="mt-2 text-sm leading-6 text-emerald-900">The reviewed calls do not justify assigning a recurring weakness.</p></div>}</CardContent></Card>

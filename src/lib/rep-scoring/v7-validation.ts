@@ -135,30 +135,29 @@ export async function getV7ValidationOverview(): Promise<V7ValidationData> {
   }
 }
 
-export async function getV7Assessment(assessmentId: string): Promise<V7Assessment | null> {
+export async function getV7Assessment(assessmentId: string, scorerVersion = activeScorecardVersion()): Promise<V7Assessment | null> {
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return null;
-  const formula = `AND({Scorer Version}=${airtableLiteral(activeScorecardVersion())},{Assessment ID}=${airtableLiteral(assessmentId)})`;
+  const formula = `AND({Scorer Version}=${airtableLiteral(scorerVersion)},{Assessment ID}=${airtableLiteral(assessmentId)})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 20);
   const canonical = canonicalScoreRecords(records);
   return canonical[0] ? normalizeAssessment(canonical[0]) : null;
 }
 
-export async function getV7Rep(repKey: string): Promise<{ summary: V7RepSummary; calls: V7Assessment[] } | null> {
+export async function getV7Rep(repKey: string, scorerVersion = activeScorecardVersion()): Promise<{ summary: V7RepSummary; calls: V7Assessment[]; call2Only: boolean } | null> {
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return null;
   const normalized = repKey.trim().toLowerCase();
   const repFormula = normalized.includes("@")
     ? `LOWER({Scored Rep Email})=${airtableLiteral(normalized)}`
     : `LOWER({Scored Rep Label})=${airtableLiteral(normalized)}`;
-  const scorerVersion = activeScorecardVersion();
   const formula = `AND({Scorer Version}=${airtableLiteral(scorerVersion)},${repFormula})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 600);
   const calls = canonicalScoreRecords(records).map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
   const summaries = scorerVersion === CALL2_MANAGER_SCORER_VERSION
     ? buildVNextManagerSummaries(calls.map(managerCall))
     : buildV7ManagerSummaries(calls.map(managerCall));
-  return summaries[0] ? { summary: summaries[0], calls } : null;
+  return summaries[0] ? { summary: summaries[0], calls, call2Only: scorerVersion === CALL2_MANAGER_SCORER_VERSION } : null;
 }
 
 function validationData(scoreRecords: AirtableRecord[], quarantineRecords: AirtableRecord[]): V7ValidationData {
