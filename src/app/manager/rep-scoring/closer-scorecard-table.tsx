@@ -16,8 +16,8 @@ const callFilters = [
   { label: "All reps", value: 0 },
 ];
 
-export function CloserScorecardTable({ reps }: { reps: V7RepSummary[] }) {
-  const [minimumCalls, setMinimumCalls] = useState(15);
+export function CloserScorecardTable({ reps, call2Only = false }: { reps: V7RepSummary[]; call2Only?: boolean }) {
+  const [minimumCalls, setMinimumCalls] = useState(call2Only ? 3 : 15);
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
   const visibleReps = useMemo(() => [...reps]

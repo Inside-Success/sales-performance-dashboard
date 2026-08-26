@@ -1,8 +1,10 @@
 import "server-only";
 
 import { buildV7ManagerSummaries, type V7ManagerCall, type V7RepSummary } from "@/lib/rep-scoring/v7-manager";
+import { buildVNextManagerSummaries } from "@/lib/rep-scoring/vnext-manager";
 
 export const V7_SCORER_VERSION = "rep-reviewer-v7.1-shadow-1";
+export const CALL2_MANAGER_SCORER_VERSION = "magic-mike-call2-evidence-score-v1";
 export const V7_VALIDATION_TARGET = 405;
 
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
@@ -70,6 +72,7 @@ export type V7ScorecardData = {
   generatedAt: string;
   callsReviewed: number;
   repSummaries: V7RepSummary[];
+  call2Only: boolean;
   error?: string;
 };
 
@@ -78,11 +81,14 @@ const SCORECARD_FIELDS = [
 ];
 
 export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
-  const fallback: V7ScorecardData = { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [] };
+  const scorerVersion = activeScorecardVersion();
+  const call2Only = scorerVersion === CALL2_MANAGER_SCORER_VERSION;
+  const fallback: V7ScorecardData = { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [], call2Only };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return { ...fallback, error: "The scorecard data source is not connected." };
   try {
-    const formula = `{Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)}`;
+    const versionFormula = `{Scorer Version}=${airtableLiteral(scorerVersion)}`;
+    const formula = call2Only ? `AND(${versionFormula},{Call Type}="Call 2+")` : versionFormula;
     const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORECARD_FIELDS, 5000);
     const calls = canonicalScoreRecords(records).flatMap((record): V7ManagerCall[] => {
       const fields = record.fields;
@@ -104,7 +110,9 @@ export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
       configured: true,
       generatedAt: new Date().toISOString(),
       callsReviewed: calls.length,
-      repSummaries: buildV7ManagerSummaries(calls).sort((a, b) => a.overallScore - b.overallScore || b.totalCalls - a.totalCalls || a.repName.localeCompare(b.repName)),
+      call2Only,
+      repSummaries: (call2Only ? buildVNextManagerSummaries(calls) : buildV7ManagerSummaries(calls))
+        .sort((a, b) => a.overallScore - b.overallScore || b.totalCalls - a.totalCalls || a.repName.localeCompare(b.repName)),
     };
   } catch (error) {
     return { ...fallback, configured: true, error: message(error, "Unable to load the scorecard.") };
@@ -130,7 +138,7 @@ export async function getV7ValidationOverview(): Promise<V7ValidationData> {
 export async function getV7Assessment(assessmentId: string): Promise<V7Assessment | null> {
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return null;
-  const formula = `AND({Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)},{Assessment ID}=${airtableLiteral(assessmentId)})`;
+  const formula = `AND({Scorer Version}=${airtableLiteral(activeScorecardVersion())},{Assessment ID}=${airtableLiteral(assessmentId)})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 20);
   const canonical = canonicalScoreRecords(records);
   return canonical[0] ? normalizeAssessment(canonical[0]) : null;
@@ -143,10 +151,13 @@ export async function getV7Rep(repKey: string): Promise<{ summary: V7RepSummary;
   const repFormula = normalized.includes("@")
     ? `LOWER({Scored Rep Email})=${airtableLiteral(normalized)}`
     : `LOWER({Scored Rep Label})=${airtableLiteral(normalized)}`;
-  const formula = `AND({Scorer Version}=${airtableLiteral(V7_SCORER_VERSION)},${repFormula})`;
+  const scorerVersion = activeScorecardVersion();
+  const formula = `AND({Scorer Version}=${airtableLiteral(scorerVersion)},${repFormula})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 600);
   const calls = canonicalScoreRecords(records).map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
-  const summaries = buildV7ManagerSummaries(calls.map(managerCall));
+  const summaries = scorerVersion === CALL2_MANAGER_SCORER_VERSION
+    ? buildVNextManagerSummaries(calls.map(managerCall))
+    : buildV7ManagerSummaries(calls.map(managerCall));
   return summaries[0] ? { summary: summaries[0], calls } : null;
 }
 
@@ -258,6 +269,10 @@ function normalizeAssessment(record: AirtableRecord): V7Assessment {
 
 function managerCall(call: V7Assessment): V7ManagerCall {
   return { assessmentId: call.assessmentId, repEmail: call.repEmail, repName: call.repName, callType: call.callType, meetingStartAt: call.meetingStartAt, score: call.score || 0, dimensions: call.dimensions };
+}
+
+function activeScorecardVersion() {
+  return process.env.REP_SCORING_ACTIVE_SCORER_VERSION || V7_SCORER_VERSION;
 }
 
 async function fetchRecords(table: string, token: string, filterByFormula: string, fields: string[], maxRecords: number) {
