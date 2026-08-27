@@ -1,12 +1,11 @@
 import { slugify } from "@/lib/slug";
+import { unstable_cache } from "next/cache";
 
 export const REP_NO_SHOW_WINDOWS = [7, 30, 90] as const;
 export type RepNoShowWindow = (typeof REP_NO_SHOW_WINDOWS)[number];
 
 const DEFAULT_AIRTABLE_BASE_ID = "appNIvRt5uouRrcZ6";
 const DEFAULT_AIRTABLE_TABLE_ID = "tblD1VHKC49agh9QZ";
-const DEFAULT_CLOSE_RATE = 0.01;
-const DEFAULT_MIN_PACKAGE_VALUE = 1000;
 const DEFAULT_TRACKING_START_DATE = "2026-05-29T04:00:00.000Z";
 const HISTORY_DAYS = 120;
 const WEEK_COUNT = 8;
@@ -66,7 +65,6 @@ export type RepNoShowRepRow = {
   noShows: number;
   call1NoShows: number;
   noShowRate: number;
-  estimatedOpportunityAtRisk: number;
   latestNoShowAt: string | null;
 };
 
@@ -75,7 +73,6 @@ export type RepNoShowWeeklyPoint = {
   label: string;
   eligibleCalls: number;
   noShows: number;
-  estimatedOpportunityAtRisk: number;
 };
 
 export type RepNoShowSummary = {
@@ -85,8 +82,6 @@ export type RepNoShowSummary = {
   trackingStartedAt: string;
   effectivePeriodStart: string;
   comparisonAvailable: boolean;
-  closeRate: number;
-  minPackageValue: number;
   recordsRead: number;
   eligibleCalls: number;
   previousEligibleCalls: number;
@@ -97,9 +92,7 @@ export type RepNoShowSummary = {
   noShowRate: number;
   previousNoShowRate: number;
   weekOverWeekChange: number;
-  estimatedOpportunityAtRisk: number;
   avoidedNoShows: number;
-  estimatedRevenueProtected: number;
   error?: string;
 };
 
@@ -128,21 +121,14 @@ export async function getRepNoShowAnalytics(
   periodDays: RepNoShowWindow = 7,
 ): Promise<RepNoShowAnalytics> {
   const generatedAt = new Date();
-  const closeRate = parseRate(process.env.REP_NO_SHOW_CLOSE_RATE, DEFAULT_CLOSE_RATE);
-  const minPackageValue = parseMoney(
-    process.env.REP_NO_SHOW_MIN_PACKAGE_VALUE,
-    DEFAULT_MIN_PACKAGE_VALUE,
-  );
-  const trackingStartedAt = parseDate(
+  const configuredTrackingStart = parseDate(
     process.env.REP_NO_SHOW_TRACKING_START_DATE,
     DEFAULT_TRACKING_START_DATE,
   );
   const fallback = getFallbackAnalytics(
     generatedAt,
     periodDays,
-    closeRate,
-    minPackageValue,
-    trackingStartedAt,
+    configuredTrackingStart,
   );
   const token = getAirtableToken();
 
@@ -157,13 +143,23 @@ export async function getRepNoShowAnalytics(
   }
 
   try {
-    const records = await fetchAirtableRecords(
-      token,
-      Math.max(HISTORY_DAYS, differenceInDays(trackingStartedAt, generatedAt) + 2),
+    const records = await fetchCachedAirtableRecords(
+      Math.max(HISTORY_DAYS, differenceInDays(configuredTrackingStart, generatedAt) + 2),
     );
     const calls = dedupeTrackedCalls(
       records.map(normalizeAirtableRecord).filter(isEligibleCall).filter(isTrackedCall),
     );
+    // Before the first detected rep-no-show signal, historical rows cannot prove that
+    // the classifier was consistently emitting this status. Start comparisons at the
+    // first positive signal so missing historical labels never masquerade as improvement.
+    const firstDetectedNoShowAt = calls
+      .filter((call) => call.noShow && call.callDate)
+      .map((call) => new Date(call.callDate as string))
+      .filter((date) => Number.isFinite(date.getTime()))
+      .sort((a, b) => a.getTime() - b.getTime())[0];
+    const trackingStartedAt = firstDetectedNoShowAt
+      ? maxDate(configuredTrackingStart, firstDetectedNoShowAt)
+      : configuredTrackingStart;
     const periodEnd = generatedAt;
     const requestedPeriodStart = addDays(periodEnd, -periodDays);
     const periodStart = maxDate(requestedPeriodStart, trackingStartedAt);
@@ -179,8 +175,8 @@ export async function getRepNoShowAnalytics(
     const noShowLog = calls.filter((call) =>
       call.noShow && isInWindow(call.callDate, trackingStartedAt, periodEnd)
     );
-    const topReps = buildRepRows(currentCalls, closeRate, minPackageValue);
-    const weekly = buildTrend(calls, generatedAt, trackingStartedAt, closeRate, minPackageValue);
+    const topReps = buildRepRows(currentCalls);
+    const weekly = buildTrend(calls, generatedAt, trackingStartedAt);
     const weekOverWeekChange = comparisonAvailable
       ? currentNoShows.length - previousNoShows.length
       : 0;
@@ -196,8 +192,6 @@ export async function getRepNoShowAnalytics(
         trackingStartedAt: trackingStartedAt.toISOString(),
         effectivePeriodStart: periodStart.toISOString(),
         comparisonAvailable,
-        closeRate,
-        minPackageValue,
         recordsRead: records.length,
         eligibleCalls: currentCalls.length,
         previousEligibleCalls: previousCalls.length,
@@ -208,9 +202,7 @@ export async function getRepNoShowAnalytics(
         noShowRate: rate(currentNoShows.length, currentCalls.length),
         previousNoShowRate: rate(previousNoShows.length, previousCalls.length),
         weekOverWeekChange,
-        estimatedOpportunityAtRisk: estimateValue(currentNoShows.length, closeRate, minPackageValue),
         avoidedNoShows,
-        estimatedRevenueProtected: estimateValue(avoidedNoShows, closeRate, minPackageValue),
       },
       topReps,
       noShowLog: noShowLog
@@ -241,6 +233,16 @@ function getAirtableToken() {
     ""
   ).trim();
 }
+
+const fetchCachedAirtableRecords = unstable_cache(
+  async (historyDays: number) => {
+    const token = getAirtableToken();
+    if (!token) return [] as AirtableRecord[];
+    return fetchAirtableRecords(token, historyDays);
+  },
+  ["rep-no-show-airtable-records-v2"],
+  { revalidate: 900 },
+);
 
 async function fetchAirtableRecords(token: string, historyDays: number) {
   const baseId = process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID;
@@ -464,11 +466,7 @@ function getSortableTime(value: string | null) {
   return Number.isFinite(time) ? time : 0;
 }
 
-function buildRepRows(
-  calls: NormalizedCall[],
-  closeRate: number,
-  minPackageValue: number,
-): RepNoShowRepRow[] {
+function buildRepRows(calls: NormalizedCall[]): RepNoShowRepRow[] {
   const byRep = new Map<string, { repName: string; repSlug: string; calls: NormalizedCall[] }>();
 
   for (const call of calls) {
@@ -491,7 +489,6 @@ function buildRepRows(
         noShows: repNoShows.length,
         call1NoShows: repNoShows.filter(isCallOne).length,
         noShowRate: rate(repNoShows.length, rep.calls.length),
-        estimatedOpportunityAtRisk: estimateValue(repNoShows.length, closeRate, minPackageValue),
         latestNoShowAt: repNoShows.sort(sortCallsDesc)[0]?.callDate || null,
       };
     })
@@ -499,7 +496,6 @@ function buildRepRows(
     .sort(
       (a, b) =>
         b.noShows - a.noShows ||
-        b.estimatedOpportunityAtRisk - a.estimatedOpportunityAtRisk ||
         a.repName.localeCompare(b.repName),
     )
     .slice(0, 12);
@@ -509,24 +505,20 @@ function buildTrend(
   calls: NormalizedCall[],
   generatedAt: Date,
   trackingStartedAt: Date,
-  closeRate: number,
-  minPackageValue: number,
 ): RepNoShowWeeklyPoint[] {
   const ageDays = differenceInDays(trackingStartedAt, generatedAt);
 
   if (ageDays < 21) {
-    return buildDailyTrend(calls, generatedAt, trackingStartedAt, closeRate, minPackageValue);
+    return buildDailyTrend(calls, generatedAt, trackingStartedAt);
   }
 
-  return buildWeeklyTrend(calls, generatedAt, trackingStartedAt, closeRate, minPackageValue);
+  return buildWeeklyTrend(calls, generatedAt, trackingStartedAt);
 }
 
 function buildDailyTrend(
   calls: NormalizedCall[],
   generatedAt: Date,
   trackingStartedAt: Date,
-  closeRate: number,
-  minPackageValue: number,
 ): RepNoShowWeeklyPoint[] {
   const firstDay = startOfDay(maxDate(addDays(generatedAt, -13), trackingStartedAt));
   const currentDay = startOfDay(generatedAt);
@@ -545,7 +537,6 @@ function buildDailyTrend(
       label: formatTrendLabel(dayStart),
       eligibleCalls: dayCalls.length,
       noShows,
-      estimatedOpportunityAtRisk: estimateValue(noShows, closeRate, minPackageValue),
     };
   });
 }
@@ -554,8 +545,6 @@ function buildWeeklyTrend(
   calls: NormalizedCall[],
   generatedAt: Date,
   trackingStartedAt: Date,
-  closeRate: number,
-  minPackageValue: number,
 ): RepNoShowWeeklyPoint[] {
   const currentWeekStart = startOfWeek(generatedAt);
   return Array.from({ length: WEEK_COUNT }, (_, index) => {
@@ -573,7 +562,6 @@ function buildWeeklyTrend(
       label: formatTrendLabel(weekStart),
       eligibleCalls: weekCalls.length,
       noShows,
-      estimatedOpportunityAtRisk: estimateValue(noShows, closeRate, minPackageValue),
     };
   }).filter((point): point is RepNoShowWeeklyPoint => Boolean(point));
 }
@@ -581,8 +569,6 @@ function buildWeeklyTrend(
 function getFallbackAnalytics(
   generatedAt: Date,
   periodDays: RepNoShowWindow,
-  closeRate: number,
-  minPackageValue: number,
   trackingStartedAt: Date,
 ): RepNoShowAnalytics {
   const effectivePeriodStart = maxDate(addDays(generatedAt, -periodDays), trackingStartedAt);
@@ -595,8 +581,6 @@ function getFallbackAnalytics(
       trackingStartedAt: trackingStartedAt.toISOString(),
       effectivePeriodStart: effectivePeriodStart.toISOString(),
       comparisonAvailable: false,
-      closeRate,
-      minPackageValue,
       recordsRead: 0,
       eligibleCalls: 0,
       previousEligibleCalls: 0,
@@ -607,13 +591,11 @@ function getFallbackAnalytics(
       noShowRate: 0,
       previousNoShowRate: 0,
       weekOverWeekChange: 0,
-      estimatedOpportunityAtRisk: 0,
       avoidedNoShows: 0,
-      estimatedRevenueProtected: 0,
     },
     topReps: [],
     noShowLog: [],
-    weekly: buildTrend([], generatedAt, trackingStartedAt, closeRate, minPackageValue),
+    weekly: buildTrend([], generatedAt, trackingStartedAt),
   };
 }
 
@@ -658,17 +640,6 @@ function normalizeText(value: string) {
     .trim();
 }
 
-function parseRate(value: string | undefined, fallback: number) {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
-  return parsed > 1 ? parsed / 100 : parsed;
-}
-
-function parseMoney(value: string | undefined, fallback: number) {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
 function parseDate(value: string | undefined, fallback: string) {
   const parsed = new Date(value || fallback);
   if (Number.isFinite(parsed.getTime())) return parsed;
@@ -677,10 +648,6 @@ function parseDate(value: string | undefined, fallback: string) {
 
 function rate(count: number, total: number) {
   return total > 0 ? count / total : 0;
-}
-
-function estimateValue(noShows: number, closeRate: number, minPackageValue: number) {
-  return Math.round(noShows * closeRate * minPackageValue);
 }
 
 function addDays(date: Date, days: number) {

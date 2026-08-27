@@ -36,10 +36,21 @@ describe("manager dashboard population and presentation rules", () => {
   it("removes financial estimates from the visible rep no-show experience", () => {
     const pageSource = source("src/app/manager/rep-no-show/page.tsx");
     const chatSource = source("src/lib/rep-no-show-chat.ts");
+    const analyticsSource = source("src/lib/rep-no-show.ts");
 
     expect(pageSource).not.toContain("Opportunity at risk");
     expect(pageSource).not.toContain("formatCurrency");
     expect(chatSource).toContain("Do not estimate financial impact");
     expect(chatSource).not.toContain("Average package value assumption");
+    expect(analyticsSource).not.toContain("estimatedOpportunityAtRisk");
+    expect(analyticsSource).not.toContain("estimatedRevenueProtected");
+  });
+
+  it("caches the heavy Airtable read and avoids false pre-classifier comparisons", () => {
+    const analyticsSource = source("src/lib/rep-no-show.ts");
+
+    expect(analyticsSource).toContain("unstable_cache");
+    expect(analyticsSource).toContain("firstDetectedNoShowAt");
+    expect(analyticsSource).toContain("previousStart >= trackingStartedAt");
   });
 });
