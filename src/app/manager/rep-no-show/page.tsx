@@ -6,7 +6,6 @@ import {
   ArrowUpRight,
   CalendarDays,
   Clock3,
-  DollarSign,
   ShieldCheck,
   UserX,
   Users,
@@ -46,11 +45,6 @@ export const metadata: Metadata = {
   },
 };
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 const numberFormatter = new Intl.NumberFormat("en-US");
 
 export default async function RepNoShowPage({
@@ -88,8 +82,8 @@ export default async function RepNoShowPage({
                 Rep No-Show Impact
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Track rep no-shows across sales calls, estimate opportunity at risk, and review
-                every detected no-show from one manager view.
+                Track rep no-shows across sales calls and review every detected no-show from one
+                manager view.
               </p>
             </div>
 
@@ -115,7 +109,7 @@ export default async function RepNoShowPage({
 
         <ExecutiveReadout analytics={analytics} />
 
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-3">
           <MetricCard
             icon={UserX}
             title="Rep no-shows"
@@ -127,12 +121,6 @@ export default async function RepNoShowPage({
             title="No-show rate"
             value={formatPercent(analytics.summary.noShowRate)}
             description={`${formatNumber(analytics.summary.eligibleCalls)} tracked calls`}
-          />
-          <MetricCard
-            icon={DollarSign}
-            title="Opportunity at risk"
-            value={formatCurrency(analytics.summary.estimatedOpportunityAtRisk)}
-            description={`${formatPercent(analytics.summary.closeRate)} close rate x ${formatCurrency(analytics.summary.minPackageValue)}`}
           />
           <MetricCard
             icon={CalendarDays}
@@ -151,12 +139,6 @@ export default async function RepNoShowPage({
           calls={analytics.noShowLog}
           trackingStartedAt={analytics.summary.trackingStartedAt}
         />
-
-        <p className="max-w-4xl text-xs leading-5 text-muted-foreground">
-          Estimates are directional and conservative. The current formula uses rep no-shows x
-          close-rate assumption x average package value. It should be described as opportunity at
-          risk, not confirmed missed sales.
-        </p>
 
         <RepNoShowChatPanel periodDays={analytics.summary.periodDays} />
       </div>
@@ -211,7 +193,6 @@ function ExecutiveReadout({ analytics }: { analytics: RepNoShowAnalytics }) {
               Executive readout
             </Badge>
             <Badge variant="outline">Last {analytics.summary.periodDays} days</Badge>
-            <Badge variant="outline">{formatPercent(analytics.summary.closeRate)} close-rate assumption</Badge>
           </div>
           <h2 className="max-w-3xl text-2xl font-semibold leading-tight tracking-normal">
             {getExecutiveHeadline(analytics)}
@@ -242,10 +223,8 @@ function ExecutiveReadout({ analytics }: { analytics: RepNoShowAnalytics }) {
                 Previous period had {formatNumber(analytics.summary.previousRepNoShows)} rep no-shows.
               </p>
               <div className="mt-4 rounded-lg border bg-card/80 px-3 py-2">
-                <p className="text-xs text-muted-foreground">Potential revenue protected</p>
-                <p className="mt-1 text-xl font-semibold">
-                  {formatCurrency(analytics.summary.estimatedRevenueProtected)}
-                </p>
+                <p className="text-xs text-muted-foreground">Current no-show rate</p>
+                <p className="mt-1 text-xl font-semibold">{formatPercent(analytics.summary.noShowRate)}</p>
               </div>
             </>
           ) : (
@@ -357,7 +336,6 @@ function TopRepsCard({ reps }: { reps: RepNoShowRepRow[] }) {
                 <TableHead>Rep</TableHead>
                 <TableHead className="text-right">No-shows</TableHead>
                 <TableHead className="text-right">Rate</TableHead>
-                <TableHead className="text-right">Risk</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -371,7 +349,6 @@ function TopRepsCard({ reps }: { reps: RepNoShowRepRow[] }) {
                   </TableCell>
                   <TableCell className="text-right font-medium">{formatNumber(rep.noShows)}</TableCell>
                   <TableCell className="text-right">{formatPercent(rep.noShowRate)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(rep.estimatedOpportunityAtRisk)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -401,7 +378,7 @@ function getExecutiveHeadline(analytics: RepNoShowAnalytics) {
     return `No rep no-shows surfaced ${getPeriodPhrase(analytics)}.`;
   }
 
-  return `${formatNumber(analytics.summary.repNoShows)} rep no-shows surfaced ${getPeriodPhrase(analytics)}, with ${formatCurrency(analytics.summary.estimatedOpportunityAtRisk)} in estimated opportunity at risk.`;
+  return `${formatNumber(analytics.summary.repNoShows)} rep no-shows surfaced ${getPeriodPhrase(analytics)}.`;
 }
 
 function getPeriodDescription(analytics: RepNoShowAnalytics) {
@@ -442,10 +419,6 @@ function formatShortDate(value: string | Date | null | undefined) {
 
 function formatNumber(value: number) {
   return numberFormatter.format(value);
-}
-
-function formatCurrency(value: number) {
-  return currencyFormatter.format(value);
 }
 
 function formatPercent(value: number) {

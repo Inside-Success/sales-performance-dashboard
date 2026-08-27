@@ -19,10 +19,8 @@ export function buildRepNoShowChatMessages(
         "Default to concise manager-ready answers: 1-3 sentences, or up to 4 bullets when a list is useful.",
         "This page is attendance visibility for rep no-shows, not compliance review or legal analysis.",
         "Keep call number context clear. Rep no-shows can occur on any tracked call.",
-        "Use the exact configured assumptions for close rate and average package value.",
-        "Use phrases like estimated opportunity at risk, potential revenue protected, no-shows surfaced, and visibility created.",
-        "Do not say confirmed sales were missed or saved. Do not claim Magic Mike caused revenue changes.",
-        "If no-shows decreased, describe the reduction as potential revenue protected using the page formula.",
+        "Focus on attendance counts, rates, trends, call number, and follow-up priority.",
+        "Do not estimate financial impact or claim Magic Mike caused revenue changes.",
         "If the snapshot says prior comparison is unavailable, do not compare against older periods.",
         "If Airtable is not configured or no data is available, say that clearly and do not invent data.",
         "Format cleanly with short paragraphs or simple markdown bullets. Do not return a wall of text.",
@@ -62,11 +60,7 @@ function buildAnalyticsContext(analytics: RepNoShowAnalytics) {
     `Call 2+ rep no-shows in period: ${summary.call2PlusNoShows}`,
     `Rep no-show rate in period: ${formatPercent(summary.noShowRate)}`,
     `Previous no-show rate: ${formatPercent(summary.previousNoShowRate)}`,
-    `Close-rate assumption: ${formatPercent(summary.closeRate)}`,
-    `Average package value assumption: ${formatCurrency(summary.minPackageValue)}`,
-    `Estimated opportunity at risk: ${formatCurrency(summary.estimatedOpportunityAtRisk)}`,
     `Avoided no-shows vs previous period: ${summary.avoidedNoShows}`,
-    `Estimated revenue protected: ${formatCurrency(summary.estimatedRevenueProtected)}`,
     "",
     "Top reps by no-show count:",
     topReps.length
@@ -78,7 +72,6 @@ function buildAnalyticsContext(analytics: RepNoShowAnalytics) {
               `rep no-shows ${rep.noShows}`,
               `Call 1 no-shows ${rep.call1NoShows}`,
               `rate ${formatPercent(rep.noShowRate)}`,
-              `estimated opportunity ${formatCurrency(rep.estimatedOpportunityAtRisk)}`,
               `latest ${rep.latestNoShowAt || "not available"}`,
             ].join(" | "),
           )
@@ -107,26 +100,13 @@ function buildAnalyticsContext(analytics: RepNoShowAnalytics) {
     "",
     "Weekly trend:",
     ...weekly.map((point) =>
-      `${point.label}: tracked calls ${point.eligibleCalls}, rep no-shows ${point.noShows}, estimated opportunity ${formatCurrency(point.estimatedOpportunityAtRisk)}`,
+      `${point.label}: tracked calls ${point.eligibleCalls}, rep no-shows ${point.noShows}`,
     ),
-    "",
-    "Formula:",
-    "Estimated opportunity at risk = rep no-shows x close-rate assumption x average package value.",
-    "Estimated revenue protected = avoided no-shows vs previous period x close-rate assumption x average package value.",
     "Older records before the Call 1 tracking start are excluded from rate, trend, and prior-period comparison.",
     "",
     "Interpretation guardrails:",
-    "These are conservative estimates, not confirmed missed sales.",
     "The manager should use this page for awareness, accountability, and follow-up prioritization.",
   ].join("\n");
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
 }
 
 function formatPercent(value: number) {

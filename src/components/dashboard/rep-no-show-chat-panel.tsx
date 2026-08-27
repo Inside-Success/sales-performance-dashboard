@@ -24,7 +24,7 @@ type ChatMessage = {
 const STARTER_QUESTIONS = [
   "Summarize this week.",
   "Who needs follow-up first?",
-  "What is the opportunity at risk?",
+  "Which call type has more no-shows?",
   "Did this improve vs last period?",
 ];
 
@@ -115,7 +115,7 @@ export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
             </div>
           </div>
           <SheetDescription id="rep-no-show-chat-description">
-            Manager Q&amp;A for rep no-shows, weekly movement, and estimated opportunity at risk.
+            Manager Q&amp;A for rep no-shows, weekly movement, and follow-up priorities.
           </SheetDescription>
         </SheetHeader>
 
@@ -123,7 +123,7 @@ export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
           {messages.length === 0 ? (
             <div className="space-y-4">
               <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-muted-foreground shadow-xs">
-                Ask about the no-show stats on this page. Magic Mike will keep the answer focused on operational visibility and conservative opportunity estimates.
+                Ask about the no-show stats on this page. Magic Mike will keep the answer focused on attendance patterns and operational follow-up.
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {STARTER_QUESTIONS.map((question) => (

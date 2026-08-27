@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import {
   Activity,
   CalendarDays,
-  MessageCircleQuestion,
   Repeat2,
   UserCheck,
   UserMinus,
@@ -47,14 +46,14 @@ export default async function AskSalesFaqUsagePage({
         <AskSalesAdminHeader
           active="usage"
           title="Rep adoption"
-          description="Track who has tried Ask Sales, who returns, and who has signed in to Magic Mike but has not yet asked a question. Coaching-report usage remains completely separate."
+          description="See which current reps have tried Ask Sales and who may need a reminder. Coaching usage stays separate."
           generatedAt={overview.generatedAt}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-slate-600">Ask Sales activity window</p>
-            <p className="mt-1 text-xs text-slate-500">Known users combine signed-in dashboard activity, stored rep emails, and Ask Sales identities. Ask Sales admins are excluded.</p>
+            <p className="mt-1 text-xs text-slate-500">The list updates automatically and hides people with no call, dashboard, or Ask Sales activity for 30 days.</p>
           </div>
           <div className="flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
             {[7, 30, 90].map((window) => (
@@ -66,11 +65,9 @@ export default async function AskSalesFaqUsagePage({
         </div>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard icon={Users} label="Known signed-in users" value={summary.knownUsers} helper="Dashboard identities and stored rep emails, excluding Ask Sales admins." />
+          <MetricCard icon={Users} label="Current users" value={summary.knownUsers} helper="Active in at least one trusted source during the last 30 days." />
           <MetricCard icon={UserCheck} label="Activated" value={`${summary.adoptionRate}%`} helper={`${summary.activatedUsers} people have asked at least one question.`} tone="good" />
-          <MetricCard icon={Activity} label="Active reps" value={summary.active7d} helper={`${summary.active30d} active in the last 30 days.`} tone="good" />
-          <MetricCard icon={Repeat2} label="Returning users" value={summary.returningUsers} helper="People with Ask Sales activity on at least two different days." />
-          <MetricCard icon={MessageCircleQuestion} label={`Questions, ${days}d`} value={summary.questionsInWindow} helper={`${summary.averageQuestionsPerActiveUser} questions per active user.`} />
+          <MetricCard icon={Activity} label="Used Ask Sales recently" value={summary.active7d} helper={`${summary.active30d} used it in the last 30 days.`} tone="good" />
           <MetricCard icon={UserMinus} label="Not activated" value={summary.neverUsed} helper="Known dashboard users who have not submitted an Ask Sales question." tone={summary.neverUsed ? "warning" : "good"} />
         </section>
 
@@ -86,7 +83,7 @@ export default async function AskSalesFaqUsagePage({
                 <h2 className="text-lg font-extrabold text-slate-950">Rep adoption detail</h2>
                 <p className="mt-1 text-sm text-slate-500">Usage only—this does not score rep performance or mix in coaching-report engagement.</p>
               </div>
-              <Badge variant="outline" className="w-fit border-slate-200 bg-slate-50">{overview.users.length} known users</Badge>
+              <Badge variant="outline" className="w-fit border-slate-200 bg-slate-50">{overview.users.length} current users</Badge>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -112,7 +109,7 @@ export default async function AskSalesFaqUsagePage({
         </section>
 
         <p className="pb-2 text-xs font-medium text-slate-400">
-          The denominator is the strongest available dashboard identity set, not a claim that every company employee is an eligible sales rep. If access later moves to a canonical roster, this page can switch sources without changing Ask Sales activity history.
+          Current users are detected automatically from activity in the previous 30 days. Historical Ask Sales records remain stored and reappear if a person becomes active again.
         </p>
       </div>
     </main>

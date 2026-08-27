@@ -50,11 +50,11 @@ export default async function AskSalesFaqAdminPage({
           generatedAt={overview.generatedAt}
         />
 
-        <section className="magic-card flex flex-col gap-3 border-emerald-200 bg-emerald-50/70 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <section className="magic-card flex flex-col gap-3 border-emerald-200 bg-emerald-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-extrabold text-emerald-950">Production logging is active</h2>
             <p className="mt-1 text-sm leading-6 text-emerald-800">
-              The old nightly AI quality audit is retired. These logs stay available for a manual review whenever enough new data has accumulated.
+              The old nightly AI quality audit is retired. Live conversations remain logged for manual review when requested.
             </p>
           </div>
           <span className="w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-extrabold text-emerald-700">

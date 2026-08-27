@@ -4,7 +4,6 @@ import {
   Activity,
   ArrowUpRight,
   BarChart3,
-  CalendarDays,
   Clock3,
   ClipboardCheck,
   DollarSign,
@@ -107,9 +106,8 @@ export default async function SalesCorrelationPage({
                 Sales impact
               </h1>
               <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-500">
-                The graph stays central: each dot is a rep, using verified Magic Mike engagement
-                on one side and new paid sales on the other. This is directional evidence, not a
-                causal claim.
+                Compare verified Magic Mike engagement with new paid sales for current reps. People
+                with no official call or sales activity for 30 days are hidden automatically.
               </p>
             </div>
 
@@ -155,10 +153,10 @@ export default async function SalesCorrelationPage({
             description={`${formatNumber(analytics.summary.correlationPairs)} rep samples`}
           />
           <MetricCard
-            icon={CalendarDays}
-            title="Valid sales rows"
-            value={formatNumber(analytics.summary.salesRowsRead)}
-            description={formatSalesRowsDescription(analytics)}
+            icon={Users}
+            title="Current reps compared"
+            value={formatNumber(analytics.reps.length)}
+            description={`${formatNumber(analytics.summary.inactiveRepCount)} inactive historical reps hidden`}
           />
         </section>
 
@@ -166,30 +164,34 @@ export default async function SalesCorrelationPage({
           <ScatterCard reps={analytics.reps} />
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.7fr)]">
-          <UsageGroupsCard groups={analytics.groups} periodDays={analytics.summary.periodDays} />
-          <DataQualityCard analytics={analytics} />
-        </section>
+        <UsageGroupsCard groups={analytics.groups} periodDays={analytics.summary.periodDays} />
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.85fr)]">
-          <WeeklyTrendCard weekly={analytics.weekly} />
-          <LaggedImpactCard analytics={analytics} />
-        </section>
-
-        <section className="grid gap-5">
-          <BeforeAfterCard reps={analytics.reps} periodDays={analytics.summary.periodDays} />
-          <RepImpactTable reps={analytics.reps} periodDays={analytics.summary.periodDays} />
-        </section>
-
-        {analytics.unmatchedSalesReps.length ? (
-          <UnmatchedSalesRepsCard reps={analytics.unmatchedSalesReps} />
-        ) : null}
+        <details className="magic-card overflow-hidden">
+          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
+            Detailed analysis and rep table
+            <span className="ml-2 text-sm font-semibold text-slate-500">
+              data checks, trends, and supporting comparisons
+            </span>
+          </summary>
+          <div className="grid gap-5 border-t border-slate-100 p-5">
+            <DataQualityCard analytics={analytics} />
+            <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.85fr)]">
+              <WeeklyTrendCard weekly={analytics.weekly} />
+              <LaggedImpactCard analytics={analytics} />
+            </section>
+            <BeforeAfterCard reps={analytics.reps} periodDays={analytics.summary.periodDays} />
+            <RepImpactTable reps={analytics.reps} periodDays={analytics.summary.periodDays} />
+            {analytics.unmatchedSalesReps.length ? (
+              <UnmatchedSalesRepsCard reps={analytics.unmatchedSalesReps} />
+            ) : null}
+            <SalesAnalyticsChatPanel periodDays={analytics.summary.periodDays} />
+          </div>
+        </details>
 
         <p className="text-xs leading-5 text-muted-foreground">
           This page shows association, not guaranteed causation. New paid sales are the primary KPI;
-          recurring revenue is kept secondary so old deals do not overstate Magic Mike impact.
+          inactive historical reps, recurring revenue, and legacy anonymous usage do not drive the main comparison.
         </p>
-        <SalesAnalyticsChatPanel periodDays={analytics.summary.periodDays} />
       </div>
     </main>
   );
@@ -329,7 +331,7 @@ function getExecutiveSupportingText(analytics: SalesCorrelationAnalytics) {
     analytics.summary.periodDays,
   );
 
-  return `Usage data covers ${usageCoverage}. Treat this as directional, not causal proof. Only verified official report engagement is included; self-submitted feedback, legacy anonymous traffic, and compliance signals are excluded.`;
+  return `Usage data covers ${usageCoverage}. Treat this as directional, not causal proof. The comparison includes only reps with official call or sales activity in the last 30 days; self-submitted feedback, legacy traffic, and compliance signals are excluded.`;
 }
 
 function MetricCard({
@@ -444,6 +446,7 @@ function DataQualityCard({ analytics }: { analytics: SalesCorrelationAnalytics }
           <QualityRow label="Self-submitted reports" value="Separated" />
           <QualityRow label="Legacy anonymous traffic" value="Excluded" />
           <QualityRow label="Quick opens under 10 sec" value="Not engagement" />
+          <QualityRow label="No activity for 30 days" value="Hidden automatically" />
         </div>
       </CardContent>
     </Card>
@@ -829,18 +832,6 @@ function formatShortDate(value: string) {
     year: "numeric",
     timeZone: "UTC",
   }).format(date);
-}
-
-function formatSalesRowsDescription(analytics: SalesCorrelationAnalytics) {
-  const latest = analytics.summary.latestSalesDate
-    ? `Latest ${formatShortDate(analytics.summary.latestSalesDate)}`
-    : "No sales rows";
-  if (analytics.summary.salesDataSource === "cached_snapshot") {
-    return analytics.summary.salesSnapshotCreatedAt
-      ? `Fallback ${formatShortDate(analytics.summary.salesSnapshotCreatedAt)}`
-      : "Using fallback snapshot";
-  }
-  return latest;
 }
 
 function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {

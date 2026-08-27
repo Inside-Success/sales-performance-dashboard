@@ -87,9 +87,9 @@ export default async function ManagerUsagePage() {
                 Rep usage tracking
               </h1>
               <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-500">
-                This page now follows the signed-in viewer, not the report owner. The main numbers
-                only count verified official report usage, while manual reports and legacy anonymous
-                traffic stay separate.
+                See whether current reps are reading their official coaching. Reps with no official
+                call activity for 30 days are hidden automatically and return automatically when
+                new activity arrives.
               </p>
             </div>
 
@@ -97,12 +97,12 @@ export default async function ManagerUsagePage() {
               <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto">
                 <HeaderStat
                   icon={Users}
-                  label="Official reps"
+                  label="Current reps (30d)"
                   value={analytics.official.total_reps}
                 />
                 <HeaderStat
                   icon={FileText}
-                  label="Official feedback"
+                  label="Feedback for current reps"
                   value={analytics.official.total_reports}
                 />
               </div>
@@ -169,24 +169,30 @@ export default async function ManagerUsagePage() {
           />
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
-          <DailyReportViewsCard daily={analytics.daily} />
-          <OfficialSignalCard official={analytics.official} />
-        </section>
-
         <RepEngagementCard reps={analytics.repEngagement} />
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)]">
-          <UnviewedReportsCard reports={analytics.unviewedReports} />
-          <UnmappedUsersCard users={analytics.unmappedUsers} />
-        </section>
+        <UnviewedReportsCard reports={analytics.unviewedReports} />
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(380px,0.75fr)]">
-          <ManualUsageCard manual={analytics.manual} />
-          <LegacyUsageCard legacy={analytics.legacy} />
-        </section>
-
-        <ChatUsageCard chat={analytics.chat} reps={analytics.chatReps} />
+        <details className="magic-card overflow-hidden">
+          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
+            Operational details
+            <span className="ml-2 text-sm font-semibold text-slate-500">
+              trends, mapping, manual reports, and chat
+            </span>
+          </summary>
+          <div className="grid gap-5 border-t border-slate-100 p-5">
+            <section className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
+              <DailyReportViewsCard daily={analytics.daily} />
+              <OfficialSignalCard official={analytics.official} />
+            </section>
+            <UnmappedUsersCard users={analytics.unmappedUsers} />
+            <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(380px,0.75fr)]">
+              <ManualUsageCard manual={analytics.manual} />
+              <LegacyUsageCard legacy={analytics.legacy} />
+            </section>
+            <ChatUsageCard chat={analytics.chat} reps={analytics.chatReps} />
+          </div>
+        </details>
       </div>
     </main>
   );
@@ -430,7 +436,7 @@ function RepEngagementCard({ reps }: { reps: UsageRepEngagement[] }) {
       <CardHeader className="border-b border-slate-100">
         <CardTitle>Verified Rep Engagement</CardTitle>
         <CardDescription>
-          Rows are based on the signed-in viewer rep. Engagement requires 10 seconds of visible report reading.
+          Current reps only. Each report is counted once; engagement requires 10 seconds of visible reading.
         </CardDescription>
       </CardHeader>
       <CardContent>

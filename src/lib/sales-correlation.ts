@@ -17,6 +17,7 @@ const DEFAULT_SALES_CSV_URL =
 const SALES_SOURCE_SHEET = "Main";
 const HISTORY_DAYS = 120;
 const LAG_DAYS = 14;
+const ACTIVE_REP_DAYS = 30;
 const REP_SLUG_ALIASES: Record<string, string> = {
   "ollie-mcfarl": "ollie-mcfarlane",
 };
@@ -125,6 +126,7 @@ export type SalesCorrelationSummary = {
   repsWithUsage: number;
   repsWithNewSales: number;
   matchedRepCount: number;
+  inactiveRepCount: number;
   correlation: number | null;
   correlationPairs: number;
   insight: string;
@@ -168,8 +170,9 @@ export async function getSalesCorrelationAnalytics(
   const usageByRep = new Map(usageRows.map((row) => [row.rep_slug, row]));
   const salesRepNames = getSalesRepNames(salesRows);
   const repSlugs = new Set([...usageByRep.keys(), ...salesByRep.keys()]);
+  const activeRepCutoff = addDays(windowEnd, -ACTIVE_REP_DAYS);
 
-  const baseReps = Array.from(repSlugs)
+  const candidateReps = Array.from(repSlugs)
     .map((repSlug) => {
       const usage = usageByRep.get(repSlug);
       const repSalesRows = salesByRep.get(repSlug) || [];
@@ -178,6 +181,13 @@ export async function getSalesCorrelationAnalytics(
       const allSales = summarizeSalesRows(repSalesRows);
       const firstActivityAt = usage?.first_activity_at || null;
       const beforeAfter = summarizeBeforeAfterUsage(repSalesRows, firstActivityAt, periodDays);
+      const latestOfficialCallAt = parseDate(usage?.latest_report_generated_at || null);
+      const hasRecentOfficialCall = Boolean(
+        latestOfficialCallAt && latestOfficialCallAt >= activeRepCutoff && latestOfficialCallAt < windowEnd,
+      );
+      const hasRecentSalesActivity = repSalesRows.some(
+        (row) => row.date >= activeRepCutoff && row.date < windowEnd,
+      );
       const generatedReports = usage?.generated_reports || 0;
       const viewedReports = usage?.viewed_reports || 0;
       const usageSignalsWindow =
@@ -213,6 +223,7 @@ export async function getSalesCorrelationAnalytics(
         lastActivityAt: usage?.last_activity_at || null,
         hasUsageData: Boolean(usage),
         hasSalesData: repSalesRows.length > 0,
+        recentlyActive: hasRecentOfficialCall || hasRecentSalesActivity,
       };
     })
     .filter(
@@ -223,6 +234,10 @@ export async function getSalesCorrelationAnalytics(
         rep.totalPaidRevenueWindow > 0 ||
         rep.newPaidRevenueAll > 0,
     );
+  const inactiveRepCount = candidateReps.filter((rep) => !rep.recentlyActive).length;
+  const baseReps = candidateReps.flatMap(({ recentlyActive, ...rep }) =>
+    recentlyActive ? [rep] : [],
+  );
 
   const groupBySlug = assignUsageGroups(baseReps);
   const reps = baseReps
@@ -271,6 +286,7 @@ export async function getSalesCorrelationAnalytics(
       repsWithUsage: reps.filter((rep) => rep.usageSignalsWindow > 0).length,
       repsWithNewSales: reps.filter((rep) => rep.newPaidRevenueWindow > 0).length,
       matchedRepCount: reps.filter((rep) => rep.hasUsageData && rep.hasSalesData).length,
+      inactiveRepCount,
       correlation,
       correlationPairs: correlationPairs.length,
       insight: buildInsight(groups, correlation, correlationPairs.length, periodDays, usageActivity),

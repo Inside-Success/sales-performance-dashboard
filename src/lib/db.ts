@@ -764,8 +764,15 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
       sql.query(
         `
           with official_events as (
-            select *
-            from dashboard_usage_events
+            select
+              events.*,
+              exists (
+                select 1
+                from performance_calls recent
+                where recent.rep_slug = events.viewer_rep_slug
+                  and coalesce(recent.call_date, recent.created_at) >= now() - interval '30 days'
+              ) as viewer_is_current_rep
+            from dashboard_usage_events events
             where source in ('official_dashboard', 'official_report')
                or event_name in ('dashboard_home_viewed', 'rep_selected', 'report_detail_viewed', 'report_engaged', 'report_active_time')
                or (event_name = 'report_card_clicked' and report_id is not null)
@@ -775,41 +782,67 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
                )
           )
           select
-            (select count(distinct rep_slug)::int from performance_calls) as total_reps,
-            (select count(*)::int from performance_calls) as total_reports,
-            count(*) filter (
+            (
+              select count(distinct rep_slug)::int
+              from performance_calls
+              where coalesce(call_date, created_at) >= now() - interval '30 days'
+            ) as total_reps,
+            (
+              select count(*)::int
+              from performance_calls calls
+              where exists (
+                select 1
+                from performance_calls recent
+                where recent.rep_slug = calls.rep_slug
+                  and coalesce(recent.call_date, recent.created_at) >= now() - interval '30 days'
+              )
+            ) as total_reports,
+            count(distinct report_id) filter (
               where event_name = 'report_detail_viewed'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '1 day'
             )::int as report_views_today,
-            count(*) filter (
+            count(distinct report_id) filter (
               where event_name = 'report_detail_viewed'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '7 days'
             )::int as report_views_7d,
-            count(*) filter (
+            count(distinct report_id) filter (
               where event_name = 'report_detail_viewed'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '30 days'
             )::int as report_views_30d,
-            count(*) filter (
+            count(distinct report_id) filter (
               where event_name = 'report_engaged'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '1 day'
             )::int as report_engagements_today,
-            count(*) filter (
+            count(distinct report_id) filter (
               where event_name = 'report_engaged'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '7 days'
             )::int as report_engagements_7d,
-            count(*) filter (
+            count(distinct report_id) filter (
               where event_name = 'report_engaged'
                 and viewer_is_mapped
+                and viewer_is_current_rep
+                and report_id is not null
                 and created_at >= now() - interval '30 days'
             )::int as report_engagements_30d,
             coalesce(sum(engagement_seconds) filter (
               where event_name = 'report_active_time'
                 and viewer_is_mapped
+                and viewer_is_current_rep
                 and created_at >= now() - interval '7 days'
             ), 0)::int as engagement_seconds_7d,
             count(distinct anonymous_session_id) filter (
@@ -828,17 +861,20 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
             count(distinct viewer_rep_slug) filter (
               where created_at >= now() - interval '7 days'
                 and viewer_is_mapped
+                and viewer_is_current_rep
                 and viewer_rep_slug is not null
             )::int as reps_with_activity_7d,
             count(*) filter (
               where event_name = 'rep_selected'
                 and viewer_is_mapped
+                and viewer_is_current_rep
                 and created_at >= now() - interval '7 days'
             )::int as rep_selections_7d,
             count(*) filter (
               where event_name in ('google_doc_clicked', 'zoom_clicked', 'transcript_clicked')
                 and report_id is not null
                 and viewer_is_mapped
+                and viewer_is_current_rep
                 and created_at >= now() - interval '7 days'
             )::int as link_clicks_7d,
             max(created_at) filter (where viewer_email is not null)::text as last_activity_at
@@ -950,6 +986,12 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
               max(rep_name) as rep_name,
               count(*)::int as generated_reports
             from performance_calls
+            where exists (
+              select 1
+              from performance_calls recent
+              where recent.rep_slug = performance_calls.rep_slug
+                and coalesce(recent.call_date, recent.created_at) >= now() - interval '30 days'
+            )
             group by rep_slug
           ),
           official_events as (
@@ -977,23 +1019,33 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
               where official_events.event_name = 'report_engaged'
                 and official_events.report_id is not null
             )::int as viewed_reports,
-            count(*) filter (where official_events.event_name = 'report_detail_viewed')::int as report_views,
-            count(*) filter (where official_events.event_name = 'report_engaged')::int as report_engagements,
-            count(*) filter (
+            count(distinct official_events.report_id) filter (
               where official_events.event_name = 'report_detail_viewed'
+                and official_events.report_id is not null
+            )::int as report_views,
+            count(distinct official_events.report_id) filter (
+              where official_events.event_name = 'report_engaged'
+                and official_events.report_id is not null
+            )::int as report_engagements,
+            count(distinct official_events.report_id) filter (
+              where official_events.event_name = 'report_detail_viewed'
+                and official_events.report_id is not null
                 and official_events.report_rep_slug = reps.rep_slug
             )::int as own_report_opens,
-            count(*) filter (
+            count(distinct official_events.report_id) filter (
               where official_events.event_name = 'report_detail_viewed'
+                and official_events.report_id is not null
                 and official_events.report_rep_slug is not null
                 and official_events.report_rep_slug <> reps.rep_slug
             )::int as other_report_opens,
-            count(*) filter (
+            count(distinct official_events.report_id) filter (
               where official_events.event_name = 'report_engaged'
+                and official_events.report_id is not null
                 and official_events.report_rep_slug = reps.rep_slug
             )::int as own_report_engagements,
-            count(*) filter (
+            count(distinct official_events.report_id) filter (
               where official_events.event_name = 'report_engaged'
+                and official_events.report_id is not null
                 and official_events.report_rep_slug is not null
                 and official_events.report_rep_slug <> reps.rep_slug
             )::int as other_report_engagements,
@@ -1028,6 +1080,7 @@ export async function getUsageAnalytics(): Promise<UsageAnalytics> {
            and events.event_name = 'report_engaged'
            and events.viewer_is_mapped
           where calls.created_at < now() - interval '48 hours'
+            and coalesce(calls.call_date, calls.created_at) >= now() - interval '30 days'
           group by calls.id
           having count(events.id) = 0
           order by calls.created_at desc
@@ -1219,8 +1272,8 @@ export async function getSalesCorrelationUsageData(
               rep_slug,
               max(rep_name) as rep_name,
               count(*)::int as generated_reports,
-              min(created_at)::text as first_report_generated_at,
-              max(created_at)::text as latest_report_generated_at
+              min(coalesce(call_date, created_at))::text as first_report_generated_at,
+              max(coalesce(call_date, created_at))::text as latest_report_generated_at
             from performance_calls
             group by rep_slug
           ),
@@ -3430,15 +3483,20 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
           select lower(viewer_email) as email, max(viewer_name) as name, 'dashboard' as source
           from dashboard_usage_events
           where viewer_email is not null
+            and viewer_is_mapped
+            and created_at >= now() - interval '30 days'
           group by lower(viewer_email)
           union all
           select lower(rep_email) as email, max(rep_name) as name, 'rep_roster' as source
           from performance_calls
-          where rep_email is not null and trim(rep_email) <> ''
+          where rep_email is not null
+            and trim(rep_email) <> ''
+            and coalesce(call_date, created_at) >= now() - interval '30 days'
           group by lower(rep_email)
           union all
           select lower(viewer_email) as email, max(viewer_name) as name, 'ask_sales' as source
           from ask_sales_faq_conversations
+          where updated_at >= now() - interval '30 days'
           group by lower(viewer_email)
         ), known_users as (
           select
@@ -3514,7 +3572,23 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
     ),
     sql.query(
       `
-        with days as (
+        with active_emails as (
+          select lower(viewer_email) as email
+          from dashboard_usage_events
+          where viewer_email is not null
+            and viewer_is_mapped
+            and created_at >= now() - interval '30 days'
+          union
+          select lower(rep_email) as email
+          from performance_calls
+          where rep_email is not null
+            and trim(rep_email) <> ''
+            and coalesce(call_date, created_at) >= now() - interval '30 days'
+          union
+          select lower(viewer_email) as email
+          from ask_sales_faq_conversations
+          where updated_at >= now() - interval '30 days'
+        ), days as (
           select generate_series(
             current_date - (($1::int - 1) * interval '1 day'),
             current_date,
@@ -3531,6 +3605,7 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
          and messages.created_at >= days.day
          and messages.created_at < days.day + interval '1 day'
          and not (lower(messages.viewer_email) = any($2::text[]))
+         and lower(messages.viewer_email) in (select email from active_emails)
         group by days.day
         order by days.day asc
       `,
