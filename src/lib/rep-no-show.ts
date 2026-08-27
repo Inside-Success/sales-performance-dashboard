@@ -114,7 +114,13 @@ export function normalizeRepNoShowWindow(value: string | string[] | undefined): 
     : 7;
 }
 
-export async function getRepNoShowAnalytics(
+export const getRepNoShowAnalytics = unstable_cache(
+  async (periodDays: RepNoShowWindow = 7) => getRepNoShowAnalyticsUncached(periodDays),
+  ["rep-no-show-analytics-v3"],
+  { revalidate: 900 },
+);
+
+async function getRepNoShowAnalyticsUncached(
   periodDays: RepNoShowWindow = 7,
 ): Promise<RepNoShowAnalytics> {
   const generatedAt = new Date();
@@ -140,7 +146,8 @@ export async function getRepNoShowAnalytics(
   }
 
   try {
-    const records = await fetchCachedAirtableRecords(
+    const records = await fetchAirtableRecords(
+      token,
       Math.max(HISTORY_DAYS, differenceInDays(configuredTrackingStart, generatedAt) + 2),
     );
     const calls = dedupeTrackedCalls(
@@ -230,16 +237,6 @@ function getAirtableToken() {
     ""
   ).trim();
 }
-
-const fetchCachedAirtableRecords = unstable_cache(
-  async (historyDays: number) => {
-    const token = getAirtableToken();
-    if (!token) return [] as AirtableRecord[];
-    return fetchAirtableRecords(token, historyDays);
-  },
-  ["rep-no-show-airtable-records-v2"],
-  { revalidate: 900 },
-);
 
 async function fetchAirtableRecords(token: string, historyDays: number) {
   const baseId = process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID;

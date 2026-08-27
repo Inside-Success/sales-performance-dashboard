@@ -50,6 +50,8 @@ describe("manager dashboard population and presentation rules", () => {
     const analyticsSource = source("src/lib/rep-no-show.ts");
 
     expect(analyticsSource).toContain("unstable_cache");
+    expect(analyticsSource).toContain("rep-no-show-analytics-v3");
+    expect(analyticsSource).not.toContain("rep-no-show-airtable-records-v2");
     expect(analyticsSource).toContain("firstDetectedNoShowAt");
     expect(analyticsSource).toContain("previousStart >= trackingStartedAt");
     expect(analyticsSource).toContain("FIND('attendance_status'");
