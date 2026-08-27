@@ -16,7 +16,14 @@ const SCORE_FIELDS = [
 ];
 
 type AirtableRecord = { id: string; createdTime?: string; fields: Record<string, unknown> };
-type AirtableListResponse = { records?: AirtableRecord[]; offset?: string; error?: { message?: string } };
+type AirtableListResponse = { records?: AirtableRecord[]; offset?: string; error?: { message?: string; type?: string } };
+
+class AirtableRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "AirtableRequestError";
+  }
+}
 
 export type V7Evidence = { timestamp: string; speaker: string; quote: string };
 export type V7Criterion = { id: string; label: string; status: string; confidence: string; reason: string; evidence: V7Evidence[]; counterevidence: V7Evidence[] };
@@ -275,6 +282,19 @@ function activeScorecardVersion() {
 }
 
 async function fetchRecords(table: string, token: string, filterByFormula: string, fields: string[], maxRecords: number) {
+  try {
+    return await fetchRecordSequence(table, token, filterByFormula, fields, maxRecords);
+  } catch (error) {
+    // Airtable pagination cursors can be invalidated while rows are changing.
+    // Restart the bounded read once so a transient 422 cannot blank the page.
+    if (error instanceof AirtableRequestError && error.status === 422) {
+      return fetchRecordSequence(table, token, filterByFormula, fields, maxRecords);
+    }
+    throw error;
+  }
+}
+
+async function fetchRecordSequence(table: string, token: string, filterByFormula: string, fields: string[], maxRecords: number) {
   const baseId = process.env.REP_SCORING_AIRTABLE_BASE_ID || DEFAULT_BASE_ID;
   const records: AirtableRecord[] = [];
   let offset = "";
@@ -287,12 +307,13 @@ async function fetchRecords(table: string, token: string, filterByFormula: strin
     if (offset) url.searchParams.set("offset", offset);
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
-      cache: "force-cache",
-      next: { revalidate: 30, tags: [`rep-scoring-v7:${table}`] },
+      // Do not cache individual Airtable pages: a cached first page can retain
+      // an offset that becomes invalid after live score rows are added.
+      cache: "no-store",
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     const body = await response.json() as AirtableListResponse;
-    if (!response.ok) throw new Error(body.error?.message || `Airtable returned ${response.status}.`);
+    if (!response.ok) throw new AirtableRequestError(body.error?.message || `Airtable returned ${response.status}.`, response.status);
     records.push(...(body.records || []));
     offset = body.offset || "";
   } while (offset && records.length < maxRecords);
