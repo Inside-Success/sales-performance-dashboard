@@ -16,10 +16,25 @@ export default async function CallScorePage({ params }: { params: Promise<{ asse
   const { assessmentId } = await params;
   const call = await getV7Assessment(decodeURIComponent(assessmentId));
   if (!call) notFound();
-  const concerns = call.improvements.length ? call.improvements : call.dimensions.flatMap((dimension) => {
+  const criterionConcerns = call.dimensions.flatMap((dimension) => {
     const criterion = dimension.criteria.find((item) => ["partial", "weak", "missed", "harmful"].includes(item.status));
     return criterion ? [{ label: dimension.label, reason: criterion.reason, evidence: criterion.evidence }] : [];
   });
+  const dimensionConcerns = call.dimensions
+    .filter((dimension) => dimension.points !== null && dimension.points < 60)
+    .sort((a, b) => (a.points ?? 100) - (b.points ?? 100))
+    .slice(0, 2)
+    .map((dimension) => ({
+      label: dimension.label,
+      reason: dimension.reason || `${dimension.label} scored ${dimension.points?.toFixed(1)}. Open the scoring breakdown and source transcript to audit the evidence behind this result.`,
+      evidence: dimension.criteria.flatMap((criterion) => criterion.evidence).slice(0, 2),
+    }));
+  const concerns = call.improvements.length
+    ? call.improvements
+    : criterionConcerns.length
+      ? criterionConcerns
+      : dimensionConcerns;
+  const lowScoreWithoutDetails = concerns.length === 0 && call.score !== null && call.score < 70;
 
   return (
     <main className="magic-page">
@@ -32,7 +47,7 @@ export default async function CallScorePage({ params }: { params: Promise<{ asse
 
         <section className="grid gap-4 md:grid-cols-2"><ContextCard label="Prospect opportunity" value={humanize(call.opportunity)} detail={call.opportunityReason} /><ContextCard label={call.callType === "Call 1" ? "Correct progression" : "Recorded outcome"} value={humanize(call.callType === "Call 1" ? call.disposition : call.outcome)} detail={call.outcomeReason || "Based on verified call evidence."} /></section>
 
-        {concerns.length ? <FindingSection title="What needs improvement" findings={concerns} concern /> : <Card className="magic-card border-emerald-100 bg-emerald-50/70"><CardContent className="flex gap-3 p-5"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div><div className="font-extrabold text-slate-950">No material weakness was supported on this call</div><p className="mt-1 text-sm leading-6 text-slate-600">This does not mean perfect execution; it means the transcript did not support a material deficiency.</p></div></CardContent></Card>}
+        {concerns.length ? <FindingSection title="What needs improvement" findings={concerns} concern /> : lowScoreWithoutDetails ? <Card className="magic-card border-amber-200 bg-amber-50/70"><CardContent className="flex gap-3 p-5"><TriangleAlert className="mt-0.5 size-5 shrink-0 text-amber-700" /><div><div className="font-extrabold text-slate-950">The score indicates manager review is needed</div><p className="mt-1 text-sm leading-6 text-slate-600">A detailed weakness label was not stored for this call. Use the manager takeaway, scoring breakdown, and source transcript instead of assuming there was no weakness.</p></div></CardContent></Card> : <Card className="magic-card border-emerald-100 bg-emerald-50/70"><CardContent className="flex gap-3 p-5"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div><div className="font-extrabold text-slate-950">No material weakness was supported on this call</div><p className="mt-1 text-sm leading-6 text-slate-600">This does not mean perfect execution; it means the transcript did not support a material deficiency.</p></div></CardContent></Card>}
         {call.strengths.length ? <FindingSection title="What was done well" findings={call.strengths} /> : null}
 
         <details className="magic-card rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-extrabold text-slate-950">View complete scoring breakdown</summary><p className="mt-2 text-sm leading-6 text-slate-500">Open this only when you need to audit how the score was calculated.</p><div className="mt-4 space-y-3">{call.dimensions.map((dimension) => <div key={dimension.key} className="rounded-xl border border-slate-200 p-4"><div className="flex items-center justify-between gap-3"><div className="font-extrabold text-slate-950">{dimension.label}</div><div className="text-xl font-extrabold text-slate-950">{dimension.points?.toFixed(1) ?? "Not scored"}</div></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>)}</div></details>

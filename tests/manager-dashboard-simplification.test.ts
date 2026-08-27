@@ -53,4 +53,14 @@ describe("manager dashboard population and presentation rules", () => {
     expect(analyticsSource).toContain("firstDetectedNoShowAt");
     expect(analyticsSource).toContain("previousStart >= trackingStartedAt");
   });
+
+  it("does not show a false no-weakness message for low Call 2 scores", () => {
+    const callPage = source("src/app/manager/rep-scoring/call/[assessmentId]/page.tsx");
+    const repPage = source("src/app/manager/rep-scoring/rep/[repKey]/page.tsx");
+
+    expect(callPage).toContain("dimension.points < 60");
+    expect(callPage).toContain("The score indicates manager review is needed");
+    expect(repPage).toContain("Review the lowest-scoring Call 2s");
+    expect(repPage).toContain("this summary does not manufacture a recurring pattern");
+  });
 });
