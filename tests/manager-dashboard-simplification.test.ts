@@ -52,7 +52,7 @@ describe("manager dashboard population and presentation rules", () => {
     expect(analyticsSource).toContain("unstable_cache");
     expect(analyticsSource).toContain("firstDetectedNoShowAt");
     expect(analyticsSource).toContain("previousStart >= trackingStartedAt");
-    expect(analyticsSource).toContain("FIND('attendance_status='");
+    expect(analyticsSource).toContain("FIND('attendance_status'");
     expect(analyticsSource).not.toContain('"AI Confidence"');
     expect(analyticsSource).not.toContain('"Automation Key"');
   });

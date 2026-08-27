@@ -252,7 +252,7 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
     params.set("pageSize", "100");
     params.set(
       "filterByFormula",
-      `AND({Processing Status} = 'Processed', FIND('attendance_status=', LOWER({AI Decision Reason} & '')) > 0, OR(IS_AFTER({Ingested At}, DATEADD(NOW(), -${historyDays}, 'days')), IS_AFTER({Meeting Start Date}, DATEADD(NOW(), -${historyDays}, 'days'))))`,
+      `AND({Processing Status} = 'Processed', FIND('attendance_status', LOWER({AI Decision Reason} & '')) > 0, OR(IS_AFTER({Ingested At}, DATEADD(NOW(), -${historyDays}, 'days')), IS_AFTER({Meeting Start Date}, DATEADD(NOW(), -${historyDays}, 'days'))))`,
     );
     params.set("sort[0][field]", "Ingested At");
     params.set("sort[0][direction]", "desc");
