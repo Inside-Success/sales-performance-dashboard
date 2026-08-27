@@ -8,7 +8,9 @@ export const CALL2_MANAGER_SCORER_VERSION = "magic-mike-call2-evidence-score-v1"
 export const V7_VALIDATION_TARGET = 405;
 
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
-const FETCH_TIMEOUT_MS = 12_000;
+const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_ATTEMPTS = 2;
+const FETCH_RETRY_DELAY_MS = 250;
 const SCORE_FIELDS = [
   "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Show Name",
   "Transcript URL", "Composite Score", "Display Band", "Dimensions JSON", "Behaviour Checks JSON", "Critical Events JSON",
@@ -305,19 +307,79 @@ async function fetchRecordSequence(table: string, token: string, filterByFormula
     url.searchParams.set("filterByFormula", filterByFormula);
     for (const field of fields) url.searchParams.append("fields[]", field);
     if (offset) url.searchParams.set("offset", offset);
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      // Do not cache individual Airtable pages: a cached first page can retain
-      // an offset that becomes invalid after live score rows are added.
-      cache: "no-store",
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    });
-    const body = await response.json() as AirtableListResponse;
-    if (!response.ok) throw new AirtableRequestError(body.error?.message || `Airtable returned ${response.status}.`, response.status);
+    const body = await fetchAirtablePage(url, table, token);
     records.push(...(body.records || []));
     offset = body.offset || "";
   } while (offset && records.length < maxRecords);
   return records.slice(0, maxRecords);
+}
+
+async function fetchAirtablePage(url: URL, table: string, token: string) {
+  for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        // Do not cache individual Airtable pages: a cached first page can retain
+        // an offset that becomes invalid after live score rows are added.
+        cache: "no-store",
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+      const body = await parseAirtableBody(response);
+      if (!response.ok) {
+        const error = new AirtableRequestError(body.error?.message || `Airtable returned ${response.status}.`, response.status);
+        if (attempt < FETCH_ATTEMPTS && retryableStatus(response.status)) {
+          logAirtableRetry(table, attempt, `status_${response.status}`);
+          await delay(retryDelay(response));
+          continue;
+        }
+        throw error;
+      }
+      return body;
+    } catch (error) {
+      if (error instanceof AirtableRequestError) throw error;
+      if (attempt < FETCH_ATTEMPTS && retryableFetchError(error)) {
+        logAirtableRetry(table, attempt, error instanceof Error ? error.name : "network_error");
+        await delay(FETCH_RETRY_DELAY_MS);
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error("Airtable read attempts were exhausted.");
+}
+
+async function parseAirtableBody(response: Response): Promise<AirtableListResponse> {
+  try {
+    return await response.json() as AirtableListResponse;
+  } catch (error) {
+    if (response.ok) throw error;
+    return {};
+  }
+}
+
+function retryableStatus(status: number) {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+function retryableFetchError(error: unknown) {
+  return error instanceof SyntaxError
+    || error instanceof TypeError
+    || (error instanceof Error && ["AbortError", "TimeoutError"].includes(error.name));
+}
+
+function retryDelay(response: Response) {
+  const retryAfterSeconds = Number(response.headers.get("retry-after"));
+  return Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+    ? Math.min(retryAfterSeconds * 1000, 2_000)
+    : FETCH_RETRY_DELAY_MS;
+}
+
+function logAirtableRetry(table: string, attempt: number, reason: string) {
+  console.warn("[rep-scoring] Airtable read retry", { table, attempt, nextAttempt: attempt + 1, reason });
+}
+
+function delay(milliseconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function dimensionList(value: unknown): V7Dimension[] {

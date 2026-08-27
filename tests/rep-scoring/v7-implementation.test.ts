@@ -81,4 +81,12 @@ describe("V7 manager presentation safeguards", () => {
     expect(productionCall).toContain("Manager takeaway");
     expect(productionCall).not.toMatch(/JSON\.stringify|raw JSON/i);
   });
+
+  it("gives managers an immediate recovery path when a review read fails", () => {
+    const errorPage = read("src/app/manager/rep-scoring/error.tsx");
+    expect(errorPage).toContain("onClick={reset}");
+    expect(errorPage).toContain("Try again");
+    expect(errorPage).toContain('href="/manager/rep-scoring"');
+    expect(errorPage).not.toContain('href="/coaching"');
+  });
 });
