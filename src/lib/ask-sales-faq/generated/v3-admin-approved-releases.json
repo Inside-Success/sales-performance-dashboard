@@ -269,6 +269,291 @@
       ],
       "resolved_blocked_topics": [],
       "expected_knowledge_version": "cfc1a6ffc557e9b7"
+    },
+    {
+      "status": "approved_for_publish",
+      "policies": [
+        {
+          "id": "kr_13fd4e32e065948a",
+          "title": "Daily dial-out list: max 75 leads, must be dialed and updated by 8 PM EST",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2:kc_4835d625-60aa-4e57-a5e9-364dc01842bc",
+              "slack_channel:C09AF0NQJE7"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "contact",
+            "report"
+          ],
+          "domains": [
+            "lead_ownership",
+            "communications"
+          ],
+          "decision": "For the daily dial-out list, each rep may claim up to 75 leads, must not change filters or cherry-pick, must take a block and write their full name, and must dial and update all claimed leads by 8 PM EST with no exceptions. Reps may take fewer than 75 if needed. The exact SOP must be followed.",
+          "entities": [
+            "daily_dial_out_list",
+            "75_leads",
+            "8_pm_est",
+            "sop"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-daily-dial-out-list-rules-e065948a",
+          "risk_level": "high",
+          "search_text": "daily dial out list max 75 leads must be dialed and updated by 8 pm est daily dial out list max 75 leads must be dialed and updated by 8 pm est the daily dial out list for 20 commissions is posted with rules max 75 leads per person do not change filters or cherry pick take a block and write your full name all claimed leads must be dialed and updated by 8 pm est no exceptions and follow the sop daily dial out list reps may take fewer than 75 leads if needed for the daily dial out list each rep may claim up to 75 leads must not change filters or cherry pick must take a block and write their full name and must dial and update all claimed leads by 8 pm est with no exceptions reps may take fewer than 75 if needed the exact sop must be followed product agnostic lead ownership communications contact report daily dial out list 75 leads 8 pm est sop",
+          "decision_key": "daily-dial-out-list-rules",
+          "effective_at": "2026-08-21T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-08-27",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "Daily dial-out list: max 75 leads, must be dialed and updated by 8 PM EST",
+            "The daily dial-out list for 20% commissions is posted with rules: max 75 leads per person, do not change filters or cherry pick, take a block and write your full name, all claimed leads must be dialed and updated by 8 PM EST, no exceptions, and follow the SOP.",
+            "Daily dial-out list",
+            "Reps may take fewer than 75 leads if needed."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        },
+        {
+          "id": "kr_5bc1b603b41e74c8",
+          "title": "No-show threshold is 5 minutes from start time",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2:kc_59d9ee2a-a074-417c-829e-e73cec4948eb",
+              "slack_channel:C0AUQKNR8CF"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "reschedule",
+            "schedule"
+          ],
+          "domains": [
+            "scheduling"
+          ],
+          "decision": "If a lead is more than 5 minutes late to a scheduled call, they may be considered a no-show and the rep can ask them to reschedule. This applies to all call types, including triple bookings.",
+          "entities": [
+            "no_show",
+            "5_minutes",
+            "reschedule"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-no-show-after-5-minutes-b41e74c8",
+          "risk_level": "high",
+          "search_text": "no show threshold is 5 minutes from start time no show threshold is 5 minutes from start time sales ops confirmed that a lead is considered a no show after 5 minutes from the original start time and reps can ask them to reschedule this is a reusable scheduling rule no show policy for scheduled calls when a lead is late to a scheduled call if a lead is more than 5 minutes late to a scheduled call they may be considered a no show and the rep can ask them to reschedule this applies to all call types including triple bookings product agnostic scheduling reschedule schedule no show 5 minutes reschedule",
+          "decision_key": "no-show-after-5-minutes",
+          "effective_at": "2026-08-26T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-08-27",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "No-show threshold is 5 minutes from start time",
+            "Sales Ops confirmed that a lead is considered a no-show after 5 minutes from the original start time, and reps can ask them to reschedule. This is a reusable scheduling rule.",
+            "No-show policy for scheduled calls",
+            "When a lead is late to a scheduled call."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        },
+        {
+          "id": "kr_8d4e25bef6c6104a",
+          "title": "Do not send license PDF via email; screen share on call",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2:kc_c486b17b-3088-4819-af5e-dc76bce949c8",
+              "slack_channel:C0AUQKNR8CF"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "send",
+            "contact"
+          ],
+          "domains": [
+            "communications",
+            "sales_tech"
+          ],
+          "decision": "Do not send the license PDF or similar proposal documents via email. Instead, screen share the document during a live Zoom call with the applicant to review payment options.",
+          "entities": [
+            "license_pdf",
+            "email",
+            "screen_share"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-no-email-license-pdf-f6c6104a",
+          "risk_level": "high",
+          "search_text": "do not send license pdf via email screen share on call do not send license pdf via email screen share on call sales ops advised not to send the license pdf via email because it often loses the sale instead screen share it during the call this is a reusable communication rule license pdf distribution when an applicant requests a copy of the license pdf or proposal do not send the license pdf or similar proposal documents via email instead screen share the document during a live zoom call with the applicant to review payment options product agnostic communications sales tech send contact license pdf email screen share",
+          "decision_key": "no-email-license-pdf",
+          "effective_at": "2026-08-26T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-08-27",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "Do not send license PDF via email; screen share on call",
+            "Sales Ops advised not to send the license PDF via email because it often loses the sale; instead, screen share it during the call. This is a reusable communication rule.",
+            "License PDF distribution",
+            "When an applicant requests a copy of the license PDF or proposal."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        },
+        {
+          "id": "kr_771fe1da0b5aea9d",
+          "title": "Non-owner at a company does not qualify unless owner approves",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2:kc_18c4d663-d20a-4064-9500-a8cb387bb3e2",
+              "slack_channel:C0AUQKNR8CF"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "qualify"
+          ],
+          "domains": [
+            "qualification"
+          ],
+          "decision": "A person who is not the owner of a business does not qualify for a show unless the owner approves the business being featured. Ask to have the owner on Call 2 if they are interested.",
+          "entities": [
+            "non_owner",
+            "owner_approval",
+            "business"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-non-owner-qualification-requires-owner-approval-0b5aea9d",
+          "risk_level": "high",
+          "search_text": "non owner at a company does not qualify unless owner approves non owner at a company does not qualify unless owner approves sales ops clarified that a non owner e g right hand to owner does not qualify for a show unless the owner approves featuring the business this is a reusable qualification rule qualification for non owners when a lead is not the owner of the business they represent a person who is not the owner of a business does not qualify for a show unless the owner approves the business being featured ask to have the owner on call 2 if they are interested product agnostic qualification qualify non owner owner approval business",
+          "decision_key": "non-owner-qualification-requires-owner-approval",
+          "effective_at": "2026-08-27T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-08-27",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "Non-owner at a company does not qualify unless owner approves",
+            "Sales Ops clarified that a non-owner (e.g., right-hand to owner) does not qualify for a show unless the owner approves featuring the business. This is a reusable qualification rule.",
+            "Qualification for non-owners",
+            "When a lead is not the owner of the business they represent."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        },
+        {
+          "id": "kr_eb62de6cfbc78d98",
+          "title": "Full episode cannot be used for film festivals; clips only",
+          "source": {
+            "ids": [
+              "knowledge-refresh:kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2:kc_35e56461-3081-47fe-be35-130dcb095f38",
+              "slack_channel:C0AUQKNR8CF"
+            ],
+            "kind": "admin_approved_knowledge_release",
+            "article_id": null,
+            "approved_by": [
+              "syed.haider@insidesuccess.com"
+            ]
+          },
+          "actions": [
+            "use_or_promote"
+          ],
+          "domains": [
+            "content_rights",
+            "shows_offers"
+          ],
+          "decision": "Clients may use clips from their episode for film festivals, hip hop festivals, etc., but may not use the full episode for such purposes.",
+          "entities": [
+            "clips",
+            "full_episode",
+            "film_festival"
+          ],
+          "authority": 115,
+          "route_key": null,
+          "policy_key": "admin-release-episode-clips-only-for-festivals-fbc78d98",
+          "risk_level": "high",
+          "search_text": "full episode cannot be used for film festivals clips only full episode cannot be used for film festivals clips only sales ops confirmed that clients can use clips from their episode for film festivals but not the full episode this is a reusable content usage rule episode usage for festivals when a client asks to use their episode for film festivals or similar events clients may use clips from their episode for film festivals hip hop festivals etc but may not use the full episode for such purposes product agnostic content rights shows offers use or promote clips full episode film festival",
+          "decision_key": "episode-clips-only-for-festivals",
+          "effective_at": "2026-08-26T00:00:00.000Z",
+          "quality_tier": "canonical",
+          "route_reason": "",
+          "answerability": "answer_evidence",
+          "last_reviewed": "2026-08-27",
+          "quality_flags": [],
+          "route_channel": null,
+          "product_scopes": [
+            "product_agnostic"
+          ],
+          "question_families": [
+            "Full episode cannot be used for film festivals; clips only",
+            "Sales Ops confirmed that clients can use clips from their episode for film festivals, but not the full episode. This is a reusable content usage rule.",
+            "Episode usage for festivals",
+            "When a client asks to use their episode for film festivals or similar events."
+          ],
+          "specificity_priority": 14,
+          "blocked_for_decision_keys": []
+        }
+      ],
+      "release_id": "kr_584500ad-cbaf-47e5-8c5f-4c3a2f219ee2",
+      "prepared_at": "2026-08-27T20:03:15.121Z",
+      "prepared_by": "syed.haider@insidesuccess.com",
+      "candidate_ids": [
+        "kc_4835d625-60aa-4e57-a5e9-364dc01842bc",
+        "kc_59d9ee2a-a074-417c-829e-e73cec4948eb",
+        "kc_c486b17b-3088-4819-af5e-dc76bce949c8",
+        "kc_18c4d663-d20a-4064-9500-a8cb387bb3e2",
+        "kc_35e56461-3081-47fe-be35-130dcb095f38"
+      ],
+      "supersessions": [],
+      "base_knowledge_version": "cfc1a6ffc557e9b7",
+      "source_snapshot_hashes": [
+        "aaabcfa6a3c9f03ba9ee7f733b9c4c3fb364eadfb07f8fc1a1dc95dc82699087",
+        "d154a00008d6892ee7b1553cfc4b80a20f423e1a4a30a8cb0075be8f14e67b7d"
+      ],
+      "resolved_blocked_topics": [],
+      "expected_knowledge_version": "44539aec14aab9fc"
     }
   ]
 }
