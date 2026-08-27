@@ -407,7 +407,7 @@ function UsageGroupsCard({
               <MiniStat label="Reps" value={formatNumber(group.repCount)} />
               <MiniStat label="Usage score" value={formatNumber(group.totalUsageSignals)} />
               <MiniStat label="New deals" value={formatNumber(group.totalNewDeals)} />
-              <MiniStat label="Engaged rate" value={formatPercent(group.avgUsageRate)} />
+              <MiniStat label="Reports engaged" value={formatNumber(group.totalEngagedReports)} />
             </div>
           </div>
         ))}
@@ -811,10 +811,6 @@ function formatCurrency(value: number) {
 
 function formatNumber(value: number) {
   return numberFormatter.format(Math.round(value));
-}
-
-function formatPercent(value: number) {
-  return `${Math.round(value * 100)}%`;
 }
 
 function formatCorrelation(value: number | null) {

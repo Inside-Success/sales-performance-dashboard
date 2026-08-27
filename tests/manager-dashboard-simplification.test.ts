@@ -23,6 +23,16 @@ describe("manager dashboard population and presentation rules", () => {
     );
   });
 
+  it("shows an auditable engaged-report count instead of an invalid rate", () => {
+    const pageSource = source("src/app/manager/sales-correlation/page.tsx");
+    const analyticsSource = source("src/lib/sales-correlation.ts");
+
+    expect(pageSource).toContain('label="Reports engaged"');
+    expect(pageSource).not.toContain('label="Engaged rate"');
+    expect(analyticsSource).toContain("totalEngagedReports");
+    expect(analyticsSource).not.toContain("avgUsageRate");
+  });
+
   it("removes financial estimates from the visible rep no-show experience", () => {
     const pageSource = source("src/app/manager/rep-no-show/page.tsx");
     const chatSource = source("src/lib/rep-no-show-chat.ts");

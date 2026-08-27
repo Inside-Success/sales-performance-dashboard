@@ -53,7 +53,6 @@ export type SalesCorrelationRep = {
   linkClicksWindow: number;
   usageSignalsWindow: number;
   usageSignalsAll: number;
-  usageRate: number;
   newPaidRevenueWindow: number;
   newPaidDealsWindow: number;
   totalPaidRevenueWindow: number;
@@ -78,7 +77,7 @@ export type SalesCorrelationGroup = {
   avgNewRevenue: number;
   totalNewDeals: number;
   avgNewDeals: number;
-  avgUsageRate: number;
+  totalEngagedReports: number;
   totalUsageSignals: number;
 };
 
@@ -210,7 +209,6 @@ export async function getSalesCorrelationAnalytics(
         linkClicksWindow: usage?.link_clicks_window || 0,
         usageSignalsWindow,
         usageSignalsAll: usage?.usage_events_all || 0,
-        usageRate: generatedReports ? viewedReports / generatedReports : 0,
         newPaidRevenueWindow: windowSales.newPaidRevenue,
         newPaidDealsWindow: windowSales.newPaidDeals,
         totalPaidRevenueWindow: windowSales.totalPaidRevenue,
@@ -785,7 +783,6 @@ function buildGroup(
   description: string,
 ): SalesCorrelationGroup {
   const groupReps = reps.filter((rep) => rep.usageGroup === key);
-  const generatedReps = groupReps.filter((rep) => rep.generatedReports > 0);
   const totalNewRevenue = sum(groupReps.map((rep) => rep.newPaidRevenueWindow));
   const totalNewDeals = sum(groupReps.map((rep) => rep.newPaidDealsWindow));
 
@@ -799,9 +796,7 @@ function buildGroup(
     avgNewRevenue: groupReps.length ? totalNewRevenue / groupReps.length : 0,
     totalNewDeals,
     avgNewDeals: groupReps.length ? totalNewDeals / groupReps.length : 0,
-    avgUsageRate: generatedReps.length
-      ? sum(generatedReps.map((rep) => rep.usageRate)) / generatedReps.length
-      : 0,
+    totalEngagedReports: sum(groupReps.map((rep) => rep.viewedReportsWindow)),
     totalUsageSignals: sum(groupReps.map((rep) => rep.usageSignalsWindow)),
   };
 }

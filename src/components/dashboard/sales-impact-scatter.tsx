@@ -175,7 +175,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
               <ScatterStat label="New deals" value={formatNumber(selectedRep.newPaidDealsWindow)} />
               <ScatterStat label="Verified usage score" value={formatNumber(selectedRep.usageSignalsWindow)} />
               <ScatterStat label="Engaged official reports" value={formatNumber(selectedRep.reportViewsWindow)} />
-              <ScatterStat label="Own report engagement rate" value={formatPercent(selectedRep.usageRate)} />
+              <ScatterStat label="Distinct reports engaged" value={formatNumber(selectedRep.viewedReportsWindow)} />
               <p className="rounded-2xl border border-slate-200 bg-white/70 p-3 text-xs font-medium leading-5 text-slate-500">
                 This point is directional. It shows whether verified Magic Mike reading and new
                 paid sales are moving together for this rep.
@@ -225,8 +225,4 @@ function formatCurrency(value: number) {
 
 function formatNumber(value: number) {
   return numberFormatter.format(Math.round(value));
-}
-
-function formatPercent(value: number) {
-  return `${Math.round(value * 100)}%`;
 }

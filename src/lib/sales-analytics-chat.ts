@@ -78,7 +78,7 @@ function buildAnalyticsContext(analytics: SalesCorrelationAnalytics) {
         `average new revenue ${formatCurrency(group.avgNewRevenue)}`,
         `total new deals ${group.totalNewDeals}`,
         `average new deals ${formatNumber(group.avgNewDeals)}`,
-        `average usage rate ${formatPercent(group.avgUsageRate)}`,
+        `distinct reports engaged in the selected window ${group.totalEngagedReports}`,
         `usage signals ${group.totalUsageSignals}`,
       ].join(" "),
     ),
@@ -106,7 +106,7 @@ function buildAnalyticsContext(analytics: SalesCorrelationAnalytics) {
         `viewed reports ${rep.viewedReports}`,
         `views in window ${rep.reportViewsWindow}`,
         `usage signals in window ${rep.usageSignalsWindow}`,
-        `usage rate ${formatPercent(rep.usageRate)}`,
+        `distinct reports engaged in the selected window ${rep.viewedReportsWindow}`,
         `new paid revenue ${formatCurrency(rep.newPaidRevenueWindow)}`,
         `new paid deals ${rep.newPaidDealsWindow}`,
         `recurring paid revenue ${formatCurrency(rep.recurringPaidRevenueWindow)}`,
@@ -150,10 +150,6 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 1,
   }).format(value);
-}
-
-function formatPercent(value: number) {
-  return `${Math.round(value * 100)}%`;
 }
 
 function formatNullableNumber(value: number | null) {
