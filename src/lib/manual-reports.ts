@@ -3,7 +3,9 @@ import { resolveCloseSection } from "@/lib/close-section";
 import { normalizeStringList } from "@/lib/list-format";
 import type { JsonObject, ManualFeedbackReport } from "@/lib/types";
 
-const MANUAL_REPORT_TIMEOUT_MS = 5 * 60 * 1000;
+// Allow the multi-stage coaching analysis and factual checks to finish before
+// treating a missing callback as a failure. Terminal statuses are never changed.
+const MANUAL_REPORT_TIMEOUT_MS = 15 * 60 * 1000;
 const WAITING_MANUAL_REPORT_STATUSES = new Set(["pending", "processing"]);
 
 const optionalString = z
