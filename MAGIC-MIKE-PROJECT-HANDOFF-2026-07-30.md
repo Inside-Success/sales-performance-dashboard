@@ -1,5 +1,9 @@
 # Magic Mike Project Handoff — 2026-07-30
 
+## September 8 Sonnet 5 coaching efficiency successor
+
+Official and manual coaching now use one Sonnet 5 writer and one high-effort Sonnet 5 factual review. The duplicate manual generator and second confirmation review are bypassed. See `MAGIC-MIKE-COACHING-EFFICIENCY-2026-09-08.md` for current active versions, 18-call evidence, approximately $0.167 new-coaching-stage average cost, coaching-only knowledge refresh, unchanged compliance/scoring, rollback, and pending natural-call delivery verification. The earlier Opus release is superseded. Source Google documents and Slack were not changed; historical reports were not rewritten. Current release checkout: `sales-performance-dashboard-coaching-2026-09-08`.
+
 ## September 8 Call 2 coaching update
 
 See `MAGIC-MIKE-COACHING-RELEASE-2026-09-08.md` for the published coaching workflow versions, isolated evidence, generation-based labels, rollback, and remaining live-execution limitations. Earlier snapshots below are historical where they conflict. Compliance context, Ask Sales, and scoring logic were preserved.

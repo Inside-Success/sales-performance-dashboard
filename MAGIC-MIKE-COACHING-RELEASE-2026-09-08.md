@@ -1,5 +1,7 @@
 # Magic Mike Call 2 coaching release — September 8, 2026
 
+> Superseded for coaching models, cost and review architecture by [the Sonnet 5 efficiency release](MAGIC-MIKE-COACHING-EFFICIENCY-2026-09-08.md). The earlier Opus configuration below is historical.
+
 ## Release state
 
 The official and manual coaching workflows are published. Their active node configurations and connections were read back and match the isolated candidates exactly. No new natural Call 2 execution has yet been verified after this publication; isolated replay is not proof of live delivery.
