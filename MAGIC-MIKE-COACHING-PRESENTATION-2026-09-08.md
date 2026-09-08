@@ -66,4 +66,4 @@ The shared provider, scorer and persistence versions were rechecked and remain u
 
 ## September 9 text-integrity correction
 
-See `MAGIC-MIKE-INTEGRITY-FIX-2026-09-09.md` for the published grouped-timestamp/strength-boundary repair and exact-key Zoom reconciliation correction. Section names/layout and knowledge ownership are unchanged. Actual sandbox replay passes; distinguish that from the still-pending natural post-fix Call 2 and hourly reconciliation verification.
+See `MAGIC-MIKE-INTEGRITY-FIX-2026-09-09.md` for the published grouped-timestamp/strength-boundary repair and exact-key Zoom reconciliation correction. Section names/layout and knowledge ownership are unchanged. Actual sandbox replay passes, and natural Call 2 execution 689039 delivered report 5821 on the fixed version. Hourly reconciliation and manual natural delivery remain separate pending observations.
