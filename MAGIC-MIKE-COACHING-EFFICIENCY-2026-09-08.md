@@ -1,5 +1,7 @@
 # Call 2 coaching efficiency release — September 8, 2026
 
+> Runtime compatibility repair published after two natural failures. See [the repair record](MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md) for current versions and actual n8n sandbox verification. Natural full-delivery verification remains separate.
+
 ## State
 
 Published official and manual workflow nodes and connections were read back and match the candidate. Natural eligible post-release report delivery is still pending. This successor supersedes the model/cost/architecture sections of the earlier September 8 coaching release, while retaining its report version marker and dashboard behavior.

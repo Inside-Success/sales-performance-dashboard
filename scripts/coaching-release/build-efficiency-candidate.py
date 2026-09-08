@@ -9,7 +9,10 @@ for wid,manual in [('L8Nn7xncA9ZPDdWA',False),('BMRrGxHyXMcgO6j3',True)]:
  base=json.loads((p/'baseline'/(wid+'.json')).read_text());w=copy.deepcopy(base);ops=[]
  def get(name):return next(n for n in w['nodes'] if n['name']==name)
  def update(name,code):
-  get(name)['parameters']['jsCode']=code;ops.append({'type':'updateNode','nodeName':name,'updates':{'parameters.jsCode':code}})
+  get(name)['parameters']['jsCode']=code
+  prior=next((op for op in ops if op['type']=='updateNode' and op['nodeName']==name),None)
+  if prior: prior['updates']['parameters.jsCode']=code
+  else: ops.append({'type':'updateNode','nodeName':name,'updates':{'parameters.jsCode':code}})
  def edge(source,target,add=True,index=0):
   a=w['connections'].setdefault(source,{'main':[]})['main']
   while len(a)<=index:a.append([])
@@ -17,8 +20,8 @@ for wid,manual in [('L8Nn7xncA9ZPDdWA',False),('BMRrGxHyXMcgO6j3',True)]:
   else:a[index].remove(next(e for e in a[index] if e['node']==target))
   ops.append({'type':'addConnection' if add else 'removeConnection','source':source,'target':target,'sourceIndex':index})
  prefix='MM Manual' if manual else 'MM';build=prefix+' Build Structured Coaching' if manual else 'MM Build Coaching Request';prep=prefix+' Build Factual Audit'
- code=get(build)['parameters']['jsCode'];start=code.rfind('const state=structuredClone($json.state);');assert start>0
- setup='const state=structuredClone($json.state); state.coaching_version=VERSION; state.coaching_model="claude-sonnet-5"; state.coaching_revision="call2-sonnet5-efficiency-2026-09-08"; const input='+('state.input' if manual else 'state.caseItem')+'; const blocks=transcriptBlocks(input.cleaned_transcript); const metadata='+('input' if manual else 'input.metadata')+';'
+ code=get(build)['parameters']['jsCode'];start=max(code.rfind('const state=cloneCoachingJson($json.state);'),code.rfind('const state=structuredClone($json.state);'));assert start>0
+ setup='const state=cloneCoachingJson($json.state); state.coaching_version=VERSION; state.coaching_model="claude-sonnet-5"; state.coaching_revision="call2-sonnet5-efficiency-2026-09-08"; const input='+('state.input' if manual else 'state.caseItem')+'; const blocks=transcriptBlocks(input.cleaned_transcript); const metadata='+('input' if manual else 'input.metadata')+';'
  if not manual:setup+='await refreshCutoverContext(state);'
  body='const cachedSystem='+json.dumps(common)+'+JSON.stringify({metadata:{rep_name:metadata.rep_name,client_name:metadata.client_name,call_date:metadata.call_date,meeting_title:metadata.meeting_title},transcript_blocks:blocks}); const provider_request={...'+json.dumps(config)+',request_id:state.result_id+"-structured",result_id:state.result_id,case_id:state.case_id||state.caseItem?.case_id,call_purpose:"call2_sonnet5_writer",system:cachedSystem,prompt:'+json.dumps(writer)+'}; return {json:{state,blocks,provider_request}};'
  update(build,code[:start]+setup+body)
@@ -44,10 +47,16 @@ return {json:{...input,state,skip_safety:false}};''')
  edge(review,confirmPrep,False);edge(review,finish)
  final=lib+'\nconst prepared=$('+json.dumps(prep)+').item.json; if($json.ok===false||["length","max_tokens"].includes($json.stop_reason))throw Error("Coaching audit generation failed"); if($json.request_id!==prepared.provider_request.request_id)throw Error("Audit source alignment failed"); const audited=applySingleAudit(prepared.analysis,$json.parsed_json,prepared.blocks); const report=renderCoaching(audited,prepared.blocks,{materialOnly:true,excludePolicyChanges:true});'
  if manual:
-  final+='const state=structuredClone(prepared.state); state.parsed_status="completed"; state.coaching_raw={...state.coaching_raw,...report}; state.provider_results.push({purpose:"structured_coaching",result:prepared.generated},{purpose:"coaching_factual_audit",result:$json}); return {json:{...state.input,state}};'
+  final+='const state=cloneCoachingJson(prepared.state); state.parsed_status="completed"; state.coaching_raw={...state.coaching_raw,...report}; state.provider_results.push({purpose:"structured_coaching",result:prepared.generated},{purpose:"coaching_factual_audit",result:$json}); return {json:{...state.input,state}};'
  else:
   final+='const sum=(a,b)=>Object.fromEntries([...new Set([...Object.keys(a||{}),...Object.keys(b||{})])].filter(k=>typeof a?.[k]==="number"||typeof b?.[k]==="number").map(k=>[k,Number(a?.[k]||0)+Number(b?.[k]||0)])); return {json:{...prepared.generated,parsed_json:report,model_text:JSON.stringify(report),costs:sum(prepared.generated.costs,$json.costs),usage:sum(prepared.generated.usage,$json.usage),latency_ms:Number(prepared.generated.latency_ms||0)+Number($json.latency_ms||0),coaching_version:VERSION,factual_audit:{review:$json.parsed_json,revision:"call2-sonnet5-efficiency-2026-09-08"}}};'
  update(finish,final)
+ for node in w["nodes"]:
+  code=node.get("parameters",{}).get("jsCode","")
+  if "structuredClone(" in code:
+   replacement=code.replace("structuredClone(","cloneCoachingJson(")
+   if "function cloneCoachingJson(" not in replacement: replacement="function cloneCoachingJson(value) { return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }\n"+replacement
+   update(node["name"],replacement)
  # Match n8n serialization: removed last edges leave no empty source entry.
  w["connections"]={k:v for k,v in w["connections"].items() if any(any(outputs) for outputs in v.values())}
  # Do not touch compliance, shared context, safety/repair, score generation or any business-write node.

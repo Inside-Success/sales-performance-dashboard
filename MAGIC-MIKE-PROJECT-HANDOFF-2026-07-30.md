@@ -1,5 +1,9 @@
 # Magic Mike Project Handoff — 2026-07-30
 
+## Runtime compatibility repair
+
+See `MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md`. The missing structuredClone production failure is patched across eight nodes and verified in the actual n8n sandbox with 18 cases. Previous active versions are superseded. Recovery of the two pre-fix calls is explicitly authorized and in progress; natural post-fix delivery is not yet verified.
+
 ## September 8 Sonnet 5 coaching efficiency successor
 
 Official and manual coaching now use one Sonnet 5 writer and one high-effort Sonnet 5 factual review. The duplicate manual generator and second confirmation review are bypassed. See `MAGIC-MIKE-COACHING-EFFICIENCY-2026-09-08.md` for current active versions, 18-call evidence, approximately $0.167 new-coaching-stage average cost, coaching-only knowledge refresh, unchanged compliance/scoring, rollback, and pending natural-call delivery verification. The earlier Opus release is superseded. Source Google documents and Slack were not changed; historical reports were not rewritten. Current release checkout: `sales-performance-dashboard-coaching-2026-09-08`.

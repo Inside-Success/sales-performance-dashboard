@@ -1,3 +1,5 @@
+// n8n Code nodes exchange JSON; structuredClone is not available in its sandbox.
+function cloneCoachingJson(value) { return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }
 // Pure parsing, validation and rendering. No network or storage. Citation existence is not semantic proof.
 const VERSION='magic-mike-call2-coaching-2026-09-08';
 function transcriptBlocks(transcript) {
@@ -76,7 +78,7 @@ function renderCoaching(analysis,blocks,options={}) {
 }
 function applyAudit(analysis,audit,blocks) {
  if (!audit || audit.outcome_pass!==true) throw Error('Coaching outcome failed factual audit');
- const result=structuredClone(analysis); const known=new Set(blocks.map(b=>b.id));
+ const result=cloneCoachingJson(analysis); const known=new Set(blocks.map(b=>b.id));
  const listMap={rejected_strengths:'strengths',rejected_improvements:'improvements',rejected_examples:'improvements',rejected_blockers:'blockers',rejected_next_steps:'next_steps'};
  for(const [key,list] of Object.entries(listMap)) {
   const indexes=audit[key];
@@ -99,7 +101,7 @@ function applyAudit(analysis,audit,blocks) {
 function applyAuditConsensus(analysis,first,second,blocks) {
  // Validate each complete independent review before combining its rejections.
  applyAudit(analysis,first,blocks);applyAudit(analysis,second,blocks);
- const combined=structuredClone(first);
+ const combined=cloneCoachingJson(first);
  for(const key of ['rejected_strengths','rejected_improvements','rejected_examples','rejected_blockers','rejected_next_steps'])combined[key]=[...new Set([...first[key],...second[key]])];
  combined.improvement_reviews=first.improvement_reviews.map(r=>combined.rejected_improvements.includes(r.index)?{...(r.verdict==='reject'?r:second.improvement_reviews.find(s=>s.index===r.index)),verdict:'reject'}:r);
  combined.findings=[...first.findings,...second.findings];
@@ -108,12 +110,12 @@ function applyAuditConsensus(analysis,first,second,blocks) {
 function applySingleAudit(analysis,audit,blocks) {
  // Preserve every rejection when the model's redundant verdict/index fields disagree.
  // All shape, index and evidence validation remains in applyAudit.
- const normalized=structuredClone(audit);
+ const normalized=cloneCoachingJson(audit);
  let reviewedAnalysis=analysis;
  if(normalized?.outcome_pass===false && normalized.corrected_outcome){
   const outcome=normalized.corrected_outcome,known=new Set(blocks.map(b=>b.id));
   if(!['confirmed','not_confirmed','unclear'].includes(outcome.payment)||typeof outcome.summary!=='string'||!outcome.summary.trim()||!Array.isArray(outcome.evidence_ids)||!outcome.evidence_ids.length||outcome.evidence_ids.some(id=>!known.has(id)))throw Error('Invalid audited outcome correction');
-  reviewedAnalysis={...analysis,outcome:structuredClone(outcome)};
+  reviewedAnalysis={...analysis,outcome:cloneCoachingJson(outcome)};
   normalized.outcome_pass=true;
  }
  if(!normalized || !Array.isArray(normalized.rejected_improvements) || !Array.isArray(normalized.improvement_reviews))throw Error('Incomplete factual audit');
@@ -123,4 +125,4 @@ function applySingleAudit(analysis,audit,blocks) {
  normalized.improvement_reviews=normalized.improvement_reviews.map(review=>rejected.has(review.index)?{...review,verdict:'reject'}:review);
  return applyAudit(reviewedAnalysis,normalized,blocks);
 }
-module.exports={VERSION,transcriptBlocks,renderCoaching,applyAudit,applyAuditConsensus,applySingleAudit};
+module.exports={cloneCoachingJson,VERSION,transcriptBlocks,renderCoaching,applyAudit,applyAuditConsensus,applySingleAudit};

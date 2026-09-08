@@ -28,3 +28,14 @@ test('publication blocks invented payment holds and written delivery commitments
 });
 
 test("an empty recommendation is not a blanket compliance clearance",()=>{const a=analysis();a.improvements=[];const r=renderCoaching(a,blocks);assert.equal(r.what_to_improve,"No additional coaching recommendation met the evidence threshold for this report.");assert.doesNotMatch(r.coaching_tip,/no corrective|no mistake/i);});
+
+test('audit and rendering work without a structuredClone global in a fresh runtime',()=>{
+ const vm=require('node:vm'),fs=require('node:fs');const context={module:{exports:{}}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('./structured-coaching.cjs'),'utf8'),context);
+ const lib=context.module.exports,a=analysis(),review=audit();
+ const result=lib.applySingleAudit(a,review,blocks);
+ assert.equal(lib.renderCoaching(result,blocks).status,'completed');
+ result.outcome.summary='Changed copy';assert.notEqual(a.outcome.summary,result.outcome.summary);
+ assert.equal(lib.cloneCoachingJson(undefined),undefined);
+ assert.equal(JSON.stringify(lib.cloneCoachingJson({n:null,arr:[1,{ok:true}],text:'é'})),JSON.stringify({n:null,arr:[1,{ok:true}],text:'é'}));
+});
