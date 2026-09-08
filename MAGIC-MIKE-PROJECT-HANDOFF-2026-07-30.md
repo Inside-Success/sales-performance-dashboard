@@ -1,3 +1,5 @@
+> September 8 coaching presentation successor: see [MAGIC-MIKE-COACHING-PRESENTATION-2026-09-08.md](MAGIC-MIKE-COACHING-PRESENTATION-2026-09-08.md) for the latest voice, shared display contract, isolated coaching knowledge, recovered scores and exact live-verification boundaries. Earlier runtime/efficiency sections are historical where superseded. The 15-minute monitor is paused.
+
 # Magic Mike Project Handoff — 2026-07-30
 
 ## Runtime compatibility repair

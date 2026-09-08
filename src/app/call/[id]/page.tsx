@@ -1,3 +1,4 @@
+import { CoachingReportContent } from "@/components/dashboard/coaching-report-content";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -179,6 +180,7 @@ export default async function CallPage({
             </div>
           </header>
 
+          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} /> : <>
           <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
             <p className="text-base leading-8 md:text-lg">{call.one_line_verdict || "Not provided"}</p>
           </ReportSection>
@@ -214,6 +216,8 @@ export default async function CallPage({
           <ReportSection title="Objections Surfaced" icon={<MessageSquareText className="size-4" />}>
             <BulletList items={call.objections_surfaced} />
           </ReportSection>
+
+          </>}
 
           <ReportFeedbackWidget
             reportType="official"
