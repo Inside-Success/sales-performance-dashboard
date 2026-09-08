@@ -31,7 +31,7 @@ Tests cover exact deduplication without dropping distinct advice, close/no-close
 
 The isolated n8n fixture workflow uses actual candidate Code bodies and saved provider outputs; it has no provider/business writes. Fresh provider evaluations are sent only to the existing isolated provider endpoint, never to delivery/callback workflows. A selected evaluation sample is not universal or statistical proof of coaching accuracy. Intermediate candidate outputs that failed factual/schema review are retained privately and are not final release evidence.
 
-Final evaluation counts, production versions, GitHub/deployment and live-delivery evidence are appended below after verification. Until then, this record does not claim the candidate is live.
+Final evaluation counts, production versions, GitHub/deployment and live-delivery evidence are recorded below.
 
 ## Rollback and operations
 
@@ -50,3 +50,16 @@ Actual n8n runtime test: all 21 final saved writer/reviewer outputs passed throu
 Natural end-to-end delivery under this new revision is pending at the time of publication. No test reports or notifications were sent, and the Codex monitor remains paused. The earlier natural Sonnet delivery remains historical evidence, not proof of this revision's final live delivery.
 
 Post-publish n8n validator: official has the same eight pre-existing Code-node array-shape diagnostics and 139 warnings; manual has zero errors and 69 warnings. Both have zero invalid connections. Actual candidate code passed the n8n runtime fixtures; this is not a claim of warning-free static validation.
+
+## Production readback and link preservation — 17:13 UTC
+
+PR #175 merged as `a0e1ab4f2bc922ed9829e5bea2cc7982bad8777b`. Production deployment `dpl_Cq9s1SZq1jXGX9FryPsTgEYSaXzs` was READY and promoted to the production aliases with this exact SHA. The preview deployment failed during resource provisioning before building; the local production build and actual production deployment succeeded.
+
+Authenticated production report 5805 shows the consolidated outcome, strengths, improvements and closing explanation. Expanding Transcript evidence displays the expected timestamps. Existing manual report `b631de0f83e84ddfa99ee966b7231f7a` still renders with its historical layout, links and content. Stored historical third-person prose is intentionally unchanged; second-person wording applies to new generations. Score recovery is verified in Airtable, not claimed as a visible dashboard score badge.
+
+The final Google Doc generator preserves explicit clickable Zoom/Transcript links as well as paragraph styles. All 21 isolated saved-output cases passed again in the actual n8n runtime at 17:09 UTC; the test workflow was deactivated. Only the two document-generator Code bodies changed in this follow-up. Final live readback matches every candidate node and connection:
+
+- Official `L8Nn7xncA9ZPDdWA`: version `8436ed38-29eb-48b8-8b53-38c8785b51b5`, updated 17:10:25 UTC.
+- Manual `BMRrGxHyXMcgO6j3`: version `9ece85c0-1db2-4324-92a6-f67452a00efb`, updated 17:10:32 UTC.
+
+The shared provider, scorer and persistence versions were rechecked and remain unchanged. The scheduled Codex monitor is PAUSED. Natural eligible official/manual delivery after this release still requires observation; routine successful intake ticks are not report-delivery proof. Do not generate duplicate reports to manufacture that evidence.

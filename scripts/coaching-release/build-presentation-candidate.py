@@ -11,11 +11,15 @@ old=Path(p.parent/'.magic-mike-sonnet5-2026-09-08')
 docfn='''
 function coachingDocRequests(sections,header){
  let text='',ranges=[];
- const add=(body,style)=>{for(const line of String(body).split(/\\n+/).filter(Boolean)){const start=1+text.length;text+=line+'\\n';ranges.push({start,end:1+text.length,style});}};
+ const add=(body,style)=>{for(const line of String(body).split(/\\n+/).filter(Boolean)){const start=1+text.length;text+=line+'\\n';ranges.push({start,end:1+text.length,style,text:line});}};
  for(const h of header)add(h.text,h.style);
  for(const section of sections){add(section.title,'HEADING_2');for(const item of section.items){const part=coachingEvidence(item);add(part.text,'NORMAL_TEXT');if(part.evidence.length)add('Transcript: '+part.evidence.join(' · '),'NORMAL_TEXT');}}
  const requests=[{insertText:{location:{index:1},text}}];
- for(const r of ranges)requests.push({updateParagraphStyle:{range:{startIndex:r.start,endIndex:r.end},paragraphStyle:{namedStyleType:r.style},fields:'namedStyleType'}});
+ for(const r of ranges){
+  requests.push({updateParagraphStyle:{range:{startIndex:r.start,endIndex:r.end},paragraphStyle:{namedStyleType:r.style},fields:'namedStyleType'}});
+  const link=r.text.match(/^(Zoom|Transcript): (https?:\\/\\/\\S+)$/);
+  if(link)requests.push({updateTextStyle:{range:{startIndex:r.start+link[1].length+2,endIndex:r.end-1},textStyle:{link:{url:link[2]}},fields:'link'}});
+ }
  return {requests,text};
 }
 '''
