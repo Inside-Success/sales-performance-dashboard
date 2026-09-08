@@ -124,7 +124,7 @@ export function ManualReportStatus({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <ReportVersionBadge createdAt={report.created_at} />
+                <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
                 {report.status !== "completed" ? (
                   <>
                     <StatusBadge status={report.status} />
@@ -240,7 +240,7 @@ export function ManualReportStatus({
                 reportId={report.public_id}
                 repName={report.rep_name}
                 clientName={report.client_name}
-                reportCreatedAt={report.created_at}
+                reportCoachingVersion={report.source_payload.coaching_version}
               />
             </>
           ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Loader2, MessageSquareText, Send, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ type ReportFeedbackWidgetProps = {
   reportId: number | string;
   repName: string;
   clientName?: string | null;
-  reportCreatedAt: string | null | undefined;
+  reportCoachingVersion?: unknown;
 };
 
 export function ReportFeedbackWidget({
@@ -24,9 +24,9 @@ export function ReportFeedbackWidget({
   reportId,
   repName,
   clientName,
-  reportCreatedAt,
+  reportCoachingVersion,
 }: ReportFeedbackWidgetProps) {
-  const eligible = useMemo(() => isEnhancedReport(reportCreatedAt), [reportCreatedAt]);
+  const eligible = isEnhancedReport(reportCoachingVersion);
   const [selectedRating, setSelectedRating] = useState<FeedbackRating | null>(null);
   const [status, setStatus] = useState<SubmitState>("idle");
   const [name, setName] = useState(() => repName || "");

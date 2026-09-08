@@ -3,12 +3,12 @@ import { getReportVersion, getReportVersionLabel, type ReportVersion } from "@/l
 import { cn } from "@/lib/utils";
 
 type ReportVersionBadgeProps = {
-  createdAt: string | Date | null | undefined;
+  coachingVersion?: unknown;
   className?: string;
 };
 
-export function ReportVersionBadge({ createdAt, className }: ReportVersionBadgeProps) {
-  const version = getReportVersion(createdAt);
+export function ReportVersionBadge({ coachingVersion, className }: ReportVersionBadgeProps) {
+  const version = getReportVersion(coachingVersion);
 
   return <ReportVersionLabel version={version} className={className} />;
 }

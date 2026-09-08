@@ -107,7 +107,7 @@ export default async function CallPage({
                   <FileText className="size-3.5" />
                   Sales feedback report
                 </span>
-                <ReportVersionBadge createdAt={call.created_at} />
+                <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
               </div>
 
               <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
@@ -220,7 +220,7 @@ export default async function CallPage({
             reportId={call.id}
             repName={call.rep_name}
             clientName={call.client_name}
-            reportCreatedAt={call.created_at}
+            reportCoachingVersion={call.source_payload.coaching_version}
           />
         </article>
       </div>
