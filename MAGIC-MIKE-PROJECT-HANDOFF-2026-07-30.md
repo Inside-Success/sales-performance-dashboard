@@ -2,7 +2,7 @@
 
 ## Runtime compatibility repair
 
-See `MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md`. The missing structuredClone production failure is patched across eight nodes and verified in the actual n8n sandbox with 18 cases. Previous active versions are superseded. Recovery of the two pre-fix calls is explicitly authorized and in progress; natural post-fix delivery is not yet verified.
+See `MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md`. The missing structuredClone production failure is patched across eight nodes and verified in the actual n8n sandbox with 18 cases. Previous active versions are superseded. Natural execution 686041 delivered report 5803. Authorized recoveries 686066 and 686165 delivered reports 5804 and 5805 exactly once. See the repair record for separate manager-score recovery and Google Doc closing-section limitations. Code PR #173 is merged; both temporary workflows are inactive.
 
 ## September 8 Sonnet 5 coaching efficiency successor
 
