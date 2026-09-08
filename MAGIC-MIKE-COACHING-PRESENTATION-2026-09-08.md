@@ -63,3 +63,7 @@ The final Google Doc generator preserves explicit clickable Zoom/Transcript link
 - Manual `BMRrGxHyXMcgO6j3`: version `9ece85c0-1db2-4324-92a6-f67452a00efb`, updated 17:10:32 UTC.
 
 The shared provider, scorer and persistence versions were rechecked and remain unchanged. The scheduled Codex monitor is PAUSED. Natural eligible official/manual delivery after this release still requires observation; routine successful intake ticks are not report-delivery proof. Do not generate duplicate reports to manufacture that evidence.
+
+## September 9 text-integrity correction
+
+See `MAGIC-MIKE-INTEGRITY-FIX-2026-09-09.md` for the published grouped-timestamp/strength-boundary repair and exact-key Zoom reconciliation correction. Section names/layout and knowledge ownership are unchanged. Actual sandbox replay passes; distinguish that from the still-pending natural post-fix Call 2 and hourly reconciliation verification.
