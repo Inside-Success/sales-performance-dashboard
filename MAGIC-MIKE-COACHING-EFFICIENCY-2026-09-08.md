@@ -1,5 +1,10 @@
 # Call 2 coaching efficiency release — September 8, 2026
 
+## September 8 coaching presentation successor — current
+
+See `MAGIC-MIKE-COACHING-PRESENTATION-2026-09-08.md`. The coaching voice, shared presentation contract, private coaching knowledge consolidation and reviewer materiality filtering are live. Google Doc closing content and clickable source links are addressed. Both previously missing scores were recovered and independently read back without resending coaching. Compliance/shared context/scoring criteria remain unchanged. The 15-minute Codex monitor is **PAUSED**, superseding older active-monitor statements below. Natural delivery under the final presentation revision is still pending observation. Historical prose is not rewritten; Ask Sales is outside this release, not a prerequisite. Scoring enhancements and manager-page simplification follow separately.
+
+
 > Runtime compatibility repair published after two natural failures. See [the repair record](MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md) for current versions and actual n8n sandbox verification. Natural official delivery and both authorized recoveries are now verified in that repair record.
 
 ## State
