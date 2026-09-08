@@ -12,7 +12,7 @@ Replaced unsupported clone calls with a JSON-compatible copy helper in eight off
 - That isolated workflow is now inactive. The runtime test is distinct from natural full delivery.
 - Fifteen unit tests pass, including a fresh JavaScript VM without structuredClone, deep-copy independence and JSON values. Candidate builder checks leave no unsupported clone calls.
 - Active official/manual graphs read back equal to the repaired candidates. Shared provider, scoring generation and score persistence remain unchanged.
-- Natural post-fix end-to-end delivery remains a separate pending checkpoint. The user explicitly authorized recovery of both pre-fix calls with normal delivery. A temporary, allowlisted recovery workflow checks for an existing Airtable report before any normal report writes. Recovery results are pending.
+- Natural official delivery is now verified in execution 686041; final evidence is below. The user explicitly authorized recovery of both pre-fix calls with normal delivery. A temporary, allowlisted recovery workflow checks for an existing Airtable report before any normal report writes. Both coaching recoveries are verified below; separate manager scores were not regenerated.
 
 ## Published versions
 
@@ -22,3 +22,26 @@ Replaced unsupported clone calls with a JSON-compatible copy helper in eight off
 Private baselines, candidate/rollback operations, exact runtime workflow and result, and natural failure evidence are in `.magic-mike-runtime-fix-2026-09-08/`. Do not commit those prompts or transcripts to the public repository. The immediate rollback snapshots contain the known clone defect; do not restore them casually or treat them as healthy. Refresh current affected state before any rollback.
 
 Sonnet 5 cost estimates, coaching improvements and preserved boundaries from the efficiency release remain applicable. This repair changes runtime compatibility, not model quality or pricing. GitHub/deployment completion is recorded in the operator handoff and PR after merge.
+
+## Verified live delivery and recovery
+
+The runtime defect is repaired. A natural official execution and both explicitly authorized coaching recoveries completed:
+
+| Kind | Original execution | Completed execution | Dashboard report |
+| --- | --- | --- | --- |
+| Natural incoming Call 2 | — | 686041 | 5803 |
+| Authorized recovery | 685864 | 686066 | 5804 |
+| Authorized recovery | 685975 | 686165 | 5805 |
+
+All three persisted `claude-sonnet-5` and the Enhanced generation marker. Source identifiers match the corresponding provider requests, Airtable rows and dashboard payloads. Each recovery checked that no Airtable report already existed, created one report row, and received one successful top-level and one successful thread Slack response. Direct DB checks found exactly one report per checked source. Both temporary workflows are inactive: sandbox test `bBl9cU2I767jTQFG` and restricted recovery `rOfntFnoLrElXjWG`.
+
+Writer plus factual-review costs for these three calls were $0.128008, $0.153210 and $0.147244 respectively. These exclude scoring, compliance, safety and other stages. Natural report 5803's outcome and cited strengths were spot-checked against transcript evidence; the generated Google Doc was read back. This is delivery and bounded content verification, not a guarantee of every future coaching judgment.
+
+Two separate limitations are confirmed and remain outside this runtime repair:
+
+- The temporary recovery workflow is not an allowed caller of the manager scorer. Existing coaching fallback delivered both reports, but the two recoveries did not regenerate separate manager scores. No scorer permission rules were changed or bypassed. The normal official execution reached the existing scoring/persistence path.
+- The existing Google Doc template expects object-shaped closing sections, while current coaching supplies strings. Report 5803's Google Doc contains an empty Why No Close heading although its complete explanation is present in Slack and the dashboard. No existing Google documents were edited to hide or correct this separate formatting issue.
+
+No natural manual submission has yet provided post-fix end-to-end evidence; manual code passed the actual n8n sandbox fixtures. Provider timeouts and the separate Vercel preview provisioning issue are not resolved by the runtime fix.
+
+Code PR #173 merged at `26611171d91ddfdc8b8245ed44d7c634e43a7e40`. Deployment `dpl_A2hnNi7zFXTRn2aAffaKR2UdBKnq` was verified READY/PROMOTED on that commit; the live sign-in GET returned 200. Documentation-only follow-up records these final delivery results. The bounded read-only monitor remains active, with report 5803 already counted/notified; the two recoveries are recorded separately and must not be replayed again.

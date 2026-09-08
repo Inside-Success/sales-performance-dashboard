@@ -1,6 +1,6 @@
 # Call 2 coaching efficiency release — September 8, 2026
 
-> Runtime compatibility repair published after two natural failures. See [the repair record](MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md) for current versions and actual n8n sandbox verification. Natural full-delivery verification remains separate.
+> Runtime compatibility repair published after two natural failures. See [the repair record](MAGIC-MIKE-COACHING-RUNTIME-FIX-2026-09-08.md) for current versions and actual n8n sandbox verification. Natural official delivery and both authorized recoveries are now verified in that repair record.
 
 ## State
 
