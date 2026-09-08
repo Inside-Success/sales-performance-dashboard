@@ -1,5 +1,9 @@
 # Magic Mike Project Handoff — 2026-07-30
 
+## September 8 Call 2 coaching update
+
+See `MAGIC-MIKE-COACHING-RELEASE-2026-09-08.md` for the published coaching workflow versions, isolated evidence, generation-based labels, rollback, and remaining live-execution limitations. Earlier snapshots below are historical where they conflict. Compliance context, Ask Sales, and scoring logic were preserved.
+
 Handoff version: `v1`
 
 This is the canonical continuation record for the complete Magic Mike project in:

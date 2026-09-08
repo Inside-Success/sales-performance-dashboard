@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Report was not found." }, { status: 404 });
     }
 
-    if (!isEnhancedReport(report.created_at)) {
+    if (!isEnhancedReport(report.source_payload.coaching_version)) {
       return NextResponse.json(
         { ok: false, error: "Feedback is only available for Enhanced reports." },
         { status: 403 },

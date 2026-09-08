@@ -231,7 +231,7 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
     <article className="magic-card overflow-hidden transition-all hover:-translate-y-px hover:border-red-200 hover:shadow-xl">
       <div className="space-y-3 border-b border-slate-100 bg-slate-50/60 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <ReportVersionBadge createdAt={report.created_at} />
+          <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
           <span className="inline-flex items-center gap-1">
             <CalendarDays className="size-3.5" />
             Completed {formatMiamiDateTime(report.updated_at)}

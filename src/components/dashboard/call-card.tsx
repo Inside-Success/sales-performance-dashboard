@@ -31,7 +31,7 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
         <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <ReportVersionBadge createdAt={call.created_at} />
+              <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
             </div>
             <h3 className="text-base font-semibold leading-6 text-slate-950">
               <TrackedLink
@@ -80,7 +80,7 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
     <article className="magic-card overflow-hidden transition-all hover:-translate-y-px hover:border-red-200 hover:shadow-xl">
       <div className="space-y-3 border-b border-slate-100 bg-slate-50/60 p-5">
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-          <ReportVersionBadge createdAt={call.created_at} />
+          <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
           {call.call_date ? (
             <span className="inline-flex items-center gap-1">
               <CalendarDays className="size-3.5" />
