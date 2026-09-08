@@ -275,7 +275,7 @@ function ManualReportCard({ report }: { report: ManualFeedbackReport }) {
           />
           <SummaryBlock
             icon={<FileText className="size-4" />}
-            label="What I'd Polish"
+            label="What to improve"
             value={report.biggest_fix}
           />
         </div>

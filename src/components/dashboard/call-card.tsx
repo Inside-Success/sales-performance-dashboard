@@ -120,7 +120,7 @@ export function CallCard({ call, compact = false, showRep = true }: CallCardProp
 
         <div className="grid gap-3 text-sm md:grid-cols-2">
           <SummaryBlock icon={<MessageSquareText className="size-4" />} label="Biggest Strength" value={call.biggest_strength} />
-          <SummaryBlock icon={<FileText className="size-4" />} label="What I'd Polish" value={call.biggest_fix} />
+          <SummaryBlock icon={<FileText className="size-4" />} label="What to improve" value={call.biggest_fix} />
         </div>
 
         <div className="flex flex-wrap gap-2">

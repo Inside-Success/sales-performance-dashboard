@@ -39,3 +39,12 @@ test('audit and rendering work without a structuredClone global in a fresh runti
  assert.equal(lib.cloneCoachingJson(undefined),undefined);
  assert.equal(JSON.stringify(lib.cloneCoachingJson({n:null,arr:[1,{ok:true}],text:'é'})),JSON.stringify({n:null,arr:[1,{ok:true}],text:'é'}));
 });
+
+test('reviewer can downgrade optional polish but cannot upgrade a writer priority',()=>{
+ const blocks=[{id:'T0001',timestamp:'00:00:01',text:'Test'}];
+ const analysis={status:'completed',call_status:'scored',outcome:{payment:'not_confirmed',summary:'No payment confirmed.',evidence_ids:['T0001']},payment_actions:[],strengths:[],improvements:[{priority:'material',observation:'A preference.',evidence_ids:['T0001'],counterevidence_ids:[],counterevidence_summary:'Checked',possible_effect:'May help.',better_action:'Clarify.'}],blockers:[],next_steps:[]};
+ const audit={outcome_pass:true,rejected_strengths:[],rejected_improvements:[],rejected_examples:[],rejected_blockers:[],rejected_next_steps:[],findings:[],improvement_reviews:[{index:0,verdict:'keep',materiality:'optional',reason:'Preference only',counterevidence_ids:[]}]};
+ const output=applySingleAudit(analysis,audit,blocks);
+ assert.equal(output.improvements[0].priority,'optional');
+ assert.equal(renderCoaching(output,blocks,{materialOnly:true}).what_id_polish,'No additional coaching recommendation met the evidence threshold for this report.');
+});

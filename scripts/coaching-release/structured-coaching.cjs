@@ -51,7 +51,7 @@ function renderCoaching(analysis,blocks,options={}) {
    const action=row.better_action;
    // Coaching must not invent a smaller commitment, a holding arrangement or written delivery guarantees.
    if(/\b(?:smaller|lower|reduced|minimal)\s+(?:initial\s+)?(?:payment|amount|commitment|installment|deposit)\b/i.test(action))return false;
-   if(/\b(?:hold|keep|reserve)\b.{0,45}\b(?:spot|place)\b/i.test(action))return false;
+   if(/\b(?:hold|keep|reserve)\b.{0,45}\b(?:spot|place|slot)\b/i.test(action))return false;
    if(/\b(?:invoice|in writing|written|documented)\b.{0,100}\b(?:timeline|deadline|delivery|benchmark)|\b(?:timeline|deadline|delivery|benchmark)\b.{0,100}\b(?:invoice|in writing|written|documented)\b/i.test(action))return false;
   }
   return true;
@@ -123,6 +123,8 @@ function applySingleAudit(analysis,audit,blocks) {
  for(const review of normalized.improvement_reviews)if(review?.verdict==='reject')rejected.add(review.index);
  normalized.rejected_improvements=[...rejected];
  normalized.improvement_reviews=normalized.improvement_reviews.map(review=>rejected.has(review.index)?{...review,verdict:'reject'}:review);
+ // The reviewer may downgrade a useful preference to optional; it cannot upgrade or invent advice.
+ reviewedAnalysis={...reviewedAnalysis,improvements:reviewedAnalysis.improvements.map((row,index)=>normalized.improvement_reviews.find(r=>r.index===index)?.materiality==='optional'?{...row,priority:'optional'}:row)};
  return applyAudit(reviewedAnalysis,normalized,blocks);
 }
 module.exports={cloneCoachingJson,VERSION,transcriptBlocks,renderCoaching,applyAudit,applyAuditConsensus,applySingleAudit};

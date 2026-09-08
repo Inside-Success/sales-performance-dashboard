@@ -44,6 +44,7 @@ function isNoCloseFallback(value: CloseSectionValue) {
 
   return (
     /\bno close occurred\b/.test(text) ||
+    /\bno completed payment was confirmed\b/.test(text) ||
     /\bno close happened\b/.test(text) ||
     /\bdeal did not close\b/.test(text) ||
     /\bcall did not close\b/.test(text) ||
