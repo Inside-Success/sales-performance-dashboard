@@ -87,6 +87,14 @@ function invalid(reason, build, provider, coaching, exclusionCategory = null, ma
     : exclusionCategory === 'excluded_scheduling_or_bridge'
       ? 'Excluded — scheduling or bridge call; not included in the closer score.'
       : 'Not scored — this call did not provide enough reliable Call 2 closing evidence.');
+  const rejectedAnalysis = provider.parsed_json || parseJson(provider.model_text) || parseJson(provider.text) || parseJson(provider.body);
+  const rejectedEvidence = reason.startsWith('ungrounded_dimension_evidence:')
+    ? rejectedAnalysis?.manager_score?.dimensions?.[reason.split(':')[1]]?.evidence
+    : /^(invalid_direct_ask_evidence|contradictory_direct_ask):/.test(reason)
+      ? rejectedAnalysis?.manager_score?.close_signals?.direct_commitment_ask?.evidence : null;
+  const rejectedTimestamp = resolveEvidence(rejectedEvidence, build.transcript)?.timestamp || rejectedEvidence?.timestamp;
+  const sourceLine = rejectedTimestamp ? String(build.transcript || '').split(/\r?\n/).find(line => line.includes(String(rejectedTimestamp))) : null;
+  const diagnostic = rejectedEvidence ? { rejected_evidence: rejectedEvidence, rejected_request_text: rejectedAnalysis?.manager_score?.close_signals?.direct_commitment_ask?.request_text || null, actual_timestamp_line: sourceLine ? sourceLine.slice(0, 4000) : null } : null;
   return [{ json: {
     preview_only:false,
     score_version:build.score_version,
@@ -94,7 +102,7 @@ function invalid(reason, build, provider, coaching, exclusionCategory = null, ma
     coaching_analysis:coaching,
     current_call_score:{ eligible:false, reason, exclusion_category:exclusionCategory, manager_message:message },
     provider_costs:provider.costs || null,
-    validation:{ valid:false, errors:[reason] },
+    validation:{ valid:false, errors:[reason], evidence_diagnostic:diagnostic },
     release_boundary:'LIVE CALL 2 COACHING + MANAGER SCORE — manager scores persist only after validation; Coaching output remains separately consumed.'
   }}];
 }
@@ -135,8 +143,19 @@ for (const name of SIGNALS) {
       signals[name] = { present:false, evidence:null };
       continue;
     }
-    signals[name] = { present:true, evidence:resolved };
+    if (name === 'direct_commitment_ask') {
+      const requestText = String(signal.request_text || '').trim();
+      const evidenceTurn = String(build.transcript || '').split(/\r?\n/).find(line => line.includes(resolved.timestamp)) || '';
+      const completeRequest = requestText.includes('?') || /^(?:please\b|let['’]?s\b|let me know\b|go ahead\b|sign\b|choose\b|select\b|complete\b|make (?:the|your) payment\b)/i.test(requestText);
+      if (wordTokens(requestText).length < 3 || !completeRequest || !normalized(evidenceTurn).includes(normalized(requestText))) return invalid('invalid_direct_ask_evidence:quote_the_complete_actual_request_from_the_timestamp_turn_or_mark_false', build, provider, coaching);
+    }
+    signals[name] = { present:true, evidence:resolved, ...(name === 'direct_commitment_ask' ? {request_text:String(signal.request_text).trim()} : {}) };
   } else signals[name] = { present:false, evidence:null };
+}
+// A claimed direct ask cannot simultaneously be described as merely implicit/indirect.
+const closeReason = normalized(a.dimensions?.close_mechanics_and_momentum?.reason);
+if (signals.direct_commitment_ask.present && /(?:commitment|payment|deposit|decision) ask implicitly|(?:implicit|indirect|hypothetical) (?:commitment |payment |deposit |decision )?ask/.test(closeReason)) {
+  return invalid('contradictory_direct_ask:implicit_or_hypothetical_is_not_an_actual_request', build, provider, coaching);
 }
 if(a.review.ended_by_unrecovered_technical_failure && !signals.direct_commitment_ask.present) return invalid('insufficient_scoring_opportunity',build,provider,coaching,'insufficient_scoring_opportunity');
 let weighted = 0;
@@ -159,6 +178,13 @@ for (const dimension of DIMS) {
   let calibratedBand = item.band;
   if (dimension === 'close_mechanics_and_momentum') {
     const order = ['absent','attempted','adequate','strong','exemplary'];
+    // Adequate closing requires a real ask/path, not a pricing description alone.
+    const hasCloseAction = signals.direct_commitment_ask.present || signals.payment_or_deposit_action.present || signals.payment_or_deposit_confirmed.present || signals.agreement_confirmed.present || signals.onboarding_or_handoff_confirmed.present;
+    if (!hasCloseAction && !a.review.definitive_affordability_decline && order.indexOf(calibratedBand) > order.indexOf('attempted')) {
+      evidenceWarnings.push('calibrated_close_ceiling:no_direct_ask_or_close_action');
+      calibratedBand = 'attempted';
+      item.reason = 'No direct commitment request or concrete payment/agreement action was evidenced. Close execution is limited to attempted.';
+    }
     const floor = signals.payment_or_deposit_confirmed.present && signals.agreement_confirmed.present && signals.onboarding_or_handoff_confirmed.present ? 'exemplary'
       : signals.direct_commitment_ask.present && signals.specific_followup_agreed.present && (signals.payment_or_deposit_action.present || signals.agreement_confirmed.present) ? 'strong'
         : signals.direct_commitment_ask.present && signals.specific_followup_agreed.present ? 'adequate' : calibratedBand;

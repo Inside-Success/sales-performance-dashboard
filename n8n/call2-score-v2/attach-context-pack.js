@@ -1,4 +1,6 @@
-const original = $('Normalize Preview Input').first().json;
+const inputs = $('Normalize Preview Input').all();
+if(inputs.length !== 1) throw new Error('Expected one context input');
+const original = inputs[0].json;
 const raw = typeof $json === 'string' ? $json : ($json.data ?? $json.body ?? $json.text ?? $json.response ?? '');
 const fetched = typeof raw === 'string' ? raw.trim() : '';
 const looksLikeHtml = /^<!doctype html/i.test(fetched) || /<html[\s>]/i.test(fetched.slice(0, 500));

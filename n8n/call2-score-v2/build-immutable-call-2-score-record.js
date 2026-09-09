@@ -2,7 +2,7 @@ const root = $json || {};
 const result = root.result && typeof root.result === 'object' ? root.result : {};
 const call = root.call && typeof root.call === 'object' ? root.call : (result.call || {});
 const score = result.current_call_score || {};
-if (result.validation?.valid !== true || score.eligible !== true || !Number.isFinite(Number(score.score))) {
+if (result.validation?.valid !== true || score.eligible !== true || typeof score.score !== 'number' || !Number.isFinite(score.score) || score.score < 0 || score.score > 100) {
   return [{ json: { route:'not_scored', write_enabled:false, reason:result.validation?.errors?.[0] || score.reason || 'invalid_score' } }];
 }
 const scorerVersion = String(result.score_version || '');
@@ -52,7 +52,8 @@ const scoreFields = {
     findings:{ main_finding:coaching.one_line_verdict || '', strengths:[], improvements:[] },
     external_factors:[score.lead_context?.disposition || 'unknown'],
     validation:{ warnings:result.validation?.warnings || [] },
-    material_adjudication:{ required:false, applied:false, reason:'' }
+    material_adjudication:{ required:false, applied:false, reason:'' },
+    scoring_evidence:{ review:score.review || {}, close_signals:score.close_signals || {}, critical_events:score.critical_event_evidence || [] }
   }),
   'Internal Inconsistency':'false',
   'Scorer Version':scorerVersion,

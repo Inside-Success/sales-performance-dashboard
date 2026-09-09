@@ -1,6 +1,6 @@
 # Call 2 scoring correction — September 10, 2026
 
-Status: isolated candidate under evaluation. NOT released. No backfill authorized.
+Status: final candidate passed evaluation and runtime gates; scorer and persistence published; dashboard cutover pending. No backfill authorized.
 
 ## Scope and boundary
 
@@ -12,7 +12,7 @@ User approved forward-only scoring improvements and showing only the numeric cal
 - Coherent scorer-local prompt replaces conflicting old policy/coaching instructions. Retains ten legacy compatibility coaching fields; the separate official coaching writer still supplies the actual rep report.
 - Strips upstream AI classification prose from transcript evidence supplied to the scorer. Explicit prospect/opportunity review and contextual cap checks handle technical truncation, financial disqualification and agreed contract review. Conservative single-speaker plus explicit practice-language guard withholds likely rehearsals; one speaker alone is insufficient.
 - Every dimension has a reason and grounded counterevidence; manager persistence retains those details. Existing bounded validation retry remains.
-- Same Sonnet 4.6 model, with bounded 2,000-token reasoning. Shorter coherent prompt removes obsolete duplicated context. Existing provider, credentials and graph retained.
+- Same Sonnet 4.6 model, temperature zero and no additional thinking budget. Shorter coherent prompt removes obsolete duplicated context. Existing provider, credentials and graph retained.
 - Persistence accepts old/new versions during in-flight drain, builds immutable versioned IDs, and rejects unknown versions.
 - Rep-facing score lookup matches current version, source record, rep email and call time. Returns numeric score and opaque assessment ID only. Store failure withholds score without blocking the coaching report.
 - Manager overview and drilldown keep current and historical cohorts separate. Earlier scores remain accessible through historical navigation; no mixed averages/trends.
@@ -27,4 +27,24 @@ Publish backward-compatible persistence, then validated scorer revision on the e
 
 Frozen 40-call sample: 25 development and 15 heldout. Known edge cases must pass before release; repeat checks preserve eligibility and avoid unsupported cap flips. Existing scores are baseline; paid test outputs stay isolated and never pass through report/persistence/delivery workflows.
 
-102 scoring/access tests and four new numeric-only lookup tests passed. Production build passed after replacing a local cross-worktree dependency symlink with an ordinary isolated installation. Full actual-runtime replay, model evaluation, release and natural delivery verification still pending at this checkpoint.
+132 scoring/access/runtime-boundary tests, TypeScript, scoped lint and production build passed. Actual n8n runtime replay passed 27 checks on 11 saved call fixtures, with no provider/storage/delivery nodes. The temporary verifier is inactive. Production cutover and natural-call verification remain pending at this checkpoint.
+
+## Model evaluation and refined eligibility
+
+The initial frozen sample comprised 40 prior executions (25 development, 15 initially held out). Three newly arrived calls were then added independently. Held-out/fresh review caught and corrected scope errors before release: complaint-only, payment-only continuation, and initial qualification recordings must not receive a full Call-2 closing grade. These findings became regression cases, so the final evidence is an iterative regression evaluation, not an untouched blind benchmark.
+
+Additional request-evidence validation rejects conditional incentive/value excerpts being credited as direct commitment asks. The existing single retry can correct these; a repeated invalid response stays withheld. Close execution cannot earn an adequate band solely from pricing/follow-up when no direct ask or concrete close action is evidenced. Actual completed payment/agreement actions and definitive financial disqualification retain their exceptions. Scoring opportunity must be substantive, independently of the upstream Call-2 label. Intake/coaching classification is not changed by this release.
+
+Final candidate evaluated on 27 unique calls: 20 scored, five defensible exclusions, two evidence-validation failures withheld after the single retry (92.6% valid score or exclusion). Scored range 37.8–76.0, standard deviation 11.0. Five separate numeric repeats differed by 0, 0, 0, 0 and 1.3 points. Earlier failed iterations were not released. This is an iterative regression sample, not a blind benchmark or a guarantee of every future judgment.
+
+Complete request text must match the cited transcript turn before a direct ask is credited. The retry receives the rejected evidence and actual source turn as untrusted user data. Invalid evidence remains withheld; it is not replaced with a guessed score. Private manager persistence includes review and close-signal evidence in the existing Call Context JSON.
+
+Recorded provider testing spend across all iterations: $18.56747655. The final 27-call sample cost $2.609931 including retries: average $0.096664 per scorer execution. This excludes separate coaching/compliance costs. The 594-row V1 cohort would imply roughly $57.42 for one pass at that sample average, not an exact invoice; transcript length, exclusions and retry incidence vary. No backfill is authorized or started.
+
+Actual n8n replay of the final Code nodes passed 27 checks across 11 saved fixtures; temporary verifier Wc6FaQJoiVARxESL is inactive. Tests never wrote reports, score rows or notifications.
+
+The live pre-release manager table showed 594 V1 scored calls across 111 rep identities when All reps was selected. This is the V1 cohort, not all historic rubric versions. No backfill started. A future estimate should multiply actual measured evaluation cost by the desired source-call cohort and allow for bounded retries; it cannot be an exact advance invoice.
+
+## Published workflow checkpoint
+
+Scorer published version `7090932d-db97-40c2-8723-2071feb8ad1e`; persistence `bd084b23-1de1-44f7-8e98-1b950f04af73`. Published nodes exactly match the tested candidates. Graph, credentials and caller restrictions unchanged. Existing workflow names retain V1 text for continuity; the emitted score_version is V2. No duplicate scorer or backfill workflow was activated.
