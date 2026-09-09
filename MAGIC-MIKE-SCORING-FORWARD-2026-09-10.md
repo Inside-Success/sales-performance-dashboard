@@ -1,6 +1,6 @@
 # Call 2 scoring correction — September 10, 2026
 
-Status: final candidate passed evaluation and runtime gates; scorer and persistence published; dashboard cutover pending. No backfill authorized.
+Status: final candidate passed evaluation and runtime gates; scorer, persistence and dashboard are live; natural V2 call verification pending. No backfill authorized.
 
 ## Scope and boundary
 
@@ -48,3 +48,11 @@ The live pre-release manager table showed 594 V1 scored calls across 111 rep ide
 ## Published workflow checkpoint
 
 Scorer published version `7090932d-db97-40c2-8723-2071feb8ad1e`; persistence `bd084b23-1de1-44f7-8e98-1b950f04af73`. Published nodes exactly match the tested candidates. Graph, credentials and caller restrictions unchanged. Existing workflow names retain V1 text for continuity; the emitted score_version is V2. No duplicate scorer or backfill workflow was activated.
+
+## Dashboard and health checkpoint
+
+PR179 merged as `cada7fe4234e1de967299da3247487930e4a58b2`. Production deployment `dpl_6kfbBNfiPnnFr2iLYXskhsvrbbLt` is READY and owns the canonical alias. Production flags enable numeric coaching scores and select V2. Authenticated current/historical manager pages render separately; old coaching report 5870 renders intact without incorrectly attaching its V1 score.
+
+In-flight V1 scorer 697993 persisted through updated persistence 697998 and official coaching created report 5870. This verifies backward compatibility, not V2 natural-call completion. Latest checked intake/official/weekly/provider executions succeed with no new errors; manual latest remains its earlier successful run. Seven legacy scoring/backfill workflows and isolated verifier remain inactive. No monitoring automation was added.
+
+Historical cohort refreshed after release through the authenticated All reps view: 602 V1 scored calls across 111 rep identities. At the final sample average, one pass is approximately $58.19 (not a fixed invoice). Earlier 594-call figure is the pre-release snapshot. No historical scoring was started.
