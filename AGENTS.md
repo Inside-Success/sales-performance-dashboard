@@ -29,3 +29,7 @@ For dashboard/web changes:
 - Report chat and sales-impact chat use `deepseek-v4-pro` through env var `DEEPSEEK_API_KEY`; do not commit keys.
 - Report chat is coaching-only and must not answer compliance/legal/red-flag questions.
 - Do not run local dev servers for this project unless the user explicitly overrides that rule.
+
+## Reliability maintenance
+
+Read `MAGIC-MIKE-RELIABILITY-RELEASE-2026-09-08.md` before changing Coaching delivery or Zoom intake. This instance publishes API updates to active workflows immediately; do not assume an unpublished draft. Preserve stage checkpoints, linked-item identity, quota-safe folder mapping, bounded pending pagination, and the shared durable failure handler. Ask Sales was excluded from this release. The documented Zoom 404 case remains unresolved; do not mark it processed without the actual transcript.

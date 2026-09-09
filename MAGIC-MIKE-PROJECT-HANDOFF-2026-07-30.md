@@ -589,3 +589,7 @@ Scheduled production proof passed on coordinator execution `494326`: it selected
 The manager application is live at `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring`. PR `#162` merged as `b82f0cfff9135eb539595606ad51a20432d37581`, duplicate fail-closed PR `#163` merged as `d0df69af92d8ef72291f160527787600ba63bf36`, and production deployment `dpl_21Ak9JzkPWjmhZXu6p3QFgPkNHA5` is `READY`. All 36 test files and 372 tests, ESLint, and the production build passed without running a local development server. Unauthenticated manager access redirects to sign-in and the post-deployment runtime-error query returned no errors.
 
 Temporary Coaching display decision — 2026-08-13: the production server toggle `REP_SCORING_COACHING_SCORE_ENABLED` is `false`, so Coaching call reports do not display the numeric V7.1 score. Scoring, live-call processing, stored assessments, and the AI Closer Scorecard remain active. Re-enable the overlay later by setting this toggle to `true` and redeploying; no n8n change is required.
+
+## 2026-09-08 — Coaching delivery and intake reliability release
+
+See `MAGIC-MIKE-RELIABILITY-RELEASE-2026-09-08.md` for the current release and recovery evidence. Both production workflow IDs remain unchanged. Four interrupted Coaching deliveries and three failed intake calls were recovered; one Zoom-hosted transcript still returns 404 and is explicitly pending. Ask Sales was not changed. Older scoring/runtime snapshots in this document remain historical.
