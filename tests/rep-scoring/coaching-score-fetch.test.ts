@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PerformanceCall } from "@/lib/types";
 import { getCoachingCallScore } from "@/lib/rep-scoring/coaching-score";
 import { CALL2_CURRENT_VERSION } from "@/lib/rep-scoring/scorer-version";
-const call = { source_payload: { source_airtable_record_id: "rec-one" }, scorecard_key: "zoom:one", rep_email: "rep@example.com", call_date: "2026-09-10T12:00:00Z" } as PerformanceCall;
+const call = { source_payload: { source_airtable_record_id: "rec-one" }, scorecard_key: "zoom:one", rep_email: "rep@example.com", call_date: "2026-09-10T12:00:00Z" } satisfies Pick<PerformanceCall, "source_payload" | "scorecard_key" | "rep_email" | "call_date">;
 const row = { id: "airtable-one", fields: { "Assessment ID": `${CALL2_CURRENT_VERSION}:rec-one`, "Source Record ID": "rec-one", "Scorer Version": CALL2_CURRENT_VERSION, "Scored Rep Email": "rep@example.com", "Meeting Start At": call.call_date, "Call Type": "Call 2+", "Composite Score": 76, "Dimensions JSON": "PRIVATE MANAGER REASONING" } };
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 function setup(response: Response) {

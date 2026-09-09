@@ -14,7 +14,7 @@ const FETCH_TIMEOUT_MS = 8_000;
 type AirtableRecord = { id: string; fields?: Record<string, unknown> };
 type AirtableResponse = { records?: AirtableRecord[] };
 
-export async function getCoachingCallScore(call: PerformanceCall): Promise<CoachingCallScore | null> {
+export async function getCoachingCallScore(call: Pick<PerformanceCall, "source_payload" | "scorecard_key" | "rep_email" | "call_date">): Promise<CoachingCallScore | null> {
   if (process.env.REP_SCORING_COACHING_SCORE_ENABLED === "false") return null;
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (!token) return null;
