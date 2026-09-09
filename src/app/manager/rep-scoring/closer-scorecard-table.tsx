@@ -16,8 +16,8 @@ const callFilters = [
   { label: "All reps", value: 0 },
 ];
 
-export function CloserScorecardTable({ reps, call2Only = false }: { reps: V7RepSummary[]; call2Only?: boolean }) {
-  const [minimumCalls, setMinimumCalls] = useState(call2Only ? 3 : 15);
+export function CloserScorecardTable({ reps, call2Only = false, historical = false }: { reps: V7RepSummary[]; call2Only?: boolean; historical?: boolean }) {
+  const [minimumCalls, setMinimumCalls] = useState(call2Only ? (reps.some(rep => rep.totalCalls >= 3) ? 3 : 0) : 15);
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
   const visibleReps = useMemo(() => [...reps]
@@ -69,7 +69,7 @@ export function CloserScorecardTable({ reps, call2Only = false }: { reps: V7RepS
                   <TableCell><span className="text-2xl font-extrabold tabular-nums text-slate-950">{rep.overallScore.toFixed(1)}</span></TableCell>
                   <TableCell><span className="font-bold text-slate-900">{rep.totalCalls}</span> <span className="text-slate-500">calls</span></TableCell>
                   <TableCell className="text-right">
-                    <Link prefetch={false} href={`/manager/rep-scoring/rep/${encodeURIComponent(rep.repEmail || rep.repName)}`} className="inline-flex items-center gap-1 text-sm font-bold text-red-700 hover:underline">
+                    <Link prefetch={false} href={`/manager/rep-scoring/rep/${encodeURIComponent(rep.repEmail || rep.repName)}${historical ? "?history=1" : ""}`} className="inline-flex items-center gap-1 text-sm font-bold text-red-700 hover:underline">
                       Review <ArrowRight className="size-4" />
                     </Link>
                   </TableCell>

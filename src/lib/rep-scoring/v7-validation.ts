@@ -1,10 +1,11 @@
+import { CALL2_CURRENT_VERSION, CALL2_PREVIOUS_VERSION, isCall2Version } from "./scorer-version";
 import "server-only";
 
 import { buildV7ManagerSummaries, type V7ManagerCall, type V7RepSummary } from "@/lib/rep-scoring/v7-manager";
 import { buildVNextManagerSummaries } from "@/lib/rep-scoring/vnext-manager";
 
 export const V7_SCORER_VERSION = "rep-reviewer-v7.1-shadow-1";
-export const CALL2_MANAGER_SCORER_VERSION = "magic-mike-call2-evidence-score-v1";
+export const CALL2_MANAGER_SCORER_VERSION = CALL2_CURRENT_VERSION;
 export const V7_VALIDATION_TARGET = 405;
 
 const DEFAULT_BASE_ID = "appEQQkTlJnc7tJgi";
@@ -89,9 +90,8 @@ const SCORECARD_FIELDS = [
   "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version", "Scored At",
 ];
 
-export async function getV7ScorecardOverview(): Promise<V7ScorecardData> {
-  const scorerVersion = activeScorecardVersion();
-  const call2Only = scorerVersion === CALL2_MANAGER_SCORER_VERSION;
+export async function getV7ScorecardOverview(scorerVersion = activeScorecardVersion()): Promise<V7ScorecardData> {
+  const call2Only = isCall2Version(scorerVersion);
   const fallback: V7ScorecardData = { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [], call2Only };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
   if (process.env.REP_SCORING_ENABLED !== "true" || !token) return { ...fallback, error: "The scorecard data source is not connected." };
@@ -163,10 +163,10 @@ export async function getV7Rep(repKey: string, scorerVersion = activeScorecardVe
   const formula = `AND({Scorer Version}=${airtableLiteral(scorerVersion)},${repFormula})`;
   const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORE_FIELDS, 600);
   const calls = canonicalScoreRecords(records).map(normalizeAssessment).filter((call) => call.score !== null).sort((a, b) => dateValue(b.meetingStartAt) - dateValue(a.meetingStartAt));
-  const summaries = scorerVersion === CALL2_MANAGER_SCORER_VERSION
+  const summaries = isCall2Version(scorerVersion)
     ? buildVNextManagerSummaries(calls.map(managerCall))
     : buildV7ManagerSummaries(calls.map(managerCall));
-  return summaries[0] ? { summary: summaries[0], calls, call2Only: scorerVersion === CALL2_MANAGER_SCORER_VERSION } : null;
+  return summaries[0] ? { summary: summaries[0], calls, call2Only: isCall2Version(scorerVersion) } : null;
 }
 
 function validationData(scoreRecords: AirtableRecord[], quarantineRecords: AirtableRecord[]): V7ValidationData {
@@ -280,7 +280,8 @@ function managerCall(call: V7Assessment): V7ManagerCall {
 }
 
 function activeScorecardVersion() {
-  return process.env.REP_SCORING_ACTIVE_SCORER_VERSION || V7_SCORER_VERSION;
+  const configured = process.env.REP_SCORING_ACTIVE_SCORER_VERSION;
+  return !configured || configured === CALL2_PREVIOUS_VERSION ? CALL2_CURRENT_VERSION : configured;
 }
 
 async function fetchRecords(table: string, token: string, filterByFormula: string, fields: string[], maxRecords: number) {

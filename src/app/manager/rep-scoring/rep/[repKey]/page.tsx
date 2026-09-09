@@ -1,3 +1,4 @@
+import { scorecardVersion } from "@/lib/rep-scoring/scorer-version";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -11,10 +12,11 @@ import { getV7Rep } from "@/lib/rep-scoring/v7-validation";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Closer Review | Magic Mike Bot", robots: { index: false, follow: false } };
 
-export default async function CloserReviewPage({ params }: { params: Promise<{ repKey: string }> }) {
+export default async function CloserReviewPage({ params, searchParams }: { params: Promise<{ repKey: string }>; searchParams: Promise<{ history?: string }> }) {
   await requireRepScoringAdmin();
   const { repKey } = await params;
-  const data = await getV7Rep(decodeURIComponent(repKey));
+  const historical = (await searchParams).history === "1";
+  const data = await getV7Rep(decodeURIComponent(repKey), scorecardVersion(historical));
   if (!data) notFound();
   const { summary, calls, call2Only } = data;
   const lowestCalls = [...calls].sort((a, b) => (a.score ?? 101) - (b.score ?? 101));
@@ -22,7 +24,7 @@ export default async function CloserReviewPage({ params }: { params: Promise<{ r
   return (
     <main className="magic-page">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <Link prefetch href="/manager/rep-scoring" className="inline-flex w-fit items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to scorecard</Link>
+        <Link prefetch href={historical ? "/manager/rep-scoring?history=1" : "/manager/rep-scoring"} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to scorecard</Link>
 
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
