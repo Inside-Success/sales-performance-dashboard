@@ -2,6 +2,7 @@ import "server-only";
 
 import type { PerformanceCall } from "@/lib/types";
 import {
+  COACHING_SCORE_SCORER_VERSION,
   selectExactCoachingCallScore,
   type CoachingCallScore,
   type CoachingScoreCandidate,
@@ -27,7 +28,7 @@ export async function getCoachingCallScore(call: PerformanceCall): Promise<Coach
     const table = process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores";
     const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`);
     url.searchParams.set("pageSize", "100");
-    url.searchParams.set("filterByFormula", `{Source Record ID}=${airtableStringLiteral(sourceRecordId)}`);
+    url.searchParams.set("filterByFormula", `AND({Source Record ID}=${airtableStringLiteral(sourceRecordId)},{Scorer Version}=${airtableStringLiteral(COACHING_SCORE_SCORER_VERSION)})`);
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -36,7 +37,7 @@ export async function getCoachingCallScore(call: PerformanceCall): Promise<Coach
     if (!response.ok) return null;
     const payload = await response.json() as AirtableResponse;
     const candidates = (payload.records || []).map(normalizeCandidate);
-    return selectExactCoachingCallScore({ sourceRecordId, automationKey, candidates });
+    return selectExactCoachingCallScore({ sourceRecordId, automationKey, candidates, repEmail: call.rep_email || "", callDate: call.call_date || "" });
   } catch {
     // Coaching is the production-critical surface. A scoring lookup failure
     // must never prevent the existing feedback report from rendering.
@@ -50,6 +51,8 @@ function normalizeCandidate(record: AirtableRecord): CoachingScoreCandidate {
     id: readString(fields["Assessment ID"]) || record.id,
     sourceRecordId: readString(fields["Source Record ID"]),
     automationKey: readString(fields["Automation Key"]),
+    repEmail: readString(fields["Scored Rep Email"]),
+    callDate: readString(fields["Meeting Start At"]),
     scorerVersion: readString(fields["Scorer Version"]),
     callType: readString(fields["Call Type"]),
     status: readString(fields.Status),
@@ -67,6 +70,7 @@ function readString(value: unknown) {
 }
 
 function readNumber(value: unknown) {
+  if (value === null || value === undefined || value === "") return null;
   const number = typeof value === "number" ? value : Number(value);
   return Number.isFinite(number) ? number : null;
 }

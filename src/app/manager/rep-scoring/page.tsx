@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { scorecardVersion } from "@/lib/rep-scoring/scorer-version";
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 
@@ -13,9 +15,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ManagerRepScoringPage() {
+export default async function ManagerRepScoringPage({ searchParams }: { searchParams: Promise<{ history?: string }> }) {
   await requireRepScoringAdmin();
-  const data = await getV7ScorecardOverview();
+  const historical = (await searchParams).history === "1";
+  const data = await getV7ScorecardOverview(scorecardVersion(historical));
 
   return (
     <main className="magic-page">
@@ -31,7 +34,8 @@ export default async function ManagerRepScoringPage() {
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Scorecard unavailable:</strong> {data.error}</div> : null}
 
-        <CloserScorecardTable reps={data.repSummaries} call2Only={data.call2Only} />
+        <p className="text-sm text-slate-600">{historical ? "Historical scores before the scoring update. These are kept separate from current scores." : "Scores from the updated assessment only. Earlier scores remain available separately."} <Link className="font-bold underline" href={historical ? "/manager/rep-scoring" : "/manager/rep-scoring?history=1"}>{historical ? "View current scores" : "View historical scores"}</Link></p>
+        <CloserScorecardTable reps={data.repSummaries} call2Only={data.call2Only} historical={historical} />
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">Scores summarize the calls reviewed and help prioritize investigation. Open a closer to verify the supporting calls before taking action.</p>
       </div>

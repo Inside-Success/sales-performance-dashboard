@@ -1,3 +1,4 @@
+import { CALL2_PREVIOUS_VERSION, CALL2_CURRENT_VERSION } from "@/lib/rep-scoring/scorer-version";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ExternalLink, Quote, TriangleAlert } from "lucide-react";
@@ -14,7 +15,9 @@ export const metadata: Metadata = { title: "Call Score Review | Magic Mike Bot",
 export default async function CallScorePage({ params }: { params: Promise<{ assessmentId: string }> }) {
   await requireRepScoringAdmin();
   const { assessmentId } = await params;
-  const call = await getV7Assessment(decodeURIComponent(assessmentId));
+  const decodedId = decodeURIComponent(assessmentId);
+  const historical = decodedId.startsWith(CALL2_PREVIOUS_VERSION + ":");
+  const call = await getV7Assessment(decodedId, historical ? CALL2_PREVIOUS_VERSION : CALL2_CURRENT_VERSION);
   if (!call) notFound();
   const criterionConcerns = call.dimensions.flatMap((dimension) => {
     const criterion = dimension.criteria.find((item) => ["partial", "weak", "missed", "harmful"].includes(item.status));
@@ -39,7 +42,7 @@ export default async function CallScorePage({ params }: { params: Promise<{ asse
   return (
     <main className="magic-page">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <Link prefetch href={`/manager/rep-scoring/rep/${encodeURIComponent(call.repEmail || call.repName)}`} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to {call.repName}</Link>
+        <Link prefetch href={`/manager/rep-scoring/rep/${encodeURIComponent(call.repEmail || call.repName)}${historical ? "?history=1" : ""}`} className="inline-flex w-fit items-center gap-2 text-sm font-bold text-slate-600 hover:text-red-700"><ArrowLeft className="size-4" />Back to {call.repName}</Link>
 
         <header className="magic-card magic-hero p-5 md:p-7"><div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge><h1 className="mt-3 text-3xl font-extrabold text-slate-950 md:text-4xl">{call.repName}</h1><p className="mt-2 text-sm text-slate-500">{formatDate(call.meetingStartAt)}{call.showName ? ` · ${call.showName}` : ""}</p></div><div className="rounded-2xl border border-slate-200 bg-white px-7 py-4 text-center"><div className="text-4xl font-extrabold text-slate-950">{call.score?.toFixed(1) ?? "—"}</div><div className="text-sm font-semibold text-slate-500">Call score</div></div></div></header>
 
