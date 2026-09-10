@@ -88,6 +88,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
 
   return (
     <div className="grid gap-4">
+      <p className="text-xs leading-5 text-slate-500">Activity counts report opens, report clicks, rep selections, and resource link clicks in the selected period. It is not a performance score.</p>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-1.5">
           {FILTERS.map((item) => (
@@ -117,7 +118,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
           <div className="absolute inset-x-12 bottom-12 top-8 rounded-2xl bg-[linear-gradient(to_right,rgba(203,213,225,0.55)_1px,transparent_1px),linear-gradient(to_bottom,rgba(203,213,225,0.55)_1px,transparent_1px)] bg-[size:25%_25%]" />
           <div className="absolute inset-x-12 bottom-12 top-8 border-l border-b border-slate-300" />
           <span className="absolute bottom-4 left-12 text-xs font-semibold text-slate-500">
-            Verified usage score
+            Coaching activity
           </span>
           <span className="absolute left-4 top-8 text-xs font-semibold text-slate-500">
             New paid sales
@@ -173,7 +174,7 @@ export function SalesImpactScatter({ reps }: { reps: SalesCorrelationRep[] }) {
               </div>
               <ScatterStat label="New paid sales" value={formatCurrency(selectedRep.newPaidRevenueWindow)} />
               <ScatterStat label="New deals" value={formatNumber(selectedRep.newPaidDealsWindow)} />
-              <ScatterStat label="Verified usage score" value={formatNumber(selectedRep.usageSignalsWindow)} />
+              <ScatterStat label="Coaching activity" value={formatNumber(selectedRep.usageSignalsWindow)} />
               <ScatterStat label="Engaged official reports" value={formatNumber(selectedRep.reportViewsWindow)} />
               <ScatterStat label="Distinct reports engaged" value={formatNumber(selectedRep.viewedReportsWindow)} />
               <p className="rounded-2xl border border-slate-200 bg-white/70 p-3 text-xs font-medium leading-5 text-slate-500">

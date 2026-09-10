@@ -14,12 +14,21 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 export function RepNoShowLogCard({
   calls,
   trackingStartedAt,
+  periodStart,
+  periodDays,
 }: {
   calls: RepNoShowCall[];
   trackingStartedAt: string;
+  periodStart: string;
+  periodDays: number;
 }) {
   const [query, setQuery] = useState("");
-  const filteredCalls = useMemo(() => filterCalls(calls, query), [calls, query]);
+  const [callType, setCallType] = useState("all");
+  const [history, setHistory] = useState(false);
+  const filteredCalls = useMemo(() => filterCalls(calls.filter(call =>
+    (history || (call.callDate && Date.parse(call.callDate) >= Date.parse(periodStart))) &&
+    (callType === "all" || (callType === "call1" ? call.callNumber.trim().toLowerCase() === "call 1" : call.callNumber.trim().toLowerCase() !== "call 1"))
+  ), query), [calls, query, callType, history, periodStart]);
 
   return (
     <Card className="dashboard-card border bg-card/95">
@@ -28,11 +37,10 @@ export function RepNoShowLogCard({
           <div>
             <CardTitle className="flex items-center gap-2">
               <FileText className="size-4" />
-              All Detected No-Shows
+              Detected no-shows
             </CardTitle>
             <CardDescription>
-              Every rep no-show detected since {formatShortDate(trackingStartedAt)}. Scroll inside
-              this card to review the full log.
+              Showing the selected period. All history is available from {formatShortDate(trackingStartedAt)}.
             </CardDescription>
           </div>
           <Badge variant="outline" className="w-fit bg-background">
@@ -44,6 +52,10 @@ export function RepNoShowLogCard({
         {calls.length ? (
           <>
             <div className="border-b px-4 py-3">
+              <div className="mb-3 flex flex-wrap gap-3">
+                <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => setCallType(event.target.value)} className="ml-2 rounded-md border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
+                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => setHistory(event.target.value === "all")} className="ml-2 rounded-md border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
+              </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
                   <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -81,7 +93,7 @@ export function RepNoShowLogCard({
               </div>
             ) : (
               <div className="px-4 py-4">
-                <EmptyState text="No no-shows match this search." />
+                <EmptyState text="No no-shows match these filters." />
               </div>
             )}
           </>

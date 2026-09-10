@@ -1,7 +1,7 @@
 import { slugify } from "@/lib/slug";
 import { unstable_cache } from "next/cache";
 
-export const REP_NO_SHOW_WINDOWS = [7, 30, 90] as const;
+export const REP_NO_SHOW_WINDOWS = [7, 14, 30, 90] as const;
 export type RepNoShowWindow = (typeof REP_NO_SHOW_WINDOWS)[number];
 
 const DEFAULT_AIRTABLE_BASE_ID = "appNIvRt5uouRrcZ6";
@@ -116,7 +116,7 @@ export function normalizeRepNoShowWindow(value: string | string[] | undefined): 
 
 export const getRepNoShowAnalytics = unstable_cache(
   async (periodDays: RepNoShowWindow = 7) => getRepNoShowAnalyticsUncached(periodDays),
-  ["rep-no-show-analytics-v3"],
+  ["rep-no-show-analytics-v4"],
   { revalidate: 900 },
 );
 
@@ -243,6 +243,7 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
   const tableId = process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID;
   const records: AirtableRecord[] = [];
   let offset = "";
+  const seenOffsets = new Set<string>();
 
   do {
     const params = new URLSearchParams();
@@ -261,6 +262,7 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
         authorization: `Bearer ${token}`,
       },
       cache: "no-store",
+      signal: AbortSignal.timeout(15000),
     });
 
     const data = (await response.json()) as AirtableListResponse;
@@ -270,7 +272,9 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
 
     records.push(...(data.records || []));
     offset = data.offset || "";
-  } while (offset && records.length < 5000);
+    if (offset && seenOffsets.has(offset)) throw new Error("Attendance history pagination repeated; no partial totals are shown.");
+    if (offset) seenOffsets.add(offset);
+  } while (offset);
 
   return records;
 }
@@ -549,6 +553,7 @@ function buildWeeklyTrend(
     const weekStart = maxDate(rawWeekStart, trackingStartedAt);
     const weekEnd = minDate(rawWeekEnd, generatedAt);
     const weekCalls = calls.filter((call) => isInWindow(call.callDate, weekStart, weekEnd));
+    if (!weekCalls.length) return null;
     const noShows = weekCalls.filter((call) => call.noShow).length;
 
     return {

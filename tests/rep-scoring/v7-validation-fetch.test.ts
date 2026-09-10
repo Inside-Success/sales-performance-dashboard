@@ -25,7 +25,7 @@ describe("scorecard Airtable pagination", () => {
     process.env.REP_SCORING_AIRTABLE_TOKEN = "test-token";
     process.env.REP_SCORING_AIRTABLE_BASE_ID = "app-test";
     process.env.REP_SCORING_CALL_SCORES_TABLE = "call_scores";
-    process.env.REP_SCORING_ACTIVE_SCORER_VERSION = "magic-mike-call2-evidence-score-v1";
+    process.env.REP_SCORING_ACTIVE_SCORER_VERSION = "magic-mike-call2-evidence-score-v2";
 
     const record = {
       id: "rec-1",
@@ -35,10 +35,11 @@ describe("scorecard Airtable pagination", () => {
         "Scored Rep Email": "rep@example.com",
         "Scored Rep Label": "Test Rep",
         "Call Type": "Call 2+",
-        "Meeting Start At": "2026-08-27T12:00:00.000Z",
+        "Meeting Start At": "2026-09-07T12:00:00.000Z",
         "Composite Score": 64,
-        "Scorer Version": "magic-mike-call2-evidence-score-v1",
-        "Scored At": "2026-08-27T12:05:00.000Z",
+      "Call Context JSON": JSON.stringify({scoring_evidence: {review: {factual_review: {revision: "bounded-claims-2026-09-10", status: "passed"}}}}),
+        "Scorer Version": "magic-mike-call2-evidence-score-v2",
+        "Scored At": "2026-09-07T12:05:00.000Z",
       },
     };
     const fetchMock = vi.fn()
@@ -96,7 +97,7 @@ function configureScorecard() {
   process.env.REP_SCORING_AIRTABLE_TOKEN = "test-token";
   process.env.REP_SCORING_AIRTABLE_BASE_ID = "app-test";
   process.env.REP_SCORING_CALL_SCORES_TABLE = "call_scores";
-  process.env.REP_SCORING_ACTIVE_SCORER_VERSION = "magic-mike-call2-evidence-score-v1";
+  process.env.REP_SCORING_ACTIVE_SCORER_VERSION = "magic-mike-call2-evidence-score-v2";
 }
 
 function scoreRecord() {
@@ -108,10 +109,11 @@ function scoreRecord() {
       "Scored Rep Email": "rep@example.com",
       "Scored Rep Label": "Test Rep",
       "Call Type": "Call 2+",
-      "Meeting Start At": "2026-08-27T12:00:00.000Z",
+      "Meeting Start At": "2026-09-07T12:00:00.000Z",
       "Composite Score": 64,
-      "Scorer Version": "magic-mike-call2-evidence-score-v1",
-      "Scored At": "2026-08-27T12:05:00.000Z",
+      "Call Context JSON": JSON.stringify({scoring_evidence: {review: {factual_review: {revision: "bounded-claims-2026-09-10", status: "passed"}}}}),
+      "Scorer Version": "magic-mike-call2-evidence-score-v2",
+      "Scored At": "2026-09-07T12:05:00.000Z",
     },
   };
 }
