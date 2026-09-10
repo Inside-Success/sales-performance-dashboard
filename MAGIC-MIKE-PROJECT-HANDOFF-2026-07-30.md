@@ -594,3 +594,8 @@ Temporary Coaching display decision — 2026-08-13: the production server toggle
 ## September 10 Luna follow-up evaluation
 
 The isolated source-ID/Luna candidate produced 20/20 numeric results but failed factual accuracy checks. It was not published; live V2 remains unchanged and no backfill is approved. Both temporary test workflows are inactive. Cumulative estimated tests $41.0113 plus a separate $1 uncertainty reserve against the $50 ceiling. See [Luna evaluation](MAGIC-MIKE-SCORING-LUNA-EVALUATION-2026-09-10.md) for exact scope, evidence and remaining gate.
+
+
+## September 10 — bounded factual checker evaluation passed, not released
+
+Sonnet 4.6 bounded claim review corrected the known failures: 20/20 regression and 5/5 unused eligible calls scored; one actual technical-only call excluded. Dean plus these 25 matched native n8n runtime; 26 real persistence mappings and 16 contract/parser tests passed. Cumulative estimated tests $44.9839 plus $1 reserve. All temporary workflows inactive; production unchanged. New natural baseline execution 702624/702626 succeeded with score 70.8 and delivery nodes. Candidate production integration/delivery verification remains before backfill; no backfill authorized. See MAGIC-MIKE-SCORING-BOUNDED-CHECK-2026-09-10.md in the scoring checkout.
