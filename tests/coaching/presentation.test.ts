@@ -32,3 +32,24 @@ describe('coaching display contract',()=>{
  expect(coachingEvidence('You clarified the $2,000 payment. [00:12:34.840, 00:14:43.660]')).toEqual({text:'You clarified the $2,000 payment.',evidence:['00:12:34','00:14:43']});
  });
 });
+
+describe('closing duplication after downstream repair',()=>{
+ for(const newline of ['\n','\n\n','\r\n'])it(`removes copied outcome and multiple numbered strengths with ${JSON.stringify(newline)}`,()=>{
+  const a='You personalized the story. [00:01:00.100] This made it relevant.';
+  const b='You resolved the payment obstacle. [00:02:00.200] This maintained momentum.';
+  const outcome='You confirmed payment.';
+  const report={one_line_verdict:outcome,what_went_well:`1. ${a}${newline}2. ${b}`,what_made_this_close_work:`${outcome} [00:03:00.300]${newline}1. ${a}${newline}2. ${b}`};
+  const before=JSON.stringify(report);const sections=coachingSections(report);
+  expect(sections.map(s=>s.key)).toEqual(['outcome','strengths']);
+  expect(sections[0].items[0]).toContain('[00:03:00.300]');expect(sections[1].items).toHaveLength(2);expect(JSON.stringify(report)).toBe(before);
+ });
+ it('retains a unique closing action and its evidence alongside copied strengths',()=>{
+  const s=coachingSections({one_line_verdict:'Payment confirmed.',what_went_well:'You tailored the pitch.',what_made_this_close_work:'Payment confirmed. [00:01:00.000]\n1. You tailored the pitch.\n2. You confirmed the onboarding owner. [00:02:00.000]'});
+  expect(s.find(s=>s.key==='close')?.items).toEqual(['You confirmed the onboarding owner. [00:02:00.000]']);
+ });
+ it('preserves unnumbered multiline unpaid explanation and distinct advice',()=>{
+  const text='Payment remains pending.\nObserved concerns:\n1. Buyer requested review.\nAgreed next steps:\n1. Follow up Friday. [00:05:00.000]';
+  const sections=coachingSections({one_line_verdict:'Buyer will review.',why_no_close:text});
+  expect(sections.find(s=>s.key==='close')?.items.join(' ')).toContain('Follow up Friday. [00:05:00.000]');
+ });
+});
