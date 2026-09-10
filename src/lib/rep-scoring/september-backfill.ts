@@ -31,9 +31,9 @@ export async function claimBackfill(executionId: string) {
       select id from mm_september_jobs where run_id=${BACKFILL_RUN} and state='pending'
       order by id for update skip locked limit 1
     ), permit as (
-      update mm_september_runs set in_flight=in_flight+1, reserved=reserved+3, started=started+1
+      update mm_september_runs set in_flight=in_flight+1, reserved=reserved+5, started=started+1
       where run_id=${BACKFILL_RUN} and state='running' and in_flight<5
-      and started<dispatch_limit and spent+reserved+3<=budget
+      and started<dispatch_limit and spent+reserved+5<=budget
       and exists(select 1 from candidate) returning run_id
     ) update mm_september_jobs set state='claimed', token=${token}, execution_id=${executionId}, updated_at=now()
       where id in(select id from candidate) and exists(select 1 from permit)
@@ -46,7 +46,7 @@ export async function failBackfillExecution(executionId: string) {
   await sql`update mm_september_runs set state='paused' where run_id=${BACKFILL_RUN} and state='running'`;
   const jobs=await sql`select id,token,state from mm_september_jobs where run_id=${BACKFILL_RUN} and execution_id=${executionId}`;
   const job=jobs[0];
-  if(job?.state==='claimed') return completeBackfill({id:job.id,token:job.token,cost:3,result:{error:'Worker failed; conservative reserve retained pending usage reconciliation'}});
+  if(job?.state==='claimed') return completeBackfill({id:job.id,token:job.token,cost:5,result:{error:'Worker failed; conservative reserve retained pending usage reconciliation'}});
   // Computed results remain available for storage-only recovery, never a new AI run.
   return {ok:true,paused:true};
 }
@@ -60,7 +60,7 @@ export async function completeBackfill(body: Record<string, unknown>) {
   if (["completed","excluded","failed","review_required"].includes(job.state)) return { ok: true, state: job.state };
   const result = (job.result || body.result || {}) as Record<string, unknown>;
   const cost = job.result ? Number(job.cost) : Number(body.cost);
-  if (!Number.isFinite(cost) || cost<0 || cost>3) throw Error("Cost outside reserved allowance; reconcile execution");
+  if (!Number.isFinite(cost) || cost<0 || cost>5) throw Error("Cost outside reserved allowance; reconcile execution");
   const fields = result.scoreFields as Record<string, unknown> | undefined;
   const payload = job.payload as Record<string, unknown>;
   if (fields && (fields["Source Record ID"] !== payload.source_record_id || fields["Scored Rep Email"] !== payload.rep_email || fields["Meeting Start At"] !== payload.call_date || fields["Assessment ID"] !== `magic-mike-call2-evidence-score-v2:${payload.source_record_id}`)) throw Error("Score identity mismatch");
@@ -83,12 +83,12 @@ export async function completeBackfill(body: Record<string, unknown>) {
   await sql`with finished as (
     update mm_september_jobs set state=${state}, updated_at=now() where id=${id} and token=${token} and state='computed' returning cost
   ) update mm_september_runs set spent=spent+coalesce((select cost from finished),0),
-    reserved=reserved-case when exists(select 1 from finished) then 3 else 0 end,
+    reserved=reserved-case when exists(select 1 from finished) then 5 else 0 end,
     in_flight=in_flight-case when exists(select 1 from finished) then 1 else 0 end
     where run_id=${BACKFILL_RUN}`;
   await sql`update mm_september_runs set state=case
       when not exists(select 1 from mm_september_jobs where run_id=${BACKFILL_RUN} and state in ('pending','claimed','computed')) then 'completed'
-      when in_flight=0 and (spent+3>budget or started>=dispatch_limit) then 'paused'
+      when in_flight=0 and (spent+5>budget or started>=dispatch_limit) then 'paused'
       else state end where run_id=${BACKFILL_RUN}`;
   return { ok:true, state };
 }
