@@ -15,7 +15,8 @@ export const metadata: Metadata = { title: "Closer Review | Magic Mike Bot", rob
 export default async function CloserReviewPage({ params, searchParams }: { params: Promise<{ repKey: string }>; searchParams: Promise<{ history?: string }> }) {
   await requireRepScoringAdmin();
   const { repKey } = await params;
-  const historical = (await searchParams).history === "1";
+  await searchParams;
+  const historical = false;
   const data = await getV7Rep(decodeURIComponent(repKey), scorecardVersion(historical));
   if (!data) notFound();
   const { summary, calls, call2Only } = data;

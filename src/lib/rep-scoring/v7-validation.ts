@@ -1,3 +1,4 @@
+import { currentScoreFields } from "./current-policy";
 import { CALL2_CURRENT_VERSION, CALL2_PREVIOUS_VERSION, isCall2Version } from "./scorer-version";
 import "server-only";
 
@@ -87,7 +88,7 @@ export type V7ScorecardData = {
 };
 
 const SCORECARD_FIELDS = [
-  "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version", "Scored At",
+  "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version", "Scored At", "Call Context JSON",
 ];
 
 export async function getV7ScorecardOverview(scorerVersion = activeScorecardVersion()): Promise<V7ScorecardData> {
@@ -192,6 +193,7 @@ function validationData(scoreRecords: AirtableRecord[], quarantineRecords: Airta
 }
 
 function canonicalScoreRecords(records: AirtableRecord[]) {
+  records = records.filter(record => currentScoreFields(record.fields));
   const groups = new Map<string, AirtableRecord[]>();
   for (const record of records) {
     const fields = record.fields;

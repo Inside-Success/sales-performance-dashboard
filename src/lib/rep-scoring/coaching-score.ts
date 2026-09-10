@@ -1,3 +1,4 @@
+import { currentScoreFields } from "./current-policy";
 import "server-only";
 
 import type { PerformanceCall } from "@/lib/types";
@@ -49,6 +50,7 @@ function normalizeCandidate(record: AirtableRecord): CoachingScoreCandidate {
   const fields = record.fields || {};
   return {
     id: readString(fields["Assessment ID"]) || record.id,
+    latestReviewed: currentScoreFields(fields),
     sourceRecordId: readString(fields["Source Record ID"]),
     automationKey: readString(fields["Automation Key"]),
     repEmail: readString(fields["Scored Rep Email"]),

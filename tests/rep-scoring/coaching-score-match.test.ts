@@ -6,6 +6,7 @@ import {
 } from "@/lib/rep-scoring/coaching-score-match";
 
 const valid: CoachingScoreCandidate = {
+  latestReviewed: true,
   id: `${COACHING_SCORE_SCORER_VERSION}:rec-source-1`,
   sourceRecordId: "rec-source-1",
   automationKey: "zoom:meeting:file",
@@ -29,6 +30,7 @@ describe("Coaching Call 2 score matching", () => {
   });
 
   it.each([
+    [{ ...valid, latestReviewed: false }],
     [{ ...valid, sourceRecordId: "other" }],
     [{ ...valid, repEmail: "other@example.com" }],
     [{ ...valid, callDate: "2026-09-09T12:00:00Z" }],

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { BackfillProgress } from "./backfill-progress";
+import { backfillProgress } from "@/lib/rep-scoring/september-backfill";
 import { scorecardVersion } from "@/lib/rep-scoring/scorer-version";
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
 
 export default async function ManagerRepScoringPage({ searchParams }: { searchParams: Promise<{ history?: string }> }) {
   await requireRepScoringAdmin();
-  const historical = (await searchParams).history === "1";
+  await searchParams;
+  const historical = false;
+  const progress = await backfillProgress();
   const data = await getV7ScorecardOverview(scorecardVersion(historical));
 
   return (
@@ -34,7 +37,8 @@ export default async function ManagerRepScoringPage({ searchParams }: { searchPa
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Scorecard unavailable:</strong> {data.error}</div> : null}
 
-        <p className="text-sm text-slate-600">{historical ? "Historical scores before the scoring update. These are kept separate from current scores." : "Scores from the updated assessment only. Earlier scores remain available separately."} <Link className="font-bold underline" href={historical ? "/manager/rep-scoring" : "/manager/rep-scoring?history=1"}>{historical ? "View current scores" : "View historical scores"}</Link></p>
+        <BackfillProgress status={progress as Parameters<typeof BackfillProgress>[0]["status"]} />
+        <p className="text-sm text-slate-600">Calls from September 1 onward, using the latest reviewed scoring rubric. Scores are added as the update completes.</p>
         <CloserScorecardTable reps={data.repSummaries} call2Only={data.call2Only} historical={historical} />
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">Scores summarize the calls reviewed and help prioritize investigation. Open a closer to verify the supporting calls before taking action.</p>

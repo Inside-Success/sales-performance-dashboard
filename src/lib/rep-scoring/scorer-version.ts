@@ -4,5 +4,6 @@ export function isCall2Version(version: string) {
   return version === CALL2_PREVIOUS_VERSION || version === CALL2_CURRENT_VERSION;
 }
 export function scorecardVersion(historical = false) {
-  return historical ? CALL2_PREVIOUS_VERSION : CALL2_CURRENT_VERSION;
+  void historical;
+  return CALL2_CURRENT_VERSION;
 }
