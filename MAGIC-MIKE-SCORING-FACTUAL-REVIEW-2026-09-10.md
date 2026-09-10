@@ -38,3 +38,8 @@ Cumulative metered-token estimate: **$35.2846**, including the prior $18.5675 sc
 Private baselines, frozen candidates, source calls, every paid response, request receipts, fresh-summary.json, fresh-independent-review.json, cached-replay-results.json and live-latest-verification.json remain under workspace root `.magic-mike-scoring-factual-2026-09-10/`. No transcripts or credentials are included in this Git change.
 
 The next approach should simplify source attribution and evidence handling before adding another paid model pass. Preserve the failed examples as regression cases, explicitly test proposed versus agreed actions and incomplete spoken requests, and evaluate a future candidate on genuinely unused calls. Do not keep retuning against these twenty and describe them as untouched. Historical backfill still requires explicit approval. This draft must not be merged as a production release.
+
+
+## September 10 Luna follow-up evaluation
+
+The isolated source-ID/Luna candidate produced 20/20 numeric results but failed factual accuracy checks. It was not published; live V2 remains unchanged and no backfill is approved. Both temporary test workflows are inactive. Cumulative estimated tests $41.0113 plus a separate $1 uncertainty reserve against the $50 ceiling. See [Luna evaluation](MAGIC-MIKE-SCORING-LUNA-EVALUATION-2026-09-10.md) for exact scope, evidence and remaining gate.

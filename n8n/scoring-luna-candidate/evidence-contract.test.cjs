@@ -1,0 +1,14 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const { transcriptTurns, sourceEvidence, hydrateReview } = require('./evidence-contract.cjs');
+const source = 'Untrusted header\nFull Transcript\n[00:01:00.000] Rep: Would you like to proceed.\n[00:01:00.000] Client: Yes.\n[00:01:02.000] Rep: I will send the link.';
+const turns = transcriptTurns(source);
+const draft = () => ({manager_score:{dimensions:{close:{band:'adequate',reason:'Example',evidence_id:'T0001',counterevidence_ids:['T0002']}},close_signals:{direct_commitment_ask:{present:true,evidence_id:'T0001'}},critical_events:[]},corrections:[]});
+test('source IDs disambiguate identical timestamps and preserve speakers', () => { assert.equal(sourceEvidence(turns,'T0002').speaker,'Client'); assert.equal(sourceEvidence(turns,'T0001').quote,'Would you like to proceed.'); });
+test('unknown IDs fail instead of fuzzy matching another turn', () => { assert.throws(()=>sourceEvidence(turns,'T9999')); assert.throws(()=>sourceEvidence(turns,'T1')); });
+test('code copies the actual request even when transcription omits a question mark', () => { assert.equal(hydrateReview(draft(),turns,'Rep').close_signals.direct_commitment_ask.request_text,'Would you like to proceed.'); });
+test('prospect speech cannot become a rep commitment ask', () => { const d=draft(); d.manager_score.close_signals.direct_commitment_ask.evidence_id='T0002'; assert.throws(()=>hydrateReview(d,turns,'Rep'),/another speaker/); });
+test('hydration preserves input and cannot rewrite source speech', () => { const d=draft(); const before=JSON.stringify(d); const result=hydrateReview(d,turns,'Rep'); assert.equal(JSON.stringify(d),before); assert.equal(result.dimensions.close.evidence.quote,turns[0].text); });
+test('an unsupported present signal fails rather than silently disappearing', () => {const d=draft();d.manager_score.close_signals.direct_commitment_ask.evidence_id=null;assert.throws(()=>hydrateReview(d,turns,'Rep'),/without evidence/);});
+test('correction citations are validated too', () => {const d=draft();d.corrections=[{evidence_ids:['T9999']}];assert.throws(()=>hydrateReview(d,turns,'Rep'));});
+test('an exact rep name with a role suffix is accepted without fuzzy first-name matching',()=>{const t=transcriptTurns('[00:00:00.000] Rep｜Casting Manager: Would you proceed?');assert.equal(hydrateReview({...draft(),manager_score:{...draft().manager_score,dimensions:{}}},t,'Rep').close_signals.direct_commitment_ask.present,true);assert.throws(()=>hydrateReview({...draft(),manager_score:{...draft().manager_score,dimensions:{}}},t,'Other Rep'));});
