@@ -70,7 +70,7 @@ function renderCoaching(analysis,blocks,options={}) {
   what_went_well:strengths.length?join(strengths):'No specific repeatable strength is established by the available transcript.',
   what_to_improve:improvements.length?join(improvements.map(x=>x.text)):noIssue,
   why_no_close:outcome.payment==='confirmed'?'Not applicable: payment was confirmed on this call.':summary+(concerns.length?'\n\nObserved concerns:\n'+join(concerns):'')+(next.length?'\n\nAgreed next steps:\n'+join(next):'\nNo further next step is confirmed in the available transcript.'),
-  what_made_this_close_work:outcome.payment==='confirmed'?summary+(strengths.length?'\n\n'+join(strengths):''):'No completed payment was confirmed on this call.',
+  what_made_this_close_work:outcome.payment==='confirmed'?summary:'No completed payment was confirmed on this call.',
   objections_surfaced:concerns.length?join(concerns):'No substantive objection was observed in the available transcript.',
   winnability:summary,
  };

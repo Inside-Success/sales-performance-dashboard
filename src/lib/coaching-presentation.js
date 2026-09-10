@@ -36,10 +36,12 @@ export function coachingSections(report) {
   const extra=uniqueCoachingItems([report.coaching_tip,report.rudys_note]).filter(x=>x!=='Keep the next action clear and confirm what actually completes.' && !main.some(y=>comparison(y).includes(comparison(x))));
   const close=coachingClose(report);
   let outcome=coachingText(report.one_line_verdict);
-  const closeParts=close.text.split(/\n\s*\n/).filter(Boolean);
+  // Parse numbered observations before paragraph boundaries: safety repairs can collapse blank lines.
+  const closeParts=coachingItems(close.text).flatMap(part=>part.split(/\n\s*\n/)).map(part=>part.trim()).filter(Boolean);
   if(closeParts[0] && comparison(closeParts[0])===comparison(outcome))outcome=closeParts[0];
   const closeRemainder=closeParts.filter(part=>![outcome,...main].some(item=>comparison(item)===comparison(part))).join('\n\n');
-  const objections=uniqueCoachingItems([report.objections_surfaced]).filter(x=>!comparison(close.text).includes(comparison(x)));
+  const visibleClose=[outcome,closeRemainder].join('\n');
+  const objections=uniqueCoachingItems([report.objections_surfaced]).filter(x=>!comparison(visibleClose).includes(comparison(x)));
   return [
     {key:'outcome',title:'Call outcome',items:[outcome].filter(Boolean)},
     {key:'strengths',title:'What you did well',items:strengths},
