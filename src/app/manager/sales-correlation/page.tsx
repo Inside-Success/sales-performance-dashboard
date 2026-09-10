@@ -619,7 +619,7 @@ function ScatterCard({ reps }: { reps: SalesCorrelationRep[] }) {
           Usage vs New Sales
         </CardTitle>
         <CardDescription>
-          Each dot is a rep. Higher and farther right is better.
+          Each dot is a rep. Higher means more new paid sales; farther right means more recorded coaching activity.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -842,7 +842,7 @@ function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {
 
 function formatUsageHistory(effectiveDays: number, periodDays: number) {
   if (!effectiveDays) return "not available";
-  if (effectiveDays >= periodDays) return `${periodDays}d covered`;
+  if (effectiveDays >= periodDays) return `${periodDays} days`;
   return `${effectiveDays}d of ${periodDays}d`;
 }
 

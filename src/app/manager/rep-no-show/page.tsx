@@ -125,8 +125,8 @@ export default async function RepNoShowPage({
           <MetricCard
             icon={CalendarDays}
             title="Call breakdown"
-            value={`${formatNumber(analytics.summary.call1NoShows)} / ${formatNumber(analytics.summary.call2PlusNoShows)}`}
-            description="Call 1 / Call 2+"
+            value={`${formatNumber(analytics.summary.call1NoShows)} Call 1`}
+            description={`${formatNumber(analytics.summary.call2PlusNoShows)} Call 2+ no-shows`}
           />
         </section>
 
@@ -138,6 +138,8 @@ export default async function RepNoShowPage({
         <RepNoShowLogCard
           calls={analytics.noShowLog}
           trackingStartedAt={analytics.summary.trackingStartedAt}
+          periodStart={analytics.summary.effectivePeriodStart}
+          periodDays={analytics.summary.periodDays}
         />
 
         <RepNoShowChatPanel periodDays={analytics.summary.periodDays} />
@@ -288,10 +290,10 @@ function TrendCard({ analytics }: { analytics: RepNoShowAnalytics }) {
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <CalendarDays className="size-4" />
-          Trend Since Activation
+          Recent weekly trend
         </CardTitle>
         <CardDescription>
-          Only reliable tracking dates from {formatShortDate(analytics.summary.trackingStartedAt)} onward.
+          Latest eight weeks. Weeks without attendance records are omitted; zero means tracked calls with no detected rep no-shows.
         </CardDescription>
       </CardHeader>
       <CardContent>

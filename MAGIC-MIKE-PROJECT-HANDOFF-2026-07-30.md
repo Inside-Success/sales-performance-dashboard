@@ -621,3 +621,15 @@ Published official workflow a87f0491-9f86-446b-a0d0-ba4e12f952d8 and manual work
 Verification: 31 tests passed, webpack production build passed, cached actual Annalia post-repair payload passed the complete Slack and Google-document Code-node renderers; manual Google-document renderer compatibility passed. Regression cases cover single/double/CRLF spacing, multiple strengths, unique closing content, evidence preservation and unpaid explanations. No paid AI calls, live test triggers, historical Slack edits, Google Doc edits or report backfill. Existing dashboard records are corrected at display time. Historical Slack/Google documents remain untouched.
 
 Private baselines, inverse patches, execution fixture and rendered test output: ../.magic-mike-close-dedup-2026-09-11/. Dashboard deployment and visual verification follow the GitHub merge; do not mistake local fixtures for a new natural delivery.
+
+## 2026-09-11 — Manager page simplification
+
+Authorized scope: usage, rep no-show, sales impact wording, current scorecard and current rep/call details. Compliance and Ask Sales admin pages excluded; leaderboard and manual scoring deferred.
+
+- Usage: received/read/last activity first, secondary signals expandable; all-history table vs 7-day summary explained. SQL/engagement definitions unchanged.
+- No-show: complete attendance pagination instead of silent 5,000-row cutoff; repeated cursor fails explicitly. Weekly bins without attendance rows omitted, genuine tracked zeros retained. Call 1 / Call 2+ log filters and selected-period / all-history selector. Existing 7/30/90-day routes preserved; 14-day supported.
+- Sales impact: scatterplot remains visible; explain recorded coaching activity and date coverage. Calculations unchanged.
+- Scorecard: completed backfill widget removed. Rep average appears once, latest-five basis explicit, empty recurring-pattern placeholders omitted. Optional exact source-ID lookup supplies client labels; missing/ambiguous names never block score display. Call evidence remains expandable and complete.
+- No workflow, score/rubric, notification, compliance, Google Doc, auth or database writes.
+- Rollback baseline: main ffd442bc42c746ee1a4b7d94845a449799c3994e / production dpl_DA97Mmmg88xELYgtSrNCT9QGq8Jr. Revert this scoped commit to roll back UI/read behavior; no migrations.
+- Validation: scoped lint and webpack production build passed. Pagination, zero-vs-missing history, bookmarked periods, scoring policy/access and read retry tests passed. Existing fetch fixtures were updated from obsolete August V1 to valid September V2 records; production score filtering is unchanged. Production verification follows GitHub release.

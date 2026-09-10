@@ -102,7 +102,7 @@ export default async function ManagerUsagePage() {
                 />
                 <HeaderStat
                   icon={FileText}
-                  label="Feedback for current reps"
+                  label="Reports (all history)"
                   value={analytics.official.total_reports}
                 />
               </div>
@@ -144,15 +144,15 @@ export default async function ManagerUsagePage() {
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
-            title="Engaged reports today"
+            title="Reports read today"
             value={analytics.official.report_engagements_today}
             description="10+ seconds of visible reading"
             icon={Timer}
           />
           <MetricCard
-            title="Engaged reports this week"
+            title="Reports read in 7 days"
             value={analytics.official.report_engagements_7d}
-            description="Verified official report engagement"
+            description="10+ seconds of visible reading"
             icon={BarChart3}
           />
           <MetricCard
@@ -162,7 +162,7 @@ export default async function ManagerUsagePage() {
             icon={UserCheck}
           />
           <MetricCard
-            title="Mapped reps active"
+            title="Reps active in 7 days"
             value={analytics.official.reps_with_activity_7d}
             description={`${formatPercent(engagedRepRate)} of tracked reps`}
             icon={CheckCircle2}
@@ -434,72 +434,35 @@ function RepEngagementCard({ reps }: { reps: UsageRepEngagement[] }) {
   return (
     <Card className="magic-card border-slate-200 bg-white/90">
       <CardHeader className="border-b border-slate-100">
-        <CardTitle>Verified Rep Engagement</CardTitle>
+        <CardTitle>Rep reading activity</CardTitle>
         <CardDescription>
-          Current reps only. Each report is counted once; engagement requires 10 seconds of visible reading.
+          All recorded history for reps with official calls in the last 30 days. A report counts as read after 10 seconds of visible reading, once per rep. Reports read can include other reps&apos; coaching.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {reps.length ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rep</TableHead>
-                <TableHead className="text-right">Reports</TableHead>
-                <TableHead className="text-right">Opens</TableHead>
-                <TableHead className="text-right">Engaged</TableHead>
-                <TableHead className="text-right">Rate</TableHead>
-                <TableHead>Own vs others</TableHead>
-                <TableHead>Secondary signals</TableHead>
-                <TableHead>Last activity</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {reps.map((rep) => {
-                const linkClicks = rep.doc_clicks + rep.zoom_clicks + rep.transcript_clicks;
-                const rate = rep.report_views ? rep.report_engagements / rep.report_views : 0;
-
-                return (
-                  <TableRow key={rep.rep_slug}>
-                    <TableCell>
-                      <span className="font-medium">{rep.rep_name}</span>
-                    </TableCell>
-                    <TableCell className="text-right">{formatNumber(rep.generated_reports)}</TableCell>
-                    <TableCell className="text-right">
-                      {formatNumber(rep.report_views)}
-                    </TableCell>
-                    <TableCell className="text-right">{formatNumber(rep.report_engagements)}</TableCell>
-                    <TableCell className="text-right font-semibold">{formatPercent(rate)}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1.5">
-                        <Badge variant="outline">
-                          {formatNumber(rep.own_report_engagements)} own
-                        </Badge>
-                        <Badge variant="outline">
-                          {formatNumber(rep.other_report_engagements)} others
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1.5">
-                        <Badge variant="outline">
-                          {formatMinutes(rep.engagement_seconds)} read
-                        </Badge>
-                        <Badge variant="outline">{formatNumber(rep.rep_selections)} picks</Badge>
-                        <Badge variant="outline">{formatNumber(linkClicks)} link clicks</Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {rep.last_activity_at ? formatMiamiDateTime(rep.last_activity_at) : "No activity"}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        ) : (
-          <EmptyPanel text="No verified rep usage has been recorded yet." />
-        )}
+        {reps.length ? <Table>
+          <TableHeader><TableRow>
+            <TableHead>Rep</TableHead><TableHead className="text-right">Reports received</TableHead>
+            <TableHead className="text-right">Reports read</TableHead><TableHead>Last activity</TableHead><TableHead>Details</TableHead>
+          </TableRow></TableHeader>
+          <TableBody>{reps.map((rep) => <TableRow key={rep.rep_slug}>
+            <TableCell className="font-medium">{rep.rep_name}</TableCell>
+            <TableCell className="text-right">{formatNumber(rep.generated_reports)}</TableCell>
+            <TableCell className="text-right">{formatNumber(rep.report_engagements)}</TableCell>
+            <TableCell className="text-muted-foreground">{rep.last_activity_at ? formatMiamiDateTime(rep.last_activity_at) : "No activity"}</TableCell>
+            <TableCell><details><summary className="cursor-pointer text-sm font-medium">Reading details</summary>
+              <div className="mt-2 min-w-48 space-y-1 text-sm text-muted-foreground">
+                <div>Reports opened: {formatNumber(rep.report_views)}</div>
+                <div>Opened then read: {formatPercent(rep.report_views ? rep.report_engagements / rep.report_views : 0)}</div>
+                <div>Own reports read: {formatNumber(rep.own_report_engagements)}</div>
+                <div>Others&apos; reports read: {formatNumber(rep.other_report_engagements)}</div>
+                <div>Reading time: {formatMinutes(rep.engagement_seconds)}</div>
+                <div>Rep selections: {formatNumber(rep.rep_selections)}</div>
+                <div>Link clicks: {formatNumber(rep.doc_clicks + rep.zoom_clicks + rep.transcript_clicks)}</div>
+              </div>
+            </details></TableCell>
+          </TableRow>)}</TableBody>
+        </Table> : <EmptyPanel text="No verified rep usage has been recorded yet." />}
       </CardContent>
     </Card>
   );
