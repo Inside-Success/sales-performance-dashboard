@@ -20,6 +20,9 @@ export const proxy = auth((request) => {
     return NextResponse.redirect(signInUrl);
   }
 
+  if (/^\/manager\/rep-scoring\/v\d/.test(nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/manager/rep-scoring", nextUrl));
+  }
   return NextResponse.next();
 });
 

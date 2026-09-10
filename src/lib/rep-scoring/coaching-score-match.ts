@@ -3,6 +3,7 @@ export const COACHING_SCORE_SCORER_VERSION = CALL2_CURRENT_VERSION;
 
 export type CoachingScoreCandidate = {
   id: string;
+  latestReviewed?: boolean;
   sourceRecordId: string;
   automationKey: string;
   repEmail?: string;
@@ -39,7 +40,8 @@ export function selectExactCoachingCallScore({
 
   if (candidates.some(candidate => candidate.sourceRecordId === sourceRecordId && candidate.scorerVersion === COACHING_SCORE_SCORER_VERSION && candidate.id !== `${COACHING_SCORE_SCORER_VERSION}:${sourceRecordId}`)) return null;
   const matches = candidates.filter((candidate) =>
-    candidate.sourceRecordId === sourceRecordId
+    candidate.latestReviewed === true
+      && candidate.sourceRecordId === sourceRecordId
       && candidate.id === `${COACHING_SCORE_SCORER_VERSION}:${sourceRecordId}`
       && candidate.repEmail?.trim().toLowerCase() === repEmail.trim().toLowerCase()
       && Date.parse(candidate.callDate || "") === Date.parse(callDate)
