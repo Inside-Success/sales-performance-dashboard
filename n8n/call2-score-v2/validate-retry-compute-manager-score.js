@@ -131,6 +131,7 @@ if (a.eligible !== true) return invalid(String(a.ineligible_reason || 'model_mar
 if (!['high','medium','low'].includes(a.confidence)) return invalid('invalid_confidence', build, provider, coaching);
 if (!a.lead_context || !['full','partial'].includes(a.lead_context.scoring_opportunity)) return invalid('insufficient_scoring_opportunity', build, provider, coaching, 'insufficient_scoring_opportunity');
 for(const key of ['ended_by_unrecovered_technical_failure','definitive_affordability_decline','contract_review_continuation']) if(typeof a.review[key] !== 'boolean') return invalid('missing_score_review',build,provider,coaching);
+a.review.evidence_revision = 'factual-check-2026-09-10';
 const evidenceWarnings = [];
 const signals = {};
 for (const name of SIGNALS) {
@@ -164,7 +165,9 @@ for (const dimension of DIMS) {
   const item = a.dimensions && a.dimensions[dimension];
   if (!item) return invalid('missing_dimension:' + dimension, build, provider, coaching);
   if(typeof item.reason !== 'string' || !item.reason.trim() || !Array.isArray(item.counterevidence)) return invalid('missing_dimension_review:' + dimension, build, provider, coaching);
-  item.counterevidence = item.counterevidence.map(e => resolveEvidence(e, build.transcript)).filter(Boolean);
+  const resolvedCounterevidence = item.counterevidence.map(e => resolveEvidence(e, build.transcript));
+  if (resolvedCounterevidence.some(e => !e)) return invalid('invalid_counterevidence:' + dimension, build, provider, coaching);
+  item.counterevidence = resolvedCounterevidence;
   if (item.band === 'not_applicable') {
     if (dimension !== 'objection_handling') return invalid('invalid_not_applicable:' + dimension, build, provider, coaching);
     continue;
@@ -183,7 +186,7 @@ for (const dimension of DIMS) {
     if (!hasCloseAction && !a.review.definitive_affordability_decline && order.indexOf(calibratedBand) > order.indexOf('attempted')) {
       evidenceWarnings.push('calibrated_close_ceiling:no_direct_ask_or_close_action');
       calibratedBand = 'attempted';
-      item.reason = 'No direct commitment request or concrete payment/agreement action was evidenced. Close execution is limited to attempted.';
+      item.reason = signals.specific_followup_agreed.present ? 'A specific follow-up was agreed, but no direct commitment request or concrete payment/agreement action was evidenced. Close execution is limited to attempted.' : 'No direct commitment request or concrete payment/agreement action was evidenced. Close execution is limited to attempted.';
     }
     const floor = signals.payment_or_deposit_confirmed.present && signals.agreement_confirmed.present && signals.onboarding_or_handoff_confirmed.present ? 'exemplary'
       : signals.direct_commitment_ask.present && signals.specific_followup_agreed.present && (signals.payment_or_deposit_action.present || signals.agreement_confirmed.present) ? 'strong'
@@ -191,6 +194,13 @@ for (const dimension of DIMS) {
     if (order.indexOf(floor) > order.indexOf(calibratedBand)) {
       evidenceWarnings.push('calibrated_close_floor:' + calibratedBand + '_to_' + floor);
       calibratedBand = floor;
+      // Keep the displayed explanation aligned with the existing deterministic anchor.
+      // This changes no score, threshold, weight, event or eligibility rule.
+      item.reason = floor === 'exemplary'
+        ? 'Completed payment, agreement, and onboarding or handoff were evidenced, meeting the existing exemplary close anchor.'
+        : floor === 'strong'
+          ? 'A direct commitment ask, a payment or agreement action, and a specific agreed follow-up were evidenced, meeting the existing strong close anchor.' + (signals.payment_or_deposit_confirmed.present ? ' Payment was confirmed.' : ' Completed payment was not confirmed.')
+          : 'A direct commitment ask and a specific agreed follow-up were evidenced, meeting the existing adequate close anchor.';
     }
     item.model_band = item.band;
     item.band = calibratedBand;
