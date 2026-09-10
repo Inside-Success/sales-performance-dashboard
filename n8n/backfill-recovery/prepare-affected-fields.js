@@ -7,7 +7,7 @@ function transcriptTurns(transcript) {
 }
 
 function canonicalTurnId(id){if(typeof id!=='string'||!/^T\d{1,4}$/.test(id))throw Error('Invalid transcript turn ID');return 'T'+String(Number(id.slice(1))).padStart(4,'0');}
-function speakerKey(s){return String(s||'').split(/[|｜]/)[0].replace(/\s+-\s+.*$/,'').trim().toLowerCase();}
+function speakerKey(s){return String(s||'').split(/[|｜]/)[0].replace(/\s+-\s+.*$/,'').trim().toLowerCase().replace(/^gregory(?= |$)/,'greg');}
 function isRepSpeaker(speaker,build,turns){
  const target=speakerKey(build.metadata.rep_name),actual=speakerKey(speaker);
  const people=[...new Set(turns.map(t=>speakerKey(t.speaker)))];
