@@ -15,7 +15,12 @@ export async function getScoreClientLabels(sourceIds: string[]): Promise<Record<
       group by source_payload->>'source_airtable_record_id'
       having count(distinct trim(client_name)) = 1
     `, [[...new Set(sourceIds)]]);
-    return Object.fromEntries(rows.map(row => [String(row.source_id), String(row.client_name)]));
+    return Object.fromEntries(rows.flatMap(row => {
+      const label = String(row.client_name).trim();
+      // Historical extraction sometimes stored sentence fragments in the name field.
+      if (/^(?:unknown|client unavailable|prospect|who\b|through\b)/i.test(label)) return [];
+      return [[String(row.source_id), label]];
+    }));
   } catch {
     console.warn("Score client labels unavailable; retaining dated call links.");
     return {};

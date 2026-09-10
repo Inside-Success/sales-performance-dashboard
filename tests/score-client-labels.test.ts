@@ -16,3 +16,8 @@ it('keeps scores available when optional labels cannot be read', async () => {
 it('does not query for an empty call list', async () => {
  expect(await getScoreClientLabels([])).toEqual({}); expect(query).not.toHaveBeenCalled();
 });
+
+it('omits historical sentence fragments instead of displaying them as names', async () => {
+ vi.stubEnv('DATABASE_URL','test'); query.mockResolvedValue([{source_id:'a',client_name:'who engaged'},{source_id:'b',client_name:'through the license video'},{source_id:'c',client_name:'Brooke'}]);
+ expect(await getScoreClientLabels(['a','b','c'])).toEqual({c:'Brooke'});
+});
