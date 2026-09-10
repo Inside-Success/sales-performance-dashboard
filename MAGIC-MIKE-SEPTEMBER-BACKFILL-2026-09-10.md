@@ -37,3 +37,11 @@ Executions 703839–703843 completed all five initial jobs with passed factual r
 Canary dispatcher 703838 completed normally at the automatic pause. The queue was then resumed with dispatch_limit=292, retaining the $81 ceiling and maximum five active claims. A new authenticated dispatcher was started; the run continues on n8n without Codex or this Mac. No recurring scheduler exists; its durable wait loop ends on completion, pause, or stalled work.
 
 The control HTTP nodes use explicit response-buffer JSON parsing due to observed n8n serialization behavior; changing compression/version alone was insufficient. Do not remove that parser without native proof. Failure/storage uncertainty must be reconciled from saved job results/executions, never by blindly re-running the AI chain.
+
+## Recovery update — 2026-09-10
+
+Dispatcher 703917 hit a 40-minute timeout at 16:27:59Z. At interruption: 93 completed, 3 excluded, 12 review-required, 184 pending; $22.3590024 spent. The old `running` label did not prove active dispatch. Queue was explicitly paused for repair.
+
+See `n8n/backfill-recovery/README.md` for the completion-driven dispatcher and bounded reviewer fixes. All 93 completed scores passed cached regression with identical numeric scores and unchanged coaching. Eleven held calls passed recovery; the remaining recording is an internal practice call, excluded using transcript evidence. Primary assessments were reused; extra recovery API cost is $0.510486. Temporary recovery workflows have no coaching/Slack/Google Doc mutation path.
+
+Release/resume verification will be appended after the initial production batch. No full-backfill completion is claimed here.

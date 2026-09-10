@@ -9,7 +9,7 @@ const db = () => neon(process.env.DATABASE_URL!);
 export async function backfillProgress() {
   const sql = db();
   try {
-    const rows = await sql`select r.state, r.budget, r.spent, r.in_flight,
+    const rows = await sql`select case when r.state='running' and r.in_flight=0 and r.updated_at < now()-interval '10 minutes' then 'interrupted' when r.state='completed' and exists(select 1 from mm_september_jobs x where x.run_id=r.run_id and x.state in ('failed','review_required')) then 'completed_with_review' else r.state end as state, r.budget, r.spent, r.in_flight,
       count(j.*)::int as total,
       count(*) filter(where j.state='completed')::int as completed,
       count(*) filter(where j.state='excluded')::int as excluded,
@@ -31,7 +31,7 @@ export async function claimBackfill(executionId: string) {
       select id from mm_september_jobs where run_id=${BACKFILL_RUN} and state='pending'
       order by id for update skip locked limit 1
     ), permit as (
-      update mm_september_runs set in_flight=in_flight+1, reserved=reserved+5, started=started+1
+      update mm_september_runs set updated_at=now(), in_flight=in_flight+1, reserved=reserved+5, started=started+1
       where run_id=${BACKFILL_RUN} and state='running' and in_flight<5
       and started<dispatch_limit and spent+reserved+5<=budget
       and exists(select 1 from candidate) returning run_id
@@ -82,7 +82,7 @@ export async function completeBackfill(body: Record<string, unknown>) {
   }
   await sql`with finished as (
     update mm_september_jobs set state=${state}, updated_at=now() where id=${id} and token=${token} and state='computed' returning cost
-  ) update mm_september_runs set spent=spent+coalesce((select cost from finished),0),
+  ) update mm_september_runs set updated_at=now(), spent=spent+coalesce((select cost from finished),0),
     reserved=reserved-case when exists(select 1 from finished) then 5 else 0 end,
     in_flight=in_flight-case when exists(select 1 from finished) then 1 else 0 end
     where run_id=${BACKFILL_RUN}`;
