@@ -622,7 +622,8 @@ const baseline=baselineValidate(cloneJson(raw),build)[0].json;
 const state={raw,build,baseline,should_review:false,needs_reassessment:false,status:'not_applicable',responses:[],audit:null,review:{dimensions:[],signals:[],events:[],review_reason:null,decisions:[]}};
 try{
 const m=raw.parsed_json?.manager_score;
-if(m?.eligible===true){
+// A definitive eligibility exclusion is different from repairable evidence validation.
+if(m?.eligible===true && !baseline.current_call_score?.exclusion_category){
  const claims=[];
  for(const [k,d] of Object.entries(m.dimensions))claims.push({id:'dimension.'+k,kind:'text',text:d.reason});
  const texts={"direct_commitment_ask": "The rep made an actual or conditional commitment, agreement, or payment request.", "payment_or_deposit_action": "The rep proposed or took a concrete payment/deposit action, beyond merely describing prices.", "payment_or_deposit_confirmed": "Payment or deposit was actually completed/confirmed on the call.", "agreement_confirmed": "The prospect agreed to proceed with the purchase/agreement.", "onboarding_or_handoff_confirmed": "An onboarding or handoff was actually confirmed.", "specific_followup_agreed": "A specific follow-up was mutually agreed."};

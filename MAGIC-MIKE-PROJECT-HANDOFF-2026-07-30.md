@@ -604,3 +604,8 @@ Sonnet 4.6 bounded claim review corrected the known failures: 20/20 regression a
 ## September 10 — bounded scorer now published
 
 Replaced existing scorer 35bFcPYdHSADpyTN in place; published version a21d96c4-2d60-469b-9602-e1a8b5777fc0. Sonnet 4.6 primary + factual checker + conditional affected-field reassessment. Removed broad retry graph; malformed primary structure alone has one guarded recovery. Existing caller, provider, compliance, context and persistence unchanged. 27 replays, 19 tests, six failure cases and fresh native correction/full-pipeline tests passed. Cumulative estimated tests $45.38485 plus $1 reserve. Test workflows off, old scorers inactive. No backfill. Natural post-publication delivery still pending. See MAGIC-MIKE-SCORING-BOUNDED-RELEASE-2026-09-10.md in scoring checkout.
+
+
+## September 10 — reviewer eligibility cost gate fixed
+
+Published scorer 06611470-8c48-4c12-989c-7531dfc848df: explicit eligibility exclusions bypass paid review; repairable evidence still reviewed. Theo native replay skips both reviewers, eligible/repairable native cases preserved, 27 regressions and 25 tests pass; no new AI spend. Aidan natural call 703297 scored 70.8 with passed review, persisted via 703320, Slack delivered. See bounded release handoff for precise timing and delivery status. No backfill.
