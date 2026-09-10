@@ -45,3 +45,14 @@ Dispatcher 703917 hit a 40-minute timeout at 16:27:59Z. At interruption: 93 comp
 See `n8n/backfill-recovery/README.md` for the completion-driven dispatcher and bounded reviewer fixes. All 93 completed scores passed cached regression with identical numeric scores and unchanged coaching. Eleven held calls passed recovery; the remaining recording is an internal practice call, excluded using transcript evidence. Primary assessments were reused; extra recovery API cost is $0.510486. Temporary recovery workflows have no coaching/Slack/Google Doc mutation path.
 
 Release/resume verification will be appended after the initial production batch. No full-backfill completion is claimed here.
+
+## Verified recovery and autonomous resume — September 10, 17:32 UTC
+
+- All 12 originally held jobs reconciled: 11 genuine calls recovered and saved; 1 internal practice call excluded with transcript evidence. Existing 93 completed numeric scores were not rewritten or regenerated.
+- Ten resumed jobs completed under the published worker: 8 scores and 2 legitimate exclusions, zero review failures. Completion callbacks launched subsequent jobs successfully; dispatcher executions ended in seconds.
+- Full remaining queue resumed with five workers and the original $81 ceiling. Latest database check: running, 124 started, 112 completed, 7 excluded, 5 claimed, 168 pending; $24.8428752 spent. These are point-in-time counts, not completion claims.
+- Live score execution 704739 also recovered from its cached primary assessment after resolving Greg/Gregory's display-name alias. Score remains 65.5; Airtable upsert verified record rec3qsbjUOlNRfTaI. Incremental live-call recovery cost $0.055731 is separate from the September backfill ledger; no coaching report or Slack message was resent.
+- Published scorer c2702d7e-b343-48de-9e67-5af48515d751; worker dfd874d1-1ca3-4918-a604-9e8fa4e50ee7; dispatcher 00a0e8fa-7bb4-4052-9d39-8f7dab4bedde.
+- Official coaching, provider and persistence workflows retain their pre-repair published versions. Temporary cached-test and storage-recovery workflows CzkB25n8WqRruViG, KU7rP1IfIb8KwA9R and II41uKXUbEw0RX6z are deactivated.
+- PR184 merged. Production deployment dpl_FD7bSY3LNGAV9MwSrB6ZP67cG5yx is READY. Fresh live scorecard browser showed five active workers, zero need-review jobs, and the correct spend/progress. 49 targeted tests and webpack production build passed. Preview deployment failed before build, consistent with the existing preview provisioning problem; production deployed successfully.
+- Stop active observation after initial verification, as requested. The completion-driven queue runs independently, stops when exhausted, and keeps failed/uncertain records for review rather than silently assigning a score. No recurring Codex automation was added.

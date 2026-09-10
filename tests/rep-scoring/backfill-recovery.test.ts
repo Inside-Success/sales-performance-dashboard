@@ -13,6 +13,7 @@ describe('backfill reviewer recovery boundaries',()=>{
  it('accepts an unambiguous display label but never attributes client speech to a rep',()=>{
   expect(f.isRepSpeaker('Alex - Casting Manager',build,turns)).toBe(true);
   expect(f.isRepSpeaker('Client',build,turns)).toBe(false);
+  expect(f.isRepSpeaker('Gregory - DJ Casting Manager',{metadata:{rep_name:'Greg Easthouse',client_name:'Lisa Burns'}},[{speaker:'Gregory - DJ Casting Manager'},{speaker:'Lisa’s iPhone'}])).toBe(true);
   expect(f.isRepSpeaker('Dale Smith',{metadata:{rep_name:'Jordann Barker',client_name:'Room'}},[{speaker:'Dale Smith'},{speaker:'Jordann Barker'}])).toBe(false);
  });
  it('rejecting a proposed signal correction preserves original evidence',()=>{
