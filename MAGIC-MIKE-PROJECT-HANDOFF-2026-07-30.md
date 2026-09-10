@@ -599,3 +599,8 @@ The isolated source-ID/Luna candidate produced 20/20 numeric results but failed 
 ## September 10 — bounded factual checker evaluation passed, not released
 
 Sonnet 4.6 bounded claim review corrected the known failures: 20/20 regression and 5/5 unused eligible calls scored; one actual technical-only call excluded. Dean plus these 25 matched native n8n runtime; 26 real persistence mappings and 16 contract/parser tests passed. Cumulative estimated tests $44.9839 plus $1 reserve. All temporary workflows inactive; production unchanged. New natural baseline execution 702624/702626 succeeded with score 70.8 and delivery nodes. Candidate production integration/delivery verification remains before backfill; no backfill authorized. See MAGIC-MIKE-SCORING-BOUNDED-CHECK-2026-09-10.md in the scoring checkout.
+
+
+## September 10 — bounded scorer now published
+
+Replaced existing scorer 35bFcPYdHSADpyTN in place; published version a21d96c4-2d60-469b-9602-e1a8b5777fc0. Sonnet 4.6 primary + factual checker + conditional affected-field reassessment. Removed broad retry graph; malformed primary structure alone has one guarded recovery. Existing caller, provider, compliance, context and persistence unchanged. 27 replays, 19 tests, six failure cases and fresh native correction/full-pipeline tests passed. Cumulative estimated tests $45.38485 plus $1 reserve. Test workflows off, old scorers inactive. No backfill. Natural post-publication delivery still pending. See MAGIC-MIKE-SCORING-BOUNDED-RELEASE-2026-09-10.md in scoring checkout.

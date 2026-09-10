@@ -1,6 +1,6 @@
 # Bounded scoring factual check — September 10, 2026
 
-Status: isolated evaluation passed; NOT deployed. No historical backfill. Existing production V2 remains active and unchanged. This supersedes the earlier failed Luna evaluation as the latest candidate evidence, not as a release record.
+Historical evaluation record. Subsequently deployed: see MAGIC-MIKE-SCORING-BOUNDED-RELEASE-2026-09-10.md. Status at evaluation: isolated evaluation passed; NOT deployed. No historical backfill. Existing production V2 remains active and unchanged. This supersedes the earlier failed Luna evaluation as the latest candidate evidence, not as a release record.
 
 ## Approach and results
 
