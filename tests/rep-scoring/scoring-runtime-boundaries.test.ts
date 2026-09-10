@@ -28,15 +28,31 @@ describe('actual retry Code node boundary', () => {
 });
 
 describe('actual scoring Code semantic guards', () => {
-  const run = (quote: string, direct = true, requestText = quote) => {
+  const run = (quote: string, direct = true, requestText = quote, counterevidence: {timestamp: string; quote: string}[] = [], extraSignals: string[] = []) => {
     const evidence={timestamp:'[00:01:00.000]',quote};
     const build={score_version:'magic-mike-call2-evidence-score-v2',call_type:'Call 2',metadata:{},context_pack:{},recent_scores:[],transcript:`[00:01:00.000] Rep: ${quote}\n[00:01:10.000] Prospect: Yes please send me those details.`};
-    const dimensions=Object.fromEntries(['frame_and_control','prospect_read_and_tailoring','objection_handling','close_mechanics_and_momentum'].map(k=>[k,{band:'adequate',evidence,reason:'Observed conduct supports this band.',counterevidence:[]}]));
+    const dimensions=Object.fromEntries(['frame_and_control','prospect_read_and_tailoring','objection_handling','close_mechanics_and_momentum'].map(k=>[k,{band:'adequate',evidence,reason:'Observed conduct supports this band.',counterevidence}]));
     const close_signals=Object.fromEntries(['direct_commitment_ask','payment_or_deposit_action','payment_or_deposit_confirmed','agreement_confirmed','onboarding_or_handoff_confirmed','specific_followup_agreed'].map(k=>[k,{present:k==='direct_commitment_ask'&&direct,request_text:requestText,evidence:k==='direct_commitment_ask'&&direct?evidence:null}]));
+    for(const name of extraSignals) close_signals[name]={present:true,request_text:'',evidence};
     const parsed_json={...Object.fromEntries(['one_line_verdict','biggest_strength','what_id_polish','coaching_tip','rudys_note','what_went_well','what_to_improve','why_no_close','what_made_this_close_work','objections_surfaced'].map(k=>[k,''])),manager_score:{eligible:true,call_phase:'closing_call',confidence:'high',lead_context:{scoring_opportunity:'full'},review:{real_prospect_confirmed:true,closing_stage_observable:true,ended_by_unrecovered_technical_failure:false,definitive_affordability_decline:false,contract_review_continuation:false},dimensions,close_signals,critical_events:[]}};
     const execute=new Function('$json','$input','$',source('validate-evidence-compute-manager-score'));
     return execute({parsed_json},{all:()=>[{json:{parsed_json}}]},()=>({all:()=>[{json:build}]}))[0].json;
   };
+  it('withholds invented counterevidence rather than silently dropping it', () => {
+    const r=run('Would you like to proceed with the deposit?',true,undefined,[{timestamp:'[00:01:10.000]',quote:'the customer said nothing like this anywhere'}]);
+    expect(r.validation.valid).toBe(false);
+    expect(r.current_call_score.reason).toMatch(/^invalid_counterevidence:/);
+    const decide=new Function('$input',source('decide-automatic-validation-retry'));
+    expect(decide({all:()=>[{json:r}]})[0].json.__automatic_retry_required).toBe(true);
+  });
+  it('retains valid counterevidence without changing the numeric grade', () => {
+    const quote='Would you like to proceed with the deposit?';
+    const a=run(quote);const b=run(quote,true,quote,[{timestamp:'[00:01:10.000]',quote:'Yes please send me those details.'}]);
+    expect(b.validation.valid).toBe(true);
+    expect(b.current_call_score.score).toBe(a.current_call_score.score);
+    expect(b.current_call_score.dimensions.frame_and_control.counterevidence).toHaveLength(1);
+    expect(b.current_call_score.review.evidence_revision).toBe('factual-check-2026-09-10');
+  });
   it.each(['if you join today then you get a discount','if money was not an issue today','what kind of value do you see here','what are your thoughts on this package'])('does not credit a non-request excerpt: %s', quote => {
     expect(run(quote).current_call_score.reason).toMatch(/^invalid_direct_ask_evidence:/);
   });
@@ -44,6 +60,15 @@ describe('actual scoring Code semantic guards', () => {
   it('allows exact quoted speech after a complete real question', () => expect(run('Would you like to pay the deposit? We can start today.').validation.valid).toBe(true));
   it('accepts evidence of a real commitment request', () => expect(run('Would you like to proceed with the deposit?').validation.valid).toBe(true));
   it('does not invent an adequate closing band without an ask or close action', () => expect(run('We discussed the package and its total price',false).current_call_score.dimensions.close_mechanics_and_momentum.band).toBe('attempted'));
+  it('explains a deterministic strong close without claiming completed payment',()=>{
+    const quote='Would you like to proceed with the deposit? I sent the link and booked our agreed call for Friday.';
+    const r=run(quote,true,'Would you like to proceed with the deposit?',[],['payment_or_deposit_action','specific_followup_agreed']);
+    expect(r.validation.valid).toBe(true);
+    expect(r.current_call_score.dimensions.close_mechanics_and_momentum).toMatchObject({band:'strong',model_band:'adequate'});
+    expect(r.current_call_score.dimensions.close_mechanics_and_momentum.reason).toContain('existing strong close anchor');
+    expect(r.current_call_score.dimensions.close_mechanics_and_momentum.reason).toContain('Completed payment was not confirmed');
+    expect(r.current_call_score.score).toBe(61.3);
+  });
 });
 
 

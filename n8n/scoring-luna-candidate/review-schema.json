@@ -1,0 +1,457 @@
+{
+  "type": "object",
+  "properties": {
+    "manager_score": {
+      "type": "object",
+      "properties": {
+        "eligible": {
+          "type": "boolean"
+        },
+        "ineligible_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "call_phase": {
+          "type": "string",
+          "enum": [
+            "closing_call",
+            "post_sale_or_onboarding",
+            "scheduling_or_bridge",
+            "insufficient_scoring_opportunity"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "lead_context": {
+          "type": "object",
+          "properties": {
+            "disposition": {
+              "type": "string"
+            },
+            "scoring_opportunity": {
+              "type": "string",
+              "enum": [
+                "full",
+                "partial"
+              ]
+            }
+          },
+          "required": [
+            "disposition",
+            "scoring_opportunity"
+          ],
+          "additionalProperties": false
+        },
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "frame_and_control": {
+              "type": "object",
+              "properties": {
+                "band": {
+                  "type": "string",
+                  "enum": [
+                    "absent",
+                    "attempted",
+                    "adequate",
+                    "strong",
+                    "exemplary",
+                    "not_applicable"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "counterevidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "band",
+                "reason",
+                "evidence_id",
+                "counterevidence_ids"
+              ],
+              "additionalProperties": false
+            },
+            "prospect_read_and_tailoring": {
+              "type": "object",
+              "properties": {
+                "band": {
+                  "type": "string",
+                  "enum": [
+                    "absent",
+                    "attempted",
+                    "adequate",
+                    "strong",
+                    "exemplary",
+                    "not_applicable"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "counterevidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "band",
+                "reason",
+                "evidence_id",
+                "counterevidence_ids"
+              ],
+              "additionalProperties": false
+            },
+            "objection_handling": {
+              "type": "object",
+              "properties": {
+                "band": {
+                  "type": "string",
+                  "enum": [
+                    "absent",
+                    "attempted",
+                    "adequate",
+                    "strong",
+                    "exemplary",
+                    "not_applicable"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "counterevidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "band",
+                "reason",
+                "evidence_id",
+                "counterevidence_ids"
+              ],
+              "additionalProperties": false
+            },
+            "close_mechanics_and_momentum": {
+              "type": "object",
+              "properties": {
+                "band": {
+                  "type": "string",
+                  "enum": [
+                    "absent",
+                    "attempted",
+                    "adequate",
+                    "strong",
+                    "exemplary",
+                    "not_applicable"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "counterevidence_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "band",
+                "reason",
+                "evidence_id",
+                "counterevidence_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "frame_and_control",
+            "prospect_read_and_tailoring",
+            "objection_handling",
+            "close_mechanics_and_momentum"
+          ],
+          "additionalProperties": false
+        },
+        "close_signals": {
+          "type": "object",
+          "properties": {
+            "direct_commitment_ask": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            },
+            "payment_or_deposit_action": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            },
+            "payment_or_deposit_confirmed": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            },
+            "agreement_confirmed": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            },
+            "onboarding_or_handoff_confirmed": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            },
+            "specific_followup_agreed": {
+              "type": "object",
+              "properties": {
+                "present": {
+                  "type": "boolean"
+                },
+                "evidence_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "present",
+                "evidence_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "direct_commitment_ask",
+            "payment_or_deposit_action",
+            "payment_or_deposit_confirmed",
+            "agreement_confirmed",
+            "onboarding_or_handoff_confirmed",
+            "specific_followup_agreed"
+          ],
+          "additionalProperties": false
+        },
+        "critical_events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "no_close_attempt",
+                  "no_concrete_next_step",
+                  "abandoned_primary_objection",
+                  "lost_control_unrecovered",
+                  "no_adaptation_after_clear_signal"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "evidence_id": {
+                "type": "string"
+              },
+              "counterevidence_checked": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "type",
+              "reason",
+              "evidence_id",
+              "counterevidence_checked"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "review": {
+          "type": "object",
+          "properties": {
+            "real_prospect_confirmed": {
+              "type": "boolean"
+            },
+            "closing_stage_observable": {
+              "type": "boolean"
+            },
+            "ended_by_unrecovered_technical_failure": {
+              "type": "boolean"
+            },
+            "definitive_affordability_decline": {
+              "type": "boolean"
+            },
+            "contract_review_continuation": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "real_prospect_confirmed",
+            "closing_stage_observable",
+            "ended_by_unrecovered_technical_failure",
+            "definitive_affordability_decline",
+            "contract_review_continuation",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eligible",
+        "ineligible_reason",
+        "call_phase",
+        "confidence",
+        "lead_context",
+        "dimensions",
+        "close_signals",
+        "critical_events",
+        "review"
+      ],
+      "additionalProperties": false
+    },
+    "corrections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "field",
+          "explanation",
+          "evidence_ids"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "manager_score",
+    "corrections"
+  ],
+  "additionalProperties": false
+}

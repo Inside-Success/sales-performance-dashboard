@@ -1,3 +1,4 @@
+// ISOLATED EVALUATION ONLY. Not the live scorer.
 function single(name) { const rows = $(name).all(); if(rows.length !== 1) throw new Error('Expected one aligned scoring item: '+name); return rows[0].json; }
 function parseJson(text) {
   const source = String(text || '').trim();
@@ -27,6 +28,14 @@ function wordTokens(value) {
 }
 function resolveEvidence(evidence, transcript, requiredSpeaker = '') {
   if (!evidence || !evidence.quote) return null;
+  if(evidence.turn_id){
+    const source=String(transcript).split(/Full Transcript\s*\n/).pop();
+    const turns=[...source.matchAll(/^\[([^\]]+)\]\s*([^:\n]+):\s*(.*)$/gm)];
+    const index=Number(String(evidence.turn_id).replace(/^T/,''))-1;
+    const t=turns[index];
+    if(!t || evidence.turn_id!=='T'+String(index+1).padStart(4,'0') || evidence.timestamp!=='['+t[1]+']' || evidence.quote!==t[3] || evidence.speaker!==t[2].trim() || (requiredSpeaker && normalized(requiredSpeaker)!==normalized(t[2])))return null;
+    return {...evidence};
+  }
   const wanted = wordTokens(evidence.quote);
   if (wanted.length < 2) return null;
   const transcriptLines = String(transcript || '').split(/\r?\n/);
@@ -109,7 +118,8 @@ function invalid(reason, build, provider, coaching, exclusionCategory = null, ma
 const provider = $json || {};
 const build = single('Build Analysis Request');
 if (provider.ok === false) throw new Error('Provider failed: ' + (provider.error || 'unknown error'));
-const analysis = provider.parsed_json || parseJson(provider.model_text) || parseJson(provider.text) || parseJson(provider.body);
+const parsedAnalysis = provider.parsed_json || parseJson(provider.model_text) || parseJson(provider.text) || parseJson(provider.body);
+const analysis = parsedAnalysis ? JSON.parse(JSON.stringify(parsedAnalysis)) : null;
 if (!analysis || typeof analysis !== 'object') return invalid('provider_unparseable_json', build, provider, {});
 const coaching = {};
 const humanSpeakers = new Set(String(build.transcript).split(/\r?\n/).map(line => line.match(/^\[[^\]]+\]\s*([^:]+):/)?.[1]?.trim().toLowerCase()).filter(name => name && !/^(audio shared|video|recording|shared audio)/.test(name)));
@@ -146,9 +156,8 @@ for (const name of SIGNALS) {
     }
     if (name === 'direct_commitment_ask') {
       const requestText = String(signal.request_text || '').trim();
-      const evidenceTurn = String(build.transcript || '').split(/\r?\n/).find(line => line.includes(resolved.timestamp)) || '';
-      const completeRequest = requestText.includes('?') || /^(?:please\b|let['’]?s\b|let me know\b|go ahead\b|sign\b|choose\b|select\b|complete\b|make (?:the|your) payment\b)/i.test(requestText);
-      if (wordTokens(requestText).length < 3 || !completeRequest || !normalized(evidenceTurn).includes(normalized(requestText))) return invalid('invalid_direct_ask_evidence:quote_the_complete_actual_request_from_the_timestamp_turn_or_mark_false', build, provider, coaching);
+      const evidenceTurn = resolved.turn_id ? resolved.quote : (String(build.transcript || '').split(/\r?\n/).find(line => line.includes(resolved.timestamp)) || '');
+      if (wordTokens(requestText).length < 3 || !normalized(evidenceTurn).includes(normalized(requestText))) return invalid('invalid_direct_ask_evidence:quote_the_complete_actual_request_from_the_timestamp_turn_or_mark_false', build, provider, coaching);
     }
     signals[name] = { present:true, evidence:resolved, ...(name === 'direct_commitment_ask' ? {request_text:String(signal.request_text).trim()} : {}) };
   } else signals[name] = { present:false, evidence:null };
@@ -194,13 +203,6 @@ for (const dimension of DIMS) {
     if (order.indexOf(floor) > order.indexOf(calibratedBand)) {
       evidenceWarnings.push('calibrated_close_floor:' + calibratedBand + '_to_' + floor);
       calibratedBand = floor;
-      // Keep the displayed explanation aligned with the existing deterministic anchor.
-      // This changes no score, threshold, weight, event or eligibility rule.
-      item.reason = floor === 'exemplary'
-        ? 'Completed payment, agreement, and onboarding or handoff were evidenced, meeting the existing exemplary close anchor.'
-        : floor === 'strong'
-          ? 'A direct commitment ask, a payment or agreement action, and a specific agreed follow-up were evidenced, meeting the existing strong close anchor.' + (signals.payment_or_deposit_confirmed.present ? ' Payment was confirmed.' : ' Completed payment was not confirmed.')
-          : 'A direct commitment ask and a specific agreed follow-up were evidenced, meeting the existing adequate close anchor.';
     }
     item.model_band = item.band;
     item.band = calibratedBand;

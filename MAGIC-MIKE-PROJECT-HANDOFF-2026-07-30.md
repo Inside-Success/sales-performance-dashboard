@@ -589,3 +589,23 @@ Scheduled production proof passed on coordinator execution `494326`: it selected
 The manager application is live at `https://sales-performance-dashboard-rose.vercel.app/manager/rep-scoring`. PR `#162` merged as `b82f0cfff9135eb539595606ad51a20432d37581`, duplicate fail-closed PR `#163` merged as `d0df69af92d8ef72291f160527787600ba63bf36`, and production deployment `dpl_21Ak9JzkPWjmhZXu6p3QFgPkNHA5` is `READY`. All 36 test files and 372 tests, ESLint, and the production build passed without running a local development server. Unauthenticated manager access redirects to sign-in and the post-deployment runtime-error query returned no errors.
 
 Temporary Coaching display decision — 2026-08-13: the production server toggle `REP_SCORING_COACHING_SCORE_ENABLED` is `false`, so Coaching call reports do not display the numeric V7.1 score. Scoring, live-call processing, stored assessments, and the AI Closer Scorecard remain active. Re-enable the overlay later by setting this toggle to `true` and redeploying; no n8n change is required.
+
+
+## September 10 Luna follow-up evaluation
+
+The isolated source-ID/Luna candidate produced 20/20 numeric results but failed factual accuracy checks. It was not published; live V2 remains unchanged and no backfill is approved. Both temporary test workflows are inactive. Cumulative estimated tests $41.0113 plus a separate $1 uncertainty reserve against the $50 ceiling. See [Luna evaluation](MAGIC-MIKE-SCORING-LUNA-EVALUATION-2026-09-10.md) for exact scope, evidence and remaining gate.
+
+
+## September 10 — bounded factual checker evaluation passed, not released
+
+Sonnet 4.6 bounded claim review corrected the known failures: 20/20 regression and 5/5 unused eligible calls scored; one actual technical-only call excluded. Dean plus these 25 matched native n8n runtime; 26 real persistence mappings and 16 contract/parser tests passed. Cumulative estimated tests $44.9839 plus $1 reserve. All temporary workflows inactive; production unchanged. New natural baseline execution 702624/702626 succeeded with score 70.8 and delivery nodes. Candidate production integration/delivery verification remains before backfill; no backfill authorized. See MAGIC-MIKE-SCORING-BOUNDED-CHECK-2026-09-10.md in the scoring checkout.
+
+
+## September 10 — bounded scorer now published
+
+Replaced existing scorer 35bFcPYdHSADpyTN in place; published version a21d96c4-2d60-469b-9602-e1a8b5777fc0. Sonnet 4.6 primary + factual checker + conditional affected-field reassessment. Removed broad retry graph; malformed primary structure alone has one guarded recovery. Existing caller, provider, compliance, context and persistence unchanged. 27 replays, 19 tests, six failure cases and fresh native correction/full-pipeline tests passed. Cumulative estimated tests $45.38485 plus $1 reserve. Test workflows off, old scorers inactive. No backfill. Natural post-publication delivery still pending. See MAGIC-MIKE-SCORING-BOUNDED-RELEASE-2026-09-10.md in scoring checkout.
+
+
+## September 10 — reviewer eligibility cost gate fixed
+
+Published scorer 06611470-8c48-4c12-989c-7531dfc848df: explicit eligibility exclusions bypass paid review; repairable evidence still reviewed. Theo native replay skips both reviewers, eligible/repairable native cases preserved, 27 regressions and 25 tests pass; no new AI spend. Aidan natural call 703297 scored 70.8 with passed review, persisted via 703320, Slack delivered. See bounded release handoff for precise timing and delivery status. No backfill.
