@@ -15,15 +15,15 @@ export default function UsageOverviewTable({ reps }: { reps:UsageRepOverview[] }
     </div>
     <p className="px-4 pt-3 text-xs text-slate-500">{visible.length} of {reps.length} current reps · Most overdue reports first</p>
     <div className="overflow-x-auto"><table className="w-full text-sm">
-      <thead><tr className="border-b text-left"><th className="p-4">Rep</th><th className="p-4 text-right">Reports available</th><th className="p-4 text-right">Own reports opened</th><th className="p-4">Last coaching opened</th><th className="p-4">Details</th></tr></thead>
+      <thead><tr className="border-b text-left"><th className="p-4">Rep</th><th className="p-4 text-right">Coaching reports received</th><th className="p-4 text-right">Opened by this rep</th><th className="p-4">Last report opened</th><th className="p-4">Details</th></tr></thead>
       <tbody>{visible.map(rep=><tr key={rep.slug} className="border-b align-top last:border-0">
         <th scope="row" className="p-4 text-left font-medium">{rep.name}</th>
-        <td className="p-4 text-right">{rep.available}</td><td className="p-4 text-right">{rep.opened}{rep.overdue>0?<span className="mt-1 block text-xs text-amber-800">{rep.overdue} unopened over 48h</span>:null}</td>
+        <td className="p-4 text-right">{rep.available}</td><td className="p-4 text-right">{rep.opened}{rep.overdue>0?<span className="mt-1 block text-xs text-amber-800">{rep.overdue} unopened after 2 days</span>:null}</td>
         <td className="p-4 whitespace-nowrap">{rep.lastOpened?formatMiamiDateTime(rep.lastOpened):'No recorded opens'}</td>
-        <td className="p-4"><details><summary className="cursor-pointer text-red-700">View</summary><div className="mt-3 min-w-56 max-w-sm space-y-3">
+        <td className="p-4"><details><summary className="cursor-pointer text-red-700">View details</summary><div className="mt-3 min-w-56 max-w-sm space-y-3">
           <p>Own reports engaged (10+ secs): <strong>{rep.engaged}</strong></p>
           <p>Other reps’ reports opened in period: <strong>{rep.otherOpened}</strong></p>
-          {rep.unopened.length?<><p className="font-semibold">Unopened reports ({rep.unopened.length})</p><ul className="max-h-72 space-y-3 overflow-y-auto">{rep.unopened.map(report=><li key={report.id}><Link className="underline" href={`/call/${report.id}`}>{report.client}</Link><span className="block text-xs text-slate-500">Available {formatMiamiDateTime(report.availableAt)}{report.overdue?' · Over 48h':' · New'}</span></li>)}</ul></>:<p>{rep.available?'All available reports opened.':'No reports available in this period.'}</p>}
+          {rep.unopened.length?<><p className="font-semibold">Unopened reports ({rep.unopened.length})</p><ul className="max-h-72 space-y-3 overflow-y-auto">{rep.unopened.map(report=><li key={report.id}><Link className="underline" href={`/call/${report.id}`}>{report.client}</Link><span className="block text-xs text-slate-500">Available {formatMiamiDateTime(report.availableAt)}{report.overdue?' · Unopened after 2 days':' · New'}</span></li>)}</ul></>:<p>{rep.available?'All available reports opened.':'No reports available in this period.'}</p>}
         </div></details></td>
       </tr>)}</tbody>
     </table></div>
