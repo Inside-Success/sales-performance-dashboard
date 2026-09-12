@@ -1,3 +1,7 @@
+export function usageReportLabel(name: string | null) {
+  const text = name?.trim();
+  return !text || /^(?:unknown|client unavailable|prospect|who\b|through\b)/i.test(text) ? 'Coaching report' : text;
+}
 export type UsagePeriod = 7 | 30 | null;
 export function parseUsagePeriod(value?: string): UsagePeriod { return value === 'all' ? null : value === '30' ? 30 : 7; }
 export type UsageReportRow = {
@@ -27,7 +31,7 @@ export function summarizeUsage(rows: UsageReportRow[], now: number) {
     if (!row.own_opened_at && row.available_at) {
       const overdue = now - Date.parse(row.available_at) >= 48 * 3600 * 1000;
       if (overdue) rep.overdue++;
-      rep.unopened.push({id:Number(row.id), client:row.client_name || 'Coaching report', availableAt:row.available_at, overdue});
+      rep.unopened.push({id:Number(row.id), client:usageReportLabel(row.client_name), availableAt:row.available_at, overdue});
     }
   }
   const result = [...reps.values()].sort((a,b)=>b.overdue-a.overdue || (b.available-b.opened)-(a.available-a.opened) || a.name.localeCompare(b.name));

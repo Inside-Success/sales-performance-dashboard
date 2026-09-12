@@ -1,5 +1,5 @@
 import { describe,it,expect } from 'vitest';
-import { parseUsagePeriod,summarizeUsage,type UsageReportRow } from '../src/lib/usage-overview';
+import { usageReportLabel,parseUsagePeriod,summarizeUsage,type UsageReportRow } from '../src/lib/usage-overview';
 const now=Date.parse('2026-09-12T12:00:00Z');
 function row(id:number|null,extra:Partial<UsageReportRow>={}):UsageReportRow {return {rep_slug:'a',rep_name:'A',id,client_name:'Client',available_at:'2026-09-01T00:00:00Z',own_opened_at:null,own_engaged:false,last_opened_at:null,other_opened:10,...extra};}
 describe('owner report overview',()=>{
@@ -11,3 +11,5 @@ describe('owner report overview',()=>{
  it('places overdue reports before newly unopened reports',()=>{const r=summarizeUsage([row(1,{rep_slug:'new',available_at:'2026-09-12T00:00:00Z'}),row(2,{rep_slug:'old'})],now);expect(r.reps[0].slug).toBe('old');});
  it('accepts supported periods and safely defaults unknown bookmarks',()=>{expect(parseUsagePeriod('all')).toBeNull();expect(parseUsagePeriod('30')).toBe(30);expect(parseUsagePeriod()).toBe(7);expect(parseUsagePeriod('bad')).toBe(7);});
 });
+
+it('does not expose obvious extracted prose as a client name',()=>{expect(usageReportLabel("who explicitly references two calls")).toBe('Coaching report');expect(usageReportLabel('Anna')).toBe('Anna');expect(usageReportLabel(null)).toBe('Coaching report');});
