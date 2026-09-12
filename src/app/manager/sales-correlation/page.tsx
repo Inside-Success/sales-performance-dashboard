@@ -13,7 +13,6 @@ import {
   MousePointerClick,
   ShieldCheck,
   Target,
-  TrendingUp,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -133,6 +132,21 @@ export default async function SalesCorrelationPage({
 
         <ExecutiveInsight analytics={analytics} />
 
+
+        <section className="grid gap-5">
+          <ScatterCard reps={analytics.reps} />
+        </section>
+
+
+
+        <details className="magic-card overflow-hidden">
+          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
+            Detailed analysis and rep table
+            <span className="ml-2 text-sm font-semibold text-slate-500">
+              data checks, trends, and supporting comparisons
+            </span>
+          </summary>
+          <div className="grid gap-5 border-t border-slate-100 p-5">
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             icon={DollarSign}
@@ -160,20 +174,7 @@ export default async function SalesCorrelationPage({
           />
         </section>
 
-        <section className="grid gap-5">
-          <ScatterCard reps={analytics.reps} />
-        </section>
-
-        <UsageGroupsCard groups={analytics.groups} periodDays={analytics.summary.periodDays} />
-
-        <details className="magic-card overflow-hidden">
-          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
-            Detailed analysis and rep table
-            <span className="ml-2 text-sm font-semibold text-slate-500">
-              data checks, trends, and supporting comparisons
-            </span>
-          </summary>
-          <div className="grid gap-5 border-t border-slate-100 p-5">
+            <UsageGroupsCard groups={analytics.groups} periodDays={analytics.summary.periodDays} />
             <DataQualityCard analytics={analytics} />
             <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.85fr)]">
               <WeeklyTrendCard weekly={analytics.weekly} />
@@ -188,10 +189,7 @@ export default async function SalesCorrelationPage({
           </div>
         </details>
 
-        <p className="text-xs leading-5 text-muted-foreground">
-          This page shows association, not guaranteed causation. New paid sales are the primary KPI;
-          inactive historical reps, recurring revenue, and legacy anonymous usage do not drive the main comparison.
-        </p>
+
       </div>
     </main>
   );
@@ -243,68 +241,13 @@ function StatusMessages({ analytics }: { analytics: SalesCorrelationAnalytics })
 }
 
 function ExecutiveInsight({ analytics }: { analytics: SalesCorrelationAnalytics }) {
-  const high = analytics.groups.find((group) => group.key === "high");
-  const low = analytics.groups.find((group) => group.key === "low");
-  const gap = (high?.avgNewRevenue || 0) - (low?.avgNewRevenue || 0);
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardContent className="grid gap-4 pt-1 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center">
-        <div>
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="gap-1 rounded-full border-red-200 bg-[#FEF2F2] text-[#B91C1C]">
-              <TrendingUp className="size-3.5" />
-              Executive readout
-            </Badge>
-            <Badge variant="outline" className="rounded-full border-slate-200 bg-white">
-              Last {analytics.summary.periodDays} days
-            </Badge>
-            <Badge variant="outline" className="rounded-full border-slate-200 bg-white">
-              Usage data {formatUsageHistory(
-                analytics.summary.effectiveUsageWindowDays,
-                analytics.summary.periodDays,
-              )}
-            </Badge>
-          </div>
-          <h2 className="max-w-3xl text-2xl font-extrabold leading-tight tracking-normal text-slate-950">
-            {getExecutiveHeadline(high, low)}
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-slate-500">
-            {getExecutiveSupportingText(analytics)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/75 p-4 shadow-xs">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">
-              Avg new revenue gap
-            </p>
-            <Badge variant={gap >= 0 ? "secondary" : "outline"}>
-              {gap >= 0 ? "High ahead" : "Review"}
-            </Badge>
-          </div>
-          <p className={cn("mt-3 text-3xl font-extrabold tracking-normal", gap >= 0 ? "text-[#DC2626]" : "text-destructive")}>
-            {gap >= 0 ? "+" : ""}
-            {formatCurrency(gap)}
-          </p>
-          <div className="mt-4 grid gap-2">
-            <ComparisonRow
-              dotClass={groupDotClass("high")}
-              label="High usage"
-              value={formatCurrency(high?.avgNewRevenue || 0)}
-            />
-            <ComparisonRow
-              dotClass={groupDotClass("low")}
-              label="Low/no usage"
-              value={formatCurrency(low?.avgNewRevenue || 0)}
-            />
-          </div>
-          <p className="mt-3 text-xs font-medium leading-5 text-slate-500">
-            Recurring revenue is tracked separately: {formatCurrency(analytics.summary.totalRecurringRevenue)}.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const high = analytics.groups.find(group => group.key === 'high');
+  const low = analytics.groups.find(group => group.key === 'low');
+  return <section className="magic-card p-5">
+    <h2 className="text-xl font-semibold">{getExecutiveHeadline(high,low)}</h2>
+    <p className="mt-2 text-sm text-slate-600">Average new paid revenue per rep: high usage {formatCurrency(high?.avgNewRevenue || 0)} · low/no usage {formatCurrency(low?.avgNewRevenue || 0)}.</p>
+    <p className="mt-2 text-xs text-slate-500">Last {analytics.summary.periodDays} days · Usage history: {formatUsageHistory(analytics.summary.effectiveUsageWindowDays,analytics.summary.periodDays)}. This is an association, not proof that usage caused sales.</p>
+  </section>;
 }
 
 function getExecutiveHeadline(
@@ -325,14 +268,6 @@ function getExecutiveHeadline(
   return "High-usage and low/no-usage reps are even on average new paid revenue.";
 }
 
-function getExecutiveSupportingText(analytics: SalesCorrelationAnalytics) {
-  const usageCoverage = formatUsageHistory(
-    analytics.summary.effectiveUsageWindowDays,
-    analytics.summary.periodDays,
-  );
-
-  return `Usage data covers ${usageCoverage}. Treat this as directional, not causal proof. The comparison includes only reps with official call or sales activity in the last 30 days; self-submitted feedback, legacy traffic, and compliance signals are excluded.`;
-}
 
 function MetricCard({
   icon: Icon,
@@ -753,25 +688,6 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ComparisonRow({
-  dotClass,
-  label,
-  value,
-}: {
-  dotClass: string;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/70 px-3 py-2">
-      <span className="inline-flex items-center gap-2 text-sm font-medium text-slate-500">
-        <span className={cn("size-2.5 rounded-full", dotClass)} />
-        {label}
-      </span>
-      <span className="font-bold text-slate-950">{value}</span>
-    </div>
-  );
-}
 
 function EmptyPanel({ text }: { text: string }) {
   return (

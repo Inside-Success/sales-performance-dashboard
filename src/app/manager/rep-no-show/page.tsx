@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  AlertTriangle,
   ArrowDownRight,
-  ArrowUpRight,
   CalendarDays,
   Clock3,
   ShieldCheck,
@@ -107,9 +105,8 @@ export default async function RepNoShowPage({
 
         <StatusMessage analytics={analytics} />
 
-        <ExecutiveReadout analytics={analytics} />
 
-        <section className="grid gap-3 sm:grid-cols-3">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             icon={UserX}
             title="Rep no-shows"
@@ -121,6 +118,12 @@ export default async function RepNoShowPage({
             title="No-show rate"
             value={formatPercent(analytics.summary.noShowRate)}
             description={`${formatNumber(analytics.summary.eligibleCalls)} tracked calls`}
+          />
+          <MetricCard
+            icon={ArrowDownRight}
+            title="Change vs prior period"
+            value={analytics.summary.comparisonAvailable ? `${analytics.summary.weekOverWeekChange > 0 ? '+' : ''}${formatNumber(analytics.summary.weekOverWeekChange)}` : 'Not available'}
+            description={analytics.summary.comparisonAvailable ? `Previously ${formatNumber(analytics.summary.previousRepNoShows)} no-shows` : 'Not enough comparable history'}
           />
           <MetricCard
             icon={CalendarDays}
@@ -176,81 +179,6 @@ function StatusMessage({ analytics }: { analytics: RepNoShowAnalytics }) {
     <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
       {analytics.summary.error}
     </div>
-  );
-}
-
-function ExecutiveReadout({ analytics }: { analytics: RepNoShowAnalytics }) {
-  const change = analytics.summary.weekOverWeekChange;
-  const improved = change < 0;
-  const flat = change === 0;
-  const comparisonAvailable = analytics.summary.comparisonAvailable;
-
-  return (
-    <Card className="dashboard-card border bg-card/95">
-      <CardContent className="grid gap-4 pt-1 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center">
-        <div>
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="gap-1">
-              <AlertTriangle className="size-3.5" />
-              Executive readout
-            </Badge>
-            <Badge variant="outline">Last {analytics.summary.periodDays} days</Badge>
-          </div>
-          <h2 className="max-w-3xl text-2xl font-semibold leading-tight tracking-normal">
-            {getExecutiveHeadline(analytics)}
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-            Counts use reliable attendance signals captured after rep no-show tracking was
-            activated. Older incomplete periods are excluded from rates and trends.
-          </p>
-        </div>
-
-        <div className="rounded-xl border bg-background/80 p-4 shadow-xs">
-          {comparisonAvailable ? (
-            <>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">
-                  Change vs prior period
-                </p>
-                <Badge variant={improved ? "secondary" : flat ? "outline" : "destructive"}>
-                  {improved ? "Improved" : flat ? "Flat" : "Higher"}
-                </Badge>
-              </div>
-              <p className={cn("mt-3 flex items-center gap-2 text-3xl font-semibold tracking-normal", improved && "text-primary", !improved && !flat && "text-destructive")}>
-                {improved ? <ArrowDownRight className="size-6" /> : <ArrowUpRight className="size-6" />}
-                {change > 0 ? "+" : ""}
-                {formatNumber(change)}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Previous period had {formatNumber(analytics.summary.previousRepNoShows)} rep no-shows.
-              </p>
-              <div className="mt-4 rounded-lg border bg-card/80 px-3 py-2">
-                <p className="text-xs text-muted-foreground">Current no-show rate</p>
-                <p className="mt-1 text-xl font-semibold">{formatPercent(analytics.summary.noShowRate)}</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-medium uppercase tracking-normal text-muted-foreground">
-                  Baseline status
-                </p>
-                <Badge variant="outline">Building</Badge>
-              </div>
-              <p className="mt-3 text-2xl font-semibold tracking-normal">No fair prior comparison yet</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Rep no-show tracking started {formatShortDate(analytics.summary.trackingStartedAt)}.
-                Older periods are hidden so the trend does not compare against incomplete detection.
-              </p>
-              <div className="mt-4 rounded-lg border bg-card/80 px-3 py-2">
-                <p className="text-xs text-muted-foreground">Comparable baseline</p>
-                <p className="mt-1 text-xl font-semibold">Pending</p>
-              </div>
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
@@ -371,17 +299,6 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
-function getExecutiveHeadline(analytics: RepNoShowAnalytics) {
-  if (analytics.summary.error) {
-    return "Connect read-only Airtable access to show live rep no-show impact.";
-  }
-
-  if (analytics.summary.repNoShows === 0) {
-    return `No rep no-shows surfaced ${getPeriodPhrase(analytics)}.`;
-  }
-
-  return `${formatNumber(analytics.summary.repNoShows)} rep no-shows surfaced ${getPeriodPhrase(analytics)}.`;
-}
 
 function getPeriodDescription(analytics: RepNoShowAnalytics) {
   const requestedStart = new Date(analytics.summary.generatedAt);
@@ -395,17 +312,6 @@ function getPeriodDescription(analytics: RepNoShowAnalytics) {
   return `Last ${analytics.summary.periodDays} days`;
 }
 
-function getPeriodPhrase(analytics: RepNoShowAnalytics) {
-  const requestedStart = new Date(analytics.summary.generatedAt);
-  requestedStart.setUTCDate(requestedStart.getUTCDate() - analytics.summary.periodDays);
-  const effectiveStart = new Date(analytics.summary.effectivePeriodStart);
-
-  if (Number.isFinite(effectiveStart.getTime()) && effectiveStart > requestedStart) {
-    return `since ${formatShortDate(analytics.summary.effectivePeriodStart)}`;
-  }
-
-  return `in the last ${analytics.summary.periodDays} days`;
-}
 
 function formatShortDate(value: string | Date | null | undefined) {
   if (!value) return "tracking start";
