@@ -10,7 +10,7 @@ export default function UsageOverviewTable({ reps }: { reps:UsageRepOverview[] }
   const visible=reps.filter(r=>(!unopenedOnly || r.opened<r.available) && r.name.toLowerCase().includes(search.trim().toLowerCase()));
   return <section className="magic-card overflow-hidden" aria-label="Rep coaching access">
     <div className="flex flex-wrap items-center gap-3 border-b p-4">
-      <input aria-label="Search reps" placeholder="Search reps" value={search} onChange={e=>setSearch(e.target.value)} className="min-w-0 flex-1 rounded-lg border px-3 py-2" />
+      <input aria-label="Search reps" placeholder="Search reps" value={search} onChange={e=>setSearch(e.target.value)} className="min-w-0 basis-full rounded-lg border px-3 py-2 sm:basis-auto sm:flex-1" />
       <div className="flex gap-2">{[{value:false,label:'All reps'},{value:true,label:'Has unopened reports'}].map(o=><button key={o.label} aria-pressed={unopenedOnly===o.value} onClick={()=>setUnopenedOnly(o.value)} className={`rounded-lg border px-3 py-2 text-sm ${unopenedOnly===o.value?'bg-red-600 text-white':'bg-white'}`}>{o.label}</button>)}</div>
     </div>
     <p className="px-4 pt-3 text-xs text-slate-500">{visible.length} of {reps.length} current reps · Most overdue reports first</p>
