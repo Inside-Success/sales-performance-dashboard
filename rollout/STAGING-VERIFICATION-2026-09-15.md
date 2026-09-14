@@ -35,3 +35,11 @@ Deployment `dpl_FcCzqzHBNU2i9HjeuABA98knhh8f` reached READY and its GitHub valid
 ## Remaining verification
 
 Google OAuth in preview is not configured. Source refresh, release version conflicts and materialization have local automated coverage; full hosted publication stays disabled. Do not report these partial checks as complete browser-to-production verification.
+
+## Final implementation verification at 8312430
+
+Dashboard CI run `34901889430` passed, including all 308 tests, static checks, TypeScript, scoped lint and production build. Paired FAQ commit `f2c8a26` passed CI run `34901890478`. Vercel deployment `dpl_3KjpDJ2oWGMBEhmnvW6D6z2iDEn9` reached READY; the GitHub status on exact head `83124305500c6ad2fcc1deadc7fdf4e2becdbbce` identifies that deployment.
+
+On this final implementation, replay returned the original message with provider `openai`; another account's feedback returned 404. A new company-policy question, following the earlier greeting in the synthetic conversation, returned the correct three-month ordinary main-show payment/signature-deadline rule in 5.961 seconds. A read-only query scoped to that synthetic message on the verified isolated endpoint confirmed runtime `revamp` and effective registry `67d5ad54a3450de58b7fa635`.
+
+Both remote main refs were rechecked and remain unchanged. These checks do not close the remaining OAuth, independent quality acceptance or controlled publication gates above. Later documentation-only commits do not change this tested implementation.
