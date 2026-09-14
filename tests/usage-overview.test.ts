@@ -13,3 +13,40 @@ describe('owner report overview',()=>{
 });
 
 it('does not expose obvious extracted prose as a client name',()=>{expect(usageReportLabel("who explicitly references two calls")).toBe('Coaching report');expect(usageReportLabel('Anna')).toBe('Anna');expect(usageReportLabel(null)).toBe('Coaching report');});
+
+import { matchesUsageFilter, usagePercent } from '../src/lib/usage-overview';
+const day=86400000;
+const at=(days:number)=>new Date(now-days*day).toISOString();
+it('keeps history for consistency but limits selected report counts',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(3),active_weeks:[0]}),row(2,{available_at:at(10),active_weeks:[1]}),row(3,{available_at:at(17),active_weeks:[2]})],now,7);
+ expect(r.available).toBe(1);expect(r.reps[0].activeWeeks).toBe(3);expect(r.reps[0].eligibleWeeks).toBe(3);expect(r.reps[0].weekActivity).toEqual([null,true,true,true]);
+ expect(matchesUsageFilter(r.reps[0],'regular',now)).toBe(true);
+});
+it('excludes no-report weeks, repeated opens and one-off activity from regular users',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(10),active_weeks:[0,1,1,2]})],now,7).reps[0];
+ expect(r.activeWeeks).toBe(1);expect(r.eligibleWeeks).toBe(1);expect(matchesUsageFilter(r,'regular',now)).toBe(false);
+});
+it('uses actual repeat-open weeks, including when opening an older report',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(50),active_weeks:[0,1],last_own_opened_at:at(1)}),row(2,{available_at:at(3)}),row(3,{available_at:at(10)})],now,7).reps[0];
+ expect(r.activeWeeks).toBe(2);expect(r.lastOwnOpened).toBe(at(1));expect(r.available).toBe(1);
+});
+it('does not call new recipients inactive or never users without overdue feedback',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(1)})],now,7).reps[0];
+ expect(matchesUsageFilter(r,'never',now)).toBe(false);expect(matchesUsageFilter(r,'inactive',now)).toBe(false);
+});
+it('distinguishes never opened from previously active using owner history',()=>{
+ const never=summarizeUsage([row(1,{available_at:at(3),last_opened_at:at(1)})],now,7).reps[0];
+ expect(matchesUsageFilter(never,'never',now)).toBe(true);
+ const inactive=summarizeUsage([row(1,{available_at:at(3)}),row(2,{available_at:at(30),own_opened_at:at(20)})],now,7).reps[0];
+ expect(matchesUsageFilter(inactive,'never',now)).toBe(false);expect(matchesUsageFilter(inactive,'inactive',now)).toBe(true);
+});
+it('compares equal 48-hour observation windows and excludes immature reports',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(3),own_opened_at:at(1)}),row(2,{available_at:at(8),own_opened_at:at(5)}),row(3,{available_at:at(10),own_opened_at:at(9)}),row(4,{available_at:at(1),own_opened_at:at(0)})],now,7);
+ expect(r.comparison).toEqual({current:{available:2,opened:1},previous:{available:1,opened:1}});
+ expect(r.available).toBe(2);
+});
+it('handles comparison boundaries, no reports and all-time without fabricated trends',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(2)}),row(2,{available_at:at(9)}),row(3,{available_at:at(16)})],now,7);
+ expect(r.comparison).toEqual({current:{available:1,opened:0},previous:{available:1,opened:0}});
+ expect(summarizeUsage([],now).comparison).toBeNull();expect(usagePercent(0,0)).toBeNull();expect(usagePercent(1,3)).toBe(33);
+});

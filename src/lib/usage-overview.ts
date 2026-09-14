@@ -7,25 +7,60 @@ export function parseUsagePeriod(value?: string): UsagePeriod { return value ===
 export type UsageReportRow = {
   rep_slug: string; rep_name: string; id: number | null; client_name: string | null;
   available_at: string | null; own_opened_at: string | null; own_engaged: boolean;
+  last_own_opened_at?: string | null; active_weeks?: number[];
   last_opened_at: string | null; other_opened: number | string;
 };
 export type UsageRepOverview = {
   slug: string; name: string; available: number; opened: number; engaged: number;
+  activeWeeks: number; eligibleWeeks: number; weekActivity: (boolean | null)[]; lastOwnOpened: string | null;
   overdue: number; lastOpened: string | null; otherOpened: number;
   unopened: { id: number; client: string; availableAt: string; overdue: boolean }[];
 };
-export function summarizeUsage(rows: UsageReportRow[], now: number) {
+const DAY = 86400000;
+export function usagePercent(opened: number, available: number): number | null {
+  return available > 0 ? Math.round(100 * opened / available) : null;
+}
+export type UsageFilter = 'all' | 'unopened' | 'never' | 'inactive' | 'regular';
+export function matchesUsageFilter(rep: UsageRepOverview, filter: UsageFilter, now: number) {
+  if (filter === 'unopened') return rep.opened < rep.available;
+  if (filter === 'never') return rep.overdue > 0 && !rep.lastOwnOpened;
+  if (filter === 'inactive') return rep.overdue > 0 && !!rep.lastOwnOpened && Date.parse(rep.lastOwnOpened) < now - 7 * DAY;
+  if (filter === 'regular') return rep.eligibleWeeks >= 3 && rep.activeWeeks === rep.eligibleWeeks;
+  return true;
+}
+export function summarizeUsage(rows: UsageReportRow[], now: number, period: UsagePeriod = null) {
   const reps = new Map<string, UsageRepOverview>();
   const seen = new Set<number>();
+  const weeks = new Map<string, { received: Set<number>; opened: Set<number> }>();
+  const comparison = { current: { available: 0, opened: 0 }, previous: { available: 0, opened: 0 } };
   for (const row of rows) {
     let rep = reps.get(row.rep_slug);
     if (!rep) {
       rep = { slug:row.rep_slug, name:row.rep_name, available:0, opened:0, engaged:0, overdue:0,
-        lastOpened:row.last_opened_at, otherOpened:Number(row.other_opened || 0), unopened:[] };
+        activeWeeks:0, eligibleWeeks:0, weekActivity:[], lastOwnOpened:null, lastOpened:row.last_opened_at, otherOpened:Number(row.other_opened || 0), unopened:[] };
       reps.set(row.rep_slug, rep);
+      weeks.set(row.rep_slug, { received: new Set(), opened: new Set() });
     }
     if (row.id === null || seen.has(Number(row.id))) continue;
-    seen.add(Number(row.id)); rep.available++;
+    seen.add(Number(row.id));
+    const activity = weeks.get(row.rep_slug)!;
+    const lastOwn = row.last_own_opened_at || row.own_opened_at;
+    if (lastOwn && (!rep.lastOwnOpened || Date.parse(lastOwn) > Date.parse(rep.lastOwnOpened))) rep.lastOwnOpened = lastOwn;
+    const availableAt = Date.parse(row.available_at || '');
+    const week = Math.floor((now - availableAt) / (7 * DAY));
+    if (week >= 0 && week < 4) activity.received.add(week);
+    for (const w of row.active_weeks || []) if (w >= 0 && w < 4) activity.opened.add(w);
+    if (period !== null && availableAt <= now - 2 * DAY) {
+      const age = now - 2 * DAY - availableAt;
+      const cohort = age < period * DAY ? comparison.current : age < 2 * period * DAY ? comparison.previous : null;
+      if (cohort) {
+        cohort.available++;
+        const openedAt = Date.parse(row.own_opened_at || '');
+        if (openedAt >= availableAt && openedAt <= availableAt + 2 * DAY) cohort.opened++;
+      }
+    }
+    if (period !== null && availableAt < now - period * DAY) continue;
+    rep.available++;
     if (row.own_opened_at) rep.opened++;
     if (row.own_engaged) rep.engaged++;
     if (!row.own_opened_at && row.available_at) {
@@ -34,9 +69,15 @@ export function summarizeUsage(rows: UsageReportRow[], now: number) {
       rep.unopened.push({id:Number(row.id), client:usageReportLabel(row.client_name), availableAt:row.available_at, overdue});
     }
   }
+  for (const [slug, rep] of reps) {
+    const activity = weeks.get(slug)!;
+    rep.weekActivity = [3,2,1,0].map(w => activity.received.has(w) ? activity.opened.has(w) : null);
+    rep.eligibleWeeks = activity.received.size;
+    rep.activeWeeks = rep.weekActivity.filter(w => w === true).length;
+  }
   const result = [...reps.values()].sort((a,b)=>b.overdue-a.overdue || (b.available-b.opened)-(a.available-a.opened) || a.name.localeCompare(b.name));
   for (const rep of result) rep.unopened.sort((a,b)=>a.availableAt.localeCompare(b.availableAt));
-  return { reps:result, available:result.reduce((n,r)=>n+r.available,0), opened:result.reduce((n,r)=>n+r.opened,0),
+  return { comparison: period === null ? null : comparison, reps:result, engaged:result.reduce((n,r)=>n+r.engaged,0), available:result.reduce((n,r)=>n+r.available,0), opened:result.reduce((n,r)=>n+r.opened,0),
     overdue:result.reduce((n,r)=>n+r.overdue,0), repsOpening:result.filter(r=>r.opened>0).length,
     repsWithReports:result.filter(r=>r.available>0).length };
 }
