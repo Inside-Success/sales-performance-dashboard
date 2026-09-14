@@ -1,0 +1,34 @@
+[
+  {
+    "id": "architecture-1",
+    "question": "What email or SMS communication do I send when someone books from outbound dialing?"
+  },
+  {
+    "id": "architecture-2",
+    "question": "Am I allowed to use our CRM to type call notes during the call?"
+  },
+  {
+    "id": "architecture-3",
+    "question": "Does the system automatically send an email the day before the initial appointment?"
+  },
+  {
+    "id": "architecture-4",
+    "question": "How long should someone wait before reapplying after both calls?"
+  },
+  {
+    "id": "architecture-5",
+    "question": "What is the current main ISTV Lite price and its approved payment plans?"
+  },
+  {
+    "id": "architecture-6",
+    "question": "Will Daymond John personally interview the client?"
+  },
+  {
+    "id": "architecture-7",
+    "question": "Can I promise six months of weekly social media support calls?"
+  },
+  {
+    "id": "architecture-8",
+    "question": "how is everything going on"
+  }
+]

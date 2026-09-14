@@ -2836,6 +2836,7 @@ function normalizeAskSalesFaqAnswerPayload(value: unknown): AskSalesFaqStructure
 
   return {
     summary: payload.summary,
+    ...(payload.confidenceBasis === "unscored" ? { confidenceBasis: "unscored" as const } : {}),
     sections,
     confidenceLabel:
       confidenceScore === null
@@ -3153,6 +3154,7 @@ export async function getAskSalesFaqAdminOverview(
           count(*) filter (
             where error_class is not null
                or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+               or outcome in ('low_confidence_route', 'abstain_unapproved')
                or exists (select 1 from feedback f where f.message_id = assistant.id and f.rating = 'down')
           )::int as review_items,
           (select count(*)::int from feedback) as feedback_count,
@@ -3225,8 +3227,8 @@ export async function getAskSalesFaqAdminOverview(
           a.answer_payload->>'sourceMode' as source_mode,
           a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
           a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
-          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
-          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          coalesce(a.answer_payload #>> '{runtimeMetadata,revamp,status}', a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}') as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,revamp,selectedEvidenceIds}', a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
           a.created_at::text as created_at,
           f.rating,
           f.comment,
@@ -3251,6 +3253,7 @@ export async function getAskSalesFaqAdminOverview(
           and (
             a.error_class is not null
             or a.outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+            or a.outcome in ('low_confidence_route', 'abstain_unapproved')
             or f.rating = 'down'
           )
         order by a.created_at desc
@@ -3320,8 +3323,9 @@ export async function getAskSalesFaqAdminOverview(
           a.model,
           a.latency_ms,
           a.error_class,
-          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case when a.answer_payload->>'confidenceBasis' = 'unscored' then null else a.answer_payload->>'confidenceLabel' end as confidence_label,
           case
+            when a.answer_payload->>'confidenceBasis' = 'unscored' then null
             when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
             then (a.answer_payload->>'confidenceScore')::float
             else null
@@ -3329,8 +3333,8 @@ export async function getAskSalesFaqAdminOverview(
           a.answer_payload->>'sourceMode' as source_mode,
           a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
           a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
-          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
-          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          coalesce(a.answer_payload #>> '{runtimeMetadata,revamp,status}', a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}') as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,revamp,selectedEvidenceIds}', a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
           a.created_at::text as created_at,
           (
             select u.content_redacted
@@ -3767,8 +3771,9 @@ export async function getAskSalesFaqRepHistory(
           a.model,
           a.latency_ms,
           a.error_class,
-          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case when a.answer_payload->>'confidenceBasis' = 'unscored' then null else a.answer_payload->>'confidenceLabel' end as confidence_label,
           case
+            when a.answer_payload->>'confidenceBasis' = 'unscored' then null
             when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
             then (a.answer_payload->>'confidenceScore')::float
             else null

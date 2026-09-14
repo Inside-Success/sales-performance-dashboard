@@ -75,9 +75,13 @@ export function classifyAskSalesFaqReview(input: {
     };
   }
 
+  if (input.outcome === "low_confidence_route") {
+    return { category: "Unanswered question", action: "Check whether the answer already exists, whether retrieval found it, and whether the reply addressed the question before adding knowledge." };
+  }
+
   if (input.needsRoute || isAskSalesFaqRouteOutcome(input.outcome)) {
     return {
-      category: "Safe route",
+      category: "Action route to review",
       action: "Check that the route is relevant, concise, and points to the correct owner or channel.",
     };
   }

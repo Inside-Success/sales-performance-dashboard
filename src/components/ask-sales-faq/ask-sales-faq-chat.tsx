@@ -162,9 +162,9 @@ function buildRequestMessages(messages: ChatMessage[]) {
   return messages
     .filter((message) => message.role === "user" || message.role === "assistant")
     .slice(-MAX_CONTEXT_MESSAGES_TO_SEND)
-    .map((message) => ({
+    .map((message, index, selected) => ({
       role: message.role,
-      content: message.content.trim().slice(0, MAX_CONTEXT_MESSAGE_CHARS),
+      content: message.content.trim().slice(0, index === selected.length - 1 ? 12000 : MAX_CONTEXT_MESSAGE_CHARS),
     }))
     .filter((message) => message.content.length > 0);
 }
@@ -1637,12 +1637,12 @@ function SourceDisclosure({ message }: { message: ChatMessage }) {
               <ShieldCheck className="size-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">Approved FAQ topic</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400">{message.structuredAnswer?.confidenceBasis === "unscored" ? "Supporting guidance" : "Approved FAQ topic"}</p>
               {message.sourceLabel ? <p className="text-sm font-bold text-slate-800">{message.sourceLabel}</p> : null}
               {message.sourceLastReviewed ? (
                 <p className="mt-0.5 text-[12.5px] font-semibold text-slate-400">Last reviewed: {message.sourceLastReviewed}</p>
               ) : null}
-              {message.structuredAnswer ? (
+              {message.structuredAnswer && message.structuredAnswer.confidenceBasis !== "unscored" ? (
                 <p className="mt-0.5 text-[12.5px] font-semibold text-slate-400">
                   Confidence: {message.structuredAnswer.confidenceLabel} ({message.structuredAnswer.confidenceScore}/100)
                 </p>

@@ -18,9 +18,9 @@ describe("Ask Sales quality and operations simplification", () => {
     expect(pageSource).not.toContain("Investigation queue");
   });
 
-  it("keeps safe routes visible without classifying them as attention items", () => {
-    expect(pageSource).toContain("These are not failures");
-    expect(pageSource).toContain("Safe routes remain in the conversation log below");
+  it("includes unanswered questions in review without treating every handoff as a failure", () => {
+    expect(pageSource).toContain("correctness still needs review");
+    expect(pageSource).toContain("including those without rep feedback");
 
     const reviewCountEnd = dbSource.indexOf("::int as review_items");
     const reviewCountStart = dbSource.lastIndexOf("count(*) filter (", reviewCountEnd);
@@ -28,6 +28,7 @@ describe("Ask Sales quality and operations simplification", () => {
     expect(reviewCountSql).not.toContain("or needs_route");
     expect(reviewCountSql).not.toContain("route_from_approved_article");
     expect(reviewCountSql).toContain("f.rating = 'down'");
+    expect(reviewCountSql).toContain("low_confidence_route");
   });
 
   it("keeps technical trace fields available but collapsed", () => {

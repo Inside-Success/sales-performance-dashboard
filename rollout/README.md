@@ -1,0 +1,32 @@
+# Ask Sales candidate rollout
+
+The revamp is an isolated candidate, not a production release. Runtime quality must pass before cutover. Current production selector remains V5.14; code tests and successful HTTP calls are not sufficient evidence of answer quality.
+
+## Coordinated components
+
+- Dashboard: select `ASK_SALES_FAQ_RUNTIME_VERSION=revamp` only in an isolated environment. Set `FAQ_REVAMP_PROVIDER=openai` and `FAQ_REVAMP_OPENAI_MODEL=gpt-5.6-luna` for Luna, or `FAQ_REVAMP_PROVIDER=deepseek`. Keep keys server-only. There is no automatic cross-provider fallback.
+- FAQ repository: `runtime/revamp-base-registry.json` must match the dashboard base export; `runtime/revamp-admin-approved-releases.json` must match the dashboard candidate ledger. Run both legacy and candidate validators.
+- Runtime, admin review, preview, publication manifests and health use the same selected registry. A publication prepared for another base version is rejected. The publisher already reads the manifest's allowed ledger path; no publisher workflow change is required.
+- `ask-sales-collector-patches.json` is a generated review artifact, **not applied**. It expands the Google/Slack guards and disables raw execution-payload persistence on those collectors. Refresh live draft and active versions before applying, reject a different active version or changed guard/settings, preserve unrelated node/settings fields, validate, and explicitly publish. Do not overwrite another person's draft. Retain an exact pre-change rollback snapshot privately.
+- Collector payloads are still redacted at source ingestion before database storage and model analysis. Expanded redaction preserves useful policy URLs. Redaction is not a guarantee that all personal information is detected. The new tech channel can contain credentials, so collector persistence settings and ingestion changes must ship before enabling its scan.
+
+## Staging requirements
+
+Use a separate database/branch with test records. Never point evaluation chat/admin requests at production storage: schema preparation, conversation logging, source registration and release operations write to that database. Disable knowledge publication and all outgoing feedback/webhook integrations in staging. Keep auth and exact-admin restrictions enabled. Clear inherited production integration endpoints/secrets from the branch environment.
+
+Verify in staging: login/access denials, one conversation and follow-up, history reload, duplicate request behavior, feedback, technical failure presentation, unanswered-question visibility, source refresh/redaction, version conflict rejection, release preview and matching effective registry. Publisher execution stays disabled until a separately reviewed controlled release. A preview sign-in page proves only that page, not this flow.
+
+## Knowledge review limits
+
+Current reality sales interpretation puts the full documentary in VIP based on the mandatory Call 2 video; the written FAQ discrepancy remains recorded. This does not resolve existing signed contracts. Current HubSpot instructions supersede obsolete Keap navigation only for the specifically evidenced process. Case-specific Slack replies are not universal permissions.
+
+Slack history coverage is checkpointed but incomplete: a historical root outside the channel scan window can gain a newer reply. Source sync does not independently discover or transcribe newly linked videos. These require periodic linked-source and old-thread review; do not describe this collector as exhaustive or self-maintaining.
+
+## Cutover and rollback
+
+1. Confirm source conflicts, held-out answer quality, privacy, latency and isolated end-to-end checks. Record any failed gate instead of relabeling it passed.
+2. Serialize with other Magic Mike dashboard releases. Confirm both Git heads and exact checks, review both PRs and collector patch.
+3. Merge/deploy the paired reviewed revisions and apply coordinated collector settings. Set the candidate selector/provider only after the matching release is ready. Recheck effective knowledge version and a bounded smoke set.
+4. Roll back the selector to V5.14 and the exact verified deployment if necessary. Keep candidate ledgers and diagnostics for investigation; do not inject candidate releases into the legacy ledger or erase evidence. Pause publication during rollback.
+
+No changes to coaching, compliance scoring, CRM source data, or source documents are part of this rollout.

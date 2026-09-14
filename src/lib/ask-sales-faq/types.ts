@@ -39,6 +39,7 @@ export type AskSalesFaqAnswerSection = {
 };
 
 export type AskSalesFaqStructuredAnswer = {
+  confidenceBasis?: "unscored";
   summary: string;
   sections: AskSalesFaqAnswerSection[];
   confidenceLabel: "High" | "Medium" | "Low";
@@ -47,10 +48,10 @@ export type AskSalesFaqStructuredAnswer = {
 };
 
 export type AskSalesFaqRuntimeMetadata = {
-  pipelineVersion?: "v2" | "v3" | "v5.14";
+  pipelineVersion?: "v2" | "v3" | "v5.14" | "revamp";
   knowledgeVersion?: string;
   providerAttempts?: Array<{
-    provider: "deepseek" | "anthropic";
+    provider: "openai" | "deepseek" | "anthropic";
     model: string;
     purpose: string;
     status: "success" | "failed";
@@ -167,6 +168,7 @@ export type AskSalesFaqRuntimeMetadata = {
     stageTimings: Record<string, number>;
   };
   v5?: Record<string, unknown>;
+  revamp?: Record<string, unknown>;
 };
 
 export type AskSalesFaqResponse = {
@@ -178,7 +180,7 @@ export type AskSalesFaqResponse = {
   outcome: AskSalesFaqOutcome;
   source: AskSalesFaqSourceSummary | null;
   model: string | null;
-  provider: "deepseek" | "anthropic" | "mock" | null;
+  provider: "openai" | "deepseek" | "anthropic" | "mock" | null;
   needsRoute: boolean;
   routeReason: string | null;
   redactions: string[];

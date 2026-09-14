@@ -86,12 +86,15 @@ describe("Ask Sales knowledge-refresh governance", () => {
     expect(insert.valuesSql).not.toContain("$37");
   });
 
-  it("monitors only the two approved Slack channels plus the governed Google corpus", () => {
-    expect(KNOWLEDGE_REFRESH_SOURCES).toHaveLength(43);
+  it("monitors the reviewed Slack channels and current reality and CRM sources", () => {
+    expect(KNOWLEDGE_REFRESH_SOURCES).toHaveLength(50);
     expect(KNOWLEDGE_REFRESH_SOURCES.filter((source) => source.kind === "slack_channel").map((source) => source.externalId)).toEqual([
       "C0AUQKNR8CF",
       "C09AF0NQJE7",
+      "C08QGKL39J6",
+      "C0A8S3JSR1Q",
     ]);
+    expect(getKnowledgeRefreshSource("google_doc:1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU")).not.toBeNull();
     expect(KNOWLEDGE_REFRESH_SOURCES.some((source) => source.externalId === "1Hu48qQNGy0C0K8gGxymHczAEk9GhDqTTl9ZgHvHE7oQ")).toBe(false);
     expect(getKnowledgeRefreshSource("slack_channel:C0AUQKNR8CF")?.label).toBe("#sales-questions-requests");
   });
