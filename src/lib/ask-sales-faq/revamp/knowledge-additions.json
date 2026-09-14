@@ -684,9 +684,9 @@
   {
     "id": "hubspot-payment-links",
     "decisionKey": "hubspot-payment-links",
-    "title": "HubSpot and payment links",
+    "title": "Payment confirmation: HubSpot and the All Payments channel",
     "questions": [],
-    "text": "The September 2 thread about custom HubSpot payment links instructs reps to use the provided payment links. A contract can be sent separately for signature. Do not assume a custom payment link is automatically connected to the contract or authorized just because it can be created in HubSpot. The current main Call 2 script instructs reps to check HubSpot/All Payments for payment confirmation before leaving the call. The bot cannot check a customer\u2019s live payment status.",
+    "text": "The September 2 thread about custom HubSpot payment links instructs reps to use the provided payment links. A contract can be sent separately for signature. Do not assume a custom payment link is automatically connected to the contract or authorized just because it can be created in HubSpot. The current main Call 2 script instructs reps to check HubSpot and the All Payments channel for payment confirmation before leaving the call. The script explicitly calls All Payments a channel; it does not establish a HubSpot menu named All Payments or a click path to one. The bot cannot check a customer\u2019s live payment status.",
     "scopes": [
       "shared"
     ],
@@ -825,7 +825,7 @@
     "decisionKey": "reapply-context-and-current-guidance",
     "title": "Reapplying: preserve context and conflicting intervals",
     "questions": [],
-    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich\u2019s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3\u20136 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich\u2019s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait.",
+    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich\u2019s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3\u20136 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich\u2019s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait. The retained non-duration instruction from the older missed-Call-1 guidance is not to read the application\u2019s banned/blacklisted language verbatim; a missed call alone does not establish permanent blacklisting. Repeated-abuse handling remains a separate decision.",
     "scopes": [
       "shared"
     ],
@@ -834,7 +834,8 @@
       "slack:1785161510",
       "slack:1788879287",
       "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
-      "screenshot:2026-07-08:rich-main-istv-reapply-three-months"
+      "screenshot:2026-07-08:rich-main-istv-reapply-three-months",
+      "slack:C0AUQKNR8CF:1781287874.524089"
     ],
     "reviewedAt": "2026-09-15",
     "authority": 12,
@@ -842,9 +843,20 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Conflicting and context-dependent guidance; no verified universal replacement."
+      "Rich controls the normal main ISTV three-month minimum, including the ordinary missed Call 2 payment/signature deadline. The superseded records contain already-adjudicated conflicting intervals and are not current exceptions. The separately reviewed July 27 VIP/Lite closed-cohort-payment rule and reality six-month rule remain distinct; do not apply either to every missed ordinary deadline."
     ],
-    "supersedes": []
+    "supersedes": [
+      "operational_90f39d10e63f2bbc",
+      "operational_c5b47d150bc1f1f0",
+      "operational_1ba92919bb81e1a5",
+      "operational_74073cdfea93e4bb",
+      "operational_dbd84eb65d2fef16",
+      "operational_415dc6b476d7c2f9",
+      "operational_ac1aa93627c77b27",
+      "operational_2fd512dd952c680d",
+      "operational_a2f41e407e26a6d4",
+      "operational_4e037bdf053bbc44"
+    ]
   },
   {
     "id": "coaching-objections-spouse",

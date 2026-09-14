@@ -28,6 +28,10 @@ Deployment `dpl_5gj4U8yShQ3jJGahY2KJSYKmVfLB` reached READY.
 
 Production was rechecked as READY at commit `325a8243d5700f66e80c8c6377db9f88859f52ea`, retaining the production domain. No production database writes, environment changes, main merges, or n8n publications were performed.
 
+## Follow-up checks at candidate 573036e
+
+Deployment `dpl_FcCzqzHBNU2i9HjeuABA98knhh8f` reached READY and its GitHub validation passed. Replaying the saved request returned `provider: openai`. The second test account's attempt to rate the first account's answer returned 404. The owning account's feedback returned 200, with sheet sync still skipped as unconfigured.
+
 ## Remaining verification
 
-Recheck replay labels and feedback ownership on the next exact deployed commit. Google OAuth in preview is not configured. Source refresh, release version conflicts and materialization have local automated coverage; full hosted publication stays disabled. Do not report these partial checks as complete browser-to-production verification.
+Google OAuth in preview is not configured. Source refresh, release version conflicts and materialization have local automated coverage; full hosted publication stays disabled. Do not report these partial checks as complete browser-to-production verification.

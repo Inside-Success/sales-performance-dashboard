@@ -9,6 +9,15 @@ const attempt={provider:"openai" as const,model:"test",purpose:"test",status:"su
 const answer:Answer={status:"answer",paragraphs:[{text:"The approved price is $20,000.",kind:"company_fact",evidenceIds:["price"]}],routeKey:null};
 const modelAnswer:Answer={...answer,paragraphs:answer.paragraphs.map(p=>({...p,evidenceIds:["E1"]}))};
 describe("revamp isolation and evidence boundaries",()=>{
+ it("rejects dangling supersession references instead of silently serving conflicting knowledge",()=>{
+  expect(()=>reconcileEvidence([{...fact("new","current"),supersedes:["missing"]}])).toThrow("Unknown superseded evidence");
+ });
+ it("rejects cycles that would silently remove every competing source",()=>{
+  expect(()=>reconcileEvidence([{...fact("a","a"),supersedes:["b"]},{...fact("b","b"),supersedes:["a"]}])).toThrow("Cyclic evidence supersession");
+ });
+ it("preserves the last replacement in a valid supersession chain",()=>{
+  expect(reconcileEvidence([fact("a","old"),{...fact("b","intermediate"),supersedes:["a"]},{...fact("c","current"),supersedes:["b"]}]).map(r=>r.id)).toEqual(["c"]);
+ });
  it("only retires explicit IDs, preserving other scopes and exceptions",()=>{
   const a=fact("old","six months"), b={...fact("new","three months"),supersedes:["old"]}, c=fact("exception","six months",["dj_nlceo"]);
   expect(reconcileEvidence([a,b,c]).map(r=>r.id)).toEqual(["new","exception"]);

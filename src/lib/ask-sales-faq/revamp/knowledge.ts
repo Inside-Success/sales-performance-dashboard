@@ -17,7 +17,20 @@ import type { Evidence } from "./types";
 // The old runtimes remain untouched. All candidate consumers use this snapshot.
 export function reconcileEvidence(records: Evidence[]) {
   const byId = new Map(records.map(record => [record.id, record]));
-  const retired = new Set(records.flatMap(record => record.supersedes));
+  const visited = new Set<string>();
+  const visiting = new Set<string>();
+  function visit(id: string) {
+    if (visiting.has(id)) throw new Error(`Cyclic evidence supersession: ${id}`);
+    if (visited.has(id)) return;
+    const record = byId.get(id);
+    if (!record) throw new Error(`Unknown superseded evidence: ${id}`);
+    visiting.add(id);
+    record.supersedes.forEach(visit);
+    visiting.delete(id);
+    visited.add(id);
+  }
+  byId.forEach(record => visit(record.id));
+  const retired = new Set([...byId.values()].flatMap(record => record.supersedes));
   // Supersession is explicit by ID. Recency alone cannot resolve different
   // products, exceptions, actors or genuinely conflicting statements.
   return [...byId.values()].filter(record => !retired.has(record.id));
