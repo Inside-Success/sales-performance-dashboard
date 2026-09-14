@@ -18,9 +18,7 @@ with roster as (
   select e.report_id,
     min(e.created_at) filter(where e.event_name='report_detail_viewed') as opened_at,
     bool_or(e.event_name='report_engaged') as engaged,
-    max(e.created_at) filter(where e.event_name='report_detail_viewed') as last_own_opened_at,
-    array_agg(distinct floor(extract(epoch from ($1::timestamptz-e.created_at))/604800)::int)
-      filter(where e.event_name='report_detail_viewed' and e.created_at > $1::timestamptz-interval '28 days') as active_weeks
+    max(e.created_at) filter(where e.event_name='report_detail_viewed') as last_own_opened_at
   from dashboard_usage_events e join reports c on c.id=e.report_id
   where e.viewer_is_mapped and e.viewer_rep_slug=c.rep_slug
     and e.created_at <= $1::timestamptz
@@ -38,7 +36,7 @@ with roster as (
 )
 select r.rep_slug,r.rep_name,c.id,c.client_name,c.available_at::text,
   a.opened_at::text as own_opened_at,coalesce(a.engaged,false) as own_engaged,
-  a.last_own_opened_at::text,coalesce(a.active_weeks,ARRAY[]::int[]) as active_weeks,
+  a.last_own_opened_at::text,
   v.last_opened_at::text,coalesce(v.other_opened,0) as other_opened
 from roster r left join reports c on c.rep_slug=r.rep_slug
 left join owner_activity a on a.report_id=c.id

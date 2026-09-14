@@ -17,18 +17,9 @@ it('does not expose obvious extracted prose as a client name',()=>{expect(usageR
 import { matchesUsageFilter, usagePercent } from '../src/lib/usage-overview';
 const day=86400000;
 const at=(days:number)=>new Date(now-days*day).toISOString();
-it('keeps history for consistency but limits selected report counts',()=>{
- const r=summarizeUsage([row(1,{available_at:at(3),active_weeks:[0]}),row(2,{available_at:at(10),active_weeks:[1]}),row(3,{available_at:at(17),active_weeks:[2]})],now,7);
- expect(r.available).toBe(1);expect(r.reps[0].activeWeeks).toBe(3);expect(r.reps[0].eligibleWeeks).toBe(3);expect(r.reps[0].weekActivity).toEqual([null,true,true,true]);
- expect(matchesUsageFilter(r.reps[0],'regular',now)).toBe(true);
-});
-it('excludes no-report weeks, repeated opens and one-off activity from regular users',()=>{
- const r=summarizeUsage([row(1,{available_at:at(10),active_weeks:[0,1,1,2]})],now,7).reps[0];
- expect(r.activeWeeks).toBe(1);expect(r.eligibleWeeks).toBe(1);expect(matchesUsageFilter(r,'regular',now)).toBe(false);
-});
-it('uses actual repeat-open weeks, including when opening an older report',()=>{
- const r=summarizeUsage([row(1,{available_at:at(50),active_weeks:[0,1],last_own_opened_at:at(1)}),row(2,{available_at:at(3)}),row(3,{available_at:at(10)})],now,7).reps[0];
- expect(r.activeWeeks).toBe(2);expect(r.lastOwnOpened).toBe(at(1));expect(r.available).toBe(1);
+it('keeps owner history for filters without counting older reports in the selected period',()=>{
+ const r=summarizeUsage([row(1,{available_at:at(3)}),row(2,{available_at:at(50),last_own_opened_at:at(1),own_opened_at:at(40)})],now,7).reps[0];
+ expect(r.available).toBe(1);expect(r.opened).toBe(0);expect(r.lastOwnOpened).toBe(at(1));expect(matchesUsageFilter(r,'never',now)).toBe(false);expect(matchesUsageFilter(r,'inactive',now)).toBe(false);
 });
 it('does not call new recipients inactive or never users without overdue feedback',()=>{
  const r=summarizeUsage([row(1,{available_at:at(1)})],now,7).reps[0];
