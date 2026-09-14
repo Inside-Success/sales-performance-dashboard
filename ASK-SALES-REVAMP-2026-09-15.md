@@ -24,21 +24,27 @@ The source registry grows from 43 to 50 sources. Collector guards must change to
 
 The latest candidate question can retain 12,000 characters through UI/API/runtime. History is bounded separately. Technical failures, partial answers, conflicts, clarifications and knowledge gaps are recorded in candidate metadata. Admin review includes unanswered questions without negative feedback, and explains that handoffs are not automatically correct. Candidate source cards do not display invented numeric confidence or imply human approval.
 
-## Evaluation evidence so far
+## Evaluation evidence
 
-- Development run 1: 40 Luna questions; three final reference failures plus factual/retrieval issues.
-- After one grouped architecture correction: 40 Luna questions completed, median 7.729 seconds and p95 12.7 seconds. This is a technical completion measure, not a quality pass.
-- Manual agent review still found problematic reapplication interpretation, old deposit guidance stated too broadly alongside current prices, unnecessary historical procedures and an overbroad CRM-notes privacy statement. These failures remain in private artifacts and block an unqualified release claim.
-- DeepSeek comparison is being rerun after a narrow shared-scope format normalization. Its earlier failures are retained rather than hidden.
-- Direct-query retrieval experiment: lexical 16/20 vs hybrid 17/20 exact gold-record recall. This modest test does not justify an extra production embedding request yet; semantic retrieval stays an offline experiment.
-- An 80-case constructed regression set is frozen for final evaluation. It is not an independent human review or an unseen real-world holdout. Historical real questions are development evidence.
+- Initial Luna development run: 40 cases, three reference failures and substantive retrieval/scope defects. Failed outputs were retained.
+- After the first grouped correction: Luna completed 40/40 cases, median 7.729 seconds, p95 12.7 seconds. DeepSeek completed 38/40 after narrow protocol normalization, median 6.751 seconds, p95 10.161 seconds. DeepSeek incorrectly transferred an ad rule to a PR-article question. Provider protocol differences limit claims about intrinsic model quality.
+- First frozen 80-case Luna run: 80 technical completions, median 8.239 seconds, p95 13.28 seconds. Agent review marked 64 useful, 12 needing editing and four requiring source checks. These labels are neither a human acceptance score nor measured accuracy.
+- An eight-question comparison used production V5.14 with DeepSeek, the candidate with historical knowledge under both providers, and the candidate with refreshed knowledge under Luna. The old runtime incorrectly answered “No” to company CRM note-taking and routed a greeting. The candidate improved synthesis, but Luna still invented a live-note-taking approval requirement and retrieval missed a newer reminder instruction. Historical and current corpora are not identical effective source sets, so this is diagnostic evidence rather than a controlled causal accuracy estimate.
+- The second grouped correction gives planning a bounded catalog of maintained source topics, preserves ordinary low-risk practical reasoning, rejects invented restrictions, and reduces unrelated policy additions. The reminder source now retains its exact automation and manual-message boundaries. A follow-up eight-case run completed technically and answered live CRM note-taking normally. An 80-case regression rerun is underway; it is now a known regression set, not an unseen holdout.
+- The older direct-query retrieval experiment returned lexical 16/20 versus hybrid 17/20 exact gold-record recall. It used an older snapshot and does not establish current production recall. Semantic retrieval remains an offline experiment.
 
-Evaluation scripts make model calls only, use private artifacts outside the repository, retain failed outputs, share a spend lock and enforce a ceiling. Cached cases are not fresh requests. Cost is estimated from provider usage; it is not an invoice.
+Luna is the staging candidate because its structured-output reliability was stronger in these runs. It has not replaced DeepSeek in production. Answer correctness is assessed separately from schema validity, routing and latency. Some answers remain more procedural or verbose than desirable, and ambiguous source/contract situations remain explicit.
 
-## Validation and release
+Evaluation scripts use private artifacts outside the repository, retain failures, share a spend lock and enforce a ceiling. Cached cases are not new requests. Cost is estimated from usage, not an invoice. Hosted smoke calls receive a conservative separate budget charge.
 
-At this checkpoint: 302 full-suite tests passed, plus the later shared-scope test; 107 static checks passed; TypeScript, scoped lint and production build passed. The initial local build failed because node_modules was an external symlink; installing the unchanged lockfile into this worktree resolved it.
+## Validation and staging
 
-Full hosted end-to-end verification is pending isolated staging storage. A branch preview must not connect to the production database or run publication/feedback workflows. Code checks, a preview sign-in page, source references and model self-review do not prove correct answers.
+All 305 local tests passed, alongside 107 static checks, TypeScript and scoped lint. The previous committed candidate also passed GitHub CI and the production build. The new revision requires its own CI and preview verification.
 
-Release gates, coordinated deployment and rollback are in `rollout/README.md`. Do not merge or switch the production selector while material quality failures or staging checks remain unresolved.
+The preview provisioning failure was traced to Neon's 10-branch limit. After specific user approval, one archived July preview branch was deleted; the new revamp database branch then provisioned successfully. Production remained on its original database and READY deployment. See `rollout/STAGING-VERIFICATION-2026-09-15.md` for the exact actions and evidence.
+
+Hosted checks verified authentication rejection, a synthetic authenticated Luna response, saved history, request replay, feedback storage without external sync, admin rendering and separation from a second test account. They revealed a replay provider-label omission and missing feedback ownership enforcement, both corrected in this revision. Google OAuth login and a fully interactive authenticated browser flow remain unverified; no login bypass was added to the application.
+
+The runtime/admin/registry changes and collector patch are reviewable but not a production rollout. Source-reference membership and model review do not prove entailment. No exhaustive Slack/video coverage or perfect accuracy is claimed. Existing contract disputes cannot be resolved without those specific agreements.
+
+Release gates, coordinated deployment and rollback are in `rollout/README.md`. Do not merge or switch the production selector while material quality failures or required staging checks remain unresolved.

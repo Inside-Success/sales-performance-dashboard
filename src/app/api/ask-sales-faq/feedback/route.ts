@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await saveAskSalesFaqFeedback({
+    const saved = await saveAskSalesFaqFeedback({
       id: `faq_feedback_${randomUUID()}`,
       messageId: payload.messageId,
       conversationId: payload.conversationId,
@@ -48,6 +48,9 @@ export async function POST(request: NextRequest) {
       rating: payload.rating,
       comment: payload.comment?.trim() || null,
     });
+    if (!saved) {
+      return NextResponse.json({ ok: false, error: "Answer was not found for this account." }, { status: 404 });
+    }
 
     const feedbackContext = await getAskSalesFaqFeedbackContext({
       messageId: payload.messageId,

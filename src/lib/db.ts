@@ -2880,7 +2880,7 @@ function normalizeAskSalesFaqResponsePayload(value: unknown): AskSalesFaqRespons
         : null,
     model: typeof payload.model === "string" ? payload.model : null,
     provider:
-      payload.provider === "deepseek" || payload.provider === "anthropic" || payload.provider === "mock"
+      payload.provider === "openai" || payload.provider === "deepseek" || payload.provider === "anthropic" || payload.provider === "mock"
         ? payload.provider
         : null,
     needsRoute: Boolean(payload.needsRoute),
@@ -2962,7 +2962,7 @@ export async function deleteAskSalesFaqConversationForViewer(payload: {
 
 export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayload) {
   await ensureSchema();
-  await getSql().query(
+  const rows = await getSql().query(
     `
       insert into ask_sales_faq_feedback (
         id,
@@ -2972,10 +2972,16 @@ export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayloa
         rating,
         comment
       )
-      values ($1, $2, $3, $4, $5, $6)
+      select $1, message.id, message.conversation_id, message.viewer_email, $5, $6
+      from ask_sales_faq_messages message
+      where message.id = $2
+        and message.conversation_id = $3
+        and message.viewer_email = $4
+        and message.role = 'assistant'
       on conflict (id) do update set
         rating = excluded.rating,
         comment = excluded.comment
+      returning id
     `,
     [
       payload.id,
@@ -2986,6 +2992,7 @@ export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayloa
       payload.comment,
     ],
   );
+  return Array.isArray(rows) && rows.length > 0;
 }
 
 export async function getAskSalesFaqFeedbackContext(payload: {
@@ -3110,6 +3117,7 @@ export async function getAskSalesFaqAdminOverview(
       medianLatencyMs: 0,
       p95LatencyMs: 0,
       deepseekAnswers: 0,
+      openaiAnswers: 0,
       anthropicAnswers: 0,
     },
     daily: [],
@@ -3162,6 +3170,7 @@ export async function getAskSalesFaqAdminOverview(
           coalesce(percentile_cont(0.5) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as median_latency_ms,
           coalesce(percentile_cont(0.95) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as p95_latency_ms,
           count(*) filter (where provider = 'deepseek')::int as deepseek_answers,
+          count(*) filter (where provider = 'openai')::int as openai_answers,
           count(*) filter (where provider = 'anthropic')::int as anthropic_answers
         from assistant
       `,
@@ -3432,6 +3441,7 @@ export async function getAskSalesFaqAdminOverview(
       medianLatencyMs: Math.round(Number(metricRow.median_latency_ms || 0)),
       p95LatencyMs: Math.round(Number(metricRow.p95_latency_ms || 0)),
       deepseekAnswers: Number(metricRow.deepseek_answers || 0),
+      openaiAnswers: Number(metricRow.openai_answers || 0),
       anthropicAnswers: Number(metricRow.anthropic_answers || 0),
     },
     daily: (dailyRows as Array<Record<string, string | number>>).map((row) => ({

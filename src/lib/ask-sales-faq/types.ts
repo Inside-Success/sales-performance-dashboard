@@ -330,6 +330,7 @@ export type AskSalesFaqAdminOverview = {
     medianLatencyMs: number;
     p95LatencyMs: number;
     deepseekAnswers: number;
+    openaiAnswers: number;
     anthropicAnswers: number;
   };
   daily: Array<{

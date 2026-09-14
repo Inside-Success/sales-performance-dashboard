@@ -47,7 +47,12 @@ export async function runAskSalesRevamp(
   }
   try {
     const companyContext=corpus.filter(r=>r.domains?.includes("company_context") && r.scopes.includes("shared"));
-    const rawPlan=await call(PLAN_PROMPT,{question:safe.text,history,companyContext},"plan");
+    // A compact catalog lets query expansion use the vocabulary of maintained
+    // sources without granting their titles the authority of an answer.
+    const maintainedTopics=corpus.filter(r=>!r.conditions.includes("legacy_scope_not_verified_for_reality"))
+      .sort((a,b)=>b.reviewedAt.localeCompare(a.reviewedAt)||a.id.localeCompare(b.id))
+      .slice(0,80).map(r=>({title:r.title,scopes:r.scopes}));
+    const rawPlan=await call(PLAN_PROMPT,{question:safe.text,history,companyContext,maintainedTopics},"plan");
     // DeepSeek JSON mode may echo the evidence scope "shared". In a query
     // this means no product restriction, not a new product or a parsing failure.
     const normalizedPlan=rawPlan && typeof rawPlan==="object" && "scopes" in rawPlan && Array.isArray(rawPlan.scopes)
