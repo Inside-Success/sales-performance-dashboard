@@ -3,8 +3,17 @@ import { getRevampRegistry,getRevampKnowledge } from "../../../src/lib/ask-sales
 import { getKnowledgeRefreshEffectiveRegistry,knowledgeReleasePaths } from "../../../src/lib/ask-sales-faq/revamp/governance";
 import { policyToEvidence } from "../../../src/lib/ask-sales-faq/revamp/policy-adapter";
 import { buildV3AdminApprovedRelease,materializeV3Registry,previewV3AdminApprovedRelease,getMaterializedV3Registry } from "../../../src/lib/ask-sales-faq/v3/admin-approved-releases";
+import additions from "../../../src/lib/ask-sales-faq/revamp/knowledge-additions.json";
 afterEach(()=>vi.unstubAllEnvs());
 describe("candidate governance shares the effective runtime registry",()=>{
+ it("preserves reviewed provenance and evidence kind through the governed registry",()=>{
+  const records=new Map(getRevampKnowledge().map(r=>[r.id,r]));
+  for(const source of additions) {
+   expect(source.sourceKind).toMatch(/source_reviewed_governed/);
+   const record=records.get(source.id);
+   if(record) {expect(record.sourceKind).toBe(source.sourceKind);expect(record.kind).toBe(source.kind);}
+  }
+ });
  it("selects legacy unchanged and candidate only explicitly",()=>{
   vi.stubEnv("ASK_SALES_FAQ_RUNTIME_VERSION","v5.14");
   expect(getKnowledgeRefreshEffectiveRegistry()).toEqual(getMaterializedV3Registry());

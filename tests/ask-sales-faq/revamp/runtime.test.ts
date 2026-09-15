@@ -25,7 +25,7 @@ describe("revamp isolation and evidence boundaries",()=>{
   expect(retrieveEvidence([old,current,other],"special payment wording",{intent:"company_question",question:"special payment wording",scopes:["main_istv"],queries:[]},1).map(r=>r.record.id)).toEqual(["current"]);
  });
  it("removes internal citation markup while preserving ordinary text and links",()=>{
-  expect(stripInternalCitations("Answer [E1, E23]. More citeE1E2 [source](https://example.test)."))
+  expect(stripInternalCitations("Answer [E1, E23]. More citeE1E2 [source](https://example.test)."))
    .toBe("Answer . More  [source](https://example.test).");
  });
  it("uses bounded medium reasoning for contextual planning, drafting and review",async()=>{

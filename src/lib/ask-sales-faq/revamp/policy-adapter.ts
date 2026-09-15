@@ -17,7 +17,7 @@ export function policyToEvidence(policy: V3Policy): Evidence {
   return { id: policy.id, decisionKey: policy.decision_key, title: policy.title, questions: policy.question_families,
     text: policy.decision, scopes: policy.product_scopes, sourceIds: policy.source.ids,
     reviewedAt: policy.last_reviewed || policy.effective_at, authority: policy.authority,
-    kind: policy.source.kind === "coaching" ? "coaching" : policy.source.kind === "resource" ? "resource" : "policy",
+    kind: /(?:^|_)coaching$/.test(policy.source.kind) ? "coaching" : /(?:^|_)resource$/.test(policy.source.kind) ? "resource" : "policy",
     risk: policy.risk_level, routeKey: policy.route_key, conditions: policy.quality_flags, supersedes: [],
     domains: policy.domains, actions: policy.actions, entities: policy.entities, sourceKind:policy.source.kind, approvedBy:policy.source.approved_by };
 }

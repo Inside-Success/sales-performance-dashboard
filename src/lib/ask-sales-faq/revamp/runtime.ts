@@ -32,7 +32,8 @@ export function validateEvidenceReferences(answer: Answer, evidence: Evidence[])
 
 export function stripInternalCitations(text: string) {
   return text.replace(/\[E\d+(?:\s*[,;]\s*E\d+)*\]/g, "")
-    .replace(/\uE200cite\uE202[^\uE201]*\uE201/g, "").trim();
+    .replace(/\uE200cite\uE202[^\uE201]*\uE201/g, "")
+    .replace(/[\uE200-\uE202]/g, "").trim();
 }
 
 export async function runAskSalesRevamp(
