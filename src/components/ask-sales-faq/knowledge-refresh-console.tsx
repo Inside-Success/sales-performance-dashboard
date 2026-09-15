@@ -184,7 +184,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
 
   async function recomputeGovernance() {
     if (governanceBusy) return;
-    if (!window.confirm("Recheck conflict labels for the current actionable queue against the deployed V3 registry? Candidate decisions and production knowledge will not change.")) return;
+    if (!window.confirm("Recheck conflict labels for the current actionable queue against the deployed knowledge registry? Candidate decisions and production knowledge will not change.")) return;
     setMessage(null);
     setGovernanceBusy(true);
     try {
@@ -295,7 +295,7 @@ export function KnowledgeRefreshConsole({ overview }: { overview: Overview }) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex items-center gap-2"><ShieldCheck className="size-5 text-emerald-600" /><h2 className="text-lg font-extrabold text-slate-950">Production safety remains automatic</h2></div>
-            <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">AI finds and organizes possible updates; it cannot approve or publish them. Your content decision is always individual. The live V5.14 chatbot changes only after the protected release checks, deployment, and exact knowledge-version verification all pass.</p>
+            <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">AI finds and organizes possible updates; it cannot approve or publish them. Your content decision is always individual. The live chatbot changes only after the protected release checks, deployment, and exact knowledge-version verification all pass.</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
             <Badge variant="outline" className="border-slate-200 bg-slate-50">Live knowledge {overview.knowledgeVersion}</Badge>

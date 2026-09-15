@@ -1249,6 +1249,7 @@ export async function recomputeActionableKnowledgeRefreshGovernance(input: { act
       candidate.conflict_level === governance.conflictLevel &&
       candidate.conflict_summary === governance.conflictSummary &&
       JSON.stringify(candidate.conflicting_policy_ids) === JSON.stringify(governance.conflictingPolicyIds) &&
+      JSON.stringify(candidate.related_policies) === JSON.stringify(governance.relatedPolicies) &&
       JSON.stringify(candidate.blocked_topic_ids) === JSON.stringify(governance.blockedTopicIds)
     ) continue;
     changes.push({
