@@ -35,3 +35,9 @@ The three regressions were duplicate-booking guidance, an overly cautious genera
 Comparison grading cost: $0.4533 estimated using existing recorded provider rates. Additional candidate and hosted calls are recorded separately in the private usage ledger. Raw conversations, keys and per-case grading stay in private workspace artifacts, not Git.
 
 Rollback: revert this scoped change and rebuild production from production configuration. Do not promote the isolated preview environment. No data migration or knowledge publication is required.
+
+## Live verification follow-up: privacy boundary
+
+A live test caught a pre-existing address-redaction false positive: in `$30,000 reality-show VIP deliverables in a way`, the street-address regex started at the trailing `000` and matched through `way`. Removing that span destroyed the product context before retrieval. The address matcher now requires a complete numeric token not prefixed by currency, decimal/grouping punctuation, or word characters. Real street addresses remain redacted. Eleven regression tests cover grouped/ungrouped currency variants, real addresses and mixed price/address/email/credential input. No raw user text bypasses privacy filtering.
+
+The offline evaluation snapshot now includes the privacy dependency, so changes to sanitization invalidate saved evaluation caches. The exact failed live wording and an ungrouped-currency variant are rechecked separately; prior 45-case evidence is not relabeled as testing this new input. Production release receipts and the retained failed verification answer are recorded in the workspace report/PR. This follow-up does not change pricing, model, knowledge, or coaching.
