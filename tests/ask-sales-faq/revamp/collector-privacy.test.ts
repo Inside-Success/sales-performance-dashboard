@@ -7,6 +7,14 @@ import {semanticScores,evidenceFingerprint,EMBEDDING_MODEL,EMBEDDING_DIMENSIONS}
 import type { Evidence } from "../../../src/lib/ask-sales-faq/revamp/types";
 describe("collector deployment contract",()=>{
  const artifact=JSON.parse(readFileSync("rollout/ask-sales-collector-patches.json","utf8"));
+ it("also protects the parent and analyzer and excludes applicant-letter logs",()=>{
+  expect(artifact.privacySettingsPatches.map((p:{workflowId:string})=>p.workflowId).sort()).toEqual(["rNc9rWTBHRSEwM3P","ua18B5wbsYptLqJX"]);
+  for(const p of artifact.privacySettingsPatches) {
+   expect(p.replacementSettings.saveDataErrorExecution).toBe("none");
+   expect(p.replacementSettings.saveExecutionProgress).toBe(false);
+  }
+  expect(KNOWLEDGE_REFRESH_SOURCES.find(s=>s.externalId==="1R-8BnPOygF8EQbFo9KFiJcc7Xw0F6xlwSE3m6Rnv8Ic")?.enabled).toBe(false);
+ });
  for(const patch of artifact.patches) it(`${patch.nodeName} accepts exactly the enabled source family`,()=>{
   const slack=patch.nodeName.includes("Slack");
   const run=(source:unknown)=>runInNewContext(`(function(){${patch.replacementParameters.jsCode}})()`,{$json:source,$execution:{id:"isolated-test"}});

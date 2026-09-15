@@ -1,13 +1,13 @@
 # Ask Sales candidate rollout
 
-The revamp is an isolated candidate, not a production release. Runtime quality must pass before cutover. Current production selector remains V5.14; code tests and successful HTTP calls are not sufficient evidence of answer quality.
+Production rollout is authorized; the revamp remains an isolated candidate until the release gates below pass. Runtime quality must pass before cutover. Current production selector remains V5.14; code tests and successful HTTP calls are not sufficient evidence of answer quality.
 
 ## Coordinated components
 
-- Dashboard: select `ASK_SALES_FAQ_RUNTIME_VERSION=revamp` only in an isolated environment. Set `FAQ_REVAMP_PROVIDER=openai` and `FAQ_REVAMP_OPENAI_MODEL=gpt-5.6-luna` for Luna, or `FAQ_REVAMP_PROVIDER=deepseek`. Keep keys server-only. There is no automatic cross-provider fallback.
+- Dashboard: select `ASK_SALES_FAQ_RUNTIME_VERSION=revamp` in staging first, then in the authorized production release. Set `FAQ_REVAMP_PROVIDER=openai` and `FAQ_REVAMP_OPENAI_MODEL=gpt-5.6-luna` for Luna, or `FAQ_REVAMP_PROVIDER=deepseek`. Keep keys server-only. There is no automatic cross-provider fallback.
 - FAQ repository: `runtime/revamp-base-registry.json` must match the dashboard base export; `runtime/revamp-admin-approved-releases.json` must match the dashboard candidate ledger. Run both legacy and candidate validators.
 - Runtime, admin review, preview, publication manifests and health use the same selected registry. A publication prepared for another base version is rejected. The publisher already reads the manifest's allowed ledger path; no publisher workflow change is required.
-- `ask-sales-collector-patches.json` is a generated review artifact, **not applied**. It expands the Google/Slack guards and disables raw execution-payload persistence on those collectors. Refresh live draft and active versions before applying, reject a different active version or changed guard/settings, preserve unrelated node/settings fields, validate, and explicitly publish. Do not overwrite another person's draft. Retain an exact pre-change rollback snapshot privately.
+- `ask-sales-collector-patches.json` is a generated review artifact, **not applied**. It expands the Google/Slack guards and disables raw execution-payload persistence on both collectors and their orchestrator/analyzer. Refresh live draft and active versions before applying, reject a different active version or changed guard/settings, preserve unrelated node/settings fields, validate, and explicitly publish. Do not overwrite another person's draft. Retain an exact pre-change rollback snapshot privately.
 - Collector payloads are still redacted at source ingestion before database storage and model analysis. Expanded redaction preserves useful policy URLs. Redaction is not a guarantee that all personal information is detected. The new tech channel can contain credentials, so collector persistence settings and ingestion changes must ship before enabling its scan.
 
 ## Staging requirements
@@ -20,7 +20,7 @@ Verify in staging: login/access denials, one conversation and follow-up, history
 
 Current reality sales interpretation puts the full documentary in VIP based on the mandatory Call 2 video; the written FAQ discrepancy remains recorded. This does not resolve existing signed contracts. Current HubSpot instructions supersede obsolete Keap navigation only for the specifically evidenced process. Case-specific Slack replies are not universal permissions.
 
-Slack history coverage is checkpointed but incomplete: a historical root outside the channel scan window can gain a newer reply. Source sync does not independently discover or transcribe newly linked videos. These require periodic linked-source and old-thread review; do not describe this collector as exhaustive or self-maintaining.
+The Slack collector fetches channel history and filters recent edits/replies, including replies on older roots. The manual source review used a checkpoint with overlap and full relevant threads. Neither approach proves exhaustive historical coverage, and newly linked videos are not independently discovered or transcribed. Two new audio announcements had no readable MCP transcript in this review. Periodic linked-source review remains necessary.
 
 ## Cutover and rollback
 

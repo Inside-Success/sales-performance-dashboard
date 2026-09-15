@@ -35,7 +35,7 @@ export function createRevampProvider(config: {
             type: "json_schema", json_schema: { name: purpose === "plan" ? "intent_plan" : "sales_answer", strict: true,
               schema: z.toJSONSchema(purpose === "plan" ? planSchema : answerSchema, { target: "draft-7" }) },
           } : { type: "json_object" },
-          ...(config.provider === "openai" ? { max_completion_tokens: maxOutputTokens, reasoning_effort: "low", store: false }
+          ...(config.provider === "openai" ? { max_completion_tokens: maxOutputTokens, reasoning_effort: purpose === "review" ? "medium" : "low", store: false }
             : { max_tokens: maxOutputTokens, thinking: { type: "disabled" }, temperature: 0 }),
         }),
       });

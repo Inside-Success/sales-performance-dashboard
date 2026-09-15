@@ -1,5 +1,5 @@
 import { describe,it,expect } from "vitest";
-import { runAskSalesRevamp,validateEvidenceReferences } from "../../../src/lib/ask-sales-faq/revamp/runtime";
+import { runAskSalesRevamp,validateEvidenceReferences,stripInternalCitations } from "../../../src/lib/ask-sales-faq/revamp/runtime";
 import { reconcileEvidence } from "../../../src/lib/ask-sales-faq/revamp/knowledge";
 import { retrieveEvidence } from "../../../src/lib/ask-sales-faq/revamp/retrieval";
 import { createRevampProvider } from "../../../src/lib/ask-sales-faq/revamp/provider";
@@ -9,6 +9,52 @@ const attempt={provider:"openai" as const,model:"test",purpose:"test",status:"su
 const answer:Answer={status:"answer",paragraphs:[{text:"The approved price is $20,000.",kind:"company_fact",evidenceIds:["price"]}],routeKey:null};
 const modelAnswer:Answer={...answer,paragraphs:answer.paragraphs.map(p=>({...p,evidenceIds:["E1"]}))};
 describe("revamp isolation and evidence boundaries",()=>{
+ it("keeps a complete reviewed policy reachable despite repeated source fragments",()=>{
+  const fragments=Array.from({length:50},(_,i)=>({...fact(`fragment-${i}`,"upgrade package"),title:"upgrade package",sourceIds:["same-article"]}));
+  const current={...fact("current","The approved upgrade package has specific payment and agreement requirements. ".repeat(15)),sourceKind:"source_reviewed_governed_synthesis",sourceIds:["current-policy"]};
+  const rows=retrieveEvidence([...fragments,current],"upgrade package",{intent:"company_question",question:"upgrade package",scopes:["main_istv"],queries:[]},12);
+  expect(rows.some(r=>r.record.id==="current")).toBe(true);
+  expect(rows.filter(r=>r.record.sourceIds[0]==="same-article").length).toBeLessThanOrEqual(3);
+ });
+ it("retrieves a governing decision with its historical hit without crossing product scope",()=>{
+  const old={...fact("old","special payment wording"),conditions:["governing_evidence:current","governing_evidence:other"]};
+  const current=fact("current","The controlling approved procedure.");
+  const other=fact("other","A different product procedure.",["reality"]);
+  const rows=retrieveEvidence([old,current,other],"special payment wording",{intent:"company_question",question:"special payment wording",scopes:["main_istv"],queries:[]});
+  expect(rows.map(r=>r.record.id)).toEqual(["current","old"]);
+  expect(retrieveEvidence([old,current,other],"special payment wording",{intent:"company_question",question:"special payment wording",scopes:["main_istv"],queries:[]},1).map(r=>r.record.id)).toEqual(["current"]);
+ });
+ it("removes internal citation markup while preserving ordinary text and links",()=>{
+  expect(stripInternalCitations("Answer [E1, E23]. More citeE1E2 [source](https://example.test)."))
+   .toBe("Answer . More  [source](https://example.test).");
+ });
+ it("uses bounded medium reasoning only for the final OpenAI review",async()=>{
+  const efforts:unknown[]=[];
+  const provider=createRevampProvider({provider:"openai",model:"test",apiKey:"test",fetcher:async(_,init)=>{
+   const request=JSON.parse(String(init?.body));efforts.push(request.reasoning_effort);expect(request.store).toBe(false);
+   return new Response(JSON.stringify({choices:[{finish_reason:"stop",message:{content:"{}"}}],usage:{}}));
+  }});
+  for(const purpose of ["plan","answer","review"]) await provider("test",{},purpose);
+  expect(efforts).toEqual(["low","low","medium"]);
+ });
+ it("keeps product catalogs out of intent planning and carries action limits through review",async()=>{
+  const history=[{role:"user" as const,content:"Tell me about the regular ISTV package"}];
+  const purposes:string[]=[];
+  const provider:JsonProvider=async(_,input,purpose)=>{
+   purposes.push(purpose);
+   const payload=input as Record<string,unknown>;
+   expect(payload.history).toEqual(history);
+   if(purpose==="plan") {
+    expect(payload).not.toHaveProperty("maintainedTopics");
+    return {value:{intent:"company_question",question:"regular ISTV price",scopes:["main_istv"],queries:[]},attempt};
+   }
+   expect(payload.capabilities).toEqual({canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true});
+   expect((payload.evidence as Array<{title:string}>).some(e=>e.title==="reality")).toBe(false);
+   return {value:modelAnswer,attempt};
+  };
+  const result=await runAskSalesRevamp("and its price?",history,{provider,evidence:[fact("price","price $20,000"),fact("reality","price $30,000",["reality"])]});
+  expect(result.errorClass).toBeNull();expect(purposes).toEqual(["plan","answer","review"]);
+ });
  it("rejects dangling supersession references instead of silently serving conflicting knowledge",()=>{
   expect(()=>reconcileEvidence([{...fact("new","current"),supersedes:["missing"]}])).toThrow("Unknown superseded evidence");
  });
@@ -48,9 +94,9 @@ describe("revamp isolation and evidence boundaries",()=>{
  });
  it("does not require evidence or Slack for ordinary conversation",async()=>{
   const replies=[{intent:"conversation",question:"how is everything going on",scopes:[],queries:[]},{status:"conversation",paragraphs:[{text:"I'm here and ready to help. How are you doing?",kind:"conversation",evidenceIds:[]}],routeKey:null}];
-  let calls=0;const provider:JsonProvider=async()=>({value:replies[calls++],attempt});
+  let calls=0;const provider:JsonProvider=async()=>({value:replies[Math.min(calls++,1)],attempt});
   const result=await runAskSalesRevamp("how is everything going on",[],{provider,evidence:[]});
-  expect(calls).toBe(2);expect(result.needsRoute).toBe(false);expect(result.outcome).toBe("conversation_reply");
+  expect(calls).toBe(3);expect(result.needsRoute).toBe(false);expect(result.outcome).toBe("conversation_reply");
  });
  it("keeps full 12000-char latest question and redacts credentials before model dispatch",async()=>{
   const question="context ".repeat(1000)+"my api key is sk-abcdefghijklmnopqrstuv and final question";

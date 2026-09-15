@@ -22,6 +22,11 @@ export function validateEvidenceReferences(answer: Answer, evidence: Evidence[])
   return true;
 }
 
+export function stripInternalCitations(text: string) {
+  return text.replace(/\[E\d+(?:\s*[,;]\s*E\d+)*\]/g, "")
+    .replace(/\uE200cite\uE202[^\uE201]*\uE201/g, "").trim();
+}
+
 export async function runAskSalesRevamp(
   question: string, messages: AskSalesFaqChatMessage[] = [],
   options: { provider?: JsonProvider; evidence?: Evidence[]; knowledgeVersion?: string } = {},
@@ -47,30 +52,33 @@ export async function runAskSalesRevamp(
   }
   try {
     const companyContext=corpus.filter(r=>r.domains?.includes("company_context") && r.scopes.includes("shared"));
-    // A compact catalog lets query expansion use the vocabulary of maintained
-    // sources without granting their titles the authority of an answer.
-    const maintainedTopics=corpus.filter(r=>!r.conditions.includes("legacy_scope_not_verified_for_reality"))
-      .sort((a,b)=>b.reviewedAt.localeCompare(a.reviewedAt)||a.id.localeCompare(b.id))
-      .slice(0,80).map(r=>({title:r.title,scopes:r.scopes}));
-    const rawPlan=await call(PLAN_PROMPT,{question:safe.text,history,companyContext,maintainedTopics},"plan");
+    // Resolve intent from the conversation before retrieval. A recency-sorted
+    // source-title catalog biased ambiguous follow-ups toward newly added
+    // products, even when the user's preceding topic was a different product.
+    const rawPlan=await call(PLAN_PROMPT,{question:safe.text,history,companyContext},"plan");
     // DeepSeek JSON mode may echo the evidence scope "shared". In a query
     // this means no product restriction, not a new product or a parsing failure.
     const normalizedPlan=rawPlan && typeof rawPlan==="object" && "scopes" in rawPlan && Array.isArray(rawPlan.scopes)
       ? {...rawPlan,scopes:rawPlan.scopes.filter(scope=>scope!=="shared")} : rawPlan;
     const resolved=planSchema.parse(normalizedPlan);
     plan=resolved;contextualQuestion=resolved.question;
-    candidates = resolved.intent === "conversation" ? [] : retrieveEvidence(corpus,safe.text,resolved).map(c=>c.record);
+    // An uncertain intent must not bypass grounding. Even a conversational
+    // follow-up can ask to confirm a company fact from a previous answer.
+    candidates = retrieveEvidence(corpus,safe.text,resolved).map(c=>c.record);
     const aliases=new Map(candidates.map((record,i)=>[`E${i+1}`,record.id]));
-    const input={question:safe.text,history,plan:resolved,evidence:candidates.map((record,i)=>({...record,id:`E${i+1}`}))};
+    const shortIds=new Map(candidates.map((record,i)=>[record.id,`E${i+1}`]));
+    const capabilities={canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true};
+    const input={question:safe.text,history,plan:resolved,capabilities,currentDate:new Date().toISOString().slice(0,10),evidence:candidates.map((record,i)=>({...record,id:`E${i+1}`,
+      governingEvidenceIds:record.conditions.filter(flag=>flag.startsWith("governing_evidence:")).map(flag=>shortIds.get(flag.slice("governing_evidence:".length))).filter(Boolean),
+    }))};
     const draft=await call(ANSWER_PROMPT,input,"answer");
-    const parsedDraft=answerSchema.safeParse(draft);
-    // A draft can have a recoverable formatting error. The already-planned
-    // review repairs it; only final output must pass the strict contract.
-    reviewed=resolved.intent!=="conversation" || !parsedDraft.success || parsedDraft.data.paragraphs.some(p=>p.kind!=="conversation");
-    answer=reviewed ? answerSchema.parse(await call(REVIEW_PROMPT,{...input,draft},"review")) : parsedDraft.data!;
+    // Every answer takes the same bounded review path. A mistaken conversation
+    // label cannot let unsupported company facts escape as casual conversation.
+    reviewed=true;
+    answer=answerSchema.parse(await call(REVIEW_PROMPT,{...input,draft},"review"));
     answer={...answer,paragraphs:answer.paragraphs.map(paragraph=>({...paragraph,
       evidenceIds:paragraph.evidenceIds.map(id=>aliases.get(id)||`UNKNOWN:${id}`),
-      text:paragraph.text.replace(/\[(E[0-9]+)\]/g,(match,id)=>aliases.has(id)?"":match).trim(),
+      text:stripInternalCitations(paragraph.text),
     }))};
     if(!validateEvidenceReferences(answer,candidates)) throw new Error("invalid_evidence_references");
   } catch(error) {

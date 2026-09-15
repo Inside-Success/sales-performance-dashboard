@@ -27,25 +27,29 @@ type Ledger={estimatedUsd:number;reservedUsd:number;attempts:Attempt[]};
 const ledger:Ledger=existsSync(ledgerPath)?JSON.parse(readFileSync(ledgerPath,"utf8")):{estimatedUsd:0,reservedUsd:0,attempts:[]};
 const ceiling=Math.min(Number(process.env.FAQ_EVAL_CEILING_USD||30),40);
 if(!Number.isFinite(ceiling)||ceiling<=0) throw new Error("Invalid spending ceiling");
-// Sequential evaluation only. Refuse unresolved reservations after interruption
+// One process owns the ledger. Refuse unresolved reservations after interruption
 // until their provider receipts are reconciled; never silently forgive spend.
 if(ledger.reservedUsd) throw new Error("Unreconciled spend reservation: inspect before resuming");
 const save=()=>writeFileSync(ledgerPath,JSON.stringify(ledger,null,2),{mode:0o600});
+const reservations=new Map<number,number>();
+const syncReserved=()=>{ledger.reservedUsd=[...reservations.values()].reduce((a,b)=>a+b,0);};
+function workerProvider(workerId:number) {
 let reservation=0;
-const provider=createRevampProvider({provider:providerName,model,apiKey:env[providerName==="openai"?"OPENAI_API_KEY":"DEEPSEEK_API_KEY"],
- timeoutMs:25000,
+return createRevampProvider({provider:providerName,model,apiKey:env[providerName==="openai"?"OPENAI_API_KEY":"DEEPSEEK_API_KEY"],
+ timeoutMs:18000,
  beforeCall:async({promptChars,maxOutputTokens})=>{
   // One character per token is deliberately conservative for these English prompts.
   // DeepSeek V4 Pro peak rates verified 2026-09-15; off-peak bills may be lower.
   reservation=providerName==="openai"?(promptChars*0.20+maxOutputTokens*1.20)/1e6:(promptChars*1.32+maxOutputTokens*3.96)/1e6;
-  if(ledger.estimatedUsd+reservation>ceiling) throw new Error("Evaluation spending ceiling reached");
-  ledger.reservedUsd=reservation;save();
+  if(ledger.estimatedUsd+ledger.reservedUsd+reservation>ceiling) throw new Error("Evaluation spending ceiling reached");
+  reservations.set(workerId,reservation);syncReserved();save();
  },afterCall:async(attempt)=>{
   const cost=attempt.error === "provider_not_configured" ? 0 : attempt.inputTokens||attempt.outputTokens ? providerName==="openai"
    ? ((attempt.inputTokens-attempt.cachedTokens)*0.20+attempt.cachedTokens*0.02+attempt.outputTokens*1.20)/1e6
    : ((attempt.inputTokens-attempt.cachedTokens)*1.32+attempt.cachedTokens*0.044+attempt.outputTokens*3.96)/1e6 : reservation;
-  ledger.estimatedUsd+=cost;ledger.reservedUsd=0;ledger.attempts.push(attempt);save();
+  ledger.estimatedUsd+=cost;reservations.delete(workerId);syncReserved();ledger.attempts.push(attempt);save();
  }});
+}
 const fixture=process.env.FAQ_EVAL_CASES;
 if(!fixture) throw new Error("FAQ_EVAL_CASES is required");
 const cases=JSON.parse(readFileSync(fixture,"utf8")) as Array<{id:string;question:string;messages?:Array<{role:"user"|"assistant";content:string}>}>;
@@ -62,7 +66,15 @@ mkdirSync(sourceSnapshot,{recursive:true,mode:0o700});
 for(const file of readdirSync(implementationDir)) writeFileSync(resolve(sourceSnapshot,file),readFileSync(resolve(implementationDir,file)),{mode:0o600});
 writeFileSync(resolve(sourceSnapshot,"evaluation-script.ts"),readFileSync(__filename),{mode:0o600});
 writeFileSync(resolve(output,`knowledge-${snapshot.version}.json`),JSON.stringify(snapshot),{mode:0o600});
-for(const item of cases) {
+const concurrency=Number(process.env.FAQ_EVAL_CONCURRENCY||1);
+if(!Number.isInteger(concurrency)||concurrency<1||concurrency>3) throw new Error("Concurrency must be 1–3");
+let next=0,stopping=false;
+process.on("SIGINT",()=>{stopping=true;console.log("Stopping after in-flight cases finish");});
+process.on("SIGTERM",()=>{stopping=true;});
+async function worker(workerId:number) {
+const provider=workerProvider(workerId);
+while(!stopping && next<cases.length) {
+ const item=cases[next++];
  const caseVersion=createHash("sha256").update(JSON.stringify(item)).digest("hex").slice(0,12);
  const path=resolve(output,`${providerName}-${snapshot.version}-${runVersion}-${item.id}-${caseVersion}.json`);
  if(existsSync(path)) {console.log(JSON.stringify({id:item.id,cached:true}));continue;}
@@ -71,5 +83,9 @@ for(const item of cases) {
  const result=await runAskSalesRevamp(item.question,item.messages||[],{provider:observedProvider,evidence:snapshot.records,knowledgeVersion:snapshot.version});
  writeFileSync(path,JSON.stringify({id:item.id,question:item.question,model,runVersion,result,outputs},null,2),{mode:0o600});
  console.log(JSON.stringify({id:item.id,status:result.runtimeMetadata?.revamp?.status,latencyMs:result.latencyMs,errorClass:result.errorClass,estimatedTotalUsd:ledger.estimatedUsd}));
- if(result.errorClass && !(result.errorClass === "revamp_invalid_output" && process.env.FAQ_EVAL_CONTINUE_SCHEMA_ERRORS === "1")) break; // Provider failures always stop; planned suites may retain isolated schema failures and continue to different cases.
+ if(result.errorClass && !(result.errorClass === "revamp_invalid_output" && process.env.FAQ_EVAL_CONTINUE_SCHEMA_ERRORS === "1")) stopping=true; // Provider failures always stop; planned suites may retain isolated schema failures and continue to different cases.
 }
+
+}
+await Promise.all(Array.from({length:concurrency},(_,id)=>worker(id)));
+console.log(JSON.stringify({completedDispatches:next,totalCases:cases.length,stopped:stopping,reservedUsd:ledger.reservedUsd}));

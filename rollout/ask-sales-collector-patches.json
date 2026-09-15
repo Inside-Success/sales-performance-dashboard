@@ -15,7 +15,7 @@
       "replacementParameters": {
         "mode": "runOnceForEachItem",
         "language": "javaScript",
-        "jsCode": "const source = $json || {};\nconst allowed = new Set([\"1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU\",\"1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE\",\"1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y\",\"1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE\",\"105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do\",\"11uEmCRyJxw2koPoPnFZNySLJVYD9722VDzoLyDV9tOg\",\"12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk\",\"17AeELjukYKUDbpKtr07PG8peYJWJAKYkfgNHOjCyrb4\",\"19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k\",\"1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM\",\"1DPGTSrLth0CE2e71lbo3TQPJzjHv0sY-tIxGwfF00EY\",\"1ER-SvUVj2cwO94yCPSvz9Hk8OWOdmYMvpzFzDAjB7eU\",\"1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ\",\"1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt\",\"1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y\",\"1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y\",\"1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8\",\"1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc\",\"1P1my5QGrvkL9Bg_7ad3bk3CL_37n2JgUioFLeY3jsXM\",\"1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM\",\"1UsagbQCvQV6EuguPsslydlvdbOFGD2GTsj0oSw57e68\",\"1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc\",\"1XC0q0OEvnEaicGKmutfh5fkf6rpDV-BShPJTgftMkTk\",\"1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw\",\"1Yryv722wjWZoHLZTvc210z5rXjhf9efbuqGc8A4e5zI\",\"1_Lb95IF0ZUK6TcAfBZhE7q1iSuTSP4Zci5bcnrefkXU\",\"1aMTwXf0u6bDzoXctE0-bRmwBUKBo5P438k1bcQhhSrc\",\"1c7JqQvi8VMotQFJ36paVkT6a5huFP1BRnYHxvj7q2gw\",\"1fbBGTEXo3DKQZXIsJCinFMskqB8nCSGW1pQKvX4LUO8\",\"1ffWEESzNgQ9L1mO25fAPDIJCD86k29sqeS05fO0KxoE\",\"1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg\",\"1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo\",\"1ljBEsaKAIoZ2EIo7s0sP1M_cc2hu-b5uHN2G0uC3r9c\",\"1lm6dWmMLUQJ83oegGZrTaA29c-rw4hJfkwTXQ4zx9Q4\",\"1mxuqrEVvocGwDlrniWam-fKcEBhtX5qwgdB07fdJS4k\",\"1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc\",\"1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4\",\"1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI\",\"1szwc1ij0bJ6dUy-BXMzpR0ji5Wb3bge7qxzEqmZm5To\",\"1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU\",\"1uJLbh7t6rOt_AjFYnqEINK2Qg09b9e0iLwmbZorquIU\",\"1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg\",\"1R-8BnPOygF8EQbFo9KFiJcc7Xw0F6xlwSE3m6Rnv8Ic\",\"1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E\",\"1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg\",\"1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM\"]);\nif (![\"google_doc\", \"google_sheet\"].includes(source.kind) || !allowed.has(source.external_id)) {\n  throw new Error(\"Google source is outside the approved Ask Sales allowlist\");\n}\nreturn {\n  json: {\n    source_id: String(source.id),\n    kind: source.kind,\n    label: String(source.label || source.external_id),\n    external_id: String(source.external_id),\n    url: String(source.url || \"\"),\n    run_id: String(source.run_id || $execution.id)\n  }\n};"
+        "jsCode": "const source = $json || {};\nconst allowed = new Set([\"1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU\",\"1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE\",\"1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y\",\"1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE\",\"105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do\",\"11uEmCRyJxw2koPoPnFZNySLJVYD9722VDzoLyDV9tOg\",\"12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk\",\"17AeELjukYKUDbpKtr07PG8peYJWJAKYkfgNHOjCyrb4\",\"19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k\",\"1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM\",\"1DPGTSrLth0CE2e71lbo3TQPJzjHv0sY-tIxGwfF00EY\",\"1ER-SvUVj2cwO94yCPSvz9Hk8OWOdmYMvpzFzDAjB7eU\",\"1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ\",\"1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt\",\"1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y\",\"1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y\",\"1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8\",\"1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc\",\"1P1my5QGrvkL9Bg_7ad3bk3CL_37n2JgUioFLeY3jsXM\",\"1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM\",\"1UsagbQCvQV6EuguPsslydlvdbOFGD2GTsj0oSw57e68\",\"1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc\",\"1XC0q0OEvnEaicGKmutfh5fkf6rpDV-BShPJTgftMkTk\",\"1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw\",\"1Yryv722wjWZoHLZTvc210z5rXjhf9efbuqGc8A4e5zI\",\"1_Lb95IF0ZUK6TcAfBZhE7q1iSuTSP4Zci5bcnrefkXU\",\"1aMTwXf0u6bDzoXctE0-bRmwBUKBo5P438k1bcQhhSrc\",\"1c7JqQvi8VMotQFJ36paVkT6a5huFP1BRnYHxvj7q2gw\",\"1fbBGTEXo3DKQZXIsJCinFMskqB8nCSGW1pQKvX4LUO8\",\"1ffWEESzNgQ9L1mO25fAPDIJCD86k29sqeS05fO0KxoE\",\"1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg\",\"1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo\",\"1ljBEsaKAIoZ2EIo7s0sP1M_cc2hu-b5uHN2G0uC3r9c\",\"1lm6dWmMLUQJ83oegGZrTaA29c-rw4hJfkwTXQ4zx9Q4\",\"1mxuqrEVvocGwDlrniWam-fKcEBhtX5qwgdB07fdJS4k\",\"1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc\",\"1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4\",\"1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI\",\"1szwc1ij0bJ6dUy-BXMzpR0ji5Wb3bge7qxzEqmZm5To\",\"1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU\",\"1uJLbh7t6rOt_AjFYnqEINK2Qg09b9e0iLwmbZorquIU\",\"1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg\",\"1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E\",\"1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg\",\"1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM\"]);\nif (![\"google_doc\", \"google_sheet\"].includes(source.kind) || !allowed.has(source.external_id)) {\n  throw new Error(\"Google source is outside the approved Ask Sales allowlist\");\n}\nreturn {\n  json: {\n    source_id: String(source.id),\n    kind: source.kind,\n    label: String(source.label || source.external_id),\n    external_id: String(source.external_id),\n    url: String(source.url || \"\"),\n    run_id: String(source.run_id || $execution.id)\n  }\n};"
       },
       "expectedSettings": {
         "saveDataSuccessExecution": "all",
@@ -52,6 +52,38 @@
         "saveDataSuccessExecution": "none",
         "saveDataErrorExecution": "none",
         "saveManualExecutions": false
+      }
+    }
+  ],
+  "privacySettingsPatches": [
+    {
+      "workflowId": "ua18B5wbsYptLqJX",
+      "expectedActiveVersionId": "cc371a8d-2a4b-4d60-971a-459ffc747bc6",
+      "expectedSettings": {
+        "saveDataSuccessExecution": "all",
+        "saveDataErrorExecution": "all",
+        "saveManualExecutions": true
+      },
+      "replacementSettings": {
+        "saveDataSuccessExecution": "none",
+        "saveDataErrorExecution": "none",
+        "saveManualExecutions": false,
+        "saveExecutionProgress": false
+      }
+    },
+    {
+      "workflowId": "rNc9rWTBHRSEwM3P",
+      "expectedActiveVersionId": "42b83ebc-c159-4ec2-a4c3-b84e63e0d769",
+      "expectedSettings": {
+        "saveDataSuccessExecution": "all",
+        "saveDataErrorExecution": "all",
+        "saveManualExecutions": true
+      },
+      "replacementSettings": {
+        "saveDataSuccessExecution": "none",
+        "saveDataErrorExecution": "none",
+        "saveManualExecutions": false,
+        "saveExecutionProgress": false
       }
     }
   ]

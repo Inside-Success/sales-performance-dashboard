@@ -1,6 +1,6 @@
 # Ask Sales / Magic Mike revamp — isolated candidate
 
-Status: implemented and evaluated as a draft candidate; **not approved for production**. Production remains V5.14. This work does not change coaching, compliance, or the AI Closer Scorecard.
+Historical implementation report. The user subsequently authorized the final fixes and production rollout; see `rollout/RELEASE-2026-09-16.md` for the current gate/status record. Production has not yet been switched in that release phase. This work does not change coaching, compliance, or the AI Closer Scorecard.
 
 ## Behavior and architecture
 

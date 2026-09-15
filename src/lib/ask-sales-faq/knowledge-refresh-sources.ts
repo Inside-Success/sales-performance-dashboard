@@ -83,7 +83,9 @@ function googleSource(kind: "google_doc" | "google_sheet", externalId: string): 
     label: SOURCE_LABELS[externalId] || `Google ${noun} ${externalId.slice(0, 8)}`,
     externalId,
     url: `https://docs.google.com/${kind === "google_doc" ? "document" : "spreadsheets"}/d/${externalId}`,
-    enabled: true,
+    // This sheet is a log of individual applicant letters, not policy/training.
+    // Preserve its source identity while excluding it from knowledge collection.
+    enabled: externalId !== "1R-8BnPOygF8EQbFo9KFiJcc7Xw0F6xlwSE3m6Rnv8Ic",
   };
 }
 

@@ -636,14 +636,15 @@
     "decisionKey": "hubspot-current-call-records",
     "title": "HubSpot: update lead and meeting records",
     "questions": [],
-    "text": "HubSpot is the current CRM for the sales lead/meeting updates discussed in September announcements. Record the meeting outcome for every meeting and keep all leads and calls updated. Rudy\u2019s September 14 announcement mentioned a first-week exception for one lead; this is a dated transition exception, not standing permission to omit records. Replacing daily stats was described as coming soon, so do not tell reps daily stats have already been discontinued. This does not establish that every historical Keap integration or unrelated process has been retired.",
+    "text": "HubSpot is the current CRM for the sales lead/meeting updates discussed in September announcements. Record the meeting outcome for every meeting and keep all leads and calls updated. Rudy\u2019s September 14 announcement mentioned a first-week exception for one lead; this is a dated transition exception, not standing permission to omit records. Replacing daily stats was described as coming soon, so do not tell reps daily stats have already been discontinued. This does not establish that every historical Keap integration or unrelated process has been retired. Pramod\u2019s September 14 clarification says meeting status supplies reporting; reps do not need to create or update Deals for passoffs.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "slack:1789399009",
       "slack:1789144095",
-      "https://www.loom.com/share/54ce553ea9824ce18c4fbfef49e46725"
+      "https://www.loom.com/share/54ce553ea9824ce18c4fbfef49e46725",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789407005047689"
     ],
     "reviewedAt": "2026-09-15",
     "authority": 12,
@@ -1148,7 +1149,7 @@
     "decisionKey": "company.current_context",
     "title": "Current company context: show families and CRM",
     "questions": [],
-    "text": "Inside Success TV\u2019s regular documentary offers (including Legacy Makers, Women in Power and America\u2019s Best Doctors) are main ISTV. Daymond John and Next Level CEO (NLCEO) belong to the separate DJ/NLCEO family, not main ISTV. The new reality competition family includes Business Race, Entrepreneurs Island, Startup Lockdown, Flipping for Fortune, Millionaire Match House, Love or Business, Mansion of Money, and Kids CEO; Kids CEO was subsequently paused on September 10. Reality terms do not inherit the regular documentary prices, package entitlements, cohort or onboarding rules. HubSpot is now the company CRM for current lead, call and meeting work. Keap references in older training are historical; they do not establish the current HubSpot screen path. Use current scoped policies for each specific procedure.",
+    "text": "Inside Success TV\u2019s regular documentary offers (including Legacy Makers, Women in Power and America\u2019s Best Doctors) are main ISTV. Daymond John and Next Level CEO (NLCEO) belong to the separate DJ/NLCEO family, not main ISTV. The new reality competition family includes Business Race, Entrepreneurs Island, Startup Lockdown, Flipping for Fortune, Millionaire Match House, Love or Business, Mansion of Money, and Kids CEO; Kids CEO was subsequently paused on September 10 and confirmed cancelled September 14; do not offer current Kids CEO auditions. Reality terms do not inherit the regular documentary prices, package entitlements, cohort or onboarding rules. HubSpot is now the company CRM for current lead, call and meeting work. Keap references in older training are historical; they do not establish the current HubSpot screen path. Use current scoped policies for each specific procedure.",
     "scopes": [
       "shared"
     ],
@@ -1174,5 +1175,880 @@
     "domains": [
       "company_context"
     ]
+  },
+  {
+    "id": "current-regular-onboarding-schedule",
+    "decisionKey": "current-regular-onboarding-schedule",
+    "title": "Current regular onboarding times after payment and signing",
+    "questions": [],
+    "text": "The current main ISTV Call 2 script lists onboarding Monday 12pm Eastern, Tuesday 5pm Eastern, Wednesday 12pm Eastern, Thursday 9am Eastern, Friday 12pm Eastern. The earlier Monday 1pm and Wednesday 3pm schedule is superseded. Confirm actual availability using the onboarding booking link in the welcome email; these are listed session times, not live availability. This is regular onboarding, not reality competition onboarding.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "operational_f654675a6946011f"
+    ]
+  },
+  {
+    "id": "current-passoff-clock",
+    "decisionKey": "current-passoff-clock",
+    "title": "Pass-off waiting periods run from the scheduled start",
+    "questions": [],
+    "text": "The updated Pass Off Channel Cheat Sheet says the first commenter waits three minutes after the top or bottom of the hour (the scheduled start), not three minutes after commenting. The original closer may take over or allow continuation if joining within seven minutes of that scheduled start. Preserve the sheet\u2019s other eligibility and claiming requirements.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to regular pass-off calls, not automatically dummy calls."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "hubspot-outcome-deadline",
+    "decisionKey": "hubspot-outcome-deadline",
+    "title": "HubSpot meeting outcomes and daily stats remain required",
+    "questions": [],
+    "text": "Rich confirmed meeting outcomes must be updated in HubSpot by 11:59pm Eastern; failure leads to one warning and then the calendar being paused. Individual approved exceptions remain individual. Pramod says removal of separate Daily Stats is planned, but reps must wait for the announced switchover date. Do not say Daily Stats are already retired.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789428844134379"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "hubspot-passoff-status",
+    "decisionKey": "hubspot-passoff-status",
+    "title": "Record pass-off outcomes; report missing editing access",
+    "questions": [],
+    "text": "Pramod says whoever takes a pass-off should update the HubSpot meeting status to the actual outcome. If ownership or permissions prevent the update, report the problem in #sales-tech-requests; do not assume the rep may reassign contact ownership or that the chatbot can edit it.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789482041462599"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "rescheduled-reminder-templates",
+    "decisionKey": "rescheduled-reminder-templates",
+    "title": "Rescheduled calls can reuse reminder email and text templates",
+    "questions": [],
+    "text": "Madeline confirms it is fine to resend the same reminder email and text formats for a rescheduled first call, updating the confirmed date/time. This permission does not establish which reminders HubSpot automatically sends.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789424905096379"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "hubspot-short-notice-reminder-uncertainty",
+    "decisionKey": "hubspot-short-notice-reminder-uncertainty",
+    "title": "Less-than-24-hour booking email automation remains unconfirmed",
+    "questions": [],
+    "text": "HubSpot\u2019s normal 24-hour pre-Call-1 email is confirmed automated. For bookings made less than 24 hours before Call 1, Adnan said he believes a manual email may be needed and requested Safi\u2019s confirmation; no definitive confirmation is present in this thread. Do not promise this short-notice automation fires. As practical advice, check whether the reminder was actually sent and ensure the client receives the necessary details using the approved template; seek Sales Tech confirmation of automation behavior.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789482509577329"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Provisional technical reply; does not supersede the confirmed standard 24-hour automation."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "passoff-access-first-sale",
+    "decisionKey": "passoff-access-first-sale",
+    "title": "Pass-off channel access after the first sale",
+    "questions": [],
+    "text": "Kent confirmed that joining the pass-off channel requires the first sale. If the rep lacks access, contact M Zubair or Rich for approval and assistance. Sending planned pass-off calls to Zubair still follows Rich approval; receiving channel access is a different action from reassigning a particular call.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789487052277239",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789489742758169"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "time-off-notification",
+    "decisionKey": "time-off-notification",
+    "title": "Notify Madeline about planned days off",
+    "questions": [],
+    "text": "Madeline handles adding planned time off to the time-off sheet. Notify her of the dates. This does not itself approve reassignment of existing client calls; the separate Rich approval and Zubair pass-off process still applies when relevant.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789480497121079"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "payment-contract-redirect-fallback",
+    "decisionKey": "payment-contract-redirect-fallback",
+    "title": "When the contract does not open after payment",
+    "questions": [],
+    "text": "Sales Tech confirms that when the contract does not pop up automatically after payment, the correct direct Jotform Sign link may be sent separately for signing. Payment and signature are both required; an ACH transfer being initiated or pending is not cleared payment. Match the agreement to the purchased show and package; do not invent a direct contract URL.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789492629373809"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "zoom-recording-find-by-meeting-id",
+    "decisionKey": "zoom-recording-find-by-meeting-id",
+    "title": "Finding a missing call recording",
+    "questions": [],
+    "text": "Kent recommends searching Zoom by meeting ID. A recording can still be processing before it appears in HubSpot. If a completed call recording is inaccessible, particularly a pass-off recording belonging to another rep, ask Sales Tech to locate it. A booking ID is not necessarily the Zoom meeting ID. The chatbot cannot retrieve live private recordings.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789443249932259",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789486684132179"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "reality-current-open-questions",
+    "decisionKey": "reality-current-open-questions",
+    "title": "Unconfirmed reality welcome-email and payment-deadline details",
+    "questions": [],
+    "text": "Reality participants must not be put on regular onboarding calls. September 15 questions asking whether to skip the welcome email and whether the ordinary same-week/cohort payment deadline applies were directed to Rudy\u2019s master reality FAQ thread and remain unanswered there. Do not turn \u201cno regular onboarding\u201d into \u201cno welcome email\u201d or invent a reality cohort deadline. Give confirmed reality guidance and use the master FAQ thread for these unresolved decisions.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789491409981669"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": []
+  },
+  {
+    "id": "hubspot-meeting-status-not-deals",
+    "decisionKey": "hubspot-meeting-status-not-deals",
+    "title": "HubSpot: meeting outcome replaces manual deal updates",
+    "questions": [],
+    "text": "Pramod clarified on September 14 that reps should update meeting status/outcome and do not need to create or update Deals for passoffs; reporting relies on meeting status. This is not permission to omit contact notes or meeting outcomes.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789407005047689"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "dialout-pre-email-manual",
+    "decisionKey": "dialout-pre-email-manual",
+    "title": "Dial-out: send the outreach pre-email yourself",
+    "questions": [],
+    "text": "For manually booked prospects from the dial-out list, Pramod explicitly instructed reps to send the pre-email themselves: HubSpot will not send that outreach email. This is separate from the ordinary scheduled-meeting reminder automation, so do not treat them as the same email.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789402796143099"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "onboarding-value-first-coaching",
+    "decisionKey": "onboarding-value-first-coaching",
+    "title": "Sales coaching: value before payment solutions",
+    "questions": [],
+    "text": "Raul\u2019s September 15 training reminder: on Call 1 follow the process and book Call 2 correctly. On Call 2 keep Green Light to 5\u201310 minutes, follow compliance, build excitement and move into Rudy\u2019s video. For objections, start with value rather than immediately offering payment plans or discounts: ask why the prospect wanted this, how they believe the supported assets could help, and why timing matters to them. Let the prospect explain the value before exploring an approved solution. This coaching does not authorize unlisted discounts or ROI promises.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0A8S3JSR1Q/p1789490696594829"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "coaching",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "outbound-sheet-edit-columns",
+    "decisionKey": "outbound-sheet-edit-columns",
+    "title": "20% outbound sheet: access and editable columns",
+    "questions": [],
+    "text": "The September 14 technical guidance says to use the ISTV work account for the 20% outbound sheet. Editable fields are column B Sales Rep, column C Call outcome, and column N Notes; other columns are protected. If those permitted columns remain inaccessible in the correct work account, request technical access help rather than moving the lead list to a personal sheet.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789411808267209"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "reality-kids-ceo-cancelled",
+    "decisionKey": "reality-kids-ceo-cancelled",
+    "title": "Kids CEO reality auditions cancelled",
+    "questions": [],
+    "text": "On September 14 Madeline confirmed Kids CEO had been cancelled and instructed reps to cancel existing Kids CEO audition calls; they may ask whether the applicant wants to audition for a different show. Do not promise Kids CEO is currently accepting applicants merely because it remains in the original reality catalog.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789407026329909"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "regular-rudy-studio-access",
+    "decisionKey": "regular-rudy-studio-access",
+    "title": "Regular shows: Rudy is not the routine studio interviewer",
+    "questions": [],
+    "text": "For the regular-show filming question, Madeline clarified September 14 that Rudy is typically not in studio for clients to meet and is no longer running the interviews. Do not promise personal time with Rudy as a standard filming entitlement. A separate expressly contracted event or benefit must be evaluated on its own terms.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789403533950319"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "dj-intro-digital-license",
+    "decisionKey": "dj-intro-digital-license",
+    "title": "DJ/NLCEO: introduction clips and contract amendments",
+    "questions": [],
+    "text": "Madeline\u2019s September 14 DJ/NLCEO clarification: the license permits use of the participant\u2019s episode clips, including the Daymond John introduction, across digital assets they own such as their website, social media, presentations, email marketing and PR materials. The existing contract wording is not rewritten for a prospect. Do not turn this into a promise of personal endorsement, unrestricted third-party use, or a specific legal duration beyond the applicable agreement. Her separate tentative explanation of promotional views does not define a new measurable guarantee or remedy.",
+    "scopes": [
+      "dj_nlceo"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789416939189489"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "contract-list-current-source-limits",
+    "decisionKey": "contract-list-current-source-limits",
+    "title": "Current contract and payment list: correct family and historical rows",
+    "questions": [],
+    "text": "Use the Contract Automation List, Inside Success - All Links tab, to locate the exact current payment and Jotform Sign links for the relevant product, package and plan. It contains distinct regular ISTV and Inside Success Reality Show sections, along with deprecated and special-offer rows. A LIVE label alone does not authorize a deprecated price or special discount. The sheet also lists a regular Standard 3 x $7,000 option, while the existing approved main-ISTV policy lists only 4 x $5,000 or 2 x $10,000; this specific extra option has not been reconciled with an explicit current sales instruction. Do not silently add it to the approved list or declare it definitively prohibited; confirm the applicable plan before offering that disputed option. Reality has its own listed plans.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=220991962"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "resource",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "rebooking-calendar-current-directory",
+    "decisionKey": "rebooking-calendar-current-directory",
+    "title": "Current team rebooking calendar directory",
+    "questions": [],
+    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep\u2019s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/spreadsheets/d/1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg/edit#gid=0"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "resource",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+    ],
+    "supersedes": []
+  },
+  {
+    "id": "money-mondays-corrected-current-status",
+    "decisionKey": "money-mondays-corrected-current-status",
+    "title": "Money Mondays is running: explicit correction of the former cancellation report",
+    "questions": [],
+    "text": "Madeline explicitly corrected her earlier statement on July 16: Money Mondays is on; she had mistakenly thought it was paused because of a different conversation and paternity leave. In the same full thread she identified it as the training discussed in the six-month weekly-support video: it can start once the applicant joins the network, teaches use of the reuse license and marketing, and has live interactive sessions as well as past recordings. On August 27 the fulfillment/client concierge confirmed a newly joined client receives the live link each Monday. Therefore do not tell reps the program is discontinued or has no current schedule solely from the superseded July 9 summary. Past-session information: https://www.legacymakerstv.com/moneymondays ; fulfillment's live-session link: http://insidesuccesstv.com/mondaylive . Current individual access, exact session time, and entitlement under a particular license belong to fulfillment/marketing. These sources confirm the program exists; they do not guarantee perpetual access or entitlement for every product, especially the new reality shows. Mastermind event access remains a separate license benefit. These sources do not set future Mastermind dates or confirm access to a closer-only HQ account.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1784169552.848079",
+      "slack:C0AUQKNR8CF:1784146217.265749",
+      "slack:C0AUQKNR8CF:1787863946.950069"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "owner-six-month-training-discontinued",
+      "v514src-weekly-support-discontinued",
+      "operational_5823dfcff62f47d3",
+      "operational_e0f43fcc640bff0e",
+      "operational_0d5728d49672c97c",
+      "operational_b6e6738a92c10c56",
+      "operational_d6c562f4573a0a67",
+      "operational_bdb2f710fe491e50",
+      "operational_4552c074891a8fc9"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "cast-hq-password-access",
+    "decisionKey": "cast-hq-password-access",
+    "title": "Cast Member HQ access: password setup email",
+    "questions": [],
+    "text": "The August 27 fulfillment reply confirms that a cast member had already been sent an email to set up their HQ password. Therefore the older statement that the HQ portal is not open is not a current access answer. Ask the client to check their onboarding/password setup email and spam folder; fulfillment can check or resend access. The source does not provide a public HQ URL or establish eligibility for every license. The chatbot cannot inspect the client's account.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1787865751.790319"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "operational_4b577237f03ba99e"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "majority-owner-payment-feature-scope",
+    "decisionKey": "majority-owner-payment-feature-scope",
+    "title": "Majority owner pays; featured partner attends onboarding",
+    "questions": [],
+    "text": "Rich's full May 18 reply says to have both owners on the calls, have the majority owner pay, sign the other owner up for onboarding, and tell fulfillment about the show-name change. 'Sign the other owner up' refers to onboarding enrollment, not contract execution. The source permits the majority owner to fund a minority partner's feature; it does not determine which person may execute the legal contract. Separate third-party payer guidance likewise requires tying payment to the correct client and does not independently authorize a different contract signer. Answer the payer/featured-partner portion, and confirm signer authority against the applicable standard agreement when it is the unresolved decision.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1779138698.082079",
+      "slack:C0AUQKNR8CF:1779141111.622859"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "claim_d05828e6000cc672",
+      "operational_c09568a1ce8c66d1"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-lite-complete-deliverables",
+    "decisionKey": "main-lite-complete-deliverables",
+    "title": "Main ISTV Lite license: listed features and benefits",
+    "questions": [],
+    "text": "Main ISTV Lite is $12,000. The maintained license-options document lists lifetime license rights, a 12\u201315 minute episode aired on the Inside Success network, professional in-studio photoshoot, access to a two-day Miami marketing event, custom trailer, studio experience, BTS content/raw files, IMDb profile, and custom movie/episode poster. Lite does not include Tier-1 submission or the 100,000 pre-promotional views. Event access does not itself establish included travel or waive separately applicable event food/beverage charges; use the current event policy for those charges and future dates. Explain the benefits as professional storytelling and reusable promotional assets, not guaranteed revenue or copyright ownership. These are main ISTV terms, not DJ/NLCEO or reality terms.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw/edit",
+      "https://docs.google.com/document/d/1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-standard-complete-deliverables",
+    "decisionKey": "main-standard-complete-deliverables",
+    "title": "Main ISTV Standard license: listed features and benefits",
+    "questions": [],
+    "text": "Main ISTV Standard is $20,000. The license-options document lists lifetime license rights, a 16\u201320 minute episode on Inside Success network, a Living Your Legacy podcast plus reels/social content discussing the episode/story, professional in-studio photoshoot, one Mastermind event access, one announcement email to the company's business database, 100,000 trailer/pre-promotion views, an Instagram trailer, and three extra reels/social pieces. Standard does not include Tier-1 submission. Do not present the old database-size or '$5k value' marketing figures as verified current audience or financial outcomes. Event fees and upcoming dates follow current event guidance. The document lists Standard's deliverables; do not assert that every Lite item automatically stacks unless the applicable current agreement confirms it.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw/edit",
+      "https://docs.google.com/document/d/1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-vip-complete-deliverables",
+    "decisionKey": "main-vip-complete-deliverables",
+    "title": "Main ISTV VIP/Premium: Standard plus VIP upgrades",
+    "questions": [],
+    "text": "Main ISTV VIP/Premium is $30,000 and explicitly includes Standard plus VIP upgrades in the license document. The current Sales Master FAQ also describes VIP as including lower-tier deliverables. VIP adds a 20\u201325 minute premium episode with upgraded editing, submission to ONE Tier-1 streaming platform, a custom webpage and social rebrand, and a TOTAL of 150,000 pre-promotional views (50,000 more than Standard, not 150,000 extra). It includes the Standard podcast and other supported Standard benefits. Platform acceptance and placement are not guaranteed. Follow the current governed platform options (Amazon Prime Video, Apple TV streaming app or Tubi); the older Google/YouTube-TV listing is not a newer approved placement option. Do not promise that Rudy conducts the podcast. The document's '$5000 cost' label is not evidence of a separately purchasable webpage add-on. These are main ISTV terms only.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw/edit",
+      "https://docs.google.com/document/d/1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM/edit",
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-package-addons-current-boundary",
+    "decisionKey": "main-package-addons-current-boundary",
+    "title": "Current main packages are standardized; prior podcast exception",
+    "questions": [],
+    "text": "The maintained Sales Master FAQ says podcasts and landing pages are not currently bundled or sold as additional products; packages are standardized. Rudy's June 19 reply did approve a specific Lite paid-in-full client's podcast add-on for $2,500, and clarified that the podcast was not with Rudy. That historical case is not a current general add-on price or authorization. Explain the current package containing the desired benefit, or route a proposed exception for a current decision; do not promise every Lite client can buy the podcast separately for $2,500. This does not forbid a supported normal package upgrade.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit",
+      "slack:C0AUQKNR8CF:1781912747.706849"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "claim_2eb9e5b4b69cd06d"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-wire-close-current-process",
+    "decisionKey": "main-wire-close-current-process",
+    "title": "Main ISTV wire payment and contract sequence",
+    "questions": [],
+    "text": "The current Sales Master FAQ explicitly supports wire payment: on the closing call the client may sign the current standard contract through the correct vanity link while the wire is being arranged. Collect proof of the wire, continue the documented welcome/onboarding steps, and ask Alex in the tech channel or Finance to verify receipt. Do not post the sale in PayMe until the wire is actually received. This is an explicit wire exception to the general payment-and-contract-together flow; it is not permission for an unapproved deferred-payment plan. Wire is not limited to second installments merely because a separate record describes a second wire payment. Use approved Finance-provided bank instructions; this source contains no account/routing numbers. A client's assertion that it cleared is not verification.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-qualification-current-framework",
+    "decisionKey": "main-qualification-current-framework",
+    "title": "Main ISTV qualification: story, brand or business, and readiness",
+    "questions": [],
+    "text": "The maintained Sales Master FAQ describes a qualified lead as having a real story or expertise, a brand/business or clear direction (early stage can be fine), a reason to use exposure, and ability to pay personally or through a legitimate sponsor. The approved qualification rubric also allows some legacy/story-led exceptions. Do not impose a universal incorporated-business or profitable-established-business requirement across every main show. Assess the specific show's fit and the actual story/brand; sensitive eligibility remains subject to the applicable review. This is not automatic casting approval and does not override profession-specific requirements (a nurse is not a doctor for America's Best Doctors), owner authorization to feature someone else's business, or separate DJ/reality eligibility.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit",
+      "kb:knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "operational_7f2812a7e35e2938",
+      "operational_332070a5ba42a56d"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "current-dnc-procedure-and-repermission",
+    "decisionKey": "current-dnc-procedure-and-repermission",
+    "title": "Current DNC process: opt-out checks, record synchronization and renewed permission",
+    "questions": [],
+    "text": "The maintained September 10 DNC SOP requires checking the DNC sheet and unsubscribe/Do Not Contact/Opted Out records before calling, texting or emailing; if an opt-out is present, do not initiate outreach. A new application or booking by itself is not documented repermission. Reconcile missing entries across the authorized records and notify #ft-opt-outs if the update was not already automated; the rule is not limited to the rep who originally received the request. The DNC sheet is https://docs.google.com/spreadsheets/d/10fjmslH7LqZ8DKkb0-IcY_yg9w-HVdRycJ2DNIB1G8U/edit . The form named in the SOP is https://form.typeform.com/to/k1ZLJv3f . The document still contains Keap/system names: preserve the substantive no-contact checks and have the authorized tech/compliance owner reconcile current systems; do not invent HubSpot click paths or bypass an opt-out. An August 3 full thread distinguishes sequence: a STOP after a voicemail means do not call back. When the client later called inbound and explicitly said STOP was a mistake, Sales Ops directed the rep to Tech to restore messaging access. Receiving an inbound conversation is not the same as resuming unrestricted automated or outbound messaging. Do not use the older July 13 'try calling after STOP' reply as current general permission against this maintained SOP. Do not invent duplicate DNC-sheet rows or erase suppression without the authorized process.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1lm6dWmMLUQJ83oegGZrTaA29c-rw4hJfkwTXQ4zx9Q4/edit",
+      "slack:C0AUQKNR8CF:1785769651.914559"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "Reviewed from the complete cited source; preserve stated product, actor and conditions."
+    ],
+    "supersedes": [
+      "operational_a3fafbb7a306f3dc"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-show-versus-tier-deliverables",
+    "decisionKey": "main-show-versus-tier-deliverables",
+    "title": "Main shows share a license framework; Lite, Standard and VIP have different benefits",
+    "questions": [],
+    "text": "The May 1 Sales Ops answer about America\u2019s Top Agents and Love Experts says the regular ISTV SHOWS use the same deliverables/license framework. It does not say all LICENSE TIERS have identical benefits. Lite, Standard and VIP differ in episode length, podcast, promotion, Tier-1 submission and other listed deliverables; use their complete package records. DJ/NLCEO and the later reality products have separate terms.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1777591236.354889",
+      "slack:C0AUQKNR8CF:1777593225.066209"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:main-lite-complete-deliverables",
+      "governing_evidence:main-standard-complete-deliverables",
+      "governing_evidence:main-vip-complete-deliverables"
+    ],
+    "supersedes": [
+      "operational_8d02b636c169ad52"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "company-history-dated-source",
+    "decisionKey": "company-history-dated-source",
+    "title": "Inside Success company age: dated June 2026 source",
+    "questions": [],
+    "text": "On June 16, 2026, Sales Ops described Inside Success as about two years old and as having branched off Mawer Capital, with the two being separate entities. This is a dated approximate-age statement, not an exact incorporation date; around 2024 is an inference from that dated statement. The same reply said Google showed 2019 for Mawer Capital; do not present that secondary lookup as verified corporate registration. Attribute the date when discussing company age instead of repeating two years indefinitely.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1781631181.957579",
+      "slack:C0AUQKNR8CF:1781633638.054959"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "claim_0c0c4444cddccea2",
+      "operational_272464fd801bf614"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "active-show-list-resource",
+    "decisionKey": "active-show-list-resource",
+    "title": "Current active ISTV show list: ISTV Offers spreadsheet",
+    "questions": [],
+    "text": "The maintained source for the approved show catalog is the ISTV Offers spreadsheet: https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Share this actual source link for questions about where to find the list, and use the accepted current catalog for membership. Listing is sales/casting availability, not evidence that an episode aired or is watchable. Do not send reps to internal repository keys as though those were accessible documents.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "main-post-call1-email-text",
+    "decisionKey": "main-post-call1-email-text",
+    "title": "Main ISTV mandatory email and text after Call 1 / before Call 2",
+    "questions": [],
+    "text": "The maintained SOP requires BOTH the main email and text on the SAME DAY as Call 1, before finishing work, to keep the prospect informed about Green Light submission and prepare for Call 2. This is separate from the normal day-before appointment confirmation. The text says the rep submitted the information to the Green Light team and emailed study materials; use that wording only after actually doing those actions. The email requests review of the media-assets PDF and at least one episode before Call 2. Do not claim approval or an overnight background check occurred. The bot can draft this but cannot send or submit anything. This is the ordinary ISTV process; do not assume it is the reality process. Current opt-out restrictions still apply. Use the maintained source for the approved template and links: https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit .",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "company-legitimacy-resource",
+    "decisionKey": "company-legitimacy-resource",
+    "title": "Company-approved due-diligence and client review resources",
+    "questions": [],
+    "text": "The maintained main-ISTV pre-Call-2 email links prospects to https://www.insidesuccesstv.com/reviews-legit-feedback for cast experiences and https://www.hollywoodreporter.com/news/general-news/istv-is-building-the-netflix-meets-espn-for-entrepreneurs-1236607136/ for a studio article. These are resources the template permits sharing, not independent proof of incorporation, legal registration, guaranteed outcomes or the truth of every marketing statement. For exact legal-entity credentials, use verified corporate documents and the contracts/legal route. The bot can provide these source links without inventing registration numbers or forcing a prospect to pay before due diligence.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "client-ai-attendee-versus-recording",
+    "decisionKey": "client-ai-attendee-versus-recording",
+    "title": "Client AI attendee and independent recording: distinct dated decisions",
+    "questions": [],
+    "text": "On April 30 Sales Ops allowed a client-side AI bot to be present in a meeting. On July 20 Sales Ops answered no to a client independently recording a Zoom call. These establish different actions: historical permission for bot attendance is not permission for a separate recording; the later recording restriction does not establish that every non-recording note-taking tool is forbidden. Ask about the tool\u2019s recording behavior when necessary and have the call owner resolve an ambiguous recording/transcription setup. Separately, reps must not add Fathom alongside required Zoom recording. None of these sources means this Magic Mike FAQ chatbot can join a call or operate as a live notetaker; it has no such capability.",
+    "scopes": [
+      "main_istv",
+      "dj_nlceo"
+    ],
+    "sourceIds": [
+      "slack:C0AUQKNR8CF:1777558004.299779",
+      "slack:C0AUQKNR8CF:1784570545.472539",
+      "slack:C0AUQKNR8CF:1782498563.976239"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "operational_42e723b0f76e4c3d",
+      "operational_e8f14a9413dcd03d"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "current-minimum-first-payment-by-product",
+    "decisionKey": "current-minimum-first-payment-by-product",
+    "title": "First payments follow current product plan, not a universal $2500 deposit",
+    "questions": [],
+    "text": "Use the current listed installment plan for the selected product. Main ISTV Lite is $12,000 with listed 4 x $3,000, 3 x $4,000 or 2 x $6,000 options; its lowest listed first installment is therefore $3,000. DJ/NLCEO Lite is $10,000 paid in full or the listed installment options including 4 x $2,500. Older summaries saying $2,500 is a universal minimum do not override these current product prices. A $1,000 holding deposit is not an approved listed plan. Do not invent custom deposits, payment links, balances or collection dates; the maintained Sales Master FAQ explicitly disallows $1,000 deposits. If an underpayment already occurred, route for Finance resolution rather than treating it as a valid newly approved plan.",
+    "scopes": [
+      "main_istv",
+      "dj_nlceo"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit"
+    ],
+    "reviewedAt": "2026-09-15",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "claim_ce3f8d499d056e7d",
+      "operational_8cc338f8a27bef4b",
+      "operational_cda32187e3dc318a"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
   }
 ]

@@ -48,7 +48,7 @@ const inherited = [
   reviewedAt: p.last_reviewed || p.effective_at, authority: p.authority,
   kind: "policy", risk: p.risk_level, routeKey: p.route_key,
   conditions: [p.answerability, p.systemic.scopeRisk, p.systemic.temporalRisk, "legacy_scope_not_verified_for_reality"], supersedes: [],
-  domains: [...p.domains, ...([v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id,v514.V514_ROI_BOUNDARY_POLICY.id,v514.V514_WEEKLY_SUPPORT_DISCONTINUED_POLICY.id].includes(p.id) ? ["company_context"] : [])], actions: p.actions, entities: p.entities, sourceKind:p.source.kind, approvedBy:p.source.approved_by,
+  domains: [...p.domains, ...([v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id,v514.V514_ROI_BOUNDARY_POLICY.id,"owner-dj-nlceo-current-offer-overview","kr_7ace400fcdf68db9"].includes(p.id) ? ["company_context"] : [])], actions: p.actions, entities: p.entities, sourceKind:p.source.kind, approvedBy:p.source.approved_by,
 }));
 // Preserve historical source adjudications as scoped evidence context rather
 // than re-running the old question-family regex gates. Only explicitly global
@@ -57,10 +57,28 @@ const resolutions = authorityResolutions.resolutions.filter(r=>r.status === "sou
 const globallyRetired = new Set(resolutions.flatMap(r=>"globally_retired_policy_ids" in r ? r.globally_retired_policy_ids || [] : []));
 const withAuthorityContext = inherited.filter(p=>!globallyRetired.has(p.id)).map(p=>({
   ...p,
-  conditions: [...p.conditions, ...resolutions.filter(r=>(r.controlling_policy_ids as string[]).includes(p.id) || (r.excluded_policy_ids as string[]).includes(p.id)).map(r=>
-    `${(r.excluded_policy_ids as string[]).includes(p.id) ? "Do not use this record to override the controlling decision" : "Controlling source decision"} for ${r.title}. Applicable scopes: ${r.product_scopes.join(", ")}. ${r.authority_basis}`)],
+  conditions: [...p.conditions, ...resolutions.filter(r=>(r.controlling_policy_ids as string[]).includes(p.id) || (r.excluded_policy_ids as string[]).includes(p.id)).flatMap(r=>[
+    ...(r.controlling_policy_ids as string[]).filter(id=>id!==p.id).map(id=>`governing_evidence:${id}`),
+    `${(r.excluded_policy_ids as string[]).includes(p.id) ? "Do not use this record to override the controlling decision" : "Controlling source decision"} for ${r.title}. Applicable scopes: ${r.product_scopes.join(", ")}. ${r.authority_basis}`])],
 }));
-const baseRecords = reconcileEvidence([...withAuthorityContext, ...additions as Evidence[]]);
+// Related maintained records travel together: a price table alone cannot answer
+// a benefits comparison, and a catalog without its resource cannot answer where.
+const maintainedRelationships: Record<string, string[]> = {
+  [v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id]: ["main-lite-complete-deliverables", "main-standard-complete-deliverables", "main-vip-complete-deliverables"],
+  kr_7ace400fcdf68db9: ["active-show-list-resource"],
+};
+const allRecords = [...withAuthorityContext, ...additions as Evidence[]].map(record=>({
+  ...record, conditions:[...record.conditions,...(maintainedRelationships[record.id]||[]).map(id=>`governing_evidence:${id}`)],
+}));
+const replacements = new Map(allRecords.flatMap(record=>record.supersedes.map(id=>[id,record.id] as const)));
+const reconciled = reconcileEvidence(allRecords);
+const activeIds = new Set(reconciled.map(record=>record.id));
+const baseRecords = reconciled.map(record=>({...record,conditions:record.conditions.flatMap(condition=>{
+  if(!condition.startsWith("governing_evidence:")) return [condition];
+  let id=condition.slice("governing_evidence:".length);
+  while(replacements.has(id)) id=replacements.get(id)!;
+  return activeIds.has(id) && id!==record.id ? [`governing_evidence:${id}`] : [];
+})}));
 const baseVersion = createHash("sha256").update(JSON.stringify(baseRecords)).digest("hex").slice(0, 24);
 const legacy = getMaterializedV3Registry();
 const baseRegistry = { ...legacy, route_catalog: getV4RouteCatalog(), knowledge_version: baseVersion, policies: baseRecords.map(record => evidenceToPolicy(record, legacy)) };
