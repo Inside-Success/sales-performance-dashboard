@@ -64,8 +64,9 @@ const withAuthorityContext = inherited.filter(p=>!globallyRetired.has(p.id)).map
 // Related maintained records travel together: a price table alone cannot answer
 // a benefits comparison, and a catalog without its resource cannot answer where.
 const maintainedRelationships: Record<string, string[]> = {
-  [v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id]: ["main-lite-complete-deliverables", "main-standard-complete-deliverables", "main-vip-complete-deliverables"],
+  [v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id]: ["main-lite-complete-deliverables", "main-standard-complete-deliverables", "main-vip-complete-deliverables", v514.V514_CALL2_QUOTE_SEQUENCE_POLICY.id],
   kr_7ace400fcdf68db9: ["active-show-list-resource"],
+  operational_112edff8e7218415: ["reapply-context-and-current-guidance"],
 };
 const allRecords = [...withAuthorityContext, ...additions as Evidence[]].map(record=>({
   ...record, conditions:[...record.conditions,...(maintainedRelationships[record.id]||[]).map(id=>`governing_evidence:${id}`)],

@@ -28,14 +28,14 @@ describe("revamp isolation and evidence boundaries",()=>{
   expect(stripInternalCitations("Answer [E1, E23]. More citeE1E2 [source](https://example.test)."))
    .toBe("Answer . More  [source](https://example.test).");
  });
- it("uses bounded medium reasoning only for the final OpenAI review",async()=>{
+ it("uses bounded medium reasoning for contextual planning, drafting and review",async()=>{
   const efforts:unknown[]=[];
   const provider=createRevampProvider({provider:"openai",model:"test",apiKey:"test",fetcher:async(_,init)=>{
    const request=JSON.parse(String(init?.body));efforts.push(request.reasoning_effort);expect(request.store).toBe(false);
    return new Response(JSON.stringify({choices:[{finish_reason:"stop",message:{content:"{}"}}],usage:{}}));
   }});
   for(const purpose of ["plan","answer","review"]) await provider("test",{},purpose);
-  expect(efforts).toEqual(["low","low","medium"]);
+  expect(efforts).toEqual(["medium","medium","medium"]);
  });
  it("keeps product catalogs out of intent planning and carries action limits through review",async()=>{
   const history=[{role:"user" as const,content:"Tell me about the regular ISTV package"}];
@@ -91,6 +91,12 @@ describe("revamp isolation and evidence boundaries",()=>{
   expect(validateEvidenceReferences(answer,[fact("price","$20,000")])).toBe(true);
   expect(validateEvidenceReferences(answer,[])).toBe(false);
   expect(validateEvidenceReferences({...answer,paragraphs:[{...answer.paragraphs[0],text:"https://fake.test"}]},[fact("price","$20,000")])).toBe(false);
+ });
+ it("accepts supplied links with sentence punctuation but rejects invented paths or prefixes",()=>{
+  const evidence=[{...fact("price","Use https://example.test/current."),sourceIds:["https://example.test/doc"]}];
+  const withText=(text:string)=>({...answer,paragraphs:[{...answer.paragraphs[0],text}]});
+  for(const text of ["https://example.test/doc.","https://example.test/doc, then continue", "[source](https://example.test/doc).", "https://example.test/current"]) expect(validateEvidenceReferences(withText(text),evidence)).toBe(true);
+  for(const text of ["https://example.test/other", "https://example.test/do", "https://example.test/doc/extra"]) expect(validateEvidenceReferences(withText(text),evidence)).toBe(false);
  });
  it("does not require evidence or Slack for ordinary conversation",async()=>{
   const replies=[{intent:"conversation",question:"how is everything going on",scopes:[],queries:[]},{status:"conversation",paragraphs:[{text:"I'm here and ready to help. How are you doing?",kind:"conversation",evidenceIds:[]}],routeKey:null}];

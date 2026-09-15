@@ -16,7 +16,15 @@ export function validateEvidenceReferences(answer: Answer, evidence: Evidence[])
     if(paragraph.evidenceIds.some(id=>!ids.has(id))) return false;
     // Resource URLs must be in the supplied corpus, not merely be syntactically valid.
     const urls = paragraph.text.match(/https?:\/\/[^\s<>\])]+/g)||[];
-    if(urls.some(url=>!evidence.some(e=>e.text.includes(url)||e.sourceIds.includes(url)))) return false;
+    const suppliedUrls = new Set(evidence.flatMap(e=>[
+      ...e.sourceIds.filter(id=>/^https?:\/\//.test(id)),
+      ...(e.text.match(/https?:\/\/[^\s<>\])]+/g)||[]),
+    ]));
+    const knownUrl = (url:string) => suppliedUrls.has(url) ||
+      [...suppliedUrls].some(source=>source.replace(/[.,;:!?]+$/, "")===url.replace(/[.,;:!?]+$/, ""));
+    // Sentence punctuation is not part of an ordinary resource link. Exact
+    // matches remain valid, but a shared host or URL prefix is insufficient.
+    if(urls.some(url=>!knownUrl(url))) return false;
   }
   if(answer.routeKey && !evidence.some(e=>e.routeKey===answer.routeKey)) return false;
   return true;
