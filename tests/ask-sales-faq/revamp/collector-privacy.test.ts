@@ -7,6 +7,14 @@ import {semanticScores,evidenceFingerprint,EMBEDDING_MODEL,EMBEDDING_DIMENSIONS}
 import type { Evidence } from "../../../src/lib/ask-sales-faq/revamp/types";
 describe("collector deployment contract",()=>{
  const artifact=JSON.parse(readFileSync("rollout/ask-sales-collector-patches.json","utf8"));
+ it("dispatches every enabled Slack source through the parent without mixing metadata",()=>{
+  const patch=artifact.orchestrationPatches[0];
+  const sources=KNOWLEDGE_REFRESH_SOURCES.map(s=>({id:s.id,kind:s.kind,external_id:s.externalId,enabled:s.enabled,last_cursor:{latestTs:s.id}}));
+  sources.push({id:"unapproved",kind:"slack_channel",external_id:"unapproved",enabled:true,last_cursor:{latestTs:"x"}});
+  const result=runInNewContext(`(function(){${patch.replacementParameters.jsCode}})()`,{$input:{first:()=>({json:{sources}})},$execution:{id:"isolated-test"}});
+  expect(result.map((r:{json:{id:string}})=>r.json.id)).toEqual(sources.filter(s=>s.enabled && s.id!=="unapproved").map(s=>s.id));
+  for(const item of result) expect(item.json.last_cursor.latestTs).toBe(item.json.id);
+ });
  it("also protects the parent and analyzer and excludes applicant-letter logs",()=>{
   expect(artifact.privacySettingsPatches.map((p:{workflowId:string})=>p.workflowId).sort()).toEqual(["rNc9rWTBHRSEwM3P","ua18B5wbsYptLqJX"]);
   for(const p of artifact.privacySettingsPatches) {
