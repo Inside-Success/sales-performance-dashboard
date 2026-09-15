@@ -82,10 +82,12 @@ export async function runAskSalesRevamp(
     plan=resolved;contextualQuestion=resolved.question;
     // An uncertain intent must not bypass grounding. Even a conversational
     // follow-up can ask to confirm a company fact from a previous answer.
-    candidates = retrieveEvidence(corpus,safe.text,resolved).map(c=>c.record);
+    const userContext=resolved.historyMode === "continue"
+      ? history.filter(m=>m.role === "user").slice(-2).map(m=>m.content).join("\n") : "";
+    candidates = retrieveEvidence(corpus,safe.text,resolved,36,new Map(),userContext).map(c=>c.record);
     const aliases=new Map(candidates.map((record,i)=>[`E${i+1}`,record.id]));
     const shortIds=new Map(candidates.map((record,i)=>[record.id,`E${i+1}`]));
-    const capabilities={canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true};
+    const capabilities={actor:"assistant",canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true};
     const relevantHistory=resolved.historyMode === "new_subject" ? [] : history;
     const input={question:safe.text,history:relevantHistory,plan:resolved,capabilities,currentDate:new Date().toISOString().slice(0,10),evidence:candidates.map((record,i)=>({...record,id:`E${i+1}`,
       governingEvidenceIds:record.conditions.filter(flag=>flag.startsWith("governing_evidence:")).map(flag=>shortIds.get(flag.slice("governing_evidence:".length))).filter(Boolean),

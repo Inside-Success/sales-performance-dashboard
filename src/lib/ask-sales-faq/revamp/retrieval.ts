@@ -19,7 +19,7 @@ export function compatible(record: Evidence, scopes: Plan["scopes"]) {
 }
 // Contextual BM25, independently ranked direct and expanded queries. No exact
 // question family can force an answer or delete another query's candidates.
-export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan, limit = 36, semantic = new Map<string,number>()) {
+export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan, limit = 36, semantic = new Map<string,number>(), userContext = "") {
   if(!Number.isInteger(limit) || limit<1) return [];
   const eligible = records.filter(r => compatible(r, plan.scopes));
   const docs = eligible.map(record => {
@@ -30,6 +30,10 @@ export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan
   const df = new Map<string, number>(); docs.forEach(d => d.tf.forEach((_,t) => df.set(t,(df.get(t)||0)+1)));
   const avg = docs.reduce((n,d) => n + d.words.length,0) / Math.max(docs.length,1);
   const queries = [...new Set([direct, plan.question, ...plan.queries])];
+  // A planner can correctly label a continuation yet omit a crucial prior fact.
+  // Keep a bounded independent user-context lane; never use assistant claims.
+  const contextIndex = userContext && plan.historyMode === "continue" ? queries.length : -1;
+  if (contextIndex >= 0) queries.push(userContext);
   const lanes = queries.map(query => {
     const qt = [...new Set(terms(query))];
     return docs.map(d => {
@@ -84,6 +88,7 @@ export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan
   for(const candidate of [...reviewedScores.values()].sort((a,b)=>b.score-a.score).slice(0,8)) add(candidate);
   // Preserve the user's direct wording as well as complementary planned queries.
   for(const candidate of lanes[0]?.slice(0,8)||[]) add(candidate);
+  if(contextIndex >= 0) for(const candidate of lanes[contextIndex]?.slice(0,4)||[]) add(candidate);
   for(const candidate of ranked) add(candidate);
   return [...selected.values()];
 }

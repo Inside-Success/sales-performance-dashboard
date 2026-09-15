@@ -48,6 +48,7 @@ import type {
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
 import { cn } from "@/lib/utils";
+import { AnswerMarkdown } from "./answer-markdown";
 
 type ChatMessage = {
   id: string;
@@ -1450,6 +1451,11 @@ function shouldShowRouteNote(message: ChatMessage) {
 }
 
 function StructuredAnswerCard({ answer }: { answer: AskSalesFaqStructuredAnswer }) {
+  // Revamp stores its complete, authored answer in summary. Legacy summaries
+  // retain their existing cards; never flatten revamp paragraphs into one <p>.
+  if (answer.confidenceBasis === "unscored" && answer.sections.length === 0) {
+    return <AnswerMarkdown text={answer.summary} />;
+  }
   const sections = removeStructuredSummaryDuplicates(answer);
   const showSummary = !isDuplicatedSummary({ ...answer, sections });
   const summaryList = showSummary && sections.length === 0 ? parseAnswerDisplayList(answer.summary) : null;
