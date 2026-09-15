@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "NOT_APPLIED",
+  "status": "REVIEWED_PATCH_TEMPLATE",
   "patches": [
     {
       "workflowId": "RJpxKZjm0f3gfWHS",

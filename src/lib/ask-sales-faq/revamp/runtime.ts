@@ -36,6 +36,14 @@ export function stripInternalCitations(text: string) {
     .replace(/[\uE200-\uE202]/g, "").trim();
 }
 
+export function normalizeRoutingMetadata(answer: Answer, evidence: Evidence[]): Answer {
+  // routeKey is optional analytics metadata, never an executable destination.
+  // Keep only an exact supplied key for an actual handoff. An unsupported label
+  // must not suppress otherwise grounded prose or be remapped to a guessed team.
+  return {...answer,routeKey:answer.status === "action_route" &&
+    evidence.some(record=>record.routeKey === answer.routeKey) ? answer.routeKey : null};
+}
+
 export async function runAskSalesRevamp(
   question: string, messages: AskSalesFaqChatMessage[] = [],
   options: { provider?: JsonProvider; evidence?: Evidence[]; knowledgeVersion?: string } = {},
@@ -52,6 +60,7 @@ export async function runAskSalesRevamp(
   let candidates: Evidence[]=[];
   let plan: unknown=null;
   let reviewed=false;
+  let routingMetadataDiscarded=false;
   let answer: Answer;
   let errorClass: string|null=null;
   let validationIssues: Array<{code:string;path:string}> = [];
@@ -86,6 +95,9 @@ export async function runAskSalesRevamp(
     // label cannot let unsupported company facts escape as casual conversation.
     reviewed=true;
     answer=answerSchema.parse(await call(REVIEW_PROMPT,{...input,draft},"review"));
+    const normalizedAnswer=normalizeRoutingMetadata(answer,candidates);
+    routingMetadataDiscarded=answer.routeKey!==normalizedAnswer.routeKey;
+    answer=normalizedAnswer;
     answer={...answer,paragraphs:answer.paragraphs.map(paragraph=>({...paragraph,
       evidenceIds:paragraph.evidenceIds.map(id=>aliases.get(id)||`UNKNOWN:${id}`),
       text:stripInternalCitations(paragraph.text),
@@ -114,7 +126,7 @@ export async function runAskSalesRevamp(
     provider:lastAttempt?.provider||null,model:lastAttempt?.model||null,redactions:safe.redactions,
     latencyMs:Date.now()-start,sanitizedQuestion:safe.text,contextualQuestion,matchedArticleId:null,errorClass,
     runtimeMetadata:{pipelineVersion:"revamp",knowledgeVersion,providerAttempts:attempts.map(a=>({...a,totalTokens:a.inputTokens+a.outputTokens,completionTokens:a.outputTokens})),
-      revamp:{validationIssues,status:errorClass?"technical_failure":answer.status,plan,reviewed,selectedEvidenceIds:selectedIds,
+      revamp:{validationIssues,status:errorClass?"technical_failure":answer.status,plan,reviewed,routingMetadataDiscarded,selectedEvidenceIds:selectedIds,
         candidateIds:candidates.map(c=>c.id),corpusSize:corpus.length,answerParagraphs:answer.paragraphs,historyMessages:history.length}},
   };
 }

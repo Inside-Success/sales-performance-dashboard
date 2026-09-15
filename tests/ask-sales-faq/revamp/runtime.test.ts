@@ -1,5 +1,5 @@
 import { describe,it,expect } from "vitest";
-import { runAskSalesRevamp,validateEvidenceReferences,stripInternalCitations } from "../../../src/lib/ask-sales-faq/revamp/runtime";
+import { runAskSalesRevamp,validateEvidenceReferences,stripInternalCitations,normalizeRoutingMetadata } from "../../../src/lib/ask-sales-faq/revamp/runtime";
 import { reconcileEvidence } from "../../../src/lib/ask-sales-faq/revamp/knowledge";
 import { retrieveEvidence } from "../../../src/lib/ask-sales-faq/revamp/retrieval";
 import { createRevampProvider } from "../../../src/lib/ask-sales-faq/revamp/provider";
@@ -9,6 +9,18 @@ const attempt={provider:"openai" as const,model:"test",purpose:"test",status:"su
 const answer:Answer={status:"answer",paragraphs:[{text:"The approved price is $20,000.",kind:"company_fact",evidenceIds:["price"]}],routeKey:null};
 const modelAnswer:Answer={...answer,paragraphs:answer.paragraphs.map(p=>({...p,evidenceIds:["E1"]}))};
 describe("revamp isolation and evidence boundaries",()=>{
+ it("discards unsupported routing metadata without rewriting prose or relaxing evidence checks",()=>{
+  const evidence=[{...fact("price","The approved price is $20,000."),routeKey:"sales_policy"}];
+  const routed:Answer={...answer,status:"action_route",routeKey:"sales_policy"};
+  expect(normalizeRoutingMetadata(routed,evidence).routeKey).toBe("sales_policy");
+  for(const candidate of [{...routed,routeKey:"invented_team"},{...routed,status:"conflict" as const}]) {
+   const normalized=normalizeRoutingMetadata(candidate,evidence);
+   expect(normalized.routeKey).toBeNull();expect(normalized.paragraphs).toEqual(candidate.paragraphs);
+   expect(validateEvidenceReferences(normalized,evidence)).toBe(true);
+   expect(validateEvidenceReferences(normalized,[])).toBe(false);
+   expect(validateEvidenceReferences({...normalized,paragraphs:[{...normalized.paragraphs[0],text:"https://invented.test/path"}]},evidence)).toBe(false);
+  }
+ });
  it("keeps a complete reviewed policy reachable despite repeated source fragments",()=>{
   const fragments=Array.from({length:50},(_,i)=>({...fact(`fragment-${i}`,"upgrade package"),title:"upgrade package",sourceIds:["same-article"]}));
   const current={...fact("current","The approved upgrade package has specific payment and agreement requirements. ".repeat(15)),sourceKind:"source_reviewed_governed_synthesis",sourceIds:["current-policy"]};

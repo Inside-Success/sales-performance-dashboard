@@ -33,5 +33,5 @@ if(parentCode===parentBaseline.parameters.jsCode) throw new Error("Expected pare
 const orchestrationPatches=[{workflowId:parentBaseline.workflowId,expectedActiveVersionId:parentBaseline.expectedActiveVersionId,
   nodeId:parentBaseline.nodeId,nodeName:parentBaseline.nodeName,expectedParameters:parentBaseline.parameters,
   replacementParameters:{...parentBaseline.parameters,jsCode:parentCode}}];
-writeFileSync(output,JSON.stringify({schemaVersion:1,status:"NOT_APPLIED",patches,privacySettingsPatches,orchestrationPatches},null,2)+"\n");
+writeFileSync(output,JSON.stringify({schemaVersion:1,status:"REVIEWED_PATCH_TEMPLATE",patches,privacySettingsPatches,orchestrationPatches},null,2)+"\n");
 console.log(`Generated ${patches.length} collector patches; no live changes`);
