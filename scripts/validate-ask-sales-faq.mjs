@@ -942,7 +942,8 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "follow-up questions use filtered recent chat context",
-    chatRoute.includes("runSelectedAskSalesFaq(lastMessage.content, messages)") &&
+    chatRoute.includes("runSelectedAskSalesFaq(lastMessage.content,") &&
+      chatRoute.includes('selectedAskSalesFaqRuntimeVersion() === "revamp" ? messages.slice(0, -1) : messages') &&
       runtime.includes("buildConversationContext") &&
       runtime.includes('questionFrame.relation === "context_follow_up"') &&
       runtime.includes("deterministicPolicyDecision.matchedRuleId !== \"default-abstain\"") &&
