@@ -9,6 +9,16 @@ const attempt={provider:"openai" as const,model:"test",purpose:"test",status:"su
 const answer:Answer={status:"answer",paragraphs:[{text:"The approved price is $20,000.",kind:"company_fact",evidenceIds:["price"]}],routeKey:null};
 const modelAnswer:Answer={...answer,paragraphs:answer.paragraphs.map(p=>({...p,evidenceIds:["E1"]}))};
 describe("revamp isolation and evidence boundaries",()=>{
+ it("retains prior user facts when the planner drops them, with bounded scoped retrieval",()=>{
+  const records=[...Array.from({length:45},(_,i)=>fact(`timing-${i}`,"return later reapply timing")),fact("conviction","criminal conviction qualification"),fact("other-program","criminal conviction qualification",["reality"])];
+  const plan={historyMode:"continue" as const,intent:"company_question" as const,question:"Can they return later?",scopes:["main_istv" as const],queries:["reapply timing"]};
+  const rows=retrieveEvidence(records,"return later",plan,36,new Map(),"The applicant has a criminal conviction");
+  expect(rows.some(r=>r.record.id==="conviction")).toBe(true);
+  expect(rows.some(r=>r.record.id==="other-program")).toBe(false);
+  expect(rows.length).toBeLessThanOrEqual(36);
+  const fresh=retrieveEvidence(records,"return later",{...plan,historyMode:"new_subject"},36,new Map(),"criminal conviction");
+  expect(fresh.some(r=>r.record.id==="conviction")).toBe(false);
+ });
  it("discards unsupported routing metadata without rewriting prose or relaxing evidence checks",()=>{
   const evidence=[{...fact("price","The approved price is $20,000."),routeKey:"sales_policy"}];
   const routed:Answer={...answer,status:"action_route",routeKey:"sales_policy"};
@@ -60,7 +70,7 @@ describe("revamp isolation and evidence boundaries",()=>{
     expect(payload).not.toHaveProperty("maintainedTopics");
     return {value:{historyMode:"continue",intent:"company_question",question:"regular ISTV price",scopes:["main_istv"],queries:[]},attempt};
    }
-   expect(payload.capabilities).toEqual({canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true});
+   expect(payload.capabilities).toEqual({actor:"assistant",canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true});
    expect((payload.evidence as Array<{title:string}>).some(e=>e.title==="reality")).toBe(false);
    return {value:modelAnswer,attempt};
   };
