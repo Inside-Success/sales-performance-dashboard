@@ -10,6 +10,7 @@ export type Evidence = {
   sourceKind?: string; approvedBy?: string[];
 };
 export const planSchema = z.object({
+  historyMode: z.enum(["continue", "new_subject"]),
   intent: z.enum(["conversation", "sales_advice", "company_question", "rewrite", "correction", "action"]),
   question: z.string().min(1).max(12000),
   scopes: z.array(z.enum(["main_istv", "dj_nlceo", "reality"])).max(3),
@@ -24,7 +25,7 @@ export const answerSchema = z.object({
   })).min(1).max(12),
   routeKey: z.string().nullable(),
 });
-export type Plan = z.infer<typeof planSchema>;
+export type Plan = Omit<z.infer<typeof planSchema>, "historyMode"> & { historyMode?: "continue" | "new_subject" };
 export type Answer = z.infer<typeof answerSchema>;
 export type Usage = { inputTokens: number; cachedTokens: number; outputTokens: number };
 export type Attempt = Usage & { provider: "openai" | "deepseek"; model: string; purpose: string; latencyMs: number; status: "success" | "failed"; error?: string };

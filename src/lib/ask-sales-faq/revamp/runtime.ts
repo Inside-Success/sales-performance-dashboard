@@ -77,7 +77,8 @@ export async function runAskSalesRevamp(
     const aliases=new Map(candidates.map((record,i)=>[`E${i+1}`,record.id]));
     const shortIds=new Map(candidates.map((record,i)=>[record.id,`E${i+1}`]));
     const capabilities={canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true};
-    const input={question:safe.text,history,plan:resolved,capabilities,currentDate:new Date().toISOString().slice(0,10),evidence:candidates.map((record,i)=>({...record,id:`E${i+1}`,
+    const relevantHistory=resolved.historyMode === "new_subject" ? [] : history;
+    const input={question:safe.text,history:relevantHistory,plan:resolved,capabilities,currentDate:new Date().toISOString().slice(0,10),evidence:candidates.map((record,i)=>({...record,id:`E${i+1}`,
       governingEvidenceIds:record.conditions.filter(flag=>flag.startsWith("governing_evidence:")).map(flag=>shortIds.get(flag.slice("governing_evidence:".length))).filter(Boolean),
     }))};
     const draft=await call(ANSWER_PROMPT,input,"answer");

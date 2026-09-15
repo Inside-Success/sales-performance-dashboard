@@ -46,7 +46,7 @@ describe("revamp isolation and evidence boundaries",()=>{
    expect(payload.history).toEqual(history);
    if(purpose==="plan") {
     expect(payload).not.toHaveProperty("maintainedTopics");
-    return {value:{intent:"company_question",question:"regular ISTV price",scopes:["main_istv"],queries:[]},attempt};
+    return {value:{historyMode:"continue",intent:"company_question",question:"regular ISTV price",scopes:["main_istv"],queries:[]},attempt};
    }
    expect(payload.capabilities).toEqual({canReadLiveAccounts:false,canBookOrModifyMeetings:false,canSendMessages:false,canApproveExceptions:false,canDraftAndExplain:true});
    expect((payload.evidence as Array<{title:string}>).some(e=>e.title==="reality")).toBe(false);
@@ -54,6 +54,19 @@ describe("revamp isolation and evidence boundaries",()=>{
   };
   const result=await runAskSalesRevamp("and its price?",history,{provider,evidence:[fact("price","price $20,000"),fact("reality","price $30,000",["reality"])]});
   expect(result.errorClass).toBeNull();expect(purposes).toEqual(["plan","answer","review"]);
+ });
+ it("removes the previous person's facts from drafting and review for a new subject",async()=>{
+  const prior=[{role:"user" as const,content:"The previous lead had an old conviction."}];
+  const seen:string[]=[];
+  const provider:JsonProvider=async(_,input,purpose)=>{
+   const payload=input as {history:unknown[]};seen.push(purpose);
+   if(purpose==="plan") {expect(payload.history).toEqual(prior);return {value:{historyMode:"new_subject",intent:"company_question",question:"Can a different non-business-owner lead qualify?",scopes:["main_istv"],queries:["qualification"]},attempt};}
+   expect(payload.history).toEqual([]);
+   expect(JSON.stringify(input)).not.toContain("conviction");
+   return {value:{status:"sales_advice",paragraphs:[{text:"Assess this new person's story and business direction.",kind:"general_advice",evidenceIds:[]}],routeKey:null},attempt};
+  };
+  const result=await runAskSalesRevamp("Another lead is not a business owner. Can he qualify?",prior,{provider,evidence:[]});
+  expect(result.errorClass).toBeNull();expect(seen).toEqual(["plan","answer","review"]);
  });
  it("rejects dangling supersession references instead of silently serving conflicting knowledge",()=>{
   expect(()=>reconcileEvidence([{...fact("new","current"),supersedes:["missing"]}])).toThrow("Unknown superseded evidence");
@@ -99,7 +112,7 @@ describe("revamp isolation and evidence boundaries",()=>{
   for(const text of ["https://example.test/other", "https://example.test/do", "https://example.test/doc/extra"]) expect(validateEvidenceReferences(withText(text),evidence)).toBe(false);
  });
  it("does not require evidence or Slack for ordinary conversation",async()=>{
-  const replies=[{intent:"conversation",question:"how is everything going on",scopes:[],queries:[]},{status:"conversation",paragraphs:[{text:"I'm here and ready to help. How are you doing?",kind:"conversation",evidenceIds:[]}],routeKey:null}];
+  const replies=[{historyMode:"continue",intent:"conversation",question:"how is everything going on",scopes:[],queries:[]},{status:"conversation",paragraphs:[{text:"I'm here and ready to help. How are you doing?",kind:"conversation",evidenceIds:[]}],routeKey:null}];
   let calls=0;const provider:JsonProvider=async()=>({value:replies[Math.min(calls++,1)],attempt});
   const result=await runAskSalesRevamp("how is everything going on",[],{provider,evidence:[]});
   expect(calls).toBe(3);expect(result.needsRoute).toBe(false);expect(result.outcome).toBe("conversation_reply");
@@ -117,13 +130,13 @@ describe("revamp isolation and evidence boundaries",()=>{
   expect(result.errorClass).toBe("revamp_provider_http_429");expect(result.answer).toContain("technical problem");expect(result.answer).not.toContain("Slack");expect(result.needsRoute).toBe(false);
  });
  it("lets the planned reviewer repair draft schema without adding a retry",async()=>{
-  let calls=0;const provider:JsonProvider=async()=>({value:[{intent:"company_question",question:"price",scopes:["main_istv"],queries:[]},{...modelAnswer,paragraphs:[{...modelAnswer.paragraphs[0],kind:"sales_advice"}]},modelAnswer][calls++],attempt});
+  let calls=0;const provider:JsonProvider=async()=>({value:[{historyMode:"continue",intent:"company_question",question:"price",scopes:["main_istv"],queries:[]},{...modelAnswer,paragraphs:[{...modelAnswer.paragraphs[0],kind:"sales_advice"}]},modelAnswer][calls++],attempt});
   const result=await runAskSalesRevamp("price",[],{provider,evidence:[fact("price","price $20,000")]});
   expect(calls).toBe(3);expect(result.errorClass).toBeNull();
   expect(result.structuredAnswer?.confidenceBasis).toBe("unscored");
  });
  it("normalizes shared query scope without accepting invented products",async()=>{
-  let calls=0;const provider:JsonProvider=async()=>({value:[{intent:"company_question",question:"price",scopes:["shared"],queries:[]},modelAnswer,modelAnswer][calls++],attempt});
+  let calls=0;const provider:JsonProvider=async()=>({value:[{historyMode:"continue",intent:"company_question",question:"price",scopes:["shared"],queries:[]},modelAnswer,modelAnswer][calls++],attempt});
   const result=await runAskSalesRevamp("price",[],{provider,evidence:[fact("price","price $20,000")]});
   expect(result.errorClass).toBeNull();
  });
@@ -137,7 +150,7 @@ describe("revamp isolation and evidence boundaries",()=>{
   expect(dispatches).toBe(0);expect(charges).toBe(0);
  });
  it("reviews company answers and uses repaired output",async()=>{
-  let calls=0;const provider:JsonProvider=async()=>({value:[{intent:"company_question",question:"price",scopes:["main_istv"],queries:[]},modelAnswer,{...modelAnswer,paragraphs:[{...modelAnswer.paragraphs[0],text:"The package costs $20,000."}]}][calls++],attempt});
+  let calls=0;const provider:JsonProvider=async()=>({value:[{historyMode:"continue",intent:"company_question",question:"price",scopes:["main_istv"],queries:[]},modelAnswer,{...modelAnswer,paragraphs:[{...modelAnswer.paragraphs[0],text:"The package costs $20,000."}]}][calls++],attempt});
   const result=await runAskSalesRevamp("price",[],{provider,evidence:[fact("price","price $20,000")]});
   expect(calls).toBe(3);expect(result.answer).toBe("The package costs $20,000.");
   expect(result.runtimeMetadata?.revamp?.selectedEvidenceIds).toEqual(["price"]);

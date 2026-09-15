@@ -969,7 +969,7 @@
     "decisionKey": "coaching-objections-roi",
     "title": "Coaching: value and ROI questions",
     "questions": [],
-    "text": "Ask what the prospect wants to accomplish and discuss supported deliverables and how they could use those assets. Do not promise or imply revenue, customer acquisition, profitability or guaranteed return. A disclaimer does not make a numerical or hypothetical ROI pitch acceptable. Example: “I can walk through the content and usage rights included, so you can judge whether those assets fit your plans. I can’t promise that participation will generate customers or revenue.” The old objection-handling video mentions weekly marketing support and historical package prices; those statements are not current offer authority.",
+    "text": "Ask what the prospect wants to accomplish and discuss supported deliverables and how they could use those assets. Do not promise or imply revenue, customer acquisition, profitability or guaranteed return. A disclaimer does not make a numerical or hypothetical ROI pitch acceptable. Example: “I can walk through the content and usage rights included, so you can judge whether those assets fit your plans. I can’t promise that participation will generate customers or revenue.” The old objection-handling video is not independent authority for current package prices or support entitlement. Money Mondays was explicitly confirmed active in later reviewed sources; do not interpret this video caveat as a cancellation or removal of weekly support. Use the linked current Money Mondays decision for program status and its product-specific entitlement limits.",
     "scopes": [
       "shared"
     ],
@@ -982,7 +982,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Coaching synthesis must not create or change company terms."
+      "Coaching synthesis must not create or change company terms.",
+      "governing_evidence:money-mondays-corrected-current-status"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_coaching"
