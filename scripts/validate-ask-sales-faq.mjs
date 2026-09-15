@@ -94,6 +94,7 @@ if (missingFiles.length === 0) {
   const knowledgeRefreshCandidateInsert = read("src/lib/ask-sales-faq/knowledge-refresh-candidate-insert.ts");
   const qualityReviewConsole = read("src/components/ask-sales-faq/quality-review-console.tsx");
   const knowledgeRefreshStore = read("src/lib/ask-sales-faq/knowledge-refresh-store.ts");
+  const revampGovernance = read("src/lib/ask-sales-faq/revamp/governance.ts");
   const knowledgeRefreshGovernance = read("src/lib/ask-sales-faq/knowledge-refresh-governance.ts");
   const knowledgeRefreshConsole = read("src/components/ask-sales-faq/knowledge-refresh-console.tsx");
   const knowledgeInboxCard = read("src/components/ask-sales-faq/knowledge-inbox-card.tsx");
@@ -214,13 +215,14 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "published admin releases materialize through one governed V3 authority lane",
+    "published admin releases materialize through the selected governed authority lane",
     v3AdminReleaseLedger.schema_version === 1 &&
       Array.isArray(v3AdminReleaseLedger.releases) &&
       adminApprovedReleases.includes('source.kind !== "admin_approved_knowledge_release"') &&
       adminApprovedReleases.includes("expected_knowledge_version") &&
       v3Retrieval.includes("getMaterializedV3Registry") &&
-      knowledgeRefreshGovernance.includes("getMaterializedV3Registry") &&
+      knowledgeRefreshGovernance.includes("getKnowledgeRefreshEffectiveRegistry") &&
+      revampGovernance.includes("getMaterializedV3Registry") && revampGovernance.includes("getRevampRegistry") &&
       knowledgeRefreshStore.includes("getKnowledgeRefreshReleaseHealth"),
     "the merged ledger is schema-checked, version-chained, and verified against the exact deployed policies",
   );
@@ -940,7 +942,8 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "follow-up questions use filtered recent chat context",
-    chatRoute.includes("runSelectedAskSalesFaq(lastMessage.content, messages)") &&
+    chatRoute.includes("runSelectedAskSalesFaq(lastMessage.content,") &&
+      chatRoute.includes('selectedAskSalesFaqRuntimeVersion() === "revamp" ? messages.slice(0, -1) : messages') &&
       runtime.includes("buildConversationContext") &&
       runtime.includes('questionFrame.relation === "context_follow_up"') &&
       runtime.includes("deterministicPolicyDecision.matchedRuleId !== \"default-abstain\"") &&
@@ -1246,7 +1249,8 @@ if (missingFiles.length === 0) {
       adminPage.includes("reviewCategory") &&
       adminPage.includes("Suggested review") &&
       adminPage.includes("Manual review only") &&
-      adminPage.includes("Safe routes remain in the conversation log below") &&
+      adminPage.includes("including answered questions, natural conversation, and handoffs") &&
+      adminPage.includes("Sample recent answers and handoffs for silent errors") &&
       !adminPage.includes("QualityReviewConsole") &&
       !adminPage.includes("export async function POST"),
     "production logs stay manually reviewed, safe routes are not mislabeled as defects, and audit metadata remains collapsed and read-only",

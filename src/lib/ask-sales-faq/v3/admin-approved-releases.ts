@@ -137,8 +137,7 @@ export function buildV3AdminApprovedRelease(input: {
   } satisfies V3AdminApprovedRelease;
 }
 
-export function previewV3AdminApprovedRelease(entry: V3AdminApprovedRelease) {
-  const current = getMaterializedV3Registry();
+export function previewV3AdminApprovedRelease(entry: V3AdminApprovedRelease, current = getMaterializedV3Registry()) {
   return materializeV3Registry(current, {
     schema_version: 1,
     description: releaseLedger.description,

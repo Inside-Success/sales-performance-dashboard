@@ -5,9 +5,9 @@ import {
   type PolicyDecisionProfile,
 } from "@/lib/ask-sales-faq/policy-relevance";
 import type { V3BlockedTopic, V3Policy, V3PolicyRegistry } from "@/lib/ask-sales-faq/v3/types";
-import { getMaterializedV3Registry } from "@/lib/ask-sales-faq/v3/admin-approved-releases";
+import { getKnowledgeRefreshEffectiveRegistry } from "@/lib/ask-sales-faq/revamp/governance";
 
-const registry = getMaterializedV3Registry() as V3PolicyRegistry;
+const registry = getKnowledgeRefreshEffectiveRegistry() as V3PolicyRegistry;
 const ragIndex = ragIndexJson as KnowledgeRefreshRagIndex;
 
 export const KNOWLEDGE_REFRESH_SLACK_AUTHORITY_DIRECTORY = [
@@ -17,6 +17,9 @@ export const KNOWLEDGE_REFRESH_SLACK_AUTHORITY_DIRECTORY = [
   { userId: "U097MUCC1PD", name: "Madeline Cary", role: "Sales Ops", authority: "sales_operations" },
   { userId: "U0B033H2HLZ", name: "Raul Rios", role: "Sales", authority: "sales_guidance" },
   { userId: "U04P5KM875L", name: "Raul Rios", role: "Sales Ops and Training", authority: "sales_operations" },
+  { userId: "U025PR5EFPA", name: "Thomas Barnes", role: "Marketing", authority: "show_launch_guidance" },
+  { userId: "U0BJA5GBM38", name: "Timothy", role: "Marketing", authority: "show_launch_guidance" },
+  { userId: "U0B1DJMT0B0", name: "Pramod Rai", role: "Sales systems", authority: "crm_procedures" },
   { userId: "U076GKSBAH3", name: "Michael Kumov", role: "Finance Lead", authority: "finance_owner" },
 ] as const;
 

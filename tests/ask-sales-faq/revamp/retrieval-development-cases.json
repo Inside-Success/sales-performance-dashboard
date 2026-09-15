@@ -1,0 +1,185 @@
+[
+  {
+    "id": "doc-tier",
+    "question": "Does the cheaper reality option get the long interview about my business too?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-documentary-package-video-2026-09-14"
+    ]
+  },
+  {
+    "id": "vip-loss",
+    "question": "Can a VIP contestant still get knocked out of the competition early?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-faq-3"
+    ]
+  },
+  {
+    "id": "travel",
+    "question": "Is the flight and hotel covered when I go shoot the reality series?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-faq-11"
+    ]
+  },
+  {
+    "id": "links",
+    "question": "Can I use the regular show checkout because the reality amount is identical?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-specific-contract-links"
+    ]
+  },
+  {
+    "id": "outbound",
+    "question": "This prospect has already talked to a colleague. Should I ring them anyway?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-lead-ownership-check"
+    ]
+  },
+  {
+    "id": "invoice",
+    "question": "Where do I get proof of sales when I submit my commission bill?",
+    "scopes": [],
+    "goldIds": [
+      "commission-invoicing-hubspot-2026-08-31"
+    ]
+  },
+  {
+    "id": "automation",
+    "question": "Can I set up my own sequences so HubSpot chases prospects automatically?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-notes-and-central-automations"
+    ]
+  },
+  {
+    "id": "notes",
+    "question": "May I type my notes from a call into our CRM?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-notes-and-central-automations"
+    ]
+  },
+  {
+    "id": "reminder",
+    "question": "Will the system remind them by email the day before their initial appointment?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-call1-24h-email"
+    ]
+  },
+  {
+    "id": "status",
+    "question": "I decided to invite them to round two. Which meeting outcome do I choose?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-greenlight-meeting-status"
+    ]
+  },
+  {
+    "id": "leave",
+    "question": "I am away next week. Can I simply move my future calls to another rep?",
+    "scopes": [],
+    "goldIds": [
+      "planned-passoff-rich-approval"
+    ]
+  },
+  {
+    "id": "crosssell",
+    "question": "A Women in Power applicant would rather enter the reality competition. Can I switch the sale?",
+    "scopes": [
+      "main_istv",
+      "reality"
+    ],
+    "goldIds": [
+      "reality-lead-conversion-direction"
+    ]
+  },
+  {
+    "id": "crmwrong",
+    "question": "The HubSpot tutorial looks like Keap. Which guidance should I follow?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-stale-navigation-video"
+    ]
+  },
+  {
+    "id": "kids",
+    "question": "Are we still taking applications for Kids CEO?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-kids-ceo-paused"
+    ]
+  },
+  {
+    "id": "pdf",
+    "question": "Can I email the reality package comparison for a prospect to read?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-package-pdf-sharing"
+    ]
+  },
+  {
+    "id": "video",
+    "question": "Do we have to play the new reality licensing presentation in the second call?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-call2-video-required"
+    ]
+  },
+  {
+    "id": "reapply",
+    "question": "They did two calls for Legacy Makers but never decided. How long before trying again?",
+    "scopes": [
+      "main_istv"
+    ],
+    "goldIds": [
+      "curated_v43_rich_main_reapply_three_months"
+    ]
+  },
+  {
+    "id": "criminal",
+    "question": "Would an old burglary charge automatically exclude a Clean and Thriving applicant?",
+    "scopes": [
+      "main_istv"
+    ],
+    "goldIds": [
+      "clean-and-thriving-criminal-history-unresolved"
+    ]
+  },
+  {
+    "id": "records",
+    "question": "Do I still need to fill out the HubSpot meetings section after every call?",
+    "scopes": [],
+    "goldIds": [
+      "hubspot-current-call-records"
+    ]
+  },
+  {
+    "id": "onboard",
+    "question": "After I close a reality participant do they get our usual onboarding call?",
+    "scopes": [
+      "reality"
+    ],
+    "goldIds": [
+      "reality-onboarding-process"
+    ]
+  }
+]

@@ -3,7 +3,7 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { getAskSalesFaqAccess } from "@/lib/ask-sales-faq/access";
-import { runSelectedAskSalesFaq } from "@/lib/ask-sales-faq/runtime-selector";
+import { runSelectedAskSalesFaq, selectedAskSalesFaqRuntimeVersion } from "@/lib/ask-sales-faq/runtime-selector";
 import type { AskSalesFaqLogPayload, AskSalesFaqResponse } from "@/lib/ask-sales-faq/types";
 import {
   checkAskSalesFaqRateLimit,
@@ -163,7 +163,10 @@ export async function POST(request: NextRequest) {
       return limited;
     }
 
-    const result = await runSelectedAskSalesFaq(lastMessage.content, messages);
+    // Revamp receives the latest question separately; history contains prior turns.
+    // Preserve the legacy full-message contract for rollback runtimes.
+    const result = await runSelectedAskSalesFaq(lastMessage.content,
+      selectedAskSalesFaqRuntimeVersion() === "revamp" ? messages.slice(0, -1) : messages);
     const response: AskSalesFaqResponse = {
       ok: true,
       conversationId,
@@ -243,7 +246,7 @@ function normalizeRuntimeMessages(messages: z.infer<typeof requestSchema>["messa
     .slice(-MAX_RUNTIME_MESSAGES)
     .map((message) => ({
       role: message.role,
-      content: message.content.trim().slice(0, MAX_RUNTIME_MESSAGE_CHARS),
+      content: message.content.trim().slice(0, selectedAskSalesFaqRuntimeVersion() === "revamp" ? 12000 : MAX_RUNTIME_MESSAGE_CHARS),
     }))
     .filter((message) => message.content.length > 0);
 }

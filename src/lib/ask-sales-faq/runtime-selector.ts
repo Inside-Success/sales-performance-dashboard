@@ -3,8 +3,11 @@ import { runAskSalesFaq } from "@/lib/ask-sales-faq/runtime";
 import { runAskSalesFaqV3 } from "@/lib/ask-sales-faq/v3/runtime";
 import { runAskSalesFaqV514Production } from "@/lib/ask-sales-faq/v5-14/production";
 
+import { runAskSalesRevamp } from "@/lib/ask-sales-faq/revamp/runtime";
+
 export function selectedAskSalesFaqRuntimeVersion() {
   const configured = process.env.ASK_SALES_FAQ_RUNTIME_VERSION?.trim().toLowerCase();
+  if (configured === "revamp") return "revamp" as const;
   if (configured === "v5.14") return "v5.14" as const;
   if (configured === "v2") return "v2" as const;
   // V3 is the safe production fallback for an empty, misspelled, or unknown
@@ -17,6 +20,7 @@ export function runSelectedAskSalesFaq(question: string, messages: AskSalesFaqCh
   // through to another runtime after retrieval, generation, or validation.
   // V3 is the operational rollback target; V2 remains explicit-only.
   const selected = selectedAskSalesFaqRuntimeVersion();
+  if (selected === "revamp") return runAskSalesRevamp(question, messages);
   if (selected === "v5.14") return runAskSalesFaqV514Production(question, messages);
   if (selected === "v2") return runAskSalesFaq(question, messages);
   return runAskSalesFaqV3(question, messages);

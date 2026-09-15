@@ -1,3 +1,4 @@
+import { redactKnowledgeRefreshContent } from "./knowledge-refresh-privacy";
 import "server-only";
 
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
@@ -26,9 +27,9 @@ import {
   assessKnowledgeRefreshReleaseReadiness,
   type KnowledgeRefreshReleaseReadiness,
 } from "@/lib/ask-sales-faq/knowledge-refresh-release-readiness";
+import { getKnowledgeRefreshEffectiveRegistry, selectedKnowledgeRuntime, knowledgeReleasePaths } from "@/lib/ask-sales-faq/revamp/governance";
 import {
   buildV3AdminApprovedRelease,
-  getMaterializedV3Registry,
   previewV3AdminApprovedRelease,
   type V3AdminApprovedRelease,
   type V3AdminReleaseCandidate,
@@ -932,7 +933,7 @@ export async function getKnowledgeRefreshOverview(input: KnowledgeRefreshOvervie
         [sourceIds],
       ) as Array<{ id: string; source_id: string; title: string; proposed_policy: string; created_at: string }>
     : [];
-  const registry = getMaterializedV3Registry();
+  const registry = getKnowledgeRefreshEffectiveRegistry();
   const decisionKeysByPolicyId = Object.fromEntries(registry.policies.map((policy) => [policy.id, policy.decision_key]));
   const activeDecisionKeys = registry.policies.map((policy) => policy.decision_key);
   const candidates = candidateRows.map((candidate) => {
@@ -1085,7 +1086,7 @@ export async function transitionKnowledgeRefreshCandidate(input: {
     }
   }
   if (input.action === "approve_content") {
-    const registry = getMaterializedV3Registry();
+    const registry = getKnowledgeRefreshEffectiveRegistry();
     const decisionKeysByPolicyId = Object.fromEntries(
       registry.policies.map((policy) => [policy.id, policy.decision_key]),
     );
@@ -1320,7 +1321,7 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
     candidateIds,
   )) as Array<KnowledgeRefreshCandidateRow & { last_content_hash: string | null }>;
   if (rows.length !== candidateIds.length) throw new KnowledgeRefreshValidationError("One or more candidates no longer exist");
-  const registry = getMaterializedV3Registry();
+  const registry = getKnowledgeRefreshEffectiveRegistry();
   const decisionKeysByPolicyId = Object.fromEntries(registry.policies.map((policy) => [policy.id, policy.decision_key]));
   const activeDecisionKeys = registry.policies.map((policy) => policy.decision_key);
   const assessed = rows.map((candidate) => ({
@@ -1401,7 +1402,7 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
       candidates: compiledCandidates,
       candidateIds,
     });
-    compiledPreview = previewV3AdminApprovedRelease(publicationRelease);
+    compiledPreview = previewV3AdminApprovedRelease(publicationRelease, registry);
   } catch (error) {
     if (error instanceof KnowledgeRefreshValidationError) throw error;
     console.error("Ask Sales release compiler rejected an approved draft", error instanceof Error ? error.message : "unknown error");
@@ -1413,6 +1414,7 @@ export async function prepareKnowledgeRefreshRelease(input: { candidateIds: stri
   }
   const manifest = {
     schemaVersion: 2,
+    knowledgeRuntime: selectedKnowledgeRuntime(),
     releaseId,
     knowledgeVersionBefore,
     knowledgeVersionAfter: compiledPreview.knowledge_version,
@@ -1676,6 +1678,12 @@ export async function claimKnowledgeRefreshReleaseAction(input: {
   const expectedStatus = input.action === "create_pull_requests" ? "creating_pull_requests" : "publishing";
   if (release.status !== expectedStatus) throw new KnowledgeRefreshConflictError("Release action is no longer current");
 
+  const releaseRuntime = (release.manifest as { knowledgeRuntime?: string }).knowledgeRuntime || "v3";
+  if (releaseRuntime !== selectedKnowledgeRuntime()) throw new KnowledgeRefreshConflictError("The active knowledge runtime changed after this preview. Rebuild it before publishing.");
+  const releasePaths = knowledgeReleasePaths(releaseRuntime as "revamp" | "v3");
+  const publicationRelease = (release.manifest as { publicationRelease?: V3AdminApprovedRelease }).publicationRelease;
+  if (!publicationRelease || publicationRelease.release_id !== release.id) throw new KnowledgeRefreshValidationError("Release publication entry is missing");
+  if (publicationRelease.base_knowledge_version !== getKnowledgeRefreshEffectiveRegistry().knowledge_version) throw new KnowledgeRefreshConflictError("The effective knowledge changed after this preview. Rebuild it before publishing.");
   const cleared = (await getSql().query(
     `update ask_sales_faq_refresh_releases
      set action_token_hash = null, action_token_expires_at = null,
@@ -1686,8 +1694,6 @@ export async function claimKnowledgeRefreshReleaseAction(input: {
   )) as Array<{ id: string }>;
   if (!cleared.length) throw new KnowledgeRefreshConflictError("Release action was already claimed");
 
-  const publicationRelease = (release.manifest as { publicationRelease?: V3AdminApprovedRelease }).publicationRelease;
-  if (!publicationRelease || publicationRelease.release_id !== release.id) throw new KnowledgeRefreshValidationError("Release publication entry is missing");
   await writeAudit("release", release.id, "release_action_claimed", "n8n:ask-sales-knowledge-publisher", expectedStatus, expectedStatus, { action: input.action });
   return {
     releaseId: release.id,
@@ -1696,8 +1702,8 @@ export async function claimKnowledgeRefreshReleaseAction(input: {
     validation: release.validation,
     publication: release.publication,
     repositories: {
-      faq: { owner: "Inside-Success", repo: "faq-chatbot", ledgerPath: "runtime/v3-admin-approved-releases.json", baseBranch: "main" },
-      dashboard: { owner: "Inside-Success", repo: "sales-performance-dashboard", ledgerPath: "src/lib/ask-sales-faq/generated/v3-admin-approved-releases.json", baseBranch: "main" },
+      faq: { owner: "Inside-Success", repo: "faq-chatbot", ledgerPath: releasePaths.faq, baseBranch: "main" },
+      dashboard: { owner: "Inside-Success", repo: "sales-performance-dashboard", ledgerPath: releasePaths.dashboard, baseBranch: "main" },
     },
   };
 }
@@ -1756,7 +1762,7 @@ export async function getKnowledgeRefreshReleaseHealth(releaseId: string) {
   const rows = (await getSql().query(`select manifest from ask_sales_faq_refresh_releases where id = $1`, [releaseId])) as Array<{ manifest: Record<string, unknown> }>;
   const releaseEntry = (rows[0]?.manifest as { publicationRelease?: V3AdminApprovedRelease } | undefined)?.publicationRelease;
   if (!releaseEntry) throw new KnowledgeRefreshValidationError("Unknown or incomplete release");
-  const registry = getMaterializedV3Registry();
+  const registry = getKnowledgeRefreshEffectiveRegistry();
   const activeIds = new Set(registry.policies.map((policy) => policy.id));
   const blockedIds = new Set(registry.blocked_topics.map((topic) => topic.id));
   const missingPolicyIds = releaseEntry.policies.map((policy) => policy.id).filter((id) => !activeIds.has(id));
@@ -1919,21 +1925,6 @@ function normalizeDecisionKey(value: string | null | undefined) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 160) || null;
 }
 
-function redactKnowledgeRefreshContent(value: string) {
-  const redactions: string[] = [];
-  let text = value.replace(/\u0000/g, "").replace(/\r\n?/g, "\n").slice(0, 250_000);
-  const patterns: Array<[string, RegExp]> = [
-    ["api_key", /\b(?:sk|xai)-[A-Za-z0-9_-]{20,}\b/g],
-    ["ssn", /\b\d{3}-\d{2}-\d{4}\b/g],
-    ["payment_number", /\b(?:\d[ -]*?){13,19}\b/g],
-  ];
-  for (const [label, pattern] of patterns) {
-    if (pattern.test(text)) redactions.push(label);
-    pattern.lastIndex = 0;
-    text = text.replace(pattern, `[redacted ${label}]`);
-  }
-  return { text: text.trim(), redactions: Array.from(new Set(redactions)).sort() };
-}
 
 function sanitizeOperationalText(value: string, max: number) {
   return value.replace(/\u0000/g, "").replace(/\r\n?/g, "\n").trim().slice(0, max);

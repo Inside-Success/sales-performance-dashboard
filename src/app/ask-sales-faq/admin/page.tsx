@@ -67,22 +67,22 @@ export default async function AskSalesFaqAdminPage({
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard icon={Activity} label={`Questions, ${days}d`} value={summary.questions} helper="Saved assistant exchanges." />
           <MetricCard icon={CheckCircle2} label="Answered" value={answered} helper="Grounded answers and natural conversation replies." tone="good" />
-          <MetricCard icon={Route} label="Safely routed" value={summary.routes} helper="Questions routed instead of guessed. These are not failures." tone={summary.routes ? "warning" : "default"} />
-          <MetricCard icon={MessageCircleWarning} label="Needs attention" value={summary.reviewItems} helper="Only technical failures or answers with thumbs-down feedback." tone={summary.reviewItems ? "warning" : "good"} />
+          <MetricCard icon={Route} label="Routes and unanswered" value={summary.routes} helper="Includes action handoffs and questions the bot could not answer; correctness still needs review." tone={summary.routes ? "warning" : "default"} />
+          <MetricCard icon={MessageCircleWarning} label="Needs attention" value={summary.reviewItems} helper="Technical failures, negative feedback, and unanswered questions." tone={summary.reviewItems ? "warning" : "good"} />
         </section>
 
         <LogPanel
           title="Needs attention"
-          description="Only clear signals are shown here: a technical failure or a rep's thumbs-down. Safe routes remain in the conversation log below."
+          description="Review technical failures, negative feedback, and unanswered questions—including those without rep feedback."
           icon={<MessageCircleWarning className="size-5" />}
           items={overview.recentMisses}
-          emptyText="Nothing currently needs attention."
+          emptyText="No flagged items in this window. Sample recent answers and handoffs for silent errors."
           mode="attention"
         />
 
         <LogPanel
           title="Recent conversations"
-          description="The latest real questions and responses, including answered questions, natural conversation, and safe routes."
+          description="The latest real questions and responses, including answered questions, natural conversation, and handoffs."
           icon={<Activity className="size-5" />}
           items={overview.recentAnswers}
           emptyText="No conversations have been logged yet."
@@ -167,7 +167,7 @@ function LogPanel({ title, description, icon, items, emptyText, mode, nested = f
 }
 
 function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "attention" | "feedback" | "conversation" }) {
-  const isProblem = item.rating === "down" || Boolean(item.errorClass);
+  const isProblem = item.rating === "down" || Boolean(item.errorClass) || item.outcome === "low_confidence_route";
   return (
     <article className="min-w-0 p-5">
       <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -194,7 +194,7 @@ function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "attenti
           {item.reviewCategory ? <span>Review category: {item.reviewCategory}</span> : null}
           {item.sourceMode ? <span>Source mode: {item.sourceMode}</span> : null}
           {typeof item.confidenceScore === "number" ? <span>Confidence: {item.confidenceScore}%</span> : null}
-          {item.validationVerdict ? <span>Validation: {item.validationVerdict}</span> : null}
+          {item.validationVerdict ? <span>Answer status / validation: {item.validationVerdict}</span> : null}
           {typeof item.selectedPolicyCount === "number" ? <span>Policies: {item.selectedPolicyCount}</span> : null}
           {item.pipelineVersion ? <span>Pipeline: {item.pipelineVersion}</span> : null}
           {item.knowledgeVersion ? <span>Knowledge: {item.knowledgeVersion}</span> : null}

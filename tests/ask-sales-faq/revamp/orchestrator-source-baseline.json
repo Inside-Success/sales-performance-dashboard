@@ -1,0 +1,11 @@
+{
+  "workflowId": "ua18B5wbsYptLqJX",
+  "expectedActiveVersionId": "cc371a8d-2a4b-4d60-971a-459ffc747bc6",
+  "nodeId": "6c71a513-1e21-4c59-a9ea-a00f5eae60b1",
+  "nodeName": "Expand Approved Sources",
+  "parameters": {
+    "mode": "runOnceForAllItems",
+    "language": "javaScript",
+    "jsCode": "const input = $input.first().json;\nconst sources = Array.isArray(input.sources) ? input.sources : [];\nconst allowedSlack = new Set([\"C0AUQKNR8CF\", \"C09AF0NQJE7\"]);\nconst output = [];\nfor (const source of sources) {\n  if (!source || source.enabled === false) continue;\n  if (source.kind === \"slack_channel\" && !allowedSlack.has(source.external_id)) continue;\n  if (![\"slack_channel\", \"google_doc\", \"google_sheet\"].includes(source.kind)) continue;\n  output.push({\n    json: {\n      id: String(source.id),\n      kind: String(source.kind),\n      label: String(source.label || source.external_id),\n      external_id: String(source.external_id),\n      url: String(source.url || \"\"),\n      last_cursor: source.last_cursor && typeof source.last_cursor === \"object\" ? source.last_cursor : {},\n      run_id: String($execution.id)\n    }\n  });\n}\nif (!output.length) throw new Error(\"Dashboard returned no enabled Ask Sales knowledge sources\");\nreturn output;"
+  }
+}

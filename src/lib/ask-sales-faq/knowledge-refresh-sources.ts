@@ -11,6 +11,10 @@ export type KnowledgeRefreshSourceDefinition = {
 };
 
 const GOOGLE_DOC_IDS = [
+  "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+  "1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE",
+  "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+  "1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE",
   "105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do",
   "11uEmCRyJxw2koPoPnFZNySLJVYD9722VDzoLyDV9tOg",
   "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
@@ -51,6 +55,7 @@ const GOOGLE_DOC_IDS = [
 ] as const;
 
 const GOOGLE_SHEET_IDS = [
+  "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
   "1R-8BnPOygF8EQbFo9KFiJcc7Xw0F6xlwSE3m6Rnv8Ic",
   "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E",
   "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
@@ -58,6 +63,11 @@ const GOOGLE_SHEET_IDS = [
 ] as const;
 
 const SOURCE_LABELS: Record<string, string> = {
+  "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU": "Reality Show Cast FAQ",
+  "1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE": "Reality Call 1 script",
+  "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y": "Reality package overview",
+  "1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE": "Current invoicing and commission SOP",
+  "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg": "Contract and payment automation list",
   "1DPGTSrLth0CE2e71lbo3TQPJzjHv0sY-tIxGwfF00EY": "Updated onboarding cheat sheet",
   "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc": "Main sales onboarding document 1",
   "1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg": "Welcome and onboarding email",
@@ -73,7 +83,9 @@ function googleSource(kind: "google_doc" | "google_sheet", externalId: string): 
     label: SOURCE_LABELS[externalId] || `Google ${noun} ${externalId.slice(0, 8)}`,
     externalId,
     url: `https://docs.google.com/${kind === "google_doc" ? "document" : "spreadsheets"}/d/${externalId}`,
-    enabled: true,
+    // This sheet is a log of individual applicant letters, not policy/training.
+    // Preserve its source identity while excluding it from knowledge collection.
+    enabled: externalId !== "1R-8BnPOygF8EQbFo9KFiJcc7Xw0F6xlwSE3m6Rnv8Ic",
   };
 }
 
@@ -93,6 +105,16 @@ export const KNOWLEDGE_REFRESH_SOURCES: KnowledgeRefreshSourceDefinition[] = [
     externalId: "C09AF0NQJE7",
     url: "https://istvoffical.slack.com/archives/C09AF0NQJE7",
     enabled: true,
+  },
+  {
+    id: "slack_channel:C08QGKL39J6", kind: "slack_channel",
+    label: "#sales-tech-requests", externalId: "C08QGKL39J6",
+    url: "https://istvoffical.slack.com/archives/C08QGKL39J6", enabled: true,
+  },
+  {
+    id: "slack_channel:C0A8S3JSR1Q", kind: "slack_channel",
+    label: "Sales onboarding questions", externalId: "C0A8S3JSR1Q",
+    url: "https://istvoffical.slack.com/archives/C0A8S3JSR1Q", enabled: true,
   },
   ...GOOGLE_DOC_IDS.map((id) => googleSource("google_doc", id)),
   ...GOOGLE_SHEET_IDS.map((id) => googleSource("google_sheet", id)),

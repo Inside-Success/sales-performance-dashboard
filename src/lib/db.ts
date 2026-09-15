@@ -2836,6 +2836,7 @@ function normalizeAskSalesFaqAnswerPayload(value: unknown): AskSalesFaqStructure
 
   return {
     summary: payload.summary,
+    ...(payload.confidenceBasis === "unscored" ? { confidenceBasis: "unscored" as const } : {}),
     sections,
     confidenceLabel:
       confidenceScore === null
@@ -2879,7 +2880,7 @@ function normalizeAskSalesFaqResponsePayload(value: unknown): AskSalesFaqRespons
         : null,
     model: typeof payload.model === "string" ? payload.model : null,
     provider:
-      payload.provider === "deepseek" || payload.provider === "anthropic" || payload.provider === "mock"
+      payload.provider === "openai" || payload.provider === "deepseek" || payload.provider === "anthropic" || payload.provider === "mock"
         ? payload.provider
         : null,
     needsRoute: Boolean(payload.needsRoute),
@@ -2961,7 +2962,7 @@ export async function deleteAskSalesFaqConversationForViewer(payload: {
 
 export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayload) {
   await ensureSchema();
-  await getSql().query(
+  const rows = await getSql().query(
     `
       insert into ask_sales_faq_feedback (
         id,
@@ -2971,10 +2972,16 @@ export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayloa
         rating,
         comment
       )
-      values ($1, $2, $3, $4, $5, $6)
+      select $1, message.id, message.conversation_id, message.viewer_email, $5, $6
+      from ask_sales_faq_messages message
+      where message.id = $2
+        and message.conversation_id = $3
+        and message.viewer_email = $4
+        and message.role = 'assistant'
       on conflict (id) do update set
         rating = excluded.rating,
         comment = excluded.comment
+      returning id
     `,
     [
       payload.id,
@@ -2985,6 +2992,7 @@ export async function saveAskSalesFaqFeedback(payload: AskSalesFaqFeedbackPayloa
       payload.comment,
     ],
   );
+  return Array.isArray(rows) && rows.length > 0;
 }
 
 export async function getAskSalesFaqFeedbackContext(payload: {
@@ -3109,6 +3117,7 @@ export async function getAskSalesFaqAdminOverview(
       medianLatencyMs: 0,
       p95LatencyMs: 0,
       deepseekAnswers: 0,
+      openaiAnswers: 0,
       anthropicAnswers: 0,
     },
     daily: [],
@@ -3153,6 +3162,7 @@ export async function getAskSalesFaqAdminOverview(
           count(*) filter (
             where error_class is not null
                or outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+               or outcome in ('low_confidence_route', 'abstain_unapproved')
                or exists (select 1 from feedback f where f.message_id = assistant.id and f.rating = 'down')
           )::int as review_items,
           (select count(*)::int from feedback) as feedback_count,
@@ -3160,6 +3170,7 @@ export async function getAskSalesFaqAdminOverview(
           coalesce(percentile_cont(0.5) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as median_latency_ms,
           coalesce(percentile_cont(0.95) within group (order by latency_ms) filter (where latency_ms is not null), 0)::float as p95_latency_ms,
           count(*) filter (where provider = 'deepseek')::int as deepseek_answers,
+          count(*) filter (where provider = 'openai')::int as openai_answers,
           count(*) filter (where provider = 'anthropic')::int as anthropic_answers
         from assistant
       `,
@@ -3225,8 +3236,8 @@ export async function getAskSalesFaqAdminOverview(
           a.answer_payload->>'sourceMode' as source_mode,
           a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
           a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
-          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
-          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          coalesce(a.answer_payload #>> '{runtimeMetadata,revamp,status}', a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}') as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,revamp,selectedEvidenceIds}', a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
           a.created_at::text as created_at,
           f.rating,
           f.comment,
@@ -3251,6 +3262,7 @@ export async function getAskSalesFaqAdminOverview(
           and (
             a.error_class is not null
             or a.outcome in ('safe_fallback', 'rate_limited', 'duplicate_in_progress', 'feature_disabled', 'auth_blocked', 'validation_error')
+            or a.outcome in ('low_confidence_route', 'abstain_unapproved')
             or f.rating = 'down'
           )
         order by a.created_at desc
@@ -3320,8 +3332,9 @@ export async function getAskSalesFaqAdminOverview(
           a.model,
           a.latency_ms,
           a.error_class,
-          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case when a.answer_payload->>'confidenceBasis' = 'unscored' then null else a.answer_payload->>'confidenceLabel' end as confidence_label,
           case
+            when a.answer_payload->>'confidenceBasis' = 'unscored' then null
             when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
             then (a.answer_payload->>'confidenceScore')::float
             else null
@@ -3329,8 +3342,8 @@ export async function getAskSalesFaqAdminOverview(
           a.answer_payload->>'sourceMode' as source_mode,
           a.answer_payload #>> '{runtimeMetadata,pipelineVersion}' as pipeline_version,
           a.answer_payload #>> '{runtimeMetadata,knowledgeVersion}' as knowledge_version,
-          a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}' as validation_verdict,
-          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
+          coalesce(a.answer_payload #>> '{runtimeMetadata,revamp,status}', a.answer_payload #>> '{runtimeMetadata,v3,validation,verdict}') as validation_verdict,
+          jsonb_array_length(coalesce(a.answer_payload #> '{runtimeMetadata,revamp,selectedEvidenceIds}', a.answer_payload #> '{runtimeMetadata,v3,selection,selectedPolicyIds}', '[]'::jsonb)) as selected_policy_count,
           a.created_at::text as created_at,
           (
             select u.content_redacted
@@ -3428,6 +3441,7 @@ export async function getAskSalesFaqAdminOverview(
       medianLatencyMs: Math.round(Number(metricRow.median_latency_ms || 0)),
       p95LatencyMs: Math.round(Number(metricRow.p95_latency_ms || 0)),
       deepseekAnswers: Number(metricRow.deepseek_answers || 0),
+      openaiAnswers: Number(metricRow.openai_answers || 0),
       anthropicAnswers: Number(metricRow.anthropic_answers || 0),
     },
     daily: (dailyRows as Array<Record<string, string | number>>).map((row) => ({
@@ -3767,8 +3781,9 @@ export async function getAskSalesFaqRepHistory(
           a.model,
           a.latency_ms,
           a.error_class,
-          a.answer_payload->>'confidenceLabel' as confidence_label,
+          case when a.answer_payload->>'confidenceBasis' = 'unscored' then null else a.answer_payload->>'confidenceLabel' end as confidence_label,
           case
+            when a.answer_payload->>'confidenceBasis' = 'unscored' then null
             when (a.answer_payload->>'confidenceScore') ~ '^[0-9]+(\\.[0-9]+)?$'
             then (a.answer_payload->>'confidenceScore')::float
             else null
