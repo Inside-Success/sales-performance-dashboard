@@ -59,11 +59,13 @@ const snapshot=historicalRecords?{version:"historical-"+createHash("sha256").upd
 const implementationDir=resolve("src/lib/ask-sales-faq/revamp");
 const implementationVersion=createHash("sha256").update(JSON.stringify({model,providerName}));
 for(const file of readdirSync(implementationDir).sort()) implementationVersion.update(readFileSync(resolve(implementationDir,file)));
+implementationVersion.update(readFileSync("src/lib/ask-sales-faq/v4/privacy.ts"));
 implementationVersion.update(readFileSync(__filename));
 const runVersion=implementationVersion.digest("hex").slice(0,16);
 const sourceSnapshot=resolve(output,`implementation-${runVersion}`);
 mkdirSync(sourceSnapshot,{recursive:true,mode:0o700});
 for(const file of readdirSync(implementationDir)) writeFileSync(resolve(sourceSnapshot,file),readFileSync(resolve(implementationDir,file)),{mode:0o600});
+writeFileSync(resolve(sourceSnapshot,"privacy.ts"),readFileSync("src/lib/ask-sales-faq/v4/privacy.ts"),{mode:0o600});
 writeFileSync(resolve(sourceSnapshot,"evaluation-script.ts"),readFileSync(__filename),{mode:0o600});
 writeFileSync(resolve(output,`knowledge-${snapshot.version}.json`),JSON.stringify(snapshot),{mode:0o600});
 const concurrency=Number(process.env.FAQ_EVAL_CONCURRENCY||1);

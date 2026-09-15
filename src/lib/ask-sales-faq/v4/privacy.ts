@@ -48,7 +48,9 @@ const SIMPLE_REPLACEMENTS: ReplacementRule[] = [
   },
   {
     label: "street_address",
-    pattern: /\b\d{1,6}\s+(?:(?:N|S|E|W|NE|NW|SE|SW)\.?\s+)?(?:[A-Za-z0-9][A-Za-z0-9.'’-]*\s+){1,6}(?:Street|Avenue|Boulevard|Road|Lane|Drive|Court|Circle|Highway|Parkway|Terrace|Place|Trail|Way|St|Ave|Blvd|Rd|Ln|Dr|Ct|Cir|Hwy|Pkwy)\.?(?![A-Za-z])(?:\s*,?\s*(?:Apt|Apartment|Suite|Ste|Unit|#)\s*[A-Za-z0-9-]+)?/gi,
+    // A street number must be a complete numeric token, not the tail of a
+    // currency amount ($30,000 -> 000) or a number immediately prefixed by $.
+    pattern: /(?<![\w$€£¥.,])\b\d{1,6}\s+(?:(?:N|S|E|W|NE|NW|SE|SW)\.?\s+)?(?:[A-Za-z0-9][A-Za-z0-9.'’-]*\s+){1,6}(?:Street|Avenue|Boulevard|Road|Lane|Drive|Court|Circle|Highway|Parkway|Terrace|Place|Trail|Way|St|Ave|Blvd|Rd|Ln|Dr|Ct|Cir|Hwy|Pkwy)\.?(?![A-Za-z])(?:\s*,?\s*(?:Apt|Apartment|Suite|Ste|Unit|#)\s*[A-Za-z0-9-]+)?/gi,
     replacement: "[redacted street address]",
   },
   {
