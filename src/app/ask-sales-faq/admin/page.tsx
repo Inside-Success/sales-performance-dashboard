@@ -1,216 +1,156 @@
-import type { Metadata } from "next";
+import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-import {
-  Activity,
-  CheckCircle2,
-  MessageCircleWarning,
-  Route,
-  ThumbsDown,
-} from "lucide-react";
 import { auth } from "@/auth";
-import { AskSalesAdminHeader } from "@/components/ask-sales-faq/admin-navigation";
-import { Badge } from "@/components/ui/badge";
-import { normalizeAskSalesFaqAnalyticsDays } from "@/lib/ask-sales-faq/admin-analytics";
-import { getAskSalesFaqAccess, isAskSalesFaqAdmin } from "@/lib/ask-sales-faq/access";
-import type { AskSalesFaqAdminLogItem } from "@/lib/ask-sales-faq/types";
-import { getAskSalesFaqAdminOverview } from "@/lib/db";
-
+import {
+  getAskSalesFaqAccess,
+  isAskSalesFaqAdmin,
+} from "@/lib/ask-sales-faq/access";
+import {
+  parseFilters,
+  filterQuery,
+  issueLabels,
+  type Params,
+} from "@/lib/ask-sales-faq/admin/filters";
+import { getConversationOverview } from "@/lib/ask-sales-faq/admin/store";
+import {
+  AdminLayout,
+  DateFilters,
+  Metric,
+  Empty,
+  LoadError,
+  PageLinks,
+} from "@/components/ask-sales-faq/admin/layout";
+import { formatMiamiDateTime } from "@/lib/format";
 export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: "Ask Sales Quality & Operations | Magic Mike Bot",
+export const metadata = {
+  title: "Ask Sales Conversations | Magic Mike Bot",
   robots: { index: false, follow: false },
 };
-
-export default async function AskSalesFaqAdminPage({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string | string[] }>;
+  searchParams: Promise<Params>;
 }) {
-  const session = await auth();
-  const access = getAskSalesFaqAccess(session);
-
+  const access = getAskSalesFaqAccess(await auth());
   if (!access.ok || !isAskSalesFaqAdmin(access.viewerEmail)) notFound();
-
-  const params = await searchParams;
-  const days = normalizeAskSalesFaqAnalyticsDays(params.days, 7);
-  const overview = await getAskSalesFaqAdminOverview(20, days);
-  const { summary } = overview;
-  const answered = summary.groundedAnswers + summary.conversationReplies;
-
+  const f = parseFilters(await searchParams);
+  let data;
+  try {
+    data = await getConversationOverview(f);
+  } catch {
+    return (
+      <AdminLayout active="conversations">
+        <LoadError />
+      </AdminLayout>
+    );
+  }
+  const { metrics: m, rows, reps } = data;
   return (
-    <main className="magic-page min-h-[calc(100dvh-72px)] bg-[#f8fafc]">
-      <div className="mx-auto flex w-full max-w-[88rem] flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <AskSalesAdminHeader
-          active="quality"
-          title="Quality & operations"
-          description="A simple view of real Ask Sales conversations. Review is manual and only happens when you request it."
-          generatedAt={overview.generatedAt}
+    <AdminLayout active="conversations">
+      <DateFilters key={filterQuery(f)} f={f} reps={reps} />
+      <section
+        aria-label="Conversation summary"
+        className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <Metric
+          label="Questions asked"
+          value={m.questions}
+          description="User questions during this period."
         />
-
-        <section className="magic-card flex flex-col gap-3 border-emerald-200 bg-emerald-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-extrabold text-emerald-950">Production logging is active</h2>
-            <p className="mt-1 text-sm leading-6 text-emerald-800">
-              The old nightly AI quality audit is retired. Live conversations remain logged for manual review when requested.
-            </p>
-          </div>
-          <span className="w-fit rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-extrabold text-emerald-700">
-            Manual review only
-          </span>
-        </section>
-
-        <WindowPicker activeDays={overview.windowDays} baseHref="/ask-sales-faq/admin" />
-
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard icon={Activity} label={`Questions, ${days}d`} value={summary.questions} helper="Saved assistant exchanges." />
-          <MetricCard icon={CheckCircle2} label="Answered" value={answered} helper="Grounded answers and natural conversation replies." tone="good" />
-          <MetricCard icon={Route} label="Routes and unanswered" value={summary.routes} helper="Includes action handoffs and questions the bot could not answer; correctness still needs review." tone={summary.routes ? "warning" : "default"} />
-          <MetricCard icon={MessageCircleWarning} label="Needs attention" value={summary.reviewItems} helper="Technical failures, negative feedback, and unanswered questions." tone={summary.reviewItems ? "warning" : "good"} />
-        </section>
-
-        <LogPanel
-          title="Needs attention"
-          description="Review technical failures, negative feedback, and unanswered questions—including those without rep feedback."
-          icon={<MessageCircleWarning className="size-5" />}
-          items={overview.recentMisses}
-          emptyText="No flagged items in this window. Sample recent answers and handoffs for silent errors."
-          mode="attention"
+        <Metric
+          label="People using it"
+          value={m.people}
+          description="People who asked a question."
         />
-
-        <LogPanel
-          title="Recent conversations"
-          description="The latest real questions and responses, including answered questions, natural conversation, and handoffs."
-          icon={<Activity className="size-5" />}
-          items={overview.recentAnswers}
-          emptyText="No conversations have been logged yet."
-          mode="conversation"
+        <Metric
+          label="Feedback received"
+          value={m.up + m.down}
+          description={`${m.up} helpful · ${m.down} unhelpful. Unrated answers are not scored.`}
+          href={`?${filterQuery(f, { filter: "down" })}`}
         />
-
-        <details className="magic-card overflow-hidden">
-          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
-            Recent rep feedback <span className="ml-2 text-sm font-semibold text-slate-500">{summary.feedbackCount} in this window</span>
-          </summary>
-          <div className="border-t border-slate-100">
-            <LogPanel
-              title="Feedback details"
-              description="Thumbs-up, thumbs-down, and any written comments submitted by reps."
-              icon={<ThumbsDown className="size-5" />}
-              items={overview.recentFeedback}
-              emptyText="No feedback has been recorded yet."
-              mode="feedback"
-              nested
-            />
-          </div>
-        </details>
-
-        <p className="pb-2 text-xs font-medium text-slate-400">
-          These counts describe system behavior; they do not replace a human factual review of the underlying answers and sources.
+        <Metric
+          label="Failed responses"
+          value={m.failures}
+          description="Technical failures—not an answer accuracy score."
+          href={`?${filterQuery(f, { filter: "failed" })}`}
+        />
+      </section>
+      <section className="space-y-4">
+        <nav aria-label="Conversation filters" className="flex flex-wrap gap-2">
+          {[
+            ["all", "All conversations"],
+            ["attention", "Needs attention"],
+            ["down", "Unhelpful feedback"],
+            ["failed", "Failed responses"],
+            ["unanswered", "Unanswered / partial"],
+          ].map(([key, label]) => (
+            <Link
+              key={key}
+              aria-current={f.filter === key ? "page" : undefined}
+              href={`?${filterQuery(f, { filter: key })}`}
+              className={`rounded-full border px-4 py-2 text-sm font-semibold ${f.filter === key ? "border-red-200 bg-red-50 text-red-800" : "bg-white text-slate-600"}`}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+        <p className="text-xs text-slate-500">
+          Flags identify items to review; they do not prove an answer is wrong.
+          Summary cards follow dates and person filters; search and review
+          filters narrow the list below.
         </p>
-      </div>
-    </main>
+        {!rows.length ? (
+          <Empty>
+            No conversations match these filters. Try a wider date range or
+            include admin activity.
+          </Empty>
+        ) : (
+          <div className="divide-y overflow-hidden rounded-2xl border bg-white">
+            {rows.map((r) => (
+              <Link
+                key={r.id}
+                href={`/ask-sales-faq/admin/conversations/${encodeURIComponent(r.id)}?${filterQuery(f)}`}
+                className="block p-5 transition-colors hover:bg-slate-50"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-bold text-slate-900">
+                    {r.name || r.email}
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    {formatMiamiDateTime(r.last_at)}
+                  </span>
+                </div>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-700">
+                  {r.title || "Untitled conversation"}
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-slate-500">
+                    {r.questions} questions · {r.messages} messages in period
+                  </span>
+                  {issueLabels(r).map((label) => (
+                    <span
+                      key={label}
+                      className="rounded-full bg-amber-50 px-2 py-1 text-amber-900"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                  <span className="ml-auto text-slate-500">
+                    {r.reviewed ? "Reviewed" : "Not reviewed / new activity"} ·
+                    Read conversation →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+        <PageLinks
+          f={f}
+          total={rows[0]?.total || 0}
+          path="/ask-sales-faq/admin"
+        />
+      </section>
+    </AdminLayout>
   );
 }
-
-function WindowPicker({ activeDays, baseHref }: { activeDays: number; baseHref: string }) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <p className="text-sm font-semibold text-slate-500">Time window</p>
-      <div className="flex rounded-full border border-slate-200 bg-white p-1 shadow-sm">
-        {[7, 30, 90].map((days) => (
-          <Link
-            key={days}
-            href={`${baseHref}?days=${days}`}
-            className={`rounded-full px-3 py-1.5 text-xs font-extrabold transition-colors ${activeDays === days ? "bg-[#DC2626] text-white" : "text-slate-500 hover:bg-slate-100"}`}
-          >
-            {days} days
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({ icon: Icon, label, value, helper, tone = "default" }: { icon: typeof Activity; label: string; value: string | number; helper: string; tone?: "default" | "good" | "warning" }) {
-  const iconTone = tone === "good" ? "bg-emerald-50 text-emerald-600" : tone === "warning" ? "bg-amber-50 text-amber-600" : "bg-red-50 text-red-600";
-  return (
-    <article className="magic-card p-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-bold text-slate-600">{label}</span>
-        <span className={`grid size-9 place-items-center rounded-xl ${iconTone}`}><Icon className="size-4" /></span>
-      </div>
-      <p className="mt-4 text-3xl font-extrabold text-slate-950">{value}</p>
-      <p className="mt-2 text-xs font-medium leading-5 text-slate-500">{helper}</p>
-    </article>
-  );
-}
-
-function LogPanel({ title, description, icon, items, emptyText, mode, nested = false }: { title: string; description: string; icon: ReactNode; items: AskSalesFaqAdminLogItem[]; emptyText: string; mode: "attention" | "feedback" | "conversation"; nested?: boolean }) {
-  return (
-    <section className={nested ? "overflow-hidden bg-white" : "magic-card overflow-hidden"}>
-      <div className="border-b border-slate-100 p-5">
-        <div className="flex items-center gap-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-red-50 text-red-600">{icon}</span>
-          <h2 className="text-lg font-extrabold text-slate-950">{title}</h2>
-        </div>
-        <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
-      </div>
-      <div className="divide-y divide-slate-100">
-        {items.length
-          ? items.map((item) => <LogItem key={`${mode}-${item.id}`} item={item} mode={mode} />)
-          : <div className="p-6 text-sm text-slate-500">{emptyText}</div>}
-      </div>
-    </section>
-  );
-}
-
-function LogItem({ item, mode }: { item: AskSalesFaqAdminLogItem; mode: "attention" | "feedback" | "conversation" }) {
-  const isProblem = item.rating === "down" || Boolean(item.errorClass) || item.outcome === "low_confidence_route";
-  return (
-    <article className="min-w-0 p-5">
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <Badge variant="outline" className={isProblem ? "border-red-200 bg-red-50 text-red-700" : item.needsRoute ? "border-amber-200 bg-amber-50 text-amber-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}>
-          {item.rating ? `Thumbs ${item.rating}` : humanizeOutcome(item.outcome || "answer")}
-        </Badge>
-        <span className="text-slate-400">{formatDateTime(item.createdAt)}</span>
-      </div>
-
-      <div className="mt-3 space-y-3">
-        <Field label="Rep" value={item.viewerEmail} />
-        <Field label="Question" value={item.question} />
-        <Field label="Answer" value={item.answer} />
-        {item.sourceLabel ? <Field label="Knowledge source" value={item.sourceLabel} /> : null}
-        {item.comment ? <Field label="Rep comment" value={item.comment} /> : null}
-        {item.routeReason ? <Field label="Why it was routed" value={item.routeReason} /> : null}
-        {mode === "attention" && item.reviewAction ? <Field label="Suggested review" value={item.reviewAction} /> : null}
-      </div>
-
-      <details className="mt-4 text-xs text-slate-500">
-        <summary className="cursor-pointer font-bold text-slate-600">Technical details</summary>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-          {item.provider ? <span>Provider: {item.provider}{item.model ? ` / ${item.model}` : ""}</span> : null}
-          {item.reviewCategory ? <span>Review category: {item.reviewCategory}</span> : null}
-          {item.sourceMode ? <span>Source mode: {item.sourceMode}</span> : null}
-          {typeof item.confidenceScore === "number" ? <span>Confidence: {item.confidenceScore}%</span> : null}
-          {item.validationVerdict ? <span>Answer status / validation: {item.validationVerdict}</span> : null}
-          {typeof item.selectedPolicyCount === "number" ? <span>Policies: {item.selectedPolicyCount}</span> : null}
-          {item.pipelineVersion ? <span>Pipeline: {item.pipelineVersion}</span> : null}
-          {item.knowledgeVersion ? <span>Knowledge: {item.knowledgeVersion}</span> : null}
-          {item.latencyMs ? <span>Latency: {formatSeconds(item.latencyMs)}</span> : null}
-          {item.errorClass ? <span>Error: {item.errorClass}</span> : null}
-        </div>
-      </details>
-    </article>
-  );
-}
-
-function Field({ label, value }: { label: string; value: string | null | undefined }) {
-  if (!value) return null;
-  return <div><div className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">{label}</div><p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-700">{value}</p></div>;
-}
-
-function formatSeconds(ms: number) { return ms ? `${(ms / 1000).toFixed(ms >= 10_000 ? 0 : 1)}s` : "—"; }
-function formatDateTime(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(date); }
-function humanizeOutcome(value: string) { return value.replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase()); }

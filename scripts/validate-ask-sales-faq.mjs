@@ -178,18 +178,10 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "governed publication requires two exact-admin actions and a single-use service claim",
-    knowledgeReleaseRoute.includes("isAskSalesFaqAdmin") &&
-      knowledgeReleaseRoute.includes("queueKnowledgeRefreshReleaseAction") &&
-      knowledgeReleaseRoute.includes("failQueuedKnowledgeRefreshReleaseAction") &&
-      knowledgeRefreshStore.includes("randomBytes(32)") &&
-      knowledgeRefreshStore.includes("action_token_expires_at") &&
-      knowledgeRefreshStore.includes("release_action_claimed") &&
-      knowledgeRefreshConsole.includes('"create_pull_requests"') &&
-      knowledgeRefreshConsole.includes('"publish_verified_release"') &&
-      knowledgeRefreshConsole.includes("Prepare protected release") &&
-      knowledgeRefreshConsole.includes("Publish approved updates"),
-    "content approval, Git PR creation, and final verified publication remain separate exact-admin events",
+    "retired interactive publisher cannot enqueue a release",
+    knowledgeReleaseRoute.includes("isAskSalesFaqAdmin") && knowledgeReleaseRoute.includes("410") && !knowledgeReleaseRoute.includes("queueKnowledgeRefreshReleaseAction") &&
+      knowledgeRefreshStore.includes("action_token_expires_at") && knowledgeRefreshStore.includes("release_action_claimed"),
+    "retired publication returns authenticated 410; retained service history keeps single-use claim safeguards",
   );
 
   addCheck(
@@ -210,8 +202,8 @@ if (missingFiles.length === 0) {
       !knowledgeRefreshStore.includes("api.github.com") &&
       knowledgeRefreshStore.includes('url.hostname !== "insidesuccess.app.n8n.cloud"') &&
       knowledgeRefreshStore.includes('url.pathname !== "/webhook/ask-sales-knowledge-publisher"') &&
-      knowledgeReleaseRoute.includes("Production was not changed"),
-    "the dashboard receives no GitHub credential and can invoke only the approved Inside Success publisher endpoint",
+      knowledgeReleaseRoute.includes("No changes were made"),
+    "no GitHub credential is embedded; retained publisher code remains host-allowlisted and interactive publication is retired",
   );
 
   addCheck(
@@ -228,8 +220,8 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "source review is Miami-timed, version-aware, and blocks combined policy approval",
-    refreshAdminPage.includes('title="Daily Knowledge Inbox"') &&
+    "retired source UI redirects while historical governance remains intact",
+    refreshAdminPage.includes('redirect("/ask-sales-faq/admin")') &&
       knowledgeRefreshConsole.includes("Updated from an earlier draft") &&
       knowledgeRefreshConsole.includes("Still-valid proposals stayed in your review queue") &&
       knowledgeInboxCard.includes("old automatic comparison is not reliable") &&
@@ -238,7 +230,7 @@ if (missingFiles.length === 0) {
       knowledgeRefreshStore.includes("candidate_evidence_reverified") &&
       knowledgeRefreshStore.includes("candidate_staled_after_source_change") &&
       knowledgeRefreshConsole.includes("formatMiamiDateTime"),
-    "the queue explains refresh results, preserves evidence-current drafts, and keeps one approval from covering several policy decisions",
+    "source UI is retired without discarding historical evidence checks, source versioning or combined-policy safeguards",
   );
 
   addCheck(
@@ -426,9 +418,9 @@ if (missingFiles.length === 0) {
   addCheck(
     "admin page uses admin email gate",
     [adminPage, usageAdminPage, repHistoryAdminPage].every((content) => content.includes("isAskSalesFaqAdmin") && content.includes("notFound()")) &&
-      adminPage.includes("getAskSalesFaqAdminOverview") &&
-      usageAdminPage.includes("getAskSalesFaqUsageOverview") &&
-      repHistoryAdminPage.includes("getAskSalesFaqRepHistory") &&
+      adminPage.includes("getConversationOverview") &&
+      usageAdminPage.includes("getUsage") &&
+      repHistoryAdminPage.includes("redirect(") &&
       !adminPage.includes("export async function POST") &&
       !usageAdminPage.includes("export async function POST") &&
       !repHistoryAdminPage.includes("export async function POST"),
@@ -436,30 +428,19 @@ if (missingFiles.length === 0) {
   );
 
   addCheck(
-    "per-rep Q&A drilldown uses opaque admin-only navigation",
-    usageAdminPage.includes("repReviewKey") &&
-      usageAdminPage.includes("View Q&amp;A") &&
-      !usageAdminPage.includes("viewerEmail}?days") &&
-      repHistoryAdminPage.includes("robots: { index: false, follow: false }") &&
-      !repHistoryAdminPage.includes('title: "Ask Sales Rep Q&A Review') &&
-      repHistoryAdminPage.includes("isAskSalesFaqRepReviewKey") &&
-      repHistoryAdminPage.includes("getAskSalesFaqUsageOverview") &&
-      adminRepReview.includes('createHmac("sha256", secret)') &&
-      adminRepReview.includes("process.env.AUTH_SECRET"),
-    "rep email is not placed in the URL; HMAC keys, admin authorization, non-disclosing 404 metadata, and noindex protect the read-only drilldown",
+    "per-rep navigation remains opaque and admin-only",
+    usageAdminPage.includes("rep: u.repKey") && !usageAdminPage.includes("rep: u.email") &&
+      repHistoryAdminPage.includes("robots:") && repHistoryAdminPage.includes("index: false") &&
+      repHistoryAdminPage.includes("encodeURIComponent(repKey)") &&
+      adminRepReview.includes('createHmac("sha256", secret)') && adminRepReview.includes("process.env.AUTH_SECRET"),
+    "automatic rep links use HMAC keys rather than email URLs and keep exact-admin access",
   );
 
   addCheck(
-    "per-rep review retains Q&A audit and bounded pagination metadata",
-    db.includes("getAskSalesFaqRepHistory") &&
-      db.includes("encodeAskSalesFaqRepHistoryCursor") &&
-      db.includes("stage_timings") &&
-      db.includes("feedback_created_at") &&
-      repHistoryAdminPage.includes("Question and answer history") &&
-      repHistoryAdminPage.includes("V3 stage timings") &&
-      repHistoryAdminPage.includes("Older questions") &&
-      repHistoryAdminPage.includes("does not write to conversations"),
-    "the detail reads retained redacted Q&A, source/validation/provider/latency/feedback metadata, and paginates 25 rows at a time",
+    "conversation review retains history and paginates the list",
+    adminPage.includes("PageLinks") && adminPage.includes("/admin/conversations/") &&
+      db.includes("getAskSalesFaqRepHistory") && db.includes("feedback_created_at"),
+    "new list pages conversations while shared reader shows the full retained history; legacy query/history code remains available",
   );
 
   addCheck(
@@ -1241,19 +1222,21 @@ if (missingFiles.length === 0) {
     "source cards avoid exposing evidence-file names or AI/source-selection mechanics to reps",
   );
 
+  const adminStore = fs.readFileSync(path.join(root, "src/lib/ask-sales-faq/admin/store.ts"), "utf8");
+  const adminReader = fs.readFileSync(path.join(root, "src/app/ask-sales-faq/admin/conversations/[conversationId]/page.tsx"), "utf8");
+  const adminReviewRoute = fs.readFileSync(path.join(root, "src/app/api/ask-sales-faq/admin/conversations/[conversationId]/review/route.ts"), "utf8");
   addCheck(
-    "manual admin review stays simple, categorized, and read-only",
-    db.includes("classifyAskSalesFaqReview") &&
-      db.includes("reviewCategory: classification.category") &&
-      db.includes("reviewAction: classification.action") &&
-      adminPage.includes("reviewCategory") &&
-      adminPage.includes("Suggested review") &&
-      adminPage.includes("Manual review only") &&
-      adminPage.includes("including answered questions, natural conversation, and handoffs") &&
-      adminPage.includes("Sample recent answers and handoffs for silent errors") &&
-      !adminPage.includes("QualityReviewConsole") &&
-      !adminPage.includes("export async function POST"),
-    "production logs stay manually reviewed, safe routes are not mislabeled as defects, and audit metadata remains collapsed and read-only",
+    "admin review preserves access and separates notes from chatbot content",
+    adminPage.includes("isAskSalesFaqAdmin") &&
+      adminReader.includes("isAskSalesFaqAdmin") &&
+      adminReviewRoute.includes("isAskSalesFaqAdmin") &&
+      adminReviewRoute.includes('request.headers.get("origin")') &&
+      adminReader.includes("Technical details") &&
+      adminStore.includes("insert into ask_sales_faq_admin_reviews") &&
+      !/update\s+ask_sales_faq_(messages|conversations)\s+set/i.test(adminStore) &&
+      !adminStore.includes("needs_route or") &&
+      !adminPage.includes("QualityReviewConsole"),
+    "admin-only full conversations and review notes do not rewrite answers or treat every handoff as an error; route and SQL behavior also have dedicated tests",
   );
 
   addCheck(
