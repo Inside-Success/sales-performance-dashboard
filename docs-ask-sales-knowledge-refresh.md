@@ -1,3 +1,5 @@
+> **September 17, 2026 update:** The Source updates admin page and its interactive publishing actions are retired. The dedicated daily refresh orchestrator `ua18B5wbsYptLqJX` is inactive. Knowledge refreshes are now user-requested weekly work; source history and checkpoints remain retained. See [the current admin release report](docs-ask-sales-admin-redesign-2026-09-17.md). The dated entries below describe historical behavior, not current scheduler status.
+
 # Ask Sales Daily Knowledge Refresh
 
 Date: 2026-07-14
