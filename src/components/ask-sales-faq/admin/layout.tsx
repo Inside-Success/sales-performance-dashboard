@@ -1,4 +1,3 @@
-
 import React from "react";
 import Link from "next/link";
 import publication from "@/lib/ask-sales-faq/admin/knowledge-publication.json";
@@ -76,7 +75,7 @@ export function DateFilters({
 }: {
   f: Filters;
   usage?: boolean;
-  reps?: { email: string; name: string | null }[];
+  reps?: { key: string; email: string; name: string | null }[];
 }) {
   const field =
     "min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm";
@@ -142,7 +141,7 @@ export function DateFilters({
             >
               <option value="">All people</option>
               {reps.map((r) => (
-                <option key={r.email} value={r.email}>
+                <option key={r.email} value={r.key}>
                   {r.name || r.email}
                 </option>
               ))}

@@ -41,7 +41,7 @@ export function parseFilters(p: Params, now = new Date()) {
     start,
     end,
     q: scalar(p.q).trim().slice(0, 200),
-    rep: scalar(p.rep).trim().toLowerCase().slice(0, 254),
+    rep: scalar(p.rep).trim().slice(0, 254),
     filter,
     review,
     includeAdmins: scalar(p.admins) === "1",

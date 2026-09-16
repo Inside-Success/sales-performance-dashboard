@@ -1,5 +1,6 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
+import { buildAskSalesFaqRepReviewKey } from "../admin-rep-review";
 import type { Filters } from "./filters";
 const db = () => {
   if (!process.env.DATABASE_URL) throw new Error("Database unavailable");
@@ -32,26 +33,42 @@ function args(f: Filters) {
 }
 export async function getConversationOverview(f: Filters) {
   const sql = db();
-  const [metrics, rows, reps] = await Promise.all([
+  const reps = await sql.query(
+    `select lower(viewer_email) as email,max(viewer_name) as name from ask_sales_faq_conversations where status<>'deleted' group by lower(viewer_email) order by name nulls last,email`,
+  );
+  const scopedFilters = {
+    ...f,
+    rep: f.rep
+      ? String(
+          reps.find(
+            (r) => buildAskSalesFaqRepReviewKey(String(r.email)) === f.rep,
+          )?.email || "unmatched.invalid",
+        )
+      : "",
+  };
+  const [metrics, rows] = await Promise.all([
     sql.query(
       base +
         ` select count(*) filter(where role='user')::int as questions,count(distinct viewer_email) filter(where role='user')::int as people,count(*) filter(where rating='up')::int as up,count(*) filter(where rating='down')::int as down,count(*) filter(where role='assistant' and failed)::int as failures from scoped`,
-      args(f),
+      args(scopedFilters),
     ),
     sql.query(
       base +
         ` select t.*, (coalesce(r.reviewed,false) and r.reviewed_through >= (select max(greatest(m.created_at,coalesce((select max(f.created_at) from ask_sales_faq_feedback f where f.message_id=m.id),m.created_at))) from ask_sales_faq_messages m where m.conversation_id=t.id)) as reviewed, count(*) over()::int as total from threads t left join ask_sales_faq_admin_reviews r on r.conversation_id=t.id where matches
  and ($7='all' or ($7='attention' and (failed or unanswered or down)) or ($7='down' and down) or ($7='failed' and failed) or ($7='unanswered' and unanswered)) and ($9='all' or ($9='reviewed')=(coalesce(r.reviewed,false) and r.reviewed_through >= (select max(greatest(m.created_at,coalesce((select max(f.created_at) from ask_sales_faq_feedback f where f.message_id=m.id),m.created_at))) from ask_sales_faq_messages m where m.conversation_id=t.id))) order by last_at desc,t.id desc limit 30 offset $8`,
-      [...args(f), f.filter, (f.page - 1) * 30, f.review],
-    ),
-    sql.query(
-      `select lower(viewer_email) as email,max(viewer_name) as name from ask_sales_faq_conversations where status<>'deleted' group by lower(viewer_email) order by name nulls last,email`,
+      [...args(scopedFilters), f.filter, (f.page - 1) * 30, f.review],
     ),
   ]);
   return {
     metrics: metrics[0] as Record<string, number>,
     rows: rows as Thread[],
-    reps: reps as { email: string; name: string | null }[],
+    reps: reps
+      .map((r) => ({
+        key: buildAskSalesFaqRepReviewKey(String(r.email)) || "",
+        email: String(r.email),
+        name: r.name ? String(r.name) : null,
+      }))
+      .filter((r) => r.key),
   };
 }
 export type Thread = {
@@ -128,11 +145,15 @@ export async function getUsage(f: Filters) {
     ),
   ]);
   return {
-    users: users as UsageUser[],
+    users: (users as UsageUser[]).map((u) => ({
+      ...u,
+      repKey: buildAskSalesFaqRepReviewKey(u.email) || "",
+    })),
     daily: daily as { day: string; questions: number; people: number }[],
   };
 }
 export type UsageUser = {
+  repKey: string;
   email: string;
   name: string | null;
   questions: number;

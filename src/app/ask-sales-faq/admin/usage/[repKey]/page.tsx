@@ -5,6 +5,7 @@ import {
   isAskSalesFaqAdmin,
 } from "@/lib/ask-sales-faq/access";
 import { getAskSalesFaqUsageOverview } from "@/lib/db";
+export const metadata = { robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 export default async function Page({
   params,
@@ -17,5 +18,5 @@ export default async function Page({
   const usage = await getAskSalesFaqUsageOverview(30);
   const rep = usage.users.find((u) => u.repReviewKey === repKey);
   if (!rep) notFound();
-  redirect("/ask-sales-faq/admin?rep=" + encodeURIComponent(rep.viewerEmail));
+  redirect("/ask-sales-faq/admin?rep=" + encodeURIComponent(repKey));
 }

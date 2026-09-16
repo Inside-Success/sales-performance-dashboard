@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { neon } from "@neondatabase/serverless";
+import { buildAskSalesFaqRepReviewKey } from "../src/lib/ask-sales-faq/admin-rep-review";
 import { parseFilters } from "../src/lib/ask-sales-faq/admin/filters";
 import {
   getConversationOverview,
@@ -35,7 +36,10 @@ try {
     `insert into ask_sales_faq_messages(id,conversation_id,viewer_email,role,content_redacted,created_at,answer_payload) values($1,$3,$4,'user','Earlier context',now()-interval '1 day',null),($2,$3,$4,'assistant','Answer with context',now(),'{"runtimeMetadata":{"revamp":{"status":"partial"}}}') on conflict(id) do nothing`,
     [id + "-u", id + "-a", id, email],
   );
-  const f = parseFilters({ days: "7", rep: email });
+  const f = parseFilters({
+    days: "7",
+    rep: buildAskSalesFaqRepReviewKey(email)!,
+  });
   const overview = await getConversationOverview(f);
   assert(overview.metrics.questions === 1, "Count user questions");
   assert(overview.rows[0]?.unanswered, "Partial flag");

@@ -1,4 +1,3 @@
-
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -206,7 +205,7 @@ export default async function Page({
                       {u.total > 0 && (
                         <Link
                           className="whitespace-nowrap font-semibold text-red-700"
-                          href={`/ask-sales-faq/admin?${filterQuery(f, { rep: u.email, q: "", filter: "all", review: "all" })}`}
+                          href={`/ask-sales-faq/admin?${filterQuery(f, { rep: u.repKey, q: "", filter: "all", review: "all" })}`}
                         >
                           View conversations →
                         </Link>
