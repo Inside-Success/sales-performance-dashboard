@@ -1241,19 +1241,21 @@ if (missingFiles.length === 0) {
     "source cards avoid exposing evidence-file names or AI/source-selection mechanics to reps",
   );
 
+  const adminStore = fs.readFileSync(path.join(root, "src/lib/ask-sales-faq/admin/store.ts"), "utf8");
+  const adminReader = fs.readFileSync(path.join(root, "src/app/ask-sales-faq/admin/conversations/[conversationId]/page.tsx"), "utf8");
+  const adminReviewRoute = fs.readFileSync(path.join(root, "src/app/api/ask-sales-faq/admin/conversations/[conversationId]/review/route.ts"), "utf8");
   addCheck(
-    "manual admin review stays simple, categorized, and read-only",
-    db.includes("classifyAskSalesFaqReview") &&
-      db.includes("reviewCategory: classification.category") &&
-      db.includes("reviewAction: classification.action") &&
-      adminPage.includes("reviewCategory") &&
-      adminPage.includes("Suggested review") &&
-      adminPage.includes("Manual review only") &&
-      adminPage.includes("including answered questions, natural conversation, and handoffs") &&
-      adminPage.includes("Sample recent answers and handoffs for silent errors") &&
-      !adminPage.includes("QualityReviewConsole") &&
-      !adminPage.includes("export async function POST"),
-    "production logs stay manually reviewed, safe routes are not mislabeled as defects, and audit metadata remains collapsed and read-only",
+    "admin review preserves access and separates notes from chatbot content",
+    adminPage.includes("isAskSalesFaqAdmin") &&
+      adminReader.includes("isAskSalesFaqAdmin") &&
+      adminReviewRoute.includes("isAskSalesFaqAdmin") &&
+      adminReviewRoute.includes('request.headers.get("origin")') &&
+      adminReader.includes("Technical details") &&
+      adminStore.includes("insert into ask_sales_faq_admin_reviews") &&
+      !/update\s+ask_sales_faq_(messages|conversations)\s+set/i.test(adminStore) &&
+      !adminStore.includes("needs_route or") &&
+      !adminPage.includes("QualityReviewConsole"),
+    "admin-only full conversations and review notes do not rewrite answers or treat every handoff as an error; route and SQL behavior also have dedicated tests",
   );
 
   addCheck(
