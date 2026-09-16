@@ -1,0 +1,15 @@
+schema_version: 1.1.0
+project_id: project-sales-performance-dashboard
+display_name: Magic Mike Bot
+context_epoch: 1
+revision_policy:
+  development: moving_checkout
+  evidence: exact_revision
+repositories:
+  - repository_id: sales-performance-dashboard
+    role: primary
+    workspace: default
+    authority_entrypoints:
+      - README.md
+      - MAGIC-MIKE-PROJECT-HANDOFF-2026-07-30.md
+    contract_seams: []
