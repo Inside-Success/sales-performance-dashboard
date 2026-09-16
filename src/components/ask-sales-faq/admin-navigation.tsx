@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Activity, ArrowLeft, BarChart3, Clock3, RefreshCw, ShieldCheck } from "lucide-react";
+import { Activity, ArrowLeft, BarChart3, Clock3, ShieldCheck } from "lucide-react";
 import { formatMiamiDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -46,28 +46,22 @@ export function AskSalesAdminHeader({
         </div>
       </header>
 
-      <nav className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-3" aria-label="Ask Sales administration">
+      <nav className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2" aria-label="Ask Sales administration">
         <AdminNavLink
           active={active === "quality"}
           href="/ask-sales-faq/admin"
           icon={<Activity className="size-4" />}
-          title="Quality & operations"
+          title="Conversations"
           description="Simple production logs for manual review"
         />
         <AdminNavLink
           active={active === "usage"}
           href="/ask-sales-faq/admin/usage"
           icon={<BarChart3 className="size-4" />}
-          title="Rep adoption"
+          title="Usage"
           description="Activation, repeat usage, and rep-level activity"
         />
-        <AdminNavLink
-          active={active === "refresh"}
-          href="/ask-sales-faq/admin/knowledge-refresh"
-          icon={<RefreshCw className="size-4" />}
-          title="Source updates"
-          description="Slack and Google changes awaiting human review"
-        />
+
       </nav>
     </>
   );
