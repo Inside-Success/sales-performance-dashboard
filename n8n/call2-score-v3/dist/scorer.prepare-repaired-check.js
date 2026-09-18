@@ -796,7 +796,9 @@ function v3Procedure(a, build, signals, resolve) {
   const start = v3LineExists(lines, gl.start_timestamp);
   const endCandidate = v3LineExists(lines, gl.end_timestamp) || (video.start ? v3LineExists(lines, video.start) : null);
   facts.prospectDriven = gl.prospect_driven_extension === true;
-  if (start && endCandidate && endCandidate.ms !== null && start.ms !== null && endCandidate.ms >= start.ms) {
+  // A boundary pair spanning more than 45 minutes is almost always a mislabelled end
+  // (first pricing line late in a long call); show it as undetermined rather than as a fact.
+  if (start && endCandidate && endCandidate.ms !== null && start.ms !== null && endCandidate.ms >= start.ms && (endCandidate.ms - start.ms) <= 45 * 60000) {
     facts.greenlightMinutes = Math.round(((endCandidate.ms - start.ms) / 60000) * 10) / 10;
     facts.greenlightUnder10 = facts.greenlightMinutes <= 10;
     push('greenlight_duration', String(facts.greenlightMinutes), { timestamp: start.timestamp, speaker: start.speaker, quote: v3Excerpt(start.text) }, `ends ${endCandidate.timestamp}${facts.prospectDriven ? '; prospect-driven extension reported' : ''}`);
