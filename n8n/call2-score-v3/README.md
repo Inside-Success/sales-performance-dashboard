@@ -1,6 +1,6 @@
 # Call 2 scorer v3 — Raul's procedure rubric (September 2026)
 
-Status: in development, not published. The live scorer `35bFcPYdHSADpyTN` still runs v2 (`magic-mike-call2-evidence-score-v2`, active version `29b014fe…`). Nothing in this folder is deployed until the user approves the test results.
+Status: evaluated candidate, not published (see ../MAGIC-MIKE-SCORECARD-V3-2026-09-18.md for results). The live scorer `35bFcPYdHSADpyTN` still runs v2 (`magic-mike-call2-evidence-score-v2`, active version `29b014fe…`). Nothing in this folder is deployed until the user approves the test results.
 
 ## What changes and what does not
 
@@ -9,14 +9,14 @@ Unchanged from v2: the four dimensions and weights (Frame 20, Tailoring 25, Obje
 New in v3 (from Raul Rios's September 11 rubric document, confirmed final in the September 17 call, forward only):
 
 1. The scorer is told the required Call 2 flow: recording disclosure, short greenlight review, transition to Rudy's video, assume the sale after the video, re-establish value on objection, prospect-specific urgency, payment solutions one at a time, complete the handoff.
-2. A procedural checklist is produced with every scored call and stored in the existing `Behaviour Checks JSON` field. Fourteen items, each `yes`, `no`, `not_applicable` or `unable_to_determine`, each `yes`/`no` backed by a transcript quote where a quote is possible.
-3. An explicit call outcome (`closed_on_call`, `deposit_taken`, `agreement_pending_payment`, `follow_up_agreed`, `declined`, `no_decision`) derived from verified close signals, stored in `Call Context JSON.outcome`.
+2. A procedural checklist is produced with every scored call and stored in the existing `Behaviour Checks JSON` field. Fourteen checks plus the measured greenlight duration (fifteen rows), each check `yes`, `no`, `not_applicable` or `unable_to_determine`, each `yes`/`no` backed by a transcript quote where a quote is possible.
+3. An explicit call outcome (`closed_on_call`, `agreement_pending_payment`, `payment_path_offered`, `follow_up_agreed`, `declined`, `no_decision`) derived from verified close signals, stored in `Call Context JSON.outcome`.
 4. Assuming the sale counts as a close. The v2 validator only credited a close when it found a literal question or imperative request. In v3 a grounded assumptive move into enrollment or payment satisfies the same requirement, and a `no_close_attempt` cap cannot coexist with a verified assumptive close.
 5. Deterministic ceilings that make Raul's guidance bite without touching weights or caps:
    - No assumptive close and no direct ask → Close at most `attempted` (existing v2 rule, now with the assumptive-close exception).
    - Four or more distinct payment options offered before a resolution check → Objection Handling at most `attempted`.
    - Payment options offered before any value re-establishment on a financial objection → Objection Handling at most `adequate`.
-   - Greenlight review longer than 10 minutes without a prospect-driven reason → Frame and Control at most `adequate`.
+   - Greenlight review longer than 12 minutes (Raul's 10 with tolerance for the model's timestamp reading) without a prospect-driven reason → Frame and Control at most `adequate`; 10–12 minutes is shown on the checklist as over 10 but not penalized.
    - No recording disclosure → Frame and Control at most `strong` (compliance flags the disclosure separately; the scorer only blocks an exemplary frame).
 6. Version identity: `score_version` becomes `magic-mike-call2-evidence-score-v3`, review revision `raul-procedure-2026-09-18`. Old v2 rows stay in Airtable untouched and remain viewable as the previous-rubric cohort. v2 and v3 are never averaged together.
 
