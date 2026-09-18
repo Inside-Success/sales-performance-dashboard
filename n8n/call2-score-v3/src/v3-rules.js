@@ -223,10 +223,15 @@ function v3MinBand(current, ceiling) {
 // Deterministic ceilings from Raul's guidance. Returns {dimension: {ceiling, reason}}.
 function v3Ceilings(facts) {
   const out = {};
-  if (facts.greenlightUnder10 === false && !facts.prospectDriven) out.frame_and_control = { ceiling: 'adequate', reason: `Greenlight review ran ${facts.greenlightMinutes} minutes without a prospect-driven reason; Frame and Control is limited to adequate.` };
+  // Raul: a greenlight "materially exceeding 10 minutes" without a prospect-driven
+  // reason lowers Frame. The checklist reports under/over 10; the ceiling applies
+  // from 12 minutes so a borderline review is shown but not penalized.
+  if (facts.greenlightMinutes !== null && facts.greenlightMinutes > 12 && !facts.prospectDriven) out.frame_and_control = { ceiling: 'adequate', reason: `Greenlight review ran ${facts.greenlightMinutes} minutes without a prospect-driven reason; Frame and Control is limited to adequate.` };
   else if (facts.disclosure === false) out.frame_and_control = { ceiling: 'strong', reason: 'No recording disclosure was found; Frame and Control cannot be exemplary.' };
   if (facts.objection !== false && facts.paymentOptionsCount > 3) out.objection_handling = { ceiling: 'attempted', reason: `${facts.paymentOptionsCount} distinct payment options were offered before a resolution check; Objection Handling is limited to attempted.` };
-  else if (facts.offeredBeforeValue) out.objection_handling = { ceiling: 'adequate', reason: 'Payment options were offered before value was re-established; Objection Handling is limited to adequate.' };
+  // Naming one payment structure as the normal close path is never penalized
+  // (Raul); the value-first rule bites when the rep answers an objection with plans.
+  else if (facts.offeredBeforeValue && facts.paymentOptionsCount >= 2) out.objection_handling = { ceiling: 'adequate', reason: 'Payment options were offered before value was re-established; Objection Handling is limited to adequate.' };
   return out;
 }
 function v3Outcome(signals, modelOutcome) {

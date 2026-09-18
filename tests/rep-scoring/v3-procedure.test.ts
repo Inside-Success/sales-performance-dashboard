@@ -11,7 +11,7 @@ const REP = 'Tara Reszitnyk';
 const T = {
   disclosure: '[00:00:30.000]', glStart: '[00:01:00.000]', video: '[00:06:00.000]', videoEnd: '[00:14:00.000]',
   assume: '[00:14:20.000]', passive: '[00:14:25.000]', objection: '[00:15:00.000]', value: '[00:15:30.000]', urgency: '[00:16:00.000]',
-  opt1: '[00:17:00.000]', opt2: '[00:17:20.000]', opt3: '[00:17:40.000]', opt4: '[00:18:00.000]', followup: '[00:19:00.000]', frame: '[00:00:45.000]', tailor: '[00:03:00.000]', longGl: '[00:12:30.000]',
+  opt1: '[00:17:00.000]', opt2: '[00:17:20.000]', opt3: '[00:17:40.000]', opt4: '[00:18:00.000]', followup: '[00:19:00.000]', frame: '[00:00:45.000]', tailor: '[00:03:00.000]', longGl: '[00:14:30.000]',
 };
 const LINES: Record<string, string> = {
   [T.disclosure]: `${REP}: Before we jump in, this call is being recorded for quality and training purposes, is that okay?`,
@@ -140,15 +140,21 @@ describe('v3 ceilings from the procedure', () => {
     expect(r.current_call_score.dimensions.objection_handling.band).toBe('attempted');
     expect(r.validation.warnings).toContain('v3_procedure_ceiling:objection_handling:attempted');
   });
-  it('limits objection handling to adequate when payment options came before value', () => {
-    const a = assessment({}, { payment_options: { status: 'no', options: [{ label: '4 x $3,000', evidence: ev(T.opt1) }], offered_before_value: true, evidence: ev(T.opt1) } });
-    const r = score(a);
-    expect(r.current_call_score.dimensions.objection_handling.band).toBe('adequate');
+  it('limits objection handling to adequate when plans answered the objection before value, but never for a single plan', () => {
+    const two = assessment({}, { payment_options: { status: 'no', options: [{ label: '4 x $3,000', evidence: ev(T.opt1) }, { label: '3 x $4,000', evidence: ev(T.opt2) }], offered_before_value: true, evidence: ev(T.opt1) } });
+    expect(score(two).current_call_score.dimensions.objection_handling.band).toBe('adequate');
+    const one = assessment({}, { payment_options: { status: 'yes', options: [{ label: '4 x $3,000', evidence: ev(T.opt1) }], offered_before_value: true, evidence: ev(T.opt1) } });
+    expect(score(one).current_call_score.dimensions.objection_handling.band).toBe('strong');
+  });
+  it('shows an 11-minute greenlight as over 10 without applying the frame ceiling', () => {
+    const r = score(assessment({}, { greenlight: { start_timestamp: T.glStart, end_timestamp: '[00:12:30.000]', prospect_driven_extension: false, reason: 'borderline' } }), build(transcript({ '[00:12:30.000]': `${REP}: Okay so that is the whole greenlight letter, now let me pull up the video.` })));
+    expect(check(r, 'greenlight_under_10').status).toBe('no');
+    expect(r.current_call_score.dimensions.frame_and_control.band).toBe('strong');
   });
   it('limits frame to adequate for a long greenlight unless the prospect drove it', () => {
     const long = assessment({}, { greenlight: { start_timestamp: T.glStart, end_timestamp: T.longGl, prospect_driven_extension: false, reason: 'long' } });
     const r = score(long);
-    expect(check(r, 'greenlight_duration').status).toBe('11.5');
+    expect(check(r, 'greenlight_duration').status).toBe('13.5');
     expect(check(r, 'greenlight_under_10').status).toBe('no');
     expect(r.current_call_score.dimensions.frame_and_control.band).toBe('adequate');
     const driven = assessment({}, { greenlight: { start_timestamp: T.glStart, end_timestamp: T.longGl, prospect_driven_extension: true, reason: 'prospect' } });
