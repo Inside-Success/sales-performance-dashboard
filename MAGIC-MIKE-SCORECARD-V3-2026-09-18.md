@@ -99,3 +99,5 @@ Spend: $10.89 in total ($0.56 smoke, $1.95 regression, $4.72 September, $3.45 ta
 5. Watch the first natural Call 2: scorer execution → persistence creates the `magic-mike-call2-evidence-score-v3:<source>` row → manager call page shows the checklist → rep report shows the number.
 6. Rollback: restore the two baseline node definitions from the private folder and publish; revert the dashboard merge. Do not delete rows.
 7. Afterwards delete the isolated test copy `vRhAIu3fTJ10QLO9`.
+
+Draft PR (record, not merged): https://github.com/Inside-Success/sales-performance-dashboard/pull/204
