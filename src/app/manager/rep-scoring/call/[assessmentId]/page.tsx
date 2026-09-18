@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
-import { getV7Assessment, type V7Evidence, type V7Finding } from "@/lib/rep-scoring/v7-validation";
+import { getV7Assessment, type V7BehaviourCheck, type V7Evidence, type V7Finding } from "@/lib/rep-scoring/v7-validation";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Call Score Review | Magic Mike Bot", robots: { index: false, follow: false } };
@@ -53,11 +53,44 @@ export default async function CallScorePage({ params }: { params: Promise<{ asse
         {concerns.length ? <FindingSection title="What needs improvement" findings={concerns} concern /> : lowScoreWithoutDetails ? <Card className="magic-card border-amber-200 bg-amber-50/70"><CardContent className="flex gap-3 p-5"><TriangleAlert className="mt-0.5 size-5 shrink-0 text-amber-700" /><div><div className="font-extrabold text-slate-950">The score indicates manager review is needed</div><p className="mt-1 text-sm leading-6 text-slate-600">A detailed weakness label was not stored for this call. Use the manager takeaway, scoring breakdown, and source transcript instead of assuming there was no weakness.</p></div></CardContent></Card> : <Card className="magic-card border-emerald-100 bg-emerald-50/70"><CardContent className="flex gap-3 p-5"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" /><div><div className="font-extrabold text-slate-950">No material weakness was supported on this call</div><p className="mt-1 text-sm leading-6 text-slate-600">This does not mean perfect execution; it means the transcript did not support a material deficiency.</p></div></CardContent></Card>}
         {call.strengths.length ? <FindingSection title="What was done well" findings={call.strengths} /> : null}
 
+        {call.behaviours.length ? <ProcedureChecklist checks={call.behaviours} /> : null}
+
         <details className="magic-card rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer font-extrabold text-slate-950">View complete scoring breakdown</summary><p className="mt-2 text-sm leading-6 text-slate-500">Open this only when you need to audit how the score was calculated.</p><div className="mt-4 space-y-3">{call.dimensions.map((dimension) => <div key={dimension.key} className="rounded-xl border border-slate-200 p-4"><div className="flex items-center justify-between gap-3"><div className="font-extrabold text-slate-950">{dimension.label}</div><div className="text-xl font-extrabold text-slate-950">{dimension.points?.toFixed(1) ?? "Not scored"}</div></div>{dimension.reason ? <p className="mt-2 text-sm leading-6 text-slate-600">{dimension.reason}</p> : null}</div>)}</div></details>
 
         {call.transcriptUrl ? <a href={call.transcriptUrl} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:border-red-200 hover:text-red-700">Open source transcript <ExternalLink className="size-4" /></a> : null}
       </div>
     </main>
+  );
+}
+
+const CHECK_STYLES: Record<string, { label: string; className: string }> = {
+  yes: { label: "Yes", className: "bg-emerald-100 text-emerald-900" },
+  no: { label: "No", className: "bg-red-100 text-red-900" },
+  not_applicable: { label: "N/A", className: "bg-slate-100 text-slate-600" },
+  unable_to_determine: { label: "Could not tell", className: "bg-slate-100 text-slate-600" },
+};
+
+function ProcedureChecklist({ checks }: { checks: V7BehaviourCheck[] }) {
+  return (
+    <Card className="magic-card bg-white">
+      <CardHeader><CardTitle>Call 2 procedure checklist</CardTitle><p className="text-sm leading-6 text-slate-500">Each step of the trained Call 2 flow, with the transcript line it was judged on. &ldquo;Could not tell&rdquo; means the transcript cannot show it (for example screen sharing) and the rep was not penalized.</p></CardHeader>
+      <CardContent>
+        <ul className="divide-y divide-slate-100">
+          {checks.map((check) => {
+            const style = CHECK_STYLES[check.status];
+            return (
+              <li key={check.name} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0">
+                  <div className="font-semibold text-slate-900">{check.label || humanize(check.name)}</div>
+                  {check.quote ? <div className="mt-1 text-xs text-slate-500">{check.timestamp}{check.speaker ? ` · ${check.speaker}` : ""} — <span className="italic">{check.quote}</span></div> : null}
+                </div>
+                <span className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1 text-xs font-bold ${style ? style.className : "bg-slate-100 text-slate-700"}`}>{style ? style.label : check.status}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 
