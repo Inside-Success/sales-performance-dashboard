@@ -64,6 +64,7 @@ function evaluateIf(node, item) {
 async function runCase(c) {
   const outputs = {}; // node name -> items [{json}]
   const trace = [];
+  const providerResponses = {}; // node name -> {request, response}, kept so a native n8n pinned replay can reuse exactly these paid responses
   const $ = (name) => ({ all: () => outputs[name] || [], item: (outputs[name] || [])[0], first: () => (outputs[name] || [])[0] });
   const runCode = (node, items) => { const $input = { all: () => items, first: () => items[0] }; const fn = new Function('$input', '$', '$json', node.parameters.jsCode); return fn($input, $, items[0] && items[0].json); };
   let queue = [{ name: 'Normalize Preview Input', items: [{ json: { call: c.call, recent_scores: [] } }] }];
@@ -74,7 +75,7 @@ async function runCase(c) {
     if (node.type === 'n8n-nodes-base.code') { result = runCode(node, items); outputs[name] = result; trace.push(name); }
     else if (node.type === 'n8n-nodes-base.httpRequest') {
       if (name === 'Fetch Live Context Pack') { result = [{ json: { data: '' } }]; }
-      else { const body = items[0].json.provider_request; if (!body) throw new Error('no provider_request for ' + name); const response = await callProvider(body, c.id, name); result = [{ json: response }]; if (response.ok !== true && node.onError === 'continueErrorOutput') branch = 1; trace.push(`${name}${response.__cached ? ' (cached)' : ''}`); }
+      else { const body = items[0].json.provider_request; if (!body) throw new Error('no provider_request for ' + name); const response = await callProvider(body, c.id, name); providerResponses[name] = { request: body, response }; result = [{ json: response }]; if (response.ok !== true && node.onError === 'continueErrorOutput') branch = 1; trace.push(`${name}${response.__cached ? ' (cached)' : ''}`); }
       outputs[name] = result;
     } else if (node.type === 'n8n-nodes-base.if') { const truthy = evaluateIf(node, items[0].json); branch = truthy ? 0 : 1; result = items; outputs[name] = items; trace.push(`${name}=${truthy}`); }
     else throw new Error('unsupported node type ' + node.type + ' for ' + name);
@@ -82,7 +83,7 @@ async function runCase(c) {
   }
   const finalItems = outputs['Return Final Reviewed Score'];
   if (!finalItems) throw new Error('graph did not reach Return Final Reviewed Score: ' + trace.join(' > '));
-  return { result: finalItems[0].json, trace };
+  return { result: finalItems[0].json, trace, providerResponses, triggerItem: outputs['When Executed for Review'][0].json };
 }
 
 const cases = loadCases();
@@ -90,8 +91,9 @@ const summary = [];
 for (const c of cases) {
   const started = Date.now();
   try {
-    const { result, trace } = await runCase(c);
+    const { result, trace, providerResponses, triggerItem } = await runCase(c);
     fs.writeFileSync(path.join(outDir, `${c.id}.result.json`), JSON.stringify({ id: c.id, source: c.source, reference: c.reference, trace, result }, null, 1));
+    if (args['save-replay'] === 'true') fs.writeFileSync(path.join(outDir, `${c.id}.replay.json`), JSON.stringify({ id: c.id, triggerItem, providerResponses }));
     const s = result.current_call_score || {};
     const row = { id: c.id, rep: c.call.rep_name, date: String(c.call.call_date || '').slice(0, 10), eligible: s.eligible, score: s.score ?? null, cap: s.cap ?? null, caps: (s.applied_critical_events || []).join(';'), reason: s.eligible ? '' : (s.reason || ''), review: result.factual_review && result.factual_review.status, cost: result.provider_costs && result.provider_costs.total_cost_usd, ref: c.reference && (c.reference.v2_live_score ?? (c.reference.claims_reviewed ?? null)), outcome: result.call_outcome && result.call_outcome.classification, assume: (result.procedural_checks || []).find((x) => x.name === 'assumptive_close_after_video')?.status, video: (result.procedural_checks || []).find((x) => x.name === 'rudy_video')?.status, gl: (result.procedural_checks || []).find((x) => x.name === 'greenlight_duration')?.status, ceilings: (result.validation && result.validation.warnings || []).filter((w) => /v3_procedure_ceiling|calibrated_close/.test(w)).join(';'), ms: Date.now() - started };
     summary.push(row); console.log(JSON.stringify(row));
