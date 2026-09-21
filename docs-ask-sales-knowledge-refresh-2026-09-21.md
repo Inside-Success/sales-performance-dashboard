@@ -8,7 +8,7 @@ User-requested knowledge-only refresh from the last successful September 16 sour
 
 ## Published knowledge changes
 
-- Call 1 pricing: Rudy withdrew the old disqualification exception. Retire the three conflicting inherited exception records.
+- Call 1 pricing: the initial refresh interpreted the announcements as withdrawing the exception. **Corrected in the September 21 coverage follow-up:** that summary was too absolute; the full message and owner clarification preserve the narrow main-offer disqualification exception. See the coverage-corrections report.
 - HubSpot: both Meeting Status and Cast Score for every call, calendar connection and existing other required fields.
 - Pass-off ownership: recipient posts the prospect email in #hubspot-passoff; approximate 15-minute assignment, attend while waiting, report persistent problems to Sales Tech. Existing eligibility/approval rules stay intact.
 - Reality buyer welcome: dedicated official template, support address, production handoff; no regular documentary onboarding call. The source has a mismatched mailto hyperlink, so the explicit support address is used.

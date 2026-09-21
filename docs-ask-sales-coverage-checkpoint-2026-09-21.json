@@ -1,0 +1,19 @@
+{
+  "status": "candidate_not_published",
+  "knowledgeVersion": "a7b2510c5bf20052503b21d1",
+  "previousKnowledgeVersion": "0f7a126e1f9fd40f7e749cf9",
+  "priorFullCheckpoint": "docs-ask-sales-knowledge-checkpoint-2026-09-21.json",
+  "coverage": "Targeted corrections only; prior channel watermarks unchanged",
+  "sourceDocumentsRead": [
+    "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+    "1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU"
+  ],
+  "sourceThreadsRead": [
+    "C09AF0NQJE7:1789782505.839959",
+    "C09AF0NQJE7:1789851038.258499",
+    "C09AF0NQJE7:1789740638.220539",
+    "C0AUQKNR8CF:1779825414.828269",
+    "C0AUQKNR8CF:1789551039.587899"
+  ],
+  "privateEvidenceDirectory": ".magic-mike-knowledge-corrections-2026-09-21"
+}

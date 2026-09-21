@@ -2171,12 +2171,12 @@
   {
     "id": "call1-no-pricing-2026-09-20",
     "decisionKey": "call1-no-pricing-2026-09-20",
-    "title": "Call 1: do not mention pricing; explain value in Call 2",
+    "title": "Call 1 pricing: normal sequence and narrowly scoped disqualification exception",
     "questions": [
       "Can I tell them the cost on the first call?",
       "They asked the price on Call 1; what do I do?"
     ],
-    "text": "Rudy’s September 19–20 instructions for the sales Call 1 / Call 2 process explicitly say never mention price on Call 1. This replaces his earlier limited exception for discussing price with a prospect who seems unable to afford it; do not reuse that exception. Introduce pricing through the required Call 2 presentation after benefits and context, with the rep present to handle objections. This is a sales sequence rule, not a price change, permission to conceal material terms, or permission to collect payment before explaining the offer. Preserve each product’s own presentation and contract requirements.",
+    "text": "The normal sales sequence is not to quote fees, a minimum or package prices on Call 1. Explain pricing on Call 2 through the required presentation, after benefits and context, with the rep present to answer questions. A prospect asking repeatedly about price does not itself create an exception. Rudy’s complete September 19 announcement opens by referring to rare disclosure (\"ONLY mention it 1 in 10 times if they felt the person was broke\") before strongly warning against routine pricing; September 20 repeats the no-pricing instruction. Do not describe these messages as explicitly revoking every qualification exception. For the regular/main ISTV offer, use the complete narrow disqualification boundary in the linked governing evidence. Do not extend that regular-offer exception automatically to reality or DJ/NLCEO. This is not permission to conceal material terms, collect payment before explaining the offer, or avoid normal financial-qualification questions. Preserve each product’s own presentation and contract requirements.",
     "scopes": [
       "shared"
     ],
@@ -2189,7 +2189,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:main-call1-disqualification-exception-2026-09-21"
+    ],
     "supersedes": [
       "claim_bc6feb1c60e8c90d__a1",
       "curated_32981b3dcba667da",
@@ -2200,12 +2202,14 @@
   {
     "id": "hubspot-status-cast-score-2026-09-19",
     "decisionKey": "hubspot-status-cast-score-2026-09-19",
-    "title": "HubSpot: meeting status AND Cast Score for every call",
+    "title": "HubSpot meeting status and Cast Score: completed calls, no-shows and cancellations",
     "questions": [
       "What do I update after my second call?",
-      "Where do I put the cast score and meeting outcome?"
+      "Where do I put the cast score and meeting outcome?",
+      "What cast score do I put for a no-show?",
+      "Does a cancelled call get zero too?"
     ],
-    "text": "Current September 19 instructions require updating both Meeting Status and Cast Score for all calls, including Call 2 and Call 3. In HubSpot open Meetings, scroll right to those columns, and use the dropdown for the call that actually occurred. Keep the other applicable sale totals, Green Light notes and meeting details required by the existing procedure. Connect the calendar under Settings (wrench) > General > Calendar > Connect Calendar. Updating only a cast score or only a meeting status is incomplete. This does not replace final Green Light/background approval.",
+    "text": "For completed calls, including Call 2 and Call 3, update BOTH Meeting Status and Cast Score. In HubSpot open Meetings, scroll right to those columns and select the outcome for that meeting. Rudy clarified in the September 18–19 thread that NO-SHOWS receive a Cast Score of 0. Cancelled meetings are different: he said “Cancelled no we will fix it”; do not fabricate a zero Cast Score for a cancellation or present it as an assessed completed call. Preserve the correct cancelled status; if HubSpot requires an inappropriate score, flag that specific system issue to sales operations. The source does not establish a special score for rescheduled meetings, so do not invent one. Keep other applicable sale totals, Green Light notes and meeting details required by the existing procedure. Connect the calendar under Settings (wrench) > General > Calendar > Connect Calendar. Cast Score here is the HubSpot lead assessment field. Final background approval remains with the Green Light team; follow the separately documented Green Light submission process.",
     "scopes": [
       "shared"
     ],
@@ -2213,7 +2217,9 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789759997702179",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789760465288799",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789680226184579",
-      "https://www.loom.com/share/0f9d32f998ac47f080ab7d972e4b7a5e"
+      "https://www.loom.com/share/0f9d32f998ac47f080ab7d972e4b7a5e",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789746795085989",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789756440160569"
     ],
     "reviewedAt": "2026-09-21",
     "authority": 12,
@@ -2583,6 +2589,128 @@
     "routeKey": null,
     "conditions": [],
     "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "main-call1-disqualification-exception-2026-09-21",
+    "decisionKey": "main-call1-disqualification-exception-2026-09-21",
+    "title": "Regular ISTV Call 1: rare price disclosure only to disqualify",
+    "questions": [
+      "Can I mention price on Call 1 if the prospect has no business and cannot afford it?",
+      "Is there an exception if I think the prospect has no money?",
+      "What if they keep asking the cost on the first call?"
+    ],
+    "text": "For the regular/main ISTV offer, normally do not discuss fees or quote a minimum on Call 1; explain that pricing is covered on Call 2 after greenlight and the presentation provides context. The preserved narrow exception applies only when the rep is sure BOTH that the prospect has no business AND that they are not financially qualified. Price may then be mentioned solely to disqualify, not to pitch, sell, negotiate or pre-handle objections. A hunch that someone lacks money, having no business alone, or repeated questions about cost does not establish both conditions. Ask normal qualification questions when facts are missing; do not assume financial circumstances. Rudy’s September 19 full message recalls rare disclosure before its strong no-pricing warning; “1 in 10” describes rarity, not a quota or permission to quote every tenth prospect. The project owner confirmed this exception on September 21 after reviewing the full message. This maintained interpretation preserves the previously owner-confirmed complete condition; it does not claim Rudy issued a new explicit reinstatement. Do not transfer this main-offer exception to reality or DJ/NLCEO without product-specific evidence.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789782505839959",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789851038258499",
+      "owner-confirmation:rich-call1-pricing-disqualification-exception-2026-07-03",
+      "owner-clarification:2026-09-21-call1-exception-full-rudy-message"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:call1-no-pricing-2026-09-20"
+    ],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "new-rep-six-training-sessions-2026-09-21",
+    "decisionKey": "new-rep-six-training-sessions-2026-09-21",
+    "title": "New sales reps: mandatory live onboarding training with Mike and Raul",
+    "questions": [
+      "When does the training for new reps happen?",
+      "How do I join the trainings required when getting hired?",
+      "What training sessions does Raul host?",
+      "When is Mike Call 1 Call 2 compliance training?"
+    ],
+    "text": "These are internal new-sales-rep onboarding sessions, not buyer onboarding, Money Mondays or Keap/HubSpot migration training. Part 1, Basic Setup item 5, requires attending at least one live session of EACH of six onboarding training Zooms: Monday 11:00 AM–12:00 PM EST, Compliance Training with Mike; Tuesday 11:00 AM–12:00 PM EST, Call 1 Sales Training with Mike; Wednesday 11:00 AM–12:00 PM EST, Call 2 Sales Training with Mike; Wednesday 3:00–4:00 PM EST, Procedural Training with Raul; Thursday 11:00 AM–12:00 PM EST, Closing, Payment, Contracts & Onboarding Training with Mike; Friday 11:00 AM–12:00 PM EST, Final Mock Call Prep & Checklist with Raul. To join, open the Part 1 Onboarding Training Sheet, go to Basic Setup item 5 “ONBOARDING TRAINING ZOOMS”, and click the HERE link beside the specific session; each session has its own link. Give the direct Part 1 document link as the resource. This is the published recurring schedule checked September 21, not proof a particular session is happening today or has not been cancelled. The document labels times EST; preserve that label and do not silently convert a dated occurrence without verifying its timezone. Raul also runs a separate first-two-weeks-live sales Q&A; explain the distinction when the user refers ambiguously to Raul training or two weeks.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:new-rep-first-two-weeks-qa-2026-09-21"
+    ],
+    "supersedes": [
+      "operational_7eb701b3cc2f4e99"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "new-rep-first-two-weeks-qa-2026-09-21",
+    "decisionKey": "new-rep-first-two-weeks-qa-2026-09-21",
+    "title": "Raul new-rep Q&A after final mock: first two weeks live",
+    "questions": [
+      "During the two weeks of onboarding what training does Raul host?",
+      "What is the new rep sales questions meeting?",
+      "Do I need to attend Raul morning meetings after going live?"
+    ],
+    "text": "Part 1 Admin Procedures distinguishes the New Rep Sales Questions Meetings with Raul from the six onboarding training Zooms. The new-rep Q&A is Tuesday through Friday, 9:00–9:30 AM EST, mandatory for the FIRST TWO WEEKS after completing training and passing the final mock. Reps receive the meeting invitation when ready to go live; DM Raul if unable to attend or unable to be on camera. They may drop this particular Q&A after two weeks. It is not the Wednesday 3–4 PM Procedural Training or Friday 11 AM–noon Final Mock Call Prep with Raul; those are separate mandatory onboarding sessions. The main sales team meeting is also separate: Part 1 lists Rich/Rudy Tuesday–Friday 9:30–10:00 AM EST. Madeline’s September 17 clarification says the daily main-team meeting is no longer on everyone’s calendar: join the link Olivia posts in the main sales Slack channel about ten minutes before start. Follow the current daily main-team post for the actual start time: some September posts say 9:20 AM, so the sheet’s 9:30 time must not override the day’s announcement. That main-team link instruction does not replace the individual HERE links for the six training Zooms or the Raul Q&A invitation. Published times are labelled EST in the document; live cancellations or calendar exceptions are not established here.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789654736520409",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650600703149"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:new-rep-six-training-sessions-2026-09-21"
+    ],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "new-rep-training-roadmap-and-mock-2026-09-21",
+    "decisionKey": "new-rep-training-roadmap-and-mock-2026-09-21",
+    "title": "New rep training resources, mock-call readiness and first weeks live",
+    "questions": [
+      "Where are Part 1 and Part 2 onboarding training documents?",
+      "How do I pass my final mock and start taking calls?",
+      "What is required when I get hired?",
+      "What training do I complete in my first two weeks live?"
+    ],
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the six live training Zooms, call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom calling/texting and cloud recording; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
+      "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:new-rep-six-training-sessions-2026-09-21",
+      "governing_evidence:new-rep-first-two-weeks-qa-2026-09-21"
+    ],
+    "supersedes": [
+      "claim_40e4504e3bf5c91c",
+      "operational_eeefbc92626d9fca"
+    ],
     "sourceKind": "source_reviewed_governed_policy"
   }
 ]
