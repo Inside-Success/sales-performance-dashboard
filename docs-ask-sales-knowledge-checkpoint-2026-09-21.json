@@ -64,5 +64,10 @@
   "productionDeployment": "dpl_Bd8DEiZ9DCbSUsELa3aXaxcdm1QV",
   "dashboardCommit": "bba32168a67f52ea028cb0da65d3d17bdaefcd77",
   "faqCommit": "e32b4254cbe014a99f69a4cb886bf2b8c1e95122",
-  "verificationLimit": "Hosted real answer tested in isolation; production SHA and alias verified; no fresh signed-in production answer or visual inspection."
+  "verificationLimit": "Hosted real answer tested in isolation; production SHA and alias verified; no fresh signed-in production answer or visual inspection.",
+  "subsequentTargetedCorrection": {
+    "knowledgeVersion": "a7b2510c5bf20052503b21d1",
+    "checkpoint": "docs-ask-sales-coverage-checkpoint-2026-09-21.json",
+    "note": "Retain these full-scan watermarks; also apply the targeted correction receipt."
+  }
 }

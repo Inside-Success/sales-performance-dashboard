@@ -1,5 +1,5 @@
 {
-  "status": "candidate_not_published",
+  "status": "published_verified_deployment",
   "knowledgeVersion": "a7b2510c5bf20052503b21d1",
   "previousKnowledgeVersion": "0f7a126e1f9fd40f7e749cf9",
   "priorFullCheckpoint": "docs-ask-sales-knowledge-checkpoint-2026-09-21.json",
@@ -15,5 +15,9 @@
     "C0AUQKNR8CF:1779825414.828269",
     "C0AUQKNR8CF:1789551039.587899"
   ],
-  "privateEvidenceDirectory": ".magic-mike-knowledge-corrections-2026-09-21"
+  "privateEvidenceDirectory": ".magic-mike-knowledge-corrections-2026-09-21",
+  "dashboardCommit": "588c2e838593049a75ccd4ed79ec72b0de5ce714",
+  "faqCommit": "23337fc293d4ad85577592a21585701ebb5c37ea",
+  "productionDeployment": "dpl_4UX8Vu697bSSCviQg3QYuGo9Uu3A",
+  "verificationLimit": "Hosted real answer verified in isolation; production source SHA and alias verified; no fresh signed-in production answer"
 }
