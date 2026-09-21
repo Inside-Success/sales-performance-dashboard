@@ -1,0 +1,64 @@
+{
+  "reviewDate": "2026-09-21",
+  "status": "reviewed_candidate_not_yet_published",
+  "previousKnowledgeVersion": "b093bfd070017710ec873413",
+  "slack": {
+    "C09AF0NQJE7": {
+      "latestRootTs": "1789983857.530259",
+      "rootMessagesRead": 58,
+      "coverage": "roots since previous successful checkpoint; relevant threads expanded"
+    },
+    "C0AUQKNR8CF": {
+      "latestRootTs": "1789941437.831759",
+      "rootMessagesRead": 105,
+      "coverage": "roots since previous successful checkpoint; relevant threads expanded"
+    },
+    "C08QGKL39J6": {
+      "latestRootTs": "1789974183.249279",
+      "rootMessagesRead": 110,
+      "coverage": "supplemental roots since 2026-09-16T00:00:00Z; historical collector unavailable checkpoint preserved"
+    },
+    "C0A8S3JSR1Q": {
+      "latestRootTs": "1789957117.164209",
+      "rootMessagesRead": 110,
+      "coverage": "supplemental roots since 2026-09-16T00:00:00Z; historical collector unavailable checkpoint preserved"
+    }
+  },
+  "olderThreadsExplicitlyRevisited": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1788746537.690009",
+      "repliesAfter": "1789518005.424409",
+      "note": "60 new replies; final page reached"
+    }
+  ],
+  "google": {
+    "enabledAccessibleSourcesMetadataChecked": 43,
+    "changedSourcesRead": [
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+      "1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg",
+      "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+      "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg"
+    ],
+    "newSourceToRecheck": "1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs",
+    "stillUnavailable": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ],
+    "excluded": "disabled private Green Light tracking sheet; no policy publication from customer tracking"
+  },
+  "limitations": [
+    "No claim of exhaustive replies on every historical Slack root. Revisit known long-running policy threads with overlap next refresh.",
+    "Two previously unavailable sources remain unavailable; historical checkpoints retained.",
+    "Unchanged linked videos were not retranscribed.",
+    "Google metadata modification time is not policy authority."
+  ],
+  "privateEvidenceDirectory": ".magic-mike-knowledge-2026-09-21",
+  "sourceEvidenceHashes": {
+    "text-1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs.txt": "c6201f75bd5dd402b4dc01738413b6b07a56c91b73859fef1dc04a3435d85d27",
+    "text-1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc.txt": "a4a576003d4f197529011c8c705dedfcb5072cec1a2757d2c40496b742ebcded",
+    "text-1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU.txt": "33544dafd5815302eb664ecec6836f3b8d1842cfac05df32255e5e9c226fbbf2"
+  },
+  "knowledgeVersion": "0f7a126e1f9fd40f7e749cf9"
+}
