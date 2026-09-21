@@ -1,3 +1,5 @@
+> Latest user-requested refresh: [September 21 verified release](docs-ask-sales-knowledge-refresh-2026-09-21.md). Start from [the successful manual checkpoint](docs-ask-sales-knowledge-checkpoint-2026-09-21.json), including its coverage limitations. Historical collector checkpoints remain preserved.
+
 > **September 17, 2026 update:** The Source updates admin page and its interactive publishing actions are retired. The dedicated daily refresh orchestrator `ua18B5wbsYptLqJX` is inactive. Knowledge refreshes are now user-requested weekly work; source history and checkpoints remain retained. See [the current admin release report](docs-ask-sales-admin-redesign-2026-09-17.md). The dated entries below describe historical behavior, not current scheduler status.
 
 # Ask Sales Daily Knowledge Refresh
