@@ -23,4 +23,22 @@ Candidate knowledge hash: `a7b2510c5bf20052503b21d1`.
 
 Initial 15 isolated Luna-medium answers were manually reviewed. Training and pricing failures were corrected; customer onboarding retained its genuine source conflict. The broad Green Light question produced an overcautious clarification: review misread a negative HubSpot scope caveat. The knowledge wording was clarified to positively identify the CRM field and retain the Green Light team’s role; follow-up checks are recorded in the final release receipt. No question-specific runtime patch or prompt change was made.
 
-354 tests passed before the final two source-context wording refinements; GitHub release CI will validate the final candidate with static safety, TypeScript, lint and production build. Final model checks and hosted verification are pending. Production has not changed at this checkpoint. Rollback is a revert of the knowledge commit plus a production-config rebuild; never promote the isolated database preview.
+354 tests passed before the final two source-context wording refinements; GitHub release CI will validate the final candidate with static safety, TypeScript, lint and production build. That was the pre-publication checkpoint; the final verified receipt below supersedes it. Rollback is a revert of the knowledge commit plus a production-config rebuild; never promote the isolated database preview.
+
+## Final verified release
+
+- Dashboard PR207 merged at `588c2e838593049a75ccd4ed79ec72b0de5ce714`; FAQ PR81 merged at `23337fc293d4ad85577592a21585701ebb5c37ea`.
+- Knowledge hash `a7b2510c5bf20052503b21d1` matches the paired export.
+- Final dashboard CI `35594677407` passed all 354 tests, 107 static checks, TypeScript, scoped lint and production build. FAQ CI `35594708567` passed its governed release validators.
+- Twenty offline Luna-medium answer checks (15 initial plus five focused final rechecks) cost an estimated $0.14289358 total, latency 8.0–18.7 seconds. The final checks correctly handled Raul schedule/follow-up distinctions, no-show/cancellation, Green Light scope and main-meeting announcement priority. This is a bounded review, not a population accuracy percentage.
+- Hosted isolated deployment `dpl_8w3gSmuotjp3E7mHJfoP48Yye1Yt` passed authenticated Ask Sales, Conversations, Usage and Coaching reads. Its real Raul-training answer supplied all three sessions and access instructions in 10.6 seconds. Storage in the isolated database was verified and the test conversation removed.
+- Production deployment `dpl_4UX8Vu697bSSCviQg3QYuGo9Uu3A` is READY on the exact dashboard merge SHA, uses the production target and owns `sales-performance-dashboard-rose.vercel.app`. The preview was not promoted. Production source/hash delivery is verified from the deployment; no fresh signed-in production answer or browser visual check is claimed.
+- Automatic new-branch preview provisioning failed at the existing resource limit; the established isolated branch was reused successfully. No databases or other teams’ branches were deleted.
+
+## Required checks for the next manual knowledge refresh
+
+1. Read the complete relevant message and thread. Record default, exception, actor, product scope and timing together; emphatic wording alone does not prove an exception has been revoked.
+2. Compare useful source sections against active compiled knowledge, not merely a list of documents read. Track missing schedules, joining instructions, conditional rules and required next steps explicitly.
+3. Use the real failed conversation and at least one paraphrase/follow-up to verify the answer. Check related product and actor boundaries, especially staff training versus buyer onboarding.
+4. Distinguish current policy from older training examples and peer suggestions. Retain genuine conflicts and source-access limitations; do not invent resolutions.
+5. Keep the original full-scan watermarks and append targeted corrections. A selective search must not pretend to advance all historical thread coverage. The source systems remain read-only and the retired automated publisher stays off.
