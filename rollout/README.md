@@ -30,3 +30,7 @@ The Slack collector fetches channel history and filters recent edits/replies, in
 4. Prefer changing the selector to V5.14 and rebuilding the current code; this retains the new source-ingestion privacy safeguards. If reverting to the old deployment instead, first restore the old collector allowlists/settings from the private rollback snapshot so expanded sources cannot reach old ingestion code. Keep revamp ledgers and diagnostics; do not inject revamp releases into the legacy ledger. Pause knowledge publication during rollback.
 
 No changes to coaching, compliance scoring, CRM source data, or source documents are part of this rollout.
+
+## Latest manual knowledge checkpoint
+
+See [September 21 refresh](KNOWLEDGE-REFRESH-2026-09-21.md) and [source checkpoint](KNOWLEDGE-CHECKPOINT-2026-09-21.json). Start the next user-requested refresh here, preserving documented incomplete/unavailable-source boundaries and revisiting old policy threads with overlap.

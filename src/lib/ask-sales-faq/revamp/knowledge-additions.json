@@ -44,7 +44,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -145,7 +146,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -170,7 +172,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -195,7 +198,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -220,7 +224,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -245,7 +250,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -270,7 +276,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -320,7 +327,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -345,7 +353,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -445,7 +454,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -520,7 +530,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-production-timeline-2026-09-21"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -1006,7 +1017,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Preserve the demonstrated UI scope; example amounts are not current price permissions."
+      "Preserve the demonstrated UI scope; example amounts are not current price permissions.",
+      "governing_evidence:hubspot-status-cast-score-2026-09-19"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -1221,7 +1233,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Catalog context, not a grant of cross-show entitlement or a claim of real-time application availability."
+      "Catalog context, not a grant of cross-show entitlement or a claim of real-time application availability.",
+      "governing_evidence:built-for-more-dj-family-2026-09-18"
     ],
     "supersedes": [],
     "domains": [
@@ -1234,14 +1247,15 @@
     "decisionKey": "current-regular-onboarding-schedule",
     "title": "Current regular onboarding times after payment and signing",
     "questions": [],
-    "text": "The current main ISTV Call 2 script lists onboarding Monday 12pm Eastern, Tuesday 5pm Eastern, Wednesday 12pm Eastern, Thursday 9am Eastern, Friday 12pm Eastern. The earlier Monday 1pm and Wednesday 3pm schedule is superseded. Confirm actual availability using the onboarding booking link in the welcome email; these are listed session times, not live availability. This is regular onboarding, not reality competition onboarding.",
+    "text": "The regular ISTV onboarding sources currently disagree. The Call 2 script lists Monday 12 pm, Tuesday 5 pm, Wednesday 12 pm, Thursday 9 am and Friday 12 pm Eastern. The buyer welcome email currently lists Monday 1 pm, Tuesday 5 pm, Wednesday 3 pm, Thursday 9 am and Friday 12 pm Eastern. A newer document modification timestamp alone does not establish which conflicting hours were deliberately approved. Use the live onboarding booking link in the current welcome email to confirm the actual available slot; do not confidently guarantee either Monday/Wednesday schedule from these documents. This is regular documentary onboarding, not reality onboarding.",
     "scopes": [
       "main_istv"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo/edit"
+      "https://docs.google.com/document/d/1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo/edit",
+      "https://docs.google.com/document/d/1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg/edit"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-09-21",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -1487,7 +1501,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+      "Apply to the stated process and product; a source-specific exception is not a universal rule.",
+      "governing_evidence:hubspot-status-cast-score-2026-09-19"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -1556,7 +1571,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Apply to the stated process and product; a source-specific exception is not a universal rule."
+      "Apply to the stated process and product; a source-specific exception is not a universal rule.",
+      "governing_evidence:outbound-75-leads-2026-09-18"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -2151,5 +2167,422 @@
     ],
     "domains": [],
     "sourceKind": "source_reviewed_governed_synthesis"
+  },
+  {
+    "id": "call1-no-pricing-2026-09-20",
+    "decisionKey": "call1-no-pricing-2026-09-20",
+    "title": "Call 1: do not mention pricing; explain value in Call 2",
+    "questions": [
+      "Can I tell them the cost on the first call?",
+      "They asked the price on Call 1; what do I do?"
+    ],
+    "text": "Rudy’s September 19–20 instructions for the sales Call 1 / Call 2 process explicitly say never mention price on Call 1. This replaces his earlier limited exception for discussing price with a prospect who seems unable to afford it; do not reuse that exception. Introduce pricing through the required Call 2 presentation after benefits and context, with the rep present to handle objections. This is a sales sequence rule, not a price change, permission to conceal material terms, or permission to collect payment before explaining the offer. Preserve each product’s own presentation and contract requirements.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789782505839959",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789851038258499"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "claim_bc6feb1c60e8c90d__a1",
+      "curated_32981b3dcba667da",
+      "owner-call1-pricing-complete-boundary"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-status-cast-score-2026-09-19",
+    "decisionKey": "hubspot-status-cast-score-2026-09-19",
+    "title": "HubSpot: meeting status AND Cast Score for every call",
+    "questions": [
+      "What do I update after my second call?",
+      "Where do I put the cast score and meeting outcome?"
+    ],
+    "text": "Current September 19 instructions require updating both Meeting Status and Cast Score for all calls, including Call 2 and Call 3. In HubSpot open Meetings, scroll right to those columns, and use the dropdown for the call that actually occurred. Keep the other applicable sale totals, Green Light notes and meeting details required by the existing procedure. Connect the calendar under Settings (wrench) > General > Calendar > Connect Calendar. Updating only a cast score or only a meeting status is incomplete. This does not replace final Green Light/background approval.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789759997702179",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789760465288799",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789680226184579",
+      "https://www.loom.com/share/0f9d32f998ac47f080ab7d972e4b7a5e"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-passoff-claim-2026-09-19",
+    "decisionKey": "hubspot-passoff-claim-2026-09-19",
+    "title": "Pass-off recipient claims HubSpot ownership with cast email",
+    "questions": [
+      "I took a passoff but cannot update the meeting",
+      "How do I claim a pass-off in HubSpot?"
+    ],
+    "text": "Pramod’s current pass-off procedure: the rep who takes an authorized pass-off posts the cast/prospect email address, one email at a time, in #hubspot-passoff. Post the email, not just the person’s name. The assignment process runs approximately every 15 minutes and assigns the contact and meetings to the claiming rep. Attend the call while waiting; do not delay it because ownership has not yet updated. Then record the actual meeting outcome and required Cast Score. If assignment or editing access still fails, ask #sales-tech-requests. This does not waive pass-off eligibility, the scheduled-start waiting rules, or approval for a planned reassignment.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789747230085169",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789749968483809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789754923117039"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "hubspot-passoff-status"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-buyer-welcome-2026-09-21",
+    "decisionKey": "reality-buyer-welcome-2026-09-21",
+    "title": "Reality buyers: dedicated welcome email and production handoff",
+    "questions": [
+      "What email do I send after a reality sale?",
+      "Does reality have an onboarding call or welcome email?"
+    ],
+    "text": "There is now an official REALITY SHOW SALES ONBOARDING EMAIL FOR BUYERS, announced by Rudy September 18. Send that reality-specific welcome template after the purchase process; do not skip the welcome email and do not send the regular documentary onboarding template. CC support@insidesuccesstv.com and ask the buyer to reply Received and save the contacts. Production will contact buyers about onboarding after the casting phase closes. Production and support questions go to support@insidesuccesstv.com. Do not book buyers onto regular weekly documentary onboarding calls or automatically arrange a Miami documentary studio visit. Use the linked welcome document for the current full template and approved social announcement assets. One embedded mailto link in the document points to a different address despite displaying the support address; use the explicit support@insidesuccesstv.com address.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789672190970179",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789677744306379"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-onboarding-process"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-no-cohort-2026-09-18",
+    "decisionKey": "reality-no-cohort-2026-09-18",
+    "title": "Reality sales: remove documentary cohort wording",
+    "questions": [
+      "Does the same-week cohort deadline apply to reality?",
+      "Is there a reality contract video?"
+    ],
+    "text": "Rudy and Sales Ops explicitly clarified that reality offers do not use cohort rules. Remove cohort wording from reality letters rather than copying the regular documentary cohort process. This does not remove a deadline expressly agreed in a reality contract or grant an invented payment extension. Reality now has a dedicated buyer welcome email and production-led onboarding. There is no separate reality contract-explanation video according to Rudy; the mandatory reality Call 2 license/package video is still required.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789681170719729",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789655383085099",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789677583143159",
+      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:reality-buyer-welcome-2026-09-21"
+    ],
+    "supersedes": [
+      "reality-current-open-questions"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-production-timeline-2026-09-21",
+    "decisionKey": "reality-production-timeline-2026-09-21",
+    "title": "Reality production timing: estimates and confirmed scheduling",
+    "questions": [
+      "How long does reality production take?",
+      "How much time off do I need for filming?"
+    ],
+    "text": "The current reality buyer welcome template describes an approximately 12-month production journey: casting about 1–3 months, pre-production 3–5 months, filming about 2–3 weeks, editing around 6 months and promotion around two weeks before release. These are approximate phases, may overlap, and are not guaranteed individual deadlines. The welcome template says production location/schedule is sent about 60 days before filming. Much production communication happens closer to filming; quiet periods do not by themselves indicate a problem. Full episodes generally precede separate clips/assets. The general FAQ still describes 7–14 filming days, while the newer welcome template says 2–3 weeks. Do not guarantee either duration for every show: disclose this difference when a buyer needs travel commitments and use the show-specific confirmed production schedule/support team. Do not convert a relative launch statement such as one or two more months of casting into an evergreen countdown.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "island-tentative-dates-2026-09-19",
+    "decisionKey": "island-tentative-dates-2026-09-19",
+    "title": "Entrepreneurs Island tentative January 2027 window",
+    "questions": [
+      "When does Entrepreneurs Island film?",
+      "Is January 10–30 also for Millionaire Match House?"
+    ],
+    "text": "Rudy gave January 10–30, 2027 as a tentative Entrepreneurs Island filming window. He clarified this applies to Island only, not Millionaire Match House or every reality show. It is planning guidance, not a confirmed booking or contractual filming guarantee. He said participants get approximately 60 days notice; schedule constraints can be considered but are not guaranteed. If someone cannot attend, another reality production or season may be discussed with the team; do not promise an automatic transfer, refund or confirmed alternative.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789688881450569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789781931256209",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789571635044649",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789571657349729"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-distribution-plans-2026-09-19",
+    "decisionKey": "reality-distribution-plans-2026-09-19",
+    "title": "Reality platform plans are not named-platform guarantees",
+    "questions": [
+      "Will reality definitely be on Amazon or Apple?"
+    ],
+    "text": "Rudy’s September 19 clarification describes plans for Amazon/Apple or a similar platform, consistent with the presentation. A different platform could buy exclusive rights, so do not promise one exact external network from these plans. Distinguish pitching/planned distribution from a platform actually guaranteed in the participant’s applicable contract. The existing Inside Success TV distribution and contract-specific guarantee boundaries remain in force.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789743819996259"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "millionaire-match-house-living-2026-09-19",
+    "decisionKey": "millionaire-match-house-living-2026-09-19",
+    "title": "Millionaire Match House: age mix and shared rooms",
+    "questions": [
+      "Do Millionaire Match House participants share rooms?",
+      "What ages are being cast?"
+    ],
+    "text": "Rudy described Millionaire Match House as generally ages 25 and up with a mixture of ages. Participants share rooms with others of the same sex. Casting aims for a roughly balanced mix of men and women but may have a couple more on one side. These are general format expectations, not exact quotas, guaranteed cast counts, private-room promises, or a guarantee that every applicant qualifies.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789757044039959"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "background-review-authority-2026-09-18",
+    "decisionKey": "background-review-authority-2026-09-18",
+    "title": "Criminal history and qualification: Green Light team makes final decision",
+    "questions": [
+      "Can Clean and Thriving take someone with an old conviction?",
+      "Who decides whether a background issue disqualifies someone?"
+    ],
+    "text": "Reps should not automatically approve or disqualify applicants solely from a criminal-history description, an old charge, an elapsed number of years, or a clean web search. Mike’s current Clean and Thriving guidance is to submit the applicant through Green Light for the team’s background check; Rich reiterates that final background qualification belongs to that team. This resolves the earlier lack of a next step, not every eligibility outcome. If a social/background screen has already rejected the applicant, raise the case with Jen/the Green Light team rather than overriding the rejection or promising approval. Preserve the applicant’s relevant context in that review.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789569675714809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650760260649",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789665767983769"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "clean-and-thriving-criminal-history-unresolved"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "outbound-75-leads-2026-09-18",
+    "decisionKey": "outbound-75-leads-2026-09-18",
+    "title": "20% outbound dial-out list: current maximum is 75 leads",
+    "questions": [
+      "Is the outbound maximum 20 or 75 leads?"
+    ],
+    "text": "Sales Ops explicitly clarified that the 20% outbound dial-out list now allows a maximum of 75 leads rather than the older SOP’s 20. Follow the daily posted list instructions: claim a named block, do not cherry-pick/filter the list, dial and update claimed leads by the stated 8 pm Eastern deadline. This is a maximum claim allowance, not a new commission promise or permission to ignore opt-outs, duplicate ownership, protected sheet columns or manual outreach-email requirements. This replaces the old combined 20-Slack/20-outbound allocation as guidance for the outbound list; it does not establish a new separate Slack lead allowance.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789665659776659",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789665667958289",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789562702053419"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "operational_9e4b495152a54027"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "built-for-more-dj-family-2026-09-18",
+    "decisionKey": "built-for-more-dj-family-2026-09-18",
+    "title": "Built for More belongs to DJ/NLCEO",
+    "questions": [
+      "Is Built for More DJ or regular ISTV?"
+    ],
+    "text": "Sales Ops confirmed Built for More belongs to the Daymond John / Next Level CEO show family. Use that family’s offer and process; do not apply main ISTV or reality pricing and benefits merely because all are company shows.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789668029874829"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "contract-copy-request-2026-09-18",
+    "decisionKey": "contract-copy-request-2026-09-18",
+    "title": "Prospect asks for the contract: it may be emailed",
+    "questions": [
+      "Can I email the contract before they pay?",
+      "They want to read the agreement instead of screen share"
+    ],
+    "text": "Sales Ops says the preferred flow is to review the agreement together on screen and answer questions. If the prospect insists on receiving the contract to review, it can be emailed; do not say the company refuses to provide it. Use the correct current product-specific agreement. Sending a copy is not permission to edit its terms or promise an exception. For Mansion of Money, Sales Ops explicitly declined requested contract edits: use the approved terms; if those do not fit, do not rewrite them yourself.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789666511709159",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789679581686189",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789743313504709"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "sales-recording-client-request-2026-09-18",
+    "decisionKey": "sales-recording-client-request-2026-09-18",
+    "title": "Do not send the company Zoom sales recording to a client",
+    "questions": [
+      "Can I send the buyer our Zoom recording?"
+    ],
+    "text": "Sales Ops answered that sharing the company’s Zoom sales-call recording with the client is against policy. Offer to explain the offer again or send the approved client-facing materials instead. This is distinct from the existing rule about a client’s AI assistant attending a call; permission for that does not authorize sending the company recording.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789666595603789"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-internal-faq-not-client-2026-09-18",
+    "decisionKey": "reality-internal-faq-not-client-2026-09-18",
+    "title": "Reality internal FAQ is not a client handout",
+    "questions": [
+      "Can I send the prospect the reality FAQ?"
+    ],
+    "text": "Sales Ops explicitly says not to send the internal reality FAQ to prospects. Use approved client-facing package materials and the correct buyer welcome email when appropriate. The approved reality package PDF may be shared under the existing guidance, but preserve the documented mini-documentary Standard/VIP discrepancy and explain benefits using current controlling presentation/contract guidance.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789666893427259",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789666908950519"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "opted-out-existing-appointment-2026-09-19",
+    "decisionKey": "opted-out-existing-appointment-2026-09-19",
+    "title": "Opted-out prospect with an existing appointment",
+    "questions": [
+      "They opted out but still have an appointment; do I join?"
+    ],
+    "text": "Do not initiate new outreach to an opted-out person. Sales Ops separately instructed reps to join an already scheduled call even if that prospect opted out; if the prospect does not attend, mark no-show after five minutes. This narrow existing-appointment instruction is not permission to resume calls, emails or texts, remove the opt-out, or infer renewed consent.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789743397589729",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789561963106919"
+    ],
+    "reviewedAt": "2026-09-21",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
   }
 ]
