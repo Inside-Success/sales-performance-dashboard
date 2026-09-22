@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const tools = [
   { href: "/coaching", title: "Casting Manager", subtitle: "AI Coach", icon: Clapperboard },
-  { href: "/ask-sales-faq", title: "Sales FAQ", subtitle: "chatbot", icon: MessageCircleMore },
+  { href: "/ask-sales-faq", title: "Casting Manager", subtitle: "FAQ Bot", icon: MessageCircleMore },
 ];
 const steps = ["Review", "Reflect", "Adjust", "Sell More"];
 

@@ -21,3 +21,7 @@ User supplied a Claude Design laptop/phone screenshot and requested matching it.
 ## Downloaded v4 specification
 
 Read ~/Downloads/DESIGN-SPEC.md in full; referenced HTML mockups were not present. Applied exact v4 clamp sizing, typography weights/tracking, spacing, glow layers, shadows, accent colors, pill layout and card styling. Plus Jakarta Sans was already installed and is retained. Header visual changes are guarded by isHub and scoped CSS: frosted background, logo proportions and outlined avatar. Profile state and actions are unchanged. Non-clickable process pills intentionally remain text rather than fake buttons. Small-phone card sizing retains compact rows without reducing link hit areas. Reduced-motion disables entry animation and hover movement.
+
+
+## Final naming and headline adjustment
+User approved matching Tyler’s second card label: Casting Manager FAQ Bot. The destination remains /ask-sales-faq. Main Study The Film headline reduced approximately 5% (clamp 53px/10vw/141px); all other layout and behavior retained.
