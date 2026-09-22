@@ -23,7 +23,7 @@ export function DashboardHomeLoading() {
           <Skeleton className="h-12 w-[min(100%,42rem)] bg-[#E7E7EB]" />
           <div className={welcomeStyles.process}>
             <Skeleton className="h-6 w-36 bg-[#E7E7EB]" />
-            <div className="space-y-3">
+            <div className="mt-4 max-w-[640px] space-y-3">
               {[0, 1, 2, 3].map((step) => (
                 <Skeleton key={step} className="h-7 w-full bg-[#E7E7EB]" />
               ))}
