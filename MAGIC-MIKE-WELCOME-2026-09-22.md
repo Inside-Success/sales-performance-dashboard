@@ -9,3 +9,7 @@ Cards retain native link semantics, visible keyboard focus, full-card hit areas,
 Scoped ESLint and a webpack production build passed locally. Release verification must include the production deployment, desktop/mobile rendering, both card destinations, keyboard navigation, and unauthenticated login redirect. No local server is required. See the PR's final verification receipt for live results.
 
 Baseline: main `0e360a588b61690dfe27da084291acc738f3dd0f`. If rollback is needed, revert this page-only release rather than changing any workflow or database.
+
+## Design refinement after user review
+
+The user rejected the initial sparse design. Revised the home page using the existing magic-card and magic-hero design language: bordered white hero with the standard red accent line, a stronger two-level headline, a compact arrow-connected practice sequence, and left-aligned tool cards with red accents and circular directional arrows. Content remains concise; destination URLs and tracking stay unchanged. Scoped ESLint and production build passed. See the refinement PR for final live checks.
