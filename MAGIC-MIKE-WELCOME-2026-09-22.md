@@ -17,3 +17,7 @@ The user rejected the initial sparse design. Revised the home page using the exi
 ## Superseding supplied design reference
 
 User supplied a Claude Design laptop/phone screenshot and requested matching it. Home now uses a large left-aligned black headline, grey eyebrow, subtle upper-right red wash, divider and individual step pills with red arrows/final red pill. Compact cards include red icons, faint 01/02 watermarks and neutral circular arrows. Phone headline breaks after Study and steps form two rows. Styling is isolated in welcome.module.css; header behavior, routes and tracking remain unchanged. Device frames and the design-tool toolbar in the reference are not website content.
+
+## Downloaded v4 specification
+
+Read ~/Downloads/DESIGN-SPEC.md in full; referenced HTML mockups were not present. Applied exact v4 clamp sizing, typography weights/tracking, spacing, glow layers, shadows, accent colors, pill layout and card styling. Plus Jakarta Sans was already installed and is retained. Header visual changes are guarded by isHub and scoped CSS: frosted background, logo proportions and outlined avatar. Profile state and actions are unchanged. Non-clickable process pills intentionally remain text rather than fake buttons. Small-phone card sizing retains compact rows without reducing link hit areas. Reduced-motion disables entry animation and hover movement.

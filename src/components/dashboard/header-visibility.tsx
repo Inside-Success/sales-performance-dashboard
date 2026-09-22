@@ -5,6 +5,7 @@ import { Bot } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { ProfileMenu } from "@/components/dashboard/profile-menu";
+import welcomeStyles from "@/app/welcome.module.css";
 import { ToolSwitcher } from "@/components/dashboard/tool-switcher";
 
 export function HeaderVisibility({ userName, userEmail }: { userName: string; userEmail: string }) {
@@ -17,7 +18,7 @@ export function HeaderVisibility({ userName, userEmail }: { userName: string; us
   const isFaqAdmin = pathname.startsWith("/ask-sales-faq/admin");
 
   return (
-    <header className="magic-app-header sticky top-0 z-40 border-b backdrop-blur supports-[backdrop-filter]:bg-white/85">
+    <header className={`magic-app-header sticky top-0 z-40 border-b backdrop-blur supports-[backdrop-filter]:bg-white/85 ${isHub ? welcomeStyles.header : ""}`}>
       <div className="mx-auto flex min-h-[72px] w-full max-w-[84rem] flex-col items-stretch justify-center gap-3 px-5 py-3 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:py-0">
         <div className="flex min-w-0 items-center justify-between gap-3">
           <BrandLink compact={!isHub} />
