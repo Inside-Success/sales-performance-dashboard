@@ -1,29 +1,20 @@
 .page.page { min-height: 0; flex: 1; background: #f5f5f7; color: #1d1d1f; font-family: var(--font-plus-jakarta), sans-serif; }
-.container { width: 100%; max-width: 1280px; margin: 0 auto; padding: clamp(16px,2.5vw,36px) clamp(12px,3vw,40px) clamp(40px,6vw,80px); }
-.hero { position: relative; isolation: isolate; overflow: hidden; padding: clamp(28px,4vw,56px) clamp(20px,4.5vw,64px) clamp(24px,3vw,44px); border: 1px solid rgba(0,0,0,.05); border-radius: clamp(22px,2.6vw,34px); background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 30px 80px -40px rgba(29,29,31,.22); }
-.hero::before, .hero::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
-.hero::before { width: 65%; height: 110%; top: -35%; right: -12%; background: radial-gradient(closest-side,rgba(224,49,47,.13),transparent); filter: blur(10px); }
-.hero::after { width: 65%; height: 90%; bottom: -55%; left: -20%; background: radial-gradient(closest-side,rgba(29,29,31,.05),transparent); }
+.container { width: 100%; max-width: 1160px; margin: 0 auto; padding: clamp(20px,3.5vw,48px) clamp(14px,3vw,36px) 64px; }
+.hero { position: relative; isolation: isolate; overflow: hidden; padding: clamp(36px,5.5vw,72px); border: 1px solid rgba(29,29,31,.06); border-radius: 28px; background: linear-gradient(120deg,#fff 58%,#fff8f8); box-shadow: 0 22px 60px -40px rgba(29,29,31,.24); }
+.hero::before { content: ""; position: absolute; z-index: -1; width: 55%; height: 100%; top: -35%; right: -15%; background: radial-gradient(closest-side,rgba(224,49,47,.09),transparent); pointer-events: none; }
 .heading { margin: 0; }
-.eyebrow { display: block; font-size: clamp(23.4px,3.24vw,46.8px); font-weight: 700; line-height: 1; color: #6e6e73; letter-spacing: -.035em; }
-.headline { display: block; max-width: 11ch; margin-top: clamp(4px,.6vw,8px); font-size: clamp(50px,9.5vw,134px); font-weight: 800; line-height: .94; letter-spacing: -.05em; }
+.eyebrow { display: block; color: #6e6e73; font-size: clamp(21px,2vw,30px); font-weight: 700; line-height: 1.2; letter-spacing: -.025em; }
+.headline { display: block; margin-top: 8px; font-size: clamp(46px,6.2vw,88px); font-weight: 800; line-height: 1.04; letter-spacing: -.055em; }
+.phrase { white-space: nowrap; }
 .period { color: #e0312f; }
-.steps { display: flex; align-items: center; flex-wrap: wrap; gap: clamp(8px,1vw,14px); list-style: none; margin: clamp(24px,3.4vw,48px) 0 0; padding: clamp(18px,2.2vw,30px) 0 0; border-top: 1px solid rgba(0,0,0,.07); }
-.step { display: flex; align-items: center; gap: clamp(8px,1vw,14px); }
-.pill, .finalPill { display: inline-flex; align-items: center; justify-content: center; padding: clamp(10px,1.2vw,16px) clamp(16px,1.9vw,28px); border: 1px solid rgba(0,0,0,.08); border-radius: 999px; background: #f5f5f7; font-size: clamp(18px,2.1vw,28px); font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
-.finalPill { background: #e0312f; border-color: #e0312f; color: white; font-weight: 800; padding-inline: clamp(18px,2.1vw,30px); box-shadow: 0 10px 24px rgba(224,49,47,.32); }
-.stepArrow { width: 28px; height: 28px; stroke-width: 2.4; color: #e0312f; flex-shrink: 0; }
-.tools { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,320px),1fr)); gap: clamp(12px,1.5vw,20px); margin-top: clamp(12px,1.5vw,20px); }
-.tool { position: relative; display: flex; align-items: center; gap: clamp(14px,1.6vw,22px); overflow: hidden; padding: clamp(16px,1.6vw,22px) clamp(16px,1.8vw,26px); border: 1px solid rgba(0,0,0,.05); border-radius: clamp(20px,2vw,26px); background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 20px 48px -28px rgba(29,29,31,.18); transition: box-shadow .35s cubic-bezier(.2,.7,.2,1),transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s; }
-.number { position: absolute; right: 56px; top: -22%; font-size: clamp(110px,11vw,150px); font-weight: 800; letter-spacing: -.06em; line-height: 1; color: rgba(224,49,47,.05); pointer-events: none; }
-.icon { position: relative; display: grid; place-items: center; width: clamp(56px,5.4vw,72px); height: clamp(56px,5.4vw,72px); flex-shrink: 0; border-radius: clamp(16px,1.6vw,20px); background: linear-gradient(160deg,#f04b48,#c9282a); color: white; box-shadow: 0 10px 24px rgba(224,49,47,.3); }
-.icon svg { width: 30px; height: 30px; }
-.toolLabel { position: relative; min-width: 0; line-height: 1.15; }
-.toolTitle { display: block; font-size: clamp(22px,2.2vw,30px); font-weight: 800; letter-spacing: -.03em; }
-.toolSubtitle { display: block; margin-top: 2px; font-size: clamp(17px,1.6vw,22px); font-weight: 700; color: #c9282a; letter-spacing: -.02em; }
-.toolArrow { position: relative; display: grid; place-items: center; width: 48px; height: 48px; margin-left: auto; flex-shrink: 0; border: 1px solid rgba(0,0,0,.06); border-radius: 50%; background: #f5f5f7; transition: background .3s,color .3s; }
-.tool:hover { border-color: rgba(224,49,47,.35); box-shadow: 0 2px 4px rgba(0,0,0,.04),0 28px 56px -28px rgba(224,49,47,.28); }
-.tool:hover .toolArrow { background: #1d1d1f; color: white; }
+.steps { display: flex; flex-wrap: wrap; list-style: none; margin: clamp(28px,3vw,40px) 0 0; padding: 20px 0 0; border-top: 1px solid rgba(29,29,31,.09); color: #57575c; font-size: clamp(16px,1.5vw,20px); font-weight: 600; line-height: 1.6; letter-spacing: -.015em; }
+.step:not(:last-child)::after { content: "·"; margin: 0 clamp(8px,1.1vw,16px); color: #b4b4b9; }
+.step:last-child { color: #c9282a; font-weight: 700; }
+.tools { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-top: 16px; }
+.tool { display: block; min-height: 120px; padding: clamp(22px,2.4vw,32px); border: 1px solid rgba(29,29,31,.08); border-radius: 20px; background: #fff; box-shadow: 0 12px 36px -28px rgba(29,29,31,.35); text-decoration: none; transition: border-color .2s,box-shadow .2s,transform .2s; }
+.toolTitle { display: block; color: #6e6e73; font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.toolSubtitle { display: block; margin-top: 6px; color: #1d1d1f; font-size: clamp(24px,2.4vw,32px); font-weight: 750; line-height: 1.15; letter-spacing: -.035em; }
+.tool:hover { border-color: rgba(224,49,47,.45); box-shadow: 0 18px 42px -30px rgba(184,42,45,.3); transform: translateY(-2px); }
 .tool:focus-visible { outline: 2px solid #e0312f; outline-offset: 3px; }
 .header.header { font-family: var(--font-plus-jakarta),sans-serif; background: rgba(245,245,247,.8); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,.06); }
 .header > div { max-width: 1280px; padding-inline: clamp(12px,3vw,40px); }
@@ -33,11 +24,6 @@
 .header button[aria-label="Open profile menu"] { width: 40px; height: 40px; border: 1.5px solid #e0312f; background: white; color: #e0312f; box-shadow: none; }
 .header button[aria-label="Open profile menu"] > span { width: auto; height: auto; background: transparent; color: inherit; font-size: 12px; box-shadow: none; }
 .header button[aria-label="Open profile menu"]:hover { background: #fdecec; }
-@keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-@media (prefers-reduced-motion: no-preference) { .hero { animation: enter .7s cubic-bezier(.2,.7,.2,1) both; } .tools { animation: enter .7s .12s cubic-bezier(.2,.7,.2,1) both; } .tool:hover { transform: translateY(-3px); } }
-@media (prefers-reduced-motion: reduce) { .tool,.toolArrow { transition: none; } }
-/* Keep the reference's compact single-line card title on phones without shrinking tap targets. */
-@media (max-width: 420px) { .tool { gap: 12px; padding-inline: 16px; } .toolTitle { font-size: 20px; } .toolArrow { width: 44px; height: 44px; } }
-@media (max-width: 359px) { .tool { gap: 10px; padding-inline: 12px; } .icon { width: 48px; height: 48px; } .toolTitle { font-size: 18px; } .toolArrow { width: 38px; height: 38px; } }
-
-.phrase { white-space: nowrap; }
+@media (max-width: 640px) { .container { padding-bottom: 40px; } .hero { border-radius: 24px; } .tools { grid-template-columns: 1fr; gap: 12px; margin-top: 12px; } .tool { min-height: 0; border-radius: 18px; } }
+@media (max-width: 359px) { .hero { padding: 28px 24px; } .headline { font-size: 43px; } .steps { font-size: 15px; } .step:not(:last-child)::after { margin-inline: 7px; } }
+@media (prefers-reduced-motion: reduce) { .tool { transition: none; } }
