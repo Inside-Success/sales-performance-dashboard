@@ -6,7 +6,7 @@
 .hero::after { width: 65%; height: 90%; bottom: -55%; left: -20%; background: radial-gradient(closest-side,rgba(29,29,31,.05),transparent); }
 .heading { margin: 0; }
 .eyebrow { display: block; font-size: clamp(26px,3.6vw,52px); font-weight: 700; line-height: 1; color: #6e6e73; letter-spacing: -.035em; }
-.headline { display: block; max-width: 11ch; margin-top: clamp(4px,.6vw,8px); font-size: clamp(53px,10vw,141px); font-weight: 800; line-height: .94; letter-spacing: -.05em; }
+.headline { display: block; max-width: 11ch; margin-top: clamp(4px,.6vw,8px); font-size: clamp(50px,9.5vw,134px); font-weight: 800; line-height: .94; letter-spacing: -.05em; }
 .period { color: #e0312f; }
 .steps { display: flex; align-items: center; flex-wrap: wrap; gap: clamp(8px,1vw,14px); list-style: none; margin: clamp(24px,3.4vw,48px) 0 0; padding: clamp(18px,2.2vw,30px) 0 0; border-top: 1px solid rgba(0,0,0,.07); }
 .step { display: flex; align-items: center; gap: clamp(8px,1vw,14px); }
