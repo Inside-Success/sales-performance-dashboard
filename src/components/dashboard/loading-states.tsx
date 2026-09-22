@@ -20,14 +20,14 @@ export function DashboardHomeLoading() {
       <LoadingProgress />
       <div className={welcomeStyles.container} aria-hidden="true">
         <section className={welcomeStyles.hero}>
-          <div className="space-y-4">
-            <Skeleton className="h-7 w-44 max-w-full bg-[#E7E7EB]" />
-            <Skeleton className="h-[clamp(46px,6.2vw,88px)] w-[min(100%,36rem)] bg-[#E7E7EB]" />
-          </div>
-          <div className="mt-10 flex flex-wrap gap-4 border-t border-[#1D1D1F]/10 pt-5">
-            {[0, 1, 2, 3].map((step) => (
-              <Skeleton key={step} className="h-5 w-20 bg-[#E7E7EB]" />
-            ))}
+          <Skeleton className="h-12 w-[min(100%,42rem)] bg-[#E7E7EB]" />
+          <div className={welcomeStyles.process}>
+            <Skeleton className="h-6 w-36 bg-[#E7E7EB]" />
+            <div className="space-y-3">
+              {[0, 1, 2, 3].map((step) => (
+                <Skeleton key={step} className="h-7 w-full bg-[#E7E7EB]" />
+              ))}
+            </div>
           </div>
         </section>
 
