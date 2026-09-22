@@ -32,7 +32,6 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { APPROVED_FAQ_ARTICLES, type ApprovedFaqArticle } from "@/lib/ask-sales-faq/generated/approved-faq-bundle";
@@ -764,15 +763,6 @@ export function AskSalesFaqChat() {
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <Badge
-              variant="outline"
-              className="border-red-100 bg-[#FEF2F2] px-2 py-0.5 text-[11px] font-bold text-[#B91C1C]"
-            >
-              Beta
-            </Badge>
           </div>
         </header>
 

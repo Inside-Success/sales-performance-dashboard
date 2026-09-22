@@ -29,11 +29,6 @@ export function ToolSwitcher({ active }: { active: "coaching" | "faq" }) {
             <Icon className={cn("hidden size-3.5 sm:block", selected ? "text-[#DC2626]" : "text-slate-400")} />
             <span className="hidden xl:inline">{tool.label}</span>
             <span className="xl:hidden">{tool.shortLabel}</span>
-            {tool.id === "faq" ? (
-              <span className="hidden rounded-full bg-red-50 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-red-700 sm:inline">
-                Beta
-              </span>
-            ) : null}
           </Link>
         );
       })}
