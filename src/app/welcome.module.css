@@ -11,10 +11,14 @@
 .step:not(:last-child)::after { content: "·"; margin: 0 clamp(8px,1.1vw,16px); color: #b4b4b9; }
 .step:last-child { color: #c9282a; font-weight: 700; }
 .tools { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-top: 16px; }
-.tool { display: block; min-height: 120px; padding: clamp(22px,2.4vw,32px); border: 1px solid rgba(29,29,31,.08); border-radius: 20px; background: #fff; box-shadow: 0 12px 36px -28px rgba(29,29,31,.35); text-decoration: none; transition: border-color .2s,box-shadow .2s,transform .2s; }
+.tool { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 120px; padding: clamp(22px,2.4vw,32px); border: 1px solid rgba(29,29,31,.08); border-radius: 20px; background: #fff; box-shadow: 0 12px 36px -28px rgba(29,29,31,.35); text-decoration: none; transition: border-color .2s,box-shadow .2s,transform .2s; }
+.toolCopy { min-width: 0; }
 .toolTitle { display: block; color: #6e6e73; font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
 .toolSubtitle { display: block; margin-top: 6px; color: #1d1d1f; font-size: clamp(24px,2.4vw,32px); font-weight: 750; line-height: 1.15; letter-spacing: -.035em; }
+.toolAction { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; padding: 10px 13px; border: 1px solid rgba(224,49,47,.17); border-radius: 999px; background: #fff7f7; color: #b92e30; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.toolAction span { font-size: 19px; line-height: .8; }
 .tool:hover { border-color: rgba(224,49,47,.45); box-shadow: 0 18px 42px -30px rgba(184,42,45,.3); transform: translateY(-2px); }
+.tool:hover .toolAction { background: #e0312f; border-color: #e0312f; color: white; }
 .tool:focus-visible { outline: 2px solid #e0312f; outline-offset: 3px; }
 .header.header { font-family: var(--font-plus-jakarta),sans-serif; background: rgba(245,245,247,.8); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,.06); }
 .header > div { max-width: 1280px; padding-inline: clamp(12px,3vw,40px); }
