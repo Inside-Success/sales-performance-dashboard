@@ -16,15 +16,18 @@ export default function HomeHub() {
       <TrackUsageEvent eventName="dashboard_home_viewed" eventData={{ source: "product_hub" }} />
       <div className={styles.container}>
         <section className={styles.hero} aria-labelledby="welcome-heading">
-          <h1 id="welcome-heading" className={styles.heading}>
-            <span className={styles.eyebrow}>Elite Closers</span>
-            <span className={styles.headline}>Study <span className={styles.phrase}>The Film<span className={styles.period}>.</span></span></span>
-          </h1>
-          <ol className={styles.steps} aria-label="Your daily practice">
-            {steps.map((step) => (
-              <li key={step} className={styles.step}>{step}</li>
-            ))}
-          </ol>
+          <h1 id="welcome-heading" className={styles.heading}>Elite Closers Study The Call</h1>
+          <div className={styles.process}>
+            <h2 id="welcome-steps-heading" className={styles.processHeading}>4 Easy Steps</h2>
+            <ol className={styles.steps} aria-labelledby="welcome-steps-heading">
+              {steps.map((step, index) => (
+                <li key={step} className={styles.step}>
+                  <span className={styles.stepNumber} aria-hidden="true">0{index + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
         <nav className={styles.tools} aria-label="Magic Mike tools">
           {tools.map((tool) => (
