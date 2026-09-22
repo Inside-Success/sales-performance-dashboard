@@ -29,8 +29,11 @@ export default function HomeHub() {
         <nav className={styles.tools} aria-label="Magic Mike tools">
           {tools.map((tool) => (
             <Link key={tool.href} href={tool.href} className={styles.tool}>
-              <span className={styles.toolTitle}>{tool.title}</span>
-              <span className={styles.toolSubtitle}>{tool.subtitle}</span>
+              <span className={styles.toolCopy}>
+                <span className={styles.toolTitle}>{tool.title}</span>
+                <span className={styles.toolSubtitle}>{tool.subtitle}</span>
+              </span>
+              <span className={styles.toolAction} aria-hidden="true">Open <span>→</span></span>
             </Link>
           ))}
         </nav>
