@@ -25,5 +25,6 @@
 .header button[aria-label="Open profile menu"] > span { width: auto; height: auto; background: transparent; color: inherit; font-size: 12px; box-shadow: none; }
 .header button[aria-label="Open profile menu"]:hover { background: #fdecec; }
 @media (max-width: 640px) { .container { padding-bottom: 40px; } .hero { border-radius: 24px; } .tools { grid-template-columns: 1fr; gap: 12px; margin-top: 12px; } .tool { min-height: 0; border-radius: 18px; } }
-@media (max-width: 359px) { .hero { padding: 28px 24px; } .headline { font-size: 43px; } .steps { font-size: 15px; } .step:not(:last-child)::after { margin-inline: 7px; } }
+@media (max-width: 480px) { .steps { display: grid; grid-template-columns: max-content max-content; column-gap: 28px; row-gap: 2px; } .step:not(:last-child)::after { content: none; } }
+@media (max-width: 359px) { .hero { padding: 28px 24px; } .headline { font-size: 43px; } .steps { font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { .tool { transition: none; } }
