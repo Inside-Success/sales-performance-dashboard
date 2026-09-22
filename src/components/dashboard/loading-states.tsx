@@ -1,41 +1,46 @@
-import { ArrowLeft, CalendarDays, Clock3, UserRound } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock3 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import welcomeStyles from "@/app/welcome.module.css";
 
 const HOME_CARDS = [0, 1, 2];
 const REPORT_SECTIONS = [0, 1, 2, 3, 4, 5];
 
 export function LoadingProgress() {
   return (
-    <div className="fixed inset-x-0 top-14 z-50 h-0.5 overflow-hidden bg-primary/10">
-      <div className="loading-progress h-full bg-primary" />
+    <div className="absolute inset-x-0 top-0 z-10 h-0.5 overflow-hidden bg-[#FEE2E2]" aria-hidden="true">
+      <div className="loading-progress h-full bg-[#DC2626]" />
     </div>
   );
 }
 
 export function DashboardHomeLoading() {
   return (
-    <main className="dashboard-page min-h-screen bg-background" aria-label="Loading dashboard">
+    <main className={`magic-page relative ${welcomeStyles.page}`} aria-label="Loading dashboard" role="status">
       <LoadingProgress />
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
-        <section className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
-          <div className="space-y-3">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-10 w-80 max-w-full" />
-            <Skeleton className="h-4 w-[24rem] max-w-full" />
+      <div className={welcomeStyles.container} aria-hidden="true">
+        <section className={welcomeStyles.hero}>
+          <div className="space-y-4">
+            <Skeleton className="h-7 w-44 max-w-full bg-[#E7E7EB]" />
+            <Skeleton className="h-[clamp(46px,6.2vw,88px)] w-[min(100%,36rem)] bg-[#E7E7EB]" />
           </div>
-          <div className="mt-6 rounded-xl border bg-background/80 p-3">
-            <div className="grid gap-1.5">
-              <Skeleton className="h-3 w-28" />
-              <Skeleton className="h-11 w-full" />
-            </div>
+          <div className="mt-10 flex flex-wrap gap-4 border-t border-[#1D1D1F]/10 pt-5">
+            {[0, 1, 2, 3].map((step) => (
+              <Skeleton key={step} className="h-5 w-20 bg-[#E7E7EB]" />
+            ))}
           </div>
         </section>
 
-        <section className="rounded-xl border bg-card/80 p-8 text-center">
-          <UserRound className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <Skeleton className="mx-auto h-5 w-36" />
-          <Skeleton className="mx-auto mt-3 h-4 w-72 max-w-full" />
+        <section className={welcomeStyles.tools}>
+          {[0, 1].map((tool) => (
+            <div key={tool} className={`${welcomeStyles.tool} pointer-events-none`}>
+              <div className="w-full space-y-3">
+                <Skeleton className="h-4 w-36 max-w-full bg-[#E7E7EB]" />
+                <Skeleton className="h-8 w-44 max-w-full bg-[#E7E7EB]" />
+              </div>
+              <Skeleton className="h-10 w-20 shrink-0 rounded-full bg-[#FEE2E2]" />
+            </div>
+          ))}
         </section>
       </div>
     </main>
@@ -44,7 +49,7 @@ export function DashboardHomeLoading() {
 
 export function RepPageLoading() {
   return (
-    <main className="dashboard-page min-h-screen bg-background" aria-label="Loading rep reports">
+    <main className="magic-page relative" aria-label="Loading rep reports" role="status">
       <LoadingProgress />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <section className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
@@ -67,7 +72,7 @@ export function RepPageLoading() {
 
 export function ReportPageLoading() {
   return (
-    <main className="dashboard-page min-h-screen bg-background" aria-label="Loading report">
+    <main className="magic-page relative" aria-label="Loading report" role="status">
       <LoadingProgress />
       <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
         <article className="space-y-5">

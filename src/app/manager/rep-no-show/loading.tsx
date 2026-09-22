@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function RepNoShowLoading() {
   return (
-    <main className="dashboard-page min-h-screen bg-background">
+    <main className="magic-page" aria-label="Loading rep no-show dashboard" role="status">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <div className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
           <Skeleton className="h-6 w-40" />
