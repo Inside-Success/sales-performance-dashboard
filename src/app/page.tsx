@@ -21,7 +21,7 @@ export default function HomeHub() {
             <span className="block text-[23px] leading-snug sm:text-[34px]">Elite Closers/Athletes</span>
             <span className="mt-2 block text-[38px] leading-[1.1] tracking-[-0.045em] sm:mt-3 sm:text-[64px]">Study The Film<span className="text-[#DC2626]">.</span></span>
           </h1>
-          <ol className="mx-auto mt-8 flex max-w-xl items-center justify-between gap-1 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 text-[12px] font-semibold text-slate-600 sm:mt-10 sm:px-6 sm:py-4 sm:text-[16px]" aria-label="Your daily practice">
+          <ol className="mx-auto mt-8 flex max-w-xl items-center justify-between gap-1 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 text-[10px] font-semibold text-slate-600 min-[360px]:text-[12px] sm:mt-10 sm:px-6 sm:py-4 sm:text-[16px]" aria-label="Your daily practice">
             {steps.map((step, index) => (
               <li key={step} className="flex items-center gap-1 sm:gap-5">
                 <span className={index === steps.length - 1 ? "whitespace-nowrap text-[#B91C1C]" : "whitespace-nowrap"}>{step}</span>
