@@ -12,13 +12,13 @@ const steps = ["Review", "Reflect", "Adjust", "Sell More"];
 
 export default function HomeHub() {
   return (
-    <main className="magic-page flex min-h-[calc(100dvh-72px)] flex-1 flex-col">
+    <main className="magic-page flex flex-1 flex-col" style={{ minHeight: 0 }}>
       <TrackUsageEvent eventName="dashboard_home_viewed" eventData={{ source: "product_hub" }} />
       <div className="mx-auto w-full max-w-5xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
         <section className="mx-auto text-center" aria-labelledby="welcome-heading">
           <h1
             id="welcome-heading"
-            className="text-balance text-[36px] font-extrabold leading-[1.12] tracking-[-0.045em] text-slate-900 sm:text-[52px] lg:text-[64px]"
+            className="text-balance text-[32px] font-extrabold leading-[1.12] tracking-[-0.045em] text-slate-900 sm:text-[52px] lg:text-[64px]"
           >
             <span className="block">Elite Closers/Athletes</span>
             <span className="block">Study The Film<span className="text-[#DC2626]">.</span></span>
