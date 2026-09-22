@@ -13,3 +13,7 @@ Baseline: main `0e360a588b61690dfe27da084291acc738f3dd0f`. If rollback is needed
 ## Design refinement after user review
 
 The user rejected the initial sparse design. Revised the home page using the existing magic-card and magic-hero design language: bordered white hero with the standard red accent line, a stronger two-level headline, a compact arrow-connected practice sequence, and left-aligned tool cards with red accents and circular directional arrows. Content remains concise; destination URLs and tracking stay unchanged. Scoped ESLint and production build passed. See the refinement PR for final live checks.
+
+## Superseding supplied design reference
+
+User supplied a Claude Design laptop/phone screenshot and requested matching it. Home now uses a large left-aligned black headline, grey eyebrow, subtle upper-right red wash, divider and individual step pills with red arrows/final red pill. Compact cards include red icons, faint 01/02 watermarks and neutral circular arrows. Phone headline breaks after Study and steps form two rows. Styling is isolated in welcome.module.css; header behavior, routes and tracking remain unchanged. Device frames and the design-tool toolbar in the reference are not website content.
