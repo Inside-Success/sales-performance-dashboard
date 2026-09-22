@@ -26,12 +26,9 @@ export default async function AskSalesFaqPage() {
         ) : (
           <section className="grid h-full place-items-center px-4 py-6">
             <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white/90 p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="grid size-9 place-items-center rounded-lg bg-[#FEF2F2] text-[#DC2626]">
-                  <ShieldAlert className="size-5" />
-                </span>
-                <span className="rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700">Beta</span>
-              </div>
+              <span className="mb-4 grid size-9 place-items-center rounded-lg bg-[#FEF2F2] text-[#DC2626]">
+                <ShieldAlert className="size-5" />
+              </span>
               <h1 className="text-2xl font-extrabold tracking-normal text-slate-950">Ask Sales FAQ</h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">{access.message}</p>
               <p className="mt-5 text-xs font-semibold text-slate-400">If this continues, contact the dashboard administrator.</p>
