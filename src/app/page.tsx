@@ -19,7 +19,7 @@ export default function HomeHub() {
         <section className={styles.hero} aria-labelledby="welcome-heading">
           <h1 id="welcome-heading" className={styles.heading}>
             <span className={styles.eyebrow}>Elite Closers/Athletes</span>
-            <span className={styles.headline}>Study The Film<span className={styles.period}>.</span></span>
+            <span className={styles.headline}>Study <span className={styles.phrase}>The Film<span className={styles.period}>.</span></span></span>
           </h1>
           <ol className={styles.steps} aria-label="Your daily practice">
             {steps.map((step, index) => (

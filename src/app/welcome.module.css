@@ -39,3 +39,5 @@
 /* Keep the reference's compact single-line card title on phones without shrinking tap targets. */
 @media (max-width: 420px) { .tool { gap: 12px; padding-inline: 16px; } .toolTitle { font-size: 20px; } .toolArrow { width: 44px; height: 44px; } }
 @media (max-width: 359px) { .tool { gap: 10px; padding-inline: 12px; } .icon { width: 48px; height: 48px; } .toolTitle { font-size: 18px; } .toolArrow { width: 38px; height: 38px; } }
+
+.phrase { white-space: nowrap; }
