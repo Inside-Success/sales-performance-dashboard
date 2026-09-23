@@ -47,11 +47,7 @@ function CoachingSectionCard({ section, recordingUrl }: { section: CoachingSecti
                 {section.items.length > 1 ? (
                   <span className={`mt-2 size-1.5 shrink-0 rounded-full ${isImprovement ? "bg-[#c43132]" : "bg-slate-400"}`} aria-hidden="true" />
                 ) : null}
-                <div className="min-w-0 flex-1 space-y-2 text-[15.5px] leading-7 text-slate-700 md:text-base">
-                  {text.split(/\n+/).filter(Boolean).map((line, lineIndex) => (
-                    <CoachingLine key={lineIndex} line={line} />
-                  ))}
-                </div>
+                <CoachingText text={text} isClosingDetail={section.key === "close"} />
               </div>
               {evidence.length > 0 ? <EvidenceTimes evidence={evidence} recordingUrl={recordingUrl} /> : null}
             </li>
@@ -62,7 +58,22 @@ function CoachingSectionCard({ section, recordingUrl }: { section: CoachingSecti
   );
 }
 
-function CoachingLine({ line }: { line: string }) {
+function CoachingText({ text, isClosingDetail }: { text: string; isClosingDetail: boolean }) {
+  const lines = text.split(/\n+/).filter(Boolean);
+  const firstHeadingIndex = lines.findIndex((line) => /^(Observed concerns:|Agreed next steps:)$/.test(line));
+  return (
+    <div className="min-w-0 flex-1 space-y-2 text-[15.5px] leading-7 text-slate-700 md:text-base">
+      {lines.map((line, index) => {
+        if (isClosingDetail && /^(Observed concerns:|Agreed next steps:)$/.test(line)) {
+          return <h3 key={index} className="pt-1 text-sm font-semibold text-slate-900">{line}</h3>;
+        }
+        return <CoachingLine key={index} line={line} asBullet={isClosingDetail && firstHeadingIndex >= 0 && index > firstHeadingIndex} />;
+      })}
+    </div>
+  );
+}
+
+function CoachingLine({ line, asBullet }: { line: string; asBullet: boolean }) {
   const note = line.match(/^(Why it matters:|Next time:)/);
   if (note) {
     return (
@@ -73,15 +84,11 @@ function CoachingLine({ line }: { line: string }) {
     );
   }
 
-  if (/^(Observed concerns:|Agreed next steps:)$/.test(line)) {
-    return <h3 className="pt-1 text-sm font-semibold text-slate-900">{line}</h3>;
-  }
-
   if (/^[“"].+[”"]$/.test(line)) {
     return <blockquote className="border-l-2 border-red-200 pl-3 italic text-slate-600">{line}</blockquote>;
   }
 
-  return <p>{line}</p>;
+  return <p className={asBullet ? "relative pl-5 before:absolute before:left-1 before:top-3 before:size-1.5 before:rounded-full before:bg-slate-400" : ""}>{line}</p>;
 }
 
 function EvidenceTimes({ evidence, recordingUrl }: { evidence: string[]; recordingUrl?: string | null }) {
