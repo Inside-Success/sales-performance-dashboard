@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {coachingSections,coachingClose,coachingEvidence} from '../../src/lib/coaching-presentation';
+import {coachingSections,coachingClose,coachingEvidence,formatCoachingTimestamp} from '../../src/lib/coaching-presentation';
 import {resolveCloseSection} from '../../src/lib/close-section';
 describe('coaching display contract',()=>{
  it('shows a complete improvement once without repeating its action',()=>{
@@ -30,6 +30,14 @@ describe('coaching display contract',()=>{
  });
  it('separates exact transcript references without changing numbers or quoted text',()=>{
  expect(coachingEvidence('You clarified the $2,000 payment. [00:12:34.840, 00:14:43.660]')).toEqual({text:'You clarified the $2,000 payment.',evidence:['00:12:34','00:14:43']});
+ });
+ it('puts outcome and improvements before strengths without removing content',()=>{
+  const sections=coachingSections({one_line_verdict:'Payment remains pending.',what_to_improve:'Confirm the next step.',what_went_well:'You explained the options.'});
+  expect(sections.map(section=>section.key)).toEqual(['outcome','improvements','strengths']);
+ });
+ it('shows evidence times without milliseconds or unnecessary leading hours',()=>{
+  expect(formatCoachingTimestamp('00:06:49.580')).toBe('6:49');
+  expect(formatCoachingTimestamp('01:02:05')).toBe('1:02:05');
  });
 });
 

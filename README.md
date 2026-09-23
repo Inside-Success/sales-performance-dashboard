@@ -84,6 +84,8 @@ The endpoint upserts dashboard rows and returns:
 - `/ask-sales-faq/admin` admin-only production conversation logs for manual quality review on request
 - `/ask-sales-faq/admin/usage` admin-only rep adoption and usage review
 
+The coaching report reading layout, evidence-link behavior, and exact rollback tag are recorded in [docs-coaching-report-ui-2026-09-23.md](docs-coaching-report-ui-2026-09-23.md).
+
 ## Current Behavior Notes
 
 - Dashboard brand is Magic Mike Bot.

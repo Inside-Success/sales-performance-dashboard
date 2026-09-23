@@ -91,96 +91,37 @@ export default async function CallPage({
           <ReportEngagementTracker eventData={officialUsageEventData} />
         </>
       ) : null}
-      <div className="magic-container max-w-5xl">
-        <article className="space-y-4">
-          <header className="magic-card magic-hero p-5 md:p-7">
-            <div className="relative">
+      <div className="magic-container max-w-6xl">
+        <article className="grid items-start gap-5 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
+          <div className="order-1 min-w-0 space-y-4 lg:order-2">
+            <header className="magic-card overflow-hidden border-t-4 border-t-[#be3032] p-5 md:p-7">
               <Link
                 href="/coaching"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-4 rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-[#a92728]"
               >
                 <ArrowLeft className="size-4" />
-                Home
+                Coaching home
               </Link>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#FEF2F2] px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#B91C1C]">
-                  <FileText className="size-3.5" />
-                  Sales feedback report
-                </span>
-                <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
-              </div>
-
-              <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
-                {call.client_name || call.meeting_title || "Feedback Report"}
-              </h1>
-              {call.meeting_title && call.meeting_title !== call.client_name ? (
-                <div className="mt-4 flex max-w-3xl flex-wrap gap-2.5">
-                  <span className="inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm">
-                    <MessageSquareText className="size-4 shrink-0 text-[#DC2626]" />
-                    <span className="shrink-0 text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
-                      Meeting
-                    </span>
-                    <span className="min-w-0 truncate">{call.meeting_title}</span>
-                  </span>
+              <div className="mt-6 flex flex-wrap items-end justify-between gap-x-5 gap-y-4">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a92728]">Your call review</p>
+                  <h1 className="mt-2 break-words text-3xl font-semibold tracking-tight text-slate-950 md:text-[42px] md:leading-tight">
+                    {call.client_name || call.meeting_title || "Feedback Report"}
+                  </h1>
                 </div>
-              ) : null}
-
-              <div className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white/80 p-4 text-sm sm:grid-cols-2">
-                <MetaItem label="Rep" value={call.rep_name} icon={<UserRound className="size-4" />} />
-                <MetaItem
-                  label={meetingMeta.label}
-                  value={meetingMeta.value}
-                  icon={<Clock3 className="size-4" />}
-                />
                 {callScore ? (
-                  <MetaItem label="Call score" value={`${callScore.score.toFixed(1)} / 100`} icon={<Award className="size-4" />} />
+                  <div className="shrink-0 rounded-2xl border border-red-100 bg-[#fff7f7] px-5 py-3.5" aria-label={`Call score ${callScore.score.toFixed(1)} out of 100`}>
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#a92728]">Call score</p>
+                    <p className="mt-1 font-semibold tabular-nums tracking-tight text-slate-950">
+                      <span className="text-[42px] leading-none md:text-[50px]">{callScore.score.toFixed(1)}</span>
+                      <span className="ml-1 text-base text-slate-500">/ 100</span>
+                    </p>
+                  </div>
                 ) : null}
               </div>
+            </header>
 
-              <div className="mt-5 flex flex-wrap items-center gap-2">
-                <ExternalButton
-                  href={call.google_doc_link}
-                  label="Open Google Doc"
-                  icon={<FileText className="size-4" />}
-                  eventName="google_doc_clicked"
-                  reportId={call.id}
-                  repSlug={call.rep_slug}
-                  repName={call.rep_name}
-                  trackingDisabled={isManagerUsageView}
-                />
-                <ExternalButton
-                  href={call.meeting_link}
-                  label="Zoom"
-                  icon={<Video className="size-4" />}
-                  eventName="zoom_clicked"
-                  reportId={call.id}
-                  repSlug={call.rep_slug}
-                  repName={call.rep_name}
-                  trackingDisabled={isManagerUsageView}
-                />
-                <ExternalButton
-                  href={call.transcript_link}
-                  label="Transcript"
-                  icon={<MessageSquareText className="size-4" />}
-                  eventName="transcript_clicked"
-                  reportId={call.id}
-                  repSlug={call.rep_slug}
-                  repName={call.rep_name}
-                  trackingDisabled={isManagerUsageView}
-                />
-                {reportChatEnabled ? (
-                  <ReportChatPanel
-                    reportId={call.id}
-                    repName={call.rep_name}
-                    clientName={call.client_name}
-                  />
-                ) : null}
-              </div>
-            </div>
-          </header>
-
-          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} /> : <>
+          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} recordingUrl={call.meeting_link} /> : <>
           <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
             <p className="text-base leading-8 md:text-lg">{call.one_line_verdict || "Not provided"}</p>
           </ReportSection>
@@ -226,6 +167,62 @@ export default async function CallPage({
             clientName={call.client_name}
             reportCoachingVersion={call.source_payload.coaching_version}
           />
+          </div>
+
+          <aside className="magic-card order-2 min-w-0 p-5 lg:sticky lg:top-24 lg:order-1" aria-label="Call details and links">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-base font-bold text-slate-950">Call details</h2>
+              <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
+            </div>
+            <div className="mt-5 space-y-5 border-t border-slate-100 pt-5">
+              <MetaItem label="Rep" value={call.rep_name} icon={<UserRound className="size-4" />} />
+              <MetaItem label={meetingMeta.label} value={meetingMeta.value} icon={<Clock3 className="size-4" />} />
+              {call.meeting_title && call.meeting_title !== call.client_name ? (
+                <MetaItem label="Meeting" value={call.meeting_title} icon={<MessageSquareText className="size-4" />} />
+              ) : null}
+            </div>
+            <div className="mt-6 space-y-2 border-t border-slate-100 pt-5">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Open source material</p>
+              <ExternalButton
+                href={call.google_doc_link}
+                label="Google Doc"
+                icon={<FileText className="size-4" />}
+                eventName="google_doc_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+                sidebar
+              />
+              <ExternalButton
+                href={call.meeting_link}
+                label="Zoom recording"
+                icon={<Video className="size-4" />}
+                eventName="zoom_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+                sidebar
+              />
+              <ExternalButton
+                href={call.transcript_link}
+                label="Transcript"
+                icon={<MessageSquareText className="size-4" />}
+                eventName="transcript_clicked"
+                reportId={call.id}
+                repSlug={call.rep_slug}
+                repName={call.rep_name}
+                trackingDisabled={isManagerUsageView}
+                sidebar
+              />
+              {reportChatEnabled ? (
+                <div className="pt-2">
+                  <ReportChatPanel reportId={call.id} repName={call.rep_name} clientName={call.client_name} />
+                </div>
+              ) : null}
+            </div>
+          </aside>
         </article>
       </div>
     </main>
@@ -246,7 +243,7 @@ function MetaItem({
       <span className="magic-icon-bubble size-8 shrink-0">{icon}</span>
       <div className="min-w-0">
         <div className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">{label}</div>
-        <div className="mt-0.5 truncate font-semibold text-slate-700">{value}</div>
+        <div className="mt-0.5 break-words font-semibold leading-snug text-slate-700">{value}</div>
       </div>
     </div>
   );
@@ -294,6 +291,7 @@ function ExternalButton({
   repSlug,
   repName,
   trackingDisabled = false,
+  sidebar = false,
 }: {
   href: string | null;
   label: string;
@@ -303,12 +301,15 @@ function ExternalButton({
   repSlug: string;
   repName: string;
   trackingDisabled?: boolean;
+  sidebar?: boolean;
 }) {
   if (!href) return null;
 
   const className = cn(
     buttonVariants({ variant: "outline" }),
-    "h-10 gap-1 rounded-full border-slate-200 bg-white px-4 text-slate-700 hover:bg-[#FEF2F2] hover:text-[#B91C1C]",
+    sidebar
+      ? "flex min-h-10 w-full justify-between gap-2 rounded-xl border-slate-200 bg-white px-3 text-sm text-slate-700 hover:border-red-200 hover:bg-[#fff7f7] hover:text-[#a92728]"
+      : "h-10 gap-1 rounded-full border-slate-200 bg-white px-4 text-slate-700 hover:bg-[#FEF2F2] hover:text-[#B91C1C]",
   );
   const content = (
     <>

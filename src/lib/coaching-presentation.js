@@ -44,12 +44,18 @@ export function coachingSections(report) {
   const objections=uniqueCoachingItems([report.objections_surfaced]).filter(x=>!comparison(visibleClose).includes(comparison(x)));
   return [
     {key:'outcome',title:'Call outcome',items:[outcome].filter(Boolean)},
-    {key:'strengths',title:'What you did well',items:strengths},
     {key:'improvements',title:'What to improve',items:improvements},
+    {key:'strengths',title:'What you did well',items:strengths},
     {key:'next',title:'Try next time',items:extra},
     {key:'close',title:close.title,items:[closeRemainder].filter(Boolean)},
     {key:'objections',title:'Buyer concerns',items:objections},
   ].filter(s=>s.items.length);
+}
+export function formatCoachingTimestamp(value) {
+  const parts=String(value).replace(/\.\d+$/,'').split(':').map(Number);
+  if(parts.length!==3 || parts.some(n=>!Number.isInteger(n) || n<0) || parts[1]>59 || parts[2]>59) return String(value);
+  const [hours,minutes,seconds]=parts;
+  return hours ? `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}` : `${minutes}:${String(seconds).padStart(2,'0')}`;
 }
 export function coachingEvidence(value) {
   const evidence=[];
