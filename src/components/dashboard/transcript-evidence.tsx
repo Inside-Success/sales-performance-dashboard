@@ -89,7 +89,7 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="right"
-          className="w-full gap-0 overflow-hidden border-l border-slate-200 bg-[#fcfbfb] p-0 data-[side=right]:sm:max-w-[680px]"
+          className="gap-0 overflow-hidden border-l border-slate-200 bg-[#fcfbfb] p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-[680px]"
           aria-describedby={descriptionId}
         >
           <SheetHeader className="shrink-0 border-b border-slate-200 bg-white px-5 py-5 pr-14 sm:px-7">
