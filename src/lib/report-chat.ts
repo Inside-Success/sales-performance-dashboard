@@ -1,4 +1,5 @@
 import { resolveCloseSection } from "@/lib/close-section";
+import { realityCoachingReference, resolveCoachingOfferFamily } from "@/lib/coaching-offer-context.cjs";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
 export const REPORT_CHAT_MODEL = "deepseek-v4-pro";
@@ -115,7 +116,12 @@ export function buildReportChatMessages(
   transcriptText: string,
   history: ReportChatMessage[],
 ) {
-  return buildMessages(buildReportContext(call, transcriptText), history);
+  const offer = resolveCoachingOfferFamily({
+    meetingTitle: call.meeting_title,
+    transcriptText,
+    sourcePayload: call.source_payload,
+  });
+  return buildMessages(buildReportContext(call, transcriptText), history, offer.family);
 }
 
 export function buildManualReportChatMessages(
@@ -123,17 +129,30 @@ export function buildManualReportChatMessages(
   transcriptText: string,
   history: ReportChatMessage[],
 ) {
-  return buildMessages(buildManualReportContext(report, transcriptText), history);
+  const offer = resolveCoachingOfferFamily({
+    transcriptText,
+    sourcePayload: report.source_payload,
+  });
+  return buildMessages(buildManualReportContext(report, transcriptText), history, offer.family);
 }
 
-function buildMessages(reportContext: string, history: ReportChatMessage[]) {
+function buildMessages(reportContext: string, history: ReportChatMessage[], offerFamily: string) {
+  const realityInstructions = offerFamily === "reality" ? [
+    "For what happened on this call, use only the supplied coaching report fields and transcript. For a question about the current reality offer, use the reference below and clearly distinguish it from what was said on this call. If the reference does not answer the question, say so; never treat a historical transcript amount as current policy.",
+    realityCoachingReference(),
+  ] : [];
   return [
     {
       role: "system" as const,
       content: [
         "You are the Magic Mike Bot report Q&A coach for Inside Success TV sales coaching reports.",
-        "Answer only questions about the opened coaching report and its transcript.",
-        "Use only the supplied coaching report fields and transcript. If the answer is not there, say you do not see it in this report or transcript.",
+        offerFamily === "reality"
+          ? "Answer questions about the opened coaching report and its transcript, and current reality-offer questions covered by the reference below."
+          : "Answer only questions about the opened coaching report and its transcript.",
+        offerFamily === "reality"
+          ? "Use the report and transcript for what happened on this call. If a call-specific answer is not there, say you do not see it in this report or transcript."
+          : "Use only the supplied coaching report fields and transcript. If the answer is not there, say you do not see it in this report or transcript.",
+        ...realityInstructions,
         "Default to short, direct answers: 1-3 sentences for normal questions, or up to 3 bullets when a list is useful.",
         "Give a longer answer only when the user explicitly asks for detail, examples, a script, a breakdown, or multiple steps.",
         "For casual memory or clarification questions, answer in one short sentence.",
