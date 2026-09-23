@@ -95,13 +95,16 @@ export default async function CallPage({
         <article className="grid items-start gap-5 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
           <div className="order-1 min-w-0 space-y-4 lg:order-2">
             <header className="magic-card overflow-hidden border-t-4 border-t-[#be3032] p-5 md:p-7">
-              <Link
-                href="/coaching"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-[#a92728]"
-              >
-                <ArrowLeft className="size-4" />
-                Coaching home
-              </Link>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Link
+                  href="/coaching"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-[#a92728]"
+                >
+                  <ArrowLeft className="size-4" />
+                  Coaching home
+                </Link>
+                <a href="#call-details" className="text-sm font-semibold text-[#a92728] underline-offset-4 hover:underline lg:hidden">Call details ↓</a>
+              </div>
               <div className="mt-6 flex flex-wrap items-end justify-between gap-x-5 gap-y-4">
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#a92728]">Your call review</p>
@@ -169,7 +172,7 @@ export default async function CallPage({
           />
           </div>
 
-          <aside className="magic-card order-2 min-w-0 p-5 lg:sticky lg:top-24 lg:order-1" aria-label="Call details and links">
+          <aside id="call-details" className="magic-card order-2 min-w-0 scroll-mt-28 p-5 lg:sticky lg:top-24 lg:order-1" aria-label="Call details and links">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-base font-bold text-slate-950">Call details</h2>
               <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
@@ -313,9 +316,11 @@ function ExternalButton({
   );
   const content = (
     <>
-      {icon}
-      {label}
-      <ExternalLink className="size-4" />
+      <span className="flex min-w-0 items-center gap-2">
+        {icon}
+        <span>{label}</span>
+      </span>
+      <ExternalLink className="size-4 shrink-0" />
     </>
   );
 
