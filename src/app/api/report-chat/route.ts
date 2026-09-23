@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { auth } from "@/auth";
 import { getManualFeedbackReport, getPerformanceCall } from "@/lib/db";
 import { resolveManualReportStatus } from "@/lib/manual-reports";
 import {
@@ -9,7 +10,7 @@ import {
   fetchTranscriptText,
   isReportChatEnabledForCall,
   isReportChatEnabledForManualReport,
-  REPORT_CHAT_MODEL,
+  COACHING_REPORT_CHAT_MODEL,
 } from "@/lib/report-chat";
 
 export const dynamic = "force-dynamic";
@@ -27,18 +28,19 @@ const requestSchema = z.object({
     .min(1),
 });
 
-type DeepSeekResponse = {
-  choices?: Array<{
-    message?: {
-      content?: string;
-    };
+type OpenAIResponse = {
+  output?: Array<{
+    type?: string;
+    content?: Array<{ type?: string; text?: string }>;
   }>;
-  error?: {
-    message?: string;
-  };
 };
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "Sign in to ask Magic Mike about this report." }, { status: 401 });
+  }
+
   let payload: z.infer<typeof requestSchema>;
 
   try {
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Send a question before asking Magic Mike." }, { status: 400 });
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "Report chat is not configured yet." }, { status: 500 });
   }
@@ -67,42 +69,55 @@ export async function POST(request: NextRequest) {
   const reportContext = await resolveReportContext(payload.reportType, String(payload.reportId), messages);
   if ("response" in reportContext) return reportContext.response;
 
-  const deepSeekResponse = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: REPORT_CHAT_MODEL,
-      temperature: 0.2,
-      max_tokens: 1200,
-      messages: reportContext.messages,
-    }),
-  });
-
-  let data: DeepSeekResponse | null = null;
+  let modelResponse: Response;
   try {
-    data = (await deepSeekResponse.json()) as DeepSeekResponse;
+    modelResponse = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: COACHING_REPORT_CHAT_MODEL,
+        input: reportContext.messages,
+        reasoning: { effort: "none" },
+        max_output_tokens: 1200,
+        store: false,
+      }),
+      signal: AbortSignal.timeout(45_000),
+    });
+  } catch {
+    return NextResponse.json({ error: "Magic Mike could not connect right now. Please try again." }, { status: 502 });
+  }
+
+  let data: OpenAIResponse | null = null;
+  try {
+    data = (await modelResponse.json()) as OpenAIResponse;
   } catch {
     data = null;
   }
 
-  if (!deepSeekResponse.ok) {
+  if (!modelResponse.ok) {
     return NextResponse.json(
-      { error: data?.error?.message || "Magic Mike could not answer right now." },
+      { error: "Magic Mike could not answer right now. Please try again." },
       { status: 502 },
     );
   }
 
-  const answer = data?.choices?.[0]?.message?.content?.trim();
+  const answer = data?.output
+    ?.filter((item) => item.type === "message")
+    .flatMap((item) => item.content || [])
+    .filter((part) => part.type === "output_text")
+    .map((part) => part.text || "")
+    .join("\n")
+    .trim();
   if (!answer) {
     return NextResponse.json({ error: "Magic Mike returned an empty answer." }, { status: 502 });
   }
 
   return NextResponse.json({
     answer,
-    model: REPORT_CHAT_MODEL,
+    model: COACHING_REPORT_CHAT_MODEL,
   });
 }
 

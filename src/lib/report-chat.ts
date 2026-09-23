@@ -2,6 +2,7 @@ import { resolveCloseSection } from "@/lib/close-section";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
 export const REPORT_CHAT_MODEL = "deepseek-v4-pro";
+export const COACHING_REPORT_CHAT_MODEL = "gpt-6-luna";
 
 export type ReportChatMessage = {
   role: "user" | "assistant";

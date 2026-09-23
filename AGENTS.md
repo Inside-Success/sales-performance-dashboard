@@ -26,6 +26,6 @@ For dashboard/web changes:
 - The admin-only rep performance reviewer is `/manager/rep-scoring`. It reads the isolated Airtable scoring base, is exact-email allowlisted, and must never write to source calls, Slack, or Google content.
 - `/manager/sales-correlation` reads the company sales Google Sheet as CSV. A structurally valid live read is authoritative; the dashboard-owned Postgres snapshot is only an availability fallback for a failed or unusable live read. It must never write to the company sales spreadsheet.
 - Official coaching usage, manual self-submitted feedback usage, and compliance feedback must stay separate.
-- Report chat and sales-impact chat use `deepseek-v4-pro` through env var `DEEPSEEK_API_KEY`; do not commit keys.
+- Report chat uses `gpt-6-luna` through server-only `OPENAI_API_KEY` and requires a signed-in session. Sales-impact and rep-no-show chats still use `deepseek-v4-pro` through `DEEPSEEK_API_KEY`; do not commit keys.
 - Report chat is coaching-only and must not answer compliance/legal/red-flag questions.
 - Do not run local dev servers for this project unless the user explicitly overrides that rule.

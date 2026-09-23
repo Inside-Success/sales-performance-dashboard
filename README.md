@@ -77,7 +77,7 @@ The endpoint upserts dashboard rows and returns:
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
 - `/manager/rep-scoring/v7-validation` exact-email-admin V7 scoring validation; isolated from the current manager dashboard and Coaching publication
 - `/api/usage-events` browser usage event ingest
-- `/api/report-chat` gated DeepSeek report Q&A
+- `/api/report-chat` signed-in GPT-6 Luna report Q&A
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
 - `/ask-sales-faq/admin/knowledge-refresh` admin-only daily source review, conflict resolution, and governed release preparation
@@ -100,7 +100,7 @@ The coaching report reading layout, evidence-link behavior, and exact rollback t
 - `/manager/sales-correlation` reads the company sales Google Sheet as CSV on every page request. A structurally valid live read is authoritative even when row counts change. The dashboard stores a last-good copy in Postgres only as an availability fallback for a failed, empty, or structurally invalid live read. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
 - `/manager/rep-scoring` defaults to the lowest-scoring reps with at least 15 valid calls. V4.3 requires repeated evidence, a material decline, or a verified high-severity event before showing `Needs attention`; it never forces a quota of weak reps or weaknesses.
 - Sales-impact matching canonicalizes known rep-name issues such as suffix `Success` and alias `ollie-mcfarl` -> `ollie-mcfarlane`.
-- Report chat sends visible coaching fields and mandatory transcript text to DeepSeek only after the user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
+- Report chat sends visible coaching fields and mandatory transcript text to OpenAI GPT-6 Luna only after a signed-in user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
 - Sales-impact chat answers only from the current analytics snapshot and must not claim Magic Mike caused sales increases.
 - Dashboard ingest and manual report callbacks are additive to the n8n workflows; dashboard failures should not block Slack, Airtable, Google Docs, or workflow continuation.
 
@@ -108,6 +108,7 @@ The coaching report reading layout, evidence-link behavior, and exact rollback t
 
 ```bash
 DEEPSEEK_API_KEY="..."
+OPENAI_API_KEY="..."
 REPORT_CHAT_ENABLED="true"
 REPORT_CHAT_BETA_REP_SLUGS="comma,separated,slugs"
 REPORT_CHAT_BETA_REPORT_IDS="comma,separated,ids"
