@@ -1,8 +1,7 @@
-import { ExternalLink } from "lucide-react";
+import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import {
   coachingSections,
   coachingEvidence,
-  formatCoachingTimestamp,
   type CoachingDisplayReport,
 } from "@/lib/coaching-presentation";
 
@@ -10,21 +9,30 @@ type CoachingSection = ReturnType<typeof coachingSections>[number];
 
 export function CoachingReportContent({
   report,
-  recordingUrl,
+  reportType,
+  reportId,
+  transcriptUrl,
 }: {
   report: CoachingDisplayReport;
-  recordingUrl?: string | null;
+  reportType: "official" | "manual";
+  reportId: string;
+  transcriptUrl?: string | null;
 }) {
   return (
     <div className="space-y-4">
       {coachingSections(report).map((section) => (
-        <CoachingSectionCard key={section.key} section={section} recordingUrl={recordingUrl} />
+        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} />
       ))}
     </div>
   );
 }
 
-function CoachingSectionCard({ section, recordingUrl }: { section: CoachingSection; recordingUrl?: string | null }) {
+function CoachingSectionCard({ section, reportType, reportId, transcriptUrl }: {
+  section: CoachingSection;
+  reportType: "official" | "manual";
+  reportId: string;
+  transcriptUrl?: string | null;
+}) {
   const isOutcome = section.key === "outcome";
   const isImprovement = section.key === "improvements";
 
@@ -49,7 +57,7 @@ function CoachingSectionCard({ section, recordingUrl }: { section: CoachingSecti
                 ) : null}
                 <CoachingText text={text} isClosingDetail={section.key === "close"} />
               </div>
-              {evidence.length > 0 ? <EvidenceTimes evidence={evidence} recordingUrl={recordingUrl} /> : null}
+              {evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
             </li>
           );
         })}
@@ -89,34 +97,4 @@ function CoachingLine({ line, asBullet }: { line: string; asBullet: boolean }) {
   }
 
   return <p className={asBullet ? "relative pl-5 before:absolute before:left-1 before:top-3 before:size-1.5 before:rounded-full before:bg-slate-400" : ""}>{line}</p>;
-}
-
-function EvidenceTimes({ evidence, recordingUrl }: { evidence: string[]; recordingUrl?: string | null }) {
-  return (
-    <details className="mt-3 text-sm text-slate-500">
-      <summary className="w-fit cursor-pointer font-medium hover:text-[#a92728]">Transcript evidence</summary>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        {evidence.map((time) => (
-          recordingUrl ? (
-            <a
-              key={time}
-              href={recordingUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`Open recording and seek to ${formatCoachingTimestamp(time)}`}
-              title={`Open recording and seek to ${formatCoachingTimestamp(time)}`}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-red-100 bg-red-50/70 px-2.5 font-semibold tabular-nums text-[#a92728] hover:border-red-200 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-            >
-              {formatCoachingTimestamp(time)} <ExternalLink className="size-3" aria-hidden="true" />
-            </a>
-          ) : (
-            <span key={time} className="inline-flex min-h-9 items-center rounded-lg border border-slate-200 bg-slate-50 px-2.5 font-semibold tabular-nums text-slate-600">
-              {formatCoachingTimestamp(time)}
-            </span>
-          )
-        ))}
-      </div>
-      {recordingUrl ? <p className="mt-2 text-xs text-slate-500">The recording opens separately; seek to the time shown.</p> : null}
-    </details>
-  );
 }

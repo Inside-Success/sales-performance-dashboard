@@ -124,7 +124,7 @@ export default async function CallPage({
               </div>
             </header>
 
-          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} recordingUrl={call.meeting_link} /> : <>
+          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} reportType="official" reportId={String(call.id)} transcriptUrl={call.transcript_link} /> : <>
           <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
             <p className="text-base leading-8 md:text-lg">{call.one_line_verdict || "Not provided"}</p>
           </ReportSection>

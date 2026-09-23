@@ -201,7 +201,7 @@ export function ManualReportStatus({
 
           {report.status === "completed" ? (
             <>
-          {(report.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={report} recordingUrl={zoomLink} /> : <>
+          {(report.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={report} reportType="manual" reportId={report.public_id} transcriptUrl={transcriptLink} /> : <>
               <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
                 <p className="text-base leading-8 md:text-lg">{report.one_line_verdict || "Not provided"}</p>
               </ReportSection>
