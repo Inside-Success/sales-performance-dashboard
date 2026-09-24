@@ -1,0 +1,65 @@
+{
+  "reviewDate": "2026-09-24",
+  "status": "candidate_not_published",
+  "previousKnowledgeVersion": "a7b2510c5bf20052503b21d1",
+  "slack": {
+    "C09AF0NQJE7": {
+      "latestRootTs": "1790258384.235079",
+      "rootMessagesRead": 62,
+      "coverage": "All available root pages since September 21 saved full-scan cutoff; relevant policy threads expanded. Does not claim every historical reply."
+    },
+    "C0AUQKNR8CF": {
+      "latestRootTs": "1790258925.362369",
+      "rootMessagesRead": 70,
+      "coverage": "All available root pages since September 21 saved full-scan cutoff; relevant policy threads expanded. Does not claim every historical reply."
+    },
+    "C08QGKL39J6": {
+      "latestRootTs": "1790260007.715069",
+      "rootMessagesRead": 112,
+      "coverage": "All available root pages since September 21 saved full-scan cutoff; relevant policy threads expanded. Does not claim every historical reply."
+    },
+    "C0A8S3JSR1Q": {
+      "latestRootTs": "1790258269.158899",
+      "rootMessagesRead": 111,
+      "coverage": "All available root pages since September 21 saved full-scan cutoff; relevant policy threads expanded. Does not claim every historical reply."
+    }
+  },
+  "olderThreadsExplicitlyRevisited": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1788746537.690009",
+      "repliesAfter": "1789983857.530259",
+      "latestReplyTs": "1790206002.359319",
+      "repliesRead": 28,
+      "paginationComplete": true
+    }
+  ],
+  "google": {
+    "registeredSourcesMetadataChecked": 43,
+    "changedDocsRead": [
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU"
+    ],
+    "changedSheetChecked": {
+      "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+      "range": "'Closers Calendars'!A1:F5",
+      "note": "Directory/header verification only; no rep calendar links copied into policy"
+    },
+    "additionalDocsRead": [
+      "13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI",
+      "1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs",
+      "1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4"
+    ],
+    "priorUnavailablePreserved": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ]
+  },
+  "limitations": [
+    "New linked objection-handling Loom, HubSpot video and Slack audio were not transcribed; no claims based on unheard media.",
+    "Reality FAQ removed a Love or Business video link; removal alone is not evidence of cancellation.",
+    "Unanswered questions, rep speculation, private lead details, tentative sponsor jokes and unconfirmed display screenshots were not promoted to company policy.",
+    "Existing inaccessible historical pass-off channel ID has a neutral safe link label; its current name/access was not invented."
+  ],
+  "privateEvidenceDirectory": ".magic-mike-luna6-2026-09-24"
+}

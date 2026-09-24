@@ -1,13 +1,14 @@
 import React, { memo } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { remarkSlackChannelLinks } from "./slack-channel-links";
 
 /** Render the author's structure without inferring lists or rewriting the answer. */
 export const AnswerMarkdown = memo(function AnswerMarkdown({ text }: { text: string }) {
   return (
     <div className="min-w-0 space-y-3 break-words text-[15.5px] font-normal leading-[1.65] text-slate-700 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_strong]:text-slate-900 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-6 [&_li>p]:my-1 [&_li>ul]:mt-1.5 [&_li>ol]:mt-1.5 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-slate-100 [&_pre]:p-3">
       <Markdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkSlackChannelLinks]}
         skipHtml
         disallowedElements={["img", "input"]}
         urlTransform={(url) => /^https?:\/\//i.test(url) ? url : ""}

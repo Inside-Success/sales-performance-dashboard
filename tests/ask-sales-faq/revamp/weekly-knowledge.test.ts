@@ -31,7 +31,7 @@ describe("September 21 knowledge refresh boundaries", () => {
     }
   });
   it("retrieves meeting outcome qualifications and practical training access", () => {
-    expect(retrieve("Does a cancelled call or no show need a cast score?", "main_istv").some(r => r.id === "hubspot-status-cast-score-2026-09-19")).toBe(true);
+    expect(retrieve("Does a cancelled call or no show need a cast score?", "main_istv").some(r => r.id === "hubspot-status-cast-score-2026-09-24")).toBe(true);
     expect(retrieve("How do I book my final mock and go live?", "main_istv").some(r => r.id === "new-rep-training-roadmap-and-mock-2026-09-21")).toBe(true);
     expect(records.some(r => r.id === "current-regular-onboarding-schedule")).toBe(true);
   });
@@ -48,7 +48,7 @@ describe("September 21 knowledge refresh boundaries", () => {
   it("retrieves current passoff and meeting requirements together", () => {
     const rows = retrieve("I took a passoff but can't change the HubSpot meeting status or cast score", "main_istv");
     expect(rows.some(r => r.id === "hubspot-passoff-claim-2026-09-19")).toBe(true);
-    expect(rows.some(r => r.id === "hubspot-status-cast-score-2026-09-19")).toBe(true);
+    expect(rows.some(r => r.id === "hubspot-status-cast-score-2026-09-24")).toBe(true);
   });
   it("keeps unresolved package benefits and product payment boundaries intact", () => {
     expect(records.some(r => r.id === "reality-documentary-package-video-2026-09-14")).toBe(true);
