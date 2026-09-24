@@ -1,11 +1,11 @@
 import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import {
-  coachingSections,
   coachingEvidence,
   type CoachingDisplayReport,
 } from "@/lib/coaching-presentation";
+import { dashboardCoachingSections } from "@/lib/coaching-dashboard-sections";
 
-type CoachingSection = ReturnType<typeof coachingSections>[number];
+type CoachingSection = ReturnType<typeof dashboardCoachingSections>[number];
 
 export function CoachingReportContent({
   report,
@@ -20,7 +20,7 @@ export function CoachingReportContent({
 }) {
   return (
     <div className="space-y-4">
-      {coachingSections(report).map((section) => (
+      {dashboardCoachingSections(report).map((section) => (
         <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} />
       ))}
     </div>
