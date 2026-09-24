@@ -37,7 +37,7 @@ function renderCoaching(analysis,blocks,options={}) {
   if(row.why_useful==null||row.why_useful==='')return observation;
   return observation+' '+string(row.why_useful,'strength effect');
  });
- const improvements=analysis.improvements.map(row=>{
+ let improvements=analysis.improvements.map(row=>{
   if(!['material','optional'].includes(row.priority))throw Error('Invalid improvement priority');
   string(row.counterevidence_summary,'counterevidence review');refs(row.counterevidence_ids,true);
   refs(row.evidence_ids);
@@ -56,11 +56,18 @@ function renderCoaching(analysis,blocks,options={}) {
   }
   return true;
  });
+ // Publish material coaching first. If none survives the factual and policy
+ // checks, one supported optional observation can still help the rep without
+ // presenting a preference as a mistake.
+ if(options.optionalFallbackOnly){
+  const material=improvements.filter(({row})=>row.priority==='material');
+  improvements=material.length?material:improvements.filter(({row})=>row.priority==='optional').slice(0,1);
+ }
  const primary=improvements.find(x=>x.row.priority==='material')||improvements[0];
  const concerns=analysis.blockers.map(r=>string(r.observation,'blocker')+refs(r.evidence_ids));
  const next=analysis.next_steps.map(r=>string(r.observation,'next step')+refs(r.evidence_ids));
  const join=rows=>rows.map((s,i)=>`${i+1}. ${s}`).join('\n\n');
- const noIssue='No additional coaching recommendation met the evidence threshold for this report.';
+ const noIssue='No specific sales-execution improvement was supported by this call.';
  const coaching={
   one_line_verdict:string(outcome.summary,'outcome'),
   biggest_strength:strengths[0]||'No distinct strength stands out clearly enough to name from this transcript.',
