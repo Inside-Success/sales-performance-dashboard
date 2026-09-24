@@ -1,0 +1,1 @@
+const rows=$input.all();if(rows.length!==1)throw Error('Expected one final score');const r=rows[0].json;delete r.__review_recovery;return [{json:r}];

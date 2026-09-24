@@ -16,8 +16,8 @@ export const metadata: Metadata = { title: "Closer Review | Magic Mike Bot", rob
 export default async function CloserReviewPage({ params, searchParams }: { params: Promise<{ repKey: string }>; searchParams: Promise<{ history?: string }> }) {
   await requireRepScoringAdmin();
   const { repKey } = await params;
-  await searchParams;
-  const historical = false;
+  const query = await searchParams;
+  const historical = query?.history === "1";
   const data = await getV7Rep(decodeURIComponent(repKey), scorecardVersion(historical));
   if (!data) notFound();
   const { summary, calls, call2Only } = data;
@@ -31,7 +31,7 @@ export default async function CloserReviewPage({ params, searchParams }: { param
 
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div><h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1><p className="mt-2 text-sm text-slate-600">{summary.totalCalls} reviewed calls. {call2Only ? `Average uses the latest ${Math.min(5, summary.totalCalls)} scored Call 2s.` : ""}</p></div>
+            <div><h1 className="text-3xl font-extrabold text-slate-950 md:text-4xl">{summary.repName}</h1><p className="mt-2 text-sm text-slate-600">{summary.totalCalls} reviewed calls. {call2Only ? `Average uses the latest ${Math.min(5, summary.totalCalls)} scored Call 2s.` : ""}{historical ? " Previous rubric scores; not averaged with current scores." : ""}</p></div>
             <div className="rounded-2xl border border-slate-200 bg-white px-7 py-4 text-center"><div className="text-4xl font-extrabold text-slate-950">{summary.overallScore.toFixed(1)}</div><div className="text-sm font-semibold text-slate-500">{call2Only ? "Latest-call average" : "Overall score"}</div></div>
           </div>
         </header>
@@ -43,7 +43,7 @@ export default async function CloserReviewPage({ params, searchParams }: { param
           {summary.strengths.length ? <Card className="magic-card bg-white"><CardHeader><CardTitle>Recurring strengths</CardTitle></CardHeader><CardContent>{summary.strengths.map(pattern => <p key={pattern.key} className="mb-3 text-sm">{pattern.label}: average {pattern.average.toFixed(1)} across {pattern.observations} {pattern.callType} calls.</p>)}</CardContent></Card> : null}
         </section> : null}
 
-        <Card className="magic-card bg-white"><CardHeader><CardTitle>Calls behind this score</CardTitle><p className="text-sm leading-6 text-slate-500">Lowest-scoring calls appear first.</p></CardHeader><CardContent className="grid gap-3 md:grid-cols-2">{lowestCalls.map((call) => <Link prefetch={false} key={call.assessmentId} href={`/manager/rep-scoring/call/${encodeURIComponent(call.assessmentId)}`} className="flex items-center justify-between rounded-xl border border-slate-200 p-4 transition hover:border-red-200 hover:bg-red-50/30"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge>{clientLabels[call.sourceRecordId] ? <div className="mt-2 font-semibold">{clientLabels[call.sourceRecordId]}</div> : null}<div className="mt-2 text-xs text-slate-500">{formatDate(call.meetingStartAt)}</div></div><div className="flex items-center gap-3"><div className="text-2xl font-extrabold text-slate-950">{call.score?.toFixed(1)}</div><ArrowRight className="size-4 text-slate-400" /></div></Link>)}</CardContent></Card>
+        <Card className="magic-card bg-white"><CardHeader><CardTitle>Calls behind this score</CardTitle><p className="text-sm leading-6 text-slate-500">Lowest-scoring calls appear first.</p></CardHeader><CardContent className="grid gap-3 md:grid-cols-2">{lowestCalls.map((call) => <Link prefetch={false} key={call.assessmentId} href={`/manager/rep-scoring/call/${encodeURIComponent(call.assessmentId)}${historical ? "?history=1" : ""}`} className="flex items-center justify-between rounded-xl border border-slate-200 p-4 transition hover:border-red-200 hover:bg-red-50/30"><div><Badge variant="outline" className="rounded-full">{call.callType}</Badge>{clientLabels[call.sourceRecordId] ? <div className="mt-2 font-semibold">{clientLabels[call.sourceRecordId]}</div> : null}<div className="mt-2 text-xs text-slate-500">{formatDate(call.meetingStartAt)}</div></div><div className="flex items-center gap-3"><div className="text-2xl font-extrabold text-slate-950">{call.score?.toFixed(1)}</div><ArrowRight className="size-4 text-slate-400" /></div></Link>)}</CardContent></Card>
       </div>
     </main>
   );
