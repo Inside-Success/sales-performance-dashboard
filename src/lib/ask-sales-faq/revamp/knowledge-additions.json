@@ -57,15 +57,16 @@
     "questions": [
       "What does the $30,000 VIP package include?"
     ],
-    "text": "Package overview: https://docs.google.com/document/d/1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y/edit (the documentary benefit placement differs from the newer Call 2 video).\r\nEverything in the standard package, plus:\r\n* Priority placement on the cast website/page\r\n* 10 additional social media clips (the current Call 2 VIP slide clarifies the written FAQ’s \"10x\" notation)\r\n* 1x Sit-down 5 min video interview with a producer on set\r\n* Where applicable, access/interview opportunities with celebrity hosts, celebrity guests, or cameos\r\n* Co-executive producer credit, subject to final production/credit terms\r\n* Ability to bring up to two guests instead of one\r\n* One early-elimination immunity advantage for EPISODE 2, meaning the VIP participant cannot be eliminated until Episode 3, described as the halfway mark of the show unless they fail a challenge/don’t participate.\r\nImportant: the VIP package does not guarantee that someone wins the competition or remains through the entire season.\nThe current Call 2 video VIP slide additionally lists a full 20–25 minute documentary interview about the participant/their business. See the recorded discrepancy with the older written package overview before discussing this benefit.",
+    "text": "Package overview: https://docs.google.com/document/d/1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y/edit (the documentary benefit placement differs from the newer Call 2 video).\r\nEverything in the standard package, plus:\r\n* Priority placement on the cast website/page\r\n* 10 additional social media clips (the current Call 2 VIP slide clarifies the written FAQ’s \"10x\" notation)\r\n* 1x Sit-down 5 min video interview with a producer on set\r\n* Where applicable, access/interview opportunities with celebrity hosts, celebrity guests, or cameos\r\n* Co-executive producer credit, subject to final production/credit terms\r\n* Ability to bring up to two guests instead of one\r\n* One early-elimination immunity advantage for EPISODE 2, meaning the VIP participant cannot be eliminated until Episode 3, described as the halfway mark of the show unless they fail a challenge/don’t participate.\r\nImportant: the VIP package does not guarantee that someone wins the competition or remains through the entire season.\nThe current Call 2 video VIP slide additionally lists a full 20–25 minute documentary interview about the participant/their business. See the recorded discrepancy with the older written package overview before discussing this benefit.\nCurrent show-specific exception (Rudy, September 23): Entrepreneurs Island permits NO plus-one, including VIP. The generic one/two-guest package allowance above does not apply to Island. Include this exception whenever describing that guest benefit; other shows remain subject to production rules.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
-      "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09"
+      "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-09-24",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -315,14 +316,15 @@
     "questions": [
       "Can cast members bring guests?"
     ],
-    "text": "Yes, subject to production rules.\r\nStandard package:\r\n* Up to 1 guest\r\nVIP package:\r\n* Up to 2 guests\r\nGuest access to actual filming areas may vary depending on the production.",
+    "text": "Yes, subject to production rules.\r\nStandard package:\r\n* Up to 1 guest\r\nVIP package:\r\n* Up to 2 guests\r\nGuest access to actual filming areas may vary depending on the production.\nCurrent show-specific exception (Rudy, September 23): Entrepreneurs Island permits NO plus-one, including VIP. The generic one/two-guest package allowance above does not apply to Island. Include this exception whenever describing that guest benefit; other shows remain subject to production rules.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-09-24",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2241,16 +2243,17 @@
       "I took a passoff but cannot update the meeting",
       "How do I claim a pass-off in HubSpot?"
     ],
-    "text": "Pramod’s current pass-off procedure: the rep who takes an authorized pass-off posts the cast/prospect email address, one email at a time, in #hubspot-passoff. Post the email, not just the person’s name. The assignment process runs approximately every 15 minutes and assigns the contact and meetings to the claiming rep. Attend the call while waiting; do not delay it because ownership has not yet updated. Then record the actual meeting outcome and required Cast Score. If assignment or editing access still fails, ask #sales-tech-requests. This does not waive pass-off eligibility, the scheduled-start waiting rules, or approval for a planned reassignment.",
+    "text": "Pramod’s current pass-off procedure: the rep who takes an authorized pass-off posts the cast/prospect email address, one email at a time, in #hubspot-passoff. Post the email, not just the person’s name. The assignment process runs approximately every 15 minutes and assigns the contact and meetings to the claiming rep. Attend the call while waiting; do not delay it because ownership has not yet updated. Then record the actual meeting outcome and required Cast Score. If assignment or editing access still fails, ask #sales-tech-requests. This does not waive pass-off eligibility, the scheduled-start waiting rules, or approval for a planned reassignment. The HubSpot email-claim destination is specifically [#hubspot-passoff](https://istvoffical.slack.com/archives/C0C2USV181G). It is distinct from the older ISTV live pass-off coordination channel identified in historical guidance as C07UQE193GD. Do not tell reps to post assignment-claim emails in that older channel; taking a call and claiming its HubSpot assignment are separate steps.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789747230085169",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789749968483809",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789754923117039"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789754923117039",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790120098567279"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-09-24",
     "authority": 12,
     "kind": "policy",
     "risk": "high",

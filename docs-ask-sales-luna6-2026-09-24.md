@@ -20,13 +20,32 @@ A scoped Markdown AST plugin converts Slack channel mentions to safe HTTPS links
 
 ## Evaluation and safety gates
 
-35 frozen cases: 19 distinct recent production questions with preceding retained conversation context, plus 16 source-grounded regressions. Both models use the same final compiled knowledge, prompts, medium reasoning, token limits and pipeline. A shared locked spend ledger accounts for both models and unresolved attempts; evaluation ceiling $4.75 leaves $0.25 for bounded hosted verification. Manual blinded review will distinguish useful correct answers, necessary clarification, omissions and unsupported claims. Latency, actual token cost and repeat stability matter as well as quality; a newer model is not presumed better.
+35 frozen cases: 19 distinct recent production questions with preceding retained conversation context, plus 16 source-grounded regressions. Both models use the same frozen compiled knowledge, prompts, medium reasoning, token limits and pipeline. A shared locked spend ledger accounts for both models and unresolved attempts; evaluation ceiling $4.75 leaves $0.25 for bounded hosted verification. Manual blinded review will distinguish useful correct answers, necessary clarification, omissions and unsupported claims. Latency, actual token cost and repeat stability matter as well as quality; a newer model is not presumed better.
 
-The first small compatibility run succeeded. An early partial evaluation was stopped to correct the new coaching record's provenance suffix before freezing the final source snapshot; its spend remains counted. No prompt or retrieval rewrite was made. Full results, selection and release receipts will be added before completion.
+### Results and decision
+
+Keep GPT-5.6 Luna at medium reasoning. GPT-6 is cheaper but did not establish a quality improvement and was slower in this sample. No production FAQ model change is required.
+
+| Matched initial 35 cases | GPT-5.6 Luna | GPT-6 Luna |
+| --- | ---: | ---: |
+| Acceptable, including appropriate clarification | 34 | 33 |
+| Material answer issue | 1 | 1 |
+| Technical failure | 0 | 1 |
+| Median latency | 14.990 s | 17.565 s |
+| Nearest-rank p95 latency | 23.846 s | 32.916 s |
+| Reported token cost | $0.240596 | $0.117219 |
+
+Initial snapshot: `140a74166415d203697d04e2`. GPT-5.6 confused the live coordination channel with the separate HubSpot email-claim channel once. GPT-6 omitted the Island no-guest exception in a broad package summary once and had a provider HTTP 500. Clarified these two source records directly; did not rewrite prompts or loosen grounding safeguards. Final snapshot: `80e8e644aec62299ac2f94c9` (2,498 records).
+
+Seven matched targeted attempts per model on the final snapshot: GPT-6 7/7 acceptable; GPT-5.6 6/7 acceptable. GPT-5.6's failure was evidence validation rejecting a generated channel URL that was not supplied in the retrieved evidence, rather than malformed JSON. The other channel repeat succeeded; both models handled the explicit Island exception. GPT-6 appropriately requested documentary scope on the B-roll case; GPT-5.6 answered directly. Across both rounds each model had two unsuccessful attempts out of 42. These are diagnostic samples with repeated cases, not an estimate that 95% of all future questions will be correct. All failures remain in the private receipts.
+
+Total local comparison ledger, including early compatibility/partial runs and conservative failed-attempt accounting: **$0.47437231**, no outstanding reservations. Initial comparison cost above uses reported tokens only and cannot measure unreported provider-500 billing. Hosted checks are additional and have a reserved $0.25 allowance within the $5 cap. GPT-6's reported-token cost was about 51% lower for the initial sample, not enough to override this user's quality/latency priority. No further tuning loop is justified by this small evaluation.
 
 ## Verification notes
 
-The initial full suite identified two expected stale record IDs after source supersession and one new record mislabeled policy instead of coaching; corrected and targeted tests passed. TypeScript also exposed pre-existing possibly-undefined response assertions in the recently added coaching test; three explicit test assertions now fail clearly if no response exists. No coaching runtime behavior was changed, and all three coaching route tests passed. Remaining full checks and hosted verification are pending.
+358 Ask Sales tests, three coaching route tests, TypeScript, scoped ESLint, static validation and a production build passed. The final knowledge clarifications passed 19 targeted tests. Both repository CI workflows passed on the initial candidate; final commit CI and publication verification are recorded below when complete.
+
+TypeScript exposed pre-existing possibly-undefined response assertions in the recently added coaching test; three explicit test assertions now fail clearly if no response exists. No coaching runtime behavior was changed. Hosted isolated preview verified authenticated FAQ, both admin pages and Coaching (HTTP 200); one GPT-6 Island answer was correct, persisted in the isolated database, and its own test fixture removed. The final candidate remains on GPT-5.6. Production release verification is pending.
 
 ## Rollback
 
