@@ -1,5 +1,6 @@
 import { normalizeStringList } from "@/lib/list-format";
 import type { JsonObject } from "@/lib/types";
+import { withoutOptionalPolishLabel } from "@/lib/coaching-presentation";
 
 export function BulletList({ items }: { items: string[] }) {
   if (!items.length) {
@@ -9,7 +10,7 @@ export function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="list-disc space-y-3 pl-6 leading-8 marker:text-primary">
       {items.map((item, index) => (
-        <li key={`${item}-${index}`}>{item}</li>
+        <li key={`${item}-${index}`}>{withoutOptionalPolishLabel(item)}</li>
       ))}
     </ul>
   );

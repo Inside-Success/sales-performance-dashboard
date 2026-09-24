@@ -12,6 +12,7 @@ import { ReportVersionBadge } from "@/components/dashboard/report-version-badge"
 import { TrackedExternalLink, TrackedLink } from "@/components/dashboard/usage-tracker";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime, truncate } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { withoutOptionalPolishLabel } from "@/lib/coaching-presentation";
 import type { PerformanceCall } from "@/lib/types";
 
 type CallCardProps = {
@@ -192,7 +193,7 @@ function SummaryBlock({
         {icon}
         {label}
       </div>
-      <p className="leading-6 text-slate-700">{truncate(value, 150) || "Not provided"}</p>
+      <p className="leading-6 text-slate-700">{truncate(withoutOptionalPolishLabel(value), 150) || "Not provided"}</p>
     </div>
   );
 }
