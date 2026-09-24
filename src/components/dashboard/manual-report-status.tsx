@@ -30,6 +30,7 @@ import { ReportChatPanel } from "@/components/dashboard/report-chat-panel";
 import { ReportVersionBadge } from "@/components/dashboard/report-version-badge";
 import { TrackedExternalLink } from "@/components/dashboard/usage-tracker";
 import { resolveCloseSection } from "@/lib/close-section";
+import { withoutOptionalPolishLabel } from "@/lib/coaching-presentation";
 import { formatMiamiDateTime } from "@/lib/format";
 import { slugify } from "@/lib/slug";
 import type { ManualFeedbackReport } from "@/lib/types";
@@ -394,7 +395,7 @@ function ReportSection({
 }
 
 function ReportText({ children }: { children: React.ReactNode }) {
-  return <p className="leading-8">{children}</p>;
+  return <p className="leading-8">{withoutOptionalPolishLabel(children)}</p>;
 }
 
 function ExternalButton({

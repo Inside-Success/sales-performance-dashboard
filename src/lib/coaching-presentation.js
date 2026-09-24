@@ -6,6 +6,10 @@ export function coachingText(value) {
   if (typeof value === 'object') return Object.entries(value).map(([k,v]) => `${k.replace(/_/g,' ')}: ${coachingText(v)}`).join('\n');
   return String(value).trim();
 }
+// The audit priority stays in stored report data; the dashboard shows the advice plainly.
+export function withoutOptionalPolishLabel(value) {
+  return typeof value === 'string' ? value.replace(/^Optional polish:\s*/i, '') : value;
+}
 export function coachingItems(value) {
   if (Array.isArray(value)) return value.flatMap(coachingItems);
   const text=coachingText(value);
@@ -59,6 +63,6 @@ export function formatCoachingTimestamp(value) {
 }
 export function coachingEvidence(value) {
   const evidence=[];
-  const text=coachingText(value).replace('No additional coaching recommendation met the evidence threshold for this report.','No clear change to recommend from this call.').replace(/^Possible effect:/gm,'Why it matters:').replace(/^Better action:/gm,'Next time:').replace(/\[((?:\d{1,2}:\d{2}:\d{2}(?:\.\d+)?(?:,\s*)?)+)\]/g,(_,times)=>{evidence.push(...times.split(/,\s*/).map(t=>t.replace(/\.\d+$/,'')));return '';}).replace(/ +\n/g,'\n').replace(/ {2,}/g,' ').trim();
+  const text=withoutOptionalPolishLabel(coachingText(value)).replace('No additional coaching recommendation met the evidence threshold for this report.','No clear change to recommend from this call.').replace(/^Possible effect:/gm,'Why it matters:').replace(/^Better action:/gm,'Next time:').replace(/\[((?:\d{1,2}:\d{2}:\d{2}(?:\.\d+)?(?:,\s*)?)+)\]/g,(_,times)=>{evidence.push(...times.split(/,\s*/).map(t=>t.replace(/\.\d+$/,'')));return '';}).replace(/ +\n/g,'\n').replace(/ {2,}/g,' ').trim();
   return {text,evidence:[...new Set(evidence)]};
 }

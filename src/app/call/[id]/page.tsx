@@ -33,6 +33,7 @@ import { getCoachingCallScore } from "@/lib/rep-scoring/coaching-score";
 import { formatMiamiDateTime, formatMiamiMeetingDateTime } from "@/lib/format";
 import { isReportChatEnabledForCall } from "@/lib/report-chat";
 import { cn } from "@/lib/utils";
+import { withoutOptionalPolishLabel } from "@/lib/coaching-presentation";
 
 export const dynamic = "force-dynamic";
 
@@ -282,7 +283,7 @@ function ReportSection({
 }
 
 function ReportText({ children }: { children: React.ReactNode }) {
-  return <p className="leading-8">{children}</p>;
+  return <p className="leading-8">{withoutOptionalPolishLabel(children)}</p>;
 }
 
 function ExternalButton({

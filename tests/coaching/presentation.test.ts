@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {coachingSections,coachingClose,coachingEvidence,formatCoachingTimestamp} from '../../src/lib/coaching-presentation';
+import {coachingSections,coachingClose,coachingEvidence,formatCoachingTimestamp,withoutOptionalPolishLabel} from '../../src/lib/coaching-presentation';
 import {resolveCloseSection} from '../../src/lib/close-section';
 describe('coaching display contract',()=>{
  it('shows a complete improvement once without repeating its action',()=>{
@@ -30,6 +30,13 @@ describe('coaching display contract',()=>{
  });
  it('separates exact transcript references without changing numbers or quoted text',()=>{
  expect(coachingEvidence('You clarified the $2,000 payment. [00:12:34.840, 00:14:43.660]')).toEqual({text:'You clarified the $2,000 payment.',evidence:['00:12:34','00:14:43']});
+ });
+ it('hides only the optional prefix in displayed advice and preserves evidence and stored text',()=>{
+  const stored='Optional polish: Answer the buyer first. [00:12:34.840]\nPossible effect: The buyer may remain confused.\nBetter action: Give the terms directly.';
+  expect(coachingEvidence(stored)).toEqual({text:'Answer the buyer first.\nWhy it matters: The buyer may remain confused.\nNext time: Give the terms directly.',evidence:['00:12:34']});
+  expect(withoutOptionalPolishLabel('Optional polish: Give the terms directly.')).toBe('Give the terms directly.');
+  expect(withoutOptionalPolishLabel('Discuss optional polish: only when asked.')).toBe('Discuss optional polish: only when asked.');
+  expect(stored.startsWith('Optional polish:')).toBe(true);
  });
  it('puts outcome and improvements before strengths without removing content',()=>{
   const sections=coachingSections({one_line_verdict:'Payment remains pending.',what_to_improve:'Confirm the next step.',what_went_well:'You explained the options.'});

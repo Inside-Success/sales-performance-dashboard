@@ -4,6 +4,7 @@ export type CoachingDisplayReport = {
  why_no_close?: unknown; what_made_this_close_work?: unknown; objections_surfaced?: unknown;
 };
 export function coachingText(value: unknown): string;
+export function withoutOptionalPolishLabel<T>(value: T): T;
 export function coachingItems(value: unknown): string[];
 export function uniqueCoachingItems(values: unknown[]): string[];
 export function coachingClose(report: CoachingDisplayReport): {title:string;text:string};
