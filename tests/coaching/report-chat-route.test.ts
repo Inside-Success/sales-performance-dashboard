@@ -53,6 +53,7 @@ describe("coaching report chat", () => {
     const fetchMock = vi.spyOn(globalThis, "fetch");
 
     const response = await POST(request());
+    if (!response) throw new Error("Expected report chat response");
 
     expect(response.status).toBe(401);
     expect(mocks.getPerformanceCall).not.toHaveBeenCalled();
@@ -67,6 +68,7 @@ describe("coaching report chat", () => {
     );
 
     const response = await POST(request());
+    if (!response) throw new Error("Expected report chat response");
     const body = await response.json();
     const [url, options] = fetchMock.mock.calls[0];
     const providerRequest = JSON.parse(String(options?.body));
@@ -91,6 +93,7 @@ describe("coaching report chat", () => {
     );
 
     const response = await POST(request());
+    if (!response) throw new Error("Expected report chat response");
 
     expect(response.status).toBe(502);
     expect(await response.json()).toEqual({ error: "Magic Mike returned an empty answer." });

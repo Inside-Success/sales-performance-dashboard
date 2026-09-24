@@ -71,7 +71,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-island-guest-accommodation-2026-09-23"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -328,7 +329,8 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-production-timeline-2026-09-21"
+      "governing_evidence:reality-production-timeline-2026-09-21",
+      "governing_evidence:reality-island-guest-accommodation-2026-09-23"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -1234,7 +1236,8 @@
     "routeKey": null,
     "conditions": [
       "Catalog context, not a grant of cross-show entitlement or a claim of real-time application availability.",
-      "governing_evidence:built-for-more-dj-family-2026-09-18"
+      "governing_evidence:built-for-more-dj-family-2026-09-18",
+      "governing_evidence:hubspot-sms-2026-09-23"
     ],
     "supersedes": [],
     "domains": [
@@ -2252,7 +2255,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-status-cast-score-2026-09-24"
+    ],
     "supersedes": [
       "hubspot-passoff-status"
     ],
@@ -2690,7 +2695,7 @@
       "What is required when I get hired?",
       "What training do I complete in my first two weeks live?"
     ],
-    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the six live training Zooms, call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom calling/texting and cloud recording; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee.",
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the six live training Zooms, call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee.",
     "scopes": [
       "shared"
     ],
@@ -2698,19 +2703,358 @@
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-09-24",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
     "routeKey": null,
     "conditions": [
       "governing_evidence:new-rep-six-training-sessions-2026-09-21",
-      "governing_evidence:new-rep-first-two-weeks-qa-2026-09-21"
+      "governing_evidence:new-rep-first-two-weeks-qa-2026-09-21",
+      "governing_evidence:hubspot-sms-2026-09-23",
+      "governing_evidence:daily-call-review-2026-09-23"
     ],
     "supersedes": [
       "claim_40e4504e3bf5c91c",
       "operational_eeefbc92626d9fca"
     ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-sms-2026-09-23",
+    "decisionKey": "hubspot-sms-2026-09-23",
+    "title": "Current SMS channel: HubSpot; voice calls: Zoom",
+    "questions": [
+      "Where do I send texts now?",
+      "Do I use Google Voice or HubSpot for SMS and calls?"
+    ],
+    "text": "Rich’s September 23 instruction is to send SMS text messages through HubSpot, not Google Voice. His thread explicitly says Zoom for phone calls; Igor clarifies HubSpot SMS uses Twilio, not the rep’s Zoom number. This newer instruction governs over the welcome document and older training references to Zoom texting or Google Voice texting. Part 1 was updated September 24 to refer to HubSpot for the text/dial-out workflow; this does not turn a Twilio SMS number into the Zoom voice number. Use the official video for current screen instructions. Never use a personal cell/number. For account access, SMS character limits, missing inbound notifications or unexpected automated reminders, ask Sales Tech; the reviewed thread does not establish that those reported issues are fixed. Do not invent settings or claim the bot can send messages.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790175822580859",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790177115541629",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790177519228129",
+      "https://drive.google.com/file/d/1OHJwHfXmwEnefOFegV8mOoFeZsTP8B9-/view"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "time-off-process-2026-09-23",
+    "decisionKey": "time-off-process-2026-09-23",
+    "title": "Time off: Olivia notification, Tech calendar blocks and short absences",
+    "questions": [
+      "Who do I tell about time off?",
+      "Can I block my calendar for an hour?"
+    ],
+    "text": "Rich’s September 23 update: if away more than one full day, DM Olivia the dates. Ask Tech in #sales-tech-requests to block the calendar, then check for existing booked calls during the block and ask Tech to move them. If off for an hour or so, the rep may block their own calendar. This replaces the older Madeline time-off notification instruction. It does not grant permission for unapproved manual lead reassignment or changing recurring availability; follow the appropriate approval process for those separate actions.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183326565409"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "time-off-notification"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-status-cast-score-2026-09-24",
+    "decisionKey": "hubspot-status-cast-score-2026-09-24",
+    "title": "HubSpot Cast Score: cancelled and no-show zero; rescheduled waits",
+    "questions": [
+      "What do I update after my second call?",
+      "Where do I put the cast score and meeting outcome?",
+      "What cast score do I put for a no-show?",
+      "Does a cancelled call get zero too?",
+      "How do I score a rescheduled call?"
+    ],
+    "text": "Update BOTH Meeting Status and Cast Score appropriately for completed calls, including Call 2 and Call 3. In HubSpot open Meetings and scroll right to those fields. September 22 supersedes the earlier cancellation guidance: Rich says cancelled and no-show meetings get 0, and Rudy explicitly confirms zero for a cancelled Call 2. RESCHEDULED is a separate exception: although the opening post grouped it with zero, Rudy’s later reply says a rescheduled meeting should be skipped and not graded until the person shows up; Tech then replied that this was done. Preserve the rescheduled status and wait to assess the attended call; do not copy the headline’s blanket zero instruction. No exact new dropdown label is established in the reviewed text, so use Sales Tech if the interface does not support the distinction. This is HubSpot’s Cast Score/meeting bookkeeping, not Magic Mike’s coaching performance grade and not permission to fabricate a completed-call assessment. Preserve other required sale totals, Green Light notes and meeting details. Calendar connection is Settings (wrench) > General > Calendar > Connect Calendar. Final background approval stays with the Green Light team.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790089141982619",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790090410466649",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096821911809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096887312259"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "hubspot-status-cast-score-2026-09-19"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-island-guest-accommodation-2026-09-23",
+    "decisionKey": "reality-island-guest-accommodation-2026-09-23",
+    "title": "Entrepreneurs Island has no plus-one; show accommodation differs",
+    "questions": [
+      "Can I bring my wife to Entrepreneurs Island VIP?",
+      "Do reality contestants need hotels while filming?",
+      "Where do Island participants sleep?"
+    ],
+    "text": "Rudy’s September 23 accommodation thread establishes a show-specific exception: NO plus-one for Entrepreneurs Island. Do not promise the generic Standard one-guest or VIP two-guest allowance for Island. Participants rough it; he says they can unlock tents/housing early with money and probably start with zero on day one. This is format guidance, not a precise survival-condition guarantee. For the three discussed shows (Island, Business Race and the mansion format), participants do not need a separate hotel DURING shooting. Hotel time may be needed a couple of days before and about two days after or for post-interviews. Race accommodation relates to money earned in challenges; the mansion has shared same-sex rooms. Do not promise a private room, complimentary travel, all hotel costs paid, or extend the arrangement to every reality title. General guest access elsewhere remains subject to production rules and does not imply a second contestant spot.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790182805112149",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183228900299",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183239228069"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-expansion-plans-2026-09-24",
+    "decisionKey": "reality-expansion-plans-2026-09-24",
+    "title": "Reality franchise expansion tests are planned, not confirmed bookings",
+    "questions": [
+      "Is Entrepreneurs Island in Ibiza?",
+      "Can I promise Business Race UK?"
+    ],
+    "text": "Rudy announced plans to TEST Business Race UK and Entrepreneurs Island Mexico / Caribbean / Ibiza soon, as possible country/location editions of popular franchises. These are planned expansion tests, not confirmed filming locations, dates, availability or guaranteed participant choices. Do not sell an Ibiza, Mexico, Caribbean or UK placement as secured from this announcement alone.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790253020231869"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-match-house-eligibility-exception-2026-09-24",
+    "decisionKey": "reality-match-house-eligibility-exception-2026-09-24",
+    "title": "Millionaire Match House: net-worth exception requires a strong successful applicant",
+    "questions": [
+      "Must Millionaire Match House applicants have a million dollar net worth?"
+    ],
+    "text": "Asked whether Millionaire Match House’s million-dollar net-worth requirement is negotiable, Rudy answered that an applicant can still be considered if they are good and very successful. This is a narrow qualitative exception, not abolition of the requirement, guaranteed acceptance, or permission to approve someone who merely wants a dating show and is not a successful business fit. Do not invent a lower numeric threshold; explain the condition and confirm the specific applicant with the casting team if their fit is unclear.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790204932731429",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790205751241449",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790205755706979"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-documentary-early-studio-2026-09-22",
+    "decisionKey": "reality-documentary-early-studio-2026-09-22",
+    "title": "Island VIP documentary can be filmed earlier in studio",
+    "questions": [
+      "Can Island VIP film the documentary in studio before the show?"
+    ],
+    "text": "Rudy confirmed yes when asked whether an Entrepreneurs Island VIP participant can film their documentary in studio earlier than the reality production. The follow-up asking exactly how to arrange it was not answered in the reviewed thread. Explain that the earlier studio documentary is possible, but coordinate the booking with production/support; do not invent an immediate slot, add a regular buyer onboarding call, or treat it as permission for Standard to receive the VIP documentary benefit.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790018365769959",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790018377380079"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-mansion-merch-airing-estimate-2026-09-21",
+    "decisionKey": "reality-mansion-merch-airing-estimate-2026-09-21",
+    "title": "Mansion of Money: subtle merch and approximate airing expectations",
+    "questions": [
+      "Can Mansion of Money cast wear a friend’s merch?",
+      "When will Mansion of Money air?"
+    ],
+    "text": "For Mansion of Money, Rudy allowed subtle occasional friend-brand merchandise, not a large branded shirt every day. Asked when it would reach the network, he said if filming is in Q1 2027, editing takes about six months; generally communicate around one year from that September 21, 2026 discussion. These are approximate planning expectations anchored to that date, not a rolling one-year-from-today promise or a guaranteed air date, and not paid sponsor exclusivity.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790009209676989",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790009243375429",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790009254627169",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790009265591059"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "daily-call-review-2026-09-23",
+    "decisionKey": "daily-call-review-2026-09-23",
+    "title": "Daily own-call review: recording and three takeaways",
+    "questions": [
+      "What do I post for daily call review?",
+      "What if I had no calls today?"
+    ],
+    "text": "Rich’s daily instruction is mandatory for all reps: post one of YOUR OWN call recordings in the daily main sales thread with three takeaways. Prefer a reality-show call if you had one; otherwise use a regular-show call. Prefer Call 2, otherwise Call 1. If no calls, write “No calls”. Olivia audits and follows up with reps who have not posted by 8 AM the next day. This is the daily self-review requirement, not submitting an invented call, sharing another rep’s call as your own, or a change to the coaching workflow.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790197200317339"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "call2-greenlight-value-framework-2026-09-24",
+    "decisionKey": "call2-greenlight-value-framework-2026-09-24",
+    "title": "Ten-part Call 2 Green Light value discussion framework",
+    "questions": [
+      "How do I use the Green Light letter on Call 2?",
+      "What are the ten things to sell on the second call?"
+    ],
+    "text": "The current training framework says do not just read the Green Light document back: discuss its meaning with the prospect. Its ten themes are story, mission, what they want to be known for, opportunity cost of invisibility, authority, documentary as a reusable asset, the content/PR/podcast/website/sales uses around it (the “fame stack”), legacy, their future identity, and belief in their story/mission. Useful questions include what stood out in their story, what they are trying to change, what one thing they want to be known for, how they could use the documentary, and what they want remembered in ten years. Adapt these as conversational coaching to the prospect’s answers. These positioning themes are not new contractual deliverables or guarantees of fame, customers, revenue, trust, referrals, rankings or ROI. Keep promised assets within their actual package. The document focuses on documentary Green Light/Call 2; do not import documentary entitlements into reality or DJ packages.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790258384235079"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "coaching",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_coaching"
+  },
+  {
+    "id": "call3-payment-calendar-2026-09-23",
+    "decisionKey": "call3-payment-calendar-2026-09-23",
+    "title": "Call 3 payment follow-up uses the Call 2 calendar",
+    "questions": [
+      "Where do I book call 3 for payment?"
+    ],
+    "text": "Rich says a Call 3 is okay if absolutely necessary to finish the deal; it is the final part of Call 2 rather than a new separate SOP. Madeline confirms booking a Call 3 payment follow-up under the Call 2 calendar in OnceHub. Do not invent a new deadline, deposit exception, guaranteed payment or permission to edit calendar configuration.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790117018508629",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790197023224929"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-broll-ai-choice-2026-09-23",
+    "decisionKey": "documentary-broll-ai-choice-2026-09-23",
+    "title": "Documentary B-roll: supplied footage, optional AI and no invented engagement stats",
+    "questions": [
+      "Does my documentary have to contain AI footage?",
+      "Can we film B-roll in Miami and give engagement rates?"
+    ],
+    "text": "Sales Ops says the episode can use the B-roll the cast provides; if they do not want AI content, they do not have to have AI content. AI clips can fill gaps if the cast is okay with that. This does not promise a separate on-location B-roll shoot in Miami. Sales Ops also says the company does not give out engagement statistics; do not invent engagement rates or present package promotional views as measured engagement or guaranteed business results.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790001113724839",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790191457900669"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "outbound-first-contact-2026-09-22",
+    "decisionKey": "outbound-first-contact-2026-09-22",
+    "title": "Outbound overlap: respect the rep who already contacted the lead",
+    "questions": [
+      "I claimed a lead but another rep emailed first, who owns it?",
+      "Can I take another rep’s client for a different show?"
+    ],
+    "text": "Sales Ops clarifies that when a rep claims an outbound list entry but another rep already emailed the applicant first, the rep with first point of contact continues; move to the next applicant to avoid duplicate outreach and confusion. An empty owner field is not proof that no one contacted the lead. Check HubSpot before dialing. Rich’s cross-show example keeps the existing Legacy Makers client with the original rep while coordinating an interested DJ sale with a DJ rep; do not take ownership merely because the desired show changes. Authorized pass-off and DNC rules still apply.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790096895088839",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790117140339249",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790119917781709"
+    ],
+    "reviewedAt": "2026-09-24",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   }
 ]

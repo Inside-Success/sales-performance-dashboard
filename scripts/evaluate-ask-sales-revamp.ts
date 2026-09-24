@@ -18,7 +18,10 @@ if(!keyFile) throw new Error("FAQ_EVAL_KEY_FILE is required");
 const env=Object.fromEntries(readFileSync(keyFile,"utf8").split(/\r?\n/).filter(l=>l.includes("=")).map(l=>{
  const at=l.indexOf("=");return [l.slice(0,at),l.slice(at+1).trim().replace(/^"|"$/g,"")];
 }));
-const model=providerName==="openai"?"gpt-5.6-luna":(env.FAQ_DEEPSEEK_MODEL||"deepseek-v4-pro");
+const model=providerName==="openai"?(process.env.FAQ_EVAL_MODEL||"gpt-5.6-luna"):(env.FAQ_DEEPSEEK_MODEL||"deepseek-v4-pro");
+if(providerName==="openai" && !["gpt-5.6-luna","gpt-6-luna"].includes(model)) throw new Error("Unpriced evaluation model");
+// Both models share this directory's locked ledger; run them sequentially.
+const rates=providerName==="deepseek"?{input:1.32,cached:0.044,output:3.96}:model==="gpt-6-luna"?{input:0.10,cached:0.01,output:0.50}:{input:0.20,cached:0.02,output:1.20};
 const lockPath=resolve(output,"spend.lock");
 const lock=openSync(lockPath,"wx",0o600);
 process.on("exit",()=>{closeSync(lock);unlinkSync(lockPath);});
@@ -40,13 +43,12 @@ return createRevampProvider({provider:providerName,model,apiKey:env[providerName
  beforeCall:async({promptChars,maxOutputTokens})=>{
   // One character per token is deliberately conservative for these English prompts.
   // DeepSeek V4 Pro peak rates verified 2026-09-15; off-peak bills may be lower.
-  reservation=providerName==="openai"?(promptChars*0.20+maxOutputTokens*1.20)/1e6:(promptChars*1.32+maxOutputTokens*3.96)/1e6;
+  reservation=(promptChars*rates.input+maxOutputTokens*rates.output)/1e6;
   if(ledger.estimatedUsd+ledger.reservedUsd+reservation>ceiling) throw new Error("Evaluation spending ceiling reached");
   reservations.set(workerId,reservation);syncReserved();save();
  },afterCall:async(attempt)=>{
-  const cost=attempt.error === "provider_not_configured" ? 0 : attempt.inputTokens||attempt.outputTokens ? providerName==="openai"
-   ? ((attempt.inputTokens-attempt.cachedTokens)*0.20+attempt.cachedTokens*0.02+attempt.outputTokens*1.20)/1e6
-   : ((attempt.inputTokens-attempt.cachedTokens)*1.32+attempt.cachedTokens*0.044+attempt.outputTokens*3.96)/1e6 : reservation;
+  const cost=attempt.error === "provider_not_configured" ? 0 : attempt.inputTokens||attempt.outputTokens
+   ? ((attempt.inputTokens-attempt.cachedTokens)*rates.input+attempt.cachedTokens*rates.cached+attempt.outputTokens*rates.output)/1e6 : reservation;
   ledger.estimatedUsd+=cost;reservations.delete(workerId);syncReserved();ledger.attempts.push(attempt);save();
  }});
 }

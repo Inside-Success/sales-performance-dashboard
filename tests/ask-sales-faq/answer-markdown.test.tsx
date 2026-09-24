@@ -6,6 +6,17 @@ import { AnswerMarkdown } from "@/components/ask-sales-faq/answer-markdown";
 const render = (text: string) => renderToStaticMarkup(<AnswerMarkdown text={text} />);
 
 describe("authored answer formatting", () => {
+  it("renders saved Slack mentions as safe readable links without touching code or existing links", () => {
+    const html=render('Use <#C0C2USV181G> or <#C07UQE193GD>. Named <#C1234567890|sales-help>. `code <#C0C2USV181G>` [existing <#C0C2USV181G>](https://example.com)');
+    expect(html).toContain('href="https://istvoffical.slack.com/archives/C0C2USV181G"');
+    expect(html).toContain('>#hubspot-passoff</a>');
+    expect(html).toContain('>Open Slack channel</a>');
+    expect(html).toContain('>#sales-help</a>');
+    expect(html).toContain('<code>code &lt;#C0C2USV181G&gt;</code>');
+    expect(html.match(/href="https:\/\/istvoffical.slack.com/g)).toHaveLength(3);
+    expect(render('```text\n<#C0C2USV181G>\n```')).not.toContain('href=');
+    expect(render('<#C1234567890|[bad](javascript:alert)>')).not.toContain('href=');
+  });
   it("preserves saved paragraph boundaries and renders actual lists and headings", () => {
     const text = "The VIP package is **$30,000**.\n\n## Included benefits\n\n- Cast profile\n- Promotional assets\n\n## Next steps\n\n1. Review the agreement\n2. Confirm the applicable terms\n\nSubmission does not guarantee publication.";
     const html = render(JSON.parse(JSON.stringify({ summary: text })).summary);
