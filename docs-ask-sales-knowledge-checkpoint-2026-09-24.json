@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-09-24",
-  "status": "candidate_not_published",
+  "status": "published_verified",
   "previousKnowledgeVersion": "a7b2510c5bf20052503b21d1",
   "slack": {
     "C09AF0NQJE7": {
@@ -61,5 +61,9 @@
     "Unanswered questions, rep speculation, private lead details, tentative sponsor jokes and unconfirmed display screenshots were not promoted to company policy.",
     "Existing inaccessible historical pass-off channel ID has a neutral safe link label; its current name/access was not invented."
   ],
-  "privateEvidenceDirectory": ".magic-mike-luna6-2026-09-24"
+  "privateEvidenceDirectory": ".magic-mike-luna6-2026-09-24",
+  "knowledgeVersion": "80e8e644aec62299ac2f94c9",
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/238",
+  "productionCommit": "16052b6db31f25f0a16f47d4975f629948d18e1a",
+  "productionDeployment": "dpl_39sZj6AXTF2RsLvx1Pm54tMxQouc"
 }

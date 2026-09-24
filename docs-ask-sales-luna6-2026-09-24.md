@@ -1,6 +1,6 @@
 # Ask Sales source refresh and Luna comparison — September 24, 2026
 
-Status: isolated candidate; not yet published. Production baseline is dashboard `fadaeade22cc96aa6e109893103d70ac8fd55f4c`, Ask Sales knowledge `a7b2510c5bf20052503b21d1` and GPT-5.6 Luna medium. Preserve all intervening coaching/UI releases.
+Status: published and verified September 24. Production baseline is dashboard `fadaeade22cc96aa6e109893103d70ac8fd55f4c`, Ask Sales knowledge `a7b2510c5bf20052503b21d1` and GPT-5.6 Luna medium. Preserve all intervening coaching/UI releases.
 
 ## Authorized scope
 
@@ -43,10 +43,20 @@ Total local comparison ledger, including early compatibility/partial runs and co
 
 ## Verification notes
 
-358 Ask Sales tests, three coaching route tests, TypeScript, scoped ESLint, static validation and a production build passed. The final knowledge clarifications passed 19 targeted tests. Both repository CI workflows passed on the initial candidate; final commit CI and publication verification are recorded below when complete.
+358 Ask Sales tests, three coaching route tests, TypeScript, scoped ESLint, static validation and a production build passed. The final knowledge clarifications passed 19 targeted tests. Both repository CI workflows passed on the initial candidate; final commit CI passed and publication verification is recorded below.
 
-TypeScript exposed pre-existing possibly-undefined response assertions in the recently added coaching test; three explicit test assertions now fail clearly if no response exists. No coaching runtime behavior was changed. Hosted isolated preview verified authenticated FAQ, both admin pages and Coaching (HTTP 200); one GPT-6 Island answer was correct, persisted in the isolated database, and its own test fixture removed. The final candidate remains on GPT-5.6. Production release verification is pending.
+TypeScript exposed pre-existing possibly-undefined response assertions in the recently added coaching test; three explicit test assertions now fail clearly if no response exists. No coaching runtime behavior was changed. Hosted isolated preview verified authenticated FAQ, both admin pages and Coaching (HTTP 200); one GPT-6 Island answer was correct, persisted in the isolated database, and its own test fixture removed. The final candidate remains on GPT-5.6. Production release verification passed as recorded below.
 
 ## Rollback
 
 Retain prior FAQ model setting and knowledge snapshot. If the candidate fails its gates, keep the current FAQ model and release only independently passing knowledge/UI work. Do not roll the shared dashboard back across other teams' subsequent changes. Prefer a scoped revert of this release and FAQ-only model setting.
+
+## Verified publication
+
+Dashboard PR238 merged to `16052b6db31f25f0a16f47d4975f629948d18e1a`; FAQ PR83 merged to `da7f216f626c772366343f2a598c16cc4ec8feff`. Production deployment `dpl_39sZj6AXTF2RsLvx1Pm54tMxQouc` is READY on the rose alias. Final isolated preview uses GPT-5.6 and returned the correct Island no-plus-one answer (14.530 s), with isolated persistence and own fixture cleanup verified.
+
+Work Chrome profile verified an old saved answer now renders “Open Slack channel” without changing history. A new live question correctly distinguished HubSpot email assignment from live call coordination and displayed the readable #hubspot-passoff link. Production database read confirmed GPT-5.6, knowledge `80e8e644aec62299ac2f94c9`, no error, 12.137 s response, and the new governed evidence record. The verification chat is retained in admin history. A narrow deployment error-log query returned no errors; this is a smoke check, not a guarantee about all future traffic.
+
+An initial final-preview check accidentally reused the earlier client request ID and received the existing cached response. It was excluded as fresh verification and rerun with a unique ID; the isolated database check caught this correctly. No retry-model or production behavior changed.
+
+The publication receipt is updated only after the above live proof. No production model setting, coaching runtime, source document, Slack message, database branch or scheduler was changed. Preview-only model configuration was restored to GPT-5.6.
