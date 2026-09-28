@@ -1,6 +1,6 @@
 # Ask Sales knowledge refresh — September 29, 2026
 
-Status: candidate prepared; publication receipt will follow live verification.
+Status: published and verified. See production receipt below.
 
 Scope: manual source refresh from the published September 24 checkpoint. Slack and Google source systems were read-only. No model, prompt, retrieval, UI, Coaching, n8n or database-schema changes.
 
@@ -39,3 +39,9 @@ Use the paired September 29 JSON checkpoint only after status is published_verif
 ## Pre-publication checks
 
 362/362 FAQ tests passed; static validation 107/107, TypeScript and production build passed. Thirteen distinct model-answer cases were reviewed (16 calls including targeted rechecks); the initial deposit conflict was corrected from the current Sheet and the four rechecks passed. Estimated offline provider spend: $0.10728. No provider or schema errors. This is targeted regression evidence, not an exhaustive correctness claim. Registry: `80ea2d2ee1f9f0636be7654c`, 2,508 active records.
+
+## Production receipt
+
+Dashboard PR241 and FAQ PR85 merged. Production `d9d63f0b08c9a251c1700b6124175122db6cc16e`, deployment `dpl_84N2oGUEhsWCTP2eZtboN4uMrbdC`, READY with the public alias. Work-profile Chrome answer and database receipt confirmed knowledge `80ea2d2ee1f9f0636be7654c`, GPT-5.6 Luna, no error, 14.425 seconds for the live combined Island guest/season question.
+
+The automatic new-branch preview failed resource provisioning before build. Reused the existing isolated preview branch/database successfully; FAQ, admin, usage and Coaching pages returned 200 and the combined answer passed. The isolated fixture was removed; the production verification conversation is retained as an audit record. No new database branch was created or deleted.
