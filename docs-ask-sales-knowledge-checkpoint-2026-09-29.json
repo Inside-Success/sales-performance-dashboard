@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-09-29",
-  "status": "candidate_verified_pending_publication",
+  "status": "published_verified",
   "previousKnowledgeVersion": "80e8e644aec62299ac2f94c9",
   "knowledgeVersion": "80ea2d2ee1f9f0636be7654c",
   "slack": {
@@ -84,5 +84,10 @@
     "Contract waiver requests, individual payment-link approvals, peer suggestions, transient incidents and private lead details not promoted into general policy.",
     "Written Standard documentary benefit still conflicts with mandatory Call 2 presentation; existing discrepancy retained."
   ],
-  "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-09-29"
+  "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-09-29",
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/241",
+  "productionCommit": "d9d63f0b08c9a251c1700b6124175122db6cc16e",
+  "productionDeployment": "dpl_84N2oGUEhsWCTP2eZtboN4uMrbdC",
+  "verifiedAt": "2026-09-28T20:19:28.856191+00:00",
+  "productionMessageId": "faq_assistant_d3b527da-048b-44b6-83b7-c984576fac5b"
 }
