@@ -1,0 +1,88 @@
+{
+  "reviewDate": "2026-09-29",
+  "status": "candidate_verified_pending_publication",
+  "previousKnowledgeVersion": "80e8e644aec62299ac2f94c9",
+  "knowledgeVersion": "80ea2d2ee1f9f0636be7654c",
+  "slack": {
+    "C09AF0NQJE7": {
+      "latestRootTs": "1790608524.263209",
+      "rootMessagesRead": 39,
+      "coverage": "All available roots after September 24 saved per-channel checkpoint; relevant policy threads expanded.",
+      "paginationComplete": true
+    },
+    "C0AUQKNR8CF": {
+      "latestRootTs": "1790624885.465669",
+      "rootMessagesRead": 62,
+      "coverage": "All available roots after September 24 saved per-channel checkpoint; relevant policy threads expanded.",
+      "paginationComplete": true
+    },
+    "C08QGKL39J6": {
+      "latestRootTs": "1790624306.704249",
+      "rootMessagesRead": 96,
+      "coverage": "All available roots after September 24 saved per-channel checkpoint; relevant policy threads expanded.",
+      "paginationComplete": true
+    },
+    "C0A8S3JSR1Q": {
+      "latestRootTs": "1790616965.376049",
+      "rootMessagesRead": 62,
+      "coverage": "All available roots after September 24 saved per-channel checkpoint; relevant policy threads expanded.",
+      "paginationComplete": true
+    }
+  },
+  "olderThreadsExplicitlyRevisited": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1788746537.690009",
+      "repliesAfter": "1790206002.359319",
+      "latestReplyTs": "1790619398.719769",
+      "repliesRead": 15,
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790089141.982619",
+      "repliesAfter": "1790260007.715069",
+      "newReplies": 0,
+      "paginationComplete": true
+    }
+  ],
+  "google": {
+    "registeredSourcesMetadataChecked": 43,
+    "additionalSourcesMetadataChecked": 2,
+    "changedDocsRead": [
+      "1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ",
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+      "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+      "13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI"
+    ],
+    "changedSheetsChecked": [
+      {
+        "id": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "ranges": [
+          "'Inside Success - All Links'!A1:H5",
+          "'Inside Success - Reduction 2k'!A1:E12"
+        ]
+      },
+      {
+        "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "ranges": [
+          "'Closers Calendars'!A1:F5"
+        ]
+      }
+    ],
+    "priorUnavailablePreserved": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ]
+  },
+  "limitations": [
+    "Root coverage plus relevant expanded threads, not every historical reply in the workspace.",
+    "New Call 1 video sequence is grounded in Rudy written instructions and the updated FAQ; video and audio themselves not transcribed.",
+    "Filming dates/locations remain approximate; the ambiguous March Money entry is not resolved by guessing.",
+    "Millionaire Match House net-worth follow-up contains tentative owner recollection, not a new independently verified eligibility rule.",
+    "Contract waiver requests, individual payment-link approvals, peer suggestions, transient incidents and private lead details not promoted into general policy.",
+    "Written Standard documentary benefit still conflicts with mandatory Call 2 presentation; existing discrepancy retained."
+  ],
+  "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-09-29"
+}

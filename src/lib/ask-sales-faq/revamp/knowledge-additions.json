@@ -57,16 +57,18 @@
     "questions": [
       "What does the $30,000 VIP package include?"
     ],
-    "text": "Package overview: https://docs.google.com/document/d/1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y/edit (the documentary benefit placement differs from the newer Call 2 video).\r\nEverything in the standard package, plus:\r\n* Priority placement on the cast website/page\r\n* 10 additional social media clips (the current Call 2 VIP slide clarifies the written FAQ’s \"10x\" notation)\r\n* 1x Sit-down 5 min video interview with a producer on set\r\n* Where applicable, access/interview opportunities with celebrity hosts, celebrity guests, or cameos\r\n* Co-executive producer credit, subject to final production/credit terms\r\n* Ability to bring up to two guests instead of one\r\n* One early-elimination immunity advantage for EPISODE 2, meaning the VIP participant cannot be eliminated until Episode 3, described as the halfway mark of the show unless they fail a challenge/don’t participate.\r\nImportant: the VIP package does not guarantee that someone wins the competition or remains through the entire season.\nThe current Call 2 video VIP slide additionally lists a full 20–25 minute documentary interview about the participant/their business. See the recorded discrepancy with the older written package overview before discussing this benefit.\nCurrent show-specific exception (Rudy, September 23): Entrepreneurs Island permits NO plus-one, including VIP. The generic one/two-guest package allowance above does not apply to Island. Include this exception whenever describing that guest benefit; other shows remain subject to production rules.",
+    "text": "Package overview: https://docs.google.com/document/d/1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y/edit (the documentary benefit placement differs from the newer Call 2 video).\r\nEverything in the standard package, plus:\r\n* Priority placement on the cast website/page\r\n* 10 additional social media clips (the current Call 2 VIP slide clarifies the written FAQ’s \"10x\" notation)\r\n* 1x Sit-down 5 min video interview with a producer on set\r\n* Where applicable, access/interview opportunities with celebrity hosts, celebrity guests, or cameos\r\n* Co-executive producer credit, subject to final production/credit terms\r\n* Ability to bring up to two guests instead of one\r\n* One early-elimination immunity advantage for EPISODE 2, meaning the VIP participant cannot be eliminated until Episode 3, described as the halfway mark of the show unless they fail a challenge/don’t participate.\r\nImportant: the VIP package does not guarantee that someone wins the competition or remains through the entire season.\nThe current Call 2 video VIP slide additionally lists a full 20–25 minute documentary interview about the participant/their business. See the recorded discrepancy with the older written package overview before discussing this benefit.\nRudy clarified September 24–25 that Island also allows Standard one guest / VIP two, with access and accommodation dependent on pre-production. See the current Island guest guidance; do not promise unrestricted access or guest travel costs.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790265725972329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790347971960629"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-09-29",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -175,7 +177,8 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-production-timeline-2026-09-21"
+      "governing_evidence:reality-production-timeline-2026-09-21",
+      "governing_evidence:reality-season-schedule-2026-09-29"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -227,7 +230,8 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-production-timeline-2026-09-21"
+      "governing_evidence:reality-production-timeline-2026-09-21",
+      "governing_evidence:reality-season-schedule-2026-09-29"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -253,7 +257,8 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-production-timeline-2026-09-21"
+      "governing_evidence:reality-production-timeline-2026-09-21",
+      "governing_evidence:reality-season-schedule-2026-09-29"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -316,15 +321,17 @@
     "questions": [
       "Can cast members bring guests?"
     ],
-    "text": "Yes, subject to production rules.\r\nStandard package:\r\n* Up to 1 guest\r\nVIP package:\r\n* Up to 2 guests\r\nGuest access to actual filming areas may vary depending on the production.\nCurrent show-specific exception (Rudy, September 23): Entrepreneurs Island permits NO plus-one, including VIP. The generic one/two-guest package allowance above does not apply to Island. Include this exception whenever describing that guest benefit; other shows remain subject to production rules.",
+    "text": "Yes, subject to production rules.\r\nStandard package:\r\n* Up to 1 guest\r\nVIP package:\r\n* Up to 2 guests\r\nGuest access to actual filming areas may vary depending on the production.\nRudy clarified September 24–25 that Island also allows Standard one guest / VIP two, with access and accommodation dependent on pre-production. See the current Island guest guidance; do not promise unrestricted access or guest travel costs.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790265725972329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790347971960629"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-09-29",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2195,7 +2202,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:main-call1-disqualification-exception-2026-09-21"
+      "governing_evidence:main-call1-disqualification-exception-2026-09-21",
+      "governing_evidence:reality-call1-video-2026-09-29"
     ],
     "supersedes": [
       "claim_bc6feb1c60e8c90d__a1",
@@ -2373,7 +2381,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:reality-season-schedule-2026-09-29"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -2746,7 +2756,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-shortcuts-sms-2026-09-29"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -2976,7 +2988,7 @@
       "https://docs.google.com/document/d/13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790258384235079"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-09-29",
     "authority": 12,
     "kind": "coaching",
     "risk": "medium",
@@ -3059,5 +3071,397 @@
     "conditions": [],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-island-guest-accommodation-2026-09-29",
+    "decisionKey": "reality-island-guest-accommodation-2026-09-29",
+    "title": "Island guest allowance: newer Rudy clarification and production-dependent access",
+    "questions": [
+      "Can I bring my wife to Entrepreneurs Island VIP?",
+      "How many guests can Island Standard bring?",
+      "Where will Island guests stay?"
+    ],
+    "text": "Rudy’s September 24 reply to an explicit Entrepreneurs Island guest question says Standard gets one guest and VIP gets two, no more. His September 25 follow-up says where guests stay and whether/how they access the island depends on the island and pre-production; the show is the priority. If the selected island has a hotel they may stay there; otherwise mainland accommodation and a ferry may be needed. These are conditional examples, not confirmed arrangements or included hotel/ferry costs. This newer, same-owner clarification replaces his September 23 no-plus-one statement. Do not promise unrestricted filming access, a whole-family allowance, a second contestant place, childcare or free guest travel. Participant accommodation remains separate: the September 23 discussion says Island participants rough it and can unlock tents/housing; the discussed Island, Race and mansion formats do not need separate participant hotels during shooting, but before/after days or post-interviews may. Race accommodation depends on challenge earnings; the mansion has shared same-sex rooms. Do not extend that to every title or to guests.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790265725972329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790347971960629",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790348005198809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790182805112149",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183228900299",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183239228069"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-island-guest-accommodation-2026-09-23"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-expansion-plans-2026-09-29",
+    "decisionKey": "reality-expansion-plans-2026-09-29",
+    "title": "Business Race UK launch; other location plans remain provisional",
+    "questions": [
+      "Is Business Race UK available?",
+      "What is Business Race UK?",
+      "Is Island Ibiza confirmed?"
+    ],
+    "text": "Business Race: UK Edition was announced/launched by Thomas and Timothy on September 28. Official casting information: https://uk.businessracetv.com/tvbruk-main-1 . The concept follows entrepreneurs starting with nothing in one city and travelling across the UK, completing business challenges and making money at stops. This is now an announced UK edition, not merely the September 23 proposed test. The launch does not establish exact filming dates, guaranteed acceptance or a secured participant place. Island Mexico/Caribbean remains an approximate future-season plan, and Ibiza was mentioned as a possible test, not a confirmed booking. Do not invent location availability or transfer entitlements.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790608524263209",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790607721654819",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790253020231869"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-expansion-plans-2026-09-24"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-season-schedule-2026-09-29",
+    "decisionKey": "reality-season-schedule-2026-09-29",
+    "title": "Island Season 1 capacity and Season 2 sales; approximate filming calendar",
+    "questions": [
+      "Can I still sell Island season one?",
+      "When does Island season two film?",
+      "Is Mansion of Money filming in January?"
+    ],
+    "text": "Rich’s September 26 instruction says Island Season 1 is full and, from Monday September 28, reps should pitch Season 2 rather than promise a Season 1 place. Do not carry forward temporary overflow counts as live inventory. Rich initially estimated March for Season 2, but Rudy later in the same thread placed Island #2 in April; the FAQ’s example calendar also says April, Mexico/Caribbean. Treat April 2027 as a planning estimate, not a confirmed date or secured location. January 2027 (previous tentative January 10–30 window) refers to Island Florida Season 1, not all reality shows or the season now being sold. Mansion is not January: Rudy described roughly February–April; the FAQ example says February. Its March entry just says 'Money' and is not enough to identify a separate title/date confidently. The FAQ explicitly labels this calendar approximate as of September 25 and directs reps to confirm updated schedules. Rudy said Startup Lockdown might be skipped; that is not a confirmed cancellation. Use show/season-specific confirmation before travel commitments.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790437550548759",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442521907949",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442526156139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442559260019",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790451677000429",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-call1-video-2026-09-29",
+    "decisionKey": "reality-call1-video-2026-09-29",
+    "title": "New reality Call 1 master video and show-specific follow-up",
+    "questions": [
+      "Which reality video do I show on call one now?",
+      "Do I show the Island video first?",
+      "Does the cofunded video mean I can quote 20k on call 1?"
+    ],
+    "text": "Rudy’s September 27 instruction and updated reality FAQ introduce the master reality Call 1 video: https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . Use a brief introduction/initial questions, play this master video, then ask the main qualification questions. Rudy recommends 1.2x speed (1.5x also mentioned); the video is about 12 minutes. If time permits, play the first roughly four minutes of the appropriate show-specific Island/Race/House video at the end; otherwise send that show-specific video afterwards. Rudy’s post says 3–4 questions and the FAQ flow says the main five: preserve the qualification purpose rather than treating these as incompatible scripts. Do not replace the mandatory reality Call 2 license video with this Call 1 video. Rudy explicitly reaffirmed in this thread that reps do not quote price on normal Call 1; introducing the co-funded concept is not permission to quote $20,000. The rare regular-ISTV disqualification exception remains scoped to regular ISTV, not automatically extended to reality.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790546171347239",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790618088184179",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "sales-question-escalation-2026-09-29",
+    "decisionKey": "sales-question-escalation-2026-09-29",
+    "title": "Current sales help: FAQ, team channel, then Rich/Mike for emergencies",
+    "questions": [
+      "Who answers sales questions now?",
+      "Should I tag Madeline for sales help?",
+      "Who handles an urgent sales question?"
+    ],
+    "text": "Rich’s September 26 update says Madeline is no longer monitoring #sales-questions-requests. First use Magic Mike/FAQ; if the answer is still missing, ask #sales-questions-requests for team help. For a true emergency, DM Rich and Mike; do not promise a quick weekend reply. Technical and HubSpot issues go to #sales-tech-requests. For detailed reality questions, consult the reality FAQ and its main-channel thread https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009 ; Madeline directed unresolved reality questions there for Rudy. This is a help-routing update, not a change to specialist billing, training or production ownership, and not permission for the chatbot to send messages.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790438251595689",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790358429836599",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790358453504509"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-shortcuts-sms-2026-09-29",
+    "decisionKey": "hubspot-shortcuts-sms-2026-09-29",
+    "title": "HubSpot central SMS view, notifications and help contact",
+    "questions": [
+      "Where can I see all HubSpot texts together?",
+      "How do I see incoming SMS notifications?",
+      "Who fixes Twilio texting?"
+    ],
+    "text": "Igor’s September 28 update provides the HubSpot shortcuts page https://app-eu1.hubspot.com/app/148285209/51316600 with Meetings, Ledger and an SMS tab for viewing messages together. Bookmark it; check the SMS tab and the top-right notifications. Igor reconfirmed this in response to missing-notification questions. A rep reported an older message missing and Igor said he would check, so do not claim every historical message or every account notification issue is fixed. Pramod directs text/Twilio issues to Igor through #sales-tech-requests. HubSpot/Twilio remains the instructed SMS channel and Zoom remains voice; this does not authorize personal-number or Google Voice workarounds. No verified increase to the SMS character limit was established.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790599991248089",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790602249454929",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790616912782809",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790598494470289"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-status-cast-score-2026-09-29",
+    "decisionKey": "hubspot-status-cast-score-2026-09-29",
+    "title": "HubSpot rescheduled dropdown update versus attended-call assessment",
+    "questions": [
+      "What do I update after my second call?",
+      "Where do I put the cast score and meeting outcome?",
+      "What cast score do I put for a no-show?",
+      "Does a cancelled call get zero too?",
+      "How do I score a rescheduled call?"
+    ],
+    "text": "Update Meeting Status and Cast Score appropriately for completed calls including Call 2 and Call 3; open Meetings and scroll right. Cancelled/no-show meetings use zero, including zero for a cancelled Call 2. For a reschedule, set Meeting Status to Rescheduled. Newer operational instruction: on September 25, Igor explicitly told a rep whose rescheduled entry showed incomplete stats to use the dropdown '0 Cancelled / No Show / Rescheduled'. Use that documented UI option to complete the rescheduled meeting bookkeeping. Preserve the context: Rudy’s September 22 instruction said skip grading a rescheduled prospect until they attend. The zero UI option is a rescheduled status placeholder, not evidence of a poor prospect or an attended-call assessment; assess the actual attended call later. Do not tell reps to invent a substantive cast assessment or ignore an incomplete record; if their UI differs ask Sales Tech. This is HubSpot bookkeeping, not Magic Mike’s coaching grade. Preserve required sale totals, Green Light notes and meeting details. Calendar connection: Settings > General > Calendar > Connect Calendar. Final background approval stays with Green Light.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790089141982619",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790090410466649",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096821911809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096887312259",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790344012745839"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "hubspot-status-cast-score-2026-09-24"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-reschedule-greenlight-recovery-2026-09-29",
+    "decisionKey": "hubspot-reschedule-greenlight-recovery-2026-09-29",
+    "title": "OnceHub rescheduling and missing HubSpot Green Light recovery",
+    "questions": [
+      "How do I reschedule a call in HubSpot?",
+      "My rescheduled meeting is missing and I need to greenlight them"
+    ],
+    "text": "Use OnceHub for actual rescheduling, then keep HubSpot’s meeting status accurate. Tech confirmed: before the scheduled start, use the reschedule link in the Google meeting; notes entered there are customer-facing. After the meeting time, use the correct OnceHub calendar: public for Call 1/outbound first calls, personal Call 2 calendar for Call 2 and Call 3. If a meeting is missing from HubSpot, check the Google Calendar connection under Settings > General > Calendar and contact Sales Tech with the relevant screenshots. Pramod confirmed the Green Light request channel as the backup if a HubSpot issue blocks Green Light submission, with the call recording and relevant notes. Avoid duplicate requests and do not bypass final Green Light approval.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790351550096509",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790352381028649",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790266561595169",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790267105437119"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-no-returning-client-discount-2026-09-29",
+    "decisionKey": "reality-no-returning-client-discount-2026-09-29",
+    "title": "No reality discount for previous DJ or documentary clients",
+    "questions": [
+      "Can a previous Daymond client get reality for half price?",
+      "Do returning documentary clients get a reality discount?"
+    ],
+    "text": "Mike and Rudy explicitly rejected applying the regular-show repeat-client 50% discount to reality on September 24. Having already purchased Daymond John / Next Level CEO or a regular documentary does not create a reality discount. Use the approved reality packages/payment options; do not transfer a regular-show discount across products.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790271481273509",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790271588247419"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "regular-deposit-no-split-across-days-2026-09-29",
+    "decisionKey": "regular-deposit-no-split-across-days-2026-09-29",
+    "title": "Regular offer: required initial payment and same-day discount boundary",
+    "questions": [
+      "Can they pay 1000 now and 1500 next week for the deposit?",
+      "Does the 2k discount carry over to call three?"
+    ],
+    "text": "Normal regular ISTV Lite remains $12,000 with its approved listed plans. A specifically approved same-day $2,000 reduction is a separate conditional offer: the current 'Inside Success - Reduction 2k' tab lists Lite $10,000 paid in full, 4 x $2,500, or 2 x $5,000. Mike’s September 24 thread confirms that this reduction is for moving forward that day, not automatically carried to a later Call 3. The sheet lists routes; it does not authorize offering a discount indiscriminately or outside the approved same-day conditions. It is therefore incorrect to say $2,500 can never be an approved regular Lite installment. However, Mike explicitly rejected $1,000 today plus $1,500 next week as a substitute for the required $2,500 initial payment: no custom split across days. Without the reduction, his example returns to 4 x $3,000 = $12,000. These are regular ISTV rules, not reality or DJ pricing. Consult the current exact package row rather than making up discounts, links or payment dates.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790268061631419",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790268910204109",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790269088895879",
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=894676259"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "ach-proof-sale-processing-2026-09-29",
+    "decisionKey": "ach-proof-sale-processing-2026-09-29",
+    "title": "ACH proof can support sale processing without claiming settled funds",
+    "questions": [
+      "Can I submit the sale with ACH proof before it clears?",
+      "Can I use an old payment link if Whop fails?"
+    ],
+    "text": "Madeline confirmed September 25 that proof of an initiated ACH payment can allow the sale to be pushed through while clearance is pending. Mike also accepted ACH proof in the specific Island place-reservation question that day. This is operational submission guidance, not a statement that the money has cleared, a guaranteed settlement time, or a way to override current season capacity, required payment amounts or signed-contract requirements. For a declined checkout, use the approved route for the exact show/package and ask Billing/Tech to confirm alternatives; Gohar’s approval of a legacy link in one identified Mansion transaction is not blanket authorization to reuse old links for every customer.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790368392304309",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790349343419029",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790584768336399"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-broll-no-fixed-quota-2026-09-29",
+    "decisionKey": "documentary-broll-no-fixed-quota-2026-09-29",
+    "title": "Documentary B-roll quantity and conditional faster production",
+    "questions": [
+      "How much B-roll does my documentary client need?",
+      "Can production guarantee a faster release?"
+    ],
+    "text": "Madeline’s September 25 answer says there is no specific fixed B-roll amount; production works with what the client can provide. Do not invent a required clip count. Production timing depends on filming, assets arriving on time and editing needs. Angelina’s faster-release example required filming the following week, timely B-roll and few edits; it was not a blanket guaranteed December release or fixed fast-track deadline. Coordinate a specific request with production before promising dates. These documentary answers do not change reality filming schedules.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790368447507159",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790362068515759"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "main-call1-business-discovery-2026-09-29",
+    "decisionKey": "main-call1-business-discovery-2026-09-29",
+    "title": "Call 1 discovery: business stage, goals and audience need",
+    "questions": [
+      "What should I ask about their business on Call 1?",
+      "Should I ask revenue in the first call?"
+    ],
+    "text": "The updated Rudy Call 1 script asks about the business stage (startup versus established, employees) and explicitly says not to ask revenue. Explore why they want exposure, the business or audience problem, their goals and what they want to be known for. Use their answers to understand fit; do not turn these discovery questions into promises of revenue, leads or ROI. Preserve the normal no-pricing Call 1 sequence and the existing narrow regular-ISTV financially-unqualified disqualification exception; do not quote a license price to every prospect or extend that exception to reality.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ/edit"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "coaching",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_coaching"
+  },
+  {
+    "id": "current-minimum-first-payment-by-product-2026-09-29",
+    "decisionKey": "current-minimum-first-payment-by-product-2026-09-29",
+    "title": "First payments follow current product plan, not a universal $2500 deposit",
+    "questions": [],
+    "text": "Use the current listed installment plan for the selected product. Main ISTV Lite is $12,000 with listed 4 x $3,000, 3 x $4,000 or 2 x $6,000 options; its lowest listed first installment is therefore $3,000. DJ/NLCEO Lite is $10,000 paid in full or the listed installment options including 4 x $2,500. Older summaries saying $2,500 is a universal minimum do not override these current product prices. A $1,000 holding deposit is not an approved listed plan. Do not invent custom deposits, payment links, balances or collection dates; the maintained Sales Master FAQ explicitly disallows $1,000 deposits. If an underpayment already occurred, route for Finance resolution rather than treating it as a valid newly approved plan. Exception verified September 29: the approved same-day regular Lite $2,000 reduction has a listed 4 x $2,500 plan (also $10,000 PIF or 2 x $5,000). This conditional reduction does not change normal baseline Lite pricing; it cannot be assumed on a later call. Do not deny this specifically approved option or invent split-across-days deposits. See the governing reduction evidence.",
+    "scopes": [
+      "main_istv",
+      "dj_nlceo"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790268061631419",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790268910204109",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790269088895879",
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=894676259"
+    ],
+    "reviewedAt": "2026-09-29",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:regular-deposit-no-split-across-days-2026-09-29"
+    ],
+    "supersedes": [
+      "current-minimum-first-payment-by-product"
+    ],
+    "domains": [],
+    "sourceKind": "source_reviewed_governed_synthesis"
   }
 ]
