@@ -1,3 +1,5 @@
+import { CoachingImprovement } from "@/components/dashboard/coaching-improvement";
+import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import {
   coachingEvidence,
@@ -18,9 +20,19 @@ export function CoachingReportContent({
   reportId: string;
   transcriptUrl?: string | null;
 }) {
+  const source = report.source_payload;
+  const sourceId = reportType === "manual" ? reportId : (source && typeof source === "object" ? String((source as Record<string, unknown>).source_airtable_record_id || "") : "");
+  const reviewed = readReviewedCoaching(source, sourceId);
+  const sections = reviewed ? [
+    { key: "outcome", title: "Call outcome", items: [reviewed.outcome.summary + (reviewed.outcome.evidence.length ? ` [${reviewed.outcome.evidence.join(", ")}]` : "")] },
+    { key: "improvements", title: "What to improve", items: reviewed.improvements.length ? reviewed.improvements.map(x => [x.title ? `Focus: ${x.title}` : "", x.observation, `Why it matters: ${x.possible_effect}`, `Next time: ${x.better_action}`, x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join("\n")) : ["No specific sales-execution improvement was supported by this call."] },
+    { key: "strengths", title: "What you did well", items: reviewed.strengths.map(x=>[x.observation,x.why_useful,x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join(" ")) },
+    { key: "objections", title: "Buyer concerns", items: reviewed.blockers.map(x=>x.observation + (x.evidence.length ? ` [${x.evidence.join(", ")}]` : "")) },
+    { key: "next-steps", title: "Agreed next steps", items: reviewed.next_steps.map(x=>x.observation + (x.evidence.length ? ` [${x.evidence.join(", ")}]` : "")) },
+  ].filter(section=>section.items.length) : dashboardCoachingSections(report);
   return (
     <div className="space-y-4">
-      {dashboardCoachingSections(report).map((section) => (
+      {sections.map((section) => (
         <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} />
       ))}
     </div>
@@ -55,7 +67,7 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl }: {
                 {section.items.length > 1 ? (
                   <span className={`mt-2 size-1.5 shrink-0 rounded-full ${isImprovement ? "bg-[#c43132]" : "bg-slate-400"}`} aria-hidden="true" />
                 ) : null}
-                <CoachingText text={text} isClosingDetail={section.key === "close"} />
+                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */} /> : <CoachingText text={text} isClosingDetail={section.key === "close"} />}
               </div>
               {evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
             </li>

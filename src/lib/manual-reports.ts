@@ -1,3 +1,4 @@
+import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { z } from "zod";
 import { resolveCloseSection } from "@/lib/close-section";
 import { normalizeStringList } from "@/lib/list-format";
@@ -132,6 +133,9 @@ export function normalizeManualCallback(raw: unknown) {
     throw new Error("public_id is required");
   }
 
+  if (parsed.reviewed_coaching_v1 !== undefined) {
+    parsed.reviewed_coaching_v1 = readReviewedCoaching(parsed, parsed.public_id) || null;
+  }
   const whatWentWell = normalizeStringList(parsed.what_went_well);
   const whatToImprove = normalizeStringList(parsed.what_to_improve);
   const objectionsSurfaced = normalizeStringList(parsed.objections_surfaced);
