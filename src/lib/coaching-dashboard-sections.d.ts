@@ -5,3 +5,6 @@ export function dashboardCoachingSections(report: CoachingDisplayReport): {
   title: string;
   items: string[];
 }[];
+
+export function isRecentCoachingReport(report: CoachingDisplayReport): boolean;
+export function groupRecentImprovements(value: unknown): string[];

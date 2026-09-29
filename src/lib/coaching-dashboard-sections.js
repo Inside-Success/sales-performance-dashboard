@@ -1,4 +1,22 @@
-import { coachingSections, withoutOptionalPolishLabel } from './coaching-presentation.js';
+import { coachingSections, coachingItems, coachingText, coachingEvidence, withoutOptionalPolishLabel } from './coaching-presentation.js';
+
+// Reassemble only the recent audited format; never reinterpret older full-section reports.
+export function isRecentCoachingReport(report) {
+ const version=report.source_payload?.coaching_version || '';
+ if(version && !/2026-09-(?:08|24|30)/.test(version))return false;
+ return /2026-09-(?:08|24|30)/.test(version) || /(?:^|\n)(?:Possible effect|Better action|Why it matters|Next time):/.test(coachingText(report.what_to_improve));
+}
+export function groupRecentImprovements(value) {
+ const groups=[];
+ for(const item of coachingItems(value)) {
+  const continuation=/^(?:Possible effect|Better action|Why it matters|Next time):/i.test(item);
+  if(continuation && groups.length) {
+   const previous=groups[groups.length-1];
+   if(!previous.split('\n').includes(item))groups[groups.length-1]=previous+'\n'+item;
+  } else groups.push(item);
+ }
+ return groups;
+}
 
 // Dashboard-only layout: keep distinct tips in What to improve, without a repeat card.
 function actionKey(value) {
@@ -12,7 +30,32 @@ function actionKey(value) {
 }
 
 export function dashboardCoachingSections(report) {
-  const sections = coachingSections(report);
+  const recent=isRecentCoachingReport(report);
+  const display=recent?{...report,what_to_improve:groupRecentImprovements(report.what_to_improve),what_id_polish:groupRecentImprovements(report.what_id_polish||report.biggest_fix),biggest_fix:undefined}:report;
+  let sections = coachingSections(display);
+  // Recent flat reports already contain these audited sections. Expose them without
+  // generating new advice or repeating the same concerns in a second card.
+  if (recent) {
+    const close = sections.find(section => section.key === 'close');
+    if (close && /Observed concerns:|Agreed next steps:/.test(close.items.join('\n'))) {
+      const source = close.items.join('\n');
+      const concerns = source.match(/Observed concerns:\s*([\s\S]*?)(?=Agreed next steps:|$)/)?.[1];
+      const nextSteps = source.match(/Agreed next steps:\s*([\s\S]*)$/)?.[1];
+      const clean = value => coachingItems(value).filter(item => item.trim());
+      const savedConcerns = sections.find(section => section.key === 'objections')?.items || [];
+      const seen = new Set();
+      const combined = [...clean(concerns), ...savedConcerns].filter(item => {
+        const key = coachingEvidence(item).text.replace(/\s+/g,' ').toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key); return true;
+      });
+      const remainder = source.split(/Observed concerns:|Agreed next steps:/)[0].trim();
+      sections = sections.filter(section => !['close','objections'].includes(section.key));
+      if (remainder) sections.push({...close,items:[remainder]});
+      if (combined.length) sections.push({key:'objections',title:'Buyer concerns',items:combined});
+      if (clean(nextSteps).length) sections.push({key:'next-steps',title:'Agreed next steps',items:clean(nextSteps)});
+    }
+  }
   const next = sections.find(section => section.key === 'next');
   if (!next) return sections;
 
