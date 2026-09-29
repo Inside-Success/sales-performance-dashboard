@@ -14,7 +14,7 @@ const themes = [
   { key: "trust", label: "Trust & proof", pattern: /\b(trust|scam|legitim\w*|skeptic\w*|proof|references|case studies|credib\w*)\b/i },
   { key: "timing", label: "Timing & availability", pattern: /\b(timing|schedule|busy|availability|travel|filming|time constraint|time to (?:review|decide|think)|not (?:ready|available)|need(?:s|ed)? (?:more )?time)\b/i },
   { key: "decision", label: "Other people involved", pattern: /\b(spouse|husband|wife|partner|advisor|attorney|lawyer|mentor|board|team|marketing department|decision.maker)\b/i },
-  { key: "terms", label: "Package & agreement questions", pattern: /\b(agreement|contract|license|licensing|payment plan|installment|instalment|package (?:terms|details|question))\b/i },
+  { key: "terms", label: "Package & agreement questions", pattern: /\b(review|read|sign|signature|question|clarif\w*|understand\w*|unsure)\b.{0,100}\b(agreement|contract|license|licensing|payment plan|installments?|instalments?|package)\b|\b(agreement|contract|license|licensing|payment plan|installments?|instalments?|package)\b.{0,100}\b(review|terms|conditions?|questions?|details?|clarif\w*|understand\w*|unsure)\b/i },
 ];
 const training = [
   { key: "questions", label: "Answering buyer questions", pattern: /\b(answer|explain|clarif\w*|direct question)\b/i },

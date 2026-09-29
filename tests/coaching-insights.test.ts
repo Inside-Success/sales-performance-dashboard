@@ -19,3 +19,6 @@ it("recognizes team and mentor approval without mistaking partnerships for other
 
 it('does not classify speculative effects as a separate training need',()=>{const x=summarizeCoachingInsights([{...base,what_to_improve:['Follow-up date was not confirmed.','Possible effect: Questions may remain.','Better action: Confirm a time to reconnect.']}]);expect(x.training.map(x=>x.key)).toEqual(['close']);});
 it('keeps uncategorized saved concerns available for inspection',()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Screen sharing failed.']}]);expect(x.unmatchedConcerns).toBe(1);expect(x.topics[0].key).toBe('other');expect(x.topics[0].calls[0].call.id).toBe(base.id);});
+
+it('does not count a bare license price as an agreement question',()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Natalie could not afford the discussed license or initial payment.']}]);expect(x.topics.map(x=>x.key)).toEqual(['budget']);});
+it('recognizes actual agreement review and payment clarification requests',()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Buyer wanted an attorney to review the agreement.']},{...base,id:'2',objections_surfaced:['Buyer was unsure about the payment plan.']}]);expect(x.topics.find(x=>x.key==='terms')?.calls).toHaveLength(2);});
