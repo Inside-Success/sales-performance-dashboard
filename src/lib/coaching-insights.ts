@@ -1,4 +1,5 @@
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
+import { groupRecentImprovements } from "@/lib/coaching-dashboard-sections";
 import { coachingEvidence } from "@/lib/coaching-presentation";
 
 export type InsightCall = {
@@ -13,11 +14,11 @@ const themes = [
   { key: "trust", label: "Trust & proof", pattern: /\b(trust|scam|legitim\w*|skeptic\w*|proof|references|case studies|credib\w*)\b/i },
   { key: "timing", label: "Timing & availability", pattern: /\b(timing|schedule|busy|availability|travel|filming|time constraint|time to (?:review|decide|think)|not (?:ready|available)|need(?:s|ed)? (?:more )?time)\b/i },
   { key: "decision", label: "Other people involved", pattern: /\b(spouse|husband|wife|partner|advisor|attorney|lawyer|mentor|board|team|marketing department|decision.maker)\b/i },
-  { key: "terms", label: "Package & agreement questions", pattern: /\b(agreement|contract|license|licensing|payment plan|installment|instalment|package (?:terms|details|question))\b/i },
+  { key: "terms", label: "Package & agreement questions", pattern: /\b(review|read|sign|signature|question|clarif\w*|understand\w*|unsure)\b.{0,100}\b(agreement|contract|license|licensing|payment plan|installments?|instalments?|package)\b|\b(agreement|contract|license|licensing|payment plan|installments?|instalments?|package)\b.{0,100}\b(review|terms|conditions?|questions?|details?|clarif\w*|understand\w*|unsure)\b/i },
 ];
 const training = [
-  { key: "questions", label: "Answering buyer questions", pattern: /\b(question|answer|explain|clarif\w*|understand\w*)\b/i },
-  { key: "listen", label: "Listening & handling concerns", pattern: /\b(listen\w*|pressure|repeat\w*|interrupt\w*|concern|objection|constraint)\b/i },
+  { key: "questions", label: "Answering buyer questions", pattern: /\b(answer|explain|clarif\w*|direct question)\b/i },
+  { key: "listen", label: "Listening & handling concerns", pattern: /\b(listen\w*|pressure|interrupt\w*|acknowledge|explore|probe|repeat(?:ed)? (?:the )?(?:pitch|script))\b/i },
   { key: "close", label: "Commitment & next steps", pattern: /\b(close|closing|commit\w*|next step|follow.up|callback|deadline|confirm\w*)\b/i },
   { key: "tailor", label: "Connecting value to the buyer", pattern: /\b(tailor\w*|goal|story|value|benefit|connect\w*)\b/i },
 ];
@@ -45,7 +46,7 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
     const reviewed = readReviewedCoaching(call.source_payload, call.source_id);
     if (reviewed) structured++;
     const blockers = reviewed ? reviewed.blockers.map(x => x.observation) : strings(call.objections_surfaced).filter(substantive);
-    const improvements = reviewed ? reviewed.improvements.map(x => x.observation + " " + x.better_action) : strings(call.what_to_improve).filter(substantive);
+    const improvements = reviewed ? reviewed.improvements.map(x => x.observation + " " + x.better_action) : groupRecentImprovements(call.what_to_improve).filter(substantive).map(text=>text.split('\n').filter(line=>!/^\s*(?:Possible effect|Why it matters):/i.test(line)).join(' '));
     if (improvements.length) withImprovements++;
     for (const [definitions, rows, observations] of [[themes, topicRows, blockers], [training, trainingRows, improvements]] as const) {
       definitions.forEach((topic, index) => {
@@ -54,8 +55,13 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
       });
     }
   }
-  return { total: calls.length, structured, withImprovements,
-    unmatchedConcerns: calls.filter(call => { const reviewed=readReviewedCoaching(call.source_payload,call.source_id); const observations=reviewed ? reviewed.blockers.map(x=>x.observation) : strings(call.objections_surfaced).filter(substantive); return observations.length && !themes.some(theme=>observations.some(text=>concernMatches(text,theme.pattern))); }).length,
+  const unmatched = calls.flatMap(call => {
+    const reviewed=readReviewedCoaching(call.source_payload,call.source_id);
+    const observations=reviewed ? reviewed.blockers.map(x=>x.observation) : strings(call.objections_surfaced).filter(substantive);
+    return observations.length && !themes.some(theme=>observations.some(text=>concernMatches(text,theme.pattern))) ? [{call,evidence:coachingEvidence(observations.join(' ')).text}] : [];
+  });
+  if(unmatched.length)topicRows.push({key:'other',label:'Other reported concerns',calls:unmatched});
+  return { total: calls.length, structured, withImprovements, unmatchedConcerns:unmatched.length,
     topics: topicRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length),
     training: trainingRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length) };
 }
