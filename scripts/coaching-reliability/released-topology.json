@@ -1,0 +1,3262 @@
+{
+  "official": {
+    "id": "L8Nn7xncA9ZPDdWA",
+    "versionId": "2941e79c-eec1-4a29-a713-e18483154c0c",
+    "nodes": [
+      {
+        "name": "Airtable Row Trigger",
+        "type": "n8n-nodes-base.airtableTrigger",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Loop Over Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Get a document",
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Clean Response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Top Level",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Create a record",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Code in JavaScript",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Performance Agent",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: too_short",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: call_1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: prospect_no_show",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: fetch_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: agent_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: airtable_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Build Ops Alert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Ops Alert",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Rep No Show",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Agent Transcript Too Short",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: rep_no_show",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: agent_transcript_too_short",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Thread Reply",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: slack_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Normalize Airtable Row",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Build PDF HTML",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Lookup Rep Folder",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Folder Exists",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: pdf_failed",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Create Drive Folder",
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Store Folder Mapping",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Update Scorecard PDF Link",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Create Coaching Doc",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Insert Doc Content",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Parse Doc Response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Verify Drive Folder",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Is Folder Valid",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Post to Dashboard",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: dashboard_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Airtable Call 1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Build Compliance Alert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Compliance Alert",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Compliance Payload Exists",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Compliance Thread Reply",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Append Compliance Sheet Row",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Rep No Show Alert Channel",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Send Rep No Show Alert",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "If Upstream Rep No Show",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Dedupe Rep No Show Alert",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Fetch Context Pack",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Attach Context Pack",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Build Classifier Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Classifier Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Parse Classifier",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM If Scored",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Build Coaching Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Coaching Provider",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "UGDHDrhhaqooSiEd"
+      },
+      {
+        "name": "MM Build Compliance Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Compliance Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Build Safety Screen Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Safety Screen Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Prepare Repair",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM If Repair Needed",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Repair Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Set: compliance_sheet_failed",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Expand Compliance Sheet Rows",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Call 2 Coaching + Evidence Score",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "35bFcPYdHSADpyTN"
+      },
+      {
+        "name": "MM Adapt VNext Coaching Result",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Restore Coaching Request Fallback",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Prepare VNext Score Persistence",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Persist VNext Manager Score",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "iG6pvqUTn0askw9y"
+      },
+      {
+        "name": "MM Build Recovery Event",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Store Recovery Event",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Lookup Rep Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Lookup Rep Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Lookup Rep Folder",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Lookup Rep Folder",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Verify Drive Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Verify Drive Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Verify Drive Folder",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Verify Drive Folder",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Create Drive Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Create Drive Folder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Create Drive Folder",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Create Drive Folder",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Create Coaching Doc",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Create Coaching Doc",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Create Coaching Doc",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Create Coaching Doc",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Insert Doc Content",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Insert Doc Content",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Insert Doc Content",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Insert Doc Content",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Update Scorecard PDF Link",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Update Scorecard PDF Link",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Update Scorecard PDF Link",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Update Scorecard PDF Link",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Checkpoint Post to Dashboard",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Policy Post to Dashboard",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Retry Allowed Post to Dashboard",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Backoff Post to Dashboard",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Verified Folder Missing",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Build Factual Audit",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Factual Audit Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Build Audit Confirmation",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Audit Confirmation Provider",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Render Audited Coaching",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Reliable Coaching",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "FShnTde2OGhIUZE4"
+      },
+      {
+        "name": "MM Coaching Completed",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Coaching Exclusion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Save Coaching Exclusion",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Queue Unfinished Coaching",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Save Unfinished Coaching",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Coaching Delivery Receipt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Save Coaching Delivery",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Entry",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Validate Recovery Source",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Source Record",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Existing Reports",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Guard",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Already Exists",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Existing Receipt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Save Existing Receipt",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Restore Recovery Source",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovery Coaching Only",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Read Recovery Cache",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Has Reviewed Recovery",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Restore Reviewed Recovery",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Record Recovery Classifier Gate",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Recovered Classifier Exclusion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "MM Save Classifier Exclusion",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      }
+    ],
+    "connections": {
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get a document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a document": {
+        "main": [
+          [
+            {
+              "node": "Clean Response",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: fetch_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean Response": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Set: too_short",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Airtable Call 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a record": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Checkpoint Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Build Compliance Alert",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: airtable_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Send Top Level",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Performance Agent": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: call_1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Create a record",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Rep No Show",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: too_short": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: call_1": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: prospect_no_show": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: fetch_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: agent_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Queue Unfinished Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: airtable_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Ops Alert": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Rep No Show": {
+        "main": [
+          [
+            {
+              "node": "Set: rep_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Agent Transcript Too Short",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Agent Transcript Too Short": {
+        "main": [
+          [
+            {
+              "node": "Set: agent_transcript_too_short",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: prospect_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: rep_no_show": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: agent_transcript_too_short": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Top Level": {
+        "main": [
+          [
+            {
+              "node": "Send Thread Reply",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Thread Reply": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: slack_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Airtable Row Trigger": {
+        "main": [
+          [
+            {
+              "node": "Normalize Airtable Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Airtable Row": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Ops Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "If Rep No Show Alert Channel",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "If Folder Exists",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: pdf_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Folder Exists": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Build PDF HTML",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Store Folder Mapping",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build PDF HTML": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "Parse Doc Response",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Checkpoint Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse Doc Response": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Is Folder Valid",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Folder Valid": {
+        "main": [
+          [
+            {
+              "node": "Build PDF HTML",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Delivery Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: dashboard_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Airtable Call 1": {
+        "main": [
+          [
+            {
+              "node": "If Upstream Rep No Show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Fetch Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Compliance Alert": {
+        "main": [
+          [
+            {
+              "node": "If Compliance Payload Exists",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Expand Compliance Sheet Rows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Compliance Payload Exists": {
+        "main": [
+          [
+            {
+              "node": "Send Compliance Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Compliance Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Compliance Thread Reply",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Upstream Rep No Show": {
+        "main": [
+          [
+            {
+              "node": "Set: rep_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: call_1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Rep No Show Alert Channel": {
+        "main": [
+          [
+            {
+              "node": "Dedupe Rep No Show Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dedupe Rep No Show Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Rep No Show Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Fetch Context Pack": {
+        "main": [
+          [
+            {
+              "node": "MM Attach Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Attach Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Attach Context Pack": {
+        "main": [
+          [
+            {
+              "node": "MM Build Classifier Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Classifier Request": {
+        "main": [
+          [
+            {
+              "node": "MM Classifier Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Classifier Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Parse Classifier",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Parse Classifier": {
+        "main": [
+          [
+            {
+              "node": "MM If Scored",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM If Scored": {
+        "main": [
+          [
+            {
+              "node": "MM Build Coaching Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Record Recovery Classifier Gate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Coaching Request": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Coaching Only",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Reliable Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Compliance Request": {
+        "main": [
+          [
+            {
+              "node": "MM Compliance Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Compliance Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Build Safety Screen Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Safety Screen Request": {
+        "main": [
+          [
+            {
+              "node": "MM Safety Screen Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Safety Screen Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Prepare Repair",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Prepare Repair": {
+        "main": [
+          [
+            {
+              "node": "MM If Repair Needed",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM If Repair Needed": {
+        "main": [
+          [
+            {
+              "node": "MM Repair Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Repair Provider": {
+        "main": [
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append Compliance Sheet Row": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Set: compliance_sheet_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Compliance Thread Reply": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: compliance_sheet_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Expand Compliance Sheet Rows": {
+        "main": [
+          [
+            {
+              "node": "Append Compliance Sheet Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Call 2 Coaching + Evidence Score": {
+        "main": [
+          [
+            {
+              "node": "MM Prepare VNext Score Persistence",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Adapt VNext Coaching Result": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Coaching Request Fallback": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Provider",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Prepare VNext Score Persistence": {
+        "main": [
+          [
+            {
+              "node": "MM Persist VNext Manager Score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Recovery Event": {
+        "main": [
+          [
+            {
+              "node": "MM Store Recovery Event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Verified Folder Missing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Scorecard PDF Link": {
+        "main": [
+          [],
+          [
+            {
+              "node": "MM Retry Policy Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: dashboard_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Verified Folder Missing": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Allowed Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Factual Audit": {
+        "main": [
+          [
+            {
+              "node": "MM Factual Audit Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Factual Audit Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Render Audited Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Audit Confirmation": {
+        "main": [
+          [
+            {
+              "node": "MM Audit Confirmation Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Audit Confirmation Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Render Audited Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Render Audited Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Exclusion": {
+        "main": [
+          [
+            {
+              "node": "MM Save Coaching Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Save Coaching Exclusion": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Reliable Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Completed",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Completed": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Coaching Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Queue Unfinished Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Save Unfinished Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Delivery Receipt": {
+        "main": [
+          [
+            {
+              "node": "MM Save Coaching Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Entry": {
+        "main": [
+          [
+            {
+              "node": "MM Validate Recovery Source",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Validate Recovery Source": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Source Record",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Source Record": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Existing Reports",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Existing Reports": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Guard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Guard": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Already Exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Already Exists": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Existing Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Recovery Source",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Existing Receipt": {
+        "main": [
+          [
+            {
+              "node": "MM Save Existing Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Recovery Source": {
+        "main": [
+          [
+            {
+              "node": "Normalize Airtable Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Coaching Only": {
+        "main": [
+          [
+            {
+              "node": "MM Read Recovery Cache",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Call 2 Coaching + Evidence Score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Read Recovery Cache": {
+        "main": [
+          [
+            {
+              "node": "MM Has Reviewed Recovery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Has Reviewed Recovery": {
+        "main": [
+          [
+            {
+              "node": "MM Restore Reviewed Recovery",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Reviewed Recovery": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Completed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Record Recovery Classifier Gate": {
+        "main": [
+          [
+            {
+              "node": "MM Recovered Classifier Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovered Classifier Exclusion": {
+        "main": [
+          [
+            {
+              "node": "MM Save Classifier Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "reliability": {
+    "id": "FShnTde2OGhIUZE4",
+    "versionId": "e3bc5de4-668e-45cc-a7ad-c55245555b2e",
+    "nodes": [
+      {
+        "name": "Run Coaching Reliability",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Prepare",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Validate Draft",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Draft Repair Needed",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Draft Repair Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Draft Repair Provider",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "UGDHDrhhaqooSiEd"
+      },
+      {
+        "name": "Validate Repaired Draft",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Coaching Eligible",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Build Factual Audit",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Factual Audit Provider",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "UGDHDrhhaqooSiEd"
+      },
+      {
+        "name": "Render Reviewed Report",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Audit Repair Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Audit Repair Provider",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "UGDHDrhhaqooSiEd"
+      },
+      {
+        "name": "Render Repaired Audit",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Return Exclusion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      }
+    ],
+    "connections": {
+      "Run Coaching Reliability": {
+        "main": [
+          [
+            {
+              "node": "Prepare",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare": {
+        "main": [
+          [
+            {
+              "node": "Validate Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Draft": {
+        "main": [
+          [
+            {
+              "node": "Draft Repair Needed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Draft Repair Needed": {
+        "main": [
+          [
+            {
+              "node": "Draft Repair Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Coaching Eligible",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Draft Repair Request": {
+        "main": [
+          [
+            {
+              "node": "Draft Repair Provider",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Draft Repair Provider": {
+        "main": [
+          [
+            {
+              "node": "Validate Repaired Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Repaired Draft": {
+        "main": [
+          [
+            {
+              "node": "Coaching Eligible",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Coaching Eligible": {
+        "main": [
+          [
+            {
+              "node": "Build Factual Audit",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Return Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Factual Audit": {
+        "main": [
+          [
+            {
+              "node": "Factual Audit Provider",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Factual Audit Provider": {
+        "main": [
+          [
+            {
+              "node": "Render Reviewed Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Audit Repair Request": {
+        "main": [
+          [
+            {
+              "node": "Audit Repair Provider",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Audit Repair Provider": {
+        "main": [
+          [
+            {
+              "node": "Render Repaired Audit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Render Reviewed Report": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Audit Repair Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "internal-provider": {
+    "id": "UGDHDrhhaqooSiEd",
+    "versionId": "21c038f3-f3e8-4e30-a8ee-44d35bc26835",
+    "nodes": [
+      {
+        "name": "Internal Coaching Request",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Normalize Provider Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Anthropic HTTP",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Decode Anthropic",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "disabled": false,
+        "calledWorkflow": null
+      }
+    ],
+    "connections": {
+      "Internal Coaching Request": {
+        "main": [
+          [
+            {
+              "node": "Normalize Provider Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Provider Request": {
+        "main": [
+          [
+            {
+              "node": "Anthropic HTTP",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anthropic HTTP": {
+        "main": [
+          [
+            {
+              "node": "Decode Anthropic",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "worker": {
+    "id": "Zx3S5B1gYHRrbv2F",
+    "versionId": "f7b8876c-a100-4b88-99ee-6701eccedf85",
+    "nodes": [
+      {
+        "name": "Every Five Minutes",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Read Queued Call",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Claim Queued Call",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Recover Coaching Once",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "disabled": false,
+        "calledWorkflow": "L8Nn7xncA9ZPDdWA"
+      },
+      {
+        "name": "Close Unfinished Attempt",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      },
+      {
+        "name": "Read Final Receipt",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "disabled": false,
+        "calledWorkflow": null
+      }
+    ],
+    "connections": {
+      "Every Five Minutes": {
+        "main": [
+          [
+            {
+              "node": "Read Queued Call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Queued Call": {
+        "main": [
+          [
+            {
+              "node": "Claim Queued Call",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Claim Queued Call": {
+        "main": [
+          [
+            {
+              "node": "Recover Coaching Once",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recover Coaching Once": {
+        "main": [
+          [
+            {
+              "node": "Close Unfinished Attempt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Close Unfinished Attempt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Close Unfinished Attempt": {
+        "main": [
+          [
+            {
+              "node": "Read Final Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
+}
