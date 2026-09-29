@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dashboardCoachingSections } from '../../src/lib/coaching-dashboard-sections';
+import { dashboardCoachingSections, groupRecentImprovements, isRecentCoachingReport } from '../../src/lib/coaching-dashboard-sections';
 
 describe('dashboard coaching sections', () => {
   it('shows a labeled optional action once in What to improve', () => {
@@ -56,4 +56,28 @@ describe('dashboard coaching sections', () => {
     });
     expect(sections.map(section => section.key)).toEqual(['outcome', 'improvements']);
   });
+});
+
+
+describe('recent report format repair', () => {
+ it('regroups saved nine-line reports into three recommendations before deduplication',()=>{
+  const points=['Partner review was not explored. [00:01:00]','Why it matters: Questions may remain.','Next time: Ask what the partner needs.','Buyer had not watched the documentary. [00:02:00]','Possible effect: He may lack context.','Better action: Arrange a viewing time.','Thursday follow-up remained unconfirmed. [00:03:00]','Why it matters: Timing may remain unclear.','Next time: Confirm Thursday.'];
+  const report={source_payload:{coaching_version:'magic-mike-call2-coaching-2026-09-08'},what_to_improve:points,biggest_fix:points.slice(0,3).join('\n')};
+  const before=JSON.stringify(report);
+  const result=dashboardCoachingSections(report).find(x=>x.key==='improvements')!.items;
+  expect(result).toHaveLength(3);expect(result[0]).toContain('Ask what the partner needs');expect(result[1]).toContain('Arrange a viewing time');expect(result[2]).toContain('Confirm Thursday');expect(JSON.stringify(report)).toBe(before);
+ });
+ it('preserves very old full-section report grouping',()=>{
+  const report={source_payload:{coaching_version:'legacy-2026-07-01'},what_to_improve:['First observation','Second observation'],what_went_well:['Strength'],why_no_close:'Existing close analysis'};
+  expect(isRecentCoachingReport(report)).toBe(false);
+  expect(dashboardCoachingSections(report).find(x=>x.key==='improvements')!.items).toEqual(report.what_to_improve);
+ });
+ it('does not invent missing observations for orphan continuation fields',()=>{
+  expect(groupRecentImprovements(['Next time: Confirm the date.'])).toEqual(['Next time: Confirm the date.']);
+ });
+});
+
+it('exposes existing buyer concerns and next steps once in recent fallback reports',()=>{
+ const result=dashboardCoachingSections({source_payload:{coaching_version:'magic-mike-call2-coaching-2026-09-08'},one_line_verdict:'No payment was made.',objections_surfaced:['Buyer needed partner approval. [00:01:00]'],why_no_close:'No payment was made.\n\nObserved concerns:\n1. Buyer needed partner approval. [00:01:00]\n\nAgreed next steps:\n1. A Thursday call was agreed. [00:02:00]'});
+ expect(result.map(x=>x.key)).toEqual(['outcome','objections','next-steps']);expect(result.find(x=>x.key==='objections')!.items).toHaveLength(1);
 });

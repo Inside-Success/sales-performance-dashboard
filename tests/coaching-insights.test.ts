@@ -8,3 +8,11 @@ describe("manager coaching grouping",()=>{
  it("keeps zero selection distinct from a data-read failure",()=>{expect(summarizeCoachingInsights([]).total).toBe(0)});
  it("rejects malformed and mismatched structured enrichment while preserving legacy readers",()=>{expect(readReviewedCoaching({reviewed_coaching_v1:{version:"future"}},"source")).toBeNull()});
 });
+
+it("does not classify incidental time and package mentions as buyer concerns",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['The buyer asked about expected ROI; the rep explained the package at that time.']}]);expect(x.topics.map(x=>x.key)).toEqual(['value']);});
+it("excludes explicit absence notes while preserving a different actual concern",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['No budget concerns. The buyer needed more time to review the agreement.']}]);expect(x.topics.some(x=>x.key==='budget')).toBe(false);expect(x.topics.map(x=>x.key)).toContain('timing');});
+it("does not misclassify no supported improvement as a training need",()=>{const x=summarizeCoachingInsights([{...base,what_to_improve:['No supported improvement in answering questions or follow-up was identified.']}]);expect(x.withImprovements).toBe(0);expect(x.training).toEqual([]);});
+it("retains resolved concern mentions without inventing an unresolved status",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['The buyer initially had a tight budget; a payment plan was agreed.']}]);expect(x.topics.map(x=>x.key)).toContain('budget');expect(x.topics[0].calls[0].evidence).toContain('was agreed');});
+
+it("does not treat a negated funding or value objection as a positive theme",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Sal wants to review the contract terms, a reasonable review request rather than a funding or value objection.']}]);expect(x.topics.map(x=>x.key)).toEqual(['terms']);});
+it("recognizes team and mentor approval without mistaking partnerships for other people",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Buyer needs mentor approval.']},{...base,id:'2',objections_surfaced:['Buyer wanted a 50-50 partnership.']}]);expect(x.topics.find(x=>x.key==='decision')?.calls).toHaveLength(1);});

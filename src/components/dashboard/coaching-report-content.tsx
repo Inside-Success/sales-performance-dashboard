@@ -5,7 +5,7 @@ import {
   coachingEvidence,
   type CoachingDisplayReport,
 } from "@/lib/coaching-presentation";
-import { dashboardCoachingSections } from "@/lib/coaching-dashboard-sections";
+import { dashboardCoachingSections, isRecentCoachingReport } from "@/lib/coaching-dashboard-sections";
 
 type CoachingSection = ReturnType<typeof dashboardCoachingSections>[number];
 
@@ -33,13 +33,14 @@ export function CoachingReportContent({
   return (
     <div className="space-y-4">
       {sections.map((section) => (
-        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} />
+        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!reviewed || isRecentCoachingReport(report)} />
       ))}
     </div>
   );
 }
 
-function CoachingSectionCard({ section, reportType, reportId, transcriptUrl }: {
+function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, recent }: {
+  recent: boolean;
   section: CoachingSection;
   reportType: "official" | "manual";
   reportId: string;
@@ -47,6 +48,7 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl }: {
 }) {
   const isOutcome = section.key === "outcome";
   const isImprovement = section.key === "improvements";
+  const grouped = isImprovement && recent;
 
   return (
     <section
@@ -58,18 +60,18 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl }: {
         <h2 className="text-xl font-bold tracking-tight text-slate-950 md:text-2xl">{section.title}</h2>
       </div>
 
-      <ul className={`space-y-5 ${section.items.length > 1 ? "divide-y divide-slate-100" : ""}`}>
+      <ul className={`space-y-5 ${section.items.length > 1 && !grouped ? "divide-y divide-slate-100" : ""}`}>
         {section.items.map((item, index) => {
           const { text, evidence } = coachingEvidence(item);
           return (
-            <li key={`${section.key}-${index}`} className={`min-w-0 ${index > 0 ? "pt-5" : ""}`}>
+            <li key={`${section.key}-${index}`} className={`min-w-0 ${grouped ? "rounded-2xl border border-slate-200 bg-slate-50/40 p-4 sm:p-5" : index > 0 ? "pt-5" : ""}`}>
               <div className="flex gap-3">
-                {section.items.length > 1 ? (
+                {grouped ? <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-red-50 text-sm font-bold text-red-700" aria-label={`Improvement ${index+1}`}>{index+1}</span> : section.items.length > 1 ? (
                   <span className={`mt-2 size-1.5 shrink-0 rounded-full ${isImprovement ? "bg-[#c43132]" : "bg-slate-400"}`} aria-hidden="true" />
                 ) : null}
-                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */} /> : <CoachingText text={text} isClosingDetail={section.key === "close"} />}
+                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */}>{grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}</CoachingImprovement> : <CoachingText text={text} isClosingDetail={section.key === "close"} />}
               </div>
-              {evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
+              {!grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
             </li>
           );
         })}

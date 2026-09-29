@@ -1,0 +1,12 @@
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const mocks=vi.hoisted(()=>({auth:vi.fn(),admin:vi.fn()}));
+vi.mock('@/auth',()=>({auth:mocks.auth}));
+vi.mock('@/lib/rep-scoring/admin-allowlist',()=>({isRepScoringAdmin:mocks.admin}));
+import {POST} from '@/app/api/manager/coaching-benchmark/route';
+const request=()=>new NextRequest('https://example.com/api/manager/coaching-benchmark',{method:'POST',body:JSON.stringify({system:'unapproved',prompt:'unapproved'})});
+beforeEach(()=>{vi.useFakeTimers();vi.setSystemTime(new Date('2026-09-30T10:00:00Z'));mocks.auth.mockResolvedValue({user:{email:'manager@example.com'}});mocks.admin.mockReturnValue(true);process.env.OPENAI_API_KEY='test-only';});
+afterEach(()=>{vi.useRealTimers();vi.restoreAllMocks();});
+it('rejects non-managers before any paid provider request',async()=>{mocks.admin.mockReturnValue(false);const fetch=vi.spyOn(globalThis,'fetch');expect((await POST(request())).status).toBe(403);expect(fetch).not.toHaveBeenCalled();});
+it('rejects arbitrary prompts',async()=>{const fetch=vi.spyOn(globalThis,'fetch');expect((await POST(request())).status).toBe(400);expect(fetch).not.toHaveBeenCalled();});
+it('expires without invoking the provider',async()=>{vi.setSystemTime(new Date('2026-10-02T00:00:00Z'));const fetch=vi.spyOn(globalThis,'fetch');expect((await POST(request())).status).toBe(410);expect(fetch).not.toHaveBeenCalled();});

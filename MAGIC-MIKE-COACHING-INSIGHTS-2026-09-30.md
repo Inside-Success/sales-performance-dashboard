@@ -48,3 +48,14 @@ User's compliance-policy questions remain pending; do not interpret the current 
 
 ## Final handoff correction
 The structured enrichment is carried in `state.reviewed_coaching_v1` alongside the existing normalized flat coaching fields. This avoids adding duplicate structured content to existing compliance/safety prompts. Final publication still invalidates enrichment if any later safety step changes the flat report. The surgical normalizer transform is included in the repository and covered by a regression. Rollback restores the original MM Build Compliance Request field as well as the original Performance Agent field from the private backups. Initial default local Turbopack build cannot resolve the deliberately shared node_modules symlink; the final webpack production build passed, as did TypeScript, scoped ESLint and 71 regressions. Hosted builds install their own dependencies.
+
+## Completion pass: report consistency and manager semantics
+
+- Recent audited flat reports are regrouped before duplicate removal: observation, possible effect and better action are one recommendation. This also covers final-safety-repair fallbacks. Existing report data is not regenerated or rewritten.
+- Each recent recommendation has a numbered boundary; its action remains visible, with a clearly labeled Show/Hide explanation and the matching transcript evidence inside it. Always-visible explanations remain a reversible component setting.
+- Existing recent flat report headings expose Buyer concerns and Agreed next steps separately. No default Call Walkthrough, filler section or forced improvement count was introduced. Older explicitly versioned report formats are excluded.
+- Manager total label is Completed coaching reports. It counts saved completed reports, not newly reviewed recordings. Theme counts are report mentions, not unresolved blockers, failed sales or proof of a rep error.
+- Removed incidental generic time/package matching; reject explicit absence and negated concern clauses; include mentor/team/board approval. Unmatched concerns are disclosed rather than forced into a category.
+- Read-only database check: 1,431 completed official reports and 1,431 distinct source IDs in the rolling 30-day selection at audit time. Replayed presentation on 30 actual saved reports, including 6996, 7005 and 7006. This is not a content certification of every historical report.
+- Temporary exact-manager-access benchmark harness accepts only three SHA-256 approved whole-call factual-audit fixtures, uses the existing server-only report-chat OpenAI credential, expires October 1 UTC, and has no business delivery or source-write path. Remove it after the isolated comparison; never commit the fixtures, transcripts or credentials.
+- Deferred compliance/reality policy review remains pending. Numeric scoring, source intake, recovery and specialist FAQ work are outside this release.
