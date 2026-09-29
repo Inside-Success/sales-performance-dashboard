@@ -48,7 +48,8 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, rec
 }) {
   const isOutcome = section.key === "outcome";
   const isImprovement = section.key === "improvements";
-  const grouped = isImprovement && recent;
+  const noImprovement = isImprovement && section.items.length === 1 && /^No (?:specific|clear|supported)/i.test(section.items[0]);
+  const grouped = isImprovement && recent && !noImprovement;
 
   return (
     <section

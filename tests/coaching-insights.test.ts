@@ -16,3 +16,6 @@ it("retains resolved concern mentions without inventing an unresolved status",()
 
 it("does not treat a negated funding or value objection as a positive theme",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Sal wants to review the contract terms, a reasonable review request rather than a funding or value objection.']}]);expect(x.topics.map(x=>x.key)).toEqual(['terms']);});
 it("recognizes team and mentor approval without mistaking partnerships for other people",()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Buyer needs mentor approval.']},{...base,id:'2',objections_surfaced:['Buyer wanted a 50-50 partnership.']}]);expect(x.topics.find(x=>x.key==='decision')?.calls).toHaveLength(1);});
+
+it('does not classify speculative effects as a separate training need',()=>{const x=summarizeCoachingInsights([{...base,what_to_improve:['Follow-up date was not confirmed.','Possible effect: Questions may remain.','Better action: Confirm a time to reconnect.']}]);expect(x.training.map(x=>x.key)).toEqual(['close']);});
+it('keeps uncategorized saved concerns available for inspection',()=>{const x=summarizeCoachingInsights([{...base,objections_surfaced:['Screen sharing failed.']}]);expect(x.unmatchedConcerns).toBe(1);expect(x.topics[0].key).toBe('other');expect(x.topics[0].calls[0].call.id).toBe(base.id);});
