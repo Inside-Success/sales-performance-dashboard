@@ -26,3 +26,6 @@ Revert this dashboard PR to restore prior report presentation and remove the new
 
 ## Still deferred
 Reality/compliance policy clarification and historical false-flag changes remain pending. Specialist scorecard V3 and Ask Sales FAQ are separate scopes. Adoption lift and sales outcomes require observation after release; neither is proven by UI or transcript tests. A fresh naturally arriving production call is distinct from an offline real-transcript replay.
+
+## Signed-in release verification
+The initial manager self-submitted filter exposed an official-only `rep_slug` column assumption. Corrected the new read query to derive manual slugs from saved rep names, with a regression test; no schema or existing report change. Made the Apply filters button match the dashboard red button styling. The official manager view loaded 1,416 available completed calls at this check; this is a time-bounded observation. Final live/manual and responsive checks are recorded after the follow-up deploy.
