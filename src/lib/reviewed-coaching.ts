@@ -18,6 +18,6 @@ export function readReviewedCoaching(payload: unknown, sourceId?: string | null)
   if (!payload || typeof payload !== "object") return null;
   const value = (payload as Record<string, unknown>).reviewed_coaching_v1;
   const parsed = reviewedCoachingSchema.safeParse(value);
-  if (!parsed.success || (sourceId && parsed.data.source_id !== sourceId)) return null;
+  if (!parsed.success || (sourceId !== undefined && (!sourceId || parsed.data.source_id !== sourceId))) return null;
   return parsed.data;
 }

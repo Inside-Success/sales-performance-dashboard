@@ -44,7 +44,7 @@ function reviewedRenderer(source){
  return source.replaceAll('call2-sonnet5-efficiency-2026-09-08','call2-reviewed-coaching-2026-09-30');
 }
 function officialFinal(source){
- source=replaceOnce(source,'const output = buildScoredOutput(state, complete.coaching);',GUARD+'\nconst reviewed_coaching_v1=safeReviewedCoaching(state.coaching_raw,complete.coaching,sourceIdFromState(state));\nconst output = buildScoredOutput(state, complete.coaching);');
+ source=replaceOnce(source,'const output = buildScoredOutput(state, complete.coaching);',GUARD+'\nconst reviewed_coaching_v1=safeReviewedCoaching({...state.coaching_raw,reviewed_coaching_v1:state.reviewed_coaching_v1||state.coaching_raw?.reviewed_coaching_v1},complete.coaching,sourceIdFromState(state));\nconst output = buildScoredOutput(state, complete.coaching);');
  return replaceOnce(source,'...state.caseItem.source, output, agent_version:', '...state.caseItem.source, output, reviewed_coaching_v1, agent_version:');
 }
 function manualFinal(source){
@@ -75,4 +75,7 @@ function documentSections(source){
 }
 const CORRECTION_REVIEW='\nPRACTICAL COACHING REVIEW: Factual correctness is essential. Distinguish a useful optional refinement from an unsupported accusation. A buyer need not visibly express confusion for a narrowly worded practical clarification to be useful. Credit an existing follow-up and later recovery; never accuse a missing action that happened. If the core observed behavior and concrete action are supported but a qualifier, title or speculative effect overstates it, you may narrow that SAME point using corrected_improvements:[{index,replacement:{priority,title,observation,evidence_ids,counterevidence_ids,counterevidence_summary,possible_effect,better_action,example:""}}]. Review the entire replacement against the whole call, including all counterevidence; use verdict keep and do not include that index in rejected_improvements. Do not add new advice or points, manufacture a flaw, or rescue a contradicted core premise. Reject an unsupported core premise. If no correction is needed, omit corrected_improvements or use []. No forced count. Review titles as factual claims too.\n';
 function auditCoverage(source){source=source.replaceAll('\"claude-sonnet-5\"','\"claude-sonnet-5-5\"').replaceAll('\"prompt_cache\": false','\"prompt_cache\": true').replaceAll('\"reasoning_effort\": \"medium\"','\"reasoning_effort\": \"high\"');return replaceOnce(source,'\\nUNTRUSTED ANALYSIS:', JSON.stringify(CORRECTION_REVIEW).slice(1,-1)+'\\nUNTRUSTED ANALYSIS:').replace('optional advice stays internal','supported optional advice can be published as a practical improvement');}
-module.exports={CORRECTION_REVIEW,auditCoverage,writerCoverage,documentSections,COVERAGE,replaceOnce,reviewedRenderer,officialFinal,manualFinal,GUARD};
+function preserveReviewedHandoff(source){
+ return replaceOnce(source,'state.coaching_raw = normalizeCoaching(providerParsed(coachingResult, "coaching"));','const reviewedResult = providerParsed(coachingResult, "coaching");\nstate.coaching_raw = normalizeCoaching(reviewedResult);\n// Preserve optional enrichment separately so existing safety prompts see their original flat fields.\nstate.reviewed_coaching_v1 = reviewedResult.reviewed_coaching_v1 || null;');
+}
+module.exports={preserveReviewedHandoff,CORRECTION_REVIEW,auditCoverage,writerCoverage,documentSections,COVERAGE,replaceOnce,reviewedRenderer,officialFinal,manualFinal,GUARD};
