@@ -39,3 +39,13 @@ Private cost receipts total approximately $10.6191 including started/uncertain-r
 ## Rollback
 
 Revert this dashboard commit/PR. For n8n, restore only the nine changed `parameters.jsCode` fields from `placeholder-prepublish-<workflow-id>.json`, after refreshing current state to preserve intervening changes. Do not restore entire graphs or credentials. Backups and exact patches are private; reusable transforms are in `scripts/coaching-insights/placeholder-patches.cjs`.
+
+## Hosted release acceptance
+
+- PR248 merged as `230873eceb960a479c08233c89ce88ef6888a89b`. Production deployment `dpl_EhYLpiVZxRApmrrreHthWvJx56bD` is READY and serves the rose alias. Preview deployment failed before application build with `Resource provisioning failed`; production build and deployment succeeded.
+- Live signed-in report7006 displays the complete generic action with its original explanation. Show/Hide explanation and timestamp evidence open correctly, and the source transcript loads. Screenshot proof is private `placeholder-live-report7006.png`.
+- Live affected report5985 shows the completed initial-payment advice. Self-submitted report `71013f6a75b242709b679bca87cfe6e1` still renders its existing outcome, action, strengths, concerns and next steps. These checks confirm presentation, not a new factual review of those saved reports.
+- Manager insights reloads with 1,441 completed official reports, matching the read-only audit. No count/classification logic was changed in this pass.
+- Published workflow versions: official `8ed5096b-4edd-46f9-8e25-3a37cc46435d`; manual `39ad7284-1773-4b6e-9eb1-0859cb474eac`; shared reviewer `8ab86d68-958c-4619-a7ff-3974c6abd17e`.
+- At the final workflow scan, no natural official/manual coaching execution had started after this publication. Latest listed official/manual runs were successful but predated it. Future generation is verified by published-body readback and real-input replays; a naturally arriving delivery under this wording version remains unobserved.
+- No additional full-pipeline cost saving is claimed. The placeholder fix is complete; tested cost variants were not promoted because quality or reliable savings were not established. Deferred compliance policy remains pending.
