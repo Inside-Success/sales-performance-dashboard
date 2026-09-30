@@ -1,4 +1,5 @@
 import { resolveCloseSection } from "@/lib/close-section";
+import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
 import { realityCoachingReference, resolveCoachingOfferFamily } from "@/lib/coaching-offer-context.cjs";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
@@ -253,7 +254,7 @@ function buildManualReportContext(report: ManualFeedbackReport, transcriptText: 
 }
 
 function fieldLine(label: string, value: unknown) {
-  const text = formatValue(value);
+  const text = completeCoachingText(formatValue(value));
   return text ? `${label}: ${text}` : null;
 }
 

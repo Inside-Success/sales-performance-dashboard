@@ -1,6 +1,7 @@
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { groupRecentImprovements } from "@/lib/coaching-dashboard-sections";
 import { coachingEvidence } from "@/lib/coaching-presentation";
+import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
 
 export type InsightCall = {
   id: string; rep_name: string; rep_slug: string; client_name: string | null;
@@ -51,14 +52,14 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
     for (const [definitions, rows, observations] of [[themes, topicRows, blockers], [training, trainingRows, improvements]] as const) {
       definitions.forEach((topic, index) => {
         const match = observations.find(text => concernMatches(text, topic.pattern));
-        if (match) rows[index].calls.push({ call, evidence: coachingEvidence(match).text });
+        if (match) rows[index].calls.push({ call, evidence: completeCoachingText(coachingEvidence(match).text) });
       });
     }
   }
   const unmatched = calls.flatMap(call => {
     const reviewed=readReviewedCoaching(call.source_payload,call.source_id);
     const observations=reviewed ? reviewed.blockers.map(x=>x.observation) : strings(call.objections_surfaced).filter(substantive);
-    return observations.length && !themes.some(theme=>observations.some(text=>concernMatches(text,theme.pattern))) ? [{call,evidence:coachingEvidence(observations.join(' ')).text}] : [];
+    return observations.length && !themes.some(theme=>observations.some(text=>concernMatches(text,theme.pattern))) ? [{call,evidence:completeCoachingText(coachingEvidence(observations.join(' ')).text)}] : [];
   });
   if(unmatched.length)topicRows.push({key:'other',label:'Other reported concerns',calls:unmatched});
   return { total: calls.length, structured, withImprovements, unmatchedConcerns:unmatched.length,
