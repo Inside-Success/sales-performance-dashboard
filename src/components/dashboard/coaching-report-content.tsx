@@ -6,6 +6,7 @@ import {
   type CoachingDisplayReport,
 } from "@/lib/coaching-presentation";
 import { dashboardCoachingSections, isRecentCoachingReport } from "@/lib/coaching-dashboard-sections";
+import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
 
 type CoachingSection = ReturnType<typeof dashboardCoachingSections>[number];
 
@@ -63,7 +64,8 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, rec
 
       <ul className={`space-y-5 ${section.items.length > 1 && !grouped ? "divide-y divide-slate-100" : ""}`}>
         {section.items.map((item, index) => {
-          const { text, evidence } = coachingEvidence(item);
+          const { text: savedText, evidence } = coachingEvidence(item);
+          const text = completeCoachingText(savedText);
           return (
             <li key={`${section.key}-${index}`} className={`min-w-0 ${grouped ? "rounded-2xl border border-slate-200 bg-slate-50/40 p-4 sm:p-5" : index > 0 ? "pt-5" : ""}`}>
               <div className="flex gap-3">
