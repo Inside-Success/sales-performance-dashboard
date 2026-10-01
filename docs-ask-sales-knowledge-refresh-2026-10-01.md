@@ -1,6 +1,6 @@
 # Ask Sales knowledge refresh — October 1, 2026
 
-Status: validated candidate; production publication pending. Resume from the published September 29 checkpoint until the receipt below confirms publication.
+Status: published and verified. Use the paired October 1 published_verified checkpoint for the next authorized refresh.
 
 ## Scope and sources
 
@@ -30,4 +30,6 @@ Some knowledge remains intentionally uncertain: anniversary expiry/all older-lea
 
 ## Publication receipt
 
-Pending. Advance the successful checkpoint only after production verification.
+Dashboard PR250 and FAQ PR87 merged. Production commit 65c2e62bf2cd6d67d67f6952a568528dcc9a82f3, deployment dpl_3zvM2oASaiPmUXsDUQSQD3wpRX6q, READY on the rose alias. Work-profile Chrome verified the changed Wednesday training and exact joining link; persisted response faq_assistant_d7c4894a-2042-4d41-832c-c61ebed24f08 used knowledge e4734698559329ca9db2e3f5, GPT-5.6 Luna, no error, 9.23 seconds.
+
+The existing isolated preview database was reused; FAQ/admin/usage/Coaching pages returned 200, anniversary price and eligibility answer passed, and only the isolated verification fixture was removed. No database branch was created/deleted. Final 56/56 revamp tests passed after the two wording clarifications; paired export validation passed. Publication manifest now records October 1, pending the final receipt deployment. Runtime code and all other application features remain unchanged.

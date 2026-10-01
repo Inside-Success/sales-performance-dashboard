@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-01",
-  "status": "validated_pending_publication",
+  "status": "published_verified",
   "previousKnowledgeVersion": "80ea2d2ee1f9f0636be7654c",
   "knowledgeVersion": "e4734698559329ca9db2e3f5",
   "slack": {
@@ -78,5 +78,10 @@
     "Transient SMS incidents, individual cases, unanswered suggestions and private prospect details are not generalized as policy."
   ],
   "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-10-01",
-  "activeRecordCount": 2513
+  "activeRecordCount": 2513,
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/250",
+  "productionCommit": "65c2e62bf2cd6d67d67f6952a568528dcc9a82f3",
+  "productionDeployment": "dpl_3zvM2oASaiPmUXsDUQSQD3wpRX6q",
+  "productionMessageId": "faq_assistant_d7c4894a-2042-4d41-832c-c61ebed24f08",
+  "verifiedAt": "2026-10-01T12:26:54.220660+00:00"
 }
