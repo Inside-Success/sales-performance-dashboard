@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 type RepPickerProps = {
   reps: RepSummary[];
   selectedRepSlug?: string;
+  selectedRepSummary?: RepSummary;
   basePath?: string;
   selectedSubline?: string;
 };
@@ -17,6 +18,7 @@ type RepPickerProps = {
 export function RepPicker({
   reps,
   selectedRepSlug,
+  selectedRepSummary,
   basePath = "/",
   selectedSubline = "Viewing newest feedback reports",
 }: RepPickerProps) {
@@ -26,14 +28,14 @@ export function RepPicker({
   const [query, setQuery] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  const selectedRep = reps.find((item) => item.rep_slug === selectedRepSlug);
+  const selectedRep = reps.find((item) => item.rep_slug === selectedRepSlug)
+    || (selectedRepSummary?.rep_slug === selectedRepSlug ? selectedRepSummary : undefined);
   const filteredReps = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return reps.slice(0, 80);
+    if (!normalizedQuery) return reps;
 
     return reps
-      .filter((rep) => rep.rep_name.toLowerCase().includes(normalizedQuery))
-      .slice(0, 80);
+      .filter((rep) => rep.rep_name.toLowerCase().includes(normalizedQuery));
   }, [query, reps]);
 
   useEffect(() => {
