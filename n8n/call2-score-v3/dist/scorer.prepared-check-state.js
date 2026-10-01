@@ -1,0 +1,1 @@
+const rows=$input.all();if(rows.length!==1)throw Error('Expected one aligned check');return rows;

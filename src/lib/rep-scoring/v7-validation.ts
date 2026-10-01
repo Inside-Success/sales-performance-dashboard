@@ -32,6 +32,7 @@ class AirtableRequestError extends Error {
 export type V7Evidence = { timestamp: string; speaker: string; quote: string };
 export type V7Criterion = { id: string; label: string; status: string; confidence: string; reason: string; evidence: V7Evidence[]; counterevidence: V7Evidence[] };
 export type V7Dimension = { key: string; label: string; points: number | null; rating: string; applicability: string; reason: string; criteria: V7Criterion[] };
+export type V7BehaviourCheck = { name: string; label: string; status: string; dimension: string; reason: string; timestamp: string; speaker: string; quote: string; validationNote: string; evidence: V7Evidence[] };
 export type V7Finding = { label: string; reason: string; evidence: V7Evidence[]; observations?: Array<{ criterion: string; status: string; reason: string }> };
 
 export type V7Assessment = {
@@ -47,7 +48,7 @@ export type V7Assessment = {
   score: number | null;
   band: string;
   dimensions: V7Dimension[];
-  behaviours: Array<{ name: string; status: string; dimension: string; reason: string; evidence: V7Evidence[] }>;
+  behaviours: V7BehaviourCheck[];
   criticalFindings: V7Finding[];
   observations: V7Finding[];
   gradeability: string;
@@ -405,7 +406,7 @@ function behaviourList(value: unknown) {
   return arrayFromJson(value).flatMap((item) => {
     const row = object(item);
     if (!row) return [];
-    return [{ name: text(row.name), status: text(row.status), dimension: text(row.dimension), reason: text(row.reason), evidence: evidenceList(row.evidence) }];
+    return [{ name: text(row.name), label: text(row.label) || text(row.name), status: text(row.status), dimension: text(row.dimension), reason: text(row.reason), timestamp: text(row.timestamp), speaker: text(row.speaker), quote: text(row.quote), validationNote: text(row.validation_note), evidence: evidenceList(row.evidence) }];
   });
 }
 
