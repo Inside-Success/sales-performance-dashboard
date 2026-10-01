@@ -1,0 +1,82 @@
+{
+  "reviewDate": "2026-10-01",
+  "status": "validated_pending_publication",
+  "previousKnowledgeVersion": "80ea2d2ee1f9f0636be7654c",
+  "knowledgeVersion": "e4734698559329ca9db2e3f5",
+  "slack": {
+    "C09AF0NQJE7": {
+      "latestRootTs": "1790855907.937469",
+      "rootMessagesRead": 43,
+      "paginationComplete": true,
+      "coverage": "All returned roots after the September 29 saved checkpoint; relevant policy threads expanded."
+    },
+    "C0AUQKNR8CF": {
+      "latestRootTs": "1790811146.199109",
+      "rootMessagesRead": 41,
+      "paginationComplete": true,
+      "coverage": "All returned roots after the September 29 saved checkpoint; relevant policy threads expanded."
+    },
+    "C08QGKL39J6": {
+      "latestRootTs": "1790856026.521999",
+      "rootMessagesRead": 58,
+      "paginationComplete": true,
+      "coverage": "All returned roots after the September 29 saved checkpoint; relevant policy threads expanded."
+    },
+    "C0A8S3JSR1Q": {
+      "latestRootTs": "1790854651.325749",
+      "rootMessagesRead": 48,
+      "paginationComplete": true,
+      "coverage": "All returned roots after the September 29 saved checkpoint; relevant policy threads expanded."
+    }
+  },
+  "olderThreadsExplicitlyRevisited": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1788746537.690009",
+      "repliesAfter": "1790619398.719769",
+      "latestReplyTs": "1790782624.898899",
+      "repliesRead": 6,
+      "paginationComplete": true
+    }
+  ],
+  "google": {
+    "registeredSourcesMetadataChecked": 43,
+    "additionalSourcesMetadataChecked": 2,
+    "changedDocsRead": [
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+      "1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo",
+      "1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM",
+      "13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI",
+      "1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs"
+    ],
+    "changedSheetsChecked": [
+      {
+        "id": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "ranges": [
+          "'Aniversary Discounts'!A1:F25",
+          "'Inside Success - All Links'!A1:F35"
+        ]
+      },
+      {
+        "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "ranges": [
+          "'Closers Calendars'!A1:F2"
+        ]
+      }
+    ],
+    "priorUnavailablePreserved": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ]
+  },
+  "limitations": [
+    "New roots and relevant expanded replies, not every historical Slack reply.",
+    "No facts inferred from untranscribed videos; written launch plus document and payment rows corroborate anniversary offer.",
+    "Anniversary expiry and blanket old-lead eligibility remain unconfirmed; launch-week clarification is dated.",
+    "Reality filming dates, remaining capacity and disputed documentary benefit are not silently resolved.",
+    "Transient SMS incidents, individual cases, unanswered suggestions and private prospect details are not generalized as policy."
+  ],
+  "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-10-01",
+  "activeRecordCount": 2513
+}

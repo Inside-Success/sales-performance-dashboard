@@ -25,34 +25,34 @@ describe("September 21 knowledge refresh boundaries", () => {
   it("retrieves schedules and distinguishes Raul's two training contexts", () => {
     for (const question of ["when does the training for new reps happen?", "trainings that are required when getting hired", "Raul hosts training during those two weeks of onboarding", "When is Mike compliance zoom?"]) {
       const ids = retrieve(question, "main_istv").map(r => r.id);
-      expect(ids).toContain("new-rep-six-training-sessions-2026-09-21");
+      expect(ids).toContain("new-rep-training-sessions-2026-10-01");
       expect(ids).toContain("new-rep-first-two-weeks-qa-2026-09-21");
       expect(ids).not.toContain("operational_7eb701b3cc2f4e99");
     }
   });
   it("retrieves meeting outcome qualifications and practical training access", () => {
-    expect(retrieve("Does a cancelled call or no show need a cast score?", "main_istv").some(r => r.id === "hubspot-status-cast-score-2026-09-29")).toBe(true);
+    expect(retrieve("Does a cancelled call or no show need a cast score?", "main_istv").some(r => r.id === "hubspot-status-cast-score-2026-10-01")).toBe(true);
     expect(retrieve("How do I book my final mock and go live?", "main_istv").some(r => r.id === "new-rep-training-roadmap-and-mock-2026-09-21")).toBe(true);
     expect(records.some(r => r.id === "current-regular-onboarding-schedule")).toBe(true);
   });
   it("retrieves the new welcome and cohort decisions for natural questions", () => {
-    expect(retrieve("Just sold a reality package. What welcome email and onboarding do I send?", "reality").some(r => r.id === "reality-buyer-welcome-2026-09-21")).toBe(true);
+    expect(retrieve("Just sold a reality package. What welcome email and onboarding do I send?", "reality").some(r => r.id === "reality-buyer-welcome-2026-10-01")).toBe(true);
     expect(retrieve("Do reality buyers have to pay before the cohort closes?", "reality").some(r => r.id === "reality-no-cohort-2026-09-18")).toBe(true);
     expect(records.some(r => r.id === "reality-current-open-questions")).toBe(false);
   });
   it("does not mix reality onboarding into regular onboarding", () => {
     const rows = retrieve("What are the regular documentary onboarding hours?", "main_istv");
     expect(rows.some(r => r.id === "current-regular-onboarding-schedule")).toBe(true);
-    expect(rows.some(r => r.id === "reality-buyer-welcome-2026-09-21")).toBe(false);
+    expect(rows.some(r => r.id === "reality-buyer-welcome-2026-10-01")).toBe(false);
   });
   it("retrieves current passoff and meeting requirements together", () => {
     const rows = retrieve("I took a passoff but can't change the HubSpot meeting status or cast score", "main_istv");
     expect(rows.some(r => r.id === "hubspot-passoff-claim-2026-09-19")).toBe(true);
-    expect(rows.some(r => r.id === "hubspot-status-cast-score-2026-09-29")).toBe(true);
+    expect(rows.some(r => r.id === "hubspot-status-cast-score-2026-10-01")).toBe(true);
   });
   it("keeps unresolved package benefits and product payment boundaries intact", () => {
     expect(records.some(r => r.id === "reality-documentary-package-video-2026-09-14")).toBe(true);
-    expect(records.some(r => r.id === "current-minimum-first-payment-by-product-2026-09-29")).toBe(true);
+    expect(records.some(r => r.id === "current-minimum-first-payment-by-product-2026-10-01")).toBe(true);
     expect(retrieve("Can Clean and Thriving accept someone with an old conviction?", "main_istv").some(r => r.id === "background-review-authority-2026-09-18")).toBe(true);
   });
 });
