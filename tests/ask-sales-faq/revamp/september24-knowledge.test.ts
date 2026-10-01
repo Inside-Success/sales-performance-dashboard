@@ -18,7 +18,7 @@ describe("September 24 source context and exceptions", () => {
     expect(records.some(r => r.id === "hubspot-status-cast-score-2026-09-19")).toBe(false);
     expect(records.some(r => r.id === "time-off-notification")).toBe(false);
     const rows=retrieve("cancelled call2 vs rescheduled call cast score", "main_istv");
-    const rule=rows.find(r=>r.id === "hubspot-status-cast-score-2026-09-29")!;
+    const rule=rows.find(r=>r.id === "hubspot-status-cast-score-2026-10-01")!;
     expect(rule.text).toContain("skip");
     expect(rule.text).toContain("zero for a cancelled Call 2");
   });

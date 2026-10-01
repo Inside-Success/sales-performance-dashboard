@@ -17,13 +17,13 @@ describe("September 29 knowledge refresh", () => {
     }
   });
   it("keeps the season being sold with the older January planning window", () => {
-    expect(ids("When does Entrepreneurs Island film?", "reality")).toContain("reality-season-schedule-2026-09-29");
+    expect(ids("When does Entrepreneurs Island film?", "reality")).toContain("reality-season-schedule-2026-10-01");
     expect(ids("Is Business Race UK available?", "reality")).toContain("reality-expansion-plans-2026-09-29");
     expect(records.some(r => r.id === "reality-expansion-plans-2026-09-24")).toBe(false);
   });
   it("retrieves concrete SMS help and replacement rescheduled UI guidance", () => {
     expect(ids("Where can I see all HubSpot texts together?", "main_istv")).toContain("hubspot-shortcuts-sms-2026-09-29");
-    expect(ids("How do I score a rescheduled call?", "main_istv")).toContain("hubspot-status-cast-score-2026-09-29");
+    expect(ids("How do I score a rescheduled call?", "main_istv")).toContain("hubspot-status-cast-score-2026-10-01");
     expect(records.some(r => r.id === "hubspot-status-cast-score-2026-09-24")).toBe(false);
   });
   it("keeps product-specific payment rules within their scopes", () => {
