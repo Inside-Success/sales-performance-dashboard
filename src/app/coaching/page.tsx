@@ -5,6 +5,7 @@ import { RepPicker } from "@/components/dashboard/rep-picker";
 import { ReportFilters } from "@/components/dashboard/report-filters";
 import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import { getDashboardData } from "@/lib/db";
+import { activeCoachingReps } from "@/lib/coaching-rep-selector";
 import { readFilters, type RawSearchParams } from "@/lib/search-params";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +14,9 @@ export default async function CoachingHome({ searchParams }: { searchParams: Pro
   const filters = readFilters(await searchParams);
   const selectedRepSlug = filters.rep;
   const { calls, reps, configured, error } = await getDashboardData(selectedRepSlug ? { ...filters, rep: selectedRepSlug } : {});
-  const selectedRepName = reps.find((rep) => rep.rep_slug === selectedRepSlug)?.rep_name || calls[0]?.rep_name || "";
+  const selectedRepSummary = reps.find((rep) => rep.rep_slug === selectedRepSlug);
+  const selectedRepName = selectedRepSummary?.rep_name || calls[0]?.rep_name || "";
+  const selectableReps = activeCoachingReps(reps);
   const hasSelectedRep = Boolean(selectedRepSlug);
 
   return (
@@ -34,7 +37,7 @@ export default async function CoachingHome({ searchParams }: { searchParams: Pro
         {!configured ? <div className="magic-card p-4 text-sm leading-6 text-muted-foreground">Connect `DATABASE_URL` and `INGEST_SECRET` in Vercel, then run `scripts/schema.sql` or let the ingest route create the table on first post.</div> : null}
 
         <section className="magic-card magic-selector-card">
-          <div className="border-b border-slate-100 p-5 sm:p-7"><RepPicker reps={reps} selectedRepSlug={selectedRepSlug} basePath="/coaching" /></div>
+          <div className="border-b border-slate-100 p-5 sm:p-7"><RepPicker reps={selectableReps} selectedRepSlug={selectedRepSlug} selectedRepSummary={selectedRepSummary} basePath="/coaching" /></div>
           {hasSelectedRep ? (
             <div className="space-y-4 p-5 sm:p-7">
               <div className="flex items-center justify-between gap-3">
