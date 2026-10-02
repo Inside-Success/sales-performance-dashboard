@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-03",
-  "status": "candidate_not_published",
+  "status": "published_verified",
   "previousKnowledgeVersion": "e4734698559329ca9db2e3f5",
   "knowledgeVersion": "ec5851fe5cd65e97f50b0d44",
   "slack": {
@@ -326,5 +326,133 @@
   ],
   "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-10-03",
   "expandedThreadCount": 24,
-  "activeRecordCount": 2521
+  "activeRecordCount": 2521,
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/254",
+  "productionCommit": "5cd8e0dc1619fb33e51b15706de7100c1dbcbb1b",
+  "productionDeployment": "dpl_F1KpzfYuLyLNiTzhaL3BQL29kmJq",
+  "productionMessageId": "faq_assistant_55df3a57-75f0-4df1-abcb-5a3d8cdfdbed",
+  "verifiedAt": "2026-10-02T21:18:58.878223+00:00",
+  "publishedDateMiami": "2026-10-02",
+  "expandedThreadWatermarks": [
+    {
+      "rootTs": "1788746537.690009",
+      "latestReadTs": "1788746537.690009",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790865994.615799",
+      "latestReadTs": "1790866897.014389",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790869051.418879",
+      "latestReadTs": "1790886207.979929",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790869920.068479",
+      "latestReadTs": "1790881622.699269",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790871397.587989",
+      "latestReadTs": "1790877115.891409",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790873134.292249",
+      "latestReadTs": "1790885893.061519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790875753.690749",
+      "latestReadTs": "1790884079.048559",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790882042.088249",
+      "latestReadTs": "1790883030.556719",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790882821.275229",
+      "latestReadTs": "1790886080.814519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790885797.652619",
+      "latestReadTs": "1790886199.086979",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790889690.790359",
+      "latestReadTs": "1790925624.420059",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790889701.175079",
+      "latestReadTs": "1790934998.138559",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790892618.591609",
+      "latestReadTs": "1790926893.752549",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790897802.631669",
+      "latestReadTs": "1790946607.171359",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790909270.738499",
+      "latestReadTs": "1790973957.068299",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790946847.244319",
+      "latestReadTs": "1790947045.482899",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790949843.139449",
+      "latestReadTs": "1790950826.298519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790950171.980529",
+      "latestReadTs": "1790951666.544709",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790950203.650219",
+      "latestReadTs": "1790950988.065279",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790956614.962309",
+      "latestReadTs": "1790957657.256779",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790959138.168809",
+      "latestReadTs": "1790959802.954889",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790965945.586959",
+      "latestReadTs": "1790967670.995309",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790968304.629349",
+      "latestReadTs": "1790968768.298729",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790971999.709329",
+      "latestReadTs": "1790974053.176749",
+      "paginationComplete": true
+    }
+  ]
 }
