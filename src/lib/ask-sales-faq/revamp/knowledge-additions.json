@@ -45,7 +45,8 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-production-timeline-2026-09-21"
+      "governing_evidence:reality-production-timeline-2026-09-21",
+      "governing_evidence:reality-mini-documentary-production-2026-10-03"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -75,7 +76,9 @@
     "routeKey": null,
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
-      "governing_evidence:reality-island-guest-accommodation-2026-09-23"
+      "governing_evidence:reality-island-guest-accommodation-2026-09-23",
+      "governing_evidence:reality-guests-and-accommodation-2026-10-03",
+      "governing_evidence:reality-mini-documentary-production-2026-10-03"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -87,14 +90,15 @@
     "questions": [
       "Is everyone guaranteed to appear in the show?"
     ],
-    "text": "Yes.\r\nEvery accepted cast member is intended to appear in the series and is guaranteed to make it through the initial episode structure before standard elimination mechanics begin.\r\nSome shows involve:\r\n* elimination\r\n* contestant voting\r\n* challenges\r\n* revenue/performance results\r\n* judging\r\n* team decisions\r\n* other competition mechanics\r\nThe exact mechanics vary by show and may intentionally not be disclosed in advance.",
+    "text": "Yes.\r\nEvery accepted cast member is intended to appear in the series and is guaranteed to make it through the initial episode structure before standard elimination mechanics begin.\r\nSome shows involve:\r\n* elimination\r\n* contestant voting\r\n* challenges\r\n* revenue/performance results\r\n* judging\r\n* team decisions\r\n* other competition mechanics\r\nThe exact mechanics vary by show and may intentionally not be disclosed in advance. October 1 FAQ describes planned eliminations from episode 2 or 3 to seek more exposure, not an exact screen-time guarantee. VIP early-elimination advantage remains subject to challenge/participation terms; do not promise surviving the whole season.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-10-03",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -339,7 +343,8 @@
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
       "governing_evidence:reality-production-timeline-2026-09-21",
-      "governing_evidence:reality-island-guest-accommodation-2026-09-23"
+      "governing_evidence:reality-island-guest-accommodation-2026-09-23",
+      "governing_evidence:reality-guests-and-accommodation-2026-10-03"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -503,14 +508,15 @@
     "questions": [
       "What is the prize?"
     ],
-    "text": "The prize varies by production and may not be finalized until sponsors are secured.\r\nPotential examples:\r\n* Cash\r\n* Vehicle\r\n* Software/services\r\n* Marketing package\r\n* Technology\r\n* Business services\r\n* Memberships\r\n* Sponsor-funded prizes\r\nThe prize should not be sold as guaranteed at a specific dollar value unless it is already contracted.",
+    "text": "The prize varies by production and may not be finalized until sponsors are secured.\r\nPotential examples:\r\n* Cash\r\n* Vehicle\r\n* Software/services\r\n* Marketing package\r\n* Technology\r\n* Business services\r\n* Memberships\r\n* Sponsor-funded prizes\r\nThe prize should not be sold as guaranteed at a specific dollar value unless it is already contracted. October 1 clarification: prizes are expected to be modest, likely below roughly $10,000–$20,000 in value, not a million-dollar MrBeast-style contest. This is an expectation, not a guaranteed minimum, maximum or contracted prize; the value proposition is TV/brand experience.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-10-03",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -554,14 +560,15 @@
     "questions": [
       "What distribution is guaranteed?"
     ],
-    "text": "This needs extremely precise sales language.\r\nBased on what you described, the safe internal structure is:\r\nGuaranteed:\r\n* Inside Success TV distribution\r\n* Whatever external platform your contract specifically guarantees\r\nNot appropriate to promise casually:\r\n* Netflix\r\n* Hulu\r\n* Amazon Prime Video\r\n* Apple TV\r\n* any particular third-party platform\r\nunless that exact platform is contractually secured for that particular show.\r\nI would not let reps say:\r\n\"You'll definitely be on Netflix, Amazon, Hulu or Apple.\"\r\nThat is legally dangerous if the actual platform has not yet been selected/contracted.\r\nBetter:\r\n\"The series is guaranteed distribution through Inside Success TV plus at least one qualifying external streaming/distribution platform as defined in your agreement. We also pitch selected original formats to major streamers and distribution partners.\"\r\nThen separately, where truthful:\r\n\"Previous Inside Success programming has appeared on platforms such as Amazon Prime Video and Apple TV.\"\r\nThe distinction between distribution and being pitched to Netflix needs to be hammered into training.",
+    "text": "This needs extremely precise sales language.\r\nBased on what you described, the safe internal structure is:\r\nGuaranteed:\r\n* Inside Success TV distribution\r\n* Whatever external platform your contract specifically guarantees\r\nNot appropriate to promise casually:\r\n* Netflix\r\n* Hulu\r\n* Amazon Prime Video\r\n* Apple TV\r\n* any particular third-party platform\r\nunless that exact platform is contractually secured for that particular show.\r\nI would not let reps say:\r\n\"You'll definitely be on Netflix, Amazon, Hulu or Apple.\"\r\nThat is legally dangerous if the actual platform has not yet been selected/contracted.\r\nBetter:\r\n\"The series is guaranteed distribution through Inside Success TV plus at least one qualifying external streaming/distribution platform as defined in your agreement. We also pitch selected original formats to major streamers and distribution partners.\"\r\nThen separately, where truthful:\r\n\"Previous Inside Success programming has appeared on platforms such as Amazon Prime Video and Apple TV.\"\r\nThe distinction between distribution and being pitched to Netflix needs to be hammered into training. October 1 FAQ says the company plans submissions to Apple TV/Amazon Prime and cites a historical 99% success rate, but explicitly says placement is NOT guaranteed. Treat that as a source-stated historical claim, not a verified forward probability or contractual promise. Named platform guarantees still require the actual agreement.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-10-03",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -674,7 +681,9 @@
     "routeKey": null,
     "conditions": [
       "Source-adjudication inference, not a new company decision.",
-      "Preserve explicit written-source discrepancy and existing-customer limitations."
+      "Preserve explicit written-source discrepancy and existing-customer limitations.",
+      "governing_evidence:reality-mini-documentary-production-2026-10-03",
+      "governing_evidence:reality-guests-and-accommodation-2026-10-03"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -682,9 +691,9 @@
   {
     "id": "hubspot-current-call-records",
     "decisionKey": "hubspot-current-call-records",
-    "title": "HubSpot: update lead and meeting records",
+    "title": "HubSpot call records and current reporting requirements",
     "questions": [],
-    "text": "HubSpot is the current CRM for the sales lead/meeting updates discussed in September announcements. Record the meeting outcome for every meeting and keep all leads and calls updated. Rudy’s September 14 announcement mentioned a first-week exception for one lead; this is a dated transition exception, not standing permission to omit records. Replacing daily stats was described as coming soon, so do not tell reps daily stats have already been discontinued. This does not establish that every historical Keap integration or unrelated process has been retired. Pramod’s September 14 clarification says meeting status supplies reporting; reps do not need to create or update Deals for passoffs.",
+    "text": "HubSpot is the current CRM for the sales lead/meeting updates discussed in September announcements. Record the meeting outcome for every meeting and keep all leads and calls updated. Rudy’s September 14 announcement mentioned a first-week exception for one lead; this is a dated transition exception, not standing permission to omit records.  As of October 2 non-DJ sales reps stop Slack daily stats and use HubSpot Meeting Status, Score, Closing Call Notes and Green Lights. DJ reps are explicitly excluded. Other reporting duties remain; see the current cutover record. Pramod says reps do not need to create or update Deals for passoffs. This does not retire unrelated Keap processes.",
     "scopes": [
       "shared"
     ],
@@ -692,15 +701,17 @@
       "slack:1789399009",
       "slack:1789144095",
       "https://www.loom.com/share/54ce553ea9824ce18c4fbfef49e46725",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789407005047689"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789407005047689",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790960409231189"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-03",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Apply only to the stated process and scope."
+      "Apply only to the stated process and scope.",
+      "governing_evidence:hubspot-daily-stats-cutover-2026-10-03"
     ],
     "supersedes": [],
     "domains": [
@@ -1222,7 +1233,7 @@
     "decisionKey": "company.current_context",
     "title": "Current company context: show families and CRM",
     "questions": [],
-    "text": "Inside Success TV’s regular documentary offers (including Legacy Makers, Women in Power and America’s Best Doctors) are main ISTV. Daymond John and Next Level CEO (NLCEO) belong to the separate DJ/NLCEO family, not main ISTV. The new reality competition family includes Business Race, Entrepreneurs Island, Startup Lockdown, Flipping for Fortune, Millionaire Match House, Love or Business, Mansion of Money, and Kids CEO; Kids CEO was subsequently paused on September 10 and confirmed cancelled September 14; do not offer current Kids CEO auditions. Reality terms do not inherit the regular documentary prices, package entitlements, cohort or onboarding rules. HubSpot is now the company CRM for current lead, call and meeting work. Keap references in older training are historical; they do not establish the current HubSpot screen path. Use current scoped policies for each specific procedure. Bill.com is the company’s vendor invoicing/payment system for rep commissions; a finance email from Bill may refer to Bill.com rather than a person. Use the current invoice SOP for the actual procedure. September 30 update: Operation Profit has launched; Startup Lockdown and Flipping for Fortune are paused due to low sales. Business Race UK is an announced edition. Apply these status changes even if older catalogs still list all titles.",
+    "text": "Inside Success TV’s regular documentary offers (including Legacy Makers, Women in Power and America’s Best Doctors) are main ISTV. Daymond John and Next Level CEO (NLCEO) belong to the separate DJ/NLCEO family, not main ISTV. The new reality competition family includes Business Race, Entrepreneurs Island, Startup Lockdown, Flipping for Fortune, Millionaire Match House, Love or Business, Mansion of Money, and Kids CEO; Kids CEO was subsequently paused on September 10 and confirmed cancelled September 14; do not offer current Kids CEO auditions. Reality terms do not inherit the regular documentary prices, package entitlements, cohort or onboarding rules. HubSpot is now the company CRM for current lead, call and meeting work. Keap references in older training are historical; they do not establish the current HubSpot screen path. Use current scoped policies for each specific procedure. Bill.com is the company’s vendor invoicing/payment system for rep commissions; a finance email from Bill may refer to Bill.com rather than a person. Use the current invoice SOP for the actual procedure. September 30 update: Operation Profit has launched; Startup Lockdown and Flipping for Fortune are paused due to low sales. Business Race UK is an announced edition. Apply these status changes even if older catalogs still list all titles. October 2 update: Entrepreneurs Jungle launched; Millionaire Match House is not currently being sold; Island Season 1 is full and sales move to Season 2 (approximately April). Consult current catalog and season records.",
     "scopes": [
       "shared"
     ],
@@ -1242,7 +1253,7 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790807712465989",
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
     ],
-    "reviewedAt": "2026-10-01",
+    "reviewedAt": "2026-10-03",
     "authority": 10,
     "kind": "policy",
     "risk": "high",
@@ -1251,7 +1262,8 @@
       "Catalog context, not a grant of cross-show entitlement or a claim of real-time application availability.",
       "governing_evidence:built-for-more-dj-family-2026-09-18",
       "governing_evidence:hubspot-sms-2026-09-23",
-      "governing_evidence:reality-catalog-status-2026-10-01"
+      "governing_evidence:reality-catalog-status-2026-10-01",
+      "governing_evidence:reality-catalog-status-2026-10-03"
     ],
     "supersedes": [],
     "domains": [
@@ -1309,21 +1321,24 @@
   {
     "id": "hubspot-outcome-deadline",
     "decisionKey": "hubspot-outcome-deadline",
-    "title": "HubSpot meeting outcomes and daily stats remain required",
+    "title": "HubSpot call records and current reporting requirements",
     "questions": [],
-    "text": "Rich confirmed meeting outcomes must be updated in HubSpot by 11:59pm Eastern; failure leads to one warning and then the calendar being paused. Individual approved exceptions remain individual. Pramod says removal of separate Daily Stats is planned, but reps must wait for the announced switchover date. Do not say Daily Stats are already retired.",
+    "text": "Rich confirmed meeting outcomes must be updated in HubSpot by 11:59pm Eastern; failure leads to one warning and then the calendar being paused. Individual approved exceptions remain individual.  As of October 2 non-DJ sales reps stop Slack daily stats and use HubSpot Meeting Status, Score, Closing Call Notes and Green Lights. DJ reps are explicitly excluded. Other reporting duties remain; see the current cutover record.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789428844134379"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789428844134379",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790960409231189"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-03",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-daily-stats-cutover-2026-10-03"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -1823,7 +1838,8 @@
     "routeKey": null,
     "conditions": [
       "Reviewed from the complete cited source; preserve stated product, actor and conditions.",
-      "governing_evidence:main-anniversary-prices-2026-10-01"
+      "governing_evidence:main-anniversary-prices-2026-10-01",
+      "governing_evidence:regular-lite-video-corrections-2026-10-03"
     ],
     "supersedes": [],
     "domains": [],
@@ -2065,7 +2081,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:reality-catalog-status-2026-10-01"
+      "governing_evidence:reality-catalog-status-2026-10-01",
+      "governing_evidence:reality-catalog-status-2026-10-03"
     ],
     "supersedes": [],
     "domains": [],
@@ -2987,7 +3004,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-daily-stats-cutover-2026-10-03"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -3514,7 +3533,8 @@
       "governing_evidence:main-standard-complete-deliverables",
       "governing_evidence:main-vip-complete-deliverables",
       "governing_evidence:call1-no-pricing-2026-09-20",
-      "governing_evidence:anniversary-sales-resources-2026-10-01"
+      "governing_evidence:anniversary-sales-resources-2026-10-01",
+      "governing_evidence:regular-lite-video-corrections-2026-10-03"
     ],
     "supersedes": [
       "v514src-current-istv-prices-and-plans"
@@ -3555,7 +3575,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:main-anniversary-prices-2026-10-01"
+      "governing_evidence:main-anniversary-prices-2026-10-01",
+      "governing_evidence:regular-lite-video-corrections-2026-10-03"
     ],
     "supersedes": [
       "regular-deposit-no-split-across-days-2026-09-29"
@@ -3620,7 +3641,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:main-anniversary-prices-2026-10-01"
+      "governing_evidence:main-anniversary-prices-2026-10-01",
+      "governing_evidence:regular-lite-video-corrections-2026-10-03"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -3751,7 +3773,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-daily-stats-cutover-2026-10-03"
+    ],
     "supersedes": [
       "hubspot-status-cast-score-2026-09-29"
     ],
@@ -3856,6 +3880,424 @@
     "supersedes": [
       "reality-buyer-welcome-2026-09-21"
     ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-daily-stats-cutover-2026-10-03",
+    "decisionKey": "hubspot-daily-stats-cutover-2026-10-03",
+    "title": "Non-DJ daily Slack stats stopped October 2; HubSpot and daily call reviews remain required",
+    "text": "Rich's October 2 instruction explicitly allows ALL sales reps EXCLUDING DJ reps to stop DAILY STATS in Slack from that date. Those reps must fill in Meeting Status, Score and Closing Call Notes in HubSpot and submit Green Lights through HubSpot. The exception is DJ reps: do not tell them their Slack stats have ended. This replaces older non-DJ instructions to submit EOD stats/Green Lights through the daily-stats Slack form or thread. It does not abolish the separate daily call-review post, trainee onboarding progress updates, Pay Me posts, payment verification or other operational obligations. Daily call review is still mandatory: post one of your own recordings with three takeaways; reality if available otherwise regular; Call 2 preferred otherwise Call 1; write No calls if none; due by 8 AM Eastern next morning. Preserve actual meeting outcomes and approved exceptions; do not invent scores or treat placeholders as performance grades. The older HubSpot outcome deadline remains 11:59 PM Eastern, with the announced warning/calendar-pause process. No new blanket retirement of Keap or unrelated systems is established.",
+    "questions": [
+      "Do I still post daily stats in Slack?",
+      "Have daily stats stopped for DJ reps?",
+      "Where do I submit Green Lights now?",
+      "Do we still need daily call reviews?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790960409231189",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790888403404779"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-catalog-status-2026-10-03",
+    "decisionKey": "reality-catalog-status-2026-10-03",
+    "title": "Current reality casting: Island S2, Mansion, Race, Operation Profit and new Jungle",
+    "text": "Rich's October 1 casting clarification lists Entrepreneurs Island SEASON 2, Mansion of Money, Business Race and Operation Profit. He explicitly says NO Millionaire Match House: steer prospective buyers toward a suitable flagship show; reps with an already-sold Match House case should contact Rich for individual handling, not promise an automatic transfer/refund. Startup Lockdown and Flipping for Fortune remain paused, not permanently cancelled. Kids CEO remains cancelled. Timothy then announced Entrepreneurs Jungle on October 2: a reality competition where entrepreneurs use business skills, strategy and leadership to build opportunities, survive extreme conditions, form alliances, face eliminations and outlast competitors in a remote jungle. Official page https://www.entrepreneursjungletv.com/tveg-main . Operation Profit is a special-forces-style physical/mental leadership competition; official page https://www.operationprofittv.com/tvop-main . Business Race UK is a UK edition; its ads now run in the UK (previously US). A title remaining in the FAQ/video catalog is not evidence that it is open. These announcements do not confirm filming dates, available slots, guaranteed prizes or exact Jungle package-specific terms.",
+    "questions": [
+      "Which reality shows are currently open?",
+      "What is Entrepreneurs Jungle?",
+      "Can I still sell Millionaire Match House?",
+      "What is Operation Profit?",
+      "Can I sell Startup Lockdown or Flipping for Fortune?",
+      "Which reality shows are paused?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790869920068479",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790968304629349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790971999709329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790771331251859",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790779460004679",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790807712465989",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-catalog-status-2026-10-01"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-season-schedule-2026-10-03",
+    "decisionKey": "reality-season-schedule-2026-10-03",
+    "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment.",
+    "questions": [
+      "Is Island season one still available?",
+      "When is Island Season 2 filming?",
+      "When does Business Race film?",
+      "Can I still sell Island season one?",
+      "When does Island season two film?",
+      "Is Mansion of Money filming in January?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790873201892299",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790885893061519",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790796948496499",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790796957050599",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790714901003149",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790437550548759",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442521907949",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442526156139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442559260019",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790451677000429",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:reality-catalog-status-2026-10-01",
+      "governing_evidence:reality-catalog-status-2026-10-03"
+    ],
+    "supersedes": [
+      "reality-season-schedule-2026-10-01"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "spanish-ads-and-existing-leads-2026-10-03",
+    "decisionKey": "spanish-ads-and-existing-leads-2026-10-03",
+    "title": "Legacy Makers Spanish ads paused; existing pipeline may close",
+    "text": "Timothy's October 2 announcement pauses Legacy Makers Spanish ADVERTISING due to low response and says it may be tried again. In the same thread he explicitly confirms sales already in the pipeline can close normally. This is not cancellation of the show or permission to cancel existing Call 2 appointments. Business Race UK ads are now live in the UK, after previously running to the US. Do not treat ad targeting as cast-nationality eligibility or a show-location guarantee.",
+    "questions": [
+      "Can I close an existing Spanish Legacy Makers lead?",
+      "Is Legacy Makers Spanish cancelled?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790971999709329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790974053176749"
+    ],
+    "scopes": [
+      "main_istv"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-guests-and-accommodation-2026-10-03",
+    "decisionKey": "reality-guests-and-accommodation-2026-10-03",
+    "title": "Reality guests visit and spectate; they do not join the cast or live on set",
+    "text": "Rudy's October 1 clarification and the updated reality FAQ say Standard $20k permits one guest and VIP $30k two guests to VISIT the set subject to production rules, including Island. Guests are spectators, not accompanying cast, contestants, production members or helpers. They cannot co-mingle freely, provide external support, disrupt filming or hang out with cast for hours each day. The FAQ suggests a short visit of a day or two rather than expecting fourteen days on set; this is an example, not a fixed entitlement. A late visit may not make sense if the cast member has already been eliminated. Production days may be 10–12 hours with little guest interaction. Rudy allows written email confirmation of the 1/2-guest allowance; if the agreement wrongly says cast member instead of guest, ask Usman/Tom to correct it, not rewrite terms yourself. Guest accommodation/island access remains production-dependent: possible island hotel or mainland/ferry arrangements are not confirmed or included costs. Participant accommodation remains separate: the discussed Island/Race/mansion formats do not require a separate participant hotel during shooting, but pre/post days may; Island roughing-it, Race challenge-dependent accommodation and mansion shared same-sex rooms are format guidance, not universal/free/private guest lodging.",
+    "questions": [
+      "Can Island VIP bring two guests for the whole two weeks?",
+      "Are guests part of the reality show?",
+      "Where do reality guests stay?",
+      "Can I bring my wife to Entrepreneurs Island VIP?",
+      "How many guests can Island Standard bring?",
+      "Where will Island guests stay?"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790884462572789",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790884496399669",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790884268801109",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790265725972329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790347971960629",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790348005198809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790182805112149",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183208824139",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183228900299",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790183239228069"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-island-guest-accommodation-2026-09-29"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-mini-documentary-production-2026-10-03",
+    "decisionKey": "reality-mini-documentary-production-2026-10-03",
+    "title": "Reality mini-documentary and social-media day are on location, not a full studio package",
+    "text": "The October 1 reality FAQ clarifies that the included documentary component is a MINI version, not the complete separately purchased Legacy Makers studio documentary package. Production plans a social-media day at the end of shooting or a later reshoot, at the island/actual show location, with 3–4 stations. Examples are a roughly 20-minute mini-documentary from a 30–40 minute interview about life/business/personal story and show fit; short roughly 60-second social interviews; a five-minute producer interview; and a possible roughly 15-minute podcast IF included in the selected package. These describe formats, not every package's entitlements or a fixed delivery date. Angelina confirms reality cast do not travel to the studio for this component. The unresolved written Standard-versus-video VIP documentary placement still requires its existing qualification; the newly described format alone does not settle which package includes it. This current October 1 general production clarification replaces the September 22 statement that Island VIP could film early in the studio as a general recommendation. Do not offer early studio filming as the current included process. If a buyer already has an individual written approval or signed entitlement, refer that specific commitment to Production/Support rather than cancelling or overriding it.",
+    "questions": [
+      "Does reality include a full Legacy Makers studio documentary?",
+      "What happens on reality social media day?",
+      "Can Island VIP film the documentary in studio before the show?"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790883640604439"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "reality-documentary-early-studio-2026-09-22"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-call1-video-2026-10-03",
+    "decisionKey": "reality-call1-video-2026-10-03",
+    "title": "Reality master Call 1 video plus current five-minute Island overview",
+    "text": "Rudy’s September 27 instruction and updated reality FAQ introduce the master reality Call 1 video: https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . Use a brief introduction/initial questions, play this master video, then ask the main qualification questions. Rudy recommends 1.2x speed (1.5x also mentioned); the video is about 12 minutes. If time permits, play the first roughly four minutes of the appropriate show-specific Island/Race/House video at the end; otherwise send that show-specific video afterwards. Rudy’s post says 3–4 questions and the FAQ flow says the main five: preserve the qualification purpose rather than treating these as incompatible scripts. Do not replace the mandatory reality Call 2 license video with this Call 1 video. Rudy explicitly reaffirmed in this thread that reps do not quote price on normal Call 1; introducing the co-funded concept is not permission to quote $20,000. The rare regular-ISTV disqualification exception remains scoped to regular ISTV, not automatically extended to reality. October 2 update: Rudy's new SHORT five-minute Island overview is https://www.loom.com/share/8eaac72b7ad3477d87844e1093addf87 . Play it at the END of Island Call 1 and send it to pending/older Island leads; it replaces the older show-specific/slidedeck overview, not the initial master video or Call 2 license video. The longer cast overview/logistics video is https://www.loom.com/share/e404e280dba14b8481e156f3a4776564 ; Rudy permits showing it to pending leads, but specifically directs calls to the short version. Visual assets: https://drive.google.com/drive/folders/1jCS5fPCqTOlzSllc5N7ZW-DEAtYak0tH . Operation Profit and Business Race UK end-of-Call-1 four-minute overviews are in https://drive.google.com/drive/folders/13kfnI_5Sr7ibtimX2nXGeWRLvrMmEk2I . Written announcements establish use and links; do not invent unreviewed video facts, reuse a dated 'today' deadline as permanent urgency, or promise Season 1 availability.",
+    "questions": [
+      "Which video do I play at end of Island Call 1?",
+      "Where is the short Island video?",
+      "Which reality video do I show on call one now?",
+      "Do I show the Island video first?",
+      "Does the cofunded video mean I can quote 20k on call 1?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790927142590729",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790960008198429",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790884911407589",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790546171347239",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790618088184179",
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:reality-season-schedule-2026-10-03"
+    ],
+    "supersedes": [
+      "reality-call1-video-2026-09-29"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "regular-lite-video-corrections-2026-10-03",
+    "decisionKey": "regular-lite-video-corrections-2026-10-03",
+    "title": "Anniversary Lite excludes podcast/email blast; two-thousand urgency reduction removed",
+    "text": "In Rudy's October 1 new-documentary-video feedback thread, reps spotted podcast and email-blast benefits mistakenly shown on the $8k Lite slide. Rudy explicitly replied 'Removing those 2 from the lite', then said the slides were fixed for re-upload. Do NOT promise a podcast or email blast with regular anniversary Lite based on that mistaken video. Use current approved package materials; this correction does not remove those benefits from another package where included. Rudy explicitly removed the $2,000 urgency reduction: it is too salesy and not affordable at the new lower prices. Do not stack or apply that old reduction to the current $8k/$12k offer. The new video separates license and marketing/PR components; it does not authorize an invented itemized price breakdown. Rudy says red carpet is mentioned verbally with the two-day event and is an award rather than a marketing/PR asset; do not infer its removal solely because absent from that slide. His 'may go back' to $12k/$20k around mid-October is a possible future change, NOT an announced expiry or permission to automatically switch prices then.",
+    "questions": [
+      "Does 8000 Lite include podcast and email blast?",
+      "Can I still offer the 2000 same-call discount?",
+      "Does anniversary pricing end mid October?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790897899317289",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790894614200159",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790898377669489",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790909428421669"
+    ],
+    "scopes": [
+      "main_istv"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "new-rep-first-two-weeks-qa-2026-10-03",
+    "decisionKey": "new-rep-first-two-weeks-qa-2026-10-03",
+    "title": "New-rep Q&A 9–9:20; main sales meeting 9:20–10 Eastern",
+    "text": "The October 1 Part 1 document updates new-rep sales Q&A with Raul to Tuesday–Friday 9:00–9:20 AM EST, mandatory for the first two weeks AFTER training and passing the final mock. The invitation arrives when ready to go live; tell Raul if absent or off camera. Reps may stop this particular Q&A after two weeks. The separate main sales meeting with Rich/Rudy is Tuesday–Friday 9:20–10 AM EST. Follow Olivia's daily main-channel meeting link and actual announcement; explain an absence/camera-off in that daily meeting thread. These replace the old 9–9:30 Q&A/9:30 main-meeting times. Neither replaces the FIVE live onboarding training sessions, including Wednesday 3–4 PM combined Call 2/Procedural training and Friday 11–noon mock prep. Keep EST as the document's label; verify timezone for dated conversions. Part 1 also labels first-call booking as public calendar and second-call booking as Call 2/personal calendar; follow the relevant booking SOP rather than swapping links.",
+    "questions": [
+      "When is Raul new rep morning Q&A?",
+      "What time is the main sales team meeting?",
+      "During the two weeks of onboarding what training does Raul host?",
+      "What is the new rep sales questions meeting?",
+      "Do I need to attend Raul morning meetings after going live?"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789654736520409",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650600703149"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:new-rep-six-training-sessions-2026-09-21",
+      "governing_evidence:new-rep-training-sessions-2026-10-01"
+    ],
+    "supersedes": [
+      "new-rep-first-two-weeks-qa-2026-09-21"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-email-signature-2026-10-03",
+    "decisionKey": "hubspot-email-signature-2026-10-03",
+    "title": "How to add HubSpot email signature",
+    "text": "In HubSpot open the Inside Success dropdown at top right, Profile & Preferences, General in the left sidebar, Email tab, then Configure > Manage email signatures. Enter and format the signature and Save. It is automatically added to emails including templates and replies.",
+    "questions": [
+      "How to add HubSpot email signature"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/13hDebf2iwo032ZabuQN4A0LeO3bmYF9Q-jLRwcw4DVE/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790869051418879"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-email-templates-2026-10-03",
+    "decisionKey": "hubspot-email-templates-2026-10-03",
+    "title": "Create and send HubSpot email templates; permissions",
+    "text": "Rich's October 1 instruction says use HubSpot for these sales emails, including when templates were previously saved in Google. Create via CRM > Message Templates > New template > From scratch; name it, choose sharing (default shared with everyone; can make private) and optional folder; add subject/body, optional personalization tokens using Insert; format and Save template. To send: open the Contact, Email in left Contact Information panel, Templates in the email window, choose template/folder, REVIEW autofilled tokens and body, then Send. These email SOPs do not document SMS-template steps. If New template is blocked, ask Tech/Igor for access; the thread shows permissions were being enabled, not that every account is guaranteed ready.",
+    "questions": [
+      "Create and send HubSpot email templates; permissions"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1rHp5j3hfebdrB-aCmbQaIBYlyixfP6V-e9BG3VlgVZ0/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790869051418879",
+      "https://docs.google.com/document/d/1NYin4WW0J-yxsGY9gGvNZtiXqe_jscGHcpTfHvEADDM/edit"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "tech-support-group-tag-2026-10-03",
+    "decisionKey": "tech-support-group-tag-2026-10-03",
+    "title": "Tag the Tech user group rather than the individual tech account",
+    "text": "Kent's October 1 clarification says in #sales-tech-requests select the Tech USER GROUP mention, which notifies the support team, not the individual account named tech. The picker shows a multiple-people avatar on mobile or a number of people on desktop. This improves visibility but does not guarantee response time. See Kent's linked explanation if unsure; do not paste raw Slack user-group syntax as a readable channel name.",
+    "questions": [
+      "Which tech tag should I use?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790882042088249"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "prospect-call-recording-sharing-2026-10-03",
+    "decisionKey": "prospect-call-recording-sharing-2026-10-03",
+    "title": "Do not send the sales-call recording to prospects",
+    "text": "Rich's October 1 reply says not to send the prospect a copy/link of the sales-call recording because the assets shown are private and confidential. This includes a request to replay it with a spouse; involve the relevant decision-maker on the call. It does not prohibit separately approved shareable materials or the explicitly shareable short Island overview. Do not infer the license video or every private sales asset can be emailed because another resource can.",
+    "questions": [
+      "Can I send my prospect their call recording to watch with a spouse?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790873345455619"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "greenlight-rejection-owner-2026-10-03",
+    "decisionKey": "greenlight-rejection-owner-2026-10-03",
+    "title": "Rep handles rejection email and cancellation after failed Green Light",
+    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists.",
+    "questions": [
+      "Who emails rejection after failed greenlight and cancels call two?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790946952130479",
+      "https://docs.google.com/document/d/105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do/edit"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   }
 ]

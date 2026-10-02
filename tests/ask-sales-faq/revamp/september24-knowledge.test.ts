@@ -11,7 +11,7 @@ describe("September 24 source context and exceptions", () => {
   it("keeps current Island guest conditions alongside the generic VIP allowance", () => {
     for (const question of ["What do I get with reality VIP?", "Can I bring my wife on Entrepreneurs Island?", "How many guests can a reality participant bring?"]) {
       const ids = retrieve(question, "reality").map(r => r.id);
-      expect(ids).toContain("reality-island-guest-accommodation-2026-09-29");
+      expect(ids).toContain("reality-guests-and-accommodation-2026-10-03");
     }
   });
   it("retires obsolete cancellation and time-off instructions", () => {
