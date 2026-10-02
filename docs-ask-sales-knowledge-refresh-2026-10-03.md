@@ -1,6 +1,6 @@
 # Magic Mike FAQ knowledge refresh — October 3, 2026
 
-Status: candidate verified offline; publication pending. October 1 remains the last successful checkpoint until production verification.
+Status: published and verified. Resume from the October 3 published_verified checkpoint; Miami publication date is October 2.
 
 ## Scope
 
@@ -32,3 +32,9 @@ Knowledge-only refresh from October 1. Dashboard base `696ee71` preserves the la
 ## Limits
 
 Actual filming dates/capacity, universal old-lead anniversary eligibility, package documentary placement and two previously unavailable sources remain qualified/deferred. Current Docs still contain old catalog items and the disputed Standard placement; do not infer availability or resolved entitlement from their presence. Full video/audio transcripts were not reviewed; written owner clarifications establish the changes used here.
+
+## Publication receipt
+
+Dashboard PR254 and FAQ PR89 merged. Live alias verified on commit 5cd8e0dc1619fb33e51b15706de7100c1dbcbb1b, deployment dpl_F1KpzfYuLyLNiTzhaL3BQL29kmJq. Knowledge ec5851fe5cd65e97f50b0d44 has 2,521 active records. Authenticated work-profile Chrome verified the non-DJ reporting change and continuing daily call review. Persisted answer faq_assistant_55df3a57-75f0-4df1-abcb-5a3d8cdfdbed used GPT-5.6 Luna, no error, 12.744 seconds. The admin verification exchange remains for audit.
+
+Isolated hosted preview verified FAQ/admin/usage/Coaching HTTP 200 and a real model answer, checked storage in the existing isolated database and removed only its disposable fixture. No database branches created/deleted. Fourteen distinct offline cases plus four rechecks cost an estimated $0.143012; two additional hosted smoke answers used the same model. All source systems stayed read-only. Final admin publication-date receipt deployment follows this verified knowledge release.
