@@ -32,8 +32,8 @@ describe("October 1 knowledge refresh", () => {
     expect(rows.find(r => r.id === "new-rep-training-sessions-2026-10-01")?.text).toContain("COMBINED Call 2 Sales Training and Procedural Training with Raul");
   });
   it("carries show-status changes with generic catalog and season questions", () => {
-    expect(retrieve("What reality shows do we offer?", "reality").map(r => r.id)).toContain("reality-catalog-status-2026-10-01");
-    expect(retrieve("Is Island season one still closed?", "reality").map(r => r.id)).toContain("reality-season-schedule-2026-10-01");
+    expect(retrieve("What reality shows do we offer?", "reality").map(r => r.id)).toContain("reality-catalog-status-2026-10-03");
+    expect(retrieve("Is Island season one still closed?", "reality").map(r => r.id)).toContain("reality-season-schedule-2026-10-03");
     expect(records.some(r => r.id === "reality-season-schedule-2026-09-29")).toBe(false);
   });
   it("keeps documentary payment-plan filming separate from reality onboarding", () => {

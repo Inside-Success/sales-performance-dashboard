@@ -26,7 +26,7 @@ describe("September 21 knowledge refresh boundaries", () => {
     for (const question of ["when does the training for new reps happen?", "trainings that are required when getting hired", "Raul hosts training during those two weeks of onboarding", "When is Mike compliance zoom?"]) {
       const ids = retrieve(question, "main_istv").map(r => r.id);
       expect(ids).toContain("new-rep-training-sessions-2026-10-01");
-      expect(ids).toContain("new-rep-first-two-weeks-qa-2026-09-21");
+      expect(ids).toContain("new-rep-first-two-weeks-qa-2026-10-03");
       expect(ids).not.toContain("operational_7eb701b3cc2f4e99");
     }
   });
