@@ -1,6 +1,8 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
 const dir=process.argv[2];const load=name=>JSON.parse(fs.readFileSync(`${dir}/${name}.json`));
 const manual=load('manual-candidate'), worker=load('worker-candidate'), failure=load('failure-candidate');
+const baseline=load('BMRrGxHyXMcgO6j3.before');
+for(const n of baseline.nodes)if(!['Manual Feedback Webhook','Normalize Input','Post Callback'].includes(n.name))assert.deepEqual(manual.nodes.find(x=>x.name===n.name),n,'Coaching/document node changed outside delivery scope: '+n.name);
 const find=(w,name)=>w.nodes.find(n=>n.name===name);
 const run=(w,name,input,refs={})=>new Function('$input','$','$json',find(w,name).parameters.jsCode)({first:()=>({json:input}),all:()=>[{json:input}]},key=>({item:{json:refs[key]},first:()=>({json:refs[key]})}),input);
 const id='716dd1bd1e2944e6acf8660cf70c853e';const origin='https://sales-performance-dashboard-rose.vercel.app';
@@ -24,6 +26,7 @@ for(const w of [manual,worker,failure]) {
  for(const [source,links]of Object.entries(w.connections)){assert(names.has(source));for(const targets of Object.values(links).flat())for(const t of targets)assert(names.has(t.node));}
  for(const n of w.nodes){if(n.parameters.jsCode)new vm.Script('(async function(){'+n.parameters.jsCode+'})');if(n.onError==='continueErrorOutput')assert(w.connections[n.name]?.main?.[1]?.length);}
 }
+for(const w of [manual,worker])for(const n of w.nodes)if(['Post Callback','Deliver Saved Manual Result'].includes(n.name))assert.equal(n.parameters.contentType,'json','Use native JSON; raw requests can return unresolved streams');
 assert(!worker.nodes.some(n=>/langchain|Google Doc|Provider/.test(n.type+n.name)));
 assert(!failure.nodes.some(n=>/langchain|Google Doc|Provider/.test(n.type+n.name)));
 console.log('Delivery checks passed: unsafe destinations, saved payload identity, callback receipts, bounded retries, generation failures, and no AI/doc regeneration.');
