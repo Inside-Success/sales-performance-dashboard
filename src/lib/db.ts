@@ -1587,6 +1587,7 @@ export async function updateManualFeedbackStatus(
           refusal_reason = coalesce($3, refusal_reason),
           updated_at = now()
       where public_id = $1
+        and status not in ('completed', 'refused', 'needs_transcript_paste')
       returning *
     `,
     [publicId, status, refusalReason || null],
@@ -1594,7 +1595,7 @@ export async function updateManualFeedbackStatus(
 
   return (rows as ManualFeedbackReport[])[0]
     ? normalizeManualReport((rows as ManualFeedbackReport[])[0])
-    : null;
+    : getManualFeedbackReport(publicId);
 }
 
 export async function applyManualFeedbackCallback(payload: NormalizedManualCallback) {
@@ -1632,6 +1633,7 @@ export async function applyManualFeedbackCallback(payload: NormalizedManualCallb
           source_type = coalesce($28, source_type),
           updated_at = now()
       where public_id = $1
+        and status not in ('completed', 'refused', 'needs_transcript_paste')
       returning *
     `,
     [
@@ -1668,7 +1670,7 @@ export async function applyManualFeedbackCallback(payload: NormalizedManualCallb
 
   return (rows as ManualFeedbackReport[])[0]
     ? normalizeManualReport((rows as ManualFeedbackReport[])[0])
-    : null;
+    : getManualFeedbackReport(payload.public_id);
 }
 
 export async function getManualFeedbackReports(limit = 100) {

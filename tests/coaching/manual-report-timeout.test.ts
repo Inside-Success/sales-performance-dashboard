@@ -9,8 +9,10 @@ describe("manual coaching callback window", () => {
   it("continues waiting while evidence checks run beyond five minutes", () => {
     expect(resolveManualReportStatus(report("processing"), new Date("2026-09-08T12:10:00Z")).status).toBe("processing");
   });
-  it("still reports a missing callback after fifteen minutes", () => {
-    expect(resolveManualReportStatus(report("processing"), new Date("2026-09-08T12:16:00Z")).status).toBe("failed");
+  it("shows a delivery delay and keeps polling after fifteen minutes", () => {
+    const delayed = resolveManualReportStatus(report("processing"), new Date("2026-09-08T12:16:00Z"));
+    expect(delayed.status).toBe("processing");
+    expect(delayed.refusal_reason).toContain("rather than submitting");
   });
   it("uses the latest update and preserves terminal results", () => {
     expect(resolveManualReportStatus(report("processing", "2026-09-08T12:10:00Z"), new Date("2026-09-08T12:20:00Z")).status).toBe("processing");

@@ -5,7 +5,7 @@ import { normalizeStringList } from "@/lib/list-format";
 import type { JsonObject, ManualFeedbackReport } from "@/lib/types";
 
 // Allow the multi-stage coaching analysis and factual checks to finish before
-// treating a missing callback as a failure. Terminal statuses are never changed.
+// showing a delivery delay. An absent callback alone does not prove generation failed.
 const MANUAL_REPORT_TIMEOUT_MS = 15 * 60 * 1000;
 const WAITING_MANUAL_REPORT_STATUSES = new Set(["pending", "processing"]);
 
@@ -110,10 +110,10 @@ export function resolveManualReportStatus(report: ManualFeedbackReport, now = ne
 
   return {
     ...report,
-    status: "failed" as const,
+    status: report.status,
     refusal_reason:
       report.refusal_reason ||
-      "The manual feedback workflow did not finish within the expected time. It may have failed before it could update this page.",
+      "Your report has not reached this page yet. Saved results are retried automatically if delivery was interrupted. Please keep this report link rather than submitting the same call again.",
   };
 }
 
