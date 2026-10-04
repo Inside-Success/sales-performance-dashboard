@@ -1,5 +1,9 @@
-import { CALL2_CURRENT_VERSION } from "./scorer-version";
+import { CALL2_CURRENT_VERSION, CALL2_PREVIOUS_VERSION } from "./scorer-version";
 export const COACHING_SCORE_SCORER_VERSION = CALL2_CURRENT_VERSION;
+// A coaching report shows the score of the rubric that was current when its
+// call was scored: v3 for new calls, v2 for reports scored before the v3
+// release. Nothing older is ever shown to reps.
+export const COACHING_SCORE_SCORER_VERSIONS = [CALL2_CURRENT_VERSION, CALL2_PREVIOUS_VERSION] as const;
 
 export type CoachingScoreCandidate = {
   id: string;
@@ -38,14 +42,24 @@ export function selectExactCoachingCallScore({
   // The current score store does not contain the legacy Automation Key/Status fields.
   void automationKey;
 
-  if (candidates.some(candidate => candidate.sourceRecordId === sourceRecordId && candidate.scorerVersion === COACHING_SCORE_SCORER_VERSION && candidate.id !== `${COACHING_SCORE_SCORER_VERSION}:${sourceRecordId}`)) return null;
+  for (const version of COACHING_SCORE_SCORER_VERSIONS) {
+    const result = selectForVersion(version, sourceRecordId, candidates, repEmail, callDate);
+    if (result === "conflict") return null;
+    if (result) return result;
+  }
+  return null;
+}
+
+function selectForVersion(version: string, sourceRecordId: string, candidates: CoachingScoreCandidate[], repEmail: string, callDate: string): CoachingCallScore | "conflict" | null {
+  const expectedId = `${version}:${sourceRecordId}`;
+  if (candidates.some(candidate => candidate.sourceRecordId === sourceRecordId && candidate.scorerVersion === version && candidate.id !== expectedId)) return "conflict";
   const matches = candidates.filter((candidate) =>
     candidate.latestReviewed === true
       && candidate.sourceRecordId === sourceRecordId
-      && candidate.id === `${COACHING_SCORE_SCORER_VERSION}:${sourceRecordId}`
+      && candidate.id === expectedId
       && candidate.repEmail?.trim().toLowerCase() === repEmail.trim().toLowerCase()
       && Date.parse(candidate.callDate || "") === Date.parse(callDate)
-      && candidate.scorerVersion === COACHING_SCORE_SCORER_VERSION
+      && candidate.scorerVersion === version
       && candidate.callType === "Call 2+"
       && (candidate.status === "" || candidate.status.toLowerCase() === "scored")
       && !candidate.internalInconsistency
@@ -60,6 +74,6 @@ export function selectExactCoachingCallScore({
   const scores = new Set(matches.map((candidate) => candidate.score));
   // Exact duplicate retry rows may collapse only when both immutable identity
   // and score agree. Any conflict stays withheld from Coaching.
-  if (assessmentIds.size !== 1 || scores.size !== 1) return null;
+  if (assessmentIds.size !== 1 || scores.size !== 1) return "conflict";
   return { assessmentId: matches[0].id, score: matches[0].score as number };
 }

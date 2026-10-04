@@ -3,7 +3,7 @@ import "server-only";
 
 import type { PerformanceCall } from "@/lib/types";
 import {
-  COACHING_SCORE_SCORER_VERSION,
+  COACHING_SCORE_SCORER_VERSIONS,
   selectExactCoachingCallScore,
   type CoachingCallScore,
   type CoachingScoreCandidate,
@@ -29,7 +29,8 @@ export async function getCoachingCallScore(call: Pick<PerformanceCall, "source_p
     const table = process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores";
     const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`);
     url.searchParams.set("pageSize", "100");
-    url.searchParams.set("filterByFormula", `AND({Source Record ID}=${airtableStringLiteral(sourceRecordId)},{Scorer Version}=${airtableStringLiteral(COACHING_SCORE_SCORER_VERSION)})`);
+    const versionFilter = `OR(${COACHING_SCORE_SCORER_VERSIONS.map((version) => `{Scorer Version}=${airtableStringLiteral(version)}`).join(",")})`;
+    url.searchParams.set("filterByFormula", `AND({Source Record ID}=${airtableStringLiteral(sourceRecordId)},${versionFilter})`);
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
