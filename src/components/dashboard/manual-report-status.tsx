@@ -195,7 +195,7 @@ export function ManualReportStatus({
             </div>
           ) : null}
 
-          {isWaiting ? <PendingPanel /> : null}
+          {isWaiting ? <PendingPanel reason={report.refusal_reason} /> : null}
           {report.status === "needs_transcript_paste" ? <NeedsTranscriptPanel reason={report.refusal_reason} /> : null}
           {report.status === "refused" ? <RefusedPanel reason={report.refusal_reason} /> : null}
           {report.status === "failed" ? <FailedPanel reason={report.refusal_reason} /> : null}
@@ -294,13 +294,13 @@ function StatusBadge({ status }: { status: ManualFeedbackReport["status"] }) {
   );
 }
 
-function PendingPanel() {
+function PendingPanel({ reason }: { reason: string | null }) {
   return (
     <section className="magic-card p-8 text-center">
       <Loader2 className="mx-auto mb-3 size-8 animate-spin text-primary" />
-      <h2 className="text-lg font-semibold text-slate-950">Your report is being generated</h2>
+      <h2 className="text-lg font-semibold text-slate-950">{reason ? "Your report is taking longer" : "Your report is being prepared"}</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">
-        This usually takes about 1-2 minutes. You can leave this page open and the report will appear automatically.
+        {reason || "This usually takes about 1-2 minutes. You can leave this page open and the report will appear automatically."}
       </p>
     </section>
   );
@@ -328,7 +328,7 @@ function FailedPanel({ reason }: { reason: string | null }) {
   return (
     <MessagePanel
       title="Report failed"
-      message={reason || "The report could not be generated. Try submitting the transcript again."}
+      message={reason || "The report could not be delivered. Keep this report link so the saved result can be checked before resubmitting."}
       destructive
     />
   );

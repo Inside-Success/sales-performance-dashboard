@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+import { manualDeliveryUrls } from "@/lib/manual-delivery";
 import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -8,6 +10,9 @@ import { resolveZoomTranscript } from "@/lib/zoom-transcript";
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+
   if (!isManualFeedbackEnabled()) {
     return NextResponse.json({ ok: false, error: "Manual feedback is disabled" }, { status: 404 });
   }
@@ -27,6 +32,10 @@ export async function POST(request: NextRequest) {
     const payload = manualSubmitSchema.parse(body);
     const publicId = randomUUID().replace(/-/g, "");
 
+    // Reject local/preview dispatch before storing a job or running paid analysis.
+    const { callbackUrl, reportUrl } = manualDeliveryUrls(request.nextUrl.origin, publicId, process.env.VERCEL_ENV);
+    const dispatchSecret = process.env.MANUAL_FEEDBACK_SECRET || process.env.INGEST_SECRET;
+    if (!dispatchSecret) throw new Error("Manual feedback delivery is not configured.");
     await createManualFeedbackReport(publicId, payload);
 
     if (!webhookUrl) {
@@ -38,9 +47,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true, public_id: publicId, status: "failed" });
     }
 
-    const origin = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
-    const callbackUrl = new URL("/api/manual-reports/callback", origin).toString();
-    const reportUrl = new URL(`/self-report/${publicId}`, origin).toString();
     let workflowTranscriptText =
       payload.input_type === "transcript" ? payload.transcript_text : null;
     let transcriptLink: string | null = null;
@@ -61,6 +67,7 @@ export async function POST(request: NextRequest) {
         method: "POST",
         headers: {
           "content-type": "application/json",
+          authorization: `Bearer ${dispatchSecret}`,
           "x-manual-feedback-source": "sales-performance-dashboard",
         },
         body: JSON.stringify({
@@ -87,15 +94,16 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true, public_id: publicId, status: "failed" });
       }
 
-      await updateManualFeedbackStatus(publicId, "processing");
-      return NextResponse.json({ ok: true, public_id: publicId, status: "processing" });
+      const updated = await updateManualFeedbackStatus(publicId, "processing");
+      return NextResponse.json({ ok: true, public_id: publicId, status: updated?.status || "processing" });
     } catch (error) {
       await updateManualFeedbackStatus(
         publicId,
-        "failed",
-        error instanceof Error ? error.message : "Manual feedback workflow could not be reached.",
+        "processing",
+        "Submission receipt could not be confirmed. Keep this link while we check for the result; do not resubmit the same call yet.",
       );
-      return NextResponse.json({ ok: true, public_id: publicId, status: "failed" });
+      console.error("Manual workflow receipt unavailable", error instanceof Error ? error.name : "UnknownError");
+      return NextResponse.json({ ok: true, public_id: publicId, status: "processing" });
     }
   } catch (error) {
     if (error instanceof ZodError) {
