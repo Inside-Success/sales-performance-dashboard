@@ -93,7 +93,7 @@ export async function getConversation(id: string) {
   );
   if (!c.length) return null;
   const messages = await sql.query(
-    `select m.id,m.role,m.content_redacted as text,m.created_at::text as date,m.provider,m.model,m.latency_ms,m.error_class,to_char(greatest(m.created_at,coalesce(f.created_at,m.created_at)) at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as event_at,m.source_label,m.answer_payload->'source' as source,${failure} as failed,coalesce(${unanswered},false) as unanswered,f.rating,f.comment from ask_sales_faq_messages m left join lateral(select rating,comment,created_at from ask_sales_faq_feedback where message_id=m.id order by created_at desc,id desc limit 1) f on true where m.conversation_id=$1 order by m.created_at,m.id`,
+    `select m.id,m.role,m.content_redacted as text,m.created_at::text as date,m.provider,m.model,m.latency_ms,m.error_class,m.answer_payload #>> '{runtimeMetadata,revamp,failure,stage}' as failure_stage,m.answer_payload #>> '{runtimeMetadata,revamp,failure,reason}' as failure_reason,to_char(greatest(m.created_at,coalesce(f.created_at,m.created_at)) at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as event_at,m.source_label,m.answer_payload->'source' as source,${failure} as failed,coalesce(${unanswered},false) as unanswered,f.rating,f.comment from ask_sales_faq_messages m left join lateral(select rating,comment,created_at from ask_sales_faq_feedback where message_id=m.id order by created_at desc,id desc limit 1) f on true where m.conversation_id=$1 order by m.created_at,m.id`,
     [id],
   );
   return {
@@ -116,6 +116,8 @@ export type Message = {
   model: string | null;
   latency_ms: number | null;
   error_class: string | null;
+  failure_stage?: string | null;
+  failure_reason?: string | null;
   source_label: string | null;
   source: unknown;
   failed: boolean;

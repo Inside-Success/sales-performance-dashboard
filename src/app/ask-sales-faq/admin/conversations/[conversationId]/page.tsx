@@ -151,6 +151,9 @@ export default async function Page({
                         : `${(m.latency_ms / 1000).toFixed(1)} seconds`}
                     </div>
                     {m.error_class && <div>Error: {m.error_class}</div>}
+                    {m.failure_stage && <div>Failed stage: {m.failure_stage}</div>}
+                    {m.failure_reason && <div>Failure reason: {m.failure_reason}</div>}
+                    {m.error_class && <div>Message ID: {m.id}</div>}
                   </dl>
                 </details>
               )}
