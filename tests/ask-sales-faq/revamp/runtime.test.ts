@@ -1,5 +1,5 @@
 import { describe,it,expect } from "vitest";
-import { runAskSalesRevamp,validateEvidenceReferences,stripInternalCitations,normalizeRoutingMetadata } from "../../../src/lib/ask-sales-faq/revamp/runtime";
+import { runAskSalesRevamp,evidenceReferenceIssue,validateEvidenceReferences,stripInternalCitations,normalizeRoutingMetadata } from "../../../src/lib/ask-sales-faq/revamp/runtime";
 import { reconcileEvidence } from "../../../src/lib/ask-sales-faq/revamp/knowledge";
 import { retrieveEvidence } from "../../../src/lib/ask-sales-faq/revamp/retrieval";
 import { createRevampProvider } from "../../../src/lib/ask-sales-faq/revamp/provider";
@@ -176,5 +176,51 @@ describe("revamp isolation and evidence boundaries",()=>{
   const result=await runAskSalesRevamp("price",[],{provider,evidence:[fact("price","price $20,000")]});
   expect(calls).toBe(3);expect(result.answer).toBe("The package costs $20,000.");
   expect(result.runtimeMetadata?.revamp?.selectedEvidenceIds).toEqual(["price"]);
+ });
+});
+
+
+describe("failure diagnostics without changing acceptance",()=>{
+ it("distinguishes reference failures without retaining rejected values",()=>{
+  const evidence=[fact("price","approved")];
+  const cases:Array<[Answer,string]>=[
+   [{...answer,paragraphs:[{...answer.paragraphs[0],evidenceIds:[]} ]},"missing_fact_evidence"],
+   [{...answer,paragraphs:[{...answer.paragraphs[0],evidenceIds:["private-reference"]}]},"unknown_evidence_reference"],
+   [{...answer,paragraphs:[{...answer.paragraphs[0],text:"https://example.test/private?token=secret"}]},"unsupported_url"],
+   [{...answer,routeKey:"private-route"},"unsupported_route"],
+  ];
+  for(const [value,code] of cases) {
+   const issue=evidenceReferenceIssue(value,evidence);
+   expect(issue?.code).toBe(code);expect(validateEvidenceReferences(value,evidence)).toBe(false);
+   expect(JSON.stringify(issue)).not.toMatch(/private|secret|https/);
+  }
+  expect(evidenceReferenceIssue(answer,evidence)).toBeNull();
+ });
+ it("preserves fail-closed behavior and diagnoses each generated-output failure with no retry",async()=>{
+  for(const mode of ["plan_schema","answer_schema","evidence_validation"]){
+   let calls=0;
+   const provider:JsonProvider=async(_,__,purpose)=>{
+    calls++;
+    return {attempt,value:purpose==="plan" ? mode==="plan_schema" ? {} :
+     {historyMode:"continue",intent:"company_question",question:"price",scopes:["main_istv"],queries:[]} :
+     mode==="answer_schema" ? {} : {...modelAnswer,paragraphs:[{...modelAnswer.paragraphs[0],text:"https://bad.test/?token=private"}]}};
+   };
+   const result=await runAskSalesRevamp("price",[],{provider,evidence:[fact("price","price")]});
+   expect(result.errorClass).toBe("revamp_invalid_output");expect(result.outcome).toBe("safe_fallback");
+   expect(result.runtimeMetadata?.revamp?.failure).toMatchObject({stage:mode,reason:mode==="evidence_validation"?"unsupported_url":"schema_validation"});
+   expect(JSON.stringify(result.runtimeMetadata?.revamp?.failure)).not.toMatch(/private|bad.test/);
+   expect(calls).toBe(mode==="plan_schema"?1:3);
+  }
+ });
+ it("records the failing provider stage and preserves its error classification",async()=>{
+  const provider=createRevampProvider({provider:"openai",model:"test",apiKey:"test",fetcher:async()=>new Response("secret body",{status:429})});
+  const result=await runAskSalesRevamp("price",[],{provider,evidence:[]});
+  expect(result.runtimeMetadata?.revamp?.failure).toEqual({stage:"plan",reason:"provider_http_429"});
+  expect(result.errorClass).toBe("revamp_provider_http_429");
+ });
+ it("does not log arbitrary exception messages as diagnostics",async()=>{
+  const provider:JsonProvider=async()=>{throw new Error("secret credential and personal data");};
+  const result=await runAskSalesRevamp("price",[],{provider,evidence:[]});
+  expect(result.runtimeMetadata?.revamp?.failure).toEqual({stage:"plan",reason:"unexpected_runtime_error"});
  });
 });

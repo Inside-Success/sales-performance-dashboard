@@ -167,6 +167,17 @@ export async function POST(request: NextRequest) {
     // Preserve the legacy full-message contract for rollback runtimes.
     const result = await runSelectedAskSalesFaq(lastMessage.content,
       selectedAskSalesFaqRuntimeVersion() === "revamp" ? messages.slice(0, -1) : messages);
+    if(result.errorClass && result.runtimeMetadata?.pipelineVersion === "revamp") {
+      // Correlate HTTP-200 fallback answers without logging questions, answers or keys.
+      console.warn("Ask Sales FAQ answer failed", {
+        messageId:assistantMessageId, conversationId, requestGuardId,
+        pipelineVersion:result.runtimeMetadata.pipelineVersion,
+        knowledgeVersion:result.runtimeMetadata.knowledgeVersion,
+        model:result.model,errorClass:result.errorClass,
+        failure:result.runtimeMetadata.revamp?.failure,
+        validationIssues:result.runtimeMetadata.revamp?.validationIssues,
+      });
+    }
     const response: AskSalesFaqResponse = {
       ok: true,
       conversationId,
