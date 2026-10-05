@@ -22,3 +22,8 @@ Revert this scoped PR if needed; no database restoration, model switch or knowle
 
 ## Pre-release checks
 376/376 FAQ tests passed across 32 files, including four new diagnostic tests. TypeScript, scoped ESLint, static safety validator and local production webpack build passed. Vercel preview dpl_BpTpDAJDGUR4312XtMfDfv7Pr6up failed before build with Resource provisioning failed. No preview resource or database changes attempted. GitHub CI and authenticated production verification remain required.
+
+## Deployment verification and blocker
+Dashboard PR258 merged at 57304255b0b2967db09d42ee06a13a97d07038ef; exact-head GitHub CI passed. Production build dpl_HBUb6h34nVCx7t8yQ1UDv9SPjsdM reached READY. The rose alias required explicit assignment. The active-show-list starter answered correctly through the work-profile UI; saved assistant faq_assistant_f74f0488-c6be-46ae-9485-6b5335377896 used GPT-5.6 Luna with no error. Three saved baseline-output replays also produced identical answers, sources, outcomes and call counts without paid calls.
+
+Admin verification returned 404 on the new deployment. The same authenticated account and historical conversation work on the old deployment. The production ASK_SALES_FAQ_ADMIN_EMAILS sensitive variable was updated after the old deployment (October 4); its value is unreadable. Auth code was unchanged. The rose alias was immediately restored to dpl_Fzub5DAKfLkPFRK235bp62jZfc75 / 605eb79, and the old admin conversation was verified accessible again. User clarification requested before overwriting the hidden allowlist, preserving any deliberate team access changes. Diagnostic code is merged but not currently served on the rose alias. No claim that rollout is complete until this blocker is resolved.
