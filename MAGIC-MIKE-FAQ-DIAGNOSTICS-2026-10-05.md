@@ -1,5 +1,7 @@
 # FAQ failure diagnostics — October 5, 2026
 
+Status: diagnostic-only release published; admin access restored and verified. Historical failure not reproduced; no behavioral fix claimed.
+
 ## Scope and decision
 Authorized bounded investigation and diagnostics; base dashboard 605eb79 (production). Branch agent/faq-diagnostics-2026-10-05. Only FAQ runtime diagnostics, request warning, admin technical details and tests changed. No model/effort, prompts, retrieval, knowledge, validation acceptance, retries, Coaching, schema, source documents or Slack changes. Do not treat this as a proven repair of the historical failure.
 
@@ -27,3 +29,9 @@ Revert this scoped PR if needed; no database restoration, model switch or knowle
 Dashboard PR258 merged at 57304255b0b2967db09d42ee06a13a97d07038ef; exact-head GitHub CI passed. Production build dpl_HBUb6h34nVCx7t8yQ1UDv9SPjsdM reached READY. The rose alias required explicit assignment. The active-show-list starter answered correctly through the work-profile UI; saved assistant faq_assistant_f74f0488-c6be-46ae-9485-6b5335377896 used GPT-5.6 Luna with no error. Three saved baseline-output replays also produced identical answers, sources, outcomes and call counts without paid calls.
 
 Admin verification returned 404 on the new deployment. The same authenticated account and historical conversation work on the old deployment. The production ASK_SALES_FAQ_ADMIN_EMAILS sensitive variable was updated after the old deployment (October 4); its value is unreadable. Auth code was unchanged. The rose alias was immediately restored to dpl_Fzub5DAKfLkPFRK235bp62jZfc75 / 605eb79, and the old admin conversation was verified accessible again. User clarification requested before overwriting the hidden allowlist, preserving any deliberate team access changes. Diagnostic code is merged but not currently served on the rose alias. No claim that rollout is complete until this blocker is resolved.
+
+## Admin configuration recovery authorized
+User confirmed the allowlist edit was accidental and requested restoring prior access. On the preserved working deployment, comparing all 166 known usage-roster identities with admin activity included/excluded identified exactly three prior admins: Syed Haider, Tyler Mills and Raul Rios. This live evidence improves on the older documentation that listed only Syed and Tyler. Restored those three known prior accounts in the production FAQ-only allowlist; no Coaching/auth-domain/scoring allowlist changes. Newly built production verification follows. No claim about identities absent from the retained roster.
+
+## Successful production verification
+After the owner confirmed the accidental configuration edit, production was rebuilt as dpl_B4Zd94AAXAueJ7kEKPuxyCyPN4CS (same verified code 5730425) and the rose alias assigned. Work-profile authenticated admin detail opens again and displays the new message-ID field for the legacy failure. Usage roster comparison matches the exact same three exclusions before and after restoration. Original historical failure remains untouched; absent old diagnostics are not backfilled or guessed. The live starter result took 10.715 seconds and persisted the new diagnostics field (null on success), the unchanged knowledge ec5851fe5cd65e97f50b0d44 and GPT-5.6 Luna. Total estimated model verification spend, including that hosted answer: $0.07252862. No forced failure or fabricated diagnostic row was inserted in production. Simulated failure paths were verified in deterministic tests.

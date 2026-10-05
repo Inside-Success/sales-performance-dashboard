@@ -31,7 +31,7 @@ The V6 and V6.1 pages are calibration-only. They read immutable rows from the is
 
 ## Ask Sales admin pages
 
-These pages require normal Magic Mike sign-in, Ask Sales access, and exact membership in `ASK_SALES_FAQ_ADMIN_EMAILS`. Production includes Syed and Tyler. Unauthorized identities receive a deliberate 404 so the hidden admin surface is not disclosed.
+These pages require normal Magic Mike sign-in, Ask Sales access, and exact membership in `ASK_SALES_FAQ_ADMIN_EMAILS`. Production includes Syed, Tyler and Raul (restored and verified October 5, 2026 after an accidental configuration edit). Unauthorized identities receive a deliberate 404 so the hidden admin surface is not disclosed.
 
 - [Ask Sales quality and operations](https://sales-performance-dashboard-rose.vercel.app/ask-sales-faq/admin)
 - [Ask Sales adoption and usage](https://sales-performance-dashboard-rose.vercel.app/ask-sales-faq/admin/usage)
