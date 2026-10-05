@@ -1,0 +1,594 @@
+{
+  "reviewDate": "2026-10-05",
+  "status": "candidate_verified_pending_publication",
+  "previousKnowledgeVersion": "ec5851fe5cd65e97f50b0d44",
+  "knowledgeVersion": "31c1c7aa4d576fe4b0cb722b",
+  "slack": {
+    "C09AF0NQJE7": {
+      "previousRootTs": "1790971999.709329",
+      "latestRootTs": "1791206318.980979",
+      "rootMessagesRead": 20,
+      "paginationComplete": true,
+      "coverage": "All roots since previous checkpoint; selected relevant threads expanded."
+    },
+    "C0AUQKNR8CF": {
+      "previousRootTs": "1790969557.628519",
+      "latestRootTs": "1791206320.008099",
+      "rootMessagesRead": 20,
+      "paginationComplete": true,
+      "coverage": "All roots since previous checkpoint; selected relevant threads expanded."
+    },
+    "C08QGKL39J6": {
+      "previousRootTs": "1790972162.396329",
+      "latestRootTs": "1791207135.959279",
+      "rootMessagesRead": 28,
+      "paginationComplete": true,
+      "coverage": "All roots since previous checkpoint; selected relevant threads expanded."
+    },
+    "C0A8S3JSR1Q": {
+      "previousRootTs": "1790971227.108249",
+      "latestRootTs": "1791206321.352899",
+      "rootMessagesRead": 9,
+      "paginationComplete": true,
+      "coverage": "All roots since previous checkpoint; selected relevant threads expanded."
+    }
+  },
+  "olderThreadsExplicitlyRevisited": [
+    {
+      "rootTs": "1788746537.690009",
+      "repliesAfter": "1790782624.898899"
+    },
+    {
+      "rootTs": "1790865994.615799",
+      "repliesAfter": "1790866897.014389"
+    },
+    {
+      "rootTs": "1790869051.418879",
+      "repliesAfter": "1790886207.979929"
+    },
+    {
+      "rootTs": "1790869920.068479",
+      "repliesAfter": "1790881622.699269"
+    },
+    {
+      "rootTs": "1790871397.587989",
+      "repliesAfter": "1790877115.891409"
+    },
+    {
+      "rootTs": "1790873134.292249",
+      "repliesAfter": "1790885893.061519"
+    },
+    {
+      "rootTs": "1790875753.690749",
+      "repliesAfter": "1790884079.048559"
+    },
+    {
+      "rootTs": "1790882042.088249",
+      "repliesAfter": "1790883030.556719"
+    },
+    {
+      "rootTs": "1790882821.275229",
+      "repliesAfter": "1790886080.814519"
+    },
+    {
+      "rootTs": "1790885797.652619",
+      "repliesAfter": "1790886199.086979"
+    },
+    {
+      "rootTs": "1790889690.790359",
+      "repliesAfter": "1790925624.420059"
+    },
+    {
+      "rootTs": "1790889701.175079",
+      "repliesAfter": "1790934998.138559"
+    },
+    {
+      "rootTs": "1790892618.591609",
+      "repliesAfter": "1790926893.752549"
+    },
+    {
+      "rootTs": "1790897802.631669",
+      "repliesAfter": "1790946607.171359"
+    },
+    {
+      "rootTs": "1790909270.738499",
+      "repliesAfter": "1790973957.068299"
+    },
+    {
+      "rootTs": "1790946847.244319",
+      "repliesAfter": "1790947045.482899"
+    },
+    {
+      "rootTs": "1790949843.139449",
+      "repliesAfter": "1790950826.298519"
+    },
+    {
+      "rootTs": "1790950171.980529",
+      "repliesAfter": "1790951666.544709"
+    },
+    {
+      "rootTs": "1790950203.650219",
+      "repliesAfter": "1790950988.065279"
+    },
+    {
+      "rootTs": "1790956614.962309",
+      "repliesAfter": "1790957657.256779"
+    },
+    {
+      "rootTs": "1790959138.168809",
+      "repliesAfter": "1790959802.954889"
+    },
+    {
+      "rootTs": "1790965945.586959",
+      "repliesAfter": "1790967670.995309"
+    },
+    {
+      "rootTs": "1790968304.629349",
+      "repliesAfter": "1790968768.298729"
+    },
+    {
+      "rootTs": "1790971999.709329",
+      "repliesAfter": "1790974053.176749"
+    }
+  ],
+  "google": {
+    "registeredSourcesMetadataChecked": 48,
+    "sourceMetadata": [
+      {
+        "id": "1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE",
+        "title": "REALITY SHOWS - Rudy's Master Script - CALL #1",
+        "modified_time": "2026-09-07T02:46:31.985Z"
+      },
+      {
+        "id": "105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do",
+        "title": "Inside Success TV - Not Approved/Rejection & Cancellation Letter",
+        "modified_time": "2026-04-28T20:04:28.105Z"
+      },
+      {
+        "id": "11uEmCRyJxw2koPoPnFZNySLJVYD9722VDzoLyDV9tOg",
+        "title": "REFUND SAVES",
+        "modified_time": "2026-05-13T20:39:09.974Z"
+      },
+      {
+        "id": "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
+        "title": "INSIDE SUCCESS TV \u2013 GREEN LIGHT PROCESS CHEAT SHEET",
+        "modified_time": "2026-09-03T21:01:55.798Z"
+      },
+      {
+        "id": "17AeELjukYKUDbpKtr07PG8peYJWJAKYkfgNHOjCyrb4",
+        "title": "MAIN ISSUES ALL REPS ARE MAKING",
+        "modified_time": "2026-04-21T03:15:49.711Z"
+      },
+      {
+        "id": "19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k",
+        "title": "Inside Success TV \u2013 Dummy Call Channel Cheat Sheet",
+        "modified_time": "2026-03-24T12:28:16.372Z"
+      },
+      {
+        "id": "1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM",
+        "title": "Inside Success TV \u2013 Outbound Dialing Cheat Sheet",
+        "modified_time": "2026-02-12T13:12:39.787Z"
+      },
+      {
+        "id": "1DPGTSrLth0CE2e71lbo3TQPJzjHv0sY-tIxGwfF00EY",
+        "title": "Ruben Copy of INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T20:41:16.965Z"
+      },
+      {
+        "id": "1ER-SvUVj2cwO94yCPSvz9Hk8OWOdmYMvpzFzDAjB7eU",
+        "title": "SOP: Daily Sales Rep Ledge Update / Invoice",
+        "modified_time": "2026-04-09T15:45:35.497Z"
+      },
+      {
+        "id": "1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ",
+        "title": "Rudy's Master Script - CALL #1",
+        "modified_time": "2026-09-28T16:17:30.006Z"
+      },
+      {
+        "id": "1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y",
+        "title": "20% Outbound Dialing SOP",
+        "modified_time": "2026-07-01T16:40:58.089Z"
+      },
+      {
+        "id": "1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y",
+        "title": "Inside Success TV \u2013 Double Bookings Cheat Sheet",
+        "modified_time": "2026-02-11T21:55:46.983Z"
+      },
+      {
+        "id": "1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8",
+        "title": "Inside Success TV \u2013 How to Close a Live Call Cheat Sheet",
+        "modified_time": "2026-06-01T17:58:03.538Z"
+      },
+      {
+        "id": "1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc",
+        "title": "ISTV - Mandatory Main Email and Text Sent AFTER CALL #1 GREEN LIGHT - Before Call #2",
+        "modified_time": "2026-07-21T16:28:33.896Z"
+      },
+      {
+        "id": "1P1my5QGrvkL9Bg_7ad3bk3CL_37n2JgUioFLeY3jsXM",
+        "title": "Master Sheet - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-03-16T21:26:47.329Z"
+      },
+      {
+        "id": "1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM",
+        "title": "ISTV LICENSE OPTIONS - 2026",
+        "modified_time": "2026-09-30T11:52:01.157Z"
+      },
+      {
+        "id": "1UsagbQCvQV6EuguPsslydlvdbOFGD2GTsj0oSw57e68",
+        "title": "Copy of INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T20:35:11.684Z"
+      },
+      {
+        "id": "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+        "title": "PART 1 - SPRINT - 72HR - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-10-05T13:34:05.337Z"
+      },
+      {
+        "id": "1XC0q0OEvnEaicGKmutfh5fkf6rpDV-BShPJTgftMkTk",
+        "title": "FAQ Bot - Sales Team Approval Questions",
+        "modified_time": "2026-06-30T10:15:20.689Z"
+      },
+      {
+        "id": "1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw",
+        "title": "ISTV LICENSE OPTIONS - 2026",
+        "modified_time": "2026-04-23T15:45:49.331Z"
+      },
+      {
+        "id": "1Yryv722wjWZoHLZTvc210z5rXjhf9efbuqGc8A4e5zI",
+        "title": "SOP: Sales Team - Contract Adjustments & Client Requests",
+        "modified_time": "2026-03-18T17:09:35.785Z"
+      },
+      {
+        "id": "1_Lb95IF0ZUK6TcAfBZhE7q1iSuTSP4Zci5bcnrefkXU",
+        "title": "INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T21:34:05.730Z"
+      },
+      {
+        "id": "1aMTwXf0u6bDzoXctE0-bRmwBUKBo5P438k1bcQhhSrc",
+        "title": "Conditional Casting Review, Background Check - Refund Agreement",
+        "modified_time": "2026-05-03T13:43:13.074Z"
+      },
+      {
+        "id": "1c7JqQvi8VMotQFJ36paVkT6a5huFP1BRnYHxvj7q2gw",
+        "title": "Inside Success Tv Resources Sheet",
+        "modified_time": "2025-12-08T15:53:48.490Z"
+      },
+      {
+        "id": "1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE",
+        "title": "SOP: Invoicing & Commission Payments",
+        "modified_time": "2026-08-31T22:50:31.508Z"
+      },
+      {
+        "id": "1fbBGTEXo3DKQZXIsJCinFMskqB8nCSGW1pQKvX4LUO8",
+        "title": "ISTV  - TEXT & EMAIL templates - Meeting Reminders ",
+        "modified_time": "2026-05-14T23:19:48.499Z"
+      },
+      {
+        "id": "1ffWEESzNgQ9L1mO25fAPDIJCD86k29sqeS05fO0KxoE",
+        "title": "Sales Team Brief (Inside Success TV Offers)",
+        "modified_time": "2026-05-16T14:36:26.890Z"
+      },
+      {
+        "id": "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+        "title": "ISTV Reality TV Show Cast / Master FAQ",
+        "modified_time": "2026-10-01T21:52:07.476Z"
+      },
+      {
+        "id": "1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg",
+        "title": "Inside Success  - Welcome Email Post Sale",
+        "modified_time": "2026-09-16T08:46:44.727Z"
+      },
+      {
+        "id": "1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo",
+        "title": "INSIDE SUCCESS TV - CALL SCRIPT #2 ",
+        "modified_time": "2026-09-30T19:15:25.543Z"
+      },
+      {
+        "id": "1ljBEsaKAIoZ2EIo7s0sP1M_cc2hu-b5uHN2G0uC3r9c",
+        "title": "istv-context-pack.md",
+        "modified_time": "2026-06-23T11:22:11.173Z"
+      },
+      {
+        "id": "1lm6dWmMLUQJ83oegGZrTaA29c-rw4hJfkwTXQ4zx9Q4",
+        "title": "SOP: Do Not Contact (DNC) / Opt-Out Compliance Procedure",
+        "modified_time": "2026-09-10T10:12:47.615Z"
+      },
+      {
+        "id": "1mxuqrEVvocGwDlrniWam-fKcEBhtX5qwgdB07fdJS4k",
+        "title": "Sales Team Feedback/Areas to Improve over Summer 2026",
+        "modified_time": "2026-04-28T21:49:09.252Z"
+      },
+      {
+        "id": "1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc",
+        "title": "Inside Success TV \u2013 Pass Off Channel Cheat Sheet",
+        "modified_time": "2026-09-14T20:37:05.189Z"
+      },
+      {
+        "id": "1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4",
+        "title": "Welcome Instructions Doc",
+        "modified_time": "2026-08-18T13:07:34.001Z"
+      },
+      {
+        "id": "1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI",
+        "title": "ISTV Sales Master FAQ 2026 ",
+        "modified_time": "2026-09-10T15:49:14.613Z"
+      },
+      {
+        "id": "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+        "title": "Reality Shows Packages",
+        "modified_time": "2026-10-03T01:04:05.104Z"
+      },
+      {
+        "id": "1szwc1ij0bJ6dUy-BXMzpR0ji5Wb3bge7qxzEqmZm5To",
+        "title": "FAQ Bot - Recommended Answers Pack 1",
+        "modified_time": "2026-06-30T17:33:43.438Z"
+      },
+      {
+        "id": "1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU",
+        "title": "PART 2 - FIRST 2 WEEKS LIVE - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-09-12T22:38:28.042Z"
+      },
+      {
+        "id": "1uJLbh7t6rOt_AjFYnqEINK2Qg09b9e0iLwmbZorquIU",
+        "title": "PERSUASIAN WITHOUT SOUNDING SALSY ",
+        "modified_time": "2026-07-13T18:58:42.083Z"
+      },
+      {
+        "id": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "title": "Contract Automation List MC",
+        "modified_time": "2026-10-05T11:35:47.804Z"
+      },
+      {
+        "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "title": "Team Rebooking Calendar Links",
+        "modified_time": "2026-10-05T13:16:56.945Z"
+      },
+      {
+        "id": "1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+        "title": "ISTV Offers",
+        "modified_time": "2026-08-21T17:46:28.196Z"
+      },
+      {
+        "id": "13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI",
+        "title": "10 Key Aspects to SELL On During Call 2",
+        "modified_time": "2026-09-29T13:50:46.335Z"
+      },
+      {
+        "id": "1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs",
+        "title": "NEW Welcome Email Post Sale - REALITY",
+        "modified_time": "2026-09-30T21:34:52.863Z"
+      },
+      {
+        "id": "13hDebf2iwo032ZabuQN4A0LeO3bmYF9Q-jLRwcw4DVE",
+        "title": "How to create an email signature",
+        "modified_time": "2026-07-02T11:37:16.198Z"
+      },
+      {
+        "id": "1rHp5j3hfebdrB-aCmbQaIBYlyixfP6V-e9BG3VlgVZ0",
+        "title": "How to create an email template",
+        "modified_time": "2026-07-02T11:33:57.847Z"
+      },
+      {
+        "id": "1NYin4WW0J-yxsGY9gGvNZtiXqe_jscGHcpTfHvEADDM",
+        "title": "How to use Email Templates for Sending Email",
+        "modified_time": "2026-07-02T11:33:12.885Z"
+      }
+    ],
+    "changedDocsRead": [
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y"
+    ],
+    "changedSheetsChecked": [
+      {
+        "id": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "ranges": [
+          "'Aniversary Discounts'!A1:H40"
+        ]
+      },
+      {
+        "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "ranges": [
+          "'Closers Calendars'!A1:F30"
+        ]
+      }
+    ],
+    "priorUnavailablePreserved": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ],
+    "newSourcesRead": []
+  },
+  "limitations": [
+    "Not every historical Slack reply or unregistered Google file was scanned. Broad Drive discovery was not exhaustive; registered metadata and new relevant channel links were used.",
+    "No video transcription or private prospect data promoted into policy.",
+    "Business Race team/pair permission remains unconfirmed; Island S1 exception requires Luke/Angelina confirmation; cast-count report under reconciliation.",
+    "Reality package document is malformed and Standard-versus-VIP mini-documentary placement remains disputed.",
+    "Two previously unavailable sources remain unverified. Changed Sheets limited to recorded ranges; no full calendar or payment inventory audit."
+  ],
+  "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-10-05",
+  "expandedThreadCount": 36,
+  "activeRecordCount": 2525,
+  "expandedThreadWatermarks": [
+    {
+      "rootTs": "1790946847.244319",
+      "latestReadTs": "1790947045.482899",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790950171.980529",
+      "latestReadTs": "1790951666.544709",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791183781.643219",
+      "latestReadTs": "1791201186.448669",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790952985.690329",
+      "latestReadTs": "1791159738.511949",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791187912.032549",
+      "latestReadTs": "1791189025.583589",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791035487.282069",
+      "latestReadTs": "1791048177.209639",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791071529.641269",
+      "latestReadTs": "1791125494.318309",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791045644.946239",
+      "latestReadTs": "1791048984.028039",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790889701.175079",
+      "latestReadTs": "1790978897.216189",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791010040.119019",
+      "latestReadTs": "1791052278.308749",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790892618.591609",
+      "latestReadTs": "1790926893.752549",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790949843.139449",
+      "latestReadTs": "1790950826.298519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790959138.168809",
+      "latestReadTs": "1790959802.954889",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790971999.709329",
+      "latestReadTs": "1790974053.176749",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790889690.790359",
+      "latestReadTs": "1790925624.420059",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790950203.650219",
+      "latestReadTs": "1790950988.065279",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791061645.321999",
+      "latestReadTs": "1791094867.876179",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791204619.074769",
+      "latestReadTs": "1791207169.801959",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790875753.690749",
+      "latestReadTs": "1790884079.048559",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790882821.275229",
+      "latestReadTs": "1790886080.814519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790871397.587989",
+      "latestReadTs": "1790877115.891409",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790873134.292249",
+      "latestReadTs": "1790885893.061519",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790869920.068479",
+      "latestReadTs": "1790881622.699269",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790909270.738499",
+      "latestReadTs": "1790973957.068299",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790869051.418879",
+      "latestReadTs": "1791192171.135479",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790885797.652619",
+      "latestReadTs": "1790886199.086979",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790965945.586959",
+      "latestReadTs": "1790967670.995309",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791154663.073789",
+      "latestReadTs": "1791185646.875569",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790968304.629349",
+      "latestReadTs": "1791197836.581639",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790865994.615799",
+      "latestReadTs": "1790866897.014389",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790882042.088249",
+      "latestReadTs": "1790883030.556719",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790897802.631669",
+      "latestReadTs": "1790946607.171359",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791126736.501119",
+      "latestReadTs": "1791147459.028589",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1791148073.196179",
+      "latestReadTs": "1791203252.908069",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1790956614.962309",
+      "latestReadTs": "1790957657.256779",
+      "paginationComplete": true
+    },
+    {
+      "rootTs": "1788746537.690009",
+      "latestReadTs": "1791068643.814969",
+      "paginationComplete": true
+    }
+  ]
+}

@@ -3265,7 +3265,7 @@
       "How do I see incoming SMS notifications?",
       "Who fixes Twilio texting?"
     ],
-    "text": "Igor’s September 28 update provides the HubSpot shortcuts page https://app-eu1.hubspot.com/app/148285209/51316600 with Meetings, Ledger and an SMS tab for viewing messages together. Bookmark it; check the SMS tab and the top-right notifications. Igor reconfirmed this in response to missing-notification questions. A rep reported an older message missing and Igor said he would check, so do not claim every historical message or every account notification issue is fixed. Pramod directs text/Twilio issues to Igor through #sales-tech-requests. HubSpot/Twilio remains the instructed SMS channel and Zoom remains voice; this does not authorize personal-number or Google Voice workarounds. No verified increase to the SMS character limit was established.",
+    "text": "Igor’s September 28 update provides the HubSpot shortcuts page https://app-eu1.hubspot.com/app/148285209/51316600 with Meetings, Ledger and an SMS tab for viewing messages together. Bookmark it; check the SMS tab and the top-right notifications. Igor reconfirmed this in response to missing-notification questions. A rep reported an older message missing and Igor said he would check, so do not claim every historical message or every account notification issue is fixed. Pramod directs text/Twilio issues to Igor through #sales-tech-requests. HubSpot/Twilio remains the instructed SMS channel and Zoom remains voice; this does not authorize personal-number or Google Voice workarounds. No verified increase to the SMS character limit was established. October 5 Tech clarification: the currently supported SMS composer limit is 160 characters; Tech says it cannot currently increase it, despite reports of earlier 320-character access. Treat this as the company's current setup/support guidance, not a universal claim that longer SMS is technically impossible. Use concise messages within the current limit; do not invent a setting, promise an upgrade, or change the required content/process without approval. Tech again confirms the shared Meetings/Ledger/SMS shortcut. This does not establish that every account's notification issue is resolved.",
     "scopes": [
       "shared"
     ],
@@ -3273,9 +3273,11 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790599991248089",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790602249454929",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790616912782809",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790598494470289"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790598494470289",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791148073196179",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791154663073789"
     ],
-    "reviewedAt": "2026-09-29",
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3611,7 +3613,8 @@
     "routeKey": null,
     "conditions": [
       "governing_evidence:regular-deposit-no-split-across-days-2026-09-29",
-      "governing_evidence:main-anniversary-prices-2026-10-01"
+      "governing_evidence:main-anniversary-prices-2026-10-01",
+      "governing_evidence:no-small-hold-or-payment-reset-2026-10-05"
     ],
     "supersedes": [
       "current-minimum-first-payment-by-product-2026-09-29"
@@ -3651,7 +3654,7 @@
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
     "title": "Current five live new-rep training sessions with Mike and Raul",
-    "text": "The September 30 Part 1 onboarding sheet, Basic Setup item 5, now lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Call 1 Sales Training with Mike; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 11 AM–noon EST Closing, Payment, Contracts & Onboarding with Mike; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. The former Wednesday 11 AM Call 2 session with Mike is no longer listed; do not give the old six-session schedule. Wednesday's current HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For the other session-specific links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
+    "text": "The October 5 Part 1 onboarding sheet, Basic Setup item 5, now lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 1–2 PM EST Compliance with Raul; Tuesday 11 AM–noon EST Call 1 Sales Training with Mike; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 1–2 PM EST Closing, Payment, Contracts & Onboarding with Mike; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. The former Wednesday 11 AM Call 2 session with Mike is no longer listed; do not give the old six-session schedule. Wednesday's current HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For the other session-specific links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3665,7 +3668,7 @@
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-01",
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3949,7 +3952,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -3970,12 +3973,13 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442526156139",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790442559260019",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790451677000429",
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790992755203939",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791204619074769"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4058,7 +4062,7 @@
     "id": "reality-mini-documentary-production-2026-10-03",
     "decisionKey": "reality-mini-documentary-production-2026-10-03",
     "title": "Reality mini-documentary and social-media day are on location, not a full studio package",
-    "text": "The October 1 reality FAQ clarifies that the included documentary component is a MINI version, not the complete separately purchased Legacy Makers studio documentary package. Production plans a social-media day at the end of shooting or a later reshoot, at the island/actual show location, with 3–4 stations. Examples are a roughly 20-minute mini-documentary from a 30–40 minute interview about life/business/personal story and show fit; short roughly 60-second social interviews; a five-minute producer interview; and a possible roughly 15-minute podcast IF included in the selected package. These describe formats, not every package's entitlements or a fixed delivery date. Angelina confirms reality cast do not travel to the studio for this component. The unresolved written Standard-versus-video VIP documentary placement still requires its existing qualification; the newly described format alone does not settle which package includes it. This current October 1 general production clarification replaces the September 22 statement that Island VIP could film early in the studio as a general recommendation. Do not offer early studio filming as the current included process. If a buyer already has an individual written approval or signed entitlement, refer that specific commitment to Production/Support rather than cancelling or overriding it.",
+    "text": "The October 1 reality FAQ clarifies that the included documentary component is a MINI version, not the complete separately purchased Legacy Makers studio documentary package. Production plans a social-media day at the end of shooting or a later reshoot, at the island/actual show location, with 3–4 stations. Examples are a roughly 20-minute mini-documentary from a 30–40 minute interview about life/business/personal story and show fit; short roughly 60-second social interviews; a five-minute producer interview; and a possible roughly 15-minute podcast IF included in the selected package. These describe formats, not every package's entitlements or a fixed delivery date. Angelina confirms reality cast do not travel to the studio for this component. The unresolved written Standard-versus-video VIP documentary placement still requires its existing qualification; the newly described format alone does not settle which package includes it. This current October 1 general production clarification replaces the September 22 statement that Island VIP could film early in the studio as a general recommendation. Do not offer early studio filming as the current included process. If a buyer already has an individual written approval or signed entitlement, refer that specific commitment to Production/Support rather than cancelling or overriding it. Rudy reconfirmed October 3 that Mansion of Money's documentary is filmed on set/location, not at the separate studios. The October 3 package document has malformed/reordered Standard text; that edit does not resolve the Standard-versus-VIP entitlement conflict or establish a full studio package.",
     "questions": [
       "Does reality include a full Legacy Makers studio documentary?",
       "What happens on reality social media day?",
@@ -4066,12 +4070,13 @@
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790883640604439"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790883640604439",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791048177209639"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4209,19 +4214,20 @@
     "id": "hubspot-email-templates-2026-10-03",
     "decisionKey": "hubspot-email-templates-2026-10-03",
     "title": "Create and send HubSpot email templates; permissions",
-    "text": "Rich's October 1 instruction says use HubSpot for these sales emails, including when templates were previously saved in Google. Create via CRM > Message Templates > New template > From scratch; name it, choose sharing (default shared with everyone; can make private) and optional folder; add subject/body, optional personalization tokens using Insert; format and Save template. To send: open the Contact, Email in left Contact Information panel, Templates in the email window, choose template/folder, REVIEW autofilled tokens and body, then Send. These email SOPs do not document SMS-template steps. If New template is blocked, ask Tech/Igor for access; the thread shows permissions were being enabled, not that every account is guaranteed ready.",
+    "text": "Rich's October 1 instruction says use HubSpot for these sales emails, including when templates were previously saved in Google. Create via CRM > Message Templates > New template > From scratch; name it, choose sharing (default shared with everyone; can make private) and optional folder; add subject/body, optional personalization tokens using Insert; format and Save template. To send: open the Contact, Email in left Contact Information panel, Templates in the email window, choose template/folder, REVIEW autofilled tokens and body, then Send. These email SOPs do not document SMS-template steps. Igor confirmed October 5 that all reps should now have template-creation access. If New template is still blocked, tell Igor/Tech; do not claim every individual account has been verified.",
     "questions": [
       "Create and send HubSpot email templates; permissions"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1rHp5j3hfebdrB-aCmbQaIBYlyixfP6V-e9BG3VlgVZ0/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790869051418879",
-      "https://docs.google.com/document/d/1NYin4WW0J-yxsGY9gGvNZtiXqe_jscGHcpTfHvEADDM/edit"
+      "https://docs.google.com/document/d/1NYin4WW0J-yxsGY9gGvNZtiXqe_jscGHcpTfHvEADDM/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791192171135479"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4292,6 +4298,104 @@
       "shared"
     ],
     "reviewedAt": "2026-10-03",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-couples-separate-entrants-2026-10-05",
+    "decisionKey": "reality-couples-separate-entrants-2026-10-05",
+    "title": "Business Race couples pay separately; competing as a pair is unconfirmed",
+    "text": "Rudy's October 4 answer says a couple seeking Business Race participation must pay twice. Chris clarifies two separate participants with two sets of deliverables, subject to the actual selected packages. Whether they may compete together as a team/pair remains explicitly awaiting Rudy's confirmation; do not say a team entry is approved or prohibited. Two payments do not guarantee pair status, shared competitive advantage or casting approval. Couples Empire is a separate regular documentary offer, not a reality competition: Chris says a couple pays once for that shared feature; separate deliverable sets for separate businesses require separate clarification. Do not transfer documentary couple rules into Business Race or treat a guest allowance as a second participant.",
+    "questions": [
+      "Can a couple compete together in Business Race?",
+      "Do husband and wife pay once or twice for Business Race?",
+      "Is Couples Empire a reality competition?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791071529641269"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-05",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-celebrity-connections-discount-2026-10-05",
+    "decisionKey": "reality-celebrity-connections-discount-2026-10-05",
+    "title": "Celebrity connections alone do not qualify a reality prospect for a discount",
+    "text": "Rudy's October 3 response declines a reality discount/exchange based only on a prospect knowing celebrities or offering introductions/promotion. He distinguishes someone who is a celebrity themselves, but does not approve an automatic celebrity discount, amount, free place, barter deal or celebrity-host promise. Use approved reality pricing; an actual celebrity exception needs specific approval before a rep offers terms.",
+    "questions": [
+      "Can I discount reality for a prospect with celebrity connections?",
+      "Can someone get reality cheaper by promoting us or introducing celebrities?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791048164282839"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-05",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "no-small-hold-or-payment-reset-2026-10-05",
+    "decisionKey": "no-small-hold-or-payment-reset-2026-10-05",
+    "title": "No small custom holding payments or automatic anniversary payment reset",
+    "text": "Rich's October 4–5 guidance says not to create custom small payments to hold a spot or bypass the cohort. A request for $750 against the regular $8,000 four-payment plan is not an approved exception; use the listed installment. For an existing underpaid customer seeking anniversary repricing and a new payment clock, Mike says at least one full payment is needed before a future pause could even be considered. That case response does not automatically approve repricing, a pause, changed due dates or a new agreement after one payment. Existing arrears/addenda require management/Finance approval; Tech provides a custom link only after confirmation. Do not generalize this into a ban on every separately authorized custom collection link.",
+    "questions": [
+      "Can I take $750 to hold an anniversary Lite spot?",
+      "Can I reset overdue payments to the anniversary price?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791156202983049",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790952985690329"
+    ],
+    "scopes": [
+      "main_istv"
+    ],
+    "reviewedAt": "2026-10-05",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-missing-passoff-meeting-2026-10-05",
+    "decisionKey": "hubspot-missing-passoff-meeting-2026-10-05",
+    "title": "Find a pass-off meeting using My Meetings, All Meetings and Cast Email",
+    "text": "Tech's October 3 instructions for an assigned pass-off missing from the rep's HubSpot view: check Today's - My Meetings for today's call. For an earlier pass-off, open All Meetings and search the client name or email; if it does not show, select the Cast Email filter. Updating dual ownership does not itself prove the meeting is visible in the current filtered tab. If still missing, ask Sales Tech with the relevant lead details; do not create duplicate meetings, invent a cast score, or assume a penalty is waived. Use the actual meeting record to update status/score/notes and keep the existing pass-off/Green Light process.",
+    "questions": [
+      "My passoff is assigned but Call 2 is missing from HubSpot Meetings. What should I check?",
+      "Where do I score yesterday pass off?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791010040119019"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-05",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
