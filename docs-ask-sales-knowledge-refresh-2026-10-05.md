@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — October 5, 2026
 
-Status: candidate verified, publication pending. Resume the last published_verified checkpoint until the release receipt below is completed.
+Status: published and verified. Resume this October 5 published_verified checkpoint, preserving prior source history and exceptions.
 
 ## Source coverage
 
@@ -30,4 +30,6 @@ No peer-only permission to close by email promoted to policy; no stale text-only
 
 ## Publication receipt
 
-Pending.
+Dashboard PR260 and FAQ PR92 merged; GitHub release checks passed. Production rose alias verified on commit 82cda2c2f81aedb19d55e85cdb20b2ce954d258f, deployment dpl_BzR9A5kp7HkYRyeQjNa5yQgzjY1X. Work-profile Chrome produced the correct updated training answer; persisted message faq_assistant_bdfe99df-193b-47b7-9745-94ddd7472eab used knowledge 31c1c7aa4d576fe4b0cb722b, GPT-5.6 Luna, no error, 8.590 seconds. Admin access and Coaching home/rep selector loaded successfully. The verification conversation remains as an audit receipt.
+
+Vercel preview failed before build with Resource provisioning failed (existing integration limitation); no database branches or environment settings were changed. Local and GitHub production builds passed; production verification above completed. Prior rollback deployment: dpl_ESUJ8D6TwtugKicsMjAkaTN8nhqg. Final date/receipt-only deployment follows; it does not change knowledge or answer behavior.

@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-05",
-  "status": "candidate_verified_pending_publication",
+  "status": "published_verified",
   "previousKnowledgeVersion": "ec5851fe5cd65e97f50b0d44",
   "knowledgeVersion": "31c1c7aa4d576fe4b0cb722b",
   "slack": {
@@ -590,5 +590,11 @@
       "latestReadTs": "1791068643.814969",
       "paginationComplete": true
     }
-  ]
+  ],
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/260",
+  "productionCommit": "82cda2c2f81aedb19d55e85cdb20b2ce954d258f",
+  "productionDeployment": "dpl_BzR9A5kp7HkYRyeQjNa5yQgzjY1X",
+  "productionMessageId": "faq_assistant_bdfe99df-193b-47b7-9745-94ddd7472eab",
+  "verifiedAt": "2026-10-05T13:52:45.524204+00:00",
+  "publishedDateMiami": "2026-10-05"
 }
