@@ -19,3 +19,6 @@ Deterministic tests force reference/schema/provider/unexpected failures, verify 
 
 ## Rollback
 Revert this scoped PR if needed; no database restoration, model switch or knowledge rollback. Preserve later Coaching or knowledge changes. No automatic retry introduced.
+
+## Pre-release checks
+376/376 FAQ tests passed across 32 files, including four new diagnostic tests. TypeScript, scoped ESLint, static safety validator and local production webpack build passed. Vercel preview dpl_BpTpDAJDGUR4312XtMfDfv7Pr6up failed before build with Resource provisioning failed. No preview resource or database changes attempted. GitHub CI and authenticated production verification remain required.
