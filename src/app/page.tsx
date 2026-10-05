@@ -7,6 +7,11 @@ export const dynamic = "force-dynamic";
 const tools = [
   { href: "/coaching", title: "Casting Manager", subtitle: "AI Coach" },
   { href: "/ask-sales-faq", title: "Casting Manager", subtitle: "FAQ Bot" },
+  {
+    href: "https://mockcallagent.insidesuccess.ai/",
+    title: "Casting Manager",
+    subtitle: "Mock Call Agent",
+  },
 ];
 const steps = ["Review", "Reflect", "Adjust", "Sell More"];
 
