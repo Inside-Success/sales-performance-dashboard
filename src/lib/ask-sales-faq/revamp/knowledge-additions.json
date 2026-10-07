@@ -1402,7 +1402,8 @@
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Provisional technical reply; does not supersede the confirmed standard 24-hour automation."
+      "Provisional technical reply; does not supersede the confirmed standard 24-hour automation.",
+      "governing_evidence:hubspot-reminder-verification-2026-10-07"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -2206,7 +2207,8 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:main-post-call1-email-text"
+      "governing_evidence:main-post-call1-email-text",
+      "governing_evidence:outbound-hubspot-assignment-2026-10-07"
     ],
     "supersedes": [
       "claim_3b135911217a337a",
@@ -2843,14 +2845,18 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790089141982619",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790090410466649",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096821911809",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096887312259"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096887312259",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791322394467459",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791325041645679"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:client-requested-cancellation-2026-10-07"
+    ],
     "supersedes": [
       "hubspot-status-cast-score-2026-09-19"
     ],
@@ -2992,14 +2998,15 @@
       "What do I post for daily call review?",
       "What if I had no calls today?"
     ],
-    "text": "Rich’s daily instruction is mandatory for all reps: post one of YOUR OWN call recordings in the daily main sales thread with three takeaways. Prefer a reality-show call if you had one; otherwise use a regular-show call. Prefer Call 2, otherwise Call 1. If no calls, write “No calls”. Olivia audits and follows up with reps who have not posted by 8 AM the next day. This is the daily self-review requirement, not submitting an invented call, sharing another rep’s call as your own, or a change to the coaching workflow.",
+    "text": "Rich's October 6 instruction is mandatory for all working reps: post one of YOUR OWN call recordings and three takeaways in the correct day's main sales call-review thread BEFORE 8 AM EST the following morning. Prefer a reality-show call if you had one, otherwise a regular show; prefer Call 2, otherwise Call 1. If you had no Call 1s or Call 2s, report your dial-out stats: calls made, people spoken to, not qualified, and booked for Call 1. Merely writing 'No calls' is no longer the full instruction. If not working, write 'Day Off'. Olivia audits daily. This is the own-call review requirement, not resuming the retired separate daily-stats thread and not a change to Magic Mike coaching or permission to invent results.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790197200317339"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790197200317339",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791321195953969"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3106,7 +3113,9 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:outbound-hubspot-assignment-2026-10-07"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -3152,16 +3161,18 @@
       "What is Business Race UK?",
       "Is Island Ibiza confirmed?"
     ],
-    "text": "Business Race: UK Edition was announced/launched by Thomas and Timothy on September 28. Official casting information: https://uk.businessracetv.com/tvbruk-main-1 . The concept follows entrepreneurs starting with nothing in one city and travelling across the UK, completing business challenges and making money at stops. This is now an announced UK edition, not merely the September 23 proposed test. The launch does not establish exact filming dates, guaranteed acceptance or a secured participant place. Island Mexico/Caribbean remains an approximate future-season plan, and Ibiza was mentioned as a possible test, not a confirmed booking. Do not invent location availability or transfer entitlements.",
+    "text": "Business Race: UK Edition was announced/launched by Thomas and Timothy on September 28. Official casting information: https://uk.businessracetv.com/tvbruk-main-1 . The concept follows entrepreneurs starting with nothing in one city and travelling across the UK, completing business challenges and making money at stops. This is now an announced UK edition, not merely the September 23 proposed test. The launch does not establish exact filming dates, guaranteed acceptance or a secured participant place. Island Mexico/Caribbean remains an approximate future-season plan, and Ibiza was mentioned as a possible test, not a confirmed booking. Do not invent location availability or transfer entitlements. October 5 clarification from Timothy: there is no separate Island UK version; a UK resident can participate in the regular Island show. Do not invent UK Island filming or imply the participant avoids travel. October 6 Timothy says UK ads are paused due to cost; that is an advertising pause, not evidence all UK editions or UK-resident participation are cancelled. Exact filming dates and a particular participant's place still require confirmation.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790608524263209",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790607721654819",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790253020231869"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790253020231869",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791224535919709",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791300437547919"
     ],
-    "reviewedAt": "2026-09-29",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3265,7 +3276,7 @@
       "How do I see incoming SMS notifications?",
       "Who fixes Twilio texting?"
     ],
-    "text": "Igor’s September 28 update provides the HubSpot shortcuts page https://app-eu1.hubspot.com/app/148285209/51316600 with Meetings, Ledger and an SMS tab for viewing messages together. Bookmark it; check the SMS tab and the top-right notifications. Igor reconfirmed this in response to missing-notification questions. A rep reported an older message missing and Igor said he would check, so do not claim every historical message or every account notification issue is fixed. Pramod directs text/Twilio issues to Igor through #sales-tech-requests. HubSpot/Twilio remains the instructed SMS channel and Zoom remains voice; this does not authorize personal-number or Google Voice workarounds. No verified increase to the SMS character limit was established. October 5 Tech clarification: the currently supported SMS composer limit is 160 characters; Tech says it cannot currently increase it, despite reports of earlier 320-character access. Treat this as the company's current setup/support guidance, not a universal claim that longer SMS is technically impossible. Use concise messages within the current limit; do not invent a setting, promise an upgrade, or change the required content/process without approval. Tech again confirms the shared Meetings/Ledger/SMS shortcut. This does not establish that every account's notification issue is resolved.",
+    "text": "Igor’s September 28 update provides the HubSpot shortcuts page https://app-eu1.hubspot.com/app/148285209/51316600 with Meetings, Ledger and an SMS tab for viewing messages together. Bookmark it; check the SMS tab and the top-right notifications. Igor reconfirmed this in response to missing-notification questions. A rep reported an older message missing and Igor said he would check, so do not claim every historical message or every account notification issue is fixed. Pramod directs text/Twilio issues to Igor through #sales-tech-requests. HubSpot/Twilio remains the instructed SMS channel and Zoom remains voice; this does not authorize personal-number or Google Voice workarounds. No verified increase to the SMS character limit was established. October 5 Tech clarification: the currently supported SMS composer limit is 160 characters; Tech says it cannot currently increase it, despite reports of earlier 320-character access. Treat this as the company's current setup/support guidance, not a universal claim that longer SMS is technically impossible. Use concise messages within the current limit; do not invent a setting, promise an upgrade, or change the required content/process without approval. Tech again confirms the shared Meetings/Ledger/SMS shortcut. This does not establish that every account's notification issue is resolved. October 5–6 confirmation: Google Voice has stopped; do not use it or personal cells for company texting. Use HubSpot SMS and Zoom Phone for voice calls. The October 6 Igor tutorial is https://www.loom.com/share/f4179725e20f4d57985aea10bbab43bc ; its visible introduction uses Marketplace > ISTV Reports home page. The verified direct Meetings/Ledger/SMS shortcut above remains the practical route. Rich says UK contacts should be emailed for now where SMS is unsupported. A future Zoom SMS return is awaiting approval, not confirmed live for all reps and not a promised launch date. Use the approved short SMS/reminder wording within the current limit; do not drop required reminders or bypass opt-outs. Ask in #sales-tech-requests instead of DMing Igor. Requests for additional incoming-only filters, replies from the combined inbox, or better alerts do not prove those features are available.",
     "scopes": [
       "shared"
     ],
@@ -3275,9 +3286,15 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790616912782809",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1790598494470289",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791148073196179",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791154663073789"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791154663073789",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791236667417009",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791303854478369",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791305366958739",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791306685236549",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791295690922789",
+      "https://docs.google.com/document/d/1fbBGTEXo3DKQZXIsJCinFMskqB8nCSGW1pQKvX4LUO8/edit"
     ],
-    "reviewedAt": "2026-10-05",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3653,8 +3670,8 @@
   {
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
-    "title": "Current five live new-rep training sessions with Mike and Raul",
-    "text": "The October 5 Part 1 onboarding sheet, Basic Setup item 5, now lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 1–2 PM EST Compliance with Raul; Tuesday 11 AM–noon EST Call 1 Sales Training with Mike; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 1–2 PM EST Closing, Payment, Contracts & Onboarding with Mike; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. The former Wednesday 11 AM Call 2 session with Mike is no longer listed; do not give the old six-session schedule. Wednesday's current HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For the other session-specific links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
+    "title": "Current five live new-rep training sessions with Raul",
+    "text": "The October 6 Part 1 onboarding sheet, Basic Setup item 5, now lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 1–2 PM EST Compliance with Raul; Tuesday 11 AM–noon EST Call 1 Sales Training with Raul; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 1–2 PM EST Closing, Payment, Contracts & Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. The former Wednesday 11 AM Call 2 session with Mike is no longer listed; do not give the old six-session schedule. Wednesday's current HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For the other session-specific links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3665,10 +3682,9 @@
       "shared"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-05",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3787,8 +3803,8 @@
   {
     "id": "payment-failed-attempts-2026-10-01",
     "decisionKey": "payment-failed-attempts-2026-10-01",
-    "title": "Use official emergency payment route after two or three failures",
-    "text": "Luke's September 29 instruction says after two or three failed payment attempts use the emergency payment links instead of repeatedly retrying seven to ten times. Use the approved payment sheet, exact product, package and installment row; the anniversary tab itself includes an Emergency Payment Links column. This is a fallback route for failed payments, not permission to choose arbitrary historical links, retry indefinitely, change amounts, waive a required installment, or presume a wire/ACH cleared. Preserve any existing payment success check to avoid duplicate charging; if outcome is uncertain or the exact route is missing, get Finance/Sales Ops help before another charge. This does not authorize the chatbot to charge a buyer.",
+    "title": "Regular payment link first; approved emergency route after a failure",
+    "text": "October 6 Tech clarification: always try the regular payment link first. If it does not work, the rep can immediately use the approved emergency payment link without making the buyer retry multiple times; this supersedes the earlier instruction to wait for two or three failures. Use the current Contract Automation sheet, correct product family, package and installment row; the anniversary tab has its own Emergency Payment Links column. If HubSpot's payment view is unavailable, use that approved sheet. Do not select arbitrary historical links, change the amount, waive an installment, or use emergency links as the default. Confirm whether payment actually succeeded before retrying to avoid duplicate charges; if uncertain, check with Finance/Tech. A contract appearing is not payment proof. Wire/ACH settlement still needs confirmation. The legacy emergency PayPal tab expressly limits its route to the first payment; do not generalize fallback permission into PayPal for all recurring payments. A sheet row marked LIVE does not authorize an old discount or revive deprecated pricing.",
     "questions": [
       "What if their card failed three times?",
       "Where are emergency payment links?"
@@ -3798,9 +3814,11 @@
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790700101112009",
-      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878"
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791283094097059",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791304012448169"
     ],
-    "reviewedAt": "2026-10-01",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3916,7 +3934,7 @@
     "id": "reality-catalog-status-2026-10-03",
     "decisionKey": "reality-catalog-status-2026-10-03",
     "title": "Current reality casting: Island S2, Mansion, Race, Operation Profit and new Jungle",
-    "text": "Rich's October 1 casting clarification lists Entrepreneurs Island SEASON 2, Mansion of Money, Business Race and Operation Profit. He explicitly says NO Millionaire Match House: steer prospective buyers toward a suitable flagship show; reps with an already-sold Match House case should contact Rich for individual handling, not promise an automatic transfer/refund. Startup Lockdown and Flipping for Fortune remain paused, not permanently cancelled. Kids CEO remains cancelled. Timothy then announced Entrepreneurs Jungle on October 2: a reality competition where entrepreneurs use business skills, strategy and leadership to build opportunities, survive extreme conditions, form alliances, face eliminations and outlast competitors in a remote jungle. Official page https://www.entrepreneursjungletv.com/tveg-main . Operation Profit is a special-forces-style physical/mental leadership competition; official page https://www.operationprofittv.com/tvop-main . Business Race UK is a UK edition; its ads now run in the UK (previously US). A title remaining in the FAQ/video catalog is not evidence that it is open. These announcements do not confirm filming dates, available slots, guaranteed prizes or exact Jungle package-specific terms.",
+    "text": "Rich's October 1 casting clarification lists Entrepreneurs Island SEASON 2, Mansion of Money, Business Race and Operation Profit. He explicitly says NO Millionaire Match House: steer prospective buyers toward a suitable flagship show; reps with an already-sold Match House case should contact Rich for individual handling, not promise an automatic transfer/refund. Startup Lockdown and Flipping for Fortune remain paused, not permanently cancelled. Kids CEO remains cancelled. Timothy then announced Entrepreneurs Jungle on October 2: a reality competition where entrepreneurs use business skills, strategy and leadership to build opportunities, survive extreme conditions, form alliances, face eliminations and outlast competitors in a remote jungle. Official page https://www.entrepreneursjungletv.com/tveg-main . Operation Profit is a special-forces-style physical/mental leadership competition; official page https://www.operationprofittv.com/tvop-main . Business Race UK is a UK edition; Timothy subsequently said UK ads were paused on October 6 due to cost. An advertising pause is not a cancellation of the show. A title remaining in the FAQ/video catalog is not evidence that it is open. These announcements do not confirm filming dates, available slots, guaranteed prizes or exact Jungle package-specific terms.",
     "questions": [
       "Which reality shows are currently open?",
       "What is Entrepreneurs Jungle?",
@@ -3932,17 +3950,20 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790771331251859",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790779460004679",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790807712465989",
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791300437547919"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:reality-expansion-plans-2026-09-29"
+    ],
     "supersedes": [
       "reality-catalog-status-2026-10-01"
     ],
@@ -4309,20 +4330,22 @@
   {
     "id": "reality-couples-separate-entrants-2026-10-05",
     "decisionKey": "reality-couples-separate-entrants-2026-10-05",
-    "title": "Business Race couples pay separately; competing as a pair is unconfirmed",
-    "text": "Rudy's October 4 answer says a couple seeking Business Race participation must pay twice. Chris clarifies two separate participants with two sets of deliverables, subject to the actual selected packages. Whether they may compete together as a team/pair remains explicitly awaiting Rudy's confirmation; do not say a team entry is approved or prohibited. Two payments do not guarantee pair status, shared competitive advantage or casting approval. Couples Empire is a separate regular documentary offer, not a reality competition: Chris says a couple pays once for that shared feature; separate deliverable sets for separate businesses require separate clarification. Do not transfer documentary couple rules into Business Race or treat a guest allowance as a second participant.",
+    "title": "Reality couples participate as separate paid entrants, not a duo entry",
+    "text": "Rudy clarified October 5 in the master FAQ thread that couples may participate but must pay twice, and there are no couples/duo entries in any reality shows. Treat them as two separate paid participants with their own selected-package deliverables, subject to casting approval. Do not offer a shared-price couple/duo entry or assume two payments buy team status. This resolves the earlier Business Race question awaiting confirmation. It does not mean the competition can never include temporary teams, alliances or team challenges. Couples Empire is a separate regular documentary offer: the earlier response says a couple pays once for that shared feature; separate deliverable sets for separate businesses need clarification. Do not transfer regular documentary couple rules into reality or treat a guest allowance as a second participant.",
     "questions": [
       "Can a couple compete together in Business Race?",
       "Do husband and wife pay once or twice for Business Race?",
       "Is Couples Empire a reality competition?"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791071529641269"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791071529641269",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791213775389389",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791213789034989"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-05",
+    "reviewedAt": "2026-10-07",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4401,6 +4424,252 @@
     "risk": "high",
     "routeKey": null,
     "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "outbound-hubspot-assignment-2026-10-07",
+    "decisionKey": "outbound-hubspot-assignment-2026-10-07",
+    "title": "20% outbound leads now assigned through HubSpot outreach channel",
+    "text": "Rich's October 6 final instruction stops the daily outbound spreadsheet: obtain leads through #hubspot-outreach-20percent (https://istvoffical.slack.com/archives/C0C1R8BBVR6), using the HubSpot assignment process there. This supersedes the earlier same-thread temporary permission to use either the sheet or channel. Tech confirmed it would stop posting the sheet and add all reps to the channel; Igor reconfirmed the assignment route October 7. Ask Sales Tech for channel or assignment access if missing. Do not continue claiming spreadsheet blocks or maintain two parallel lead pools. Preserve first-contact ownership, no cherry-picking, opt-outs, accurate outcomes and existing outreach requirements. The former spreadsheet maximum was 75; these cutover messages do not establish a new HubSpot batch size, quota or commission entitlement. Follow the current assignment control rather than inventing a limit. 'No ready unowned contacts found' is not proof that all leads are permanently exhausted: Igor fixed a reported incident October 7; report a persistent assignment failure to Tech rather than taking owned leads.",
+    "questions": [
+      "Where do I get my 20% outbound leads now?",
+      "Do I still use the daily dial out spreadsheet?",
+      "HubSpot says no ready unowned contacts found"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791299399935619",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791299516056219",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791312921479939",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791363656180879",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791367158609599"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "outbound-sheet-edit-columns",
+      "outbound-75-leads-2026-09-18"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-media-pack-2026-10-07",
+    "decisionKey": "reality-media-pack-2026-10-07",
+    "title": "Reality media pack for Island, Business Race and Mansion of Money",
+    "text": "Rudy shared the Reality Shows Social Media Packages deck October 6: https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit . All three visually reviewed slides (Entrepreneurs Island, Business Race, Mansion of Money) show the same media-pack categories: 1 acceptance letter, 10 Instagram reels, 1 custom cast website profile, 20 social graphics, 5 social posters, 100+ PR press-release distribution, 1 billboard feature, 1 movie poster, an edited-photo set labelled 50–100, 1 podcast episode, 1 IMDb listing, 1 episode trailer, 1 podcast reel and 1 BTS reel. The deck calls this 'ASSETS = 46' and expressly says totals may vary up or down depending on show and episode length. Describe it as the current media-pack presentation, not 46 guaranteed distinct deliverables per buyer. The deck does NOT specify Standard versus VIP eligibility, delivery dates, billboard location/duration, or resolve the mini-documentary entitlement discrepancy. Do not add these counts to older package quantities or assume this replaces every contractual benefit. For a package-specific promise, use the applicable package/contract and verified governing guidance; explain this deck's scope if eligibility is not confirmed. Press-release distribution is not a promise of independent editorial coverage or guaranteed business results. Link the deck when asked to see the media assets.",
+    "questions": [
+      "What is in the new reality social media pack?",
+      "Where can I find the 46 assets presentation?",
+      "Are 46 assets guaranteed in every Standard package?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791288734722279",
+      "https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-updated-explainer-videos-2026-10-07",
+    "decisionKey": "reality-updated-explainer-videos-2026-10-07",
+    "title": "Updated Jungle and Mansion concept videos",
+    "text": "Rudy shared two new October 5 explainer videos: Entrepreneur Jungle https://www.loom.com/share/c79dc48a00124a62896c111f1d071cd5 and Mansion of Money https://www.loom.com/share/7a1fabb77fe946e881494ec76422b613 . The reviewed opening Jungle transcript describes jungle survival blended with entrepreneurial leadership, negotiation, creativity and team challenges; hut-building with limited supplies is an example, not a fixed challenge promised to every cast member. The reviewed opening Mansion transcript describes a social reality competition with 20 entrepreneurs in a Florida mansion, leadership/teamwork/strategy challenges and show-money progression. Rudy explicitly labels this initial pre-production planning: details may change, some rules are intentionally unrevealed, and the unaired show's details are confidential. Present those as concept descriptions, not finalized dates, confirmed available slots or guaranteed challenges. Full transcript access was unavailable in this review, so no new timing, platform-distribution or package-entitlement promises are established from these videos; existing approved contract-specific guidance still applies.",
+    "questions": [
+      "Where is Rudy new Jungle video?",
+      "Where is the latest Mansion of Money overview video?",
+      "How do the Jungle and Mansion concepts work?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791219365194829",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791218803310079",
+      "https://www.loom.com/share/c79dc48a00124a62896c111f1d071cd5",
+      "https://www.loom.com/share/7a1fabb77fe946e881494ec76422b613"
+    ],
+    "scopes": [
+      "reality"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "sales-rep-dashboard-2026-10-07",
+    "decisionKey": "sales-rep-dashboard-2026-10-07",
+    "title": "New HubSpot-fed sales rep performance dashboard",
+    "text": "Rudy announced the new beta sales-rep dashboard October 6 at https://dash.insidesuccess.com/sales-reps . It uses HubSpot data and includes leaderboard, HQ and performance views, projected income based on contracts/bonuses/tiers, close rate based on CALL 2s TAKEN, earnings per Call 2 and trends. He says older marketing dashboards are being retired; this does not retire Magic Mike's Coaching, Ask Sales or manager pages. Treat projected income as an estimate, not a commission payout guarantee. Keep HubSpot records accurate and report data issues rather than altering status to improve statistics. Rudy's 30-day analysis found similar close-rate/RPC across the compared lower revenue bands; this supports not dismissing prospects solely on revenue, not guaranteed results or removal of affordability/qualification rules.",
+    "questions": [
+      "Where is the new sales reps leaderboard?",
+      "What is close rate based on in the new dashboard?",
+      "Is projected income guaranteed?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791315291896659",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791318108037129"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-email-close-zoom-exception-2026-10-07",
+    "decisionKey": "documentary-email-close-zoom-exception-2026-10-07",
+    "title": "Documentary email close when the willing buyer has Zoom problems",
+    "text": "Mike confirmed October 6 that a willing documentary/docuseries buyer having Zoom problems can move forward over email. Keep the exception scoped to that situation; it is not a blanket replacement of the live closing process, not a reality-show exception and not a waiver of Green Light, accurate disclosures, the correct agreement, payment verification, consent or onboarding. Preserve the written record and use the approved product-specific links; do not mark a sale complete merely because the buyer says yes in an email.",
+    "questions": [
+      "Can I close a documentary client over email if their Zoom is not working?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791183781643219",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791267725716769"
+    ],
+    "scopes": [
+      "main_istv"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-troubleshooting-2026-10-07",
+    "decisionKey": "hubspot-troubleshooting-2026-10-07",
+    "title": "HubSpot missing contacts, commission rows and UK booking timezones",
+    "text": "For a missing HubSpot contact, Tech's October 6 advice is Contacts > All Contacts > search the client's email before creating a duplicate. For missing commission-ledger rows, remove date filters first; Tech/Finance may need to reconcile the rep-name mapping between the ledger and HubSpot. Do not change payment/commission facts yourself to force a match. For UK manual-booking timezones, select the country UK first so the appropriate timezone options appear, then verify the actual agreed meeting time. For a confirmed inactive old OT calendar/rebooking link, coordinate with Tech and manually book the client's requested time through the appropriate normal calendar; do not cancel unrelated appointments. Lead/account reassignment requires Rich's approval before Tech moves records between HubSpot/Zoom.",
+    "questions": [
+      "Why is a client missing in HubSpot contacts?",
+      "Why are my commission ledger rows missing?",
+      "Why cannot I select UK timezone when booking?",
+      "Can tech transfer a lead to another rep?"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791313556547249",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791294878380029",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791303415676469",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791321909763129",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791292835926039"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "manual-booking-calendar-sops-2026-10-07",
+    "decisionKey": "manual-booking-calendar-sops-2026-10-07",
+    "title": "Manual Call 1 uses Public; Call 2 Green Light uses Personal calendar",
+    "text": "The linked booking SOPs distinguish three OnceHub calendars: Master is reserved for marketing/automatic distribution and must not be used or modified for manual bookings; Public is for manually booking first calls after an interested lead agrees; Personal is for second/follow-up calls. For Call 2 choose the correct show (Other only if absent), Meeting Type Green Light Approval, accurate name/email/mobile and agreed timezone, send booking notifications and verify the record. Prefer booking the follow-up directly while on Call 1 and, when possible, for the next day, subject to existing Green Light/readiness rules. A booking label does not itself grant Green Light approval. Use the current team rebooking directory for the rep's actual link rather than guessing it.",
+    "questions": [
+      "Which calendar do I use for a manual Call 1?",
+      "Do I book Green Light on the public or personal calendar?",
+      "Can I use the Master calendar manually?"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YQYGv1Yi95xBhFf3r2fQ07JnqBj9ae80DziJ8YDELaY/edit",
+      "https://docs.google.com/document/d/1vzPJe2IFySHjEMJ3f8AeFxqTZnbxTy-IQAHdgFX8eKc/edit"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-reminder-verification-2026-10-07",
+    "decisionKey": "hubspot-reminder-verification-2026-10-07",
+    "title": "Verify the automated first-meeting email was sent",
+    "text": "The HubSpot setup and automated first-meeting reminder guides require authorization for the company Gmail account. Check the HubSpot meeting property 24hour_email_sent and the Gmail Sent folder to verify sending. A Yes flag or a Sent item records sending, not proof the recipient read the email or it avoided spam. These guides describe the 24-hour first-meeting automation; they do not resolve the existing uncertainty about a new booking made less than 24 hours before the call, remove manually required outreach confirmations, or authorize skipping SMS reminders. If a reminder is missing, use the approved reminder process and ask Tech to check setup rather than assuming it was delivered.",
+    "questions": [
+      "How do I check the automated 24 hour reminder was sent?"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/101Re3Lrtm3T6uUVAxZCf1KuEiyOje1Zx6bDMq5jw234/edit",
+      "https://docs.google.com/document/d/1iWB3K1zxTtbSe4wnChqTwpadMH1nNH9_TFyAk5JiPg8/edit"
+    ],
+    "scopes": [
+      "shared"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "client-requested-cancellation-2026-10-07",
+    "decisionKey": "client-requested-cancellation-2026-10-07",
+    "title": "Client texted or emailed to cancel after the meeting start time",
+    "questions": [
+      "How do I record a client cancellation when OnceHub will not allow cancellation after the meeting starts?"
+    ],
+    "text": "October 6 follow-up: when the CLIENT requests cancellation by text/email, Rich says cancel in OnceHub and record the reason, for example 'client texted me to cancel'; Rudy agrees. If the start time has passed and OnceHub no longer permits cancellation, Rich confirms marking that requested cancellation in HubSpot and rating it is sufficient for that workflow. Apply the existing cancelled-call zero rule, preserve the actual client request/reason, and do not fabricate a cancellation or completed-call score to improve RPC. This is not permission to cancel merely because a lead seems weak, nor a guarantee of how every dashboard recalculates historical metrics.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790089141982619",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790090410466649",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096821911809",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790096887312259",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791322394467459",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791325041645679"
+    ],
+    "reviewedAt": "2026-10-07",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:hubspot-status-cast-score-2026-09-24"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   }
