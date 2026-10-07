@@ -34,7 +34,7 @@ The full official validator reported the same eight pre-existing Code-node retur
 - Restored dashboard report: [7403](https://sales-performance-dashboard-rose.vercel.app/call/7403).
 - One Google Doc was created in the existing mapped Abigail folder and populated from the saved coaching. The existing Airtable record received its document link; the dashboard returned a matching successful ingest receipt.
 - Independent readback confirmed one dashboard row for the source/report, matching rep/client, original call metadata, transcript link and document ID. Company Drive readback confirmed document contents and the intended shared-drive parent.
-- Signed-in Chrome verified report content, explanation expansion, transcript evidence controls and successful timestamp-to-transcript loading. Existing Abigail report 7340 also opened normally.
+- Signed-in Chrome verified report content, explanation expansion, transcript evidence controls and successful timestamp-to-transcript loading. Existing reports 7340 (Abigail) and 7402 (Elena) also opened normally; no browser errors were captured in the checked existing-report tab.
 - No new coaching, classifier, scoring, safety or compliance model request was made. No Slack post/reply was repeated and no new Airtable coaching record or rep folder was created.
 - The original recovery event, row 88, was marked resolved only after delivery verification. Its original error remains in the audit message along with the recovery execution/report IDs.
 
@@ -57,3 +57,7 @@ Private backups, candidates and execution/readback evidence are in `.magic-mike-
 If rollback is needed, first fetch the current published workflow and compare it with the verified post-repair snapshot. Restore only the changed URL and missing-folder conditions after assessing the known false-404 behavior; preserve any later edits. Do not restore an entire old workflow or replay the already-delivered report. The earlier configuration's automatic 404 replacement behavior is the documented defect, so rollback is not an automatic response to an unrelated failure.
 
 This repository change records the external n8n release only. It requires no application deployment.
+
+## GitHub receipt
+
+Sanitized release evidence is pushed in [documentation PR 264](https://github.com/Inside-Success/sales-performance-dashboard/pull/264). This is a documentation-only PR; the n8n fix and recovered delivery above are already live. Application deployment is not part of this repair.
