@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — October 7, 2026
 
-Status: validated candidate; publication and production verification pending. Resume the October 5 successful checkpoint until this report records verified publication.
+Status: published and production-verified on October 7, 2026. Resume the paired October 7 published_verified checkpoint.
 
 ## Source coverage and boundaries
 
@@ -26,7 +26,7 @@ Limits: this is the maintained source set and checkpoint channels, not every his
 - Adds Mike's narrowly scoped documentary email-close exception for willing buyers with Zoom problems, without waiving existing agreement/payment/approval requirements.
 - Adds verified HubSpot troubleshooting, manual booking calendar distinctions and automated reminder sending checks. Sending is not proof of delivery/read status.
 
-Nine new records, eight content amendments and relevant governing-evidence relationships; two superseded spreadsheet records removed from the active view, preserved in source history. Active knowledge: 6cea49e390450a445c34e567, 2,532 records. No model, reasoning, prompt, retrieval algorithm, diagnostics, auth/environment, schema, UI, Coaching or n8n changes.
+Nine new records, seven content amendments and relevant governing-evidence relationships; two superseded spreadsheet records removed from the active view, preserved in source history. Active knowledge: 6cea49e390450a445c34e567, 2,532 records. No model, reasoning, prompt, retrieval algorithm, diagnostics, auth/environment, schema, UI, Coaching or n8n changes.
 
 ## Validation
 
@@ -36,4 +36,10 @@ Unresolved: source-specific media-pack tier eligibility, Standard/VIP mini-docum
 
 ## Publication
 
-Pending. Prior verified production rollback target dpl_8xHQ9psEyK65522sJ6NSv57ch4Mw. Current dashboard main includes the Mock Call Agent homepage changes; this refresh preserves them. Vercel connector returned 403; its documented CLI fallback successfully accessed the same team/project. No access settings were changed.
+Dashboard [PR #265](https://github.com/Inside-Success/sales-performance-dashboard/pull/265) merged as `15452d987df5cd3d35c85cd7c23fea95dfe1b171`; FAQ [PR #94](https://github.com/Inside-Success/faq-chatbot/pull/94) merged as `86a3940`. Both governed checks passed; dashboard run `37619518115` includes all 383 FAQ tests, static validation, TypeScript, lint and production build. Preview provisioning failed before build with the existing resource-provisioning error; no database branches, credentials or permissions changed to bypass it.
+
+READY production deployment `dpl_4NUPJFQDEkHhyczsDgJ2EyYsYzhP` was assigned the rose alias. A work-profile Chrome test asked who teaches Tuesday/Thursday and where outbound leads come from. It correctly answered Raul, the respective current times, and the HubSpot outreach channel replacing the spreadsheet. Persisted assistant message `faq_assistant_da578cb7-bd04-4f67-a1e9-71ca192245ff` confirms knowledge `6cea49e390450a445c34e567`, corpus 2532, GPT-5.6 Luna, successful plan/answer/review, no error or validation issues, and 11,884 ms total latency. Screenshot and read-only DB receipt saved in the private evidence directory.
+
+Authenticated FAQ Usage loads successfully; Coaching loads its rep selector with 162 reps; the homepage retains Coaching, FAQ and Mock Call Agent links. These are smoke checks, not a new full Coaching audit. A receipt-only follow-up records the verified October 7 publication date; its final deployment evidence will be retained in the local completion receipt.
+
+Prior verified production rollback target dpl_8xHQ9psEyK65522sJ6NSv57ch4Mw. Current dashboard main includes the Mock Call Agent homepage changes; this refresh preserves them. Vercel connector returned 403; its documented CLI fallback successfully accessed the same team/project. No access settings were changed.
