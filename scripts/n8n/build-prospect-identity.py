@@ -114,7 +114,8 @@ const resolved = resolveProspectIdentity({
   showName: headerValue('Show Name'), clientIdentity: suppliedIdentity
 });
 // A newly resolved canonical identity must survive downstream reads unchanged.
-const suppliedMatches = suppliedIdentity && identityKey(suppliedIdentity.name) === identityKey(original_client_name);
+const strongerResolution = resolved.clientIdentity.confidence === 'high' && identityKey(resolved.clientName) !== identityKey(original_client_name);
+const suppliedMatches = suppliedIdentity && identityKey(suppliedIdentity.name) === identityKey(original_client_name) && !strongerResolution;
 const effectiveName = suppliedMatches ? original_client_name : resolved.clientName;
 const lines = identityLines({ mergedTranscript: cleaned_transcript });
 const present = [...new Set(lines.map(line => line.speaker))].filter(name => !identityRep(name, {repName}) && !identityBot(name));

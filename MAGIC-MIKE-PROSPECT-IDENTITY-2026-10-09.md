@@ -9,6 +9,7 @@ The existing intake classifier remains Claude Sonnet 4.6. Coaching, compliance, 
 ## Name rules
 
 - Prefer a real prospect name supported by their own introduction or the rep directly addressing them. A full name must also exist in the transcript, appointment title or participant labels.
+- If the single external human transcript speaker exactly matches the appointment title and the selected Zoom account label never speaks, use that corroborated human name. This handles an assistant account being selected instead of the actual prospect. Optional earlier fallback metadata cannot suppress this stronger resolution.
 - A borrowed Zoom account can be corrected when the appointment title and direct address agree and there is exactly one external speaker. Contradictory surnames and multiple-attendee ambiguity remain conservative.
 - Keep manually verified names on the exact matched source record. Never use an unrelated search result as an override.
 - If evidence is insufficient, retain the original external label, including device labels. Use `Prospect` only when no usable external label exists. Bots and known internal staff do not establish prospect attendance.
@@ -20,8 +21,8 @@ The existing intake classifier remains Claude Sonnet 4.6. Coaching, compliance, 
 
 | Workflow | Previous published version | Final published version | Changed nodes |
 | --- | --- | --- | --- |
-| Zoom intake `qMQYNQtQbRZWjtG2` | `24bb8677-7e85-48a9-8cef-bf28db5ddcd2` | `ca2a7fa5-c419-48b5-8559-4dcb98c460b1` | Fetch Zoom Context; Sales Call Structured Parser; Classify Sales Call; Apply AI Sales Call Classification; Build Transcript Document; Prepare Airtable Write |
-| Official coaching `L8Nn7xncA9ZPDdWA` | `ad801f19-ba0c-4f1d-9311-0282b97afa61` | `8b69409e-7a8d-4a8c-9b9e-92140077586c` | Clean Response; Edit Fields; MM Parse Classifier |
+| Zoom intake `qMQYNQtQbRZWjtG2` | `24bb8677-7e85-48a9-8cef-bf28db5ddcd2` | `b467b896-31da-4ca8-86e0-cd60615e3498` | Fetch Zoom Context; Sales Call Structured Parser; Classify Sales Call; Apply AI Sales Call Classification; Build Transcript Document; Prepare Airtable Write |
+| Official coaching `L8Nn7xncA9ZPDdWA` | `ad801f19-ba0c-4f1d-9311-0282b97afa61` | `915e9f0b-e519-4b98-808f-134e279e9f90` | Clean Response; Edit Fields; MM Parse Classifier |
 
 Readback confirms the exact intended node parameters are published, both workflows remain active, every other node hash is unchanged, and all connection/settings hashes are unchanged. n8n partial updates publish edits to active workflows automatically. Downstream compatibility was released before intake.
 
@@ -29,12 +30,13 @@ The optional classifier fields are `name_confidence`, `client_speaker_label` and
 
 ## Verification
 
-- 29 meaningful synthetic/integration assertions passed using the actual modified n8n Code node bodies and Edit Fields expression. Coverage includes ordinary names, device names, borrowed accounts, manual corrections, unrelated records/emails, multiple attendees, missing/bot-only transcripts, no-shows, absent reps, item pairing, optional parser fields and duplicate identifiers.
+- 31 meaningful synthetic/integration assertions passed using the actual modified n8n Code node bodies and Edit Fields expression. Coverage includes ordinary names, device names, borrowed accounts, manual corrections, unrelated records/emails, multiple attendees, missing/bot-only transcripts, no-shows, absent reps, item pairing, optional parser fields and duplicate identifiers.
 - 32 saved real Call 2 reports were replayed through intake resolution, document construction, official cleaning/attendance and Airtable write preparation without network side effects or model calls. All 32 still passed the attendance gate; raw transcripts and routing/control identifiers stayed identical. Fourteen names improved: thirteen device labels and one surname-only human label. Zero became `Prospect`. A reality-show control retained its correct identity and show.
 - These replays validate deterministic name/attendance behavior; they do not regenerate coaching, rerun paid models, send Slack messages or alter historical reports.
 - Intake full validation passed with zero errors and the same five pre-existing warnings. Official validation retained the same eight static return-shape findings and seven warnings on existing shared-template nodes, with zero invalid connections. Modified Code node bodies passed execution tests; unrelated validator findings were not edited.
 - Naturally arriving intake executions 1029443/1029457/1029497/1029505/1029562 completed classification, transcript document creation and Airtable updates. Downstream executions 1029465/1029521/1029596 accepted the added identity metadata and kept Call 1/no-show routing. Training execution 1029510 remained excluded as training. These are live observations, not forced test submissions.
 - Signed-in Chrome opened existing report 7403 and showed normal coaching sections, source links, transcript evidence controls and Ask Magic Mike. No dashboard application code changed.
+- New natural Call 2 intake executions 1029658/1029688 created documents and updated their source records. Official executions 1029680/1029702/1029733 passed the attendance gate and reached coaching processing under the preceding release revision. Two newly arriving source documents also passed side-effect-free final-code replays; the assistant-account case now resolves to the actual named human speaker. No historical source document was edited.
 - A newly arriving Call 2 completing end to end under the final release has not yet been observed at this checkpoint. Saved Call 2 replay success must not be described as that natural production observation.
 
 New testing AI spend: **USD 0.00**. Normal incoming calls continue their existing paid processing. No new AI stage is added; optional identity evidence can add a small amount of tokens to the existing classifier request/response. No per-call cost reduction claim is made.
@@ -59,3 +61,9 @@ Private baselines, patches and real-data receipts remain outside Git in the work
 Previous n8n versions remain available. The small compressed baseline preserves original parameters for the selected nodes plus invariant hashes. To roll back, first compare the current graph with the release receipt, then restore only these selected node parameters from the baseline; preserve any later independent production edits. Keep intake and official speaker-handling changes coordinated. Do not roll back an entire workflow over another person's intervening changes.
 
 Git records the source implementation and release note. Retain private rollback evidence locally; never commit transcripts, workflow credential references, webhook headers or credentials. This release cannot recover a real name that the available conversation/title/labels never establish. Ambiguous cases intentionally retain the existing external display label.
+
+## GitHub and deployment receipt
+
+Source/docs PR271 merged `c3a8628e9b6ca766e376d6078848e4156fe175fb`. Its preview dpl_652N9QRAqqMA2Pn2Xv3kJdpEgwXb failed during resource provisioning before an application build. Production documentation deployment dpl_6GkksdDcyQhgrVUrCiPH3Sip785i reached READY. This release changes no application code; the original healthy rose deployment was confirmed during the preview failure. Vercel connector access returned403; the scoped CLI provided deployment receipts. No access, integration or environment settings were changed.
+
+The final assistant-account refinement is published in n8n and recorded separately in Git so both revisions remain reviewable. Private rollback/receipts occupy roughly110KB; source/test/docs add roughly40KB before Git overhead.
