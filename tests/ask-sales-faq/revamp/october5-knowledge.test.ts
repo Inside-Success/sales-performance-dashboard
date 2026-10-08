@@ -8,7 +8,7 @@ describe('October 5 knowledge refresh',()=>{
  it('retrieves revised training hours without the old Monday instructor',()=>{
   const evidence=rows('When does Raul teach compliance and when is closing training?').map(r=>r.text).join('\n');
   expect(evidence).toContain('Monday 1–2 PM EST Compliance with Raul');
-  expect(evidence).toContain('Thursday 1–2 PM EST Closing');
+  expect(evidence).toContain('Thursday 2–3 PM EST Closing');
   expect(evidence).not.toContain('Monday 11 AM–noon EST Compliance with Mike');
  });
  it('finds couple participation clarification in reality scope',()=>{
