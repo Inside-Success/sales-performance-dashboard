@@ -67,3 +67,11 @@ Git records the source implementation and release note. Retain private rollback 
 Source/docs PR271 merged `c3a8628e9b6ca766e376d6078848e4156fe175fb`. Its preview dpl_652N9QRAqqMA2Pn2Xv3kJdpEgwXb failed during resource provisioning before an application build. Production documentation deployment dpl_6GkksdDcyQhgrVUrCiPH3Sip785i reached READY. This release changes no application code; the original healthy rose deployment was confirmed during the preview failure. Vercel connector access returned403; the scoped CLI provided deployment receipts. No access, integration or environment settings were changed.
 
 The final assistant-account refinement is published in n8n and recorded separately in Git so both revisions remain reviewable. Private rollback/receipts occupy roughly110KB; source/test/docs add roughly40KB before Git overhead.
+
+## Final verification checkpoint
+
+PR272 merged `257d7fc3fe456d11ad5aaba32df0dd8d53860df8`; production deployment dpl_4nc8oCp6kZzVqU23RXpQX9338GTs reached READY. Its preview again failed during resource provisioning before a build. No application source was changed or environment/access setting edited.
+
+Natural official executions1029680/1029702/1029733 subsequently completed with four delivered receipts. Independent database reads found exactly one matching row per generated report at IDs7514–7517. Signed-in report7517 displayed the correct name, coaching, score and source links; explanation expansion and evidence at36:59 opened and loaded the actual cited transcript passage. These runs began under the earlier revision of this release, before the final assistant-account refinement. One in-flight report7515 retained that earlier fallback label; existing outputs remain unchanged. The final rule was independently verified against its real source document and the synthetic retained-metadata case. A final-revision natural Call 2 completion is still not claimed.
+
+Private compressed baselines/patches and metadata-only receipts total108628bytes at this checkpoint (about106KiB). No full transcript archive, new checkout or dependency/build cache was created. New AI testing spend remains USD0.00.
