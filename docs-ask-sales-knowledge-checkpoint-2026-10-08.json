@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-08",
-  "status": "candidate_not_published",
+  "status": "published_verified",
   "previousKnowledgeVersion": "6cea49e390450a445c34e567",
   "knowledgeVersion": "ac26e8375acc5bf5c29bfd79",
   "activeRecordCount": 2540,
@@ -54,7 +54,7 @@
       },
       {
         "id": "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
-        "title": "INSIDE SUCCESS TV – GREEN LIGHT PROCESS CHEAT SHEET",
+        "title": "INSIDE SUCCESS TV \u2013 GREEN LIGHT PROCESS CHEAT SHEET",
         "modified_time": "2026-09-03T21:01:55.798Z"
       },
       {
@@ -64,12 +64,12 @@
       },
       {
         "id": "19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k",
-        "title": "Inside Success TV – Dummy Call Channel Cheat Sheet",
+        "title": "Inside Success TV \u2013 Dummy Call Channel Cheat Sheet",
         "modified_time": "2026-03-24T12:28:16.372Z"
       },
       {
         "id": "1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM",
-        "title": "Inside Success TV – Outbound Dialing Cheat Sheet",
+        "title": "Inside Success TV \u2013 Outbound Dialing Cheat Sheet",
         "modified_time": "2026-02-12T13:12:39.787Z"
       },
       {
@@ -94,12 +94,12 @@
       },
       {
         "id": "1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y",
-        "title": "Inside Success TV – Double Bookings Cheat Sheet",
+        "title": "Inside Success TV \u2013 Double Bookings Cheat Sheet",
         "modified_time": "2026-02-11T21:55:46.983Z"
       },
       {
         "id": "1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8",
-        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "title": "Inside Success TV \u2013 How to Close a Live Call Cheat Sheet",
         "modified_time": "2026-06-01T17:58:03.538Z"
       },
       {
@@ -204,7 +204,7 @@
       },
       {
         "id": "1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc",
-        "title": "Inside Success TV – Pass Off Channel Cheat Sheet",
+        "title": "Inside Success TV \u2013 Pass Off Channel Cheat Sheet",
         "modified_time": "2026-09-14T20:37:05.189Z"
       },
       {
@@ -284,7 +284,7 @@
       },
       {
         "id": "1YyqlqJHPQzcnlyDluhmpxuFuFtVGzdbwO1MJ33P2rac",
-        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "title": "Inside Success TV \u2013 How to Close a Live Call Cheat Sheet",
         "modified_time": "2026-10-01T15:31:45.605Z"
       },
       {
@@ -2434,5 +2434,23 @@
       "error": "thread_not_found"
     }
   ],
-  "successfulThreadReads": 206
+  "successfulThreadReads": 206,
+  "publication": {
+    "dashboardPR": 267,
+    "dashboardCommit": "a5c198b1bfe436fae06fb4b9a4048363d72f08bf",
+    "faqPR": 96,
+    "faqCommit": "adc1efd6f7fbbdcb296df884912db91a3262ee0c",
+    "productionDeployment": "dpl_ZZYxvLHdjkDEYCrPpRRriVv59aEy",
+    "productionURL": "https://sales-performance-dashboard-rose.vercel.app",
+    "githubDashboardRun": "37790733717",
+    "githubFAQRun": "37790766184",
+    "liveAnswerId": "faq_assistant_67ea86e8-ea1b-4d37-bbf1-81378eb85418",
+    "liveAnswerAt": "2026-10-08T14:19:37.936Z",
+    "liveAnswerKnowledgeVersion": "ac26e8375acc5bf5c29bfd79",
+    "liveAnswerLatencyMs": 12446,
+    "providerAttempts": "plan, answer and review successful",
+    "adminAccessVerified": true,
+    "coachingPageSmokeVerified": true,
+    "testsPassed": 387
+  }
 }
