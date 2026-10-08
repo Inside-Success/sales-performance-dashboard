@@ -3,6 +3,7 @@ import {
   getSalesCorrelationUsageData,
   saveSalesPerformanceSnapshot,
 } from "@/lib/db";
+import { SALES_SYNC_SOURCE_URL, salesSyncToCsv, syncedSalesStatus } from "@/lib/sales-sheet-sync";
 import { slugify } from "@/lib/slug";
 import { getSalesSheetColumnIndexes } from "@/lib/sales-sheet-columns";
 import { getLiveSalesReadErrors } from "@/lib/sales-sheet-health";
@@ -116,7 +117,7 @@ export type SalesCorrelationSummary = {
   usageDataMaturity: "no_usage" | "early" | "developing" | "stable";
   usageError?: string;
   sheetError?: string;
-  salesDataSource: "live_sheet" | "cached_snapshot" | "unavailable";
+  salesDataSource: "live_sheet" | "synced_sheet" | "cached_snapshot" | "unavailable";
   salesSnapshotCreatedAt: string | null;
   salesSnapshotWarning?: string;
   totalNewRevenue: number;
@@ -439,7 +440,7 @@ function laterDateString(first: string | null, second: string | null) {
   return new Date(first) >= new Date(second) ? first : second;
 }
 
-async function getSalesRows(): Promise<{
+export async function getSalesRows(): Promise<{
   configured: boolean;
   rows: SalesPaymentRow[];
   dataSource: SalesCorrelationSummary["salesDataSource"];
@@ -449,6 +450,21 @@ async function getSalesRows(): Promise<{
 }> {
   const csvUrl = process.env.SALES_PERFORMANCE_CSV_URL || DEFAULT_SALES_CSV_URL;
   const latestSnapshot = await getLatestSalesPerformanceSnapshot();
+
+  // Once authenticated sync is established, page loads use its validated read.
+  // A failed refresh never replaces the last good snapshot or resets its age.
+  if (latestSnapshot?.source_url === SALES_SYNC_SOURCE_URL) {
+    const dataSource = syncedSalesStatus(latestSnapshot.created_at);
+    return {
+      configured: true,
+      rows: deserializeSnapshotRows(latestSnapshot.rows),
+      dataSource,
+      snapshotCreatedAt: latestSnapshot.created_at,
+      ...(dataSource === "cached_snapshot" ? {
+        snapshotWarning: `The authenticated sales refresh is delayed. Showing the last successful read from ${latestSnapshot.created_at}.`,
+      } : {}),
+    };
+  }
 
   try {
     const response = await fetch(csvUrl, {
@@ -519,6 +535,24 @@ async function getSalesRows(): Promise<{
       error: "Sales sheet could not be read. The page only reads the Google Sheet and never writes to it.",
     };
   }
+}
+
+export function prepareSalesSync(payload: unknown) {
+  const parsed = parseSalesCsv(salesSyncToCsv(payload));
+  const stats = getSalesRowStats(parsed.rows);
+  const errors = getLiveSalesReadErrors(stats);
+  if (errors.length) throw new Error(errors.join(" "));
+  return {
+    source_url: SALES_SYNC_SOURCE_URL,
+    source_sheet: SALES_SOURCE_SHEET,
+    headers: parsed.headers,
+    rows: serializeSnapshotRows(parsed.rows),
+    row_count: stats.rowCount,
+    paid_row_count: stats.paidRowCount,
+    new_paid_row_count: stats.newPaidRowCount,
+    latest_sales_date: stats.latestSalesDate?.toISOString() || null,
+    validation_notes: ["Authenticated Google Sheets read; seven analytics columns only; source spreadsheet unchanged."],
+  };
 }
 
 function parseSalesCsv(csv: string): { headers: string[]; rows: SalesPaymentRow[] } {
