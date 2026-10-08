@@ -31,6 +31,13 @@ test('borrowed Zoom account is corrected with a corroborating title and direct a
   const resolved = resolveProspectIdentity(source);
   assert.equal(resolved.clientName,'Jacob Example'); assert.deepEqual(resolved.clientIdentity.speakerAliases,['Mary Example']);
 });
+test('actual human speaker and title displace an unspeaking account label', () => {
+  const source = {...base, clientName: "Taylor's Assistant", meetingTitle:'Jamie Actual - Inside Success - Followup Casting Call',
+    mergedTranscript:'[00:01:00] Taylor Rep: Can you hear me?\n[00:01:03] Jamie Actual: Yes.'};
+  const result = resolveProspectIdentity(source);
+  assert.equal(result.clientName,'Jamie Actual'); assert.deepEqual(result.clientIdentity.speakerAliases,['Jamie Actual']);
+  assert.equal(resolveProspectIdentity({...source,mergedTranscript:source.mergedTranscript+'\n[00:01:05] Partner Actual: Hello.'}).clientName,"Taylor's Assistant");
+});
 test('conflicting surname is not resolved by first-name greeting', () => {
   assert.equal(resolveProspectIdentity({ ...base, clientName: 'Jacob Other' }).clientName, 'Jacob Other');
 });
@@ -118,6 +125,11 @@ if (baselinePath && patchesPath) {
     const before = await execute(b[official].nodes['MM Parse Classifier'].parameters.jsCode,[{json:{parsed_json:{call_status:'scored'}}}],{'MM Build Classifier Request':[{json:{state}}]});
     assert.equal(before.json.state.gate_output.call_status,'transcript_too_short'); count++;
   }
+  const retained = {version:'2026-10-09',name:"Taylor's Assistant",speakerAliases:['Jamie Actual'],confidence:'medium',resolution:'display_label_retained'};
+  const pendingText = 'Client Name: '+retained.name+'\nRep Name: Taylor Rep\nMeeting Title: Jamie Actual - Inside Success - Followup Casting Call\nClient Name Source: Zoom Display Name\nClient Identity JSON: '+JSON.stringify(retained)+'\nFull Transcript\n\n[00:01:00] Taylor Rep: Can you hear me?\n[00:01:03] Jamie Actual: Yes.';
+  const pendingClean = await execute(p[official]['Clean Response'].jsCode,[{json:{body:{content:[{paragraph:{elements:[{textRun:{content:pendingText}}]}}]}}}]);
+  assert.equal(pendingClean[0].json.normalized_client_name,'Jamie Actual');
+  assert.deepEqual(pendingClean[0].json.client_speaker_aliases,['Jamie Actual']); count++;
   // Duplicate-control fields must not depend on a name correction.
   const source = {...classified[0].json,automationKey:'zoom:instance:file',meetingUuid:'instance',recordingFileId:'file',meetingId:'123',documentId:'doc',documentUrl:'https://example.test/doc'};
   const afterWrite = await execute(p[intake]['Prepare Airtable Write'].jsCode,[{json:source}]);

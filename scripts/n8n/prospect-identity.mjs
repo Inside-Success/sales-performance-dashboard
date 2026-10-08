@@ -132,6 +132,11 @@ export function resolveProspectIdentity(source = {}, ai = {}) {
   if (selected && valid(original) && originalParts.length > 1 && selectedParts.length > 1
     && originalParts.at(-1) !== selectedParts.at(-1)
     && (!proof || identityRep(proof.speaker, source) || !identityKey(proof.text).includes(identityKey(selected)))) selected = '';
+  // The single external human speaker and appointment title independently
+  // agree, while the selected Zoom account label never actually speaks.
+  // This handles an assistant/account participant being picked by Zoom.
+  if (!selected && external.length === 1 && valid(primary) && valid(title)
+    && identityKey(primary) === identityKey(title) && !currentSpeaker) selected = title;
   let name = selected || (rawUsable ? original : '') || (primary && !identityBot(primary) ? primary : '') || 'Prospect';
   let nameSource = selected ? 'AI: Transcript' : (name === original ? source.clientNameSource || 'Zoom Display Name' : 'Unknown');
   let confidence = selected ? 'high' : (valid(name) ? 'medium' : 'low');
