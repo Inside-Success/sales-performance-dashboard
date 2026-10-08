@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — October 8, 2026
 
-Status: candidate tested; production publication pending. Last successful checkpoint remains October 7 until the verified publication receipt is recorded.
+Status: published and production-verified. Resume the October 8 published_verified checkpoint.
 
 ## Source review
 
@@ -25,14 +25,20 @@ Limits: maintained channels/source set, not every historical message or Drive fi
 - Acknowledges Entrepreneurs Mountain with explicit limits: no verified specific video, schedule, format or availability claim.
 - Makes the verified reality payment rows explicit in the reality contract knowledge: lowest listed first installments $5,000 Standard / $7,500 VIP. A multipart test initially missed this known information; completing the source-backed record and its existing evidence relationship corrected the answer without changing retrieval code. Bankruptcy eligibility remains genuinely unconfirmed; it is not inferred from installment availability.
 
-Eight new maintained records and nine content amendments, plus evidence relationships. Candidate knowledge `ac26e8375acc5bf5c29bfd79`, 2,540 active records. GPT-5.6 Luna medium, prompts, retrieval algorithm, diagnostics, auth/environment, database schema, UI, Coaching and n8n remain unchanged.
+Eight new maintained records and eight content amendments, plus evidence relationships. Published knowledge `ac26e8375acc5bf5c29bfd79`, 2,540 active records. GPT-5.6 Luna medium, prompts, retrieval algorithm, diagnostics, auth/environment, database schema, UI, Coaching and n8n remain unchanged.
 
 ## Verification before publication
 
-Four new focused retrieval/scope tests passed, including training, outbound, pass-off/SMS, reality payment and onboarding coverage. Existing local suite: 380/383 passed, three legacy V5.14 tests hit 5-second local timeouts. A bounded rerun with 20-second test timeout passed all 27 legacy assertions but reported a worker RPC timeout; this is not a clean local pass. No runtime or test-timeout configuration changed. Require clean governed CI before publication. Static safety validator 107/107, TypeScript and scoped ESLint passed. Paired registry validator passed; webpack production build passed; governed CI is pending at this candidate record.
+Four new focused retrieval/scope tests passed, including training, outbound, pass-off/SMS, reality payment and onboarding coverage. Existing local suite: 380/383 passed, three legacy V5.14 tests hit 5-second local timeouts. A bounded rerun with 20-second test timeout passed all 27 legacy assertions but reported a worker RPC timeout; this is not a clean local pass. No runtime or test-timeout configuration changed. The subsequent clean governed GitHub run passed all 387 tests across 35 files, resolving the release gate. Static safety validator 107/107, TypeScript and scoped ESLint passed. Paired registry validator passed; webpack production build passed; both governed GitHub workflows passed.
 
-Ten isolated current-model cases reviewed, plus one targeted payment recheck after the knowledge completion. No provider/schema failure. The season answer gives the supported same-show waitlist and qualifies cross-show ambiguity. The multipart payment answer now supplies the supported first installments and correctly leaves bankruptcy eligibility unconfirmed. Estimated isolated evaluation cost: $0.10006138. Production checks will be added to the completion receipt.
+Ten isolated current-model cases reviewed, plus one targeted payment recheck after the knowledge completion. No provider/schema failure. The season answer gives the supported same-show waitlist and qualifies cross-show ambiguity. The multipart payment answer now supplies the supported first installments and correctly leaves bankruptcy eligibility unconfirmed. Estimated isolated evaluation cost: $0.10006138. A real authenticated production answer also passed: the current Thursday time and Extra-lead process were correct, with all three provider stages successful, no validation issues, and 12.446 seconds total latency. Its stored runtime hash matches the published 2,540-record corpus. Estimated isolated evaluation plus this live check remained below $0.12.
 
-## Publication boundary
+## Verified publication
 
-Publish only the paired knowledge release after governed checks. Preserve previous READY deployment `dpl_6di5MphEXwPKshyUXf6mEhUPht6t` for rollback. Verify a real authenticated answer against the candidate knowledge hash, admin access and Coaching smoke check before advancing the checkpoint or publication date. Raw sources/evaluation outputs are private under `.magic-mike-knowledge-refresh-2026-10-08/`.
+- Dashboard PR [267](https://github.com/Inside-Success/sales-performance-dashboard/pull/267), commit `a5c198b1bfe436fae06fb4b9a4048363d72f08bf`; governed run `37790733717` succeeded.
+- FAQ mirror PR [96](https://github.com/Inside-Success/faq-chatbot/pull/96), commit `adc1efd6f7fbbdcb296df884912db91a3262ee0c`; governed run `37790766184` succeeded.
+- Production deployment `dpl_ZZYxvLHdjkDEYCrPpRRriVv59aEy` reached READY and the rose alias was explicitly assigned to it. Previous READY `dpl_6di5MphEXwPKshyUXf6mEhUPht6t` remains available for rollback.
+- Stored live assistant message `faq_assistant_67ea86e8-ea1b-4d37-bbf1-81378eb85418` at `2026-10-08T14:19:37.936Z` verifies knowledge `ac26e8375acc5bf5c29bfd79`, GPT-5.6 Luna, no error, and correct updated facts.
+- Work Chrome authenticated FAQ admin usage page and Coaching landing page loaded successfully. This is a page smoke check, not a new coaching-report execution.
+- Preview deployment `dpl_8zeTEpbM3XK6qV6ibWyBiKRXBAoW` failed at existing resource provisioning before build. No database branch, environment or access setting was changed to work around it; clean CI/build and actual production checks supply the release evidence.
+- The completion receipt updates the admin publication date only after the above verification. Raw sources, evaluation outputs and screenshot proof remain private under `.magic-mike-knowledge-refresh-2026-10-08/`.
