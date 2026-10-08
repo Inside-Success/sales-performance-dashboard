@@ -94,6 +94,11 @@ export default async function SalesCorrelationPage({
                     <ShieldCheck className="size-3.5" />
                     Fallback snapshot
                   </Badge>
+                ) : analytics.summary.salesDataSource === "synced_sheet" ? (
+                  <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
+                    <ShieldCheck className="size-3.5" />
+                    Google Sheet synced
+                  </Badge>
                 ) : analytics.summary.salesDataSource === "live_sheet" ? (
                   <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
                     <ShieldCheck className="size-3.5" />
@@ -752,6 +757,9 @@ function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {
       ? `Fallback snapshot (${formatShortDate(analytics.summary.salesSnapshotCreatedAt)})`
       : "Fallback snapshot";
   }
+  if (analytics.summary.salesDataSource === "synced_sheet") {
+    return `Authenticated Google Sheet read (${analytics.summary.salesSnapshotCreatedAt ? formatRefreshTime(analytics.summary.salesSnapshotCreatedAt) : "unknown"})`;
+  }
   if (analytics.summary.salesDataSource === "live_sheet") return "Current live Google Sheet";
   return "Unavailable";
 }
@@ -764,4 +772,10 @@ function formatUsageHistory(effectiveDays: number, periodDays: number) {
 
 function sum(values: number[]) {
   return values.reduce((total, value) => total + value, 0);
+}
+
+function formatRefreshTime(value: string) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "unknown";
+  return date.toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 }
