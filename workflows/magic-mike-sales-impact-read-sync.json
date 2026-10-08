@@ -1,0 +1,164 @@
+{
+  "name": "Magic Mike Sales Impact - authenticated read sync",
+  "nodes": [
+    {
+      "id": "82bd1266-8326-4a45-862b-3f90fe1e74c1",
+      "name": "Authorized refresh",
+      "webhookId": "7168a5e0-df11-48ff-8a99-e951dd91aefe",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mm-sales-impact-refresh-2026-10-08",
+        "authentication": "headerAuth",
+        "responseMode": "lastNode",
+        "responseData": "noData",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "A7b27rDQ3fMgMP39",
+          "name": "Magic Mike Sales Impact sync"
+        }
+      }
+    },
+    {
+      "id": "a01d5e63-8264-402b-a8b6-6074a82351ce",
+      "name": "Read sales columns",
+      "notes": "GET only. Seven analytics columns of Main. No Sheet writes or client identifiers.",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/1lBdE_LUKI8rzTvYc5vztSwKROJ7uIAOb5mNT9s4PeLA/values:batchGet?ranges=Main!A%3AA&ranges=Main!C%3AC&ranges=Main!D%3AD&ranges=Main!H%3AH&ranges=Main!I%3AI&ranges=Main!J%3AJ&ranges=Main!K%3AK&valueRenderOption=FORMATTED_VALUE&majorDimension=ROWS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6jvVtQ6oVbN9Qyar",
+          "name": "admin@mawercapital.com"
+        }
+      }
+    },
+    {
+      "id": "1b18a761-135c-4ed0-8acb-79d043e9e17c",
+      "name": "Save validated sales read",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [
+        640,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/sales-performance/sync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "A7b27rDQ3fMgMP39",
+          "name": "Magic Mike Sales Impact sync"
+        }
+      }
+    },
+    {
+      "id": "405b8b91-4cde-440c-8f7c-ffdc9370b86b",
+      "name": "Hourly refresh",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Authorized refresh": {
+      "main": [
+        [
+          {
+            "node": "Read sales columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read sales columns": {
+      "main": [
+        [
+          {
+            "node": "Save validated sales read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hourly refresh": {
+      "main": [
+        [
+          {
+            "node": "Read sales columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 180,
+    "errorWorkflow": "s927mUKeEwKWwGKR",
+    "timezone": "America/New_York",
+    "executionOrder": "v1"
+  }
+}
