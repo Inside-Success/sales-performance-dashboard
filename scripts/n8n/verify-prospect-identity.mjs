@@ -94,6 +94,32 @@ test('malformed optional identity metadata does not throw', () => {
   assert.doesNotThrow(()=>resolveProspectIdentity({...base,clientIdentity:{name:'Jacob Example',speakerAliases:{}}}));
 });
 
+test('assistant label cannot block corroborated nickname and surname', () => {
+  const source={...base,clientName:"Taylor's Assistant",meetingTitle:'Mike Example - Inside Success - Followup Casting Call',mergedTranscript:'[00:01:00] Taylor Rep: Alright Mike, have a great day.\n[00:01:03] Michael Example: Thank you.'};
+  const r=resolveProspectIdentity(source);assert.equal(r.clientName,'Michael Example');assert.deepEqual(r.clientIdentity.speakerAliases,['Michael Example']);
+  assert.equal(resolveProspectIdentity({...source,mergedTranscript:source.mergedTranscript.replace('Michael Example','Michael Other')}).clientName,"Taylor's Assistant");
+});
+test('nickname and surname fallback needs a single actual human speaker', () => {
+  const source={...base,clientName:"Taylor's Assistant",meetingTitle:'Mike Example - Inside Success - Followup Casting Call',mergedTranscript:'[00:01:00] Taylor Rep: Can you hear me?\n[00:01:03] Michael Example: Yes.'};
+  assert.equal(resolveProspectIdentity(source).clientName,'Michael Example');
+  assert.equal(resolveProspectIdentity({...source,mergedTranscript:source.mergedTranscript+'\n[00:01:05] Partner Example: Hello.'}).clientName,"Taylor's Assistant");
+});
+test('compound appointment title separates known rep and company suffix', () => {
+  const source={...base,clientName:'iPhone',titleClientName:'Lynn Example x Taylor Rep [Inside Success TV]',meetingTitle:'Lynn Example x Taylor Rep [Inside Success TV]',mergedTranscript:'[00:01:00] Taylor Rep: Good morning, Lynn.\n[00:01:03] iPhone: Good morning.'};
+  const r=resolveProspectIdentity(source);assert.equal(r.clientName,'Lynn Example');assert.deepEqual(r.clientIdentity.speakerAliases,['iPhone']);
+  const ai={client_name:source.meetingTitle,client_speaker_label:'iPhone',name_confidence:'high',name_evidence:{quote:'Good morning, Lynn.',speaker:'Taylor Rep'}};
+  assert.equal(resolveProspectIdentity(source,ai).clientName,'Lynn Example');
+  assert.equal(resolveProspectIdentity({...source,meetingTitle:'Lynn Example x Partner Example',titleClientName:''}).clientName,'iPhone');
+});
+test('meeting description is retained only as fallback without real identity evidence', () => {
+  const source={...base,clientName:"Taylor Rep's Zoom Meeting",meetingTitle:"Taylor Rep's Zoom Meeting",mergedTranscript:'[00:01:00] Taylor Rep: Hello?'};
+  const r=resolveProspectIdentity(source);assert.equal(r.clientName,source.clientName);assert.deepEqual(r.clientIdentity.speakerAliases,[]);
+});
+test('nickname normalization preserves manually verified identity', () => {
+  const source={...base,clientName:'Mike Example',clientNameSource:'Manual',meetingTitle:'Mike Example - Followup Casting Call',mergedTranscript:'[00:01:00] Taylor Rep: Hi Mike.\n[00:01:03] Michael Example: Hello.'};
+  assert.equal(resolveProspectIdentity(source).clientName,'Mike Example');
+});
+
 const [baselinePath, patchesPath] = process.argv.slice(2);
 if (baselinePath && patchesPath) {
   const read = path => JSON.parse(gunzipSync(fs.readFileSync(path)).toString());

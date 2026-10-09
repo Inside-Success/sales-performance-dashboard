@@ -20,6 +20,8 @@ export function identityPerson(value) {
   const name = identityText(value);
   return name.length >= 2 && name.length <= 100 && /\p{L}/u.test(name)
     && !identityBot(name) && !identityDevice(name) && !/@|https?:|\d/u.test(name)
+    && !/\b(?:assistant|zoom meeting|personal meeting room|casting manager|sales rep|closer)\b/i.test(name)
+    && !/\s+x\s+|\[|\]/i.test(name)
     && !/^(?:client|prospect|customer|host|sales call|casting call|call|show|tv show|inside success|inside success tv)$/i.test(name)
     && !/^(?:interested|excited|happy|good|fine|ready|sorry|thinking|calling|doing|glad|here|okay|ok|sure|not|just|really)(?:\s|$)/i.test(name);
 }
@@ -34,6 +36,12 @@ export function identityFirstMatches(a, b) {
     ['daniel', 'dan', 'danny'], ['elizabeth', 'liz', 'beth'], ['thomas', 'tom'],
     ['joseph', 'joe'], ['christopher', 'chris'], ['jonathan', 'jon']];
   return Boolean(x && y && (x === y || families.some(group => group.includes(x) && group.includes(y))));
+}
+// Nicknames alone cannot establish identity: full names must also share a surname.
+export function identitySameFullName(a, b) {
+  const x = identityKey(a).split(' '), y = identityKey(b).split(' ');
+  return identityPerson(a) && identityPerson(b) && x.length > 1 && y.length > 1
+    && identityFirstMatches(a, b) && x.slice(1).join(' ') === y.slice(1).join(' ');
 }
 export function identityRep(value, source) {
   const key = identityKey(value).replace(/\s+success$/, '');
@@ -58,7 +66,16 @@ export function identityLines(source) {
 }
 export function identityTitleCandidate(source) {
   const shows = source.knownShows || [];
-  const parts = String(source.meetingTitle || '').split(/\s+[-–—|]\s+|:\s*/u);
+  const text = String(source.meetingTitle || '')
+    .replace(/\[inside success(?: tv)?\]/gi, '').trim();
+  // A compound title is usable only when all other named parties are known reps.
+  const compound = text.split(/\s+x\s+/i);
+  if (compound.length > 1) {
+    const external = compound.map(identityText).filter(part => !identityRep(part, source));
+    if (external.length !== 1 || compound.filter(part => identityRep(part, source)).length !== compound.length - 1) return '';
+    return identityPerson(external[0]) ? external[0] : '';
+  }
+  const parts = text.split(/\s+[-–—|]\s+|:\s*/u);
   return parts.map(identityText).find(part => identityPerson(part) && !identityRep(part, source)
     && !/\b(?:casting|follow.?up|call|meeting|episode|reality|tv|show|inside success)\b/i.test(part)
     && !shows.some(show => identityKey(show) === identityKey(part))) || '';
@@ -83,7 +100,7 @@ export function resolveProspectIdentity(source = {}, ai = {}) {
   const speakers = [...new Set(lines.map(line => line.speaker))];
   const external = speakers.filter(name => !identityRep(name, source) && !identityBot(name));
   const original = identityText(source.clientName);
-  const title = identityText(source.titleClientName) || identityTitleCandidate(source);
+  const title = identityTitleCandidate({ ...source, meetingTitle: source.titleClientName || '' }) || identityTitleCandidate(source);
   const aiName = identityText(ai.client_name || ai.clientName);
   const valid = name => identityPerson(name) && !identityRep(name, source)
     && !(source.knownShows || []).some(show => identityKey(show) === identityKey(name));
@@ -132,11 +149,17 @@ export function resolveProspectIdentity(source = {}, ai = {}) {
   if (selected && valid(original) && originalParts.length > 1 && selectedParts.length > 1
     && originalParts.at(-1) !== selectedParts.at(-1)
     && (!proof || identityRep(proof.speaker, source) || !identityKey(proof.text).includes(identityKey(selected)))) selected = '';
+  // An unspeaking account label must not hide a conflicting human surname.
+  if (selected && !currentSpeaker && valid(primary) && identityKey(primary).split(' ').length > 1
+    && selectedParts.length > 1 && identityKey(primary).split(' ').at(-1) !== selectedParts.at(-1)
+    && (!proof || identityRep(proof.speaker, source))) selected = '';
   // The single external human speaker and appointment title independently
   // agree, while the selected Zoom account label never actually speaks.
   // This handles an assistant/account participant being picked by Zoom.
   if (!selected && external.length === 1 && valid(primary) && valid(title)
-    && identityKey(primary) === identityKey(title) && !currentSpeaker) selected = title;
+    && (identityKey(primary) === identityKey(title) || identitySameFullName(primary, title)) && !currentSpeaker) selected = primary;
+  // Prefer the actual named speaker when the corroborated title uses a nickname.
+  if (selected && external.length === 1 && identitySameFullName(selected, primary)) selected = primary;
   let name = selected || (rawUsable ? original : '') || (primary && !identityBot(primary) ? primary : '') || 'Prospect';
   let nameSource = selected ? 'AI: Transcript' : (name === original ? source.clientNameSource || 'Zoom Display Name' : 'Unknown');
   let confidence = selected ? 'high' : (valid(name) ? 'medium' : 'low');
