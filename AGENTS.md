@@ -20,6 +20,7 @@ For dashboard/web changes:
 - Dashboard brand is Magic Mike Bot.
 - Magic Mike is live on the new multi-stage production workflow `L8Nn7xncA9ZPDdWA`.
 - Forward-only scoring V2 is authorized for numeric-only display on matching coaching reports. The coaching writer itself still does not generate the numeric grade. Missing, excluded, invalid or historical scores remain blank; never invent a fallback. Manager reasoning remains restricted. See MAGIC-MIKE-SCORING-FORWARD-2026-09-10.md.
+- Official crash recovery now detects both error and crashed executions, reuses exact-match unreviewed drafts through the existing factual audit, and holds terminal stale worker claims before retry. See MAGIC-MIKE-CRASH-RECOVERY-2026-10-09.md; preserve source/report deduplication and do not bypass review.
 - Prospect identity is resolved in intake and official coaching from transcript/title evidence. Preserve raw speaker aliases, exact matched manual names, item pairing and duplicate controls. Retain an external device/display label when identity evidence is insufficient. See MAGIC-MIKE-PROSPECT-IDENTITY-2026-10-09.md for versions, tests and scoped rollback.
 - Compliance categories and risk values feed manager dashboards, weekly summaries, and Google Sheet views. Be careful with schema or label changes.
 - Hidden manager pages are `/manager/usage` and `/manager/sales-correlation?days=7|14|30|90`.
