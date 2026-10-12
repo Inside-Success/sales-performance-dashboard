@@ -35,7 +35,15 @@ Exactly reports 7614, 7620 and 7715 had blank names. Read-only Drive inspection 
 - TypeScript, scoped ESLint and production webpack build passed. No dev server, new checkout or dependency installation.
 - Paid AI testing spend: USD0.00. Ordinary hosting/database/n8n execution consumption is not included in that figure.
 
-Dashboard Git/deployment and signed-in release verification must be recorded below before calling the dashboard repair live. A naturally arriving call under these exact n8n versions must be recorded separately before claiming that observation.
+## Completed dashboard release and live readback
+
+PR280 merged b4c3ebdcb2ee56fe01d9e6ef9135ea68954607e9. Production dpl_Ft7SuX2qMgdZZJrH4CjuQdpWFmLV is READY for that exact commit and the rose alias was explicitly assigned to it. Preview builds failed before compilation with the pre-existing Resource provisioning failed limitation; production and local builds succeeded. No environment/access settings were changed. The branch was rebased onto the independently completed October 12 FAQ knowledge release (PR278/279); its source changes were preserved. The combined build passed and 116 tests passed (110 coaching plus six current FAQ knowledge regressions).
+
+Signed-in Chrome checked all seven identified outcome-repeat examples: 7634, 7640, 7661, 7667, 7680, 7705, 7714. Each shows Call outcome once, followed by the existing improvement/strength/concern/next-step sections. Reports 7614/7620/7715 show the restored original Zoom user label, their full meeting titles and all source links. No human name was fabricated. Existing very-old full-section report2240 retains Verdict, Biggest Strength, What I'd Polish, Coaching Tip, Rudy's Note, What Went Well, What To Improve, Why No Close and Objections Surfaced. Bryce self-report716dd1bd1e2944e6acf8660cf70c853e still loads its structured report. Manager scorecard and FAQ usage access load successfully; FAQ knowledge date remains October12. Explanation expansion, evidence-time selection and actual source transcript loading at3:23 were verified on7714.
+
+Live workflow readback again matches the five intended nodes exactly; all remaining node hashes/connections/settings are preserved. Recovery worker and recent intake remain successful. Latest official execution1076303 started11:11UTC, before this repair, so no fresh natural call under the precise new revision is claimed. Saved real-data replay and published-code checks passed; the next natural call is an observation to capture in a later authorized health scan, not an extra test submission or regeneration.
+
+Private rollback/metadata receipts total approximately42KB, plus a206KB visual proof image. No transcript archive or duplicate checkout/dependency tree was created. Local existing webpack cache grew approximately46MB during validation. AI testing spend remains USD0.00; no additional per-call model cost is introduced.
 
 ## Scoped rollback
 
