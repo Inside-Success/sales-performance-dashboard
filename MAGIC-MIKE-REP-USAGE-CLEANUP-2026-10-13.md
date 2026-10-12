@@ -17,7 +17,15 @@ Usage SQL, authenticated identity mapping, event tracking, historical events, ac
 ## Verification
 - 16 usage unit tests passed, including report-panel count/status reconciliation, period boundaries, duplicates, immutable numeric/rate/date sorting and missing values.
 - Scoped ESLint and TypeScript passed.
-- Production webpack build and authenticated deployed UI verification: pending at initial commit; append actual results after release.
+- Production webpack build passed. Code PR #284 merged as `b3ad9094bcd9dcbabb9563e3fb2bf831a0f6a8f1`.
+- Production deployment `dpl_GdwAkNRsXpyLxQBTHA3mqGUZaNki` READY; explicitly promoted and rose alias verified on this deployment. Previous rose rollback target: `dpl_45kRyQZQ8tZNL2WR8v4n64pijnPj`.
+- Authenticated live page: removed metrics absent; all five headings toggle correctly in both directions; search and opened-feedback filter work; selected Irene row/panel agrees (32 received, 8 opened, 25%). Panel lists 8 opened / 24 not opened; Escape restores trigger focus.
+- Independent SELECT-only database reconciliation: 7-day 28/398 opened; all-time 630/5646; Irene 8/32. 30-day 152 opened and 24/132 reps agree; report denominator moved 1687 to 1688 as a natural report arrived between observations.
+- Actual report links, period controls, empty/no-report cases are covered by live inspection and unit tests.
+- After release, authenticated Coaching, report 7736, FAQ, FAQ admin usage, scorecard, Sales Impact and Compliance pages loaded without page errors. Production error logs since release showed no error entries.
+- Responsive CSS/table scroll and panel bounds reviewed. The browser viewport override did not apply (actual viewport remained 1425px), so a real phone-width browser check is NOT claimed. Override reset.
+- Vercel preview failed before build with existing `Resource provisioning failed`; local production build and Git-backed production build succeeded. No environment settings changed.
+- Small local screenshot (49 KB) retained for visual verification; no repository/transcript/dependency backup copies created.
 
 ## Rollback
 Previous source: main commit `9f7c359ce9bf784d853943dc2de0db6a9f521c54`. Revert this scoped change or restore these four files from that commit, retaining unrelated FAQ changes. No database rollback or workflow changes required. Use the prior verified rose deployment captured during release if runtime rollback is needed.
