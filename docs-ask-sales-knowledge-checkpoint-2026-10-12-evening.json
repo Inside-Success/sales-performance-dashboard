@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-12",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "6bc98e0bac65bcea71c789cc",
   "knowledgeVersion": "6bd6585253dd6c7c3eb2b664",
   "activeRecordCount": 2550,
@@ -3167,5 +3167,24 @@
     "hubspot-reminder-delivery-diagnosis-2026-10-12"
   ],
   "additionalTargetedThreadReads": 1,
-  "lateSourceReview": "User-requested Rudy forward and full original thread read after initial collection; both attached screenshots inspected; audio file connector returned no content or downloadable reference."
+  "lateSourceReview": "User-requested Rudy forward and full original thread read after initial collection; both attached screenshots inspected; audio file connector returned no content or downloadable reference.",
+  "publication": {
+    "dashboardPR": 282,
+    "dashboardCommit": "8e03f7e5f64bdee40146a70e4bbac00d31cf4922",
+    "faqPR": 101,
+    "faqCommit": "d535c055f665241d4fb5afa3cb0df596f1382127",
+    "productionDeployment": "dpl_8DNkVoDEDhNYCqTMFrLwtjBfi8DP",
+    "productionURL": "https://sales-performance-dashboard-rose.vercel.app",
+    "githubDashboardRun": "38292127581",
+    "githubFAQRun": "38291718873",
+    "liveAnswerId": "faq_assistant_4883567b-3aa7-41d0-945a-a4a28557d36d",
+    "liveAnswerAt": "2026-10-12T18:41:19.391Z",
+    "liveAnswerKnowledgeVersion": "6bd6585253dd6c7c3eb2b664",
+    "liveAnswerLatencyMs": 10293,
+    "providerAttempts": "plan, answer and review successful; no validation issues",
+    "adminAccessVerified": true,
+    "coachingPageSmokeVerified": true,
+    "testsPassed": 397,
+    "estimatedApiCostUsd": 0.13431862
+  }
 }
