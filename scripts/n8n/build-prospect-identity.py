@@ -121,7 +121,7 @@ const lines = identityLines({ mergedTranscript: cleaned_transcript });
 const present = [...new Set(lines.map(line => line.speaker))].filter(name => !identityRep(name, {repName}) && !identityBot(name));
 const aliases = suppliedMatches ? (Array.isArray(suppliedIdentity.speakerAliases) ? suppliedIdentity.speakerAliases : []).filter(name => present.includes(name)) : resolved.clientIdentity.speakerAliases;
 return [{ json: { cleaned_transcript, too_short, original_client_name: suppliedMatches ? (suppliedIdentity.originalDisplayName || original_client_name) : original_client_name,
-  normalized_client_name: effectiveName !== original_client_name ? effectiveName : '',
+  resolved_client_name: effectiveName, normalized_client_name: effectiveName,
   client_name_normalization_reason: suppliedMatches ? 'source=validated_intake_identity' : resolved.clientIdentity.resolution,
   client_speaker_aliases: aliases, resolved_show_name: resolved.showName,
   person_misfiled_as_show: !resolved.showName && Boolean(headerValue('Show Name'))
@@ -135,7 +135,7 @@ return [{ json: { cleaned_transcript, too_short, original_client_name: suppliedM
     fields.append({'id': 'mm-client-speaker-aliases-20261009', 'name': 'Client Speaker Aliases', 'value': '={{ JSON.stringify($json.client_speaker_aliases || []) }}', 'type': 'string'})
     for f in fields:
         if f['name'] == 'Client Name':
-            f['value'] = "={{ /^(manual|verified)(\\b|:)/i.test(String($('Loop Over Items').item.json['Client Name Source'] || '')) ? $('Loop Over Items').item.json['Client Name'] : ($json.normalized_client_name || $('Loop Over Items').item.json['Client Name']) }}"
+            f['value'] = "={{ (() => { const row = $('Loop Over Items').item.json; return /^(manual|verified)(\\b|:)/i.test(String(row['Client Name Source'] || '')) && String(row['Client Name'] || '').trim() ? row['Client Name'] : ($json.resolved_client_name || $json.normalized_client_name || $json.original_client_name || row['Client Name'] || ''); })() }}"
         if f['name'] == 'Show Name':
             f['value'] = "={{ $json.person_misfiled_as_show ? '' : ($json.resolved_show_name || $('Loop Over Items').item.json['Show Name']) }}"
     patches[OFFICIAL]['Edit Fields'] = p

@@ -485,7 +485,7 @@ export async function upsertPerformanceCall(payload: NormalizedIngestPayload) {
         rep_name = excluded.rep_name,
         rep_slug = excluded.rep_slug,
         rep_email = excluded.rep_email,
-        client_name = excluded.client_name,
+        client_name = coalesce(nullif(btrim(excluded.client_name), ''), performance_calls.client_name),
         call_date = excluded.call_date,
         meeting_id = excluded.meeting_id,
         meeting_title = excluded.meeting_title,

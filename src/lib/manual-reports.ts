@@ -69,6 +69,8 @@ export const manualCallbackSchema = z
     rep_name: optionalString,
     rep_email: optionalString,
     client_name: optionalString,
+    resolved_client_name: optionalString,
+    original_client_name: optionalString,
     source_type: optionalString,
     zoom_link: optionalString,
     original_zoom_link: optionalString,
@@ -132,6 +134,8 @@ export function normalizeManualCallback(raw: unknown) {
   if (!parsed.public_id) {
     throw new Error("public_id is required");
   }
+
+  parsed.client_name = parsed.client_name || parsed.resolved_client_name || parsed.original_client_name || null;
 
   if (parsed.reviewed_coaching_v1 !== undefined) {
     parsed.reviewed_coaching_v1 = readReviewedCoaching(parsed, parsed.public_id) || null;

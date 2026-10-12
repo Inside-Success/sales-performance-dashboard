@@ -81,3 +81,26 @@ it('exposes existing buyer concerns and next steps once in recent fallback repor
  const result=dashboardCoachingSections({source_payload:{coaching_version:'magic-mike-call2-coaching-2026-09-08'},one_line_verdict:'No payment was made.',objections_surfaced:['Buyer needed partner approval. [00:01:00]'],why_no_close:'No payment was made.\n\nObserved concerns:\n1. Buyer needed partner approval. [00:01:00]\n\nAgreed next steps:\n1. A Thursday call was agreed. [00:02:00]'});
  expect(result.map(x=>x.key)).toEqual(['outcome','objections','next-steps']);expect(result.find(x=>x.key==='objections')!.items).toHaveLength(1);
 });
+
+describe('semantic closing boundaries',()=>{
+ for(const gap of ['\n','\n\n','\r\n','\r\n\r\n'])it(`shows the outcome once with ${JSON.stringify(gap)} before labels`,()=>{
+  const outcome='Buyer will review the agreement.';
+  const report={source_payload:{coaching_version:'magic-mike-call2-coaching-2026-09-08'},one_line_verdict:outcome,
+   why_no_close:`${outcome} [00:01:00.100]${gap}Observed concerns:${gap}1. Buyer needs attorney approval. [00:02:00.200]${gap}Agreed next steps:${gap}1. Call Monday. [00:03:00.300]`};
+  const before=JSON.stringify(report);const sections=dashboardCoachingSections(report);
+  expect(sections.map(x=>x.key)).toEqual(['outcome','objections','next-steps']);
+  expect(sections[0].items[0]).toContain('[00:01:00.100]');
+  expect(sections[1].items.join(' ')).toContain('attorney approval');
+  expect(sections[2].items.join(' ')).toContain('[00:03:00.300]');
+  expect(JSON.stringify(report)).toBe(before);
+ });
+ it('preserves a genuinely different closing explanation',()=>{
+  const sections=dashboardCoachingSections({source_payload:{coaching_version:'magic-mike-call2-coaching-2026-09-08'},one_line_verdict:'No payment was confirmed.',why_no_close:'The contract review delayed the payment.\nObserved concerns:\n1. Attorney review is pending.\nAgreed next steps:\n1. Call Monday.'});
+  expect(sections.find(x=>x.key==='close')?.items).toEqual(['The contract review delayed the payment.']);
+ });
+ it('preserves old full-section layouts rather than reparsing their labels',()=>{
+  const report={source_payload:{coaching_version:'legacy-2026-07-01'},one_line_verdict:'Buyer will review.',why_no_close:'Buyer will review.\nObserved concerns:\n1. Existing concern.\nAgreed next steps:\n1. Existing step.'};
+  expect(dashboardCoachingSections(report).map(x=>x.key)).toEqual(['outcome','close']);
+  expect(dashboardCoachingSections(report).find(x=>x.key==='close')?.items.join(' ')).toContain('Observed concerns:');
+ });
+});
