@@ -892,8 +892,10 @@
     "id": "reapply-context-and-current-guidance",
     "decisionKey": "reapply-context-and-current-guidance",
     "title": "Reapplying: preserve context and conflicting intervals",
-    "questions": [],
-    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich’s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3–6 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich’s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait. The retained non-duration instruction from the older missed-Call-1 guidance is not to read the application’s banned/blacklisted language verbatim; a missed call alone does not establish permanent blacklisting. Repeated-abuse handling remains a separate decision. The May 8 statement that an ordinary greenlit applicant missing the Sunday deadline may never be considered again is superseded for reapplication duration by Rich’s July 8 ordinary three-month minimum. Its Sunday 11:59 PM Eastern cohort cutoff and proven catastrophic-event exception are retained in their original context; they do not establish permanent exclusion.",
+    "questions": [
+      "Can someone who declined a documentary two months ago apply for a reality show now?"
+    ],
+    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich’s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3–6 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich’s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait. The retained non-duration instruction from the older missed-Call-1 guidance is not to read the application’s banned/blacklisted language verbatim; a missed call alone does not establish permanent blacklisting. Repeated-abuse handling remains a separate decision. The May 8 statement that an ordinary greenlit applicant missing the Sunday deadline may never be considered again is superseded for reapplication duration by Rich’s July 8 ordinary three-month minimum. Its Sunday 11:59 PM Eastern cohort cutoff and proven catastrophic-event exception are retained in their original context; they do not establish permanent exclusion. October 12: Mike expressly approved one documentary-to-reality applicant to proceed now before three months, emphasizing it was a one-off; Rich explained the exception was doc to reality, not reapplying for a documentary. Preserve the ordinary three-month minimum above. A switch of show family is a reason to request leadership review, not automatic permission for every applicant to bypass the wait.",
     "scopes": [
       "shared"
     ],
@@ -904,9 +906,12 @@
       "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
       "screenshot:2026-07-08:rich-main-istv-reapply-three-months",
       "slack:C0AUQKNR8CF:1781287874.524089",
-      "slack:C0AUQKNR8CF:1778242291.989949"
+      "slack:C0AUQKNR8CF:1778242291.989949",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791809279851669",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791809901772899",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791812773300389"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2351,9 +2356,11 @@
     "title": "Reality sales: remove documentary cohort wording",
     "questions": [
       "Does the same-week cohort deadline apply to reality?",
-      "Is there a reality contract video?"
+      "Is there a reality contract video?",
+      "Can I mention Sunday casting urgency on a reality call?",
+      "Does a reality prospect lose acceptance if they decide Monday?"
     ],
-    "text": "Rudy and Sales Ops explicitly clarified that reality offers do not use cohort rules. Remove cohort wording from reality letters rather than copying the regular documentary cohort process. This does not remove a deadline expressly agreed in a reality contract or grant an invented payment extension. Reality now has a dedicated buyer welcome email and production-led onboarding. There is no separate reality contract-explanation video according to Rudy; the mandatory reality Call 2 license/package video is still required.",
+    "text": "Rudy and Sales Ops explicitly clarified that reality offers do not use cohort rules. Remove cohort wording from reality letters rather than copying the regular documentary cohort process. This does not remove a deadline expressly agreed in a reality contract or grant an invented payment extension. Reality now has a dedicated buyer welcome email and production-led onboarding. There is no separate reality contract-explanation video according to Rudy; the mandatory reality Call 2 license/package video is still required. Rudy's October 12 clarification permits truthful studio-level context: the majority of the studio and shows works on a weekly cohort, with about 3,000 casting auditions a week, so casting is likely to finalize Sunday for a Monday announcement. For reality this is NOT a hard cutoff. Reps must not say a reality applicant will not be accepted merely because they do not decide by Sunday. This qualifies the earlier instruction to remove documentary cohort wording: truthful general studio timing is allowed, but documentary hard-deadline consequences must not be transferred to reality.",
     "scopes": [
       "reality"
     ],
@@ -2361,9 +2368,11 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789681170719729",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789655383085099",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789677583143159",
-      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit"
+      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791824978986749",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825002937529"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2752,7 +2761,7 @@
       "What is required when I get hired?",
       "What training do I complete in my first two weeks live?"
     ],
-    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the six live training Zooms, call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee.",
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (currently five sessions), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee.",
     "scopes": [
       "shared"
     ],
@@ -2760,7 +2769,7 @@
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -3687,8 +3696,8 @@
   {
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
-    "title": "Current five live new-rep training sessions with Raul",
-    "text": "The October 7 Part 1 onboarding sheet, Basic Setup item 5, now lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 1–2 PM EST Compliance with Raul; Tuesday 11 AM–noon EST Call 1 Sales Training with Raul; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts & Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. The former Wednesday 11 AM Call 2 session with Mike is no longer listed; do not give the old six-session schedule. Wednesday's current HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For the other session-specific links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
+    "title": "Current five live new-rep training sessions with Mike and Raul",
+    "text": "The October 12 Part 1 onboarding sheet, Basic Setup item 5, lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Call 1 Sales Training with Raul; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts & Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. Monday replaces the previous 1–2 PM session with Raul. The former separate Wednesday 11 AM Call 2 session with Mike remains absent. The signoff footer still refers to six sessions, but item 5 lists five; do not invent a sixth session. Wednesday's HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For session-specific joining links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3701,7 +3710,7 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3994,7 +4003,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -4022,19 +4031,22 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791409515865209",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791387386985359",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791425329648439",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791647053466119"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791647053466119",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791820068205409",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284548+00:00",
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
     "conditions": [
       "governing_evidence:reality-catalog-status-2026-10-01",
-      "governing_evidence:reality-catalog-status-2026-10-03"
+      "governing_evidence:reality-catalog-status-2026-10-03",
+      "governing_evidence:island-season1-production-confirmed-2026-10-12"
     ],
     "supersedes": [
       "reality-season-schedule-2026-10-01"
@@ -5028,9 +5040,13 @@
     "title": "Reality contract questions: clarification is not a rewritten agreement",
     "questions": [
       "Do reality participants need to disclose paying?",
-      "Can I rewrite a UK reality agreement or promise a liability waiver?"
+      "Can I rewrite a UK reality agreement or promise a liability waiver?",
+      "What exactly did Rudy say about disclosing paid participation?",
+      "Can I promise no liability if someone leaves a reality show?",
+      "Does the paid production clause mean they must say they paid, or disclose being part of the production?",
+      "Do reality participants still need ad or promotion disclosures?"
     ],
-    "text": "In the master reality FAQ replies Rudy says the company uses US/Florida terms and reps must not edit contracts. On October 9–10 he says cast should not need to disclose payment, that disclaimers go at the end of shows/trailers, and legal is working through the wording. The quoted existing contract still contains participant-disclosure obligations, so these replies do not establish that a revised agreement has been issued or waive a signed clause. Explain the distinction and have the applicable agreement/legal clarification confirmed before advising a participant to disregard it. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved.",
+    "text": "Rudy's latest October 12 clarification of the PAID PRODUCTION CONTRACT CLAUSE says it is about participants disclosing that they are part of the production, like influencers using #ad or #promotion; it is not about saying that they paid to participate. Explain both parts together: no requirement to announce their own payment under this company explanation, but promotional/production-relationship disclosure still applies. Do not shorten this to 'no disclosure is needed' or assume end credits remove participants' promotional disclosure obligations. Earlier statements remain context: on September 29 Rudy wrote 'No he doesn't need to say that on all his posts. We have to just add it in the credits somewhere at some point'; on October 9, when asked whether participants have to say it is a paid thing, his exact reply was 'No they don’t', with a separate statement about disclaimers at the end of shows/trailers. The newer October 12 message resolves what the paid-production wording means; it must accompany those earlier quotes when explaining the current position. The attached screenshots are general online explanations of promotional disclosure, not a new signed agreement or company legal opinion. These replies do not establish that a revised agreement has been issued or provide final replacement contractual wording. Answer the meaning directly; if someone specifically requests legal's final written clause, obtain the applicable approved wording rather than inventing it. Do not tell reps to edit or disregard an agreement. Rudy says the company uses US/Florida terms and reps must not edit contracts. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved. In the October 12 early-departure discussion Rich said they would not sue the particular participant for having to leave, while Rudy distinguished simply quitting from ruining a costly production, which could create liability. This is not a blanket no-liability promise, contract amendment, refund right or approved liability cap.",
     "scopes": [
       "reality"
     ],
@@ -5039,9 +5055,16 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791475943444109",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791579215707669",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791579242821079",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791638683655779"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791638683655779",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790701112994459",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791812956139689",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791813009939739",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791813030612909",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791829650737249",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791829775640999"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284557+00:00",
+    "reviewedAt": "2026-10-12T18:35:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5065,6 +5088,109 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791745221069689"
     ],
     "reviewedAt": "2026-10-12T11:08:26.284558+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "island-season1-production-confirmed-2026-10-12",
+    "decisionKey": "island-season1-production-confirmed-2026-10-12",
+    "title": "Rudy confirms Entrepreneurs Island Season 1 financing and production readiness",
+    "questions": [
+      "Is Entrepreneurs Island Season 1 fully financed with filming location and production arrangements secured?",
+      "Has Rudy confirmed the funding and filming arrangements for Island season one?"
+    ],
+    "text": "On October 12, in the Entrepreneurs Island thread, the rep's numbered point 2 asked for confirmation that Season 1 is fully financed, with filming location and production arrangements secured. Rudy replied '(2) yes'. Therefore the current company answer is yes, Rudy has confirmed those three points for Entrepreneurs Island Season 1. Attribute this confirmation to Rudy and link his reply. Earlier absence of confirmation is superseded by this newer answer. The reply supplies no financing paperwork, location name/address, exact filming dates or independently audited financial proof. Do not manufacture those details or extend the confirmation to another show or season. It does not reopen a full season or hold a participant's place; existing capacity/waitlist guidance still applies. The separate request for final contractual disclosure wording is a different question and is not answered by '(2) yes'.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825046342499",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719"
+    ],
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-housing-by-show-2026-10-12",
+    "decisionKey": "reality-housing-by-show-2026-10-12",
+    "title": "Reality accommodation differs by show",
+    "questions": [
+      "Where do reality cast members sleep?",
+      "Will Mansion of Money cast have private rooms?",
+      "Is accommodation a hotel on Island or Business Race?"
+    ],
+    "text": "In the master reality FAQ on October 12 Rudy describes Entrepreneurs Island accommodation as Survivor-style/in tents; Mansion of Money uses shared rooms of two to four people split by sex; Business Race participants figure it out, like Amazing Race. Keep those formats separate. Do not promise private rooms, a hotel or the same housing across all reality shows, and do not infer Entrepreneurs Mountain accommodation from Island. These remarks do not provide an exact property, accessibility arrangement, room assignment or extra travel benefit.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791814647243929"
+    ],
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-duplicate-meetings-2026-10-12",
+    "decisionKey": "hubspot-duplicate-meetings-2026-10-12",
+    "title": "HubSpot duplicate contacts can leave duplicate meeting records",
+    "questions": [
+      "Why are there two HubSpot meetings for one prospect?",
+      "Will merging duplicate contacts remove both meeting records?",
+      "Is this really a double booking or a duplicated CRM record?"
+    ],
+    "text": "October 12 Tech explanations from Sayim and Igor distinguish duplicate HubSpot records from genuine double bookings. Applications under different emails can create duplicate contacts even with the same phone number. Merging contacts may leave both meeting records. Check whether they represent one actual appointment or separate valid bookings, and give Tech the relevant records so the rep can confirm which duplicate should be removed. Igor said they were working on a fix; no universal deployed fix was confirmed in this thread. Do not blindly delete a valid appointment or promise that no-show statistics and KPIs are unaffected merely because records were merged.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822730923609",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822824682509",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822881598449",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791827426287469"
+    ],
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-reminder-delivery-diagnosis-2026-10-12",
+    "decisionKey": "hubspot-reminder-delivery-diagnosis-2026-10-12",
+    "title": "Reminder logs: sent does not prove inbox delivery",
+    "questions": [
+      "HubSpot says reminder sent but the prospect did not receive it. What does that mean?",
+      "Does a newsletter send error prove meeting reminders failed?"
+    ],
+    "text": "Igor's October 12 Tech clarification: an email marked sent does not prove arrival in the prospect's inbox. A missing 24-hour reminder entry is not by itself a confirmed send failure until the booking and reminder logs are checked. A newsletter sending error is separate from meeting-reminder delivery. Provide Tech the affected booking/contact and timing so they can check permissions, subscription status, bounce events and sender-domain authentication as relevant. These are diagnostic checks, not a confirmed root cause or completed fix. Do not bypass opt-outs or claim every reminder is working from a sent status alone.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791821084730519",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791821429221169"
+    ],
+    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
