@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-12",
-  "status": "reviewed_pending_publication",
+  "status": "published_verified",
   "previousKnowledgeVersion": "ac26e8375acc5bf5c29bfd79",
   "knowledgeVersion": "6bc98e0bac65bcea71c789cc",
   "activeRecordCount": 2546,
@@ -2378,5 +2378,23 @@
       "error": "thread_not_found"
     }
   ],
-  "successfulThreadReads": 314
+  "successfulThreadReads": 314,
+  "publication": {
+    "dashboardPR": 278,
+    "dashboardCommit": "06b165a04228d38d08b05e05a6992611b85200e5",
+    "faqPR": 99,
+    "faqCommit": "7652b8458aa082c6f503ddda2b9839a25ba8fa00",
+    "productionDeployment": "dpl_9N6ZvPdjhUTaGZJFzMYHnzoupXZm",
+    "productionURL": "https://sales-performance-dashboard-rose.vercel.app",
+    "githubDashboardRun": "38241335154",
+    "githubFAQRun": "38241356595",
+    "liveAnswerId": "faq_assistant_1e0461af-298c-4cf1-8713-cf3de6d1688a",
+    "liveAnswerAt": "2026-10-12T11:19:27.258Z",
+    "liveAnswerKnowledgeVersion": "6bc98e0bac65bcea71c789cc",
+    "liveAnswerLatencyMs": 10042,
+    "providerAttempts": "plan, answer and review successful; no validation issues",
+    "adminAccessVerified": true,
+    "coachingPageSmokeVerified": true,
+    "testsPassed": 393
+  }
 }

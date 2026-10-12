@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — October 12, 2026
 
-Status: reviewed and tested candidate; publication verification pending. Resume October 8 until this checkpoint is marked published_verified.
+Status: published and production-verified. Resume the October 12 published_verified checkpoint.
 
 ## Source review
 
@@ -12,7 +12,7 @@ Coverage limits: the maintained source set and checkpoint channels, not every hi
 
 ## Knowledge changes
 
-Six new records and nine amendments; candidate knowledge `6bc98e0bac65bcea71c789cc` with 2546 active records.
+Six new records and nine amendments; published knowledge `6bc98e0bac65bcea71c789cc` with 2546 active records.
 
 - HubSpot-first payment-link creation, Zoom-chat delivery, emergency spreadsheet fallback and separate signature/payment checks.
 - Next-day Call 2 guidance and Personal-calendar handling for Call 3; Public bookings distort outbound classification.
@@ -32,8 +32,15 @@ GPT-5.6 Luna medium, prompts, retrieval algorithm, diagnostics, auth/env, schema
 
 ## Verification
 
-Six new retrieval/scope tests passed. Initial local full suite: 391/392 passed; one unchanged V5.14 test hit its 5-second local timeout. The bounded legacy recheck passed all 27 assertions; clean CI remains the release gate. Static safety validator, TypeScript and scoped ESLint passed. Paired registry export validated. Twelve isolated current-model cases cover new facts and key overclaim boundaries; all returned reviewed useful answers without provider/schema errors, with the contract conflict correctly qualified. Estimated cost $0.1086718; no unresolved spend reservation.
+Six new retrieval/scope tests passed. Initial local full suite: 391/392 passed; one unchanged V5.14 test hit its 5-second local timeout. The bounded legacy recheck passed all 27 assertions; clean GitHub CI subsequently passed all 393 tests across 36 files plus the safety validator, TypeScript, scoped ESLint and production build. Static safety validator, TypeScript and scoped ESLint passed. Paired registry export validated. Twelve isolated current-model cases cover new facts and key overclaim boundaries; all returned reviewed useful answers without provider/schema errors, with the contract conflict correctly qualified. Estimated cost $0.1086718; no unresolved spend reservation.
 
 ## Publication
 
-Pending. Preserve the current READY deployment `dpl_55D63Ky99noGYMnckyH7wTmCVjWN` as rollback. No source checkpoint is described as published until production verification succeeds.
+- Dashboard [PR 278](https://github.com/Inside-Success/sales-performance-dashboard/pull/278), commit `06b165a04228d38d08b05e05a6992611b85200e5`; governed run `38241335154` succeeded.
+- FAQ mirror [PR 99](https://github.com/Inside-Success/faq-chatbot/pull/99), commit `7652b8458aa082c6f503ddda2b9839a25ba8fa00`; governed run `38241356595` succeeded.
+- Production `dpl_9N6ZvPdjhUTaGZJFzMYHnzoupXZm` reached READY and the rose alias was assigned. Prior READY `dpl_55D63Ky99noGYMnckyH7wTmCVjWN` remains available for rollback.
+- Authenticated live answer `faq_assistant_1e0461af-298c-4cf1-8713-cf3de6d1688a` at `2026-10-12T11:19:27.258Z` correctly answered the Call 3 calendar and Mountain video exception. Stored metadata confirms knowledge `6bc98e0bac65bcea71c789cc`, 2546 records, GPT-5.6 Luna, all three provider stages successful, no validation issues, and 10.042 seconds latency.
+- Isolated evaluation plus live-answer estimated API cost: $0.11796962.
+- Work Chrome authenticated admin page and Coaching landing page loaded. Coaching check is page-level, not a new report execution.
+- Preview `dpl_8e5xtLbvjdxf3ENw1vAcaCvUtmr2` failed before build with Resource provisioning failed. No database/environment/access changes were made as a workaround; clean CI/local builds and actual production checks supply release evidence.
+- Completion receipt updates the admin publication date only after these checks. Raw source text, private client context and evaluation artifacts remain private.
