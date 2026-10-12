@@ -5,11 +5,11 @@ import type { Plan } from '../../../src/lib/ask-sales-faq/revamp/types';
 const records=getRevampKnowledge();
 const rows=(question:string,scope:Plan['scopes'][number]='main_istv')=>retrieveEvidence(records,question,{intent:'company_question',question,scopes:[scope],queries:[]}).map(x=>x.record);
 describe('October 5 knowledge refresh',()=>{
- it('retrieves revised training hours without the old Monday instructor',()=>{
+ it('retrieves the latest training hours even when the question names the former instructor',()=>{
   const evidence=rows('When does Raul teach compliance and when is closing training?').map(r=>r.text).join('\n');
-  expect(evidence).toContain('Monday 1–2 PM EST Compliance with Raul');
+  expect(evidence).toContain('Monday 11 AM–noon EST Compliance with Mike');
   expect(evidence).toContain('Thursday 2–3 PM EST Closing');
-  expect(evidence).not.toContain('Monday 11 AM–noon EST Compliance with Mike');
+  expect(evidence).not.toContain('Monday 1–2 PM EST Compliance with Raul');
  });
  it('finds couple participation clarification in reality scope',()=>{
   expect(rows('Can a couple compete together in Business Race?','reality').map(r=>r.id)).toContain('reality-couples-separate-entrants-2026-10-05');
