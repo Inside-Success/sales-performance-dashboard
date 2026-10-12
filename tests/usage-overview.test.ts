@@ -14,7 +14,7 @@ describe('owner report overview',()=>{
 
 it('does not expose obvious extracted prose as a client name',()=>{expect(usageReportLabel("who explicitly references two calls")).toBe('Coaching report');expect(usageReportLabel('Anna')).toBe('Anna');expect(usageReportLabel(null)).toBe('Coaching report');});
 
-import { matchesUsageFilter, usagePercent } from '../src/lib/usage-overview';
+import { matchesUsageFilter, usagePercent, sortUsageReps } from '../src/lib/usage-overview';
 const day=86400000;
 const at=(days:number)=>new Date(now-days*day).toISOString();
 it('keeps owner history for filters without counting older reports in the selected period',()=>{
@@ -40,4 +40,29 @@ it('handles comparison boundaries, no reports and all-time without fabricated tr
  const r=summarizeUsage([row(1,{available_at:at(2)}),row(2,{available_at:at(9)}),row(3,{available_at:at(16)})],now,7);
  expect(r.comparison).toEqual({current:{available:1,opened:0},previous:{available:1,opened:0}});
  expect(summarizeUsage([],now).comparison).toBeNull();expect(usagePercent(0,0)).toBeNull();expect(usagePercent(1,3)).toBe(33);
+});
+
+it('rep panel reports reconcile with overview, deduplicate and exclude older reports',()=>{
+ const rows=[row(1,{available_at:at(3),own_opened_at:at(2)}),row(2,{available_at:at(1)}),row(3,{available_at:at(40),own_opened_at:at(39)})];
+ const r=summarizeUsage([...rows,rows[0]],now,7).reps[0];
+ expect(r.reports.map(report=>report.id)).toEqual([2,1]);
+ expect(r.reports).toHaveLength(r.available);
+ expect(r.reports.filter(report=>report.openedAt)).toHaveLength(r.opened);
+ expect(r.reports.filter(report=>!report.openedAt)).toHaveLength(r.unopened.length);
+ expect(summarizeUsage(rows,now,null).reps[0].reports).toHaveLength(3);
+});
+it('sorts numeric values and rates correctly in both directions without changing source order',()=>{
+ const reps=summarizeUsage([row(1,{rep_name:'Z',rep_slug:'z',available_at:at(1)}),row(2,{rep_name:'A',rep_slug:'a',available_at:at(1),own_opened_at:at(0)}),row(3,{rep_name:'A',rep_slug:'a',available_at:at(1)})],now,7).reps;
+ const original=reps.map(rep=>rep.slug);
+ expect(sortUsageReps(reps,'available','asc').map(rep=>rep.slug)).toEqual(['z','a']);
+ expect(sortUsageReps(reps,'available','desc').map(rep=>rep.slug)).toEqual(['a','z']);
+ expect(sortUsageReps(reps,'rate','desc').map(rep=>rep.slug)).toEqual(['a','z']);
+ expect(sortUsageReps(reps,'name','asc').map(rep=>rep.slug)).toEqual(['a','z']);
+ expect(reps.map(rep=>rep.slug)).toEqual(original);
+});
+it('keeps unknown rates and missing last-open dates last in both sort directions',()=>{
+ const reps=summarizeUsage([row(null,{rep_slug:'none',rep_name:'None'}),row(1,{rep_slug:'old',rep_name:'Old',own_opened_at:at(5)}),row(2,{rep_slug:'new',rep_name:'New',own_opened_at:at(1)})],now,null).reps;
+ expect(sortUsageReps(reps,'lastOwnOpened','asc').map(rep=>rep.slug)).toEqual(['old','new','none']);
+ expect(sortUsageReps(reps,'lastOwnOpened','desc').map(rep=>rep.slug)).toEqual(['new','old','none']);
+ for(const direction of ['asc','desc'] as const) expect(sortUsageReps(reps,'rate',direction).at(-1)?.slug).toBe('none');
 });
