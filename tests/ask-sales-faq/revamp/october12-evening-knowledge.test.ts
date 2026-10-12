@@ -13,7 +13,9 @@ describe('October 12 evening source refresh', () => {
     expect(text).toContain('not reopen a full season');
     const disclosure = evidence('Do reality participants need to disclose paying?');
     expect(disclosure).toContain('No they don’t');
-    expect(disclosure).toContain('not establish that a revised agreement has been issued');
+    expect(disclosure).toContain('establish that a revised agreement has been issued');
+    expect(disclosure).toContain('disclosing that they are part of the production');
+    expect(disclosure).toContain('#ad or #promotion');
   });
   it('keeps the reality urgency and reapplication exceptions bounded', () => {
     const deadline = evidence('Does a reality prospect lose acceptance if they decide Monday?');

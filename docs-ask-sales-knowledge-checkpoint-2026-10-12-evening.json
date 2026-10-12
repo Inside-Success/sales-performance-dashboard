@@ -2,13 +2,13 @@
   "reviewDate": "2026-10-12",
   "status": "candidate awaiting production verification",
   "previousKnowledgeVersion": "6bc98e0bac65bcea71c789cc",
-  "knowledgeVersion": "a32381eceb340333210609b6",
+  "knowledgeVersion": "6bd6585253dd6c7c3eb2b664",
   "activeRecordCount": 2550,
   "slack": {
     "C09AF0NQJE7": {
       "previousRootTs": "1791801249.216529",
-      "latestRootTs": "1791828102.707539",
-      "rootMessagesRead": 6,
+      "latestRootTs": "1791829775.640999",
+      "rootMessagesRead": 7,
       "paginationComplete": true,
       "coverage": "New roots since prior checkpoint; tracked threads revisited, plus 83 previously untracked roots from the prior scan. Retain all read roots, including those without replies, for future reply checks."
     },
@@ -2563,7 +2563,7 @@
     {
       "channel": "C0AUQKNR8CF",
       "rootTs": "1791748964.170619",
-      "latestReadTs": "1791825674.191739",
+      "latestReadTs": "1791829650.737249",
       "paginationComplete": true
     },
     {
@@ -3123,6 +3123,12 @@
       "rootTs": "1791803548.050639",
       "latestReadTs": "1791803548.050639",
       "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791829775.640999",
+      "latestReadTs": "1791829775.640999",
+      "paginationComplete": true
     }
   ],
   "privateEvidenceDirectory": ".magic-mike-knowledge-refresh-2026-10-12-evening",
@@ -3144,7 +3150,8 @@
     "Coverage is the maintained source map and four maintained Slack channels, not every private workspace conversation or all historical videos.",
     "Slack cutoff is per-channel/root and per-thread last-read timestamp; messages arriving after those reads belong to the next refresh.",
     "Final replacement disclosure contract wording was not found; CEO guidance is preserved separately.",
-    "The training document lists five sessions while its footer still says six; preserve the listed schedule rather than inventing a session."
+    "The training document lists five sessions while its footer still says six; preserve the listed schedule rather than inventing a session.",
+    "Latest Rudy audio clip F0C86GN0QCX was not exposed by the Slack connector; written clarification and both screenshots were read."
   ],
   "sourceReviewCompletedAt": "2026-10-12T18:29:36.496544+00:00",
   "changedKnowledgeIds": [
@@ -3158,5 +3165,7 @@
     "reality-housing-by-show-2026-10-12",
     "hubspot-duplicate-meetings-2026-10-12",
     "hubspot-reminder-delivery-diagnosis-2026-10-12"
-  ]
+  ],
+  "additionalTargetedThreadReads": 1,
+  "lateSourceReview": "User-requested Rudy forward and full original thread read after initial collection; both attached screenshots inspected; audio file connector returned no content or downloadable reference."
 }
