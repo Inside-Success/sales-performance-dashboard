@@ -1,0 +1,2382 @@
+{
+  "reviewDate": "2026-10-12",
+  "status": "reviewed_pending_publication",
+  "previousKnowledgeVersion": "ac26e8375acc5bf5c29bfd79",
+  "knowledgeVersion": "6bc98e0bac65bcea71c789cc",
+  "activeRecordCount": 2546,
+  "slack": {
+    "C09AF0NQJE7": {
+      "previousRootTs": "1791465727.033399",
+      "latestRootTs": "1791801249.216529",
+      "rootMessagesRead": 27,
+      "paginationComplete": true,
+      "coverage": "New roots since previous checkpoint; reported threads expanded; tracked older threads revisited separately."
+    },
+    "C0AUQKNR8CF": {
+      "previousRootTs": "1791464583.798409",
+      "latestRootTs": "1791768055.374899",
+      "rootMessagesRead": 53,
+      "paginationComplete": true,
+      "coverage": "New roots since previous checkpoint; reported threads expanded; tracked older threads revisited separately."
+    },
+    "C08QGKL39J6": {
+      "previousRootTs": "1791463422.171479",
+      "latestRootTs": "1791773076.687029",
+      "rootMessagesRead": 70,
+      "paginationComplete": true,
+      "coverage": "New roots since previous checkpoint; reported threads expanded; tracked older threads revisited separately."
+    },
+    "C0A8S3JSR1Q": {
+      "previousRootTs": "1791463425.291859",
+      "latestRootTs": "1791802353.497229",
+      "rootMessagesRead": 41,
+      "paginationComplete": true,
+      "coverage": "New roots since previous checkpoint; reported threads expanded; tracked older threads revisited separately."
+    }
+  },
+  "google": {
+    "registeredSourcesMetadataChecked": 75,
+    "sourceMetadata": [
+      {
+        "id": "1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE",
+        "title": "REALITY SHOWS - Rudy's Master Script - CALL #1",
+        "modified_time": "2026-09-07T02:46:31.985Z"
+      },
+      {
+        "id": "105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do",
+        "title": "Inside Success TV - Not Approved/Rejection & Cancellation Letter",
+        "modified_time": "2026-04-28T20:04:28.105Z"
+      },
+      {
+        "id": "11uEmCRyJxw2koPoPnFZNySLJVYD9722VDzoLyDV9tOg",
+        "title": "REFUND SAVES",
+        "modified_time": "2026-05-13T20:39:09.974Z"
+      },
+      {
+        "id": "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
+        "title": "INSIDE SUCCESS TV – GREEN LIGHT PROCESS CHEAT SHEET",
+        "modified_time": "2026-10-08T18:53:31.012Z"
+      },
+      {
+        "id": "17AeELjukYKUDbpKtr07PG8peYJWJAKYkfgNHOjCyrb4",
+        "title": "MAIN ISSUES ALL REPS ARE MAKING",
+        "modified_time": "2026-04-21T03:15:49.711Z"
+      },
+      {
+        "id": "19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k",
+        "title": "Inside Success TV – Dummy Call Channel Cheat Sheet",
+        "modified_time": "2026-03-24T12:28:16.372Z"
+      },
+      {
+        "id": "1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM",
+        "title": "Inside Success TV – Outbound Dialing Cheat Sheet",
+        "modified_time": "2026-02-12T13:12:39.787Z"
+      },
+      {
+        "id": "1DPGTSrLth0CE2e71lbo3TQPJzjHv0sY-tIxGwfF00EY",
+        "title": "Ruben Copy of INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T20:41:16.965Z"
+      },
+      {
+        "id": "1ER-SvUVj2cwO94yCPSvz9Hk8OWOdmYMvpzFzDAjB7eU",
+        "title": "SOP: Daily Sales Rep Ledge Update / Invoice",
+        "modified_time": "2026-04-09T15:45:35.497Z"
+      },
+      {
+        "id": "1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ",
+        "title": "Rudy's Master Script - CALL #1",
+        "modified_time": "2026-10-06T15:34:24.407Z"
+      },
+      {
+        "id": "1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y",
+        "title": "20% Outbound Dialing SOP",
+        "modified_time": "2026-07-01T16:40:58.089Z"
+      },
+      {
+        "id": "1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y",
+        "title": "Inside Success TV – Double Bookings Cheat Sheet",
+        "modified_time": "2026-02-11T21:55:46.983Z"
+      },
+      {
+        "id": "1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8",
+        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "modified_time": "2026-06-01T17:58:03.538Z"
+      },
+      {
+        "id": "1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc",
+        "title": "ISTV - Mandatory Main Email and Text Sent AFTER CALL #1 GREEN LIGHT - Before Call #2",
+        "modified_time": "2026-07-21T16:28:33.896Z"
+      },
+      {
+        "id": "1P1my5QGrvkL9Bg_7ad3bk3CL_37n2JgUioFLeY3jsXM",
+        "title": "Master Sheet - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-03-16T21:26:47.329Z"
+      },
+      {
+        "id": "1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM",
+        "title": "ISTV LICENSE OPTIONS - 2026",
+        "modified_time": "2026-09-30T11:52:01.157Z"
+      },
+      {
+        "id": "1UsagbQCvQV6EuguPsslydlvdbOFGD2GTsj0oSw57e68",
+        "title": "Copy of INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T20:35:11.684Z"
+      },
+      {
+        "id": "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+        "title": "PART 1 - SPRINT - 72HR - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-10-08T18:43:28.857Z"
+      },
+      {
+        "id": "1XC0q0OEvnEaicGKmutfh5fkf6rpDV-BShPJTgftMkTk",
+        "title": "FAQ Bot - Sales Team Approval Questions",
+        "modified_time": "2026-06-30T10:15:20.689Z"
+      },
+      {
+        "id": "1YW6Z0NEYb8Ot8mSv3iDAFxCpTohhiQxIxhl0eygPcTw",
+        "title": "ISTV LICENSE OPTIONS - 2026",
+        "modified_time": "2026-04-23T15:45:49.331Z"
+      },
+      {
+        "id": "1Yryv722wjWZoHLZTvc210z5rXjhf9efbuqGc8A4e5zI",
+        "title": "SOP: Sales Team - Contract Adjustments & Client Requests",
+        "modified_time": "2026-03-18T17:09:35.785Z"
+      },
+      {
+        "id": "1_Lb95IF0ZUK6TcAfBZhE7q1iSuTSP4Zci5bcnrefkXU",
+        "title": "INSIDE SUCCESS TV CHEAT SHEET W/ APRIL UPDATES",
+        "modified_time": "2026-04-28T21:34:05.730Z"
+      },
+      {
+        "id": "1aMTwXf0u6bDzoXctE0-bRmwBUKBo5P438k1bcQhhSrc",
+        "title": "Conditional Casting Review, Background Check - Refund Agreement",
+        "modified_time": "2026-05-03T13:43:13.074Z"
+      },
+      {
+        "id": "1c7JqQvi8VMotQFJ36paVkT6a5huFP1BRnYHxvj7q2gw",
+        "title": "Inside Success Tv Resources Sheet",
+        "modified_time": "2025-12-08T15:53:48.490Z"
+      },
+      {
+        "id": "1eQ2AMnshiIRKbE9YJ48zTe9IYxN_vRERB0F-00xrALE",
+        "title": "SOP: Invoicing & Commission Payments",
+        "modified_time": "2026-08-31T22:50:31.508Z"
+      },
+      {
+        "id": "1fbBGTEXo3DKQZXIsJCinFMskqB8nCSGW1pQKvX4LUO8",
+        "title": "ISTV  - TEXT & EMAIL templates - Meeting Reminders ",
+        "modified_time": "2026-10-05T16:49:38.625Z"
+      },
+      {
+        "id": "1ffWEESzNgQ9L1mO25fAPDIJCD86k29sqeS05fO0KxoE",
+        "title": "Sales Team Brief (Inside Success TV Offers)",
+        "modified_time": "2026-05-16T14:36:26.890Z"
+      },
+      {
+        "id": "1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU",
+        "title": "ISTV Reality TV Show Cast / Master FAQ",
+        "modified_time": "2026-10-05T16:47:37.978Z"
+      },
+      {
+        "id": "1gmTU4pX0o56QnZgNrJ9b4oIxHfBI1hl6eQ8qarULWrg",
+        "title": "Inside Success  - Welcome Email Post Sale",
+        "modified_time": "2026-10-05T17:13:23.720Z"
+      },
+      {
+        "id": "1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo",
+        "title": "INSIDE SUCCESS TV - CALL SCRIPT #2 ",
+        "modified_time": "2026-10-07T19:21:44.810Z"
+      },
+      {
+        "id": "1ljBEsaKAIoZ2EIo7s0sP1M_cc2hu-b5uHN2G0uC3r9c",
+        "title": "istv-context-pack.md",
+        "modified_time": "2026-06-23T11:22:11.173Z"
+      },
+      {
+        "id": "1lm6dWmMLUQJ83oegGZrTaA29c-rw4hJfkwTXQ4zx9Q4",
+        "title": "SOP: Do Not Contact (DNC) / Opt-Out Compliance Procedure",
+        "modified_time": "2026-09-10T10:12:47.615Z"
+      },
+      {
+        "id": "1mxuqrEVvocGwDlrniWam-fKcEBhtX5qwgdB07fdJS4k",
+        "title": "Sales Team Feedback/Areas to Improve over Summer 2026",
+        "modified_time": "2026-04-28T21:49:09.252Z"
+      },
+      {
+        "id": "1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc",
+        "title": "Inside Success TV – Pass Off Channel Cheat Sheet",
+        "modified_time": "2026-09-14T20:37:05.189Z"
+      },
+      {
+        "id": "1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4",
+        "title": "Welcome Instructions Doc",
+        "modified_time": "2026-08-18T13:07:34.001Z"
+      },
+      {
+        "id": "1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI",
+        "title": "ISTV Sales Master FAQ 2026 ",
+        "modified_time": "2026-09-10T15:49:14.613Z"
+      },
+      {
+        "id": "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+        "title": "Reality Shows Packages",
+        "modified_time": "2026-10-11T01:01:02.305Z"
+      },
+      {
+        "id": "1szwc1ij0bJ6dUy-BXMzpR0ji5Wb3bge7qxzEqmZm5To",
+        "title": "FAQ Bot - Recommended Answers Pack 1",
+        "modified_time": "2026-06-30T17:33:43.438Z"
+      },
+      {
+        "id": "1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU",
+        "title": "PART 2 - FIRST 2 WEEKS LIVE - Inside Success Tv Onboarding Training Sheet",
+        "modified_time": "2026-09-12T22:38:28.042Z"
+      },
+      {
+        "id": "1uJLbh7t6rOt_AjFYnqEINK2Qg09b9e0iLwmbZorquIU",
+        "title": "PERSUASIAN WITHOUT SOUNDING SALSY ",
+        "modified_time": "2026-10-09T17:51:25.120Z"
+      },
+      {
+        "id": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "title": "Contract Automation List MC",
+        "modified_time": "2026-10-09T15:24:51.689Z"
+      },
+      {
+        "id": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "title": "Team Rebooking Calendar Links",
+        "modified_time": "2026-10-09T20:55:45.166Z"
+      },
+      {
+        "id": "1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM",
+        "title": "ISTV Offers",
+        "modified_time": "2026-08-21T17:46:28.196Z"
+      },
+      {
+        "id": "13MgTjFzHFFbF8Ez56XLCXa3i3ArjJAPdRguqNGV3GQI",
+        "title": "10 Key Aspects to SELL On During Call 2",
+        "modified_time": "2026-10-08T12:28:30.124Z"
+      },
+      {
+        "id": "1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs",
+        "title": "NEW Welcome Email Post Sale - REALITY",
+        "modified_time": "2026-10-07T18:21:08.176Z"
+      },
+      {
+        "id": "13hDebf2iwo032ZabuQN4A0LeO3bmYF9Q-jLRwcw4DVE",
+        "title": "How to create an email signature",
+        "modified_time": "2026-07-02T11:37:16.198Z"
+      },
+      {
+        "id": "1rHp5j3hfebdrB-aCmbQaIBYlyixfP6V-e9BG3VlgVZ0",
+        "title": "How to create an email template",
+        "modified_time": "2026-07-02T11:33:57.847Z"
+      },
+      {
+        "id": "1NYin4WW0J-yxsGY9gGvNZtiXqe_jscGHcpTfHvEADDM",
+        "title": "How to use Email Templates for Sending Email",
+        "modified_time": "2026-07-02T11:33:12.885Z"
+      },
+      {
+        "id": "14FT7azEZGu4JlJubX8QTs7RNFfQP9UBGRVf0aSEd2qI",
+        "title": "Mock Call Role Play Structure",
+        "modified_time": "2026-04-27T03:25:29.505Z"
+      },
+      {
+        "id": "1YyqlqJHPQzcnlyDluhmpxuFuFtVGzdbwO1MJ33P2rac",
+        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "modified_time": "2026-10-08T18:30:00.536Z"
+      },
+      {
+        "id": "1__cq939oKZ5QdP0dF7q8FJ0fw7O7oaaV5DRg_18VmOs",
+        "title": "Wire Transfer details:",
+        "modified_time": "2026-05-07T03:14:49.360Z"
+      },
+      {
+        "id": "1i0Qc_37Ppmsq72EoA7Ah1e3fCbeWd45A4ARlminWJvo",
+        "title": "NEW Welcome Email Post Sale",
+        "modified_time": "2026-09-17T16:32:02.200Z"
+      },
+      {
+        "id": "1YQYGv1Yi95xBhFf3r2fQ07JnqBj9ae80DziJ8YDELaY",
+        "title": "SOP for Manually Booking First Calls with Leads",
+        "modified_time": "2026-09-04T16:04:50.596Z"
+      },
+      {
+        "id": "1vzPJe2IFySHjEMJ3f8AeFxqTZnbxTy-IQAHdgFX8eKc",
+        "title": "SOP for Booking Second Calls with Leads",
+        "modified_time": "2026-09-04T16:00:27.744Z"
+      },
+      {
+        "id": "1GizLAG1mY9dZ0bvS-0XdfUvAkloq7ZVlQwGoUYIVI-0",
+        "title": "Green light FTC compliance cheat sheet",
+        "modified_time": "2026-04-23T13:40:45.621Z"
+      },
+      {
+        "id": "182uEqTU-2Eu1tWV8nDeQ9wHgefj62H5132A8EeV9xzE",
+        "title": "2026 KEY RULES - FTC - SALES & CASTING RULES (SCANNABLE VERSION)",
+        "modified_time": "2026-01-07T02:22:25.017Z"
+      },
+      {
+        "id": "1G9NH93ism-1sSHbB_YqdwmzqVJgvR-NJaqc3DatPNdU",
+        "title": "How To Add ISTV As Email Contact",
+        "modified_time": "2026-09-22T15:59:36.181Z"
+      },
+      {
+        "id": "1iWB3K1zxTtbSe4wnChqTwpadMH1nNH9_TFyAk5JiPg8",
+        "title": "HubSpot Set up Guide",
+        "modified_time": "2026-09-15T12:41:28.449Z"
+      },
+      {
+        "id": "101Re3Lrtm3T6uUVAxZCf1KuEiyOje1Zx6bDMq5jw234",
+        "title": "Automated First-Meeting Emails (24-Hour Reminder)",
+        "modified_time": "2026-09-06T11:06:47.357Z"
+      },
+      {
+        "id": "18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs",
+        "title": "Realty shows Media packs",
+        "modified_time": "2026-10-10T12:37:39.481Z"
+      },
+      {
+        "id": "1s8K1RFwUW0IOCJEYeh83QtDNk1WrKVoLd9-zTsN8NTY",
+        "title": "SOP Slack",
+        "modified_time": "2026-10-08T10:42:48.392Z"
+      },
+      {
+        "id": "17pecdTq77Tm6Mm16M7Q2D-7UFX5MfdUqEp8jnNnlVpc",
+        "title": "Untitled document",
+        "modified_time": "2026-09-29T12:57:44.478Z"
+      },
+      {
+        "id": "12zzF5nqu4uTsMcLo_1ovxWNhgxJOummEX-zknRzWb30",
+        "title": "Dial Out and Outreach Call Outcome",
+        "modified_time": "2026-10-09T15:58:21.286Z"
+      },
+      {
+        "id": "1Ria4Mr2f35zG9cXY9NiSEhC8gmA5z5dCa_E2ToI5_Qc",
+        "title": "SOP OnceHub Webhook",
+        "modified_time": "2026-09-25T10:49:35.918Z"
+      },
+      {
+        "id": "1yrmmpN29iyw7FpGCpBrFyCvpPmPgKWB0dX8qp-42tlI",
+        "title": "SOP OnceHub Consumer Lambda",
+        "modified_time": "2026-09-25T10:51:27.988Z"
+      },
+      {
+        "id": "16r93bK4Vqgs3h8m2gwuuf5ne777n5mYYaeAEGvf73Mc",
+        "title": "SOP Meeting Reconciler",
+        "modified_time": "2026-09-25T11:05:09.406Z"
+      },
+      {
+        "id": "1bEAUsym1hU7Jnb3kxgnQUi6jqLYr6gRdg8GpzGSF964",
+        "title": "SOP Typeform Alerts",
+        "modified_time": "2026-09-25T10:35:00.470Z"
+      },
+      {
+        "id": "10nGqObAHQRWlFGfb6xkHenbSe_hFCzSW6daz8Hs8c90",
+        "title": "SOP Typeform Webhook",
+        "modified_time": "2026-09-25T10:41:11.700Z"
+      },
+      {
+        "id": "1fQ-fnvvDxqcyXxCj3mtC9VgWRTEXRoYva6fpGZcAoW0",
+        "title": "SOP Typeform-HubSpot-Integration",
+        "modified_time": "2026-09-25T10:32:55.930Z"
+      },
+      {
+        "id": "1jr-YYGZgYZiLRhYGG9RKFFGpPWgyQGml4X1hdB3dnFI",
+        "title": "SOP Typeform-Hubspot-Mapping",
+        "modified_time": "2026-09-25T10:35:15.261Z"
+      },
+      {
+        "id": "1Q1SHlepMpe1dODJxb3IQp_Fxb_1vfZ3UOQhzkZvDtOY",
+        "title": "SOP Google Integration",
+        "modified_time": "2026-09-28T18:32:59.650Z"
+      },
+      {
+        "id": "1Dx_sUPXq7kXH-hXpr_8lEExP5W2eRTqbkQeY1_FITXM",
+        "title": "SOP Whop Webhook",
+        "modified_time": "2026-09-28T18:39:07.315Z"
+      },
+      {
+        "id": "1BNceNA7MLAAHQZRiMM3gZ28ML8c3Ha-bTJw9Sl875bo",
+        "title": "SOP - Whop Producer Lambda",
+        "modified_time": "2026-09-28T19:01:58.556Z"
+      },
+      {
+        "id": "1G38f83XQ2GmNbhvEgDRO-ig-GFcYG10P1fkbwP-nihE",
+        "title": "SQS Queues",
+        "modified_time": "2026-09-28T19:09:15.376Z"
+      },
+      {
+        "id": "1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc",
+        "title": "SOP List",
+        "modified_time": "2026-10-10T16:43:39.477Z"
+      }
+    ],
+    "registeredDocsFetched": 70,
+    "additionalLinkedDocsRead": [],
+    "changedRegisteredDocs": [
+      "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
+      "1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc",
+      "1piWUsDLE4ON9kaHybWoXy3xGWu1PsqoeMBNYn4zz38Y",
+      "1YyqlqJHPQzcnlyDluhmpxuFuFtVGzdbwO1MJ33P2rac"
+    ],
+    "slidesVisuallyReviewed": [
+      "18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs: all 3 slides; existing media-pack content reconfirmed"
+    ],
+    "sheetRangesReviewed": [
+      {
+        "spreadsheetId": "1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc",
+        "range": "'Completed Work'!A1:Y70"
+      },
+      {
+        "spreadsheetId": "1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc",
+        "range": "'Pending Pipeline'!A1:Z30"
+      },
+      {
+        "spreadsheetId": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "range": "'Inside Success - All Links'!A1:AK50"
+      },
+      {
+        "spreadsheetId": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "range": "'Aniversary Discounts'!A1:AH40"
+      },
+      {
+        "spreadsheetId": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "range": "'Daymond John''s Next Level CEO'!A1:AE35"
+      },
+      {
+        "spreadsheetId": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "range": "'Emergency Stripe/Paypal Links '!A1:J35"
+      },
+      {
+        "spreadsheetId": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "range": "'Closers Calendars'!A1:H20"
+      },
+      {
+        "spreadsheetId": "1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg",
+        "range": "'Setters Calendars'!A1:G20"
+      },
+      {
+        "spreadsheetId": "1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg",
+        "range": "'Inside Success - All Links'!A40:R85"
+      }
+    ],
+    "unavailableSources": [
+      "1GHvmHjmR28geXQhg0GeGAuqQeDvhuhgt",
+      "1geZ14Hdwm0P8l8qkYe0u0kOAO2GRHxXFuP3v3iOEv2E"
+    ],
+    "additionalTechnicalDocsFetchedAndScopeScreened": []
+  },
+  "expandedThreadWatermarks": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791327661.765819",
+      "latestReadTs": "1791327906.107869",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791321195.953969",
+      "latestReadTs": "1791441440.344289",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791318108.037129",
+      "latestReadTs": "1791342799.047489",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791315291.896659",
+      "latestReadTs": "1791469635.252599",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791303854.478369",
+      "latestReadTs": "1791306752.371659",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791293034.753119",
+      "latestReadTs": "1791315440.225199",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791292200.465559",
+      "latestReadTs": "1791302685.332989",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791290700.447299",
+      "latestReadTs": "1791312921.479939",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791280859.908709",
+      "latestReadTs": "1791320293.714389",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791250771.218789",
+      "latestReadTs": "1791251164.314799",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791236667.417009",
+      "latestReadTs": "1791378780.752749",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791234004.443499",
+      "latestReadTs": "1791381016.317699",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791219365.194829",
+      "latestReadTs": "1791248854.781319",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791218803.310079",
+      "latestReadTs": "1791288203.754939",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791369123.428529",
+      "latestReadTs": "1791369994.043889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791318090.854709",
+      "latestReadTs": "1791323561.210189",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791317722.049509",
+      "latestReadTs": "1791326023.157729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791310855.703959",
+      "latestReadTs": "1791326756.750079",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791310112.701009",
+      "latestReadTs": "1791383837.627109",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791307659.086959",
+      "latestReadTs": "1791327798.952059",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791304990.292189",
+      "latestReadTs": "1791305356.601339",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791303927.001479",
+      "latestReadTs": "1791306639.662529",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791303662.627399",
+      "latestReadTs": "1791303757.689619",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791301400.471629",
+      "latestReadTs": "1791326481.478959",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791301365.342419",
+      "latestReadTs": "1791331927.360459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791297491.202629",
+      "latestReadTs": "1791301254.171379",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791235379.701119",
+      "latestReadTs": "1791325792.508999",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791235111.697349",
+      "latestReadTs": "1791308963.725579",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791232065.001379",
+      "latestReadTs": "1791235986.869739",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791229512.262649",
+      "latestReadTs": "1791266375.486619",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791224535.919709",
+      "latestReadTs": "1791225254.960809",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791223135.804589",
+      "latestReadTs": "1791223575.869059",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791221944.173159",
+      "latestReadTs": "1791241340.575179",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791220073.831159",
+      "latestReadTs": "1791226746.312289",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791208216.202119",
+      "latestReadTs": "1791214493.644889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791339298.544499",
+      "latestReadTs": "1791390479.141019",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791336903.335539",
+      "latestReadTs": "1791366106.463489",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791336536.173329",
+      "latestReadTs": "1791365615.649729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791331282.470529",
+      "latestReadTs": "1791332749.127419",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791327877.382489",
+      "latestReadTs": "1791363656.180879",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791321270.297919",
+      "latestReadTs": "1791367158.609599",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791319497.694849",
+      "latestReadTs": "1791392684.616939",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791316564.806099",
+      "latestReadTs": "1791316690.912239",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791312836.081569",
+      "latestReadTs": "1791321934.966099",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791310648.879349",
+      "latestReadTs": "1791310683.263309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791310458.573869",
+      "latestReadTs": "1791310485.658569",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791309944.916629",
+      "latestReadTs": "1791318268.005439",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791309333.474009",
+      "latestReadTs": "1791313611.882729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791309203.999919",
+      "latestReadTs": "1791311177.158209",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791307076.557099",
+      "latestReadTs": "1791310942.580879",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791305847.100589",
+      "latestReadTs": "1791367835.917649",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791305526.615529",
+      "latestReadTs": "1791307514.884779",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791304758.472149",
+      "latestReadTs": "1791304990.678119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791304214.029759",
+      "latestReadTs": "1791305471.800629",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791303549.561729",
+      "latestReadTs": "1791304476.615619",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791302480.031189",
+      "latestReadTs": "1791303436.298599",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791301783.709279",
+      "latestReadTs": "1791305436.197719",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791300873.884589",
+      "latestReadTs": "1791302170.059929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791300060.320959",
+      "latestReadTs": "1791300294.942209",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791298714.344529",
+      "latestReadTs": "1791300761.026279",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791297813.863299",
+      "latestReadTs": "1791301064.523669",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791297598.541159",
+      "latestReadTs": "1791298213.045019",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791296678.090069",
+      "latestReadTs": "1791297433.896109",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791295460.982229",
+      "latestReadTs": "1791300437.547919",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791295018.548699",
+      "latestReadTs": "1791303065.132179",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791294878.380029",
+      "latestReadTs": "1791304465.629289",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791294798.838549",
+      "latestReadTs": "1791299566.711079",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791294302.184869",
+      "latestReadTs": "1791295690.922789",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791293970.198379",
+      "latestReadTs": "1791295882.736079",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791292835.926039",
+      "latestReadTs": "1791314376.074379",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791288206.982009",
+      "latestReadTs": "1791307175.810589",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791282476.042479",
+      "latestReadTs": "1791293575.421469",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791254214.109239",
+      "latestReadTs": "1791297700.343749",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791252068.497899",
+      "latestReadTs": "1791282133.035119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791251104.568559",
+      "latestReadTs": "1791253626.344889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791250949.075019",
+      "latestReadTs": "1791286655.022329",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791250788.517939",
+      "latestReadTs": "1791283094.097059",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791247460.830909",
+      "latestReadTs": "1791283131.931569",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791243505.997599",
+      "latestReadTs": "1791316965.296889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791242517.806259",
+      "latestReadTs": "1791310028.725889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791242284.709659",
+      "latestReadTs": "1791245655.066219",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791241787.974839",
+      "latestReadTs": "1791282466.790819",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791238575.708919",
+      "latestReadTs": "1791244682.829719",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791237059.661299",
+      "latestReadTs": "1791237608.412459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791236925.003239",
+      "latestReadTs": "1791284232.852419",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791234471.271669",
+      "latestReadTs": "1791237078.357899",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791233116.697709",
+      "latestReadTs": "1791237671.332779",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791227558.745969",
+      "latestReadTs": "1791233083.856659",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791227160.370609",
+      "latestReadTs": "1791227479.068349",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791226582.840059",
+      "latestReadTs": "1791237249.080569",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791224113.268339",
+      "latestReadTs": "1791237838.370659",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791223769.261519",
+      "latestReadTs": "1791223809.145919",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791222179.615939",
+      "latestReadTs": "1791245159.504609",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791217795.394969",
+      "latestReadTs": "1791222784.728399",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791214358.900719",
+      "latestReadTs": "1791222604.759989",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791213789.150209",
+      "latestReadTs": "1791213956.450389",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791212399.176039",
+      "latestReadTs": "1791214707.471989",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791210723.022319",
+      "latestReadTs": "1791214537.490169",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791209769.919619",
+      "latestReadTs": "1791210130.238029",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791209344.145299",
+      "latestReadTs": "1791210196.454119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791207834.496939",
+      "latestReadTs": "1791208815.182659",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791207702.157739",
+      "latestReadTs": "1791216678.999129",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791310508.422839",
+      "latestReadTs": "1791311935.011729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791291135.105829",
+      "latestReadTs": "1791295709.108609",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791207840.260909",
+      "latestReadTs": "1791210970.444809",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791207762.200399",
+      "latestReadTs": "1791248746.170059",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790946847.244319",
+      "latestReadTs": "1790947045.482899",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790950171.980529",
+      "latestReadTs": "1790951666.544709",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791183781.643219",
+      "latestReadTs": "1791267725.716769",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1790952985.690329",
+      "latestReadTs": "1791159738.511949",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791187912.032549",
+      "latestReadTs": "1791189025.583589",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791035487.282069",
+      "latestReadTs": "1791048177.209639",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791071529.641269",
+      "latestReadTs": "1791125494.318309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791045644.946239",
+      "latestReadTs": "1791048984.028039",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790889701.175079",
+      "latestReadTs": "1790978897.216189",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791010040.119019",
+      "latestReadTs": "1791052278.308749",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790892618.591609",
+      "latestReadTs": "1790926893.752549",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790949843.139449",
+      "latestReadTs": "1790950826.298519",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790959138.168809",
+      "latestReadTs": "1790959802.954889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790971999.709329",
+      "latestReadTs": "1790974053.176749",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790889690.790359",
+      "latestReadTs": "1790925624.420059",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790950203.650219",
+      "latestReadTs": "1790950988.065279",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791061645.321999",
+      "latestReadTs": "1791094867.876179",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791204619.074769",
+      "latestReadTs": "1791210632.631409",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790875753.690749",
+      "latestReadTs": "1790884079.048559",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790882821.275229",
+      "latestReadTs": "1790886080.814519",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790871397.587989",
+      "latestReadTs": "1790877115.891409",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790873134.292249",
+      "latestReadTs": "1790885893.061519",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790869920.068479",
+      "latestReadTs": "1790881622.699269",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790909270.738499",
+      "latestReadTs": "1790973957.068299",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790869051.418879",
+      "latestReadTs": "1791192171.135479",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790885797.652619",
+      "latestReadTs": "1790886199.086979",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790965945.586959",
+      "latestReadTs": "1790967670.995309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791154663.073789",
+      "latestReadTs": "1791185646.875569",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790968304.629349",
+      "latestReadTs": "1791210655.355119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1790865994.615799",
+      "latestReadTs": "1790866897.014389",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1790882042.088249",
+      "latestReadTs": "1790883030.556719",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1790897802.631669",
+      "latestReadTs": "1790946607.171359",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791126736.501119",
+      "latestReadTs": "1791147459.028589",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791148073.196179",
+      "latestReadTs": "1791203252.908069",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1790956614.962309",
+      "latestReadTs": "1790957657.256779",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1788746537.690009",
+      "latestReadTs": "1791721866.782189",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791465000.946959",
+      "latestReadTs": "1791510939.610929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791460458.162349",
+      "latestReadTs": "1791489213.501369",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791453659.335689",
+      "latestReadTs": "1791478312.821979",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791406803.053209",
+      "latestReadTs": "1791492491.978819",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791386320.556499",
+      "latestReadTs": "1791472564.175189",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791386084.968799",
+      "latestReadTs": "1791531894.029319",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791378600.957379",
+      "latestReadTs": "1791391572.089339",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791376989.539609",
+      "latestReadTs": "1791379061.374869",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791464583.798409",
+      "latestReadTs": "1791465106.088049",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791464432.322219",
+      "latestReadTs": "1791468352.205489",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791444548.274769",
+      "latestReadTs": "1791461443.783529",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791415749.286069",
+      "latestReadTs": "1791460668.500929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791414318.905129",
+      "latestReadTs": "1791462103.328119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791409697.194669",
+      "latestReadTs": "1791414523.212619",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791406757.983419",
+      "latestReadTs": "1791470588.364649",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791404291.599789",
+      "latestReadTs": "1791420791.133099",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791403418.198919",
+      "latestReadTs": "1791403545.266769",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791401932.779709",
+      "latestReadTs": "1791406770.076399",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791401402.523589",
+      "latestReadTs": "1791427442.346789",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791401010.393579",
+      "latestReadTs": "1791472305.173409",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791396654.111899",
+      "latestReadTs": "1791396788.724309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791395607.859249",
+      "latestReadTs": "1791395658.869409",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791395306.064529",
+      "latestReadTs": "1791463987.848039",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791391815.459279",
+      "latestReadTs": "1791399246.664519",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791390655.462769",
+      "latestReadTs": "1791463213.407439",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791390145.907699",
+      "latestReadTs": "1791492877.913309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791388713.617159",
+      "latestReadTs": "1791389929.715199",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791385999.699969",
+      "latestReadTs": "1791495375.652339",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791381896.086969",
+      "latestReadTs": "1791383699.225529",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791416485.228089",
+      "latestReadTs": "1791418838.337949",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791414068.778599",
+      "latestReadTs": "1791472048.726759",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791413305.089449",
+      "latestReadTs": "1791414577.398359",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791413220.506779",
+      "latestReadTs": "1791414503.744149",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791413145.449969",
+      "latestReadTs": "1791567071.597299",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791411383.615449",
+      "latestReadTs": "1791413953.039899",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791410994.141089",
+      "latestReadTs": "1791453880.449739",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791404998.117749",
+      "latestReadTs": "1791461770.908999",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791403598.002499",
+      "latestReadTs": "1791463063.602919",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791402594.709919",
+      "latestReadTs": "1791462778.376139",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791402500.447039",
+      "latestReadTs": "1791586088.076329",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791402308.484559",
+      "latestReadTs": "1791404421.962639",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791401694.095099",
+      "latestReadTs": "1791499330.472019",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791400407.429859",
+      "latestReadTs": "1791401705.397849",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791396690.959609",
+      "latestReadTs": "1791397065.315909",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791395538.384829",
+      "latestReadTs": "1791408586.324179",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791395481.779209",
+      "latestReadTs": "1791396056.427049",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791394625.551979",
+      "latestReadTs": "1791483711.022449",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791394473.380329",
+      "latestReadTs": "1791394514.078789",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791393546.434249",
+      "latestReadTs": "1791397190.081709",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791391539.644789",
+      "latestReadTs": "1791392346.280239",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791390245.540009",
+      "latestReadTs": "1791396977.908449",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791389836.739459",
+      "latestReadTs": "1791391881.041189",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791389742.778379",
+      "latestReadTs": "1791391498.658289",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791389314.278119",
+      "latestReadTs": "1791396309.195099",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791388995.228609",
+      "latestReadTs": "1791395811.150159",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791388127.447339",
+      "latestReadTs": "1791388854.673709",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791386378.174439",
+      "latestReadTs": "1791387305.692379",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791385930.740449",
+      "latestReadTs": "1791400799.136639",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791385587.586389",
+      "latestReadTs": "1791394434.816269",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791382491.318729",
+      "latestReadTs": "1791382825.608909",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791382479.020069",
+      "latestReadTs": "1791386231.517809",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791381452.510909",
+      "latestReadTs": "1791382294.801259",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791381245.920389",
+      "latestReadTs": "1791383085.267809",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791379181.541059",
+      "latestReadTs": "1791379326.988539",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791374078.919489",
+      "latestReadTs": "1791374804.285649",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791551412.175379",
+      "latestReadTs": "1791559754.677449",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791550971.222519",
+      "latestReadTs": "1791551424.386299",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791541263.324029",
+      "latestReadTs": "1791550445.882319",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791505177.278089",
+      "latestReadTs": "1791509217.562069",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791505128.668569",
+      "latestReadTs": "1791550651.438899",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791500162.721809",
+      "latestReadTs": "1791553320.163729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791499008.548349",
+      "latestReadTs": "1791508680.595729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791496191.927989",
+      "latestReadTs": "1791497856.073689",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791491253.629139",
+      "latestReadTs": "1791563686.743739",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791480690.918869",
+      "latestReadTs": "1791482103.791629",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791480284.596909",
+      "latestReadTs": "1791488911.937299",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791478872.932449",
+      "latestReadTs": "1791482163.459399",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791476114.569639",
+      "latestReadTs": "1791479292.629279",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791473152.773749",
+      "latestReadTs": "1791484795.713089",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791470328.767639",
+      "latestReadTs": "1791471341.691839",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791468266.098189",
+      "latestReadTs": "1791468506.139169",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791468235.135969",
+      "latestReadTs": "1791468557.196459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791468029.876669",
+      "latestReadTs": "1791468828.506149",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791735834.749089",
+      "latestReadTs": "1791742620.515879",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791734654.089629",
+      "latestReadTs": "1791738793.611939",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791709725.743289",
+      "latestReadTs": "1791727198.433219",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791669921.395859",
+      "latestReadTs": "1791688409.286979",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791657657.821219",
+      "latestReadTs": "1791802364.423449",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791657370.309939",
+      "latestReadTs": "1791773076.687029",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791649140.038559",
+      "latestReadTs": "1791650643.327159",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791648293.043939",
+      "latestReadTs": "1791648836.183469",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791642246.027889",
+      "latestReadTs": "1791644078.084039",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791640850.064609",
+      "latestReadTs": "1791645851.827559",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791631105.425269",
+      "latestReadTs": "1791634562.138629",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791589411.790509",
+      "latestReadTs": "1791639323.006819",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791585571.460959",
+      "latestReadTs": "1791607653.954779",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791584688.442679",
+      "latestReadTs": "1791586590.128999",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791583509.625329",
+      "latestReadTs": "1791620695.661539",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791574847.740849",
+      "latestReadTs": "1791579556.920609",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791572248.602849",
+      "latestReadTs": "1791613871.384159",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791571794.161939",
+      "latestReadTs": "1791572340.784139",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791569389.140129",
+      "latestReadTs": "1791574874.029429",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791567929.753279",
+      "latestReadTs": "1791605694.560199",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791567391.254299",
+      "latestReadTs": "1791570240.051899",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791565510.483089",
+      "latestReadTs": "1791565993.734309",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791563413.249339",
+      "latestReadTs": "1791563587.814579",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791563347.737439",
+      "latestReadTs": "1791564170.272999",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791561535.064409",
+      "latestReadTs": "1791561633.908389",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791560675.606079",
+      "latestReadTs": "1791564094.653269",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791559121.264569",
+      "latestReadTs": "1791564575.462619",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791558875.233979",
+      "latestReadTs": "1791564833.707739",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791557107.855239",
+      "latestReadTs": "1791565395.918689",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791555937.868579",
+      "latestReadTs": "1791566955.883579",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791554227.298779",
+      "latestReadTs": "1791556736.142539",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791553571.145209",
+      "latestReadTs": "1791554232.458829",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791550159.031019",
+      "latestReadTs": "1791550738.862359",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791539159.508779",
+      "latestReadTs": "1791539740.557139",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791530591.203159",
+      "latestReadTs": "1791532773.864119",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791505887.815449",
+      "latestReadTs": "1791527818.885289",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791505360.196589",
+      "latestReadTs": "1791527718.586999",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791500655.142739",
+      "latestReadTs": "1791586160.585229",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791500370.998349",
+      "latestReadTs": "1791527761.186489",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791499601.703749",
+      "latestReadTs": "1791499830.827009",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791497488.675589",
+      "latestReadTs": "1791573152.028639",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791497314.329389",
+      "latestReadTs": "1791557147.470499",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791493550.210709",
+      "latestReadTs": "1791526969.167179",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791491648.034479",
+      "latestReadTs": "1791492556.955009",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791488279.081169",
+      "latestReadTs": "1791555872.781889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791480149.311029",
+      "latestReadTs": "1791482471.518459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791470306.545669",
+      "latestReadTs": "1791471171.063099",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791470159.850249",
+      "latestReadTs": "1791470744.397949",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791467724.392679",
+      "latestReadTs": "1791470662.585929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791467665.573739",
+      "latestReadTs": "1791471133.806929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C08QGKL39J6",
+      "rootTs": "1791467556.179889",
+      "latestReadTs": "1791475447.689129",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791772591.779909",
+      "latestReadTs": "1791802344.253269",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791635212.625789",
+      "latestReadTs": "1791655860.912099",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791574605.893109",
+      "latestReadTs": "1791674589.449959",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0A8S3JSR1Q",
+      "rootTs": "1791490914.348849",
+      "latestReadTs": "1791590452.663929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791745221.069689",
+      "latestReadTs": "1791786746.420759",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791712851.604219",
+      "latestReadTs": "1791752880.685829",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791647864.052069",
+      "latestReadTs": "1791652833.462879",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791626456.428859",
+      "latestReadTs": "1791738994.616769",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791583073.387059",
+      "latestReadTs": "1791598432.407269",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791579732.220479",
+      "latestReadTs": "1791616985.043879",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791579587.621139",
+      "latestReadTs": "1791766240.839869",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791563974.083789",
+      "latestReadTs": "1791577715.099339",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791552680.731619",
+      "latestReadTs": "1791573776.500889",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791551400.357389",
+      "latestReadTs": "1791564179.693049",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791540056.499399",
+      "latestReadTs": "1791575826.741369",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791492751.589779",
+      "latestReadTs": "1791507264.881299",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791492428.374439",
+      "latestReadTs": "1791575673.989799",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791768055.374899",
+      "latestReadTs": "1791771499.383519",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791752761.171639",
+      "latestReadTs": "1791758101.652729",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791745263.974629",
+      "latestReadTs": "1791770871.523849",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791677983.175899",
+      "latestReadTs": "1791731060.502049",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791675210.946649",
+      "latestReadTs": "1791679983.411759",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791656730.982259",
+      "latestReadTs": "1791659205.695669",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791640738.025319",
+      "latestReadTs": "1791756427.017089",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791638746.052329",
+      "latestReadTs": "1791756356.220389",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791629733.068759",
+      "latestReadTs": "1791794761.630169",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791626111.636859",
+      "latestReadTs": "1791630913.698259",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791578655.097509",
+      "latestReadTs": "1791581943.859929",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791572512.502689",
+      "latestReadTs": "1791574545.987149",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791571914.352319",
+      "latestReadTs": "1791586987.329169",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791570786.299569",
+      "latestReadTs": "1791575634.905509",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791570110.764019",
+      "latestReadTs": "1791575611.659549",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791565921.307209",
+      "latestReadTs": "1791566086.095459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791563265.544339",
+      "latestReadTs": "1791565784.416549",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791563081.580109",
+      "latestReadTs": "1791565546.142459",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791562962.543259",
+      "latestReadTs": "1791571025.573249",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791561931.807749",
+      "latestReadTs": "1791562031.398599",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791560291.451599",
+      "latestReadTs": "1791568436.256939",
+      "paginationComplete": true
+    },
+    {
+      "channel": "C0AUQKNR8CF",
+      "rootTs": "1791558841.416979",
+      "latestReadTs": "1791563559.755759",
+      "paginationComplete": true
+    }
+  ],
+  "privateEvidenceDirectory": "/Users/moonishaider/Desktop/upwork/Inside success tv/lil rudy/.magic-mike-knowledge-refresh-2026-10-12",
+  "expandedThreadCount": 108,
+  "olderThreadsExplicitlyRevisited": 207,
+  "limitations": [
+    "Four maintained Slack channels since their prior successful root timestamps; 108 new threads expanded and 207 older threads rechecked. Not all historical messages across the company.",
+    "All 74 registered source metadata checked and all 70 Docs fetched. Changed content and relevant reply chains reviewed. Three media-pack slides visually checked and nine bounded Sheet ranges read. Targeted Drive discovery, not every client document or entire Drive.",
+    "Two previously unavailable Google sources still return 404; one old Slack thread still returns thread_not_found. Its successful watermark is retained.",
+    "Video folder listings checked; historical audio/video and private client attachments were not all retranscribed or inspected. No claims invented from filenames or unreviewed attachments.",
+    "Current sheet links do not authorize historical discounts. Unanswered questions, peer guesses, private client details and case-specific concessions are not general policy. Reality documentary entitlement and disclosure-versus-contract discrepancies remain qualified.",
+    "Sources strictly read-only: no Slack messages/reactions, document edits, source permission or automation changes."
+  ],
+  "unavailableThreads": [
+    {
+      "channel": "C09AF0NQJE7",
+      "rootTs": "1791327661.765819",
+      "error": "thread_not_found"
+    }
+  ],
+  "successfulThreadReads": 314
+}
