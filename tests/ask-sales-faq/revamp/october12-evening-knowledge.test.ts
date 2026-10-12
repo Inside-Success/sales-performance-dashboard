@@ -24,14 +24,14 @@ describe('October 12 evening source refresh', () => {
     expect(reapply).toContain('not automatic permission');
   });
   it('retrieves the current schedule without the superseded Monday session', () => {
-    const text = evidence('When does the training for new reps happen?', 'shared');
+    const text = evidence('When does the training for new reps happen?', 'main_istv');
     expect(text).toContain('Monday 11 AM–noon EST Compliance with Mike');
     expect(text).toContain('Wednesday 3–4 PM EST COMBINED');
     expect(text).not.toContain('Monday 1–2 PM EST Compliance with Raul');
   });
   it('keeps housing distinctions and duplicate-meeting caution available', () => {
     expect(evidence('Will Mansion of Money cast have private rooms?')).toContain('shared rooms of two to four');
-    expect(evidence('Will merging duplicate contacts remove both meeting records?', 'shared')).toContain('Merging contacts may leave both meeting records');
-    expect(evidence('HubSpot says reminder sent but the prospect did not receive it. What does that mean?', 'shared')).toContain('does not prove arrival');
+    expect(evidence('Will merging duplicate contacts remove both meeting records?', 'main_istv')).toContain('Merging contacts may leave both meeting records');
+    expect(evidence('HubSpot says reminder sent but the prospect did not receive it. What does that mean?', 'main_istv')).toContain('does not prove arrival');
   });
 });
