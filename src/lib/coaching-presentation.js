@@ -33,7 +33,12 @@ export function coachingClose(report) {
   if (closed && !noClose.test(closed)) return {title:'What helped you close',text:closed};
   return {title:'Outcome and next steps',text:why||closed};
 }
-export function coachingSections(report) {
+export function coachingClosingParts(text) {
+  return coachingText(text)
+    .split(/\r?\n\s*\r?\n|\r?\n(?=\s*(?:Observed concerns|Agreed next steps):)/)
+    .flatMap(coachingItems).map(part=>part.trim()).filter(Boolean);
+}
+export function coachingSections(report, { splitClosingLabels = true } = {}) {
   const strengths=uniqueCoachingItems([report.what_went_well,report.biggest_strength]);
   const improvements=uniqueCoachingItems([report.what_to_improve,report.what_id_polish||report.biggest_fix]);
   const main=[...strengths,...improvements];
@@ -41,7 +46,12 @@ export function coachingSections(report) {
   const close=coachingClose(report);
   let outcome=coachingText(report.one_line_verdict);
   // Parse numbered observations before paragraph boundaries: safety repairs can collapse blank lines.
-  const closeParts=coachingItems(close.text).flatMap(part=>part.split(/\n\s*\n/)).map(part=>part.trim()).filter(Boolean);
+  // Separate semantic labels before numbered items: a safety repair may remove
+  // blank lines, but must not join the outcome to the concerns heading.
+  const closeParts=(splitClosingLabels
+    ? coachingClosingParts(close.text)
+    : coachingItems(close.text).flatMap(part=>part.split(/\n\s*\n/)))
+    .map(part=>part.trim()).filter(Boolean);
   if(closeParts[0] && comparison(closeParts[0])===comparison(outcome))outcome=closeParts[0];
   const closeRemainder=closeParts.filter(part=>![outcome,...main].some(item=>comparison(item)===comparison(part))).join('\n\n');
   const visibleClose=[outcome,closeRemainder].join('\n');

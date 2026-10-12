@@ -8,6 +8,7 @@ export function withoutOptionalPolishLabel<T>(value: T): T;
 export function coachingItems(value: unknown): string[];
 export function uniqueCoachingItems(values: unknown[]): string[];
 export function coachingClose(report: CoachingDisplayReport): {title:string;text:string};
-export function coachingSections(report: CoachingDisplayReport): {key:string;title:string;items:string[]}[];
+export function coachingClosingParts(text: unknown): string[];
+export function coachingSections(report: CoachingDisplayReport, options?: {splitClosingLabels?: boolean}): {key:string;title:string;items:string[]}[];
 export function formatCoachingTimestamp(value: string): string;
 export function coachingEvidence(value: unknown): {text:string;evidence:string[]};

@@ -32,7 +32,7 @@ function actionKey(value) {
 export function dashboardCoachingSections(report) {
   const recent=isRecentCoachingReport(report);
   const display=recent?{...report,what_to_improve:groupRecentImprovements(report.what_to_improve),what_id_polish:groupRecentImprovements(report.what_id_polish||report.biggest_fix),biggest_fix:undefined}:report;
-  let sections = coachingSections(display);
+  let sections = coachingSections(display, { splitClosingLabels: recent });
   // Recent flat reports already contain these audited sections. Expose them without
   // generating new advice or repeating the same concerns in a second card.
   if (recent) {

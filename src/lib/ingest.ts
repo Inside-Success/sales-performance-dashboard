@@ -23,6 +23,8 @@ export const ingestPayloadSchema = z
     rep_slug: optionalString,
     rep_email: optionalString,
     client_name: optionalString,
+    resolved_client_name: optionalString,
+    original_client_name: optionalString,
     call_date: optionalString,
     meeting_id: optionalString,
     meeting_title: optionalString,
@@ -58,6 +60,10 @@ export function normalizeIngestPayload(raw: unknown) {
   if (!airtableRecordId) {
     throw new Error("airtable_record_id is required");
   }
+
+  // A producer's selected name/display label survives an empty legacy field.
+  // Do not infer a person or reject an otherwise deliverable report here.
+  parsed.client_name = parsed.client_name || parsed.resolved_client_name || parsed.original_client_name || null;
 
   if (parsed.reviewed_coaching_v1 !== undefined) {
     parsed.reviewed_coaching_v1 = readReviewedCoaching(parsed, parsed.source_airtable_record_id) || null;
