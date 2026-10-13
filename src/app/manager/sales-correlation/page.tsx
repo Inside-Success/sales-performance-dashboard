@@ -75,14 +75,14 @@ export default async function Page({
             <div className="space-y-3">
               <nav
                 aria-label="Sales impact period"
-                className="flex flex-wrap rounded-xl border border-slate-200 bg-white p-1"
+                className="grid grid-cols-2 rounded-xl border border-slate-200 bg-white p-1 sm:flex"
               >
                 {SALES_CORRELATION_WINDOWS.map((d) => (
                   <Link
                     key={d}
                     aria-current={period === d ? "page" : undefined}
                     href={`?days=${d}`}
-                    className={`rounded-lg px-3 py-2 text-sm font-semibold ${period === d ? "bg-[#c43132] text-white" : "text-slate-500 hover:bg-slate-50"}`}
+                    className={`rounded-lg px-3 py-2 text-center text-sm font-semibold ${period === d ? "bg-[#c43132] text-white" : "text-slate-500 hover:bg-slate-50"}`}
                   >
                     {d} days
                   </Link>
@@ -106,7 +106,7 @@ export default async function Page({
           </div>
         ) : null}
         <section className="magic-card border-l-4 border-l-[#c43132] p-6 sm:p-7">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             What the data shows
           </p>
           <h2 className="mt-2 text-xl font-bold leading-snug text-slate-950 sm:text-2xl">
@@ -122,7 +122,7 @@ export default async function Page({
             across {a.groups[0].count} reps · No recorded opens:{" "}
             {money(a.groups[2].average)} across {a.groups[2].count} reps.
           </p>
-          <p className="mt-2 text-xs leading-5 text-slate-400">
+          <p className="mt-2 text-xs leading-5 text-slate-500">
             {a.start} to {a.end} · Complete Miami days · An association, not
             proof that coaching caused the difference.
           </p>
@@ -224,7 +224,7 @@ function Comparison({
           <p className="mt-2 text-sm text-slate-500">
             {money(c.before)} → {money(c.after)} · {c.count} reps
           </p>
-          <p className="mt-3 text-xs leading-5 text-slate-400">
+          <p className="mt-3 text-xs leading-5 text-slate-500">
             Typical rep’s change: {money(c.medianDifference)}. This does not
             establish causation.
           </p>
@@ -235,7 +235,7 @@ function Comparison({
         </p>
       )}
       {c.waiting ? (
-        <p className="mt-3 text-xs text-slate-400">
+        <p className="mt-3 text-xs text-slate-500">
           {c.waiting} reps are waiting for a complete follow-up period.
         </p>
       ) : null}
