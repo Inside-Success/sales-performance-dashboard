@@ -9,7 +9,7 @@ export function buildCurrentSalesImpactChatMessages(
     {
       role: "system" as const,
       content:
-        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
+        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. When summarizing, lead with completed beforeAfter pairs when available, then mention the same-period groups and subsequent-sales check, including conflicting findings. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
     },
     {
       role: "user" as const,
@@ -17,10 +17,32 @@ export function buildCurrentSalesImpactChatMessages(
         "Current verified page snapshot:\n" +
         JSON.stringify({
           ...analytics,
-          reps: analytics.reps.map(({ trend, ...rep }) => ({
-            ...rep,
-            weeklySales: trend.map((t) => [t.label, t.revenue, t.opened]),
-          })),
+          subsequentWindowDays: 84,
+          repColumns: [
+            "name",
+            "reportsOpened",
+            "newPaidRevenue",
+            "group",
+            "firstRecordedOpen",
+            "before",
+            "after",
+            "waiting",
+            "weeklyRevenue",
+            "weeklyOpens",
+          ],
+          weekDates: analytics.reps[0]?.trend.map((t) => t.label) || [],
+          reps: analytics.reps.map((rep) => [
+            rep.name,
+            rep.opened,
+            rep.revenue,
+            rep.group,
+            rep.firstOpen,
+            rep.before,
+            rep.after,
+            rep.waiting,
+            rep.revenue === null ? null : rep.trend.map((t) => t.revenue),
+            rep.trend.map((t) => t.opened),
+          ]),
         }),
     },
     ...history,

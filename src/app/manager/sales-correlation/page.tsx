@@ -123,8 +123,8 @@ export default async function Page({
             {money(a.groups[2].average)} across {a.groups[2].count} reps.
           </p>
           <p className="mt-2 text-xs leading-5 text-slate-500">
-            {a.start} to {a.end} · Complete Miami days · An association, not
-            proof that coaching caused the difference.
+            Chart period: {a.start} to {a.end} · Complete Miami days · An
+            association, not proof that coaching caused the difference.
           </p>
           {a.coverageStart && a.coverageStart > a.start ? (
             <p className="mt-2 text-xs text-amber-800">
@@ -142,7 +142,7 @@ export default async function Page({
             />
             <Comparison
               title="Sales after a coaching week"
-              description="For the same reps, compare the next 14 days after weeks with opens versus weeks without opens."
+              description="Last 12 weeks: compare each rep’s next 14 days after weeks with opens versus weeks without opens."
               comparison={a.subsequent}
             />
           </section>
