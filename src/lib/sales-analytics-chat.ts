@@ -9,7 +9,7 @@ export function buildCurrentSalesImpactChatMessages(
     {
       role: "system" as const,
       content:
-        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. When summarizing, lead with completed beforeAfter pairs when available, then mention the same-period groups and subsequent-sales check, including conflicting findings. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
+        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. When summarizing, lead with completed beforeAfter pairs when available, then mention the same-period groups and subsequent-sales check, including conflicting findings. The high-group gap compares high usage with no recorded opens, never the all-users average. The subsequent-sales check compares next-14-day sales after open weeks versus after no-open weeks; it is not a before/after-first-use comparison. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
     },
     {
       role: "user" as const,
@@ -17,7 +17,22 @@ export function buildCurrentSalesImpactChatMessages(
         "Current verified page snapshot:\n" +
         JSON.stringify({
           ...analytics,
-          subsequentWindowDays: 84,
+          subsequent: {
+            reps: analytics.subsequent.count,
+            windowDays: 84,
+            next14DaysAfterNoOpenWeeks: analytics.subsequent.before,
+            next14DaysAfterOpenWeeks: analytics.subsequent.after,
+            openMinusNoOpen: analytics.subsequent.difference,
+            medianDifference: analytics.subsequent.medianDifference,
+          },
+          samePeriodHighVsNoOpen: {
+            baseline: "reps with no recorded own opens",
+            difference:
+              analytics.groups[0].average === null ||
+              analytics.groups[2].average === null
+                ? null
+                : analytics.groups[0].average - analytics.groups[2].average,
+          },
           repColumns: [
             "name",
             "reportsOpened",
@@ -208,4 +223,45 @@ function formatNumber(value: number) {
 
 function formatNullableNumber(value: number | null) {
   return value === null ? "not enough data" : value.toFixed(2);
+}
+
+/** Preset numerical summaries come directly from the page facts, without an LLM reinterpreting baselines. */
+export function buildSalesImpactPresetAnswer(
+  a: ImpactAnalysis,
+  question: string,
+): string | null {
+  const q = question
+    .trim()
+    .toLowerCase()
+    .replace(/[.!?]+$/, "");
+  const cash = (v: number | null) =>
+    v === null ? "not available" : formatCurrency(v);
+  const c = a.beforeAfter,
+    s = a.subsequent,
+    high = a.groups[0],
+    none = a.groups[2];
+  const before = c.count
+    ? `For ${c.count} reps with complete ${a.days}-day periods around their first recorded coaching open, average new paid revenue was ${cash(c.before)} before and ${cash(c.after)} after (${cash(c.difference)} difference; median change ${cash(c.medianDifference)}).`
+    : "No complete matched before/after comparison is available yet.";
+  const gap =
+    high.average === null || none.average === null
+      ? null
+      : high.average - none.average;
+  const groups =
+    gap === null
+      ? "The matched high-usage/no-open comparison is not available yet."
+      : `In the chart period (${a.start} to ${a.end}), high-usage reps averaged ${cash(high.average)} (${high.count} reps), versus ${cash(none.average)} for reps with no recorded own opens (${none.count} reps): ${cash(gap)} difference per rep.`;
+  const subsequent = s.count
+    ? `Across the last 12 weeks, ${s.count} matched reps averaged ${cash(s.after)} in the 14 days after open weeks versus ${cash(s.before)} after no-open weeks (${cash(s.difference)} difference).`
+    : "There are no complete same-rep open-week/no-open-week comparisons yet.";
+  const limit =
+    "These are observational associations, not proof that coaching caused the sales difference.";
+  if (q === "summarize this page")
+    return `- ${before}\n- ${groups}\n- ${subsequent}\n\n${limit}`;
+  if (q === "are high-usage reps selling more") return `${groups}\n\n${limit}`;
+  if (q === "what changed after reps started using coaching")
+    return `${before} First recorded opens occur on different dates for different reps. ${c.waiting ? `${c.waiting} reps are waiting for a complete follow-up period. ` : ""}${limit}`;
+  if (q === "is this enough data to trust")
+    return `The page has ${a.matched} matched active reps and ${c.count} complete before/after pairs. ${a.excludedUnmatched} unmatched sales identities are excluded from revenue comparisons, rather than treated as zero. This is useful descriptive evidence; sample sizes and other sales factors limit conclusions. ${limit}`;
+  return null;
 }
