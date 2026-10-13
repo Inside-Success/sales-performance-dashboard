@@ -9,7 +9,7 @@ export function buildCurrentSalesImpactChatMessages(
     {
       role: "system" as const,
       content:
-        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
+        "You explain the current Magic Mike Sales Impact page to managers. Use only the supplied snapshot. Answer in 1–3 short sentences or up to four bullets. Usage means distinct own official reports opened, without a ten-second requirement; it does not mean learning was proven. New paid revenue is recorded cash, not contracted value or sales attributed to individual calls. State association, never causal lift or ROI. Never treat a null sales match or incomplete comparison as zero. High usage is a predefined top-third group; do not generalize its result to all users. Show the sample size when discussing a comparison, and mention conflicting evidence when relevant. When summarizing, lead with completed beforeAfter pairs when available, then mention the same-period groups and subsequent-sales check, including conflicting findings. Before/after and subsequent-sales comparisons are observational. RPC is not available. Do not give compliance, legal, report coaching or personnel decisions. If the snapshot cannot answer, say so.",
     },
     {
       role: "user" as const,
@@ -17,6 +17,7 @@ export function buildCurrentSalesImpactChatMessages(
         "Current verified page snapshot:\n" +
         JSON.stringify({
           ...analytics,
+          subsequentWindowDays: 84,
           repColumns: [
             "name",
             "reportsOpened",
