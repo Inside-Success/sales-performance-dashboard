@@ -1,781 +1,244 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowUpRight, TrendingUp } from "lucide-react";
+import { getSalesImpactAnalytics } from "@/lib/sales-impact-data";
 import {
-  Activity,
-  ArrowUpRight,
-  BarChart3,
-  Clock3,
-  ClipboardCheck,
-  DollarSign,
-  Eye,
-  FileSpreadsheet,
-  LineChart,
-  MousePointerClick,
-  ShieldCheck,
-  Target,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SalesAnalyticsChatPanel } from "@/components/dashboard/sales-analytics-chat-panel";
-import { SalesImpactScatter } from "@/components/dashboard/sales-impact-scatter";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { formatMiamiDateTime } from "@/lib/format";
-import {
-  getSalesCorrelationAnalytics,
   normalizeSalesCorrelationWindow,
   SALES_CORRELATION_WINDOWS,
-  type SalesCorrelationAnalytics,
-  type SalesCorrelationGroup,
-  type SalesCorrelationRep,
-  type SalesCorrelationWeeklyPoint,
-  type UsageGroupKey,
 } from "@/lib/sales-correlation";
-import { cn } from "@/lib/utils";
+import { SalesImpactOverview } from "@/components/dashboard/sales-impact-overview";
+import { SalesAnalyticsChatPanel } from "@/components/dashboard/sales-analytics-chat-panel";
+import { formatMiamiDateTime } from "@/lib/format";
+import type { ImpactComparison } from "@/lib/sales-impact-analysis";
 
 export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Sales Impact | Magic Mike Bot",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  robots: { index: false, follow: false },
 };
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-const numberFormatter = new Intl.NumberFormat("en-US");
-
-export default async function SalesCorrelationPage({
+const money = (n: number | null) =>
+  n === null
+    ? "—"
+    : new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      }).format(n);
+export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string | string[] }>;
+  searchParams: Promise<{ days?: string }>;
 }) {
-  const { days } = await searchParams;
-  const periodDays = normalizeSalesCorrelationWindow(days);
-  const analytics = await getSalesCorrelationAnalytics(periodDays);
-
+  const { days } = await searchParams,
+    period = normalizeSalesCorrelationWindow(days);
+  let data: Awaited<ReturnType<typeof getSalesImpactAnalytics>>;
+  try {
+    data = await getSalesImpactAnalytics(period);
+  } catch (error) {
+    console.error("Sales Impact read failed", error);
+    return (
+      <main className="magic-page p-8">
+        <section role="alert" className="magic-card mx-auto max-w-3xl p-8">
+          <h1 className="text-2xl font-bold">
+            Sales impact is temporarily unavailable
+          </h1>
+          <p className="mt-3 text-slate-600">
+            The data could not be loaded. Missing results are not shown as zero.
+            Please try again.
+          </p>
+        </section>
+      </main>
+    );
+  }
+  const a = data.analysis;
+  const paired = a.beforeAfter;
+  const pairedHeadline = paired.count
+    ? `Reps averaged ${money(Math.abs(paired.difference ?? 0))} ${(paired.difference ?? 0) >= 0 ? "more" : "less"} after their first recorded coaching open.`
+    : a.headline;
   return (
     <main className="magic-page">
-      <div className="mx-auto flex w-full max-w-[84rem] flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
-        <header className="magic-card magic-hero p-5 md:p-7">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="magic-kicker">
-                  <ShieldCheck className="size-3.5" />
-                  Hidden manager view
-                </span>
-                <Badge variant="outline" className="gap-1 rounded-full border-slate-200 bg-white/80">
-                  <FileSpreadsheet className="size-3.5" />
-                  Google Sheet read-only
-                </Badge>
-                {!analytics.summary.usageConfigured ? (
-                  <Badge variant="destructive">Database not connected</Badge>
-                ) : null}
-                {!analytics.summary.sheetConfigured ? (
-                  <Badge variant="destructive">Sales sheet unavailable</Badge>
-                ) : null}
-                {analytics.summary.salesDataSource === "cached_snapshot" ? (
-                  <Badge variant="outline" className="gap-1 rounded-full border-amber-200 bg-amber-50 text-amber-700">
-                    <ShieldCheck className="size-3.5" />
-                    Fallback snapshot
-                  </Badge>
-                ) : analytics.summary.salesDataSource === "synced_sheet" ? (
-                  <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
-                    <ShieldCheck className="size-3.5" />
-                    Google Sheet synced
-                  </Badge>
-                ) : analytics.summary.salesDataSource === "live_sheet" ? (
-                  <Badge variant="outline" className="gap-1 rounded-full border-emerald-200 bg-emerald-50 text-emerald-700">
-                    <ShieldCheck className="size-3.5" />
-                    Live Google Sheet
-                  </Badge>
-                ) : null}
+      <div className="mx-auto max-w-[84rem] space-y-5 px-5 pb-16 pt-8 sm:px-8">
+        <header className="magic-card magic-hero p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div>
+              <div className="magic-kicker">
+                <TrendingUp className="size-4" aria-hidden="true" />
+                Manager insights
               </div>
-              <h1 className="text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">
+              <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
                 Sales impact
               </h1>
-              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-500">
-                Compare verified Magic Mike engagement with new paid sales for current reps. People
-                with no official call or sales activity for 30 days are hidden automatically.
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+                See how opening Magic Mike coaching relates to sales results.
               </p>
             </div>
-
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground lg:items-end">
-              <PeriodSelector selectedDays={analytics.summary.periodDays} />
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-2 text-slate-500">
-                <Clock3 className="size-4 text-[#DC2626]" />
-                Updated {formatMiamiDateTime(analytics.summary.generatedAt)}
-              </div>
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                <Link href="/manager/usage" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
-                  Usage dashboard
-                </Link>
-                <Link href="/coaching" className={cn(buttonVariants({ variant: "outline" }), "h-9 w-fit rounded-full border-slate-200 bg-white hover:bg-[#FEF2F2] hover:text-[#B91C1C]")}>
-                  Open dashboard
-                </Link>
-              </div>
+            <div className="space-y-3">
+              <nav
+                aria-label="Sales impact period"
+                className="flex flex-wrap rounded-xl border border-slate-200 bg-white p-1"
+              >
+                {SALES_CORRELATION_WINDOWS.map((d) => (
+                  <Link
+                    key={d}
+                    aria-current={period === d ? "page" : undefined}
+                    href={`?days=${d}`}
+                    className={`rounded-lg px-3 py-2 text-sm font-semibold ${period === d ? "bg-[#c43132] text-white" : "text-slate-500 hover:bg-slate-50"}`}
+                  >
+                    {d} days
+                  </Link>
+                ))}
+              </nav>
+              <Link
+                href="/manager/usage?days=30"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-red-700"
+              >
+                Rep usage <ArrowUpRight className="size-4" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </header>
-
-        <StatusMessages analytics={analytics} />
-
-        <ExecutiveInsight analytics={analytics} />
-
-
-        <section className="grid gap-5">
-          <ScatterCard reps={analytics.reps} />
+        {data.warning ? (
+          <div
+            role="status"
+            className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"
+          >
+            {data.warning}
+          </div>
+        ) : null}
+        <section className="magic-card border-l-4 border-l-[#c43132] p-6 sm:p-7">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            What the data shows
+          </p>
+          <h2 className="mt-2 text-xl font-bold leading-snug text-slate-950 sm:text-2xl">
+            {pairedHeadline}
+          </h2>
+          <p className="mt-3 text-sm text-slate-500">
+            {paired.count
+              ? `${paired.count} reps with complete ${period}-day before/after periods · ${money(paired.before)} → ${money(paired.after)} average new paid revenue.`
+              : "No complete before/after comparison yet."}
+          </p>
+          <p className="mt-2 text-sm text-slate-500">
+            Same-period comparison · High usage: {money(a.groups[0].average)}{" "}
+            across {a.groups[0].count} reps · No recorded opens:{" "}
+            {money(a.groups[2].average)} across {a.groups[2].count} reps.
+          </p>
+          <p className="mt-2 text-xs leading-5 text-slate-400">
+            {a.start} to {a.end} · Complete Miami days · An association, not
+            proof that coaching caused the difference.
+          </p>
+          {a.coverageStart && a.coverageStart > a.start ? (
+            <p className="mt-2 text-xs text-amber-800">
+              Recorded own-report opens begin {a.coverageStart}; usage does not
+              cover this entire sales period.
+            </p>
+          ) : null}
         </section>
-
-
-
-        <details className="magic-card overflow-hidden">
-          <summary className="cursor-pointer p-5 text-lg font-extrabold text-slate-950">
-            Detailed analysis and rep table
-            <span className="ml-2 text-sm font-semibold text-slate-500">
-              data checks, trends, and supporting comparisons
-            </span>
+        <SalesImpactOverview data={a}>
+          <section className="grid gap-5 lg:grid-cols-2">
+            <Comparison
+              title="Before and after first recorded use"
+              description={`${period} complete days before and after the first recorded open. The opening day is excluded.`}
+              comparison={a.beforeAfter}
+            />
+            <Comparison
+              title="Sales after a coaching week"
+              description="For the same reps, compare the next 14 days after weeks with opens versus weeks without opens."
+              comparison={a.subsequent}
+            />
+          </section>
+        </SalesImpactOverview>
+        <details className="magic-card p-5 sm:p-6">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-600">
+            How this comparison works
           </summary>
-          <div className="grid gap-5 border-t border-slate-100 p-5">
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard
-            icon={DollarSign}
-            title="New paid revenue"
-            value={formatCurrency(analytics.summary.totalNewRevenue)}
-            description={`${formatNumber(analytics.summary.totalNewDeals)} new paid deals`}
-          />
-          <MetricCard
-            icon={Users}
-            title="Reps with verified usage"
-            value={formatNumber(analytics.summary.repsWithUsage)}
-            description={`${formatNumber(analytics.summary.matchedRepCount)} matched to sales sheet`}
-          />
-          <MetricCard
-            icon={LineChart}
-            title="Usage-sales correlation"
-            value={formatCorrelation(analytics.summary.correlation)}
-            description={`${formatNumber(analytics.summary.correlationPairs)} rep samples`}
-          />
-          <MetricCard
-            icon={Users}
-            title="Current reps compared"
-            value={formatNumber(analytics.reps.length)}
-            description={`${formatNumber(analytics.summary.inactiveRepCount)} inactive historical reps hidden`}
-          />
-        </section>
-
-            <UsageGroupsCard groups={analytics.groups} periodDays={analytics.summary.periodDays} />
-            <DataQualityCard analytics={analytics} />
-            <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.85fr)]">
-              <WeeklyTrendCard weekly={analytics.weekly} />
-              <LaggedImpactCard analytics={analytics} />
-            </section>
-            <BeforeAfterCard reps={analytics.reps} periodDays={analytics.summary.periodDays} />
-            <RepImpactTable reps={analytics.reps} periodDays={analytics.summary.periodDays} />
-            {analytics.unmatchedSalesReps.length ? (
-              <UnmatchedSalesRepsCard reps={analytics.unmatchedSalesReps} />
-            ) : null}
-            <SalesAnalyticsChatPanel periodDays={analytics.summary.periodDays} />
+          <div className="mt-4 space-y-3 text-sm leading-6 text-slate-500">
+            <p>
+              Usage counts distinct own official coaching reports opened in the
+              selected period. Repeat opens count once; there is no ten-second
+              requirement. Self-submitted reports, other reps’ reports and
+              anonymous activity are excluded from this measure.
+            </p>
+            <p>
+              High usage is the top third of matched reps with opens, ranked by
+              report count, then days used. Groups are defined from usage before
+              examining sales. The comparison uses reps with official call
+              activity in the last 30 days and an exact normalized sales-name
+              match. {a.matched} matched reps; {a.excludedUnmatched} unmatched
+              reps are listed separately and not treated as zero-sales reps.
+            </p>
+            <p>
+              Revenue is the amount of New + Paid entries in the existing sales
+              Sheet. It is cash recorded in the period, not contracted value or
+              revenue attributed to a particular call. The Sheet is read-only.{" "}
+              {data.syncedAt
+                ? `Last successful sales read: ${formatMiamiDateTime(data.syncedAt)}.`
+                : ""}
+            </p>
+            <p>
+              Same-rep before/after results require complete periods and
+              available sales history. The following-sales check uses up to four
+              non-overlapping 21-day blocks across the previous 84 days; it
+              includes only reps with both a usage and a no-usage block and
+              available coaching before the block. Observational comparisons can
+              also reflect call volume, experience, offer changes and lead mix.
+            </p>
+            <p>
+              Robustness check: high-usage median {money(a.groups[0].median)};
+              no-open median {money(a.groups[2].median)}. High-usage average
+              without its largest sale-total rep:{" "}
+              {money(a.sensitivity.highWithoutLargest)}. All reps with opens
+              average: {money(a.sensitivity.allUsers)}. These checks are shown
+              regardless of whether they favour coaching.
+            </p>
           </div>
         </details>
-
-
+        <SalesAnalyticsChatPanel periodDays={period} />
       </div>
     </main>
   );
 }
-
-function PeriodSelector({ selectedDays }: { selectedDays: number }) {
-  return (
-    <div className="inline-flex rounded-full border border-slate-200 bg-white/80 p-1">
-      {SALES_CORRELATION_WINDOWS.map((days) => (
-        <Link
-          key={days}
-          href={`/manager/sales-correlation?days=${days}`}
-          className={cn(
-            "rounded-full px-3 py-1.5 text-xs font-bold transition-colors",
-            selectedDays === days
-              ? "bg-[#DC2626] text-white"
-              : "text-slate-500 hover:bg-[#FEF2F2] hover:text-[#B91C1C]",
-          )}
-        >
-          {days}d
-        </Link>
-      ))}
-    </div>
-  );
-}
-
-function StatusMessages({ analytics }: { analytics: SalesCorrelationAnalytics }) {
-  const messages = [analytics.summary.usageError, analytics.summary.sheetError].filter(Boolean);
-  const warning = analytics.summary.salesSnapshotWarning;
-  if (!messages.length && !warning) return null;
-
-  return (
-    <div className="grid gap-2">
-      {warning ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-amber-800">
-          {warning}
-        </div>
-      ) : null}
-      {messages.map((message) => (
-        <div
-          key={message}
-          className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
-        >
-          {message}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ExecutiveInsight({ analytics }: { analytics: SalesCorrelationAnalytics }) {
-  const high = analytics.groups.find(group => group.key === 'high');
-  const low = analytics.groups.find(group => group.key === 'low');
-  return <section className="magic-card p-5">
-    <h2 className="text-xl font-semibold">{getExecutiveHeadline(high,low)}</h2>
-    <p className="mt-2 text-sm text-slate-600">Average new paid revenue per rep: high usage {formatCurrency(high?.avgNewRevenue || 0)} · low/no usage {formatCurrency(low?.avgNewRevenue || 0)}.</p>
-    <p className="mt-2 text-xs text-slate-500">Last {analytics.summary.periodDays} days · Usage history: {formatUsageHistory(analytics.summary.effectiveUsageWindowDays,analytics.summary.periodDays)}. This is an association, not proof that usage caused sales.</p>
-  </section>;
-}
-
-function getExecutiveHeadline(
-  high: SalesCorrelationGroup | undefined,
-  low: SalesCorrelationGroup | undefined,
-) {
-  if (!high?.repCount || !low?.repCount) {
-    return "There is not enough matched usage and sales data yet.";
-  }
-
-  const gap = high.avgNewRevenue - low.avgNewRevenue;
-  if (gap > 0) {
-    return `High-usage reps are averaging ${formatCurrency(gap)} more new paid revenue.`;
-  }
-  if (gap < 0) {
-    return `High-usage reps are not ahead yet on average new paid revenue.`;
-  }
-  return "High-usage and low/no-usage reps are even on average new paid revenue.";
-}
-
-
-function MetricCard({
-  icon: Icon,
+function Comparison({
   title,
-  value,
   description,
+  comparison: c,
 }: {
-  icon: LucideIcon;
   title: string;
-  value: string;
   description: string;
+  comparison: ImpactComparison;
 }) {
   return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardContent className="flex items-start justify-between gap-3 pt-1">
-        <div>
-          <p className="text-sm font-semibold text-slate-500">{title}</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-normal text-slate-950">{value}</p>
-          <p className="mt-1 text-xs font-medium text-slate-400">{description}</p>
-        </div>
-        <span className="grid size-10 shrink-0 place-items-center rounded-2xl border border-red-100 bg-[#FEF2F2] text-[#DC2626]">
-          <Icon className="size-4" />
-        </span>
-      </CardContent>
-    </Card>
-  );
-}
-
-function UsageGroupsCard({
-  groups,
-  periodDays,
-}: {
-  groups: SalesCorrelationGroup[];
-  periodDays: number;
-}) {
-  const maxAverage = Math.max(1, ...groups.map((group) => group.avgNewRevenue));
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <Users className="size-4 text-[#DC2626]" />
-          Verified Usage Groups
-        </CardTitle>
-        <CardDescription>
-          Reps are grouped by verified Magic Mike official-report engagement in the last {periodDays} days.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        {groups.map((group) => (
-          <div key={group.key} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className={cn("size-2.5 rounded-full", groupDotClass(group.key))} />
-                  <h3 className="font-semibold">{group.label}</h3>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{group.description}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xl font-semibold">{formatCurrency(group.avgNewRevenue)}</p>
-                <p className="text-xs text-muted-foreground">avg new revenue</p>
-              </div>
-            </div>
-            <div className="mt-4 h-3 overflow-hidden rounded-full bg-muted">
-              <div
-                className={cn("h-full rounded-full", groupBarClass(group.key))}
-                style={{ width: `${Math.max(3, Math.round((group.avgNewRevenue / maxAverage) * 100))}%` }}
-              />
-            </div>
-            <div className="mt-3 grid gap-2 text-sm sm:grid-cols-4">
-              <MiniStat label="Reps" value={formatNumber(group.repCount)} />
-              <MiniStat label="Usage score" value={formatNumber(group.totalUsageSignals)} />
-              <MiniStat label="New deals" value={formatNumber(group.totalNewDeals)} />
-              <MiniStat label="Reports engaged" value={formatNumber(group.totalEngagedReports)} />
-            </div>
+    <section className="magic-card p-6">
+      <h2 className="text-lg font-bold text-slate-950">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+      {c.count ? (
+        <>
+          <div className="mt-5 flex items-baseline gap-3">
+            <p
+              className={`text-3xl font-extrabold tabular-nums ${(c.difference ?? 0) >= 0 ? "text-emerald-700" : "text-slate-900"}`}
+            >
+              {(c.difference ?? 0) > 0 ? "+" : ""}
+              {money(c.difference)}
+            </p>
+            <span className="text-sm text-slate-500">average difference</span>
           </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-function DataQualityCard({ analytics }: { analytics: SalesCorrelationAnalytics }) {
-  const usageCoverage = formatUsageHistory(
-    analytics.summary.effectiveUsageWindowDays,
-    analytics.summary.periodDays,
-  );
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <ClipboardCheck className="size-4 text-[#DC2626]" />
-          Data Quality
-        </CardTitle>
-        <CardDescription>
-          The impact view is useful only if old traffic and manual reports stay out of the main math.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        <SignalBox
-          label="Matched usage + sales reps"
-          value={formatNumber(analytics.summary.matchedRepCount)}
-        />
-        <SignalBox label="Usage history" value={usageCoverage} />
-        <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-3 text-sm">
-          <QualityRow label="Official reports" value="Included" />
-          <QualityRow label="10+ sec engaged reads" value="Included" />
-          <QualityRow label="Sales sheet source" value={salesDataSourceLabel(analytics)} />
-          <QualityRow label="Self-submitted reports" value="Separated" />
-          <QualityRow label="Legacy anonymous traffic" value="Excluded" />
-          <QualityRow label="Quick opens under 10 sec" value="Not engagement" />
-          <QualityRow label="No activity for 30 days" value="Hidden automatically" />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function QualityRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-semibold text-slate-950">{value}</span>
-    </div>
-  );
-}
-
-function BeforeAfterCard({
-  reps,
-  periodDays,
-}: {
-  reps: SalesCorrelationRep[];
-  periodDays: number;
-}) {
-  const eligible = reps.filter((rep) => rep.firstActivityAt);
-  const avgBefore = eligible.length
-    ? sum(eligible.map((rep) => rep.beforeUsageNewRevenue)) / eligible.length
-    : 0;
-  const avgAfter = eligible.length
-    ? sum(eligible.map((rep) => rep.afterUsageNewRevenue)) / eligible.length
-    : 0;
-  const delta = avgAfter - avgBefore;
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <ArrowUpRight className="size-4 text-[#DC2626]" />
-          Before vs After Usage
-        </CardTitle>
-        <CardDescription>
-          Same-length windows around each rep&apos;s first verified official engagement signal.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <SignalBox label={`${periodDays}d before first usage`} value={formatCurrency(avgBefore)} />
-          <SignalBox label={`${periodDays}d after first usage`} value={formatCurrency(avgAfter)} />
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-          <p className="text-sm text-muted-foreground">Average change</p>
-          <p className={cn("mt-2 text-3xl font-extrabold", delta >= 0 ? "text-[#DC2626]" : "text-destructive")}>
-            {delta >= 0 ? "+" : ""}
-            {formatCurrency(delta)}
+          <p className="mt-2 text-sm text-slate-500">
+            {money(c.before)} → {money(c.after)} · {c.count} reps
           </p>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Based on {formatNumber(eligible.length)} reps with at least one verified official usage signal.
+          <p className="mt-3 text-xs leading-5 text-slate-400">
+            Typical rep’s change: {money(c.medianDifference)}. This does not
+            establish causation.
           </p>
-        </div>
-      </CardContent>
-    </Card>
+        </>
+      ) : (
+        <p className="mt-5 text-sm text-slate-500">
+          Not enough complete matched comparisons yet.
+        </p>
+      )}
+      {c.waiting ? (
+        <p className="mt-3 text-xs text-slate-400">
+          {c.waiting} reps are waiting for a complete follow-up period.
+        </p>
+      ) : null}
+    </section>
   );
-}
-
-function WeeklyTrendCard({ weekly }: { weekly: SalesCorrelationWeeklyPoint[] }) {
-  const maxRevenue = Math.max(1, ...weekly.map((point) => point.newPaidRevenue));
-  const maxUsage = Math.max(1, ...weekly.map((point) => point.usageSignals));
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="size-4 text-[#DC2626]" />
-          Weekly Usage and New Sales
-        </CardTitle>
-        <CardDescription>
-          A simple weekly read of verified usage signals alongside new paid revenue.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        {weekly.map((point) => (
-          <div key={point.weekStart} className="grid grid-cols-[4.5rem_minmax(0,1fr)_6.5rem] items-center gap-3">
-            <span className="text-xs text-muted-foreground">{point.label}</span>
-            <div className="grid gap-1">
-              <div className="h-3 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-chart-3"
-                  style={{ width: `${Math.round((point.newPaidRevenue / maxRevenue) * 100)}%` }}
-                />
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted/80">
-                <div
-                  className="h-full rounded-full bg-[#DC2626]"
-                  style={{ width: `${Math.round((point.usageSignals / maxUsage) * 100)}%` }}
-                />
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-medium">{formatCurrency(point.newPaidRevenue)}</p>
-              <p className="text-[0.7rem] text-muted-foreground">
-                {formatNumber(point.usageSignals)} signals
-              </p>
-            </div>
-          </div>
-        ))}
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <span className="size-2.5 rounded-full bg-chart-3" />
-            New paid revenue
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="size-2.5 rounded-full bg-[#DC2626]" />
-            Usage score
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function LaggedImpactCard({ analytics }: { analytics: SalesCorrelationAnalytics }) {
-  const lag = analytics.laggedImpact;
-  const delta = lag.avgRevenueAfterActiveWeek - lag.avgRevenueAfterInactiveWeek;
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="size-4 text-[#DC2626]" />
-          Lagged Impact Check
-        </CardTitle>
-        <CardDescription>
-          Compares usage weeks with new sales in the following {lag.lagDays} days.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        <SignalBox
-          label="Correlation after usage weeks"
-          value={formatCorrelation(lag.correlation)}
-        />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <SignalBox
-            label="Avg next revenue after usage week"
-            value={formatCurrency(lag.avgRevenueAfterActiveWeek)}
-          />
-          <SignalBox
-            label="Avg next revenue after no-usage week"
-            value={formatCurrency(lag.avgRevenueAfterInactiveWeek)}
-          />
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-          <p className="text-sm text-muted-foreground">Difference</p>
-          <p className={cn("mt-2 text-3xl font-extrabold", delta >= 0 ? "text-[#DC2626]" : "text-destructive")}>
-            {delta >= 0 ? "+" : ""}
-            {formatCurrency(delta)}
-          </p>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            {formatNumber(lag.pairCount)} rep-week comparisons.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ScatterCard({ reps }: { reps: SalesCorrelationRep[] }) {
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <Target className="size-4 text-[#DC2626]" />
-          Usage vs New Sales
-        </CardTitle>
-        <CardDescription>
-          Each dot is a rep. Higher means more new paid sales; farther right means more recorded coaching activity.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <SalesImpactScatter reps={reps} />
-      </CardContent>
-    </Card>
-  );
-}
-
-function RepImpactTable({
-  reps,
-  periodDays,
-}: {
-  reps: SalesCorrelationRep[];
-  periodDays: number;
-}) {
-  const visibleReps = reps;
-
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="size-4 text-[#DC2626]" />
-          Rep Sales Impact
-        </CardTitle>
-        <CardDescription>
-          Verified official engagement and new paid sales for the last {periodDays} days.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {visibleReps.length ? (
-          <div className="dashboard-scroll max-h-[42rem] overflow-y-auto rounded-2xl border border-slate-200">
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white shadow-xs">
-                <TableRow>
-                  <TableHead>Rep</TableHead>
-                  <TableHead className="text-right">Usage</TableHead>
-                  <TableHead className="text-right">New sales</TableHead>
-                  <TableHead className="text-right">Before/after</TableHead>
-                  <TableHead>Last activity</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {visibleReps.map((rep) => (
-                  <TableRow key={rep.repSlug}>
-                    <TableCell>
-                      <div className="font-medium">{rep.repName}</div>
-                      <Badge variant="outline" className={cn("mt-1", groupBadgeClass(rep.usageGroup))}>
-                        {groupLabel(rep.usageGroup)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="font-medium">{formatNumber(rep.reportViewsWindow)} engaged</div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatNumber(rep.usageSignalsWindow)} usage score
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="font-medium">{formatCurrency(rep.newPaidRevenueWindow)}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatNumber(rep.newPaidDealsWindow)} deals
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="font-medium">
-                        {formatCurrency(rep.afterUsageNewRevenue - rep.beforeUsageNewRevenue)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatCurrency(rep.beforeUsageNewRevenue)} to {formatCurrency(rep.afterUsageNewRevenue)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {rep.lastActivityAt ? formatMiamiDateTime(rep.lastActivityAt) : "No usage yet"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
-          <EmptyPanel text="No rep-level sales or usage data is available yet." />
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function UnmatchedSalesRepsCard({ reps }: { reps: SalesCorrelationRep[] }) {
-  return (
-    <Card className="magic-card border-slate-200 bg-white/90">
-      <CardHeader className="border-b border-slate-100">
-        <CardTitle className="flex items-center gap-2">
-          <MousePointerClick className="size-4 text-[#DC2626]" />
-          Sales Reps Not Matched To Dashboard Usage
-        </CardTitle>
-        <CardDescription>
-          These names had new paid sales in the sheet but no matching verified Magic Mike usage row.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {reps.map((rep) => (
-            <div key={rep.repSlug} className="rounded-lg border bg-background/70 p-3">
-              <div className="font-medium">{rep.repName}</div>
-              <div className="mt-1 text-sm text-muted-foreground">
-                {formatCurrency(rep.newPaidRevenueWindow)} new paid sales
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function SignalBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-extrabold tracking-normal text-slate-950">{value}</p>
-    </div>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/70 px-3 py-2">
-      <span className="text-xs font-medium text-slate-500">{label}</span>
-      <span className="text-sm font-bold text-slate-950">{value}</span>
-    </div>
-  );
-}
-
-
-function EmptyPanel({ text }: { text: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-6 text-center text-sm font-medium text-slate-500">
-      {text}
-    </div>
-  );
-}
-
-function groupLabel(group: UsageGroupKey) {
-  if (group === "high") return "High usage";
-  if (group === "medium") return "Some usage";
-  return "Low/no usage";
-}
-
-function groupDotClass(group: UsageGroupKey) {
-  if (group === "high") return "bg-[#DC2626]";
-  if (group === "medium") return "bg-chart-3";
-  return "bg-muted-foreground";
-}
-
-function groupBarClass(group: UsageGroupKey) {
-  if (group === "high") return "bg-[#DC2626]";
-  if (group === "medium") return "bg-chart-3";
-  return "bg-muted-foreground/65";
-}
-
-function groupBadgeClass(group: UsageGroupKey) {
-  if (group === "high") return "border-red-200 bg-[#FEF2F2] text-[#B91C1C]";
-  if (group === "medium") return "border-chart-3/40 bg-chart-3/15 text-foreground";
-  return "border-muted-foreground/25 bg-muted text-muted-foreground";
-}
-
-function formatCurrency(value: number) {
-  return currencyFormatter.format(value);
-}
-
-function formatNumber(value: number) {
-  return numberFormatter.format(Math.round(value));
-}
-
-function formatCorrelation(value: number | null) {
-  if (value === null) return "n/a";
-  return value.toFixed(2);
-}
-
-function formatShortDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "unknown";
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(date);
-}
-
-function salesDataSourceLabel(analytics: SalesCorrelationAnalytics) {
-  if (analytics.summary.salesDataSource === "cached_snapshot") {
-    return analytics.summary.salesSnapshotCreatedAt
-      ? `Fallback snapshot (${formatShortDate(analytics.summary.salesSnapshotCreatedAt)})`
-      : "Fallback snapshot";
-  }
-  if (analytics.summary.salesDataSource === "synced_sheet") {
-    return `Authenticated Google Sheet read (${analytics.summary.salesSnapshotCreatedAt ? formatRefreshTime(analytics.summary.salesSnapshotCreatedAt) : "unknown"})`;
-  }
-  if (analytics.summary.salesDataSource === "live_sheet") return "Current live Google Sheet";
-  return "Unavailable";
-}
-
-function formatUsageHistory(effectiveDays: number, periodDays: number) {
-  if (!effectiveDays) return "not available";
-  if (effectiveDays >= periodDays) return `${periodDays} days`;
-  return `${effectiveDays}d of ${periodDays}d`;
-}
-
-function sum(values: number[]) {
-  return values.reduce((total, value) => total + value, 0);
-}
-
-function formatRefreshTime(value: string) {
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return "unknown";
-  return date.toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 }

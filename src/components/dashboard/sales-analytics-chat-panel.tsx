@@ -24,7 +24,7 @@ type ChatMessage = {
 const STARTER_QUESTIONS = [
   "Summarize this page.",
   "Are high-usage reps selling more?",
-  "Who needs manager follow-up?",
+  "What changed after reps started using coaching?",
   "Is this enough data to trust?",
 ];
 
