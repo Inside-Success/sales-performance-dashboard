@@ -87,7 +87,7 @@ export function SalesImpactOverview({
             </p>
           </div>
           <div
-            className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1"
+            className="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 sm:flex sm:flex-wrap"
             aria-label="Scatterplot usage group"
           >
             {(["all", "high", "some", "none"] as const).map((k) => (
@@ -96,7 +96,7 @@ export function SalesImpactOverview({
                 type="button"
                 aria-pressed={filter === k}
                 onClick={() => setFilter(k)}
-                className={`min-h-10 rounded-lg px-3 text-xs font-semibold ${filter === k ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}
+                className={`min-h-11 rounded-lg px-3 text-xs font-semibold ${filter === k ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}
               >
                 {k === "all"
                   ? "All reps"
@@ -159,7 +159,7 @@ export function SalesImpactOverview({
                 </span>
               ))}
             </div>
-            <p className="mt-3 text-xs leading-5 text-slate-400">
+            <p className="mt-3 text-xs leading-5 text-slate-500">
               {visible.length} reps shown. Zero-sales reps remain included.
               Search the table to select overlapping dots.
             </p>
@@ -190,7 +190,7 @@ export function SalesImpactOverview({
                           {g.average === null ? "—" : money(g.average)}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-400">
+                      <p className="mt-1 text-xs text-slate-500">
                         {g.count} matched reps · average new paid revenue
                       </p>
                     </div>
@@ -214,7 +214,7 @@ export function SalesImpactOverview({
             </p>
           </div>
           <label className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
-            <Search className="size-4 text-slate-400" aria-hidden="true" />
+            <Search className="size-4 text-slate-500" aria-hidden="true" />
             <input
               aria-label="Search sales impact reps"
               value={query}
@@ -262,7 +262,7 @@ export function SalesImpactOverview({
                     </button>
                   </th>
                 ))}
-                <th className="px-5 py-3">
+                <th className="relative px-5 py-3">
                   <span className="sr-only">Open rep summary</span>
                 </th>
               </tr>
@@ -342,7 +342,7 @@ function RepDetail({ rep }: { rep: ImpactRep }) {
             key={t.label}
             className="grid grid-cols-[2.5rem_1fr_4rem] items-center gap-2 text-[10px]"
           >
-            <span className="text-slate-400">{t.label.slice(5)}</span>
+            <span className="text-slate-500">{t.label.slice(5)}</span>
             <div className="h-2 rounded-full bg-slate-200">
               <div
                 className="h-full rounded-full bg-[#c43132]"
