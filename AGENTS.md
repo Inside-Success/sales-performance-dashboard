@@ -27,6 +27,7 @@ For dashboard/web changes:
 - Hidden manager pages are `/manager/usage` and `/manager/sales-correlation?days=7|14|30|90`.
 - Additional hidden manager pages include `/manager/compliance` and `/manager/rep-no-show`.
 - The admin-only rep performance reviewer is `/manager/rep-scoring`. It reads the isolated Airtable scoring base, is exact-email allowlisted, and must never write to source calls, Slack, or Google content.
+- Sales Impact now counts distinct mapped own official report opens, uses complete Miami-date periods, keeps unmatched sales identities separate from zero, and presents paired before/after and non-overlapping subsequent-sales checks. See MAGIC-MIKE-SALES-IMPACT-2026-10-14.md. Its chat must use the same read model and an authenticated session. Do not reintroduce the ten-second engagement threshold on this page.
 - `/manager/sales-correlation` reads the company sales Google Sheet through an isolated authenticated, read-only n8n sync. Validated reads are saved in dashboard-owned Postgres snapshots; the page shows refresh freshness and warns after two hours without a successful refresh. Legacy CSV remains a fallback before the first authenticated sync. It must never write to the company sales spreadsheet.
 - Official coaching usage, manual self-submitted feedback usage, and compliance feedback must stay separate.
 - Report chat uses `gpt-6-luna` through server-only `OPENAI_API_KEY` and requires a signed-in session. Sales-impact and rep-no-show chats still use `deepseek-v4-pro` through `DEEPSEEK_API_KEY`; do not commit keys.
