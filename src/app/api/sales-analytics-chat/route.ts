@@ -106,6 +106,8 @@ export async function POST(request: NextRequest) {
         model: REPORT_CHAT_MODEL,
         temperature: 0.15,
         max_tokens: 900,
+        // The page provides calculated facts; return a visible answer within the short response budget.
+        thinking: { type: "disabled" },
         messages: chatMessages,
       }),
     },

@@ -37,3 +37,48 @@ it("returns source failure as unavailable rather than a fabricated answer", asyn
   expect(fetch).not.toHaveBeenCalled();
   vi.unstubAllEnvs();
 });
+it("uses the current open-based snapshot and visible-answer mode for a signed-in question", async () => {
+  const { analyzeSalesImpact } = await import(
+    "../src/lib/sales-impact-analysis"
+  );
+  const analysis = analyzeSalesImpact(
+    [],
+    [],
+    [],
+    30,
+    new Date("2026-10-14T16:00:00Z"),
+  );
+  mocks.auth.mockResolvedValue({ user: { email: "manager@example.com" } });
+  mocks.data.mockResolvedValue({ analysis });
+  vi.stubEnv("DEEPSEEK_API_KEY", "test-only");
+  const provider = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { content: "No complete comparisons yet." } }],
+        }),
+        { status: 200 },
+      ),
+    );
+  const r = await POST(
+    new NextRequest("https://example.com/api/sales-analytics-chat", {
+      method: "POST",
+      body: JSON.stringify({
+        periodDays: 30,
+        messages: [{ role: "user", content: "Summarize this page." }],
+      }),
+    }),
+  );
+  expect(r.status).toBe(200);
+  expect((await r.json()).answer).toBe("No complete comparisons yet.");
+  const body = JSON.parse(String(provider.mock.calls[0][1]?.body));
+  expect(body.thinking).toEqual({ type: "disabled" });
+  expect(body.max_tokens).toBe(900);
+  expect(body.messages[0].content).toContain(
+    "without a ten-second requirement",
+  );
+  expect(body.messages[1].content).toContain("repColumns");
+  expect(mocks.data).toHaveBeenCalledWith(30);
+  vi.unstubAllEnvs();
+});

@@ -24,7 +24,7 @@ Same-rep before/after evidence leads the page when complete pairs exist. Same-pe
 
 ## Verification before release
 
-- 46 targeted tests across the new pure analysis, data reader, chat failure/auth boundaries and existing usage, source sync and sales-sheet health suites.
+- 47 targeted tests across the new pure analysis, data reader, chat failure/auth boundaries and existing usage, source sync and sales-sheet health suites.
 - Independent production SELECT audit: all four periods' distinct owner opens reconcile with PostgreSQL; every matched rep's selected-period revenue reconciles with a separate JSONB SQL aggregate of the latest source snapshot.
 - October 13 20:42 UTC evidence: 7,750 stored reports, 1,245 eligible owner-open events, 4,008 source rows; snapshot refreshed at 20:00 UTC. No source or report changes during audit.
 - 30-day data: 77 matched, 54 unmatched active reps; 192 distinct own opens. 27 complete first-open pairs averaged $10,175.93 before and $18,037 after (+$7,861.07; median change +$7,500). Same-period high users averaged $8,071.43 vs no-open $10,115.52. Fixed subsequent-sales paired check across 23 reps was -$1,192.03. Evidence is mixed and does not prove causation.
@@ -40,4 +40,10 @@ After this improvement, revisit complete attended-call coverage and separating g
 
 ## Release evidence
 
-Pending final GitHub/Vercel and authenticated UI verification; fill this section after verified release.
+- Core PR286 merged `2077a7759274100055dbcb6cd1cdcce0e23c1bf9`. Git-sourced staged production build `dpl_72ypNsYwusP89Ly7zGcrZ24Subgz` READY, then promoted to the rose alias. Automatic PR preview failed during resource provisioning before app build; no infrastructure settings were changed.
+- Mobile follow-up PR287 merged `210056794a1bd6baa86f34181b298720ff578d1a`. Production `dpl_AXuZBPpKs3nk9uNpaxspDkWqJtZv` READY. Actual 375px viewport checked: document width 360px, no page overflow; table remains separately scrollable. Filters wrap evenly and secondary copy has stronger contrast.
+- Authenticated live checks: all four period links update figures; stable chart axes across group filtering; Annalia dot and table search agree (22 opens, $23,000, incomplete follow-up clearly marked); Rossini displays 7 opens with **Not matched**, never zero; both name-sort directions, report-count sorting, Show all131, and chat drawer verified.
+- Existing coaching home, report7614, self-submitted picker, rep usage, FAQ admin usage and scorecard rendered successfully. This is scoped regression verification, not a claim to have re-run every production workflow or proved future availability.
+- Rep Usage retains its own report-availability denominator and includes its existing rolling-date behavior; Sales Impact counts events within complete days, including opens of older available reports. Different totals between these pages are expected, not a label-only rename.
+- Live sales chat initially returned an empty answer. Final follow-up explicitly requests DeepSeek non-thinking mode for the already-calculated facts, preserves the same model and output budget, and compacts the snapshot into named columns with identical rep and trend values. Its live post-release answer remains to verify. The external provider request used by local diagnostic could not access the sensitive Vercel key; no credentials were copied or changed.
+- Rollback still restores only this release; source Sheet/sync and production workflow state remain unchanged.
