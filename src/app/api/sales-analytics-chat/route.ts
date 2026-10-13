@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { z } from "zod";
 import {
   buildCurrentSalesImpactChatMessages,
+  buildSalesImpactPresetAnswer,
   type SalesAnalyticsChatMessage,
 } from "@/lib/sales-analytics-chat";
 import { normalizeSalesCorrelationWindow } from "@/lib/sales-correlation";
@@ -69,14 +70,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "Sales analytics chat is not configured yet." },
-      { status: 500 },
-    );
-  }
-
   const periodDays = normalizeSalesCorrelationWindow(
     String(payload.periodDays || ""),
   );
@@ -89,6 +82,21 @@ export async function POST(request: NextRequest) {
       { status: 503 },
     );
   }
+  const presetAnswer = buildSalesImpactPresetAnswer(
+    analytics.analysis,
+    lastMessage.content,
+  );
+  if (presetAnswer)
+    return NextResponse.json({
+      answer: presetAnswer,
+      model: "verified-page-data",
+    });
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey)
+    return NextResponse.json(
+      { error: "Sales analytics chat is not configured yet." },
+      { status: 500 },
+    );
   const chatMessages = buildCurrentSalesImpactChatMessages(
     analytics.analysis,
     messages,

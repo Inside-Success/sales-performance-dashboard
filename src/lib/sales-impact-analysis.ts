@@ -328,9 +328,9 @@ export function analyzeSalesImpact(
     gap === null
       ? "More matched usage and sales data is needed for a comparison."
       : gap > 0
-        ? `High-usage reps averaged ${dollars(gap)} more in new paid revenue.`
+        ? `High-usage reps averaged ${dollars(gap)} more in new paid revenue than reps with no recorded own opens.`
         : gap < 0
-          ? `High-usage reps averaged ${dollars(gap)} less in new paid revenue.`
+          ? `High-usage reps averaged ${dollars(gap)} less in new paid revenue than reps with no recorded own opens.`
           : "High-usage and no-open reps averaged the same new paid revenue.";
   const highSales = reps
     .filter((r) => r.group === "high" && r.revenue !== null)
