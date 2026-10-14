@@ -55,7 +55,7 @@ describe("Approved leadership access", () => {
     expect(isMagicMikeAdmin(" DAGIM.ABATE@INSIDESUCCESS.COM ")).toBe(true);
   });
   it("keeps the external team link exact and all internal directory routes distinct", () => {
-    expect(ADMIN_DIRECTORY_LINKS.at(-1)?.href).toBe("https://mockcallagent.insidesuccess.ai/admin/team");
+    expect(ADMIN_DIRECTORY_LINKS.find(link => link.name === "Mock Call Agent Team Admin")?.href).toBe("https://mockcallagent.insidesuccess.ai/admin/team");
     expect(new Set(ADMIN_DIRECTORY_LINKS.map(link => link.href)).size).toBe(9);
   });
 });

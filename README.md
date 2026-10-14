@@ -64,16 +64,16 @@ The endpoint upserts dashboard rows and returns:
 
 ## Routes
 
-- `/` Magic Mike tool homepage with an authorized Admin link
+- `/` Magic Mike tool homepage with an authorized Admin Insights link
 - `/coaching` searchable official call library
 - `/rep/[slug]` rep-scoped call library
 - `/call/[id]` full coaching report
 - `/submit` manual sales feedback submission
 - `/manual-reports` completed manual reports by rep
 - `/self-report/[publicId]` manual report status/detail page
-- `/admin` authorized Magic Mike admin directory, including the external Mock Call Agent Team Admin link
+- `/admin` authorized Admin Insights directory, including the external Mock Call Agent Team Admin link
 - `/manager/usage` AI Coaching Rep Usage (admin only)
-- `/manager/coaching-insights` AI Coaching Team Insights (admin only)
+- `/manager/coaching-insights` AI Coaching Objection Library (admin only)
 - `/manager/sales-correlation?days=7|14|30|90` AI Coaching Sales Impact (admin only)
 - `/manager/compliance` Sales Compliance Review (admin only)
 - `/manager/rep-no-show` Sales Call Rep No-Shows (admin only)
@@ -85,7 +85,7 @@ The endpoint upserts dashboard rows and returns:
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
 - `/ask-sales-faq/admin/knowledge-refresh` legacy compatibility route, redirected to FAQ Conversations
-- `/ask-sales-faq/admin` admin-only production conversation logs for manual quality review on request
+- `/ask-sales-faq/admin` Sales FAQ Chatbot Conversations: admin-only production conversation logs for manual quality review on request
 - `/ask-sales-faq/admin/usage` admin-only rep adoption and usage review
 
 The coaching report reading layout, evidence-link behavior, and exact rollback tag are recorded in [docs-coaching-report-ui-2026-09-23.md](docs-coaching-report-ui-2026-09-23.md).
@@ -142,3 +142,5 @@ Ask Sales knowledge refresh is a separate read-only source-monitoring system. It
 Ask Sales quality review is manual and on demand. The old nightly AI quality audit is retired and inactive; its historical records are preserved. The Quality & Operations page shows production conversations, safe routes, feedback, and genuine runtime/negative-feedback attention signals without automatically treating a safe route as a defect. See `docs-ask-sales-faq-admin-and-adoption.md`.
 
 Admin directory, exact leadership exceptions and additive access policy: [MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md](MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md).
+
+Admin layout, names, order and navigation follow-up: [MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md](MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md).

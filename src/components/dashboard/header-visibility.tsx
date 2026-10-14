@@ -13,6 +13,7 @@ export function HeaderVisibility({ userName, userEmail }: { userName: string; us
 
   if (pathname === "/sign-in" || pathname.startsWith("/sign-in/")) return null;
 
+  const isManager = pathname.startsWith("/manager/");
   const isHub = pathname === "/" || pathname === "/admin";
   const isFaq = pathname === "/ask-sales-faq" || pathname.startsWith("/ask-sales-faq/");
   const isFaqAdmin = pathname.startsWith("/ask-sales-faq/admin");
@@ -21,21 +22,21 @@ export function HeaderVisibility({ userName, userEmail }: { userName: string; us
     <header className={`magic-app-header sticky top-0 z-40 border-b backdrop-blur supports-[backdrop-filter]:bg-white/85 ${isHub ? welcomeStyles.header : ""}`}>
       <div className="mx-auto flex min-h-[72px] w-full max-w-[84rem] flex-col items-stretch justify-center gap-3 px-5 py-3 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:py-0">
         <div className="flex min-w-0 items-center justify-between gap-3">
-          <BrandLink compact={!isHub} />
-          {!isHub && !isFaqAdmin ? <ToolSwitcher active={isFaq ? "faq" : "coaching"} /> : null}
+          <BrandLink compact={!isHub && !isManager && !isFaqAdmin} />
+          {!isHub && !isFaqAdmin && !isManager ? <ToolSwitcher active={isFaq ? "faq" : "coaching"} /> : null}
           <div className="lg:hidden">
             <ProfileMenu userName={userName} userEmail={userEmail} compact />
           </div>
         </div>
 
-        {!isHub && !isFaq ? (
+        {!isHub && !isFaq && !isManager ? (
           <div className="flex min-w-0 items-center justify-between gap-3 lg:justify-end">
             <MainNav />
             <div className="hidden lg:block"><ProfileMenu userName={userName} userEmail={userEmail} /></div>
           </div>
         ) : (
           <div className="hidden items-center gap-4 lg:flex">
-            {isFaqAdmin ? <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Admin only</span> : null}
+            {isFaqAdmin || isManager ? <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">Admin only</span> : null}
             <ProfileMenu userName={userName} userEmail={userEmail} compact />
           </div>
         )}

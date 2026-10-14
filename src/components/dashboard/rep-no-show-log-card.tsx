@@ -31,7 +31,7 @@ export function RepNoShowLogCard({
   ), query), [calls, query, callType, history, periodStart]);
 
   return (
-    <Card className="dashboard-card border bg-card/95">
+    <Card className="magic-card">
       <CardHeader className="border-b">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -53,8 +53,8 @@ export function RepNoShowLogCard({
           <>
             <div className="border-b px-4 py-3">
               <div className="mb-3 flex flex-wrap gap-3">
-                <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => setCallType(event.target.value)} className="ml-2 rounded-md border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
-                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => setHistory(event.target.value === "all")} className="ml-2 rounded-md border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
+                <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => setCallType(event.target.value)} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
+                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => setHistory(event.target.value === "all")} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
@@ -63,7 +63,7 @@ export function RepNoShowLogCard({
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Search rep, client, date, call, reason..."
-                    className="h-9 pl-8 pr-8"
+                    className="h-11 pl-8 pr-8"
                     aria-label="Search detected no-shows"
                   />
                   {query ? (

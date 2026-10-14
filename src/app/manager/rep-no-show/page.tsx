@@ -13,7 +13,6 @@ import {
 import { RepNoShowLogCard } from "@/components/dashboard/rep-no-show-log-card";
 import { RepNoShowChatPanel } from "@/components/dashboard/rep-no-show-chat-panel";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -57,9 +56,9 @@ export default async function RepNoShowPage({
   const analytics = await getRepNoShowAnalytics(periodDays);
 
   return (
-    <main className="dashboard-page min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="dashboard-card dashboard-hero rounded-2xl border bg-card/95 p-5 md:p-6">
+    <main className="magic-page magic-no-show-theme">
+      <div className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 px-5 py-6 sm:px-8">
+        <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl">
               <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -78,7 +77,7 @@ export default async function RepNoShowPage({
                   <Badge variant="destructive">Airtable not connected</Badge>
                 ) : null}
               </div>
-              <h1 className="text-3xl font-semibold tracking-normal md:text-4xl">
+              <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
                 Sales Call Rep No-Shows
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -92,14 +91,6 @@ export default async function RepNoShowPage({
               <div className="inline-flex items-center gap-2 rounded-lg border bg-background/75 px-3 py-2">
                 <Clock3 className="size-4 text-foreground" />
                 Updated {formatMiamiDateTime(analytics.summary.generatedAt)}
-              </div>
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                <Link href="/manager/usage" className={cn(buttonVariants({ variant: "outline" }), "w-fit")}>
-                  Usage
-                </Link>
-                <Link href="/manager/sales-correlation" className={cn(buttonVariants({ variant: "outline" }), "w-fit")}>
-                  Sales impact
-                </Link>
               </div>
             </div>
           </div>
@@ -161,13 +152,13 @@ function PeriodSelector({ selectedDays }: { selectedDays: number }) {
           key={days}
           href={`/manager/rep-no-show?days=${days}`}
           className={cn(
-            "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+            "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
             selectedDays === days
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-muted hover:text-foreground",
           )}
         >
-          {days}d
+          {days} days
         </Link>
       ))}
     </div>
@@ -196,7 +187,7 @@ function MetricCard({
   icon: LucideIcon;
 }) {
   return (
-    <Card className="dashboard-card border bg-card/95">
+    <Card className="magic-card">
       <CardContent className="flex items-start justify-between gap-3 pt-1">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{title}</p>
@@ -216,7 +207,7 @@ function TrendCard({ analytics }: { analytics: RepNoShowAnalytics }) {
   const maxNoShows = Math.max(1, ...weekly.map((point) => point.noShows));
 
   return (
-    <Card className="dashboard-card border bg-card/95">
+    <Card className="magic-card">
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <CalendarDays className="size-4" />
@@ -252,7 +243,7 @@ function TrendCard({ analytics }: { analytics: RepNoShowAnalytics }) {
 
 function TopRepsCard({ reps }: { reps: RepNoShowRepRow[] }) {
   return (
-    <Card className="dashboard-card border bg-card/95">
+    <Card className="magic-card">
       <CardHeader className="border-b">
         <CardTitle className="flex items-center gap-2">
           <Users className="size-4" />

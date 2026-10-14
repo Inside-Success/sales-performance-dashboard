@@ -15,14 +15,14 @@ export function AdminLayout({
   return (
     <main className="min-h-[calc(100dvh-72px)] bg-slate-50 px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <Link href="/admin" className="inline-flex min-h-11 items-center rounded-lg text-sm font-semibold text-slate-600 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600">← Magic Mike Admin</Link>
+        <Link href="/admin" className="inline-flex min-h-11 items-center rounded-lg text-sm font-semibold text-slate-600 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600">← Back to Admin Insights</Link>
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-red-700">
               Ask Sales · Admin
             </p>
             <h1 className="mt-2 text-3xl font-extrabold text-slate-950">
-              {active === "conversations" ? "Sales FAQ Conversations" : "Sales FAQ Usage"}
+              {active === "conversations" ? "Sales FAQ Chatbot Conversations" : "Sales FAQ Chatbot Usage"}
             </h1>
             <p className="mt-2 text-slate-600">
               {active === "conversations"
