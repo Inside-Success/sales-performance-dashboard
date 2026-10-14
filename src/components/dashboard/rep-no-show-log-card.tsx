@@ -25,6 +25,7 @@ export function RepNoShowLogCard({
   periodDays: number;
 }) {
   const [query, setQuery] = useState("");
+  const [visibleLimit, setVisibleLimit] = useState(100);
   const [callType, setCallType] = useState("all");
   const [history, setHistory] = useState(false);
   const [historyCalls, setHistoryCalls] = useState<RepNoShowCall[] | null>(null);
@@ -68,15 +69,15 @@ export function RepNoShowLogCard({
           <>
             <div className="border-b px-4 py-3">
               <div className="mb-3 flex flex-wrap gap-3">
-                <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => setCallType(event.target.value)} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
-                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => { setHistoryError(null); setHistory(event.target.value === "all"); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
+                <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => { setVisibleLimit(100); setCallType(event.target.value); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
+                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => { setVisibleLimit(100); setHistoryError(null); setHistory(event.target.value === "all"); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
                   <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={query}
-                    onChange={(event) => setQuery(event.target.value)}
+                    onChange={(event) => { setVisibleLimit(100); setQuery(event.target.value); }}
                     placeholder="Search rep, client, date, call, reason..."
                     className="h-11 pl-8 pr-8"
                     aria-label="Search detected no-shows"
@@ -87,7 +88,7 @@ export function RepNoShowLogCard({
                       variant="ghost"
                       size="icon-xs"
                       className="absolute right-1.5 top-1/2 -translate-y-1/2"
-                      onClick={() => setQuery("")}
+                      onClick={() => { setVisibleLimit(100); setQuery(""); }}
                       aria-label="Clear no-show search"
                     >
                       <X className="size-3.5" />
@@ -102,7 +103,7 @@ export function RepNoShowLogCard({
 
             {history && !historyCalls ? <p role={historyError ? "alert" : "status"} className="px-4 py-4 text-sm">{historyError || "Loading all history…"}</p> : filteredCalls.length ? (
               <div className="dashboard-scroll max-h-[31.25rem] divide-y overflow-y-auto">
-                {filteredCalls.map((call) => (
+                {filteredCalls.slice(0, visibleLimit).map((call) => (
                   <NoShowLogRow key={call.id} call={call} />
                 ))}
               </div>
@@ -111,6 +112,10 @@ export function RepNoShowLogCard({
                 <EmptyState text="No no-shows match these filters." />
               </div>
             )}
+            {filteredCalls.length > visibleLimit ? <div className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
+              <p className="text-xs text-muted-foreground">{visibleLimit} of {formatNumber(filteredCalls.length)} matching entries displayed</p>
+              <Button variant="outline" className="min-h-11" onClick={() => setVisibleLimit(limit => limit + 100)}>Show 100 more</Button>
+            </div> : null}
           </>
         ) : (
           <div className="px-4 py-4">
