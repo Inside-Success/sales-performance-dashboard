@@ -54,7 +54,7 @@ export default async function RepNoShowPage({
   await requireRepScoringAdmin();
   const { days } = await searchParams;
   const periodDays = normalizeRepNoShowWindow(days);
-  const analytics = await getRepNoShowAnalytics(periodDays);
+  const analytics = await getRepNoShowAnalytics(periodDays, false);
 
   return (
     <main className="magic-page magic-no-show-theme">
@@ -136,7 +136,7 @@ export default async function RepNoShowPage({
 
         <RepNoShowLogCard key={analytics.summary.generatedAt}
           calls={analytics.noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analytics.summary.effectivePeriodStart))}
-          historyCount={analytics.noShowLog.length}
+          historyCount={analytics.historyCount ?? analytics.noShowLog.length}
           trackingStartedAt={analytics.summary.trackingStartedAt}
           periodStart={analytics.summary.effectivePeriodStart}
           periodDays={analytics.summary.periodDays}

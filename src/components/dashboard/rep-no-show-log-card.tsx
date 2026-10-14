@@ -56,7 +56,7 @@ export function RepNoShowLogCard({
               Detected no-shows
             </CardTitle>
             <CardDescription>
-              Showing the selected period. All history is available from {formatShortDate(trackingStartedAt)}.
+              {history ? "Showing all history." : "Showing the selected period."} All history is available from {formatShortDate(trackingStartedAt)}.
             </CardDescription>
           </div>
           <Badge variant="outline" className="w-fit bg-background">

@@ -98,6 +98,7 @@ export type RepNoShowSummary = {
 
 export type RepNoShowAnalytics = {
   summary: RepNoShowSummary;
+  historyCount?: number;
   topReps: RepNoShowRepRow[];
   noShowLog: RepNoShowCall[];
   weekly: RepNoShowWeeklyPoint[];
@@ -117,47 +118,55 @@ export function normalizeRepNoShowWindow(value: string | string[] | undefined): 
     : 7;
 }
 
-export function attendanceSnapshotSpec(): SnapshotSpec<AirtableRecord[]> {
-  return { key: `attendance-v1:${process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID}:${process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID}:${process.env.REP_NO_SHOW_TRACKING_START_DATE || DEFAULT_TRACKING_START_DATE}`,
-    maxAgeSeconds: 900, load: async () => {
-      const token = getAirtableToken();
-      if (!token) throw new Error("Airtable read access is not configured.");
-      return fetchAirtableRecords(token, Math.max(HISTORY_DAYS, differenceInDays(parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE), new Date()) + 2));
-    } };
+type AttendanceSnapshot = { periods: Record<RepNoShowWindow, RepNoShowAnalytics>; history: RepNoShowCall[] };
+function attendanceKey(version: string) {
+  return `${version}:${process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID}:${process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID}:${process.env.REP_NO_SHOW_TRACKING_START_DATE || DEFAULT_TRACKING_START_DATE}`;
 }
-const legacyAttendanceRead = unstable_cache(getRepNoShowAnalyticsUncached, ["rep-no-show-analytics-performance-rollback"], { revalidate: 900 });
-export async function getRepNoShowAnalytics(periodDays: RepNoShowWindow = 7) {
-  return process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" ? legacyAttendanceRead(periodDays) : getRepNoShowAnalyticsUncached(periodDays);
-}
-
-async function getRepNoShowAnalyticsUncached(
-  periodDays: RepNoShowWindow = 7,
-): Promise<RepNoShowAnalytics> {
-  const generatedAt = new Date();
-  const configuredTrackingStart = parseDate(
-    process.env.REP_NO_SHOW_TRACKING_START_DATE,
-    DEFAULT_TRACKING_START_DATE,
-  );
-  const fallback = getFallbackAnalytics(
-    generatedAt,
-    periodDays,
-    configuredTrackingStart,
-  );
-  const token = getAirtableToken();
-
-  if (!token) {
-    return {
-      ...fallback,
-      summary: {
-        ...fallback.summary,
-        error: "Airtable read access is not configured for rep no-show analytics.",
-      },
-    };
+export function buildAttendanceSnapshot(records: AirtableRecord[], generatedAt = new Date()): AttendanceSnapshot {
+  const trackingStart = parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE);
+  const periods = {} as AttendanceSnapshot["periods"];
+  let history: RepNoShowCall[] = [];
+  for (const days of REP_NO_SHOW_WINDOWS) {
+    const analysis = calculateAttendance(records, days, generatedAt, trackingStart);
+    history = analysis.noShowLog;
+    periods[days] = { ...analysis, historyCount: history.length,
+      noShowLog: history.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analysis.summary.effectivePeriodStart)) };
   }
-
+  return { periods, history };
+}
+export function attendanceSnapshotSpec(): SnapshotSpec<AttendanceSnapshot> {
+  return { key: attendanceKey("attendance-v2"), maxAgeSeconds: 900, initializeOnRead: false, load: async () => {
+    const token = getAirtableToken();
+    if (!token) throw new Error("Airtable read access is not configured.");
+    const records = await fetchAirtableRecords(token, Math.max(HISTORY_DAYS, differenceInDays(parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE), new Date()) + 2));
+    return buildAttendanceSnapshot(records);
+  } };
+}
+const legacyAttendanceRead = unstable_cache(getRepNoShowAnalyticsUncached, ["rep-no-show-analytics-performance-rollback-v2"], { revalidate: 900 });
+export async function getRepNoShowAnalytics(periodDays: RepNoShowWindow = 7, includeHistory = true) {
+  return process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" ? legacyAttendanceRead(periodDays, includeHistory) : getRepNoShowAnalyticsUncached(periodDays, includeHistory);
+}
+async function getRepNoShowAnalyticsUncached(periodDays: RepNoShowWindow = 7, includeHistory = true): Promise<RepNoShowAnalytics> {
+  const fallback = getFallbackAnalytics(new Date(), periodDays, parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE));
   try {
-    const read = await getReadSnapshot(attendanceSnapshotSpec());
-    const records = read.data;
+    let read;
+    try { read = await getReadSnapshot(attendanceSnapshotSpec()); }
+    catch (error) {
+      // Keep the verified previous version available while the compact version is populated.
+      const previous = await getReadSnapshot<AirtableRecord[]>({ key: attendanceKey("attendance-v1"), maxAgeSeconds: 900,
+        initializeOnRead: false, refreshOnRead: false, load: async () => { throw new Error("Previous attendance read is unavailable."); } }).catch(() => { throw error; });
+      const result = calculateAttendance(previous.data, periodDays, new Date(previous.fetchedAt), parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE));
+      return { ...result, historyCount: result.noShowLog.length, summary: { ...result.summary, warning: "Showing the previous successful attendance read while the compact read is prepared." },
+        noShowLog: includeHistory ? result.noShowLog : result.noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(result.summary.effectivePeriodStart)) };
+    }
+    const analysis = read.data.periods[periodDays];
+    return { ...analysis, noShowLog: includeHistory ? read.data.history : analysis.noShowLog,
+      summary: { ...analysis.summary, generatedAt: read.fetchedAt, warning: snapshotWarning(read) } };
+  } catch (error) {
+    return { ...fallback, summary: { ...fallback.summary, configured: true, error: error instanceof Error ? error.message : "Attendance data is unavailable." } };
+  }
+}
+function calculateAttendance(records: AirtableRecord[], periodDays: RepNoShowWindow, generatedAt: Date, configuredTrackingStart: Date): RepNoShowAnalytics {
     const calls = dedupeTrackedCalls(
       records.map(normalizeAirtableRecord).filter(isEligibleCall).filter(isTrackedCall),
     );
@@ -199,8 +208,7 @@ async function getRepNoShowAnalyticsUncached(
     return {
       summary: {
         configured: true,
-        generatedAt: read.fetchedAt,
-        warning: snapshotWarning(read),
+        generatedAt: generatedAt.toISOString(),
         periodDays,
         trackingStartedAt: trackingStartedAt.toISOString(),
         effectivePeriodStart: periodStart.toISOString(),
@@ -223,19 +231,6 @@ async function getRepNoShowAnalyticsUncached(
         .map(stripNoShowFlag),
       weekly,
     };
-  } catch (error) {
-    return {
-      ...fallback,
-      summary: {
-        ...fallback.summary,
-        configured: true,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Rep no-show analytics could not read Airtable right now.",
-      },
-    };
-  }
 }
 
 function getAirtableToken() {

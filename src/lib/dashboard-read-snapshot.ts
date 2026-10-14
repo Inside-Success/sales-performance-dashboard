@@ -6,7 +6,7 @@ import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { randomUUID } from "node:crypto";
 
-export type SnapshotSpec<T> = { key: string; maxAgeSeconds: number; load: () => Promise<T> };
+export type SnapshotSpec<T> = { key: string; maxAgeSeconds: number; initializeOnRead?: boolean; refreshOnRead?: boolean; load: () => Promise<T> };
 export type ReadSnapshot<T> = { data: T; fetchedAt: string; stale: boolean; refreshFailed: boolean };
 let schema: Promise<void> | undefined;
 function db() { return neon(process.env.DATABASE_URL!); }
@@ -58,10 +58,14 @@ export async function getReadSnapshot<T>(spec: SnapshotSpec<T>): Promise<ReadSna
   // Stale successful data stays immediately available. Scheduled refresh owns source I/O.
   if (row?.payload != null && row.fetched_at) {
     const value = result<T>(row, spec);
-    if (value.stale) {
+    if (value.stale && spec.refreshOnRead !== false) {
       try { after(async () => { try { await refreshReadSnapshot(spec); } catch { /* Saved data remains available; source error is logged by refresher. */ } }); } catch { /* Direct scripts have no request context; scheduled refresh handles recent activity. */ }
     }
     return value;
+  }
+  if (spec.initializeOnRead === false) {
+    if (spec.refreshOnRead !== false) try { after(async () => { try { await refreshReadSnapshot(spec); } catch { /* Existing version remains the fallback. */ } }); } catch { /* Bootstrap/cron can prepare the new read outside a page request. */ }
+    throw new Error("The new source read is being prepared.");
   }
   await refreshReadSnapshot(spec);
   const first = await readRow(spec.key);

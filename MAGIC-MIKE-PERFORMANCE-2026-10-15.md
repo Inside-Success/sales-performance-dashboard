@@ -45,3 +45,7 @@ Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to 
 - Fixed the period caption to compare the actual tracking cutoff, rather than the saved source refresh time. Counts/calculation rules are unchanged.
 
 - Long no-show evidence lists render the first 100 matches with a clear Show 100 more control. Search and call-type matching still cover the entire loaded dataset; no history is discarded. This avoids mounting thousands of rows during date transitions.
+
+## Compact attendance read
+
+Protected live inspection found 32,155 records / 33,551,433 JSON bytes in the initial raw attendance snapshot. Compact v2 moves the unchanged four date-window calculations into refresh, saves one full no-show evidence history plus per-period results, and removes raw present-call records from visitor reads. Counts are fixed to the successful read's cutoff, appropriate to the stated source freshness. The previous v1 read remains available while v2 is populated, preventing a blank transition; it is retained as a dashboard-owned rollback artifact. All historical no-show evidence remains accessible.
