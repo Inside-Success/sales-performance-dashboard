@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ExternalLink, FileText, Search, X } from "lucide-react";
 import type { RepNoShowCall } from "@/lib/rep-no-show";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +13,13 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 
 export function RepNoShowLogCard({
   calls,
+  historyCount,
   trackingStartedAt,
   periodStart,
   periodDays,
 }: {
   calls: RepNoShowCall[];
+  historyCount: number;
   trackingStartedAt: string;
   periodStart: string;
   periodDays: number;
@@ -25,10 +27,23 @@ export function RepNoShowLogCard({
   const [query, setQuery] = useState("");
   const [callType, setCallType] = useState("all");
   const [history, setHistory] = useState(false);
-  const filteredCalls = useMemo(() => filterCalls(calls.filter(call =>
+  const [historyCalls, setHistoryCalls] = useState<RepNoShowCall[] | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!history || historyCalls) return;
+    const controller = new AbortController();
+    fetch("/api/admin/rep-no-show/history", { signal: controller.signal }).then(async response => {
+      const data = await response.json();
+      if (!response.ok || !Array.isArray(data.calls)) throw new Error("History could not be loaded. Please switch back and try again.");
+      if (!controller.signal.aborted) setHistoryCalls(data.calls);
+    }).catch(() => { if (!controller.signal.aborted) setHistoryError("History could not be loaded. Please switch back and try again."); });
+    return () => controller.abort();
+  }, [history, historyCalls]);
+  const displayedCalls = useMemo(() => history ? historyCalls || [] : calls, [history, historyCalls, calls]);
+  const filteredCalls = useMemo(() => filterCalls(displayedCalls.filter(call =>
     (history || (call.callDate && Date.parse(call.callDate) >= Date.parse(periodStart))) &&
     (callType === "all" || (callType === "call1" ? call.callNumber.trim().toLowerCase() === "call 1" : call.callNumber.trim().toLowerCase() !== "call 1"))
-  ), query), [calls, query, callType, history, periodStart]);
+  ), query), [displayedCalls, query, callType, history, periodStart]);
 
   return (
     <Card className="magic-card">
@@ -44,17 +59,17 @@ export function RepNoShowLogCard({
             </CardDescription>
           </div>
           <Badge variant="outline" className="w-fit bg-background">
-            {formatNumber(calls.length)} total
+            {formatNumber(historyCount)} total
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="px-0">
-        {calls.length ? (
+        {historyCount ? (
           <>
             <div className="border-b px-4 py-3">
               <div className="mb-3 flex flex-wrap gap-3">
                 <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => setCallType(event.target.value)} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
-                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => setHistory(event.target.value === "all")} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
+                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => { setHistoryError(null); setHistory(event.target.value === "all"); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
@@ -80,12 +95,12 @@ export function RepNoShowLogCard({
                   ) : null}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Showing {formatNumber(filteredCalls.length)} of {formatNumber(calls.length)}
+                  Showing {formatNumber(filteredCalls.length)} of {formatNumber(historyCount)}
                 </p>
               </div>
             </div>
 
-            {filteredCalls.length ? (
+            {history && !historyCalls ? <p role={historyError ? "alert" : "status"} className="px-4 py-4 text-sm">{historyError || "Loading all history…"}</p> : filteredCalls.length ? (
               <div className="dashboard-scroll max-h-[31.25rem] divide-y overflow-y-auto">
                 {filteredCalls.map((call) => (
                   <NoShowLogRow key={call.id} call={call} />

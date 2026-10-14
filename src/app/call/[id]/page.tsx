@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import type { PerformanceCall } from "@/lib/types";
 import { CoachingReportContent } from "@/components/dashboard/coaching-report-content";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -52,7 +54,6 @@ export default async function CallPage({
 
   if (!call) notFound();
 
-  const callScore = await getCoachingCallScore(call);
 
   const reportChatEnabled = isReportChatEnabledForCall(call);
   const closeSection = resolveCloseSection({
@@ -113,15 +114,7 @@ export default async function CallPage({
                     {call.client_name || call.meeting_title || "Feedback Report"}
                   </h1>
                 </div>
-                {callScore ? (
-                  <div className="shrink-0 rounded-2xl border border-red-100 bg-[#fff7f7] px-5 py-3.5" aria-label={`Call score ${callScore.score.toFixed(1)} out of 100`}>
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#a92728]">Call score</p>
-                    <p className="mt-1 font-semibold tabular-nums tracking-tight text-slate-950">
-                      <span className="text-[42px] leading-none md:text-[50px]">{callScore.score.toFixed(1)}</span>
-                      <span className="ml-1 text-base text-slate-500">/ 100</span>
-                    </p>
-                  </div>
-                ) : null}
+                <Suspense fallback={<span role="status" className="text-xs text-slate-500">Loading call score…</span>}><AsyncCallScore call={call} /></Suspense>
               </div>
             </header>
 
@@ -350,4 +343,13 @@ function ExternalButton({
       {content}
     </TrackedExternalLink>
   );
+}
+
+async function AsyncCallScore({ call }: { call: PerformanceCall }) {
+  const score = await getCoachingCallScore(call);
+  if (!score) return null;
+  return <div className="shrink-0 rounded-2xl border border-red-100 bg-[#fff7f7] px-5 py-3.5" aria-label={`Call score ${score.score.toFixed(1)} out of 100`}>
+    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#a92728]">Call score</p>
+    <p className="mt-1 font-semibold tabular-nums tracking-tight text-slate-950"><span className="text-[42px] leading-none md:text-[50px]">{score.score.toFixed(1)}</span><span className="ml-1 text-base text-slate-500">/ 100</span></p>
+  </div>;
 }

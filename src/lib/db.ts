@@ -1409,7 +1409,7 @@ export async function getSalesCorrelationUsageData(
   }
 }
 
-export async function getDashboardData(filters: DashboardFilters = {}) {
+export async function getDashboardData(filters: DashboardFilters = {}, options: { libraryOnly?: boolean; loadCalls?: boolean } = {}) {
   if (!hasDatabase()) {
     return getFallbackDashboardData();
   }
@@ -1463,9 +1463,9 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
     const sql = getSql();
 
     const [calls, reps, latestByRep, lastUpdatedRows] = await Promise.all([
-      sql.query(
+      options.loadCalls === false ? Promise.resolve([]) : sql.query(
         `
-          select *
+          select ${options.libraryOnly ? "id,rep_name,rep_slug,client_name,call_date,meeting_title,updated_at,created_at,jsonb_build_object('coaching_version',source_payload->'coaching_version') as source_payload" : "*"}
           from performance_calls
           ${whereSql}
           order by call_date desc nulls last, updated_at desc
@@ -1482,7 +1482,7 @@ export async function getDashboardData(filters: DashboardFilters = {}) {
         `,
         [],
       ),
-      sql.query(
+      options.libraryOnly ? Promise.resolve([]) : sql.query(
         `
           select *
           from (
