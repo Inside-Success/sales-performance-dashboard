@@ -40,3 +40,5 @@ For dashboard/web changes:
 - `src/lib/approved-admin-emails.ts` contains the owner-approved leadership roster plus Dagim. Preserve configured manager and FAQ admins additively. FAQ-only legacy admins retain their existing FAQ permissions; they are not promoted to manager access.
 - Rudy and Mike have exact-email sign-in exceptions. Never authorize the Gmail domain broadly. Source Sheets, coaching workflows and external Mock Call Agent permissions remain unchanged.
 - See MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md for scope, verification and rollback.
+
+- Admin UI follow-up: see MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md. Never use a full-page minimum-height class on the compact directory return nav. The directory is named Admin Insights; its link order and page URLs are deliberately separate.

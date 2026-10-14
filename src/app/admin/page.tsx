@@ -7,7 +7,7 @@ import { canAccessAdminDirectory, isMagicMikeAdmin, isSalesFaqAdmin } from "@/li
 import { ADMIN_DIRECTORY_LINKS } from "@/lib/admin-directory";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Magic Mike Admin", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Admin Insights", robots: { index: false, follow: false } };
 
 export default async function AdminDirectoryPage() {
   const session = await auth();
@@ -23,7 +23,7 @@ export default async function AdminDirectoryPage() {
       </Link>
       <header className="mb-7 flex items-center gap-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-700"><ShieldCheck className="size-5" aria-hidden="true" /></span>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Magic Mike Admin</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Admin Insights</h1>
       </header>
       <nav aria-label="Magic Mike admin pages" className="magic-card overflow-hidden">
         <ul className="divide-y divide-slate-100">

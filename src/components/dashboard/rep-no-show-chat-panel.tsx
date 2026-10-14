@@ -98,7 +98,7 @@ export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
       />
       <SheetContent
         side="right"
-        className="w-full gap-0 overflow-hidden p-0 sm:max-w-[520px]"
+        className="magic-no-show-theme w-full gap-0 overflow-hidden p-0 sm:max-w-[520px]"
         aria-describedby="rep-no-show-chat-description"
       >
         <SheetHeader className="border-b bg-background/95 p-5 pr-12">

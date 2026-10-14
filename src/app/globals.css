@@ -213,6 +213,27 @@
     letter-spacing: 0;
   }
 
+  /* Scoped to the no-show page and its portalled chat, never a full-page height. */
+  .magic-no-show-theme {
+    --background: #ffffff;
+    --foreground: #111827;
+    --card: #ffffff;
+    --card-foreground: #111827;
+    --primary: #dc2626;
+    --primary-foreground: #ffffff;
+    --secondary: #fef2f2;
+    --secondary-foreground: #b91c1c;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --accent: #fef2f2;
+    --accent-foreground: #b91c1c;
+    --border: #e2e8f0;
+    --input: #cbd5e1;
+    --ring: #dc2626;
+    color: #111827;
+    font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  }
+
   .magic-container {
     margin-inline: auto;
     width: 100%;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { auth } from "@/auth";
 import { canAccessAdminDirectory } from "@/lib/admin-access-policy";
 import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
@@ -25,7 +25,7 @@ export default async function HomeHub() {
     <main className={`magic-page ${styles.page}`}>
       <TrackUsageEvent eventName="dashboard_home_viewed" eventData={{ source: "product_hub" }} />
       <div className={styles.container}>
-        {showAdmin ? <nav aria-label="Administration" className={styles.adminNav}><Link href="/admin" className={styles.adminLink}><ShieldCheck size={17} aria-hidden="true" />Admin</Link></nav> : null}
+        {showAdmin ? <nav aria-label="Administration" className={styles.adminNav}><Link href="/admin" className={styles.adminLink}><ShieldCheck size={17} aria-hidden="true" />Admin Insights<ArrowRight size={16} aria-hidden="true" /></Link></nav> : null}
         <section className={styles.hero} aria-labelledby="welcome-heading">
           <h1 id="welcome-heading" className={styles.heading}>Elite Closers Study The Call</h1>
           <div className={styles.process}>
