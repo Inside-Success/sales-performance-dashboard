@@ -19,7 +19,7 @@ Owner approved the read-only audit's plan: shared validated source reads, last-g
 
 ## Verification and staged release
 
-Record test/build, deployment, bootstrap results and authenticated UI timings here after they are observed. Initial audit measurements are individual samples, not percentile guarantees: compliance reload ~3.5s, cached no-show filter ~2.1s, coaching ~1.5s, existing report ~1.9s, scorecard ~3.6s. Seven-day no-show timeout was reproduced and had been cached as a successful empty result.
+The release evidence below records observed tests, deployment, bootstrap and authenticated UI checks. Initial audit measurements are individual samples, not percentile guarantees: compliance reload ~3.5s, cached no-show filter ~2.1s, coaching ~1.5s, existing report ~1.9s, scorecard ~3.6s. Seven-day no-show timeout was reproduced and had been cached as a successful empty result.
 
 Acceptance covers all date ranges, stale fallback and refresh overlap, historical evidence, exact-email access, unchanged score matching, regular report/coaching/FAQ availability and source-read-only behavior. No paid AI evaluation is needed for this backend/UI change.
 
@@ -34,7 +34,7 @@ Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to 
 - Preview `dpl_AjzfThckfqujukfEtn36osyxNyQB` hit the existing pre-build “Resource provisioning failed” error. It was not counted as passing; the production build succeeded.
 - Protected bootstrap completed in 118.42 seconds with HTTP200: compliance, scorecard and attendance all `refreshed`. Visitors did not wait on this background population. All writes are confined to the additive dashboard-owned snapshot table.
 - Existing report `/call/7846` still rendered its feedback and matching 60.3 score during the staged release. A cold sampled report load was 5.5 seconds, so do not claim every route is universally sub-second. The score no longer blocks feedback structurally; end-user latency also includes database/session/network startup.
-- Production flag has been set to true for the next Git deployment. Fresh authenticated UI and date-filter timings must be recorded after activation. No AI calls were used for this verification.
+- Production flag is enabled; activated verification is recorded below. No AI calls were used for this verification.
 
 ## Final efficiency safeguards
 
@@ -49,3 +49,20 @@ Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to 
 ## Compact attendance read
 
 Protected live inspection found 32,155 records / 33,551,433 JSON bytes in the initial raw attendance snapshot. Compact v2 moves the unchanged four date-window calculations into refresh, saves one full no-show evidence history plus per-period results, and removes raw present-call records from visitor reads. Counts are fixed to the successful read's cutoff, appropriate to the stated source freshness. The previous v1 read remains available while v2 is populated, preventing a blank transition; it is retained as a dashboard-owned rollback artifact. All historical no-show evidence remains accessible.
+
+## Completed production acceptance
+
+- Implementation and refinement PR298–303 are merged. Final application commit `c977c9ce3ed521f039d1dc44523f4f0955fd2ae2` deployed as `dpl_CgpNqHgvmyhRSuyB6QVYBXXw1mjD`, READY on the production rose URL. No local development server or new checkout was used.
+- Final 101 tests across 19 suites passed, including failure retention, refresh leases, pagination completeness, four-window calculation parity, protected history/cron access, admin permissions, exact coaching scores, FAQ analytics and Sales Impact regression. TypeScript, scoped lint and webpack production build passed.
+- Compact v2 population completed HTTP200 in 119.15 seconds outside visitor requests. All three sources refreshed successfully. Inspection showed attendance v2 3,417,777 JSON bytes versus v1 33,551,433 bytes, approximately 90% less saved data per shared attendance read. No failed refresh or remaining lease appeared at inspection. Compliance 5,094,856 bytes and scorecard 110,703 bytes were stored successfully as well.
+- Signed-in Chrome verified 7/14/30/90 days at one attendance source cutoff (21:47:54 UTC October14): 108 / 192 / 403 / 1,056 no-shows; 1,583 / 3,000 / 6,629 / 18,090 tracked calls; 11 / 15 / 27 / 48 Call2+ no-shows. These are cutoff-specific observations, not permanently current counts. Updated denominator counts reflect source activity since the earlier read.
+- Live measured filter transitions: 14 days 1.099s, 30 days 1.328s, 90 days 1.324s. Seven-day mobile transition 2.190s. These are individual automated wall-clock samples including browser-control overhead; they are not load-test percentiles or guarantees. A sampled compliance load remained 3.019s, so do not promise every page is instantaneous.
+- All-history returned 1,610 no-shows, including 62 Call2+ entries. Selected 90-day Call2+ filter returned 48, matching its summary. Show100more advanced 100 to200 visible matching rows; full-history search returned original May29 evidence beyond the first rows. At375px the page/filter remained usable with no horizontal overflow; viewport reset afterward.
+- Compliance still showed 222 flags /39reps and opened Imad's exact transcript evidence. Scorecard still showed125closers with actual scores (Avila37.5/9calls), and existing report7846 retained60.3 plus its3supported improvements. Lean coaching selection returned Tara's existing report library. FAQ usage and self-submission form loaded normally without submitting a new AI request. Anonymous cron/history requests both returned401; exact-email authorization regression tests passed.
+- Scoped production error logs over the final15minutes returned no error entries. This is supplementary evidence, not a claim that every unrelated workflow or future source outage has been tested.
+- AI testing/recovery spend for this task: USD0.00. Ordinary hosting/database/source-read usage still applies; no additional model, n8n AI stage, report regeneration or workflow execution was introduced. Source Sheets and Airtable remain read-only. Access policy, scoring, report content, sales calculations and deferred specialist work remain intact.
+- Screenshots and metadata are bounded. Git history and the disabled-read flag provide rollback; the former raw snapshot is retained in dashboard-owned storage. Task-created local build artifacts and the temporary cron-secret file are removed after verification; no repository backup copies were created.
+
+## Practical limits
+
+Freshness is visible and deliberately trades a small delay for reliable, fast page reads. Active attendance targets15minutes and compliance/scorecard5minutes, plus scheduling/source-read time and the30-second shared read cache. Idle dashboards refresh after a visit. A provider outage can make the displayed successful data older; the warning and timestamp reveal this. The first uncached application/session request may still take several seconds. The existing preview resource-provisioning failure remains separate infrastructure work; production builds and authenticated acceptance passed.
