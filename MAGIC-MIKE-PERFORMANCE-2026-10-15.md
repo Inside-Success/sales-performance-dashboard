@@ -43,3 +43,5 @@ Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to 
 - Added one dashboard-owned `last_requested_at` column for refresh demand tracking; this is separate from rep usage/adoption events and never changes those metrics.
 - Initial activated samples: no-show cold load 6.1s, compliance 2.7s, scorecard 0.7s. This prompted the bounded shared read cache; do not publish those as final acceptance timings.
 - Fixed the period caption to compare the actual tracking cutoff, rather than the saved source refresh time. Counts/calculation rules are unchanged.
+
+- Long no-show evidence lists render the first 100 matches with a clear Show 100 more control. Search and call-type matching still cover the entire loaded dataset; no history is discarded. This avoids mounting thousands of rows during date transitions.
