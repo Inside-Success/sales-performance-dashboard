@@ -86,7 +86,7 @@ The endpoint upserts dashboard rows and returns:
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
 - `/ask-sales-faq/admin/knowledge-refresh` legacy compatibility route, redirected to FAQ Conversations
 - `/ask-sales-faq/admin` Sales FAQ Chatbot Conversations: admin-only production conversation logs for manual quality review on request
-- `/ask-sales-faq/admin/usage` admin-only rep adoption and usage review
+- `/ask-sales-faq/admin/usage` Sales FAQ Chatbot Usage: admin-only rep adoption and usage review
 
 The coaching report reading layout, evidence-link behavior, and exact rollback tag are recorded in [docs-coaching-report-ui-2026-09-23.md](docs-coaching-report-ui-2026-09-23.md).
 The later in-dashboard transcript evidence behavior and its rollback point are recorded in [docs-report-transcript-evidence-2026-09-24.md](docs-report-transcript-evidence-2026-09-24.md).
