@@ -6,20 +6,22 @@
     "questions": [
       "Who is eligible to apply?"
     ],
-    "text": "Ideal cast members are:\r\n* Business owners\r\n* CEOs\r\n* Startup founders\r\n* Entrepreneurs\r\n* Influencers with a business angle\r\n* People actively building businesses, side hustles, brands, or ventures\r\nThere is no minimum revenue requirement.\r\nPersonality matters. These are reality shows, so we want people who are confident, interesting, competitive, opinionated, charismatic, or otherwise strong on camera.\r\nThe opportunity should also be financially appropriate. Someone should be able to comfortably afford the $20,000–$30,000 package plus approximately $3,000–$5,000 in travel/hotel expenses without expecting the show to immediately generate that money back.",
+    "text": "Ideal cast members are:\r\n* Business owners\r\n* CEOs\r\n* Startup founders\r\n* Entrepreneurs\r\n* Influencers with a business angle\r\n* People actively building businesses, side hustles, brands, or ventures\r\nThere is no minimum revenue requirement.\r\nPersonality matters. These are reality shows, so we want people who are confident, interesting, competitive, opinionated, charismatic, or otherwise strong on camera.\r\nThe opportunity should also be financially appropriate. Someone should be able to comfortably afford the $20,000–$30,000 package plus approximately $3,000–$5,000 in travel/hotel expenses without expecting the show to immediately generate that money back. The generic travel/hotel budget is not proof every show requires a separate hotel: current show-specific housing guidance governs, including Mansion cast staying at the mansion during filming. Do not use the generic estimate to promise a travel allowance or require duplicate accommodation.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980241597019"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "Source designated by project owner; preserve contract-dependent and provisional wording."
+      "Source designated by project owner; preserve contract-dependent and provisional wording.",
+      "governing_evidence:reality-housing-by-show-2026-10-12"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -167,14 +169,15 @@
     "questions": [
       "How long is filming & shot location?"
     ],
-    "text": "Most shows will film for approximately:\r\n7–14 consecutive days\r\nSome larger concepts may require closer to two weeks.\r\nParticipants should block the entire filming period because schedules remain dynamic.\r\nThere will often be downtime between scenes, setups, interviews, challenges, etc., but cast members need to remain available.\r\nDaily call sheets/agendas may be provided approximately the day before depending on production requirements.\r\nLOCATION - Either Florida or Caribbean for most part. Small chance of LA or elsewhere for tax/rebate purposes. Confirmed once cast are finalized. Some shows may feature a celebrity guest/judge/host - so location has to stay flexible until casting is finished.",
+    "text": "Most shows will film for approximately:\r\n7–14 consecutive days\r\nSome larger concepts may require closer to two weeks.\r\nParticipants should block the entire filming period because schedules remain dynamic.\r\nThere will often be downtime between scenes, setups, interviews, challenges, etc., but cast members need to remain available.\r\nDaily call sheets/agendas may be provided approximately the day before depending on production requirements.\r\nLOCATION - Either Florida or Caribbean for most part. Small chance of LA or elsewhere for tax/rebate purposes. Confirmed once cast are finalized. Some shows may feature a celebrity guest/judge/host - so location has to stay flexible until casting is finished. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -182,7 +185,8 @@
     "conditions": [
       "Source designated by project owner; preserve contract-dependent and provisional wording.",
       "governing_evidence:reality-production-timeline-2026-09-21",
-      "governing_evidence:reality-season-schedule-2026-09-29"
+      "governing_evidence:reality-season-schedule-2026-09-29",
+      "governing_evidence:reality-provisional-venues-2026-10-14"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -508,15 +512,17 @@
     "questions": [
       "What is the prize?"
     ],
-    "text": "The prize varies by production and may not be finalized until sponsors are secured.\r\nPotential examples:\r\n* Cash\r\n* Vehicle\r\n* Software/services\r\n* Marketing package\r\n* Technology\r\n* Business services\r\n* Memberships\r\n* Sponsor-funded prizes\r\nThe prize should not be sold as guaranteed at a specific dollar value unless it is already contracted. October 1 clarification: prizes are expected to be modest, likely below roughly $10,000–$20,000 in value, not a million-dollar MrBeast-style contest. This is an expectation, not a guaranteed minimum, maximum or contracted prize; the value proposition is TV/brand experience.",
+    "text": "The prize varies by production and may not be finalized until sponsors are secured.\r\nPotential examples:\r\n* Cash\r\n* Vehicle\r\n* Software/services\r\n* Marketing package\r\n* Technology\r\n* Business services\r\n* Memberships\r\n* Sponsor-funded prizes\r\nThe prize should not be sold as guaranteed at a specific dollar value unless it is already contracted. October 1 clarification: prizes are expected to be modest, likely below roughly $10,000–$20,000 in value, not a million-dollar MrBeast-style contest. This is an expectation, not a guaranteed minimum, maximum or contracted prize; the value proposition is TV/brand experience. October 13 Rudy reiterates the prize will not be large like a major competition show and describes it as more gimmicky / brand sponsorship. No $10,000–$20,000 cash prize was approved in that exchange. Do not convert earlier rough expectations into a cash payout, fixed range or guaranteed benefit; sell the verified show and brand experience, with any prize subject to the production's confirmed terms. In the same October 13 discussion Rudy specifically tells reps not to repeat his derogatory internal comparison with The Blox publicly. Explain verified differences in format/dynamics and scale respectfully; his 'likely 5–10x' production-cost estimate is not an audited competitor-cost fact or a guaranteed result.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791924480376149",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791924489365279",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791930406270989"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -844,17 +850,21 @@
     "id": "reality-call2-video-required",
     "decisionKey": "reality-call2-video-required",
     "title": "Reality Call 2 license video is mandatory",
-    "questions": [],
-    "text": "Rudy’s September 14 instruction requires showing the reality license video on Call 2. The video can be played at 1.2x or 1.5x speed as instructed. Use its reality-specific explanation and current package presentation. General main-show scripts with copied $10,000 or Miami language do not override the reality FAQ’s $20,000/$30,000 packages or provisional filming locations.",
+    "questions": [
+      "Where is the reality Call 2 script?",
+      "How do I run my first Mansion or Island Call 2?"
+    ],
+    "text": "Rudy’s September 14 instruction requires showing the reality license video on Call 2. The video can be played at 1.2x or 1.5x speed as instructed. Use its reality-specific explanation and current package presentation. General main-show scripts with copied $10,000 or Miami language do not override the reality FAQ’s $20,000/$30,000 packages or provisional filming locations. Rich's October 13 response to reps unable to find a separate reality Call 2 script gives the process: go over Green Light, help the prospect connect emotionally and explain how the opportunity would help them, play Rudy's video, then close. Use this as the practical Call 2 flow alongside the mandatory reality-specific license video and current terms; it does not mean copy documentary prices, benefits or cohort deadlines into reality.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "slack:1789354338",
       "slack:1789240875.961299",
-      "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09"
+      "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791933379242319"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -895,7 +905,7 @@
     "questions": [
       "Can someone who declined a documentary two months ago apply for a reality show now?"
     ],
-    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich’s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3–6 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich’s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait. The retained non-duration instruction from the older missed-Call-1 guidance is not to read the application’s banned/blacklisted language verbatim; a missed call alone does not establish permanent blacklisting. Repeated-abuse handling remains a separate decision. The May 8 statement that an ordinary greenlit applicant missing the Sunday deadline may never be considered again is superseded for reapplication duration by Rich’s July 8 ordinary three-month minimum. Its Sunday 11:59 PM Eastern cohort cutoff and proven catastrophic-event exception are retained in their original context; they do not establish permanent exclusion. October 12: Mike expressly approved one documentary-to-reality applicant to proceed now before three months, emphasizing it was a one-off; Rich explained the exception was doc to reality, not reapplying for a documentary. Preserve the ordinary three-month minimum above. A switch of show family is a reason to request leadership review, not automatic permission for every applicant to bypass the wait.",
+    "text": "Main ISTV ordinary reapplication: the prior source adjudication identifies Rich’s minimum of three months for a no-show, missed ordinary Call 2 decision deadline, rejection or not-fit outcome. This does not automatically permit reapplication or override documented exceptions or repeated-abuse handling. Preserve the separately reviewed six-month VIP/Lite case where payment was not completed before the cohort closed (July 27). A September 8 Sales Ops reply says 3–6 months in a mixed missed-main-cohort/reality recommendation thread, but does not establish an explicit replacement for Rich’s normal rule. Reality competition reapplication is a separate six-month statement in its Call 2 video. Determine the show and missed-decision versus closed-cohort-payment context; do not flatten them into one universal wait. The retained non-duration instruction from the older missed-Call-1 guidance is not to read the application’s banned/blacklisted language verbatim; a missed call alone does not establish permanent blacklisting. Repeated-abuse handling remains a separate decision. The May 8 statement that an ordinary greenlit applicant missing the Sunday deadline may never be considered again is superseded for reapplication duration by Rich’s July 8 ordinary three-month minimum. Its Sunday 11:59 PM Eastern cohort cutoff and proven catastrophic-event exception are retained in their original context; they do not establish permanent exclusion. October 12: Mike expressly approved one documentary-to-reality applicant to proceed now before three months, emphasizing it was a one-off; Rich explained the exception was doc to reality, not reapplying for a documentary. Preserve the ordinary three-month minimum above. A switch of show family is a reason to request leadership review, not automatic permission for every applicant to bypass the wait. On October 13 Rich again tells a rep whose prospect missed the Sunday decision deadline to explain that they may reapply after a minimum of three months. This reiterates the ordinary rule; it does not erase the documented case-specific documentary-to-reality exception or transfer a documentary hard cutoff to reality. Peer speculation calling this an FTC rule is not evidence of a legal requirement.",
     "scopes": [
       "shared"
     ],
@@ -909,9 +919,10 @@
       "slack:C0AUQKNR8CF:1778242291.989949",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791809279851669",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791809901772899",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791812773300389"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791812773300389",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791919059280569"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3174,13 +3185,15 @@
   {
     "id": "reality-expansion-plans-2026-09-29",
     "decisionKey": "reality-expansion-plans-2026-09-29",
-    "title": "Business Race UK launch; other location plans remain provisional",
+    "title": "Business Race UK paused; US participation requires US travel",
     "questions": [
       "Is Business Race UK available?",
       "What is Business Race UK?",
-      "Is Island Ibiza confirmed?"
+      "Is Island Ibiza confirmed?",
+      "Can a UK prospect join Business Race without travelling to America?",
+      "Are any UK reality shows currently available?"
     ],
-    "text": "Business Race: UK Edition was announced/launched by Thomas and Timothy on September 28. Official casting information: https://uk.businessracetv.com/tvbruk-main-1 . The concept follows entrepreneurs starting with nothing in one city and travelling across the UK, completing business challenges and making money at stops. This is now an announced UK edition, not merely the September 23 proposed test. The launch does not establish exact filming dates, guaranteed acceptance or a secured participant place. Island Mexico/Caribbean remains an approximate future-season plan, and Ibiza was mentioned as a possible test, not a confirmed booking. Do not invent location availability or transfer entitlements. October 5 clarification from Timothy: there is no separate Island UK version; a UK resident can participate in the regular Island show. Do not invent UK Island filming or imply the participant avoids travel. October 6 Timothy says UK ads are paused due to cost; that is an advertising pause, not evidence all UK editions or UK-resident participation are cancelled. Exact filming dates and a particular participant's place still require confirmation.",
+    "text": "Timothy's October 13 clarification says Business Race UK was paused and is no longer available; only the US version is available, so a UK participant would need to travel to the US. Asked about other current or future planned UK shows, he replied 'None at the moment.' This newer availability statement supersedes the September UK launch and October 6 ads-only pause guidance. Do not offer the old UK casting page as an available production or promise a UK filming alternative. This is a current pause, not proof of permanent cancellation or a ban on UK residents. His October 5 clarification still distinguishes a UK resident joining regular Island from a separate Island UK production. Earlier Island Mexico/Caribbean and Ibiza possibilities are not confirmed bookings. Exact filming dates, eligibility and a particular participant's place must not be invented.",
     "scopes": [
       "reality"
     ],
@@ -3189,9 +3202,11 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790607721654819",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790253020231869",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791224535919709",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791300437547919"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791300437547919",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791912280782369",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791912420321639"
     ],
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4003,7 +4018,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -4033,12 +4048,13 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791425329648439",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791647053466119",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791820068205409",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4046,7 +4062,8 @@
     "conditions": [
       "governing_evidence:reality-catalog-status-2026-10-01",
       "governing_evidence:reality-catalog-status-2026-10-03",
-      "governing_evidence:island-season1-production-confirmed-2026-10-12"
+      "governing_evidence:island-season1-production-confirmed-2026-10-12",
+      "governing_evidence:reality-provisional-venues-2026-10-14"
     ],
     "supersedes": [
       "reality-season-schedule-2026-10-01"
@@ -4504,7 +4521,7 @@
     "id": "reality-media-pack-2026-10-07",
     "decisionKey": "reality-media-pack-2026-10-07",
     "title": "Reality media pack for Island, Business Race and Mansion of Money",
-    "text": "Rudy shared the Reality Shows Social Media Packages deck October 6: https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit . All three visually reviewed slides (Entrepreneurs Island, Business Race, Mansion of Money) show the same media-pack categories: 1 acceptance letter, 10 Instagram reels, 1 custom cast website profile, 20 social graphics, 5 social posters, 100+ PR press-release distribution, 1 billboard feature, 1 movie poster, an edited-photo set labelled 50–100, 1 podcast episode, 1 IMDb listing, 1 episode trailer, 1 podcast reel and 1 BTS reel. The deck calls this 'ASSETS = 46' and expressly says totals may vary up or down depending on show and episode length. Describe it as the current media-pack presentation, not 46 guaranteed distinct deliverables per buyer. The deck does NOT specify Standard versus VIP eligibility, delivery dates, billboard location/duration, or resolve the mini-documentary entitlement discrepancy. Do not add these counts to older package quantities or assume this replaces every contractual benefit. For a package-specific promise, use the applicable package/contract and verified governing guidance; explain this deck's scope if eligibility is not confirmed. Press-release distribution is not a promise of independent editorial coverage or guaranteed business results. Link the deck when asked to see the media assets.",
+    "text": "Rudy shared the Reality Shows Social Media Packages deck October 6: https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit . All three visually reviewed slides (Entrepreneurs Island, Business Race, Mansion of Money) show the same media-pack categories: 1 acceptance letter, 10 Instagram reels, 1 custom cast website profile, 20 social graphics, 5 social posters, 100+ PR press-release distribution, 1 billboard feature, 1 movie poster, an edited-photo set labelled 50–100, 1 podcast episode, 1 IMDb listing, 1 episode trailer, 1 podcast reel and 1 BTS reel. The deck calls this 'ASSETS = 46' and expressly says totals may vary up or down depending on show and episode length. Describe it as the current media-pack presentation, not 46 guaranteed distinct deliverables per buyer. The deck does NOT specify Standard versus VIP eligibility, delivery dates, billboard location/duration, or resolve the mini-documentary entitlement discrepancy. Do not add these counts to older package quantities or assume this replaces every contractual benefit. For a package-specific promise, use the applicable package/contract and verified governing guidance; explain this deck's scope if eligibility is not confirmed. Press-release distribution is not a promise of independent editorial coverage or guaranteed business results. Link the deck when asked to see the media assets. On October 14 Rudy expressly confirms media kits were already made for the three main reality shows and pinned in the main channel last week, correcting the earlier reply that none existed. Use the linked three-show deck, preserving its presentation-versus-contract limits.",
     "questions": [
       "What is in the new reality social media pack?",
       "Where can I find the 46 assets presentation?",
@@ -4512,12 +4529,14 @@
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791288734722279",
-      "https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit"
+      "https://docs.google.com/presentation/d/18JxDZi5jfTvdCiWtrAgZgVwu9qRk2onQat5qVJdAbJs/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980958058799",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980963737179"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4642,25 +4661,29 @@
     "id": "manual-booking-calendar-sops-2026-10-07",
     "decisionKey": "manual-booking-calendar-sops-2026-10-07",
     "title": "Manual Call 1 uses Public; Call 2 Green Light uses Personal calendar",
-    "text": "The linked booking SOPs distinguish three OnceHub calendars: Master is reserved for marketing/automatic distribution and must not be used or modified for manual bookings; Public is for manually booking first calls after an interested lead agrees; Personal is for second/follow-up calls. For Call 2 choose the correct show (Other only if absent), Meeting Type Green Light Approval, accurate name/email/mobile and agreed timezone, send booking notifications and verify the record. Prefer booking the follow-up directly while on Call 1 and, when possible, for the next day, subject to existing Green Light/readiness rules. A booking label does not itself grant Green Light approval. Use the current team rebooking directory for the rep's actual link rather than guessing it. Rudy explicitly reconfirmed October 9 that the Call 2 SOP is next day, not routinely two or three days later. October 10: do not book a Call 3 or existing follow-up on the Public calendar; it misclassifies the booking as cold outreach and distorts outbound statistics. Use the appropriate Personal follow-up calendar and accurate meeting context. This does not bypass approval/readiness rules or impose regular documentary cohort rules on reality.",
+    "text": "The linked booking SOPs distinguish three OnceHub calendars: Master is reserved for marketing/automatic distribution and must not be used or modified for manual bookings; Public is for manually booking first calls after an interested lead agrees; Personal is for second/follow-up calls. For Call 2 choose the correct show (Other only if absent), Meeting Type Green Light Approval, accurate name/email/mobile and agreed timezone, send booking notifications and verify the record. Book Call 2 directly at the end of Call 1 for the next day, except exceptional circumstances, subject to Green Light approval. A booking label does not itself grant Green Light approval. Use the current team rebooking directory for the rep's actual link rather than guessing it. Rudy explicitly reconfirmed October 9 that the Call 2 SOP is next day, not routinely two or three days later. October 10: do not book a Call 3 or existing follow-up on the Public calendar; it misclassifies the booking as cold outreach and distorts outbound statistics. Use the appropriate Personal follow-up calendar and accurate meeting context. This does not bypass approval/readiness rules or impose regular documentary cohort rules on reality. Rich's October 13 announcement makes the linked end-of-Call-1 script compulsory except exceptional circumstances. Congratulate the prospect on moving to the next phase subject to overnight Green Light review; offer actual available times tomorrow, book the agreed slot and ask them to confirm. The script describes an approval email by approximately 10 AM tomorrow and cancellation if not approved; this is approximate process wording, not a guaranteed email-delivery SLA. Its sample 1 PM, 2 PM, 5 PM and 8 PM slots must not be invented as the rep's actual availability. Booking does not itself grant approval. Call 2 covers recap, logistics, contracts, onboarding, potential shoot dates and production requirements. Use the published script, accurate availability and timezone, without changing pricing/disclosure policy.",
     "questions": [
       "Which calendar do I use for a manual Call 1?",
       "Do I book Green Light on the public or personal calendar?",
       "Can I use the Master calendar manually?",
       "Can I put a third call on my public calendar?",
-      "Should Call 2 be tomorrow or in two or three days?"
+      "Should Call 2 be tomorrow or in two or three days?",
+      "What is the compulsory script for booking Call 2 tomorrow?",
+      "Can I reserve Call 2 before the overnight Green Light decision?"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1YQYGv1Yi95xBhFf3r2fQ07JnqBj9ae80DziJ8YDELaY/edit",
       "https://docs.google.com/document/d/1vzPJe2IFySHjEMJ3f8AeFxqTZnbxTy-IQAHdgFX8eKc/edit",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791568436256939",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791638739525839",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791638746052329"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791638746052329",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791929730984289",
+      "https://docs.google.com/document/d/1H0VJOrt8hyxgg-3ooMXObh6pN5BncXEP9iIKRUOopiQ/edit"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284550+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4781,24 +4804,28 @@
     "id": "hubspot-sms-inbox-2026-10-08",
     "decisionKey": "hubspot-sms-inbox-2026-10-08",
     "title": "Current SMS inbox and Zoom texting limitation",
-    "text": "Tech's October 7–8 instruction is to send SMS through the Twilio card inside HubSpot, not Zoom SMS. Twilio is integrated; reps do not need to create their own separate Twilio account. Use the SMS inbox https://app-eu1.hubspot.com/app/148285209/51316600 and turn on Auto refresh to see new messages. This does not establish working audible/mobile push notifications or international SMS support. Sayim's current tool guidance says keep SMS within 160 characters; use the short approved template and do not present this as a universal SMS protocol limit. Feature requests or a rep's expectation of Zoom texting are not proof it is ready. Ask Tech for missing number/access or delivery problems; email remains the documented fallback for unsupported UK SMS. October 8 Tech confirmation from Igor: currently only US numbers are supported; do not assume +44/international SMS was enabled. Use the approved email route where appropriate and respect opt-outs. Igor confirmed an SMS interface adjustment October 9 after reps raised the internal \"sales rep\" label; a rep's successful self-test is not proof every delivery problem is fixed. Missing replies or delivery failures still need their specific contact and error checked.",
+    "text": "Tech's October 7–8 instruction is to send SMS through the Twilio card inside HubSpot, not Zoom SMS. Twilio is integrated; reps do not need to create their own separate Twilio account. Use the SMS inbox https://app-eu1.hubspot.com/app/148285209/51316600 and turn on Auto refresh to see new messages. This does not establish working audible/mobile push notifications or international SMS support. Sayim's current tool guidance says keep SMS within 160 characters; use the short approved template and do not present this as a universal SMS protocol limit. Feature requests or a rep's expectation of Zoom texting are not proof it is ready. Ask Tech for missing number/access or delivery problems; email remains the documented fallback for unsupported UK SMS. October 8 Tech confirmation from Igor: currently only US numbers are supported; do not assume +44/international SMS was enabled. Use the approved email route where appropriate and respect opt-outs. Igor confirmed an SMS interface adjustment October 9 after reps raised the internal \"sales rep\" label; a rep's successful self-test is not proof every delivery problem is fixed. Missing replies or delivery failures still need their specific contact and error checked. Igor's October 13 Sales Rep HubSpot app update includes predefined SMS templates, Auto refresh and top-right bell notifications. On October 14 he says ISTV Rep Home was updated and deployed so the conversation list shows contacts with the latest messages first; search and Needs reply results follow that same order. This is the contact/conversation list ordering, distinct from message order inside an individual contact card. His request for rep confirmation is not proof that every account's delivery or notification problem is resolved; no change to international support or the documented character limit was announced.",
     "questions": [
       "Where can I see HubSpot text replies?",
       "Can we send texts from Zoom now?",
       "Do I need my own Twilio account?",
-      "Can I text a UK number from HubSpot?"
+      "Can I text a UK number from HubSpot?",
+      "How do I see the newest conversations first in Rep Home?",
+      "Where are the predefined SMS templates and incoming notifications?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791463010679959",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791386231517809",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791396134427059",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791470345982109",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791555872781889"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791555872781889",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791899025139539",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791957180911659"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284551+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4908,22 +4935,26 @@
   {
     "id": "reality-entrepreneurs-mountain-2026-10-08",
     "decisionKey": "reality-entrepreneurs-mountain-2026-10-08",
-    "title": "Entrepreneurs Mountain title acknowledged; specific materials unconfirmed",
-    "text": "In the October 7 sales-questions thread asking about Entrepreneurs Mountain, Kent (Tech Admin) confirms it is a new show. That reply does not supply a verified Call 1 video, package variation, dates, location, challenges or casting availability. Acknowledge the title and give the confirmed shared reality process where applicable; check the current reality materials/Production for Mountain-specific details rather than inventing them or calling it a documentary. October 8 follow-up: Alex confirms Mountain is a new reality show, and Rudy specifically says to skip the second video at the end of Call 1 and explain a little about the show manually when its dedicated video is missing. This exception concerns the missing show-specific Call 1 video, not the mandatory Call 2 license presentation. Use verified Mountain facts only; no dedicated video, dates, location or format details were supplied in that reply.",
+    "title": "Entrepreneurs Mountain paused; redirect lingering leads toward Jungle",
+    "text": "Timothy's October 12 announcement pauses Entrepreneurs Mountain; there had been no sales. For lingering Mountain leads, he recommends redirecting them to Entrepreneurs Jungle, the most similar show. Do not present Mountain as currently available or continue its earlier casting/video workaround as if sales were open. The prior October 8 instruction to skip the missing show-specific second Call 1 video and explain verified details manually was historical guidance before this pause; it never waived the mandatory Call 2 license presentation. No Mountain reopening date, replacement booking, guaranteed Jungle acceptance or automatic transfer was confirmed.",
     "questions": [
       "What is Entrepreneurs Mountain?",
-      "Where is the Entrepreneurs Mountain Call 1 video?"
+      "Where is the Entrepreneurs Mountain Call 1 video?",
+      "Is Entrepreneurs Mountain still available?",
+      "What should I do with Mountain leads now?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791401010393579",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791415325422619",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791472298718649",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791472305173409"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791472305173409",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791831441249359",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791835119421039"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-12T11:12:16.755464+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5104,20 +5135,23 @@
       "Is Entrepreneurs Island Season 1 fully financed with filming location and production arrangements secured?",
       "Has Rudy confirmed the funding and filming arrangements for Island season one?"
     ],
-    "text": "On October 12, in the Entrepreneurs Island thread, the rep's numbered point 2 asked for confirmation that Season 1 is fully financed, with filming location and production arrangements secured. Rudy replied '(2) yes'. Therefore the current company answer is yes, Rudy has confirmed those three points for Entrepreneurs Island Season 1. Attribute this confirmation to Rudy and link his reply. Earlier absence of confirmation is superseded by this newer answer. The reply supplies no financing paperwork, location name/address, exact filming dates or independently audited financial proof. Do not manufacture those details or extend the confirmation to another show or season. It does not reopen a full season or hold a participant's place; existing capacity/waitlist guidance still applies. The separate request for final contractual disclosure wording is a different question and is not answered by '(2) yes'.",
+    "text": "On October 12, in the Entrepreneurs Island thread, the rep's numbered point 2 asked for confirmation that Season 1 is fully financed, with filming location and production arrangements secured. Rudy replied '(2) yes'. Therefore the current company answer is yes, Rudy has confirmed those three points for Entrepreneurs Island Season 1. Attribute this confirmation to Rudy and link his reply. Earlier absence of confirmation is superseded by this newer answer. The reply supplies no financing paperwork, location name/address, exact filming dates or independently audited financial proof. Do not manufacture those details or extend the confirmation to another show or season. It does not reopen a full season or hold a participant's place; existing capacity/waitlist guidance still applies. The separate request for final contractual disclosure wording is a different question and is not answered by '(2) yes'. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825046342499",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:reality-provisional-venues-2026-10-14"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -5128,21 +5162,26 @@
     "questions": [
       "Where do reality cast members sleep?",
       "Will Mansion of Money cast have private rooms?",
-      "Is accommodation a hotel on Island or Business Race?"
+      "Is accommodation a hotel on Island or Business Race?",
+      "Do Mansion cast pay for a hotel or stay at the mansion?"
     ],
-    "text": "In the master reality FAQ on October 12 Rudy describes Entrepreneurs Island accommodation as Survivor-style/in tents; Mansion of Money uses shared rooms of two to four people split by sex; Business Race participants figure it out, like Amazing Race. Keep those formats separate. Do not promise private rooms, a hotel or the same housing across all reality shows, and do not infer Entrepreneurs Mountain accommodation from Island. These remarks do not provide an exact property, accessibility arrangement, room assignment or extra travel benefit.",
+    "text": "In the master reality FAQ on October 12 Rudy describes Entrepreneurs Island accommodation as Survivor-style/in tents; Mansion of Money uses shared rooms of two to four people split by sex; Business Race participants figure it out, like Amazing Race. Keep those formats separate. Do not promise private rooms, a hotel or the same housing across all reality shows, and do not infer Entrepreneurs Mountain accommodation from Island. These remarks do not provide an exact property, accessibility arrangement, room assignment or extra travel benefit. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. October 14 Mike directly confirms everyone stays at the mansion for Mansion of Money because that is where the show takes place. Do not tell Mansion cast they must separately book a hotel for the filming stay. This does not create a private-room entitlement, cover extra pre/post-filming nights or promise guests' expenses.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791814647243929"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791814647243929",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980241597019"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:reality-provisional-venues-2026-10-14"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -5153,9 +5192,10 @@
     "questions": [
       "Why are there two HubSpot meetings for one prospect?",
       "Will merging duplicate contacts remove both meeting records?",
-      "Is this really a double booking or a duplicated CRM record?"
+      "Is this really a double booking or a duplicated CRM record?",
+      "Why does one contact show several reps?"
     ],
-    "text": "October 12 Tech explanations from Sayim and Igor distinguish duplicate HubSpot records from genuine double bookings. Applications under different emails can create duplicate contacts even with the same phone number. Merging contacts may leave both meeting records. Check whether they represent one actual appointment or separate valid bookings, and give Tech the relevant records so the rep can confirm which duplicate should be removed. Igor said they were working on a fix; no universal deployed fix was confirmed in this thread. Do not blindly delete a valid appointment or promise that no-show statistics and KPIs are unaffected merely because records were merged.",
+    "text": "October 12 Tech explanations from Sayim and Igor distinguish duplicate HubSpot records from genuine double bookings. Applications under different emails can create duplicate contacts even with the same phone number. Merging contacts may leave both meeting records. Check whether they represent one actual appointment or separate valid bookings, and give Tech the relevant records so the rep can confirm which duplicate should be removed. Igor said they were working on a fix; no universal deployed fix was confirmed in this thread. Do not blindly delete a valid appointment or promise that no-show statistics and KPIs are unaffected merely because records were merged. October 14 Sayim explains that repeated applications can associate a contact with several reps over time. Tech can remove older associations if the current rep is taking over AND no other rep is actively working the contact. An association alone is not proof of current ownership or permission to take an active lead; verify the situation with Tech and preserve leadership ownership rules.",
     "scopes": [
       "shared"
     ],
@@ -5163,9 +5203,10 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822730923609",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822824682509",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791822881598449",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791827426287469"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791827426287469",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791968364456469"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5191,6 +5232,138 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791821429221169"
     ],
     "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-provisional-venues-2026-10-14",
+    "decisionKey": "reality-provisional-venues-2026-10-14",
+    "title": "Rudy names provisional Mansion and Island locations",
+    "questions": [
+      "Where will Mansion of Money be filmed?",
+      "What is the Island filming venue?",
+      "Are Park Place Mansion and Tea Table confirmed?"
+    ],
+    "text": "On October 13 Rudy shared Mansion location https://www.luxuri.com/properties/park-place-mansion and Island location https://teatableislamorada.com with the explicit qualifier 'Not 100% but mostly confirmed'. Explain these as the provisional named venues, not final contractual venue guarantees. His separate October 12 Entrepreneurs Island Season 1 financing/production confirmation remains recorded, but it does not remove the newer qualification about the precise named property. Do not promise an exact address, travel date, room allocation, Season 2 venue, non-refundable travel booking or entitlement inferred from either property's public website. Existing show-specific housing rules and capacity limits remain applicable.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989"
+    ],
+    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-sponsor-funded-proposal-2026-10-14",
+    "decisionKey": "reality-sponsor-funded-proposal-2026-10-14",
+    "title": "Rudy declines the sponsor-funded reality participation proposal",
+    "questions": [
+      "Can a sponsor pay the $20,000 reality participation fee?",
+      "Can we hold a reality spot while a prospect finds a presenting sponsor?"
+    ],
+    "text": "On October 14 a rep asked whether ISTV would accept a presenting sponsor covering the $20,000 reality participation fee and hold a spot while funding was arranged. Mike floated a possible distinction for a sponsor with no production ties, but expressly deferred confirmation to Rudy. Rudy replied 'No'. Do not present Mike's tentative suggestion as approval, offer this sponsor-funded arrangement or promise a held place/deadline. Attribute the answer to this reviewed proposal. The short reply gives no wider policy on every possible third-party payment, gift or corporate payer, and supplies no approved alternative sponsorship package or product-placement entitlement.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791972088788779",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980160418729",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980941919559"
+    ],
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "outbound-calling-hours-2026-10-14",
+    "decisionKey": "outbound-calling-hours-2026-10-14",
+    "title": "Outbound calling window and no Sunday dialing",
+    "questions": [
+      "Can I dial outbound leads on Sunday?",
+      "What hours can I make outbound calls?"
+    ],
+    "text": "Celia's October 12 reminder, explicitly attributed to Rudy's instruction, says dial out Monday through Saturday, 8 AM to 8 PM EST, and do NOT dial out on Sundays. Keep the source's Eastern/EST label; do not reinterpret it as the rep's local time. This concerns outbound dialing, not a blanket cancellation of scheduled appointments or the separately documented pre-call email process. It does not override consent, opt-outs or any applicable stricter contact restriction.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791838411349729"
+    ],
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "main-business-fit-clarifications-2026-10-14",
+    "decisionKey": "main-business-fit-clarifications-2026-10-14",
+    "title": "Assess the actual business; distinguish adult-content work from an eligible episode",
+    "questions": [
+      "Do we automatically reject someone with an OnlyFans account?",
+      "Can a legal cannabis business be featured if its owner also does adult content?",
+      "Should I cancel a greenlit call because I suspect they cannot afford it?"
+    ],
+    "text": "Rich's October 13 guidance is to take Call 1 rather than reject solely from an OnlyFans label, because the applicant may have another business. His follow-up specifically permits an episode about a legal cannabis business if OnlyFans is kept entirely out of the episode and promotions; an episode about OnlyFans/Playboy itself is not permitted. This is a content/business-fit clarification, not automatic casting approval or a determination that a particular cannabis business is legally compliant. Separately, when a rep had already greenlit someone who affirmed the financial qualification but the rep doubted their finances from social media, Rich advised still taking the call. Do not turn a hunch into a confirmed financial fact or treat a peer's 'push through nearly everyone' comment as policy. Preserve ordinary qualification, Green Light, disclosure and affordability rules.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791918989913739",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791927926149379",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791919122309789"
+    ],
+    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "payment-link-diagnosis-2026-10-14",
+    "decisionKey": "payment-link-diagnosis-2026-10-14",
+    "title": "Payment links: HubSpot first, emergency fallback, currency and contract checks",
+    "questions": [
+      "The payment page says select a TV show but there is no dropdown. What should I do?",
+      "Why does my $12,000 payment link show $17,000?",
+      "Will a custom payment link automatically open the contract?"
+    ],
+    "text": "Use the regular payment link generated from the HubSpot contact first. Igor reaffirmed this October 13; Sayim's October 14 instruction reserves emergency payment links for when the regular HubSpot link is not working for that client. In the reviewed October 13 incident, Igor separated two problems: Whop card attempts failed the bank's 3D Secure verification, while a legacy Keap emergency form incorrectly required a TV-show field it did not display. Do not assume every error is a bank decline or that one cause explains all links. Sayim reported the emergency forms fixed and says a show-name selection should appear before checkout; after renewed reports he requested screenshots, so do not promise every client/link is now fixed. Supply Tech the exact link, show, plan and error screenshot for diagnosis; an 'oops broken' report remained under investigation. Igor also stated custom links did not currently include a contract redirect, so the approved matching contract had to be sent manually. Verify payment and the applicable contract through the existing process; do not assume missing redirect means payment succeeded or bypass signature requirements. For a $12,000 link showing about $17,000, Igor confirmed switching the checkout display to USD; check currency before concluding the price changed. This is not a price increase, exchange-rate guarantee or permission to charge an unapproved amount.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791878025512009",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791890649673389",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791925016021569",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791968885987379",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791967983961729",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791924505183519"
+    ],
+    "reviewedAt": "2026-10-14T12:33:19.429997+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
