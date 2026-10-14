@@ -17,7 +17,15 @@ Owner approved fixing the oversized top gap, clearer admin/page names, directory
 
 - Scoped ESLint passed.
 - 67 tests passed across 11 suites: leadership/sign-in/admin authorization, FAQ access/analytics/review/filter behavior, and no-show history/pagination/date windows.
-- Production build and authenticated desktop/mobile visual verification must be recorded below after release; do not treat a heading-only check as visual acceptance.
+- Final local webpack production build and TypeScript passed.
+- Implementation PR295 merged as `dab32e4010fa876ba8277c0b4d5707b719319833`; production `dpl_Dvte9Kg1FD8sspm2J9HicSghwtSC` is READY on the rose alias.
+- The preview `dpl_3C7Tmnt5jd86tVj6x9MGmuZw2Gea` failed before build with the existing platform message “Resource provisioning failed”. Production build and authenticated live UI succeeded; preview was not counted as passing.
+- Signed-in live UI verified all eight internal destinations load: usage, sales impact, objection library, scorecard, compliance, no-shows, FAQ usage and FAQ conversations. Desktop screenshots inspected; mobile directory, usage, FAQ admin views and no-show layout inspected.
+- Usage return nav decreased from 714px to 56px; usage heading moved from 812px to 154px. Manager pages share the corrected nav.
+- Directory has the approved nine links in order. Homepage Admin Insights entry and directory return navigation work. No-show Call 2 filter shows 11 matching entries; usage search and the rep report-detail dialog work. No-show chat opens with the scoped red theme; no paid question was sent.
+- Mobile verification caught wrapped no-show date labels; follow-up changes those controls to a two-column layout below the small-screen breakpoint, retaining the desktop row and all URLs. This final adjustment requires a fresh live check after its Git deployment.
+- Before/after no-show count remained 103 total, including 92 Call 1 and 11 Call 2+. Other time-window counters refreshed with ongoing source activity; the implementation does not change calculations.
+- Local screenshots are small temporary QA artifacts, not full checkout backups.
 
 ## Rollback
 

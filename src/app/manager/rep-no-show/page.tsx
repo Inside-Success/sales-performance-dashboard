@@ -146,13 +146,13 @@ export default async function RepNoShowPage({
 
 function PeriodSelector({ selectedDays }: { selectedDays: number }) {
   return (
-    <div className="inline-flex rounded-lg border bg-background/75 p-1">
+    <div className="grid grid-cols-2 gap-1 rounded-xl border bg-background/75 p-1 sm:inline-flex">
       {REP_NO_SHOW_WINDOWS.map((days) => (
         <Link
           key={days}
           href={`/manager/rep-no-show?days=${days}`}
           className={cn(
-            "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
+            "inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
             selectedDays === days
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-muted hover:text-foreground",
