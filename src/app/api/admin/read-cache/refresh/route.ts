@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { refreshReadSnapshot } from "@/lib/dashboard-read-snapshot";
 import { attendanceSnapshotSpec } from "@/lib/rep-no-show";
 import { complianceSnapshotSpec } from "@/lib/compliance-dashboard";
+import { scorecardVersion } from "@/lib/rep-scoring/scorer-version";
 import { scorecardSnapshotSpec } from "@/lib/rep-scoring/v7-validation";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
   if (process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" && request.nextUrl.searchParams.get("bootstrap") !== "1") return NextResponse.json({ state: "disabled" });
   // Independent sources have separate leases; the two Airtable readers use different bases.
   const results: Record<string, string> = {};
-  const specs = [["compliance", complianceSnapshotSpec()], ["scorecard", scorecardSnapshotSpec()], ["attendance", attendanceSnapshotSpec()]] as const;
+  const specs = [["compliance", complianceSnapshotSpec()], ["scorecard", scorecardSnapshotSpec(scorecardVersion())], ["attendance", attendanceSnapshotSpec()]] as const;
   await Promise.all(specs.map(async ([name, spec]) => {
     try { results[name] = await refreshReadSnapshot<unknown>(spec); }
     catch { results[name] = "refresh_failed_previous_data_retained"; }

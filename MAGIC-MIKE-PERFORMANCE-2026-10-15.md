@@ -26,3 +26,12 @@ Acceptance covers all date ranges, stale fallback and refresh overlap, historica
 ## Rollback
 
 Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to return to legacy source reads while disabling scheduled refreshes. Preserve the snapshot table as an unused rollback artifact; do not drop source or dashboard data. Revert the scoped Git implementation if report/library presentation needs rollback. The new cron secret is server-only and must never be printed, committed or copied into browser URLs.
+
+## Observed release evidence
+
+- 99 targeted tests across 19 suites passed. Scoped ESLint, TypeScript and webpack production build passed. A final seven-test subset also passed after readable freshness timestamps and explicit cron/page scoring-version alignment.
+- PR298 merged as `222396f3d03ec24f5ff334dfd384315a87ac1af8`; staged production `dpl_4rjJe8YsQoozGbJ3gTKLzNrFYdXp` is READY. Snapshot reads were disabled for population.
+- Preview `dpl_AjzfThckfqujukfEtn36osyxNyQB` hit the existing pre-build “Resource provisioning failed” error. It was not counted as passing; the production build succeeded.
+- Protected bootstrap completed in 118.42 seconds with HTTP200: compliance, scorecard and attendance all `refreshed`. Visitors did not wait on this background population. All writes are confined to the additive dashboard-owned snapshot table.
+- Existing report `/call/7846` still rendered its feedback and matching 60.3 score during the staged release. A cold sampled report load was 5.5 seconds, so do not claim every route is universally sub-second. The score no longer blocks feedback structurally; end-user latency also includes database/session/network startup.
+- Production flag has been set to true for the next Git deployment. Fresh authenticated UI and date-filter timings must be recorded after activation. No AI calls were used for this verification.

@@ -1,3 +1,4 @@
+import { formatMiamiDateTime } from "@/lib/format";
 import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { randomUUID } from "node:crypto";
@@ -62,5 +63,5 @@ export async function refreshReadSnapshot<T>(spec: SnapshotSpec<T>): Promise<str
 }
 export function snapshotWarning(read: Pick<ReadSnapshot<unknown>, "stale" | "refreshFailed" | "fetchedAt">) {
   return read.stale || read.refreshFailed
-    ? `Refresh is delayed. Showing the last successful source read from ${read.fetchedAt}.` : undefined;
+    ? `Refresh is delayed. Showing the last successful source read from ${formatMiamiDateTime(read.fetchedAt)}.` : undefined;
 }
