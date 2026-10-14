@@ -74,9 +74,9 @@ The endpoint upserts dashboard rows and returns:
 - `/admin` authorized Magic Mike admin directory, including the external Mock Call Agent Team Admin link
 - `/manager/usage` AI Coaching Rep Usage (admin only)
 - `/manager/coaching-insights` AI Coaching Team Insights (admin only)
-- `/manager/sales-correlation?days=7|14|30|90` hidden manager sales-impact analytics
-- `/manager/compliance` hidden manager compliance review
-- `/manager/rep-no-show` hidden manager rep no-show impact review
+- `/manager/sales-correlation?days=7|14|30|90` AI Coaching Sales Impact (admin only)
+- `/manager/compliance` Sales Compliance Review (admin only)
+- `/manager/rep-no-show` Sales Call Rep No-Shows (admin only)
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
 - `/manager/rep-scoring/v7-validation` legacy compatibility route, redirected to the current scorecard
 - `/api/usage-events` browser usage event ingest

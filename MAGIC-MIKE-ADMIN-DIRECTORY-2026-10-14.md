@@ -20,11 +20,25 @@ No n8n workflow, source Sheet/Doc, stored report, compliance/scoring policy, mod
 
 ## Verification before release
 
-- 56 focused tests passed: all approved accounts, exact exceptions, denial of unrelated Gmail/Rudysmarketing accounts, legacy manager/FAQ permissions, company-rep FAQ access, per-page authorization before data reads, and both API authorization paths.
+- 68 focused tests passed: all approved accounts, exact exceptions, denial of unrelated Gmail/Rudysmarketing accounts, legacy manager/FAQ permissions, company-rep FAQ access, per-page authorization before data reads, and both API authorization paths.
 - Additional existing FAQ admin filters/rep-review and Sales Impact factual-answer tests passed.
 - Scoped ESLint, git diff --check and full Next.js production webpack build including TypeScript passed.
-- Signed-in production UI and deployed access verification will be recorded below after release. Other people's OAuth logins cannot be claimed as tested through the owner's session; exact-email policy checks cover their configuration.
+- Other people's OAuth logins cannot be claimed as tested through the owner's session; exact-email policy checks cover their configuration.
 
 ## Rollback
 
 Base main commit before changes: `8396515df0b18b9865fae20fe02e5a45b71a7133`. Prior ready production: `dpl_H1VLBXPvJWkAeJNSBhxf6L41BeYV`. Revert the scoped release commit through GitHub to restore prior page names and permission behavior. No database rollback or environment-secret restoration is needed.
+
+## Release and live verification
+
+- Implementation PR293 merged: `c11b3357c27390c322b42fa1ea5e356b0ab7bc63`.
+- Production `dpl_HAzjyH7TpMeXsDWnGhf3ohw5U2A8` reached READY and holds the rose alias for that exact merge commit.
+- Preview `dpl_8cMWP5em6SgE5s5gSEsraAW2GKgA` failed with Resource provisioning failed before application build, consistent with the known preview infrastructure issue. The local production build and actual production release succeeded.
+- Signed-in owner session: homepage Admin button opens `/admin`; all nine labels/links match their targets. All eight internal pages loaded with data under their new names. External Mock Call Agent Team Admin uses its exact supplied URL, `_blank` and `noopener noreferrer`; external permissions were not touched.
+- Directory desktop screenshot: `/tmp/magic-mike-admin-directory-2026-10-14.jpg` (55KB). Mobile at 375px: all nine links remain present, no horizontal overflow, profile and content remain inside document bounds. Viewport reset after QA.
+- Normal coaching home, official report7846 including score/outcome/improvements, self-submitted report listing, and FAQ landing page load. No report or AI answer was generated for this release verification.
+- Anonymous homepage/directory/manager/FAQ-admin requests redirect to sign-in. Both manager-chat endpoints return401 before any provider invocation. Non-admin authenticated denial is covered by policy, direct-page and endpoint tests.
+- The final combined test run passed68 tests across12 files. Scoped lint, full production build/TypeScript and diff checks passed.
+- The four production access variables retain their original IDs and update timestamps; no configuration secret was changed. Existing exact-email and FAQ-only permissions are retained.
+- FAQ default 30-day Usage now shows48 questions from15 people, excluding newly designated admin activity (including Jawad's previously counted41 questions). Saved history is intact and Include admin activity remains available. Coaching and Sales Impact calculations were not changed.
+- Latest report inspected was generated before this deployment. This verifies report reading and existing delivery data, not a new post-release real-call execution. Workflow/report generation was outside this scoped change.
