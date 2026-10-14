@@ -10,7 +10,7 @@ describe("last successful dashboard reads", () => {
     query.mockImplementation(async (sql: string) => sql.startsWith('select') ? [old] : []);
     const load = vi.fn(); const data = await getReadSnapshot({ key:'test',maxAgeSeconds:300,load });
     expect(data.data).toEqual({count:12}); expect(data.stale).toBe(true); expect(load).not.toHaveBeenCalled();
-    expect(snapshotWarning(data)).toContain(old.fetched_at);
+    expect(data.fetchedAt).toBe(old.fetched_at); expect(snapshotWarning(data)).toContain("last successful source read");
   });
   it("does not replace payload or success time when a refresh fails", async () => {
     query.mockImplementation(async (sql: string) => sql.startsWith('insert') ? [{key:'test'}] : []);
