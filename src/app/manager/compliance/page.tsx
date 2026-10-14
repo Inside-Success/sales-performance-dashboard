@@ -1,3 +1,4 @@
+import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -31,7 +32,7 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Compliance Review | Magic Mike Bot",
+  title: "Sales Compliance Review | Magic Mike Bot",
   description: "Hidden manager dashboard for weekly sales compliance review.",
   robots: {
     index: false,
@@ -46,6 +47,7 @@ export default async function ManagerCompliancePage({
 }: {
   searchParams: Promise<ComplianceSearchParams>;
 }) {
+  await requireRepScoringAdmin();
   const params = await searchParams;
   const data = await getComplianceDashboardData(params);
 
@@ -72,7 +74,7 @@ export default async function ManagerCompliancePage({
                 ) : null}
               </div>
               <h1 className="text-4xl font-semibold tracking-normal text-slate-950 md:text-5xl">
-                Compliance Review
+                Sales Compliance Review
               </h1>
               <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
                 Weekly flags by rep and category. Click any row to see the exact call evidence.

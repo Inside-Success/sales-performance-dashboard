@@ -1,3 +1,5 @@
+import { APPROVED_ADMIN_EMAILS } from "@/lib/approved-admin-emails";
+
 const DEFAULT_ALLOWED_DOMAINS = [
   "insidesuccesstv.com",
   "insidesuccess.com",
@@ -5,7 +7,7 @@ const DEFAULT_ALLOWED_DOMAINS = [
   "nextlevelceotv.com",
 ];
 
-const DEFAULT_ALLOWED_EMAILS = ["syed.haider@insidesuccess.com"];
+const DEFAULT_ALLOWED_EMAILS = APPROVED_ADMIN_EMAILS;
 
 export function normalizeAuthEmail(email: string | null | undefined) {
   const normalized = email?.trim().toLowerCase();
@@ -39,5 +41,5 @@ export function isAllowedAuthEmail(email: string | null | undefined) {
   if (!normalized) return false;
 
   const domain = getAuthEmailDomain(normalized);
-  return getAllowedAuthEmails().has(normalized) || Boolean(domain && getAllowedAuthDomains().includes(domain));
+  return getAllowedAuthEmails().has(normalized) || Boolean(domain && domain !== "gmail.com" && getAllowedAuthDomains().includes(domain));
 }

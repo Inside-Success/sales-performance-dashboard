@@ -1,3 +1,4 @@
+import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -7,9 +8,10 @@ import { getUsageOverview } from '@/lib/usage-overview-data';
 import { parseUsagePeriod, usagePercent } from '@/lib/usage-overview';
 import { formatMiamiDateTime } from '@/lib/format';
 export const dynamic='force-dynamic';
-export const metadata:Metadata={title:'Rep usage | Magic Mike Bot',robots:{index:false,follow:false}};
+export const metadata:Metadata={title:'AI Coaching Rep Usage | Magic Mike Bot',robots:{index:false,follow:false}};
 
 export default async function ManagerUsagePage({searchParams}:{searchParams:Promise<{days?:string;details?:string}>}) {
+  await requireRepScoringAdmin();
   const params=await searchParams;
   const period=parseUsagePeriod(params.days);
   const data=await getUsageOverview(period);
@@ -17,7 +19,7 @@ export default async function ManagerUsagePage({searchParams}:{searchParams:Prom
   const periodValue=period===null?'all':String(period);
   return <main className="magic-page"><div className="mx-auto flex w-full max-w-[84rem] flex-col gap-4 px-5 py-6 sm:px-8">
     <header className="flex flex-wrap items-center justify-between gap-4">
-      <div><h1 className="text-3xl font-bold text-slate-950">Rep usage</h1></div>
+      <div><h1 className="text-3xl font-bold text-slate-950">AI Coaching Rep Usage</h1></div>
       <nav aria-label="Report availability period" className="flex gap-2">{[{value:'7',label:'7 days'},{value:'30',label:'30 days'},{value:'all',label:'All time'}].map(p=><Link key={p.value} aria-current={periodValue===p.value?'page':undefined} href={`/manager/usage?days=${p.value}`} className={`rounded-lg border px-4 py-2 text-sm ${periodValue===p.value?'bg-red-600 text-white':'bg-white'}`}>{p.label}</Link>)}</nav>
     </header>
     {data.error?<p role="alert" className="rounded-lg border border-red-300 bg-red-50 p-4">{data.error}</p>:<>

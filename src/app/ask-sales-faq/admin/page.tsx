@@ -24,7 +24,7 @@ import {
 import { formatMiamiDateTime } from "@/lib/format";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Ask Sales Conversations | Magic Mike Bot",
+  title: "Sales FAQ Conversations | Magic Mike Bot",
   robots: { index: false, follow: false },
 };
 export default async function Page({

@@ -1,5 +1,6 @@
 import type { Session } from "next-auth";
 import { isAllowedAuthEmail, normalizeAuthEmail } from "@/lib/auth-utils";
+import { isSalesFaqAdmin } from "@/lib/admin-access-policy";
 
 export type AskSalesFaqAccess =
   | {
@@ -28,9 +29,7 @@ export function parseEmailAllowlist(value: string | undefined) {
 }
 
 export function isAskSalesFaqAdmin(email: string | null | undefined) {
-  const normalized = normalizeAuthEmail(email);
-  if (!normalized) return false;
-  return parseEmailAllowlist(process.env.ASK_SALES_FAQ_ADMIN_EMAILS).has(normalized);
+  return isSalesFaqAdmin(email);
 }
 
 export function getAskSalesFaqAccess(session: Session | null): AskSalesFaqAccess {

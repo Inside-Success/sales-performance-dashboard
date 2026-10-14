@@ -13,7 +13,7 @@ export function HeaderVisibility({ userName, userEmail }: { userName: string; us
 
   if (pathname === "/sign-in" || pathname.startsWith("/sign-in/")) return null;
 
-  const isHub = pathname === "/";
+  const isHub = pathname === "/" || pathname === "/admin";
   const isFaq = pathname === "/ask-sales-faq" || pathname.startsWith("/ask-sales-faq/");
   const isFaqAdmin = pathname.startsWith("/ask-sales-faq/admin");
 

@@ -1,3 +1,4 @@
+import { getSalesFaqAdminEmails } from "@/lib/admin-access-policy";
 import { neon } from "@neondatabase/serverless";
 import { getAuthEmailDomain, normalizeAuthEmail } from "@/lib/auth-utils";
 import type { NormalizedIngestPayload } from "@/lib/ingest";
@@ -3487,10 +3488,7 @@ export async function getAskSalesFaqUsageOverview(windowDays = 30): Promise<AskS
 
   await ensureSchema();
   const sql = getSql();
-  const excludedEmails = (process.env.ASK_SALES_FAQ_ADMIN_EMAILS || "")
-    .split(",")
-    .map((email) => normalizeAuthEmail(email))
-    .filter((email): email is string => Boolean(email));
+  const excludedEmails = Array.from(getSalesFaqAdminEmails());
 
   const [userRows, dailyRows] = await Promise.all([
     sql.query(

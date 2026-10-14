@@ -1,3 +1,4 @@
+import { isMagicMikeAdmin } from "@/lib/admin-access-policy";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { z } from "zod";
@@ -42,6 +43,8 @@ export async function POST(request: NextRequest) {
       { error: "Sign in to use sales analytics chat." },
       { status: 401 },
     );
+
+  if (!isMagicMikeAdmin(session.user.email)) return NextResponse.json({ error: "Admin access required." }, { status: 403 });
 
   let payload: z.infer<typeof requestSchema>;
 

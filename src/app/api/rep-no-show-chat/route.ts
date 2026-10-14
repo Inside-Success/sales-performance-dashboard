@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+import { isMagicMikeAdmin } from "@/lib/admin-access-policy";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import {
@@ -33,6 +35,9 @@ type DeepSeekResponse = {
 };
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.email) return NextResponse.json({ error: "Sign in to use this admin tool." }, { status: 401 });
+  if (!isMagicMikeAdmin(session.user.email)) return NextResponse.json({ error: "Admin access required." }, { status: 403 });
   let payload: z.infer<typeof requestSchema>;
 
   try {

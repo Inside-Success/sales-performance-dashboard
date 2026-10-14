@@ -23,7 +23,7 @@ it("rejects unsigned requests before reading data or calling a provider", async 
   expect(fetch).not.toHaveBeenCalled();
 });
 it("returns source failure as unavailable rather than a fabricated answer", async () => {
-  mocks.auth.mockResolvedValue({ user: { email: "manager@example.com" } });
+  mocks.auth.mockResolvedValue({ user: { email: "syed.haider@insidesuccess.com" } });
   mocks.data.mockRejectedValue(new Error("unavailable"));
   vi.stubEnv("DEEPSEEK_API_KEY", "test-only");
   const fetch = vi.spyOn(globalThis, "fetch");
@@ -48,7 +48,7 @@ it("uses the current open-based snapshot and visible-answer mode for a signed-in
     30,
     new Date("2026-10-14T16:00:00Z"),
   );
-  mocks.auth.mockResolvedValue({ user: { email: "manager@example.com" } });
+  mocks.auth.mockResolvedValue({ user: { email: "syed.haider@insidesuccess.com" } });
   mocks.data.mockResolvedValue({ analysis });
   vi.stubEnv("DEEPSEEK_API_KEY", "test-only");
   const provider = vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -91,7 +91,7 @@ it("answers preset numerical summaries from verified facts without a provider ca
     30,
     new Date("2026-10-14T16:00:00Z"),
   );
-  mocks.auth.mockResolvedValue({ user: { email: "manager@example.com" } });
+  mocks.auth.mockResolvedValue({ user: { email: "syed.haider@insidesuccess.com" } });
   mocks.data.mockResolvedValue({ analysis });
   const provider = vi.spyOn(globalThis, "fetch");
   const r = await POST(
