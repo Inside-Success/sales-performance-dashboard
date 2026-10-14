@@ -23,10 +23,18 @@ Owner approved fixing the oversized top gap, clearer admin/page names, directory
 - Signed-in live UI verified all eight internal destinations load: usage, sales impact, objection library, scorecard, compliance, no-shows, FAQ usage and FAQ conversations. Desktop screenshots inspected; mobile directory, usage, FAQ admin views and no-show layout inspected.
 - Usage return nav decreased from 714px to 56px; usage heading moved from 812px to 154px. Manager pages share the corrected nav.
 - Directory has the approved nine links in order. Homepage Admin Insights entry and directory return navigation work. No-show Call 2 filter shows 11 matching entries; usage search and the rep report-detail dialog work. No-show chat opens with the scoped red theme; no paid question was sent.
-- Mobile verification caught wrapped no-show date labels; follow-up changes those controls to a two-column layout below the small-screen breakpoint, retaining the desktop row and all URLs. This final adjustment requires a fresh live check after its Git deployment.
+- Mobile verification caught wrapped no-show date labels; follow-up changes those controls to a two-column layout below the small-screen breakpoint, retaining the desktop row and all URLs. Final production verification confirmed a two-column grid with unwrapped labels at a 375px requested viewport (360px content width).
 - Before/after no-show count remained 103 total, including 92 Call 1 and 11 Call 2+. Other time-window counters refreshed with ongoing source activity; the implementation does not change calculations.
 - Local screenshots are small temporary QA artifacts, not full checkout backups.
 
 ## Rollback
 
 Revert only this UI follow-up commit through a new reviewed GitHub change. Preserve the earlier admin access release (PR293) and its documentation (PR294). Git history is the backup; no copied checkout or large local backup was created.
+
+## Final release receipt
+
+- PR296 merged as `305615b776540aa02b2a1526bf039393aab02e77`; production `dpl_2cDmymhkjpZw1xt1AWb4qQAeop7u` is READY on the rose alias. This includes the final mobile date-control adjustment, visually verified live.
+- Normal coaching library remains available (165 reps); existing report `/call/7846` renders its score, call outcome and three improvement points. FAQ chatbot landing/history loaded; no AI question or self-submitted report was generated for this cosmetic QA.
+- Final screenshot artifacts: `/tmp/magic-mike-admin-insights-2026-10-14.jpg`, `/tmp/magic-mike-usage-spacing-fixed-2026-10-14.jpg`, `/tmp/magic-mike-no-shows-mobile-2026-10-14.jpg`. Browser viewport override reset after mobile checks.
+- Build output `.next` created for this task was removed after verification to avoid retaining a large local build cache. No other directory was deleted.
+- UI checks establish this release's presentation/navigation behavior; they are not a fresh audit of every workflow execution or an accuracy audit of historical compliance flags. Deferred compliance work remains pending.
