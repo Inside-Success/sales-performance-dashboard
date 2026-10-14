@@ -1,3 +1,6 @@
+import { randomBytes } from "node:crypto";
+vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn }));
+vi.mock("next/server", () => ({ after: vi.fn() }));
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const query = vi.hoisted(() => vi.fn());
 vi.mock("@neondatabase/serverless", () => ({ neon: () => ({ query }) }));
@@ -12,12 +15,24 @@ describe("last successful dashboard reads", () => {
     expect(data.data).toEqual({count:12}); expect(data.stale).toBe(true); expect(load).not.toHaveBeenCalled();
     expect(data.fetchedAt).toBe(old.fetched_at); expect(snapshotWarning(data)).toContain("last successful source read");
   });
+  it("keeps a large successful dataset usable when it exceeds the shared cache budget", async () => {
+    const row = { ...old, payload: { text: randomBytes(1300000).toString("base64") } };
+    query.mockImplementation(async (sql: string) => sql.startsWith("select") ? [row] : []);
+    const load = vi.fn(); const value = await getReadSnapshot({key:"large",maxAgeSeconds:300,load});
+    expect(value.data).toEqual(row.payload); expect(load).not.toHaveBeenCalled();
+  });
   it("does not replace payload or success time when a refresh fails", async () => {
     query.mockImplementation(async (sql: string) => sql.startsWith('insert') ? [{key:'test'}] : []);
     await expect(refreshReadSnapshot({key:'test',maxAgeSeconds:300,load:async()=>{throw new Error('timeout');}})).rejects.toThrow('timeout');
     const failure = query.mock.calls.find(([sql]) => sql.includes('failed_at=now()'));
     expect(failure?.[0]).not.toContain('payload='); expect(failure?.[0]).not.toContain('fetched_at=');
     expect(query.mock.calls.some(([sql]) => sql.includes('payload=$3'))).toBe(false);
+  });
+  it("requires recent dashboard activity for scheduled source refreshes", async () => {
+    query.mockResolvedValue([]); const load = vi.fn();
+    await refreshReadSnapshot({key:"test",maxAgeSeconds:300,load}, true);
+    const claim = query.mock.calls.find(([sql]) => sql.startsWith("insert"));
+    expect(claim?.[0]).toContain("last_requested_at"); expect(claim?.[1][3]).toBe(true); expect(load).not.toHaveBeenCalled();
   });
   it("does not start a second source refresh when another worker owns the lease", async () => {
     query.mockResolvedValue([]); const load=vi.fn();

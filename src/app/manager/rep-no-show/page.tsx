@@ -1,3 +1,4 @@
+import { LinkPending } from "@/components/dashboard/link-pending";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -155,6 +156,7 @@ function PeriodSelector({ selectedDays }: { selectedDays: number }) {
         <Link
           key={days}
           href={`/manager/rep-no-show?days=${days}`}
+          aria-current={selectedDays === days ? "page" : undefined}
           className={cn(
             "inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
             selectedDays === days
@@ -162,7 +164,7 @@ function PeriodSelector({ selectedDays }: { selectedDays: number }) {
               : "text-muted-foreground hover:bg-muted hover:text-foreground",
           )}
         >
-          {days} days
+          {days} days<LinkPending />
         </Link>
       ))}
     </div>
@@ -298,11 +300,7 @@ function EmptyState({ text }: { text: string }) {
 
 
 function getPeriodDescription(analytics: RepNoShowAnalytics) {
-  const requestedStart = new Date(analytics.summary.generatedAt);
-  requestedStart.setUTCDate(requestedStart.getUTCDate() - analytics.summary.periodDays);
-  const effectiveStart = new Date(analytics.summary.effectivePeriodStart);
-
-  if (Number.isFinite(effectiveStart.getTime()) && effectiveStart > requestedStart) {
+  if (analytics.summary.effectivePeriodStart === analytics.summary.trackingStartedAt) {
     return `Since ${formatShortDate(analytics.summary.effectivePeriodStart)}`;
   }
 

@@ -35,3 +35,11 @@ Set `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` and release a fresh deployment to 
 - Protected bootstrap completed in 118.42 seconds with HTTP200: compliance, scorecard and attendance all `refreshed`. Visitors did not wait on this background population. All writes are confined to the additive dashboard-owned snapshot table.
 - Existing report `/call/7846` still rendered its feedback and matching 60.3 score during the staged release. A cold sampled report load was 5.5 seconds, so do not claim every route is universally sub-second. The score no longer blocks feedback structurally; end-user latency also includes database/session/network startup.
 - Production flag has been set to true for the next Git deployment. Fresh authenticated UI and date-filter timings must be recorded after activation. No AI calls were used for this verification.
+
+## Final efficiency safeguards
+
+- Successful database reads use a shared 30-second cache across period filters. Payloads are losslessly compressed server-side and guarded below the framework cache-size limit; oversized datasets fall back to the successful database read instead of becoming an error. Only successful complete reads are cached.
+- Scheduled refreshes run for datasets requested within the preceding 30 minutes, avoiding expensive full-history polling of unused dashboards. A stale first visit after inactivity shows its true source timestamp immediately and schedules a leased refresh after the response; cron remains the retry path. Active-dashboard refresh cadence is five minutes for compliance/scorecard and fifteen for attendance, with scheduling/source-read time and the brief shared cache potentially adding delay. These are refresh targets, not strict maximum data-age guarantees.
+- Added one dashboard-owned `last_requested_at` column for refresh demand tracking; this is separate from rep usage/adoption events and never changes those metrics.
+- Initial activated samples: no-show cold load 6.1s, compliance 2.7s, scorecard 0.7s. This prompted the bounded shared read cache; do not publish those as final acceptance timings.
+- Fixed the period caption to compare the actual tracking cutoff, rather than the saved source refresh time. Counts/calculation rules are unchanged.

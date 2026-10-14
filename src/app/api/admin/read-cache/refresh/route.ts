@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const results: Record<string, string> = {};
   const specs = [["compliance", complianceSnapshotSpec()], ["scorecard", scorecardSnapshotSpec(scorecardVersion())], ["attendance", attendanceSnapshotSpec()]] as const;
   await Promise.all(specs.map(async ([name, spec]) => {
-    try { results[name] = await refreshReadSnapshot<unknown>(spec); }
+    try { results[name] = await refreshReadSnapshot<unknown>(spec, request.nextUrl.searchParams.get("bootstrap") !== "1"); }
     catch { results[name] = "refresh_failed_previous_data_retained"; }
   }));
   return NextResponse.json({ results }, { status: Object.values(results).some(x => x.includes("failed")) ? 503 : 200 });
