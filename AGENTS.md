@@ -42,3 +42,7 @@ For dashboard/web changes:
 - See MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md for scope, verification and rollback.
 
 - Admin UI follow-up: see MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md. Never use a full-page minimum-height class on the compact directory return nav. The directory is named Admin Insights; its link order and page URLs are deliberately separate.
+
+## Dashboard performance reads (October 15)
+
+- See MAGIC-MIKE-PERFORMANCE-2026-10-15.md. Source Sheets/Airtable remain read-only. Successful snapshots and timestamps must survive failed refreshes; never cache empty failure results or show them as genuine zeros. Preserve auth before all admin reads. Attendance history and score matching remain complete and exact.

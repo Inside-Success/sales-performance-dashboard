@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
 
   const periodDays = normalizeRepNoShowWindow(String(payload.periodDays || ""));
   const analytics = await getRepNoShowAnalytics(periodDays);
+  if (analytics.summary.error) return NextResponse.json({ error: "Attendance data is unavailable. Please try again after it refreshes." }, { status: 503 });
   const chatMessages = buildRepNoShowChatMessages(analytics, messages);
 
   const deepSeekResponse = await fetch("https://api.deepseek.com/chat/completions", {

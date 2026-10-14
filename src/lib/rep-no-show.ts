@@ -1,5 +1,7 @@
-import { slugify } from "@/lib/slug";
 import { unstable_cache } from "next/cache";
+import { slugify } from "@/lib/slug";
+import { getReadSnapshot, snapshotWarning, type SnapshotSpec } from "@/lib/dashboard-read-snapshot";
+import { readAirtablePage } from "@/lib/source-read";
 
 export const REP_NO_SHOW_WINDOWS = [7, 14, 30, 90] as const;
 export type RepNoShowWindow = (typeof REP_NO_SHOW_WINDOWS)[number];
@@ -91,6 +93,7 @@ export type RepNoShowSummary = {
   weekOverWeekChange: number;
   avoidedNoShows: number;
   error?: string;
+  warning?: string;
 };
 
 export type RepNoShowAnalytics = {
@@ -114,11 +117,18 @@ export function normalizeRepNoShowWindow(value: string | string[] | undefined): 
     : 7;
 }
 
-export const getRepNoShowAnalytics = unstable_cache(
-  async (periodDays: RepNoShowWindow = 7) => getRepNoShowAnalyticsUncached(periodDays),
-  ["rep-no-show-analytics-v4"],
-  { revalidate: 900 },
-);
+export function attendanceSnapshotSpec(): SnapshotSpec<AirtableRecord[]> {
+  return { key: `attendance-v1:${process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID}:${process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID}:${process.env.REP_NO_SHOW_TRACKING_START_DATE || DEFAULT_TRACKING_START_DATE}`,
+    maxAgeSeconds: 900, load: async () => {
+      const token = getAirtableToken();
+      if (!token) throw new Error("Airtable read access is not configured.");
+      return fetchAirtableRecords(token, Math.max(HISTORY_DAYS, differenceInDays(parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE), new Date()) + 2));
+    } };
+}
+const legacyAttendanceRead = unstable_cache(getRepNoShowAnalyticsUncached, ["rep-no-show-analytics-performance-rollback"], { revalidate: 900 });
+export async function getRepNoShowAnalytics(periodDays: RepNoShowWindow = 7) {
+  return process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" ? legacyAttendanceRead(periodDays) : getRepNoShowAnalyticsUncached(periodDays);
+}
 
 async function getRepNoShowAnalyticsUncached(
   periodDays: RepNoShowWindow = 7,
@@ -146,10 +156,8 @@ async function getRepNoShowAnalyticsUncached(
   }
 
   try {
-    const records = await fetchAirtableRecords(
-      token,
-      Math.max(HISTORY_DAYS, differenceInDays(configuredTrackingStart, generatedAt) + 2),
-    );
+    const read = await getReadSnapshot(attendanceSnapshotSpec());
+    const records = read.data;
     const calls = dedupeTrackedCalls(
       records.map(normalizeAirtableRecord).filter(isEligibleCall).filter(isTrackedCall),
     );
@@ -191,7 +199,8 @@ async function getRepNoShowAnalyticsUncached(
     return {
       summary: {
         configured: true,
-        generatedAt: generatedAt.toISOString(),
+        generatedAt: read.fetchedAt,
+        warning: snapshotWarning(read),
         periodDays,
         trackingStartedAt: trackingStartedAt.toISOString(),
         effectivePeriodStart: periodStart.toISOString(),
@@ -244,6 +253,7 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
   const records: AirtableRecord[] = [];
   let offset = "";
   const seenOffsets = new Set<string>();
+  const deadline = Date.now() + 240000;
 
   do {
     const params = new URLSearchParams();
@@ -257,25 +267,21 @@ async function fetchAirtableRecords(token: string, historyDays: number) {
     AIRTABLE_FIELDS.forEach((field) => params.append("fields[]", field));
     if (offset) params.set("offset", offset);
 
-    const response = await fetch(`https://api.airtable.com/v0/${baseId}/${tableId}?${params}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-      signal: AbortSignal.timeout(15000),
-    });
+    const response = await readAirtablePage(`https://api.airtable.com/v0/${baseId}/${tableId}?${params}`, token, deadline);
 
     const data = (await response.json()) as AirtableListResponse;
     if (!response.ok) {
       throw new Error(data.error?.message || "Airtable rejected the rep no-show analytics request.");
     }
 
-    records.push(...(data.records || []));
+    if (!Array.isArray(data.records)) throw new Error("Attendance source returned an invalid page; incomplete totals are not published.");
+    records.push(...data.records);
     offset = data.offset || "";
     if (offset && seenOffsets.has(offset)) throw new Error("Attendance history pagination repeated; no partial totals are shown.");
     if (offset) seenOffsets.add(offset);
   } while (offset);
 
+  if (!records.length) throw new Error("Attendance history was empty; keeping the previous successful read.");
   return records;
 }
 

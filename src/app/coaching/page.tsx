@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function CoachingHome({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
   const filters = readFilters(await searchParams);
   const selectedRepSlug = filters.rep;
-  const { calls, reps, configured, error } = await getDashboardData(selectedRepSlug ? { ...filters, rep: selectedRepSlug } : {});
+  const { calls, reps, configured, error } = await getDashboardData(selectedRepSlug ? { ...filters, rep: selectedRepSlug } : {}, { libraryOnly: true, loadCalls: !!selectedRepSlug });
   const selectedRepSummary = reps.find((rep) => rep.rep_slug === selectedRepSlug);
   const selectedRepName = selectedRepSummary?.rep_name || calls[0]?.rep_name || "";
   const selectableReps = activeCoachingReps(reps);

@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/admin/read-cache/refresh", "schedule": "*/5 * * * *" }]
+}

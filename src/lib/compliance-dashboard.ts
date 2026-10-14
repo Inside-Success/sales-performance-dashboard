@@ -1,3 +1,4 @@
+import { getReadSnapshot, snapshotWarning, type SnapshotSpec } from "@/lib/dashboard-read-snapshot";
 import { slugify } from "@/lib/slug";
 
 const COMPLIANCE_SHEET_ID = "17yBNMgUT7rX2KjdvRFJHj8OrMTWnXrYSOCb46VtwUoc";
@@ -140,6 +141,7 @@ export type ComplianceDashboardData = {
   unfilteredRepCount: number;
   unfilteredCategoryCount: number;
   error?: string;
+  warning?: string;
 };
 
 export async function getComplianceDashboardData(
@@ -151,11 +153,8 @@ export async function getComplianceDashboardData(
   const fallback = getFallbackDashboardData(generatedAt, sheetUrl, filters);
 
   try {
-    const [repRecords, categoryRecords] = await Promise.all([
-      fetchSheetRecords(REP_SUMMARY_SHEET, "Week"),
-      fetchSheetRecords(CATEGORY_SUMMARY_SHEET, "Week"),
-    ]);
-    const rawRecords = await fetchOptionalSheetRecords(RAW_LOG_SHEET, "Date");
+    const read = await getReadSnapshot(complianceSnapshotSpec());
+    const { repRecords, categoryRecords, rawRecords } = read.data;
     const repRows = repRecords.map(normalizeRepSummaryRow).filter(isPresent);
     const categoryRows = categoryRecords.map(normalizeCategorySummaryRow).filter(isPresent);
     const rawRows = rawRecords.map(normalizeRawComplianceRow).filter(isPresent);
@@ -207,7 +206,8 @@ export async function getComplianceDashboardData(
       .sort(sortCategoryRows);
 
     return {
-      generatedAt: generatedAt.toISOString(),
+      generatedAt: read.fetchedAt,
+      warning: snapshotWarning(read),
       sheetUrl,
       selectedWeek,
       weeks,
@@ -303,17 +303,14 @@ async function fetchSheetRecords(sheetName: string, requiredHeader: string) {
   }
 }
 
-async function fetchOptionalSheetRecords(sheetName: string, requiredHeader: string) {
-  try {
-    return await fetchSheetRecords(sheetName, requiredHeader);
-  } catch (error) {
-    console.warn(
-      `Optional compliance sheet read failed for ${sheetName}: ${
-        error instanceof Error ? error.message : "unknown error"
-      }`,
-    );
-    return [];
-  }
+export function complianceSnapshotSpec(): SnapshotSpec<{ repRecords: Record<string, string>[]; categoryRecords: Record<string, string>[]; rawRecords: Record<string, string>[] }> {
+  return { key: `compliance-v1:${COMPLIANCE_SHEET_ID}`, maxAgeSeconds: 300, load: async () => {
+    const [repRecords, categoryRecords, rawRecords] = await Promise.all([
+      fetchSheetRecords(REP_SUMMARY_SHEET, "Week"), fetchSheetRecords(CATEGORY_SUMMARY_SHEET, "Week"), fetchSheetRecords(RAW_LOG_SHEET, "Date")
+    ]);
+    if (!repRecords.length || !categoryRecords.length) throw new Error("Compliance summaries were empty; keeping the previous successful read.");
+    return { repRecords, categoryRecords, rawRecords };
+  } };
 }
 
 function recordsFromCsv(csv: string, sheetName: string, requiredHeader: string) {

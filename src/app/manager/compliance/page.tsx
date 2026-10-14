@@ -105,11 +105,13 @@ export default async function ManagerCompliancePage({
         </header>
 
         {data.error ? (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
-            {data.error}
+          <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
+            Data unavailable. {data.error}
           </div>
         ) : null}
 
+        {data.warning ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{data.warning}</p> : null}
+        {!data.error ? <>
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             icon={Flag}
@@ -153,6 +155,7 @@ export default async function ManagerCompliancePage({
         <ComplianceFilters data={data} />
 
         <ComplianceDrilldownBoard data={data} />
+        </> : null}
 
         <p className="max-w-4xl text-xs leading-5 text-slate-500">
           This view only reads the compliance sheet and dashboard records. It does not change

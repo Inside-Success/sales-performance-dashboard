@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-vi.mock("next/cache", () => ({ unstable_cache: (fn: unknown) => fn }));
+vi.mock("@/lib/source-read", () => ({ readAirtablePage: (url: string) => fetch(url) }));
 import { getRepNoShowAnalytics, normalizeRepNoShowWindow } from "@/lib/rep-no-show";
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
 function record(id: number, day: string, absent = false) {

@@ -90,7 +90,7 @@ export default async function RepNoShowPage({
               <PeriodSelector selectedDays={analytics.summary.periodDays} />
               <div className="inline-flex items-center gap-2 rounded-lg border bg-background/75 px-3 py-2">
                 <Clock3 className="size-4 text-foreground" />
-                Updated {formatMiamiDateTime(analytics.summary.generatedAt)}
+                {analytics.summary.error ? "Data unavailable" : `Source read ${formatMiamiDateTime(analytics.summary.generatedAt)}`}
               </div>
             </div>
           </div>
@@ -99,6 +99,8 @@ export default async function RepNoShowPage({
         <StatusMessage analytics={analytics} />
 
 
+        {analytics.summary.warning ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{analytics.summary.warning}</p> : null}
+        {!analytics.summary.error ? <>
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             icon={UserX}
@@ -131,14 +133,16 @@ export default async function RepNoShowPage({
           <TopRepsCard reps={analytics.topReps} />
         </section>
 
-        <RepNoShowLogCard
-          calls={analytics.noShowLog}
+        <RepNoShowLogCard key={analytics.summary.generatedAt}
+          calls={analytics.noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analytics.summary.effectivePeriodStart))}
+          historyCount={analytics.noShowLog.length}
           trackingStartedAt={analytics.summary.trackingStartedAt}
           periodStart={analytics.summary.effectivePeriodStart}
           periodDays={analytics.summary.periodDays}
         />
 
         <RepNoShowChatPanel periodDays={analytics.summary.periodDays} />
+        </> : null}
       </div>
     </main>
   );
@@ -169,8 +173,8 @@ function StatusMessage({ analytics }: { analytics: RepNoShowAnalytics }) {
   if (!analytics.summary.error) return null;
 
   return (
-    <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
-      {analytics.summary.error}
+    <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
+      Data unavailable. {analytics.summary.error} No attendance totals are shown because the source could not be read.
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { getReadSnapshot, snapshotWarning, type SnapshotSpec } from "@/lib/dashboard-read-snapshot";
 import { currentScoreFields } from "./current-policy";
 import { CALL2_CURRENT_VERSION, CALL2_PREVIOUS_VERSION, isCall2Version } from "./scorer-version";
 import "server-only";
@@ -78,7 +79,7 @@ export type V7ValidationData = {
   error?: string;
 };
 
-export type V7ScorecardData = {
+export type V7ScorecardData = { warning?: string;
   configured: boolean;
   generatedAt: string;
   callsReviewed: number;
@@ -91,7 +92,7 @@ const SCORECARD_FIELDS = [
   "Assessment ID", "Source Record ID", "Scored Rep Email", "Scored Rep Label", "Call Type", "Meeting Start At", "Composite Score", "Scorer Version", "Scored At", "Call Context JSON",
 ];
 
-export async function getV7ScorecardOverview(scorerVersion = activeScorecardVersion()): Promise<V7ScorecardData> {
+async function getV7ScorecardOverviewUncached(scorerVersion = activeScorecardVersion()): Promise<V7ScorecardData> {
   const call2Only = isCall2Version(scorerVersion);
   const fallback: V7ScorecardData = { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [], call2Only };
   const token = process.env.REP_SCORING_AIRTABLE_TOKEN;
@@ -99,7 +100,7 @@ export async function getV7ScorecardOverview(scorerVersion = activeScorecardVers
   try {
     const versionFormula = `{Scorer Version}=${airtableLiteral(scorerVersion)}`;
     const formula = call2Only ? `AND(${versionFormula},{Call Type}="Call 2+")` : versionFormula;
-    const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORECARD_FIELDS, 5000);
+    const records = await fetchRecords(process.env.REP_SCORING_CALL_SCORES_TABLE || "call_scores", token, formula, SCORECARD_FIELDS, 0);
     const calls = canonicalScoreRecords(records).flatMap((record): V7ManagerCall[] => {
       const fields = record.fields;
       const score = number(fields["Composite Score"]);
@@ -302,19 +303,25 @@ async function fetchRecords(table: string, token: string, filterByFormula: strin
 async function fetchRecordSequence(table: string, token: string, filterByFormula: string, fields: string[], maxRecords: number) {
   const baseId = process.env.REP_SCORING_AIRTABLE_BASE_ID || DEFAULT_BASE_ID;
   const records: AirtableRecord[] = [];
+  const deadline = Date.now() + 240000;
+  const seenOffsets = new Set<string>();
   let offset = "";
   do {
+    if (Date.now() >= deadline) throw new Error("Scorecard refresh exceeded its time budget.");
     const url = new URL(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`);
-    url.searchParams.set("pageSize", String(Math.min(100, maxRecords)));
-    url.searchParams.set("maxRecords", String(maxRecords));
+    url.searchParams.set("pageSize", String(maxRecords ? Math.min(100, maxRecords) : 100));
+    if (maxRecords) url.searchParams.set("maxRecords", String(maxRecords));
     url.searchParams.set("filterByFormula", filterByFormula);
     for (const field of fields) url.searchParams.append("fields[]", field);
     if (offset) url.searchParams.set("offset", offset);
     const body = await fetchAirtablePage(url, table, token);
-    records.push(...(body.records || []));
+    if (!Array.isArray(body.records)) throw new Error("Scorecard source returned an incomplete page.");
+    records.push(...body.records);
     offset = body.offset || "";
-  } while (offset && records.length < maxRecords);
-  return records.slice(0, maxRecords);
+    if (offset && seenOffsets.has(offset)) throw new Error("Scorecard pagination repeated; incomplete data is not published.");
+    if (offset) seenOffsets.add(offset);
+  } while (offset && (!maxRecords || records.length < maxRecords));
+  return maxRecords ? records.slice(0, maxRecords) : records;
 }
 
 async function fetchAirtablePage(url: URL, table: string, token: string) {
@@ -442,3 +449,12 @@ function dateValue(value: string) { const parsed = Date.parse(value); return Num
 function airtableLiteral(value: string) { return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`; }
 function safeUrl(value: string) { try { const url = new URL(value); return url.protocol === "https:" ? url.toString() : ""; } catch { return ""; } }
 function message(error: unknown, fallback: string) { return error instanceof Error ? error.message : fallback; }
+
+export function scorecardSnapshotSpec(scorerVersion = activeScorecardVersion()): SnapshotSpec<V7ScorecardData> {
+  return { key: `scorecard-v1:${process.env.REP_SCORING_AIRTABLE_BASE_ID || DEFAULT_BASE_ID}:${scorerVersion}`, maxAgeSeconds: 300,
+    load: async () => { const data = await getV7ScorecardOverviewUncached(scorerVersion); if (data.error) throw new Error(data.error); return data; } };
+}
+export async function getV7ScorecardOverview(scorerVersion = activeScorecardVersion()): Promise<V7ScorecardData> {
+  try { const read = await getReadSnapshot(scorecardSnapshotSpec(scorerVersion)); return { ...read.data, generatedAt: read.fetchedAt, warning: snapshotWarning(read) }; }
+  catch { return { configured: false, generatedAt: new Date().toISOString(), callsReviewed: 0, repSummaries: [], call2Only: isCall2Version(scorerVersion), error: "Scorecard data is unavailable. Please try again after the next refresh." }; }
+}
