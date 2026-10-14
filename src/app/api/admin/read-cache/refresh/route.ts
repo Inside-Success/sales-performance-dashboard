@@ -1,3 +1,4 @@
+import { neon } from "@neondatabase/serverless";
 import { NextRequest, NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { refreshReadSnapshot } from "@/lib/dashboard-read-snapshot";
@@ -13,6 +14,14 @@ export async function GET(request: NextRequest) {
   const wanted = `Bearer ${expected || ""}`;
   if (!expected || Buffer.byteLength(actual) !== Buffer.byteLength(wanted) || !timingSafeEqual(Buffer.from(actual), Buffer.from(wanted)))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (request.nextUrl.searchParams.get("inspect") === "1") {
+    if (!process.env.DATABASE_URL) return NextResponse.json({ error: "Storage unavailable" }, { status: 503 });
+    const rows = await neon(process.env.DATABASE_URL).query(`select split_part(key,':',1) as source, fetched_at::text, failed_at::text,
+      last_requested_at::text, lease_until::text, octet_length(payload::text) as json_bytes,
+      case when jsonb_typeof(payload)='array' then jsonb_array_length(payload) else null end as records
+      from dashboard_read_snapshots order by key limit 20`);
+    return NextResponse.json({ sources: rows }, { headers: { "Cache-Control": "private, no-store" } });
+  }
   if (process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" && request.nextUrl.searchParams.get("bootstrap") !== "1") return NextResponse.json({ state: "disabled" });
   // Independent sources have separate leases; the two Airtable readers use different bases.
   const results: Record<string, string> = {};
