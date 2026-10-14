@@ -1,8 +1,8 @@
 # Magic Mike FAQ knowledge refresh — October 14, 2026
 
-Status: candidate; not yet published or a successful checkpoint.
+Status: published and verified on October 14, 2026.
 
-Resumed from the October 12 evening successful checkpoint (`6bd6585253dd6c7c3eb2b664`, 2550 records). Candidate `0492d8d294d53d729bc81946`, 2555 records: five additions and fourteen amendments. Source systems were read only; no Slack messages or Google source edits.
+Resumed from the October 12 evening successful checkpoint (`6bd6585253dd6c7c3eb2b664`, 2550 records). Published `0492d8d294d53d729bc81946`, 2555 records: five additions and fourteen amendments. Source systems were read only; no Slack messages or Google source edits.
 
 ## Knowledge changes
 
@@ -26,10 +26,18 @@ Resumed from the October 12 evening successful checkpoint (`6bd6585253dd6c7c3eb2
 
 ## Verification
 
-Initial full suite: 401 passed, one obsolete Mountain expectation failed. Updated that assertion to the newly documented pause and preserved Call 2 requirement; both affected/new suites passed (11 tests). Static validator 107/107 passed. Full release CI and production verification pending.
+Initial full suite: 401 passed, one obsolete Mountain expectation failed. Updated that assertion to the newly documented pause and preserved Call 2 requirement; both affected/new suites passed (11 tests). Static validator 107/107 passed. Full release CI passed: 402/402 tests, TypeScript, scoped ESLint and production build; paired FAQ checks passed. Authenticated production answer and stored metadata verified.
 
 Isolated answer evaluation preserves the current GPT-5.6 Luna model, medium reasoning and runtime. One initial review-stage provider_invalid_response occurred; the bounded retry succeeded. All ten targeted cases returned usable reviewed answers after that one retry, including pricing and disclosure regressions. Estimated isolated cost $0.12624618. These are bounded checks, not an all-question accuracy score. No runtime/provider changes are included.
 
 ## Release boundaries
 
 Only FAQ knowledge, knowledge tests, paired registry and checkpoint/report documentation. No model, prompt, retrieval, runtime, schema, auth, environment, Coaching, n8n or source changes. Production baseline is f9d97d8fd56c8cde372abdac26af1a9c35f9139a (deployment dpl_6XNwkJvJrSLXp2qbC9rW5GsZHHeZ); preserve its unrelated Sales Impact changes. Publication receipt is updated only after authenticated live verification.
+
+## Production verification
+
+Dashboard PR291 and FAQ PR103 merged. Production deployment `dpl_3koMz7o9vS3XL2F3kJdhgPhSNJwQ` is READY and serves the rose alias, commit `d69305d7f96b30f38d8d0a2c958f8c40d401c78f`. The preview could not provision its resource; no preview success is claimed and no environment/database workaround was made. Production built successfully.
+
+Work-profile Chrome answer `faq_assistant_2bcc2378-502c-46f7-9ed0-9af2aa53f75c` at `2026-10-14T12:47:11.452Z` correctly describes Mansion housing and links the media kit. Stored metadata confirms current knowledge, 2555 records, GPT-5.6 Luna, successful plan/answer/review, no validation issues and 10.374 seconds. Screenshot and raw receipt are private. The one initial isolated provider error was retained and retried successfully; this is not proof provider errors cannot recur.
+
+Resume `docs-ask-sales-knowledge-checkpoint-2026-10-14.json` / `KNOWLEDGE-CHECKPOINT-2026-10-14.json`, preserving recorded access gaps and all 597 thread watermarks.

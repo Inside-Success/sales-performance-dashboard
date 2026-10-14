@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-14",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "6bd6585253dd6c7c3eb2b664",
   "knowledgeVersion": "0492d8d294d53d729bc81946",
   "activeRecordCount": 2555,
@@ -4104,5 +4104,24 @@
     "main-business-fit-clarifications-2026-10-14",
     "hubspot-duplicate-meetings-2026-10-12",
     "payment-link-diagnosis-2026-10-14"
-  ]
+  ],
+  "publication": {
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/291",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/103",
+    "dashboardCommit": "d69305d7f96b30f38d8d0a2c958f8c40d401c78f",
+    "deploymentId": "dpl_3koMz7o9vS3XL2F3kJdhgPhSNJwQ",
+    "deploymentUrl": "https://sales-performance-dashboard-cpa0sqyn8-admin-insidesuccess.vercel.app",
+    "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+    "liveAnswerId": "faq_assistant_2bcc2378-502c-46f7-9ed0-9af2aa53f75c",
+    "liveAnswerAt": "2026-10-14T12:47:11.452Z",
+    "liveAnswerKnowledgeVersion": "0492d8d294d53d729bc81946",
+    "liveModel": "gpt-5.6-luna",
+    "liveLatencyMs": 10374,
+    "fullSuite": "402/402",
+    "staticSafety": "107/107",
+    "ci": "TypeScript, scoped ESLint, production build and paired FAQ validation passed",
+    "isolatedCasesPassed": 10,
+    "isolatedInitialTechnicalFailures": 1,
+    "isolatedEstimatedCostUsd": 0.12624618
+  }
 }
