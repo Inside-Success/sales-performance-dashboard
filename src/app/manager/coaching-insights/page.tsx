@@ -6,7 +6,7 @@ import { getCoachingInsightCalls } from "@/lib/coaching-insights-data";
 import { summarizeCoachingInsights } from "@/lib/coaching-insights";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Coaching insights | Magic Mike Bot", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "AI Coaching Team Insights | Magic Mike Bot", robots: { index: false, follow: false } };
 export default async function CoachingInsightsPage({ searchParams }: { searchParams: Promise<{ days?: string; rep?: string; type?: string }> }) {
   await requireRepScoringAdmin();
   const params = await searchParams;
@@ -21,7 +21,7 @@ export default async function CoachingInsightsPage({ searchParams }: { searchPar
   return <main className="magic-page"><div className="mx-auto max-w-6xl space-y-6 px-5 pb-16 pt-8 sm:px-8">
     <header className="magic-card magic-hero p-6 md:p-8">
       <div className="magic-kicker"><Target className="size-4" aria-hidden="true" />Manager coaching</div>
-      <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950 md:text-4xl">Where your team needs support</h1>
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950 md:text-4xl">AI Coaching Team Insights</h1>
       <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">See recurring buyer concerns and coaching opportunities. Open the calls behind each theme to plan your next training.</p>
     </header>
     <form className="magic-card flex flex-wrap items-end gap-4 p-5">

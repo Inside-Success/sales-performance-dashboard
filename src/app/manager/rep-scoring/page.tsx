@@ -9,7 +9,7 @@ import { getV7ScorecardOverview } from "@/lib/rep-scoring/v7-validation";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "AI Closer Scorecard | Magic Mike Bot",
+  title: "AI Coaching Closer Scorecard | Magic Mike Bot",
   description: "Private closer scorecard for authorized managers.",
   robots: { index: false, follow: false },
 };
@@ -26,7 +26,7 @@ export default async function ManagerRepScoringPage({ searchParams }: { searchPa
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="max-w-3xl">
             <div className="magic-kicker"><ShieldCheck className="size-3.5" />Manager access</div>
-            <h1 className="mt-3 text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">AI Closer Scorecard</h1>
+            <h1 className="mt-3 text-[34px] font-extrabold leading-tight tracking-normal text-slate-950 md:text-[44px]">AI Coaching Closer Scorecard</h1>
             <p className="mt-3 max-w-2xl text-[15px] font-medium leading-7 text-slate-600">Review closer scores and open the calls behind them. Lowest scores appear first.</p>
             {data.call2Only ? <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Eligible Call 2 sales calls only.</p> : null}
           </div>

@@ -64,24 +64,27 @@ The endpoint upserts dashboard rows and returns:
 
 ## Routes
 
-- `/` global searchable call library
+- `/` Magic Mike tool homepage with an authorized Admin link
+- `/coaching` searchable official call library
 - `/rep/[slug]` rep-scoped call library
 - `/call/[id]` full coaching report
 - `/submit` manual sales feedback submission
 - `/manual-reports` completed manual reports by rep
 - `/self-report/[publicId]` manual report status/detail page
-- `/manager/usage` hidden manager usage analytics
+- `/admin` authorized Magic Mike admin directory, including the external Mock Call Agent Team Admin link
+- `/manager/usage` AI Coaching Rep Usage (admin only)
+- `/manager/coaching-insights` AI Coaching Team Insights (admin only)
 - `/manager/sales-correlation?days=7|14|30|90` hidden manager sales-impact analytics
 - `/manager/compliance` hidden manager compliance review
 - `/manager/rep-no-show` hidden manager rep no-show impact review
 - `/manager/rep-scoring` exact-email-admin sales call execution review, backed by the isolated versioned scoring store
-- `/manager/rep-scoring/v7-validation` exact-email-admin V7 scoring validation; isolated from the current manager dashboard and Coaching publication
+- `/manager/rep-scoring/v7-validation` legacy compatibility route, redirected to the current scorecard
 - `/api/usage-events` browser usage event ingest
 - `/api/report-chat` signed-in GPT-6 Luna report Q&A
 - `/api/report-transcript` signed-in, read-only transcript text for timestamp evidence on enhanced coaching reports
 - `/api/sales-analytics-chat` gated DeepSeek sales-impact Q&A
 - `/api/report-feedback` Enhanced-report thumbs-up/thumbs-down feedback forwarding to n8n
-- `/ask-sales-faq/admin/knowledge-refresh` admin-only daily source review, conflict resolution, and governed release preparation
+- `/ask-sales-faq/admin/knowledge-refresh` legacy compatibility route, redirected to FAQ Conversations
 - `/ask-sales-faq/admin` admin-only production conversation logs for manual quality review on request
 - `/ask-sales-faq/admin/usage` admin-only rep adoption and usage review
 
@@ -99,7 +102,7 @@ The later in-dashboard transcript evidence behavior and its rollback point are r
 - Enhanced report feedback is forwarded to n8n workflow `Vt1Ze3LiWynk7mao` and stored in the production Google Sheet tabs `Positive Reviews` and `Negative Reviews`.
 - Manual reports stuck in `pending` or `processing` for more than 5 minutes are treated as stale/timed out instead of showing an endless generation state.
 - `/manager/usage` tracks official and manual usage separately. Usage tracking starts from the deployment that added events; older visits are not backfilled.
-- `/manager/sales-correlation` reads the company sales Google Sheet as CSV on every page request. A structurally valid live read is authoritative even when row counts change. The dashboard stores a last-good copy in Postgres only as an availability fallback for a failed, empty, or structurally invalid live read. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
+- `/manager/sales-correlation` reads validated Postgres snapshots from the isolated authenticated, GET-only Google Sheets sync. Refresh freshness is shown; missing results are not treated as zero. It never writes to the company sales sheet. It is a directional correlation/association page, not causal proof.
 - `/manager/rep-scoring` defaults to the lowest-scoring reps with at least 15 valid calls. V4.3 requires repeated evidence, a material decline, or a verified high-severity event before showing `Needs attention`; it never forces a quota of weak reps or weaknesses.
 - Sales-impact matching canonicalizes known rep-name issues such as suffix `Success` and alias `ollie-mcfarl` -> `ollie-mcfarlane`.
 - Report chat sends visible coaching fields and mandatory transcript text to OpenAI GPT-6 Luna only after a signed-in user sends a message. It is coaching-only and must not answer compliance/legal/red-flag questions.
@@ -137,3 +140,5 @@ Enhanced report feedback is a separate active n8n workflow and does not modify t
 Ask Sales knowledge refresh is a separate read-only source-monitoring system. It never writes to Slack or Google and never changes the runtime registry directly. Both allowlisted private Slack channels, the governed Google corpus, and the admin review path are live. The queue separates actionable changes from preserved baseline, duplicate, stale, and resolved records; bulk approval is intentionally unavailable. See `docs-ask-sales-knowledge-refresh.md` for the source allowlist, workflow IDs, verified run state, noise controls, human-review rules, and release boundary.
 
 Ask Sales quality review is manual and on demand. The old nightly AI quality audit is retired and inactive; its historical records are preserved. The Quality & Operations page shows production conversations, safe routes, feedback, and genuine runtime/negative-feedback attention signals without automatically treating a safe route as a defect. See `docs-ask-sales-faq-admin-and-adoption.md`.
+
+Admin directory, exact leadership exceptions and additive access policy: [MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md](MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md).

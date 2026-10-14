@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
+import { auth } from "@/auth";
+import { canAccessAdminDirectory } from "@/lib/admin-access-policy";
 import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import styles from "./welcome.module.css";
 
@@ -15,11 +18,14 @@ const tools = [
 ];
 const steps = ["Review", "Reflect", "Adjust", "Sell More"];
 
-export default function HomeHub() {
+export default async function HomeHub() {
+  const session = await auth();
+  const showAdmin = canAccessAdminDirectory(session?.user?.email);
   return (
     <main className={`magic-page ${styles.page}`}>
       <TrackUsageEvent eventName="dashboard_home_viewed" eventData={{ source: "product_hub" }} />
       <div className={styles.container}>
+        {showAdmin ? <nav aria-label="Administration" className={styles.adminNav}><Link href="/admin" className={styles.adminLink}><ShieldCheck size={17} aria-hidden="true" />Admin</Link></nav> : null}
         <section className={styles.hero} aria-labelledby="welcome-heading">
           <h1 id="welcome-heading" className={styles.heading}>Elite Closers Study The Call</h1>
           <div className={styles.process}>

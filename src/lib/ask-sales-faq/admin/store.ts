@@ -1,4 +1,5 @@
 import "server-only";
+import { getSalesFaqAdminEmails } from "@/lib/admin-access-policy";
 import { neon } from "@neondatabase/serverless";
 import { buildAskSalesFaqRepReviewKey } from "../admin-rep-review";
 import type { Filters } from "./filters";
@@ -6,11 +7,7 @@ const db = () => {
   if (!process.env.DATABASE_URL) throw new Error("Database unavailable");
   return neon(process.env.DATABASE_URL);
 };
-export const adminEmails = () =>
-  (process.env.ASK_SALES_FAQ_ADMIN_EMAILS || "")
-    .split(",")
-    .map((x) => x.trim().toLowerCase())
-    .filter(Boolean);
+export const adminEmails = () => Array.from(getSalesFaqAdminEmails());
 const failure = `(m.error_class is not null or m.outcome in ('safe_fallback','rate_limited','duplicate_in_progress','feature_disabled','auth_blocked','validation_error'))`;
 const unanswered = `(m.outcome in ('low_confidence_route','abstain_unapproved') or m.answer_payload #>> '{runtimeMetadata,revamp,status}' in ('knowledge_gap','conflict','partial'))`;
 const base = `with scoped as (

@@ -1,9 +1,9 @@
+import { getSalesFaqAdminEmails } from "@/lib/admin-access-policy";
 import "server-only";
 
 import { createHash, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import registryJson from "@/lib/ask-sales-faq/generated/v3-policy-registry.json";
-import { parseEmailAllowlist } from "@/lib/ask-sales-faq/access";
 import {
   classifyPolicyDecisionRelation,
   policyDecisionProfile,
@@ -230,7 +230,7 @@ async function buildSchema() {
 
 export async function getPendingAskSalesQualityAuditPackets(limit = 50) {
   await ensureAskSalesQualityReviewStorage();
-  const adminEmails = Array.from(parseEmailAllowlist(process.env.ASK_SALES_FAQ_ADMIN_EMAILS));
+  const adminEmails = Array.from(getSalesFaqAdminEmails());
   const rows = (await getSql().query(
     `
       select
@@ -382,7 +382,7 @@ export async function recordAskSalesQualityAuditEvaluations(input: {
   evaluations: AskSalesQualityAuditEvaluation[];
 }) {
   await ensureAskSalesQualityReviewStorage();
-  const adminEmails = Array.from(parseEmailAllowlist(process.env.ASK_SALES_FAQ_ADMIN_EMAILS));
+  const adminEmails = Array.from(getSalesFaqAdminEmails());
   let recorded = 0;
   let casesCreatedOrUpdated = 0;
 

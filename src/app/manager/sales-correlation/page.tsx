@@ -1,3 +1,4 @@
+import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, TrendingUp } from "lucide-react";
@@ -13,7 +14,7 @@ import type { ImpactComparison } from "@/lib/sales-impact-analysis";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Sales Impact | Magic Mike Bot",
+  title: "AI Coaching Sales Impact | Magic Mike Bot",
   robots: { index: false, follow: false },
 };
 const money = (n: number | null) =>
@@ -29,6 +30,7 @@ export default async function Page({
 }: {
   searchParams: Promise<{ days?: string }>;
 }) {
+  await requireRepScoringAdmin();
   const { days } = await searchParams,
     period = normalizeSalesCorrelationWindow(days);
   let data: Awaited<ReturnType<typeof getSalesImpactAnalytics>>;
@@ -66,7 +68,7 @@ export default async function Page({
                 Manager insights
               </div>
               <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
-                Sales impact
+                AI Coaching Sales Impact
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
                 See how opening Magic Mike coaching relates to sales results.

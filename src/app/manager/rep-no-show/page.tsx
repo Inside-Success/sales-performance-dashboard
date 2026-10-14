@@ -1,3 +1,4 @@
+import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -35,7 +36,7 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Rep No-Show Impact | Magic Mike Bot",
+  title: "Sales Call Rep No-Shows | Magic Mike Bot",
   description: "Hidden manager view for tracking rep no-shows across sales calls.",
   robots: {
     index: false,
@@ -50,6 +51,7 @@ export default async function RepNoShowPage({
 }: {
   searchParams: Promise<{ days?: string | string[] }>;
 }) {
+  await requireRepScoringAdmin();
   const { days } = await searchParams;
   const periodDays = normalizeRepNoShowWindow(days);
   const analytics = await getRepNoShowAnalytics(periodDays);
@@ -77,7 +79,7 @@ export default async function RepNoShowPage({
                 ) : null}
               </div>
               <h1 className="text-3xl font-semibold tracking-normal md:text-4xl">
-                Rep No-Show Impact
+                Sales Call Rep No-Shows
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                 Track rep no-shows across sales calls and review every detected no-show from one

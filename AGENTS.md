@@ -33,3 +33,10 @@ For dashboard/web changes:
 - Report chat uses `gpt-6-luna` through server-only `OPENAI_API_KEY` and requires a signed-in session. Sales-impact and rep-no-show chats still use `deepseek-v4-pro` through `DEEPSEEK_API_KEY`; do not commit keys.
 - Report chat is coaching-only and must not answer compliance/legal/red-flag questions.
 - Do not run local dev servers for this project unless the user explicitly overrides that rule.
+
+## Admin directory and leadership access (October 14)
+
+- `/admin` is the authorized admin directory, linked from the homepage only for eligible admins. All `/manager/*` views require the shared exact-email manager policy; data pages and chat endpoints also check access before reading data or calling a provider.
+- `src/lib/approved-admin-emails.ts` contains the owner-approved leadership roster plus Dagim. Preserve configured manager and FAQ admins additively. FAQ-only legacy admins retain their existing FAQ permissions; they are not promoted to manager access.
+- Rudy and Mike have exact-email sign-in exceptions. Never authorize the Gmail domain broadly. Source Sheets, coaching workflows and external Mock Call Agent permissions remain unchanged.
+- See MAGIC-MIKE-ADMIN-DIRECTORY-2026-10-14.md for scope, verification and rollback.
