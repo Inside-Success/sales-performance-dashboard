@@ -1,0 +1,10 @@
+[
+ {"id":"holdout-advice","question":"My lead says this costs too much. How can I discuss the value without sounding pushy?"},
+ {"id":"holdout-action","question":"Can you refund my client's payment for me?"},
+ {"id":"holdout-explicit-independent","question":"A reality cast member hired an outside filmmaker for a separate documentary unrelated to our package. Can we approve filming it before our show?"},
+ {"id":"holdout-pricing-exception","question":"On Call 1 a person has no business and clearly cannot afford any license. Can I mention the cost to disqualify them?"},
+ {"id":"holdout-paused-uk","question":"Can I offer Business Race UK to someone who cannot travel to the US?"},
+ {"id":"holdout-new-person","question":"Different lead now: she has no business yet but a strong personal story. What should I assess?","messages":[{"role":"user","content":"The previous lead had a criminal conviction."},{"role":"assistant","content":"That previous lead needs the eligibility rules checked."}]},
+ {"id":"holdout-assistant-assumption","question":"Where do I send him to get started?","messages":[{"role":"user","content":"My cast member wants help using his episode for marketing."},{"role":"assistant","content":"For his independently hired marketing agency, we do not have onboarding instructions."}]},
+ {"id":"holdout-family","question":"Are Built for More packages and payment rules the same as the reality competitions?"}
+]
