@@ -16,19 +16,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { AssistantMessageContent } from "@/components/dashboard/report-chat-panel";
 import { cn } from "@/lib/utils";
 
+import type { AttendanceDay } from "@/lib/rep-no-show-calendar";
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
 
 const STARTER_QUESTIONS = [
-  "Summarize this week.",
+  "Summarize this period.",
   "Who needs follow-up first?",
   "Which call type has more no-shows?",
   "Did this improve vs last period?",
 ];
 
-export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
+export function RepNoShowChatPanel({ periodDays, calendarDay }: { periodDays: number; calendarDay?: AttendanceDay }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -60,6 +62,7 @@ export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
         },
         body: JSON.stringify({
           periodDays,
+          calendarDay,
           messages: nextMessages,
         }),
       });
@@ -109,7 +112,7 @@ export function RepNoShowChatPanel({ periodDays }: { periodDays: number }) {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary">AI analyst</Badge>
-                <Badge variant="outline">{periodDays}d view</Badge>
+                <Badge variant="outline">{calendarDay || `${periodDays}d view`}</Badge>
               </div>
               <SheetTitle className="mt-2 text-xl">Ask Magic Mike</SheetTitle>
             </div>

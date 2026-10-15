@@ -1,3 +1,5 @@
+import { normalizeAttendanceDay, type AttendanceDay } from "@/lib/rep-no-show-calendar";
+import { RepNoShowRepsCard } from "@/components/dashboard/rep-no-show-reps-card";
 import { LinkPending } from "@/components/dashboard/link-pending";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import type { Metadata } from "next";
@@ -15,21 +17,12 @@ import { RepNoShowLogCard } from "@/components/dashboard/rep-no-show-log-card";
 import { RepNoShowChatPanel } from "@/components/dashboard/rep-no-show-chat-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { formatMiamiDateTime } from "@/lib/format";
 import {
   getRepNoShowAnalytics,
   normalizeRepNoShowWindow,
   REP_NO_SHOW_WINDOWS,
   type RepNoShowAnalytics,
-  type RepNoShowRepRow,
 } from "@/lib/rep-no-show";
 import { cn } from "@/lib/utils";
 
@@ -49,12 +42,13 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 export default async function RepNoShowPage({
   searchParams,
 }: {
-  searchParams: Promise<{ days?: string | string[] }>;
+  searchParams: Promise<{ days?: string | string[]; day?: string }>;
 }) {
   await requireRepScoringAdmin();
-  const { days } = await searchParams;
+  const { days, day } = await searchParams;
+  const calendarDay = normalizeAttendanceDay(day);
   const periodDays = normalizeRepNoShowWindow(days);
-  const analytics = await getRepNoShowAnalytics(periodDays, false);
+  const analytics = await getRepNoShowAnalytics(periodDays, false, calendarDay);
 
   return (
     <main className="magic-page magic-no-show-theme">
@@ -88,7 +82,7 @@ export default async function RepNoShowPage({
             </div>
 
             <div className="flex flex-col gap-2 text-sm text-muted-foreground lg:items-end">
-              <PeriodSelector selectedDays={analytics.summary.periodDays} />
+              <PeriodSelector selectedDays={analytics.summary.periodDays} calendarDay={calendarDay} />
               <div className="inline-flex items-center gap-2 rounded-lg border bg-background/75 px-3 py-2">
                 <Clock3 className="size-4 text-foreground" />
                 {analytics.summary.error ? "Data unavailable" : `Source read ${formatMiamiDateTime(analytics.summary.generatedAt)}`}
@@ -118,7 +112,7 @@ export default async function RepNoShowPage({
             icon={ArrowDownRight}
             title="Change vs prior period"
             value={analytics.summary.comparisonAvailable ? `${analytics.summary.weekOverWeekChange > 0 ? '+' : ''}${formatNumber(analytics.summary.weekOverWeekChange)}` : 'Not available'}
-            description={analytics.summary.comparisonAvailable ? `Previously ${formatNumber(analytics.summary.previousRepNoShows)} no-shows` : 'Not enough comparable history'}
+            description={analytics.summary.comparisonAvailable ? `Previously ${formatNumber(analytics.summary.previousRepNoShows)} no-shows` : calendarDay === 'today' ? 'Today is still in progress' : 'Not enough comparable history'}
           />
           <MetricCard
             icon={CalendarDays}
@@ -130,35 +124,39 @@ export default async function RepNoShowPage({
 
         <section className="grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)]">
           <TrendCard analytics={analytics} />
-          <TopRepsCard reps={analytics.topReps} />
+          <RepNoShowRepsCard key={`${analytics.summary.generatedAt}-${calendarDay || periodDays}`} reps={analytics.topReps} calls={analytics.noShowLog} periodLabel={getPeriodDescription(analytics)} />
         </section>
 
-        <RepNoShowLogCard key={analytics.summary.generatedAt}
+        <RepNoShowLogCard key={`${analytics.summary.generatedAt}-${calendarDay || periodDays}`}
           calls={analytics.noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analytics.summary.effectivePeriodStart))}
           historyCount={analytics.historyCount ?? analytics.noShowLog.length}
           trackingStartedAt={analytics.summary.trackingStartedAt}
           periodStart={analytics.summary.effectivePeriodStart}
           periodDays={analytics.summary.periodDays}
+          calendarDay={calendarDay}
+          readAt={analytics.summary.generatedAt}
+          referenceAt={new Date().toISOString()}
         />
 
-        <RepNoShowChatPanel periodDays={analytics.summary.periodDays} />
+        <RepNoShowChatPanel key={`${calendarDay || periodDays}`} periodDays={analytics.summary.periodDays} calendarDay={calendarDay} />
         </> : null}
       </div>
     </main>
   );
 }
 
-function PeriodSelector({ selectedDays }: { selectedDays: number }) {
+function PeriodSelector({ selectedDays, calendarDay }: { selectedDays: number; calendarDay?: AttendanceDay }) {
   return (
-    <div className="grid grid-cols-2 gap-1 rounded-xl border bg-background/75 p-1 sm:inline-flex">
+    <div className="grid grid-cols-2 gap-1 rounded-xl border bg-background/75 p-1 sm:flex sm:flex-wrap">
+      {(["today", "yesterday"] as const).map(day => <Link key={day} href={`/manager/rep-no-show?day=${day}`} aria-current={calendarDay === day ? "page" : undefined} className={cn("inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-red-600", calendarDay === day ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}>{day === "today" ? "Today" : "Yesterday"}<LinkPending /></Link>)}
       {REP_NO_SHOW_WINDOWS.map((days) => (
         <Link
           key={days}
           href={`/manager/rep-no-show?days=${days}`}
-          aria-current={selectedDays === days ? "page" : undefined}
+          aria-current={!calendarDay && selectedDays === days ? "page" : undefined}
           className={cn(
             "inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
-            selectedDays === days
+            !calendarDay && selectedDays === days
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-muted hover:text-foreground",
           )}
@@ -246,49 +244,6 @@ function TrendCard({ analytics }: { analytics: RepNoShowAnalytics }) {
   );
 }
 
-function TopRepsCard({ reps }: { reps: RepNoShowRepRow[] }) {
-  return (
-    <Card className="magic-card">
-      <CardHeader className="border-b">
-        <CardTitle className="flex items-center gap-2">
-          <Users className="size-4" />
-          Reps To Watch
-        </CardTitle>
-        <CardDescription>Sorted by rep no-show count in the selected period.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {reps.length ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rep</TableHead>
-                <TableHead className="text-right">No-shows</TableHead>
-                <TableHead className="text-right">Rate</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {reps.map((rep) => (
-                <TableRow key={rep.repSlug}>
-                  <TableCell>
-                    <div className="font-medium">{rep.repName}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatNumber(rep.call1NoShows)} Call 1 / {formatNumber(rep.eligibleCalls)} tracked calls
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-medium">{formatNumber(rep.noShows)}</TableCell>
-                  <TableCell className="text-right">{formatPercent(rep.noShowRate)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <EmptyState text="No rep no-shows found for this period." />
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
 function EmptyState({ text }: { text: string }) {
   return (
     <div className="rounded-lg border bg-background/80 p-4 text-sm leading-6 text-muted-foreground">
@@ -299,6 +254,7 @@ function EmptyState({ text }: { text: string }) {
 
 
 function getPeriodDescription(analytics: RepNoShowAnalytics) {
+  if (analytics.summary.calendarDay) return `${analytics.summary.calendarDay === "today" ? "Today" : "Yesterday"} · ${analytics.summary.calendarDate} (Miami)`;
   if (analytics.summary.effectivePeriodStart === analytics.summary.trackingStartedAt) {
     return `Since ${formatShortDate(analytics.summary.effectivePeriodStart)}`;
   }

@@ -1,3 +1,4 @@
+import { normalizeAttendanceDay } from "@/lib/rep-no-show-calendar";
 import { auth } from "@/auth";
 import { isMagicMikeAdmin } from "@/lib/admin-access-policy";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,6 +13,7 @@ import { REPORT_CHAT_MODEL } from "@/lib/report-chat";
 export const dynamic = "force-dynamic";
 
 const requestSchema = z.object({
+  calendarDay: z.enum(["today", "yesterday"]).optional(),
   periodDays: z.union([z.string(), z.number()]).optional(),
   messages: z
     .array(
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
   }
 
   const periodDays = normalizeRepNoShowWindow(String(payload.periodDays || ""));
-  const analytics = await getRepNoShowAnalytics(periodDays);
+  const analytics = await getRepNoShowAnalytics(periodDays, true, normalizeAttendanceDay(payload.calendarDay));
   if (analytics.summary.error) return NextResponse.json({ error: "Attendance data is unavailable. Please try again after it refreshes." }, { status: 503 });
   const chatMessages = buildRepNoShowChatMessages(analytics, messages);
 

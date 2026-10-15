@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { attendanceDayKey, miamiDayKey, miamiMidnight, type AttendanceDay } from "@/lib/rep-no-show-calendar";
 import { formatMiamiDateTime } from "@/lib/format";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
@@ -17,35 +18,48 @@ export function RepNoShowLogCard({
   trackingStartedAt,
   periodStart,
   periodDays,
+  calendarDay,
+  readAt,
+  referenceAt,
 }: {
   calls: RepNoShowCall[];
   historyCount: number;
   trackingStartedAt: string;
   periodStart: string;
   periodDays: number;
+  calendarDay?: AttendanceDay;
+  readAt: string;
+  referenceAt: string;
 }) {
   const [query, setQuery] = useState("");
   const [visibleLimit, setVisibleLimit] = useState(100);
   const [callType, setCallType] = useState("all");
-  const [history, setHistory] = useState(false);
+  const [logPeriod, setLogPeriod] = useState<string>(calendarDay || "selected");
+  const history = logPeriod === "all";
+  const needsHistory = history || (logPeriod !== "selected" && logPeriod !== calendarDay);
   const [historyCalls, setHistoryCalls] = useState<RepNoShowCall[] | null>(null);
+  const [historyReadAt, setHistoryReadAt] = useState(readAt);
   const [historyError, setHistoryError] = useState<string | null>(null);
   useEffect(() => {
-    if (!history || historyCalls) return;
+    if (!needsHistory || historyCalls) return;
     const controller = new AbortController();
     fetch("/api/admin/rep-no-show/history", { signal: controller.signal }).then(async response => {
       const data = await response.json();
       if (!response.ok || !Array.isArray(data.calls)) throw new Error("History could not be loaded. Please switch back and try again.");
-      if (!controller.signal.aborted) setHistoryCalls(data.calls);
+      if (!controller.signal.aborted) { setHistoryCalls(data.calls); setHistoryReadAt(data.fetchedAt || readAt); }
     }).catch(() => { if (!controller.signal.aborted) setHistoryError("History could not be loaded. Please switch back and try again."); });
     return () => controller.abort();
-  }, [history, historyCalls]);
-  const displayedCalls = useMemo(() => history ? historyCalls || [] : calls, [history, historyCalls, calls]);
+  }, [needsHistory, historyCalls, readAt, logPeriod]);
+  const totalCount = historyCalls?.length ?? historyCount;
+  const displayedCalls = useMemo(() => needsHistory ? historyCalls || [] : calls, [needsHistory, historyCalls, calls]);
   const filteredCalls = useMemo(() => filterCalls(displayedCalls.filter(call =>
-    (history || (call.callDate && Date.parse(call.callDate) >= Date.parse(periodStart))) &&
+    (history || (call.callDate && (logPeriod === "today" || logPeriod === "yesterday"
+      ? miamiDayKey(call.callDate) === attendanceDayKey(logPeriod, new Date(referenceAt))
+      : Date.parse(call.callDate) >= Date.parse(periodStart)))) &&
     (callType === "all" || (callType === "call1" ? call.callNumber.trim().toLowerCase() === "call 1" : call.callNumber.trim().toLowerCase() !== "call 1"))
-  ), query), [displayedCalls, query, callType, history, periodStart]);
+  ), query), [displayedCalls, query, callType, history, periodStart, logPeriod, referenceAt]);
 
+  const dayPending = (logPeriod === "today" || logPeriod === "yesterday") && Date.parse(needsHistory ? historyReadAt : readAt) < miamiMidnight(miamiDayKey(referenceAt)).getTime();
   return (
     <Card className="magic-card">
       <CardHeader className="border-b">
@@ -56,11 +70,11 @@ export function RepNoShowLogCard({
               Detected no-shows
             </CardTitle>
             <CardDescription>
-              {history ? "Showing all history." : "Showing the selected period."} All history is available from {formatShortDate(trackingStartedAt)}.
+              {history ? "Showing all history." : logPeriod === "today" ? "Showing today in Miami time." : logPeriod === "yesterday" ? "Showing yesterday in Miami time." : "Showing the selected period."} All history is available from {formatShortDate(trackingStartedAt)}.
             </CardDescription>
           </div>
           <Badge variant="outline" className="w-fit bg-background">
-            {formatNumber(historyCount)} total
+            {formatNumber(totalCount)} total
           </Badge>
         </div>
       </CardHeader>
@@ -70,7 +84,7 @@ export function RepNoShowLogCard({
             <div className="border-b px-4 py-3">
               <div className="mb-3 flex flex-wrap gap-3">
                 <label className="text-sm font-medium">Call type <select aria-label="Filter no-shows by call type" value={callType} onChange={event => { setVisibleLimit(100); setCallType(event.target.value); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="all">All calls</option><option value="call1">Call 1</option><option value="call2">Call 2+</option></select></label>
-                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={history ? "all" : "selected"} onChange={event => { setVisibleLimit(100); setHistoryError(null); setHistory(event.target.value === "all"); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2"><option value="selected">Last {periodDays} days</option><option value="all">All history</option></select></label>
+                <label className="text-sm font-medium">Period <select aria-label="No-show log period" value={logPeriod} onChange={event => { setVisibleLimit(100); setHistoryError(null); setLogPeriod(event.target.value); }} className="ml-2 min-h-11 rounded-lg border bg-background p-2">{!calendarDay && <option value="selected">Last {periodDays} days</option>}<option value="today">Today</option><option value="yesterday">Yesterday</option><option value="all">All history</option></select></label>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
@@ -96,12 +110,12 @@ export function RepNoShowLogCard({
                   ) : null}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Showing {formatNumber(filteredCalls.length)} of {formatNumber(historyCount)}
+                  {dayPending ? "Daily attendance is being updated." : `Showing ${formatNumber(filteredCalls.length)} of ${formatNumber(totalCount)}`}
                 </p>
               </div>
             </div>
 
-            {history && !historyCalls ? <p role={historyError ? "alert" : "status"} className="px-4 py-4 text-sm">{historyError || "Loading all history…"}</p> : filteredCalls.length ? (
+            {dayPending ? <p role="status" className="px-4 py-4 text-sm">Daily attendance is being updated. Please try again shortly.</p> : needsHistory && !historyCalls ? <p role={historyError ? "alert" : "status"} className="px-4 py-4 text-sm">{historyError || "Loading all history…"}</p> : filteredCalls.length ? (
               <div className="dashboard-scroll max-h-[31.25rem] divide-y overflow-y-auto">
                 {filteredCalls.slice(0, visibleLimit).map((call) => (
                   <NoShowLogRow key={call.id} call={call} />

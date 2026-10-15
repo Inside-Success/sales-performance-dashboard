@@ -46,3 +46,5 @@ For dashboard/web changes:
 ## Dashboard performance reads (October 15)
 
 - See MAGIC-MIKE-PERFORMANCE-2026-10-15.md. Source Sheets/Airtable remain read-only. Successful snapshots and timestamps must survive failed refreshes; never cache empty failure results or show them as genuine zeros. Preserve auth before all admin reads. Attendance history and score matching remain complete and exact.
+
+- Daily rep no-show UI: see MAGIC-MIKE-NO-SHOW-DRILLDOWN-2026-10-15.md. Today/Yesterday use Miami calendar boundaries; selected rep popup counts must reconcile with evidence from the same read. Preserve prior rolling windows and authenticated full-history access.

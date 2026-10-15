@@ -39,11 +39,11 @@ export function buildRepNoShowChatMessages(
 
 function buildAnalyticsContext(analytics: RepNoShowAnalytics) {
   const { summary, topReps, noShowLog, weekly } = analytics;
-  const chatNoShowRows = noShowLog.slice(0, 50);
+  const chatNoShowRows = noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(summary.effectivePeriodStart) && Date.parse(call.callDate) < Date.parse(summary.effectivePeriodEnd || summary.generatedAt)).slice(0, 50);
 
   return [
     "Current Magic Mike Rep No-Show Impact snapshot:",
-    `Selected period: last ${summary.periodDays} days`,
+    `Selected period: ${summary.calendarDay ? `${summary.calendarDay} (${summary.calendarDate}, Miami)` : `last ${summary.periodDays} days`}`,
     `Generated at: ${summary.generatedAt}`,
     `Call 1 tracking started at: ${summary.trackingStartedAt}`,
     `Effective period start after tracking cutoff: ${summary.effectivePeriodStart}`,
@@ -55,7 +55,7 @@ function buildAnalyticsContext(analytics: RepNoShowAnalytics) {
     `Tracked sales calls in previous period: ${summary.previousEligibleCalls}`,
     `Rep no-shows in period: ${summary.repNoShows}`,
     `Rep no-shows in previous period: ${summary.previousRepNoShows}`,
-    `No-show count change vs previous period: ${summary.comparisonAvailable ? summary.weekOverWeekChange : "not available because Call 1 tracking was not active for the full prior period"}`,
+    `No-show count change vs previous period: ${summary.comparisonAvailable ? summary.weekOverWeekChange : "not available for this selected period"}`,
     `Call 1 rep no-shows in period: ${summary.call1NoShows}`,
     `Call 2+ rep no-shows in period: ${summary.call2PlusNoShows}`,
     `Rep no-show rate in period: ${formatPercent(summary.noShowRate)}`,
