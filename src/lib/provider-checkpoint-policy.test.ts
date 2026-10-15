@@ -12,8 +12,8 @@ describe("coaching checkpoint boundaries", () => {
     expect(validProviderResult({ok:true,parsed_json:{decision:"scored"},stop_reason:"end_turn"})).toBe(true);
   });
   it("backs off transient faults without treating credentials or policy failures as retryable", () => {
-    for (const error of ["524", "429 rate limit", "request timed out", "JSON parse failed"]) expect(retryableProviderFailure(error)).toBe(true);
-    for (const error of ["401 Unauthorized", "unsafe report", "invalid source ID"]) expect(retryableProviderFailure(error)).toBe(false);
+    for (const error of ["524", "429 rate limit", "request timed out", "JSON parse failed", "empty response"]) expect(retryableProviderFailure(error)).toBe(true);
+    for (const error of ["401 Unauthorized", "unsafe report", "invalid source ID", "Invalid structured provider result: refusal"]) expect(retryableProviderFailure(error)).toBe(false);
     expect([1,2,3,99].map(retryDelaySeconds)).toEqual([300,900,3600,3600]);
   });
 });

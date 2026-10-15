@@ -1,0 +1,626 @@
+{
+  "name": "Magic Mike Durable Internal Provider — 2026-10-15",
+  "nodes": [
+    {
+      "id": "internal-request",
+      "name": "Internal Coaching Request",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "body",
+              "type": "object"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "normalize-provider-request",
+      "name": "Normalize Provider Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const incoming = $input.first().json.body || $input.first().json || {};\nconst now = new Date();\nconst num = (value, fallback) => {\n  const parsed = Number(value);\n  return Number.isFinite(parsed) ? parsed : fallback;\n};\nconst cleanString = (value) => String(value || '').trim();\nconst normalizeEffort = (value, fallback = '') => {\n  const normalized = cleanString(value).toLowerCase();\n  if (['max', 'xhigh', 'highest'].includes(normalized)) return 'max';\n  if (['high', 'medium', 'low'].includes(normalized)) return 'high';\n  return fallback;\n};\nconst provider = cleanString(incoming.provider).toLowerCase();\nconst model = cleanString(incoming.model);\nconst system = cleanString(incoming.system);\nconst prompt = cleanString(incoming.prompt);\nconst maxTokens = Math.max(256, Math.floor(num(incoming.max_tokens, 6000)));\nconst temperature = num(incoming.temperature, 0.2);\nconst pricing = incoming.pricing && typeof incoming.pricing === 'object' ? incoming.pricing : {};\nconst requestId = cleanString(incoming.request_id) || crypto.randomUUID();\nconst callPurpose = cleanString(incoming.call_purpose) || 'model_call';\nconst requestedThinking = incoming.thinking && typeof incoming.thinking === 'object' ? incoming.thinking : null;\nconst requestedOutputConfig = incoming.output_config && typeof incoming.output_config === 'object' ? incoming.output_config : null;\nconst requestedEffort = cleanString(incoming.reasoning_effort || incoming.effort || requestedOutputConfig?.effort || requestedThinking?.effort);\n\nif (!provider || !model || !prompt) {\n  return [{ json: { ok: false, error: 'provider, model, and prompt are required', provider, model, request_id: requestId } }];\n}\n\nfunction shouldCacheAnthropicSystem(text, incoming) {\n  if (incoming.prompt_cache === false || incoming.prompt_cache_enabled === false) return false;\n  const chars = String(text || '').length;\n  return chars >= 3000;\n}\nfunction anthropicSystemValue(text, incoming) {\n  const source = String(text || '');\n  if (!shouldCacheAnthropicSystem(source, incoming)) return source;\n  const requested = incoming.cache_control && typeof incoming.cache_control === 'object'\n    ? incoming.cache_control\n    : { type: 'ephemeral' };\n  const cacheControl = {\n    type: cleanString(requested.type) || 'ephemeral'\n  };\n  if (cleanString(requested.ttl)) cacheControl.ttl = cleanString(requested.ttl);\n  return [{ type: 'text', text: source, cache_control: cacheControl }];\n}\nfunction anthropicCacheMeta(systemValue) {\n  const enabled = Array.isArray(systemValue) && systemValue.some((part) => part?.cache_control);\n  const first = enabled ? systemValue.find((part) => part?.cache_control) : null;\n  return { enabled, cache_control: first?.cache_control || null };\n}\n\nlet requestBody = {};\nlet thinkingEnabled = false;\nlet effort = '';\n\nif (provider === 'anthropic') {\n  const systemValue = anthropicSystemValue(system, incoming);\n  const cacheMeta = anthropicCacheMeta(systemValue);\n  requestBody = {\n    model,\n    max_tokens: maxTokens,\n    system: systemValue,\n    messages: [{ role: 'user', content: prompt }]\n  };\n\n  if (requestedThinking?.type) {\n    const type = cleanString(requestedThinking.type);\n    if (type === 'adaptive') {\n      requestBody.thinking = {\n        type: 'adaptive',\n        display: cleanString(requestedThinking.display) || 'omitted'\n      };\n      thinkingEnabled = true;\n    } else if (type === 'enabled') {\n      const budgetTokens = Math.max(1024, Math.floor(num(requestedThinking.budget_tokens, 2000)));\n      requestBody.thinking = {\n        type: 'enabled',\n        budget_tokens: Math.min(budgetTokens, Math.max(1024, maxTokens - 1)),\n        display: cleanString(requestedThinking.display) || 'omitted'\n      };\n      thinkingEnabled = true;\n    }\n  }\n\n  if (requestedOutputConfig?.format) requestBody.output_config = { format: requestedOutputConfig.format };\n  if (requestedEffort) {\n    effort = requestedEffort;\n    requestBody.output_config = { ...(requestBody.output_config || {}), effort };\n  }\n\n  if (!thinkingEnabled && !/opus-4-8/i.test(model)) requestBody.temperature = temperature;\n} else if (provider === 'deepseek') {\n  const messages = [];\n  if (system) messages.push({ role: 'system', content: system });\n  messages.push({ role: 'user', content: prompt });\n  const requestedThinkingType = cleanString(requestedThinking?.type).toLowerCase();\n  const enableThinking = ['enabled', 'adaptive', 'max', 'highest', 'true', 'on'].includes(requestedThinkingType);\n  requestBody = {\n    model,\n    messages,\n    max_tokens: maxTokens,\n    response_format: { type: 'json_object' },\n    thinking: { type: enableThinking ? 'enabled' : 'disabled' }\n  };\n  if (enableThinking) {\n    thinkingEnabled = true;\n    effort = normalizeEffort(requestedEffort, 'max');\n    requestBody.reasoning_effort = effort;\n  } else {\n    requestBody.temperature = temperature;\n  }\n}\n\nreturn [{\n  json: {\n    ok: provider === 'anthropic' || provider === 'deepseek',\n    error: provider === 'anthropic' || provider === 'deepseek' ? '' : `Unsupported provider: ${provider}`,\n    provider,\n    model,\n    request_id: requestId,\n    call_purpose: callPurpose,\n    result_id: incoming.result_id || null,\n    case_id: incoming.case_id || null,\n    pricing,\n    prompt_cache_enabled: provider === 'anthropic' ? Boolean(requestBody.system && Array.isArray(requestBody.system) && requestBody.system.some((part) => part?.cache_control)) : false,\n    prompt_cache_control: provider === 'anthropic' && Array.isArray(requestBody.system) ? (requestBody.system.find((part) => part?.cache_control)?.cache_control || null) : null,\n    thinking_enabled: thinkingEnabled,\n    effort,\n    started_at: now.toISOString(),\n    started_ms: now.getTime(),\n    request_body_json: JSON.stringify(requestBody)\n  }\n}];\n"
+      }
+    },
+    {
+      "id": "request-hash",
+      "name": "Hash Request",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "action": "hash",
+        "type": "SHA256",
+        "binaryData": false,
+        "value": "={{ $json.request_body_json }}",
+        "dataPropertyName": "request_hash",
+        "encoding": "hex"
+      }
+    },
+    {
+      "id": "claim-checkpoint",
+      "name": "Claim Checkpoint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1500,
+      "position": [
+        700,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/provider-checkpoints",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({action:'claim',source_id:$json.case_id || $json.request_id,stage:$json.call_purpose,provider:$json.provider,request_hash:$json.request_hash}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "Sales Performance Dashboard Ingest"
+        }
+      }
+    },
+    {
+      "id": "validate-claim",
+      "name": "Validate Claim",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const s=$('Hash Request').first().json;const c=$json;\nif(!s.ok)throw Error('Invalid provider input');\nif(!['acquired','cached'].includes(c.status))throw Error('Provider checkpoint deferred; retry after '+String(c.retry_at||'lease expiry'));\nreturn [{json:{...s,checkpoint:c}}];"
+      }
+    },
+    {
+      "id": "cached-result?",
+      "name": "Cached Result?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "Cached Result?",
+              "leftValue": "={{ $json.checkpoint.status === 'cached' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "restore-cached-result",
+      "name": "Restore Cached Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        -220
+      ],
+      "parameters": {
+        "jsCode": "const s=$json;const r=s.checkpoint.result;\nif(!r || r.ok!==true || r.parse_error || !r.parsed_json)throw Error('Invalid cached provider result');\nreturn [{json:{...r,request_id:s.request_id,result_id:s.result_id,case_id:s.case_id,call_purpose:s.call_purpose,started_at:s.started_at,finished_at:new Date().toISOString(),latency_ms:0,checkpoint_reused:true,checkpoint_original_costs:r.costs,checkpoint_original_usage:r.usage,usage:Object.fromEntries(Object.entries(r.usage||{}).map(([k,v])=>[k,typeof v==='number'?0:v])),costs:{input_cost_usd:0,cache_write_cost_usd:0,cache_read_cost_usd:0,output_cost_usd:0,total_cost_usd:0}}}];"
+      }
+    },
+    {
+      "id": "if-anthropic",
+      "name": "If Anthropic",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "If Anthropic",
+              "leftValue": "={{ $json.provider === 'anthropic' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "anthropic-http",
+      "name": "Anthropic HTTP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": false,
+      "maxTries": 1,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "position": [
+        720,
+        -160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.request_body_json }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "credentials": {
+        "anthropicApi": {
+          "id": "zw2mhXvaRZZLPtDn",
+          "name": "Sales call analyzer"
+        }
+      }
+    },
+    {
+      "id": "decode-anthropic",
+      "name": "Decode Anthropic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -160
+      ],
+      "parameters": {
+        "jsCode": "const source = $('Normalize Provider Request').first().json;\nconst response = $input.first().json || {};\nconst usage = response.usage || {};\nconst text = Array.isArray(response.content)\n  ? response.content.map(part => part && part.type === 'text' ? part.text : '').join('\\n').trim()\n  : String(response.content || response.text || '').trim();\nfunction parseJson(raw) {\n  if (!raw) return { parsed: null, error: 'empty response' };\n  const cleaned = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\n  try { return { parsed: JSON.parse(cleaned), error: '' }; } catch (first) {}\n  const start = cleaned.indexOf('{');\n  const end = cleaned.lastIndexOf('}');\n  if (start >= 0 && end > start) {\n    try { return { parsed: JSON.parse(cleaned.slice(start, end + 1)), error: '' }; } catch (second) {}\n  }\n  return { parsed: null, error: 'JSON parse failed' };\n}\nfunction cost(tokens, perMtok) { return (Number(tokens || 0) / 1000000) * Number(perMtok || 0); }\nconst parsed = parseJson(text);\nconst inputTokens = Number(usage.input_tokens || 0);\nconst outputTokens = Number(usage.output_tokens || 0);\nconst cacheCreation = Number(usage.cache_creation_input_tokens || 0);\nconst cacheRead = Number(usage.cache_read_input_tokens || 0);\nconst pricing = source.pricing || {};\nconst inputCost = cost(inputTokens, pricing.input_mtok);\nconst cacheWriteCost = cost(cacheCreation, pricing.cache_write_mtok || pricing.input_mtok);\nconst cacheReadCost = cost(cacheRead, pricing.cache_read_mtok || pricing.input_mtok);\nconst outputCost = cost(outputTokens, pricing.output_mtok);\nconst finished = new Date();\nreturn [{ json: {\n  ok: true,\n  provider: 'anthropic',\n  model: response.model || source.model,\n  request_id: source.request_id,\n  result_id: source.result_id,\n  case_id: source.case_id,\n  call_purpose: source.call_purpose,\n  started_at: source.started_at,\n  finished_at: finished.toISOString(),\n  latency_ms: Math.max(0, finished.getTime() - Number(source.started_ms || finished.getTime())),\n  provider_response_id: response.id || null,\n  stop_reason: response.stop_reason || null,\n  usage: {\n    input_tokens: inputTokens,\n    cache_creation_input_tokens: cacheCreation,\n    cache_read_input_tokens: cacheRead,\n    output_tokens: outputTokens,\n    prompt_cache_enabled: Boolean(source.prompt_cache_enabled),\n    prompt_cache_control: source.prompt_cache_control || null\n  },\n  costs: {\n    input_cost_usd: inputCost,\n    cache_write_cost_usd: cacheWriteCost,\n    cache_read_cost_usd: cacheReadCost,\n    output_cost_usd: outputCost,\n    total_cost_usd: inputCost + cacheWriteCost + cacheReadCost + outputCost\n  },\n  model_text: text,\n  parsed_json: parsed.parsed,\n  parse_error: parsed.error,\n  raw_response: response\n}}];"
+      }
+    },
+    {
+      "id": "deepseek-http",
+      "name": "DeepSeek HTTP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": false,
+      "maxTries": 1,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "position": [
+        960,
+        80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.deepseek.com/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.request_body_json }}",
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "poguYwZ8Qdx8VdZI",
+          "name": "DeepSeek API Key - Evaluation Only"
+        }
+      }
+    },
+    {
+      "id": "decode-deepseek",
+      "name": "Decode DeepSeek",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        80
+      ],
+      "parameters": {
+        "jsCode": "const source = $('Normalize Provider Request').first().json;\nconst response = $input.first().json || {};\nconst usage = response.usage || {};\nconst text = Array.isArray(response.choices)\n  ? response.choices.map(choice => choice?.message?.content || '').join('\\n').trim()\n  : String(response.content || response.text || '').trim();\nfunction parseJson(raw) {\n  if (!raw) return { parsed: null, error: 'empty response' };\n  const cleaned = raw.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\n  try { return { parsed: JSON.parse(cleaned), error: '' }; } catch (first) {}\n  const start = cleaned.indexOf('{');\n  const end = cleaned.lastIndexOf('}');\n  if (start >= 0 && end > start) {\n    try { return { parsed: JSON.parse(cleaned.slice(start, end + 1)), error: '' }; } catch (second) {}\n  }\n  return { parsed: null, error: 'JSON parse failed' };\n}\nfunction cost(tokens, perMtok) { return (Number(tokens || 0) / 1000000) * Number(perMtok || 0); }\nconst parsed = parseJson(text);\nconst details = usage.prompt_tokens_details || {};\nconst promptTokens = Number(usage.prompt_tokens || 0);\nconst cacheRead = Number(details.cached_tokens || usage.prompt_cache_hit_tokens || 0);\nconst cacheMiss = Math.max(0, promptTokens - cacheRead);\nconst outputTokens = Number(usage.completion_tokens || 0);\nconst pricing = source.pricing || {};\nconst inputCost = cost(cacheMiss, pricing.input_mtok);\nconst cacheReadCost = cost(cacheRead, pricing.cache_read_mtok || pricing.input_mtok);\nconst outputCost = cost(outputTokens, pricing.output_mtok);\nconst finished = new Date();\nreturn [{ json: {\n  ok: true,\n  provider: 'deepseek',\n  model: response.model || source.model,\n  request_id: source.request_id,\n  result_id: source.result_id,\n  case_id: source.case_id,\n  call_purpose: source.call_purpose,\n  started_at: source.started_at,\n  finished_at: finished.toISOString(),\n  latency_ms: Math.max(0, finished.getTime() - Number(source.started_ms || finished.getTime())),\n  provider_response_id: response.id || null,\n  stop_reason: response.choices?.[0]?.finish_reason || null,\n  usage: {\n    input_tokens: cacheMiss,\n    cache_creation_input_tokens: 0,\n    cache_read_input_tokens: cacheRead,\n    output_tokens: outputTokens\n  },\n  costs: {\n    input_cost_usd: inputCost,\n    cache_write_cost_usd: 0,\n    cache_read_cost_usd: cacheReadCost,\n    output_cost_usd: outputCost,\n    total_cost_usd: inputCost + cacheReadCost + outputCost\n  },\n  model_text: text,\n  parsed_json: parsed.parsed,\n  parse_error: parsed.error,\n  raw_response: response\n}}];"
+      }
+    },
+    {
+      "id": "validate-result",
+      "name": "Validate Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const s=$('Validate Claim').first().json;const r=$json;\nlet valid=r.ok===true && !r.parse_error && r.parsed_json && typeof r.parsed_json==='object' && !Array.isArray(r.parsed_json) && !['max_tokens','length','refusal'].includes(r.stop_reason);\nif(s.call_purpose==='classifier') { const p=r.parsed_json; valid=valid && ['scored','rep_no_show','prospect_no_show','transcript_too_short'].includes(p?.call_status) && ['high','medium','low'].includes(p?.confidence) && ['classification_reason','evidence_quote'].every(k=>typeof p?.[k]==='string'); }\nconst providerError=(()=>{for(const name of ['Anthropic HTTP','DeepSeek HTTP']) {try {if($(name).isExecuted){const e=$(name).first().json.error;if(e)return typeof e==='string'?e:JSON.stringify(e);}}catch{}}return ''})();\nreturn [{json:{source_id:s.case_id||s.request_id,stage:s.call_purpose,provider:s.provider,request_hash:s.request_hash,token:s.checkpoint.token,result:r,valid:Boolean(valid),error:(providerError || r.parse_error || ('Invalid structured provider result: '+String(r.stop_reason||''))).slice(0,1500)}}];"
+      }
+    },
+    {
+      "id": "valid-result?",
+      "name": "Valid Result?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2220,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "Valid Result?",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "complete-checkpoint",
+      "name": "Complete Checkpoint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1500,
+      "position": [
+        2440,
+        -100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/provider-checkpoints",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({action:'complete',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,result:Object.fromEntries(Object.entries($json.result).filter(([key])=>key!=='raw_response'))}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "Sales Performance Dashboard Ingest"
+        }
+      }
+    },
+    {
+      "id": "return-provider-result",
+      "name": "Return Provider Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        -100
+      ],
+      "parameters": {
+        "jsCode": "return [{json:$('Validate Result').first().json.result}];"
+      }
+    },
+    {
+      "id": "fail-checkpoint",
+      "name": "Fail Checkpoint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1500,
+      "position": [
+        2440,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/provider-checkpoints",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({action:'fail',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,error:$json.error}) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "Sales Performance Dashboard Ingest"
+        }
+      }
+    },
+    {
+      "id": "provider-failure",
+      "name": "Provider Failure",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2660,
+        160
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "={{ $('Validate Result').first().json.stage + ': ' + $('Validate Result').first().json.error }}"
+      }
+    }
+  ],
+  "connections": {
+    "Internal Coaching Request": {
+      "main": [
+        [
+          {
+            "node": "Normalize Provider Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Provider Request": {
+      "main": [
+        [
+          {
+            "node": "Hash Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Request": {
+      "main": [
+        [
+          {
+            "node": "Claim Checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim Checkpoint": {
+      "main": [
+        [
+          {
+            "node": "Validate Claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Claim": {
+      "main": [
+        [
+          {
+            "node": "Cached Result?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cached Result?": {
+      "main": [
+        [
+          {
+            "node": "Restore Cached Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Anthropic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Anthropic": {
+      "main": [
+        [
+          {
+            "node": "Anthropic HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DeepSeek HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic HTTP": {
+      "main": [
+        [
+          {
+            "node": "Decode Anthropic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode Anthropic": {
+      "main": [
+        [
+          {
+            "node": "Validate Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek HTTP": {
+      "main": [
+        [
+          {
+            "node": "Decode DeepSeek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode DeepSeek": {
+      "main": [
+        [
+          {
+            "node": "Validate Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Result": {
+      "main": [
+        [
+          {
+            "node": "Valid Result?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Result?": {
+      "main": [
+        [
+          {
+            "node": "Complete Checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Checkpoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete Checkpoint": {
+      "main": [
+        [
+          {
+            "node": "Return Provider Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Checkpoint": {
+      "main": [
+        [
+          {
+            "node": "Provider Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 420,
+    "executionOrder": "v1"
+  }
+}
