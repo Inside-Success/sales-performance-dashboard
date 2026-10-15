@@ -67,9 +67,6 @@ export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan
     if(selected.size>=limit) return;
     selected.set(candidate.record.id,candidate);sources.set(source,(sources.get(source)||0)+1);
   }
-  // Current context is maintained in the registry and can be superseded through
-  // the same admin release. It cannot be displaced by duplicate historical hits.
-  for(const record of eligible.filter(r=>r.domains?.includes("company_context")).slice(0,Math.min(6,limit))) add({record,score:0},true);
   const fused = new Map<string,{record:Evidence;score:number}>();
   lanes.forEach(lane=>lane.slice(0,60).forEach((candidate,rank)=>{
     const old=fused.get(candidate.record.id);
@@ -85,10 +82,14 @@ export function retrieveEvidence(records: Evidence[], direct: string, plan: Plan
     const old=reviewedScores.get(candidate.record.id);
     reviewedScores.set(candidate.record.id,{record:candidate.record,score:(old?.score||0)+1/(30+rank)});
   }));
-  for(const candidate of [...reviewedScores.values()].sort((a,b)=>b.score-a.score).slice(0,8)) add(candidate);
-  // Preserve the user's direct wording as well as complementary planned queries.
+  // Reserve the first opportunities for the actual request and user-supplied
+  // context. Governing decisions still travel with every selected historical hit.
   for(const candidate of lanes[0]?.slice(0,8)||[]) add(candidate);
   if(contextIndex >= 0) for(const candidate of lanes[contextIndex]?.slice(0,4)||[]) add(candidate);
+  for(const candidate of [...reviewedScores.values()].sort((a,b)=>b.score-a.score).slice(0,8)) add(candidate);
   for(const candidate of ranked) add(candidate);
+  // Generic context is a fallback, not a mandatory prefix consuming the answer
+  // budget. Relevant context already competes in the same ranked lanes above.
+  for(const record of eligible.filter(r=>r.domains?.includes("company_context")).slice(0,6)) add({record,score:0},true);
   return [...selected.values()];
 }
