@@ -66,3 +66,7 @@ Protected live inspection found 32,155 records / 33,551,433 JSON bytes in the in
 ## Practical limits
 
 Freshness is visible and deliberately trades a small delay for reliable, fast page reads. Active attendance targets15minutes and compliance/scorecard5minutes, plus scheduling/source-read time and the30-second shared read cache. Idle dashboards refresh after a visit. A provider outage can make the displayed successful data older; the warning and timestamp reveal this. The first uncached application/session request may still take several seconds. The existing preview resource-provisioning failure remains separate infrastructure work; production builds and authenticated acceptance passed.
+
+## Owner-approved display follow-up — October15
+
+Removed only the three yellow source-freshness banners introduced in this release: Sales Call Rep No-Shows, Sales Compliance Review and AI Coaching Closer Scorecard. The quiet source timestamp remains. Cache refresh, last-good retention, error/unavailable states and access checks are unchanged. The older Sales Impact warning and other pre-existing warnings remain, as requested. This is a three-line display removal; no data, source, workflow or model changes. Verification and deployment receipt follow in the local continuity packet.

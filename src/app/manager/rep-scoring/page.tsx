@@ -35,7 +35,6 @@ export default async function ManagerRepScoringPage({ searchParams }: { searchPa
 
         {data.error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900"><strong>Scorecard unavailable:</strong> {data.error}</div> : null}
 
-        {data.warning ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{data.warning}</p> : null}
         <p className="text-xs text-slate-500">Source read {formatMiamiDateTime(data.generatedAt)}</p>
         <p className="text-sm text-slate-600">Calls from September 1 onward, using the latest reviewed scoring rubric. </p>
         {!data.error ? <CloserScorecardTable reps={data.repSummaries} call2Only={data.call2Only} historical={historical} /> : null}
