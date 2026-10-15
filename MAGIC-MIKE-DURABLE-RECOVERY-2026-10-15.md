@@ -56,6 +56,7 @@ New model cost from saved normalized provider usage/pricing: **$2.37043121 recov
 - The manual provider input mapping succeeded in isolation, without creating a fake self-submitted report. Naturally arriving official execution `1130023` confirmed real report `7933`, document creation, Slack delivery and applicable compliance append through the new native route. This is not a claim that a new human manual submission arrived during the verification window.
 - Temporary QA, failure-fixture and incident recovery-runner workflows are deactivated. The regular official/manual workflows, native internal provider, scheduled recovery worker and crash scanner remain active.
 - First deployment PR: [#311](https://github.com/Inside-Success/sales-performance-dashboard/pull/311), production merge `d8ef65367b1bc879080e30600adbffa1e7db7c4e`, deployment `dpl_5WCUjKVvkeNQVgDKXWtwRQJ3zyd9` READY. Preview provisioning failed before the app build; the production Git deployment succeeded.
+- Final workflow manifests, retry-policy edge cases, live integration tests and recovery evidence are recorded in [#312](https://github.com/Inside-Success/sales-performance-dashboard/pull/312). The final local production build passed. At the post-recovery sample, all 80 completed executions of the new internal provider were successful; deliberate failure tests ran in the separate isolated fixture.
 
 ## Safety boundaries and rollback
 
