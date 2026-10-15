@@ -55,7 +55,7 @@ return [{json:{source_id:s.case_id||s.request_id,stage:s.call_purpose,provider:s
     checkpoint("Complete Checkpoint","={{ JSON.stringify({action:'complete',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,result:$json.result}) }}",2440,-100),
     code("Return Provider Result","return [{json:$('Validate Result').first().json.result}];",2660,-100),
     checkpoint("Fail Checkpoint","={{ JSON.stringify({action:'fail',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,error:$json.error}) }}",2440,160),
-    code("Provider Failure","const e=$('Validate Result').first().json;throw Error(e.stage+': '+e.error);",2660,160));
+    {id:"provider-failure",name:"Provider Failure",type:"n8n-nodes-base.stopAndError",typeVersion:1,position:[2660,160],parameters:{errorType:"errorMessage",errorMessage:"={{ $('Validate Result').first().json.stage + ': ' + $('Validate Result').first().json.error }}"}});
   const connections={};
   function link(from,to,output=0){const main=(connections[from]??={main:[]}).main;while(main.length<=output)main.push([]);main[output].push({node:to,type:"main",index:0});}
   link("Internal Coaching Request","Normalize Provider Request");link("Normalize Provider Request","Hash Request");link("Hash Request","Claim Checkpoint");link("Claim Checkpoint","Validate Claim");link("Validate Claim","Cached Result?");
