@@ -28,4 +28,10 @@ Baseline Git main: `5158e3b`. Before-release rose deployment: `dpl_8GhVERnSMZzhY
 
 ## Results and live receipt
 
-Pending final evaluation and release verification.
+- Final full FAQ suite: 406/406 passed. Initial run had one unchanged legacy V5.14 test exceed its 5-second timeout; its isolated 27-test suite and the final full run passed without relaxing timeouts.
+- TypeScript, scoped ESLint and local webpack production build passed. The static validator initially failed because the October 14 admin-access refactor replaced inline allowlist parsing with getSalesFaqAdminEmails. Updated only that stale static assertion to check the shared accessor and its configured FAQ allowlist; runtime access policy is unchanged.
+- Baseline implementation a3da3f01a25f8b76: 20 real-log replays. First candidate 208c257cceba5b9d: 20. Final 9b9eb3aaac059414: 20 plus eight independent synthetic holdouts. All 68 returned without technical errors. Estimated total isolated API cost $0.58991224, no unresolved reservations. Same knowledge, model, medium reasoning and original conversation history in paired runs.
+- Concrete gains: dummy-passoff commission evidence/answer, active-show resource URL, and removal of the definite independent-production premise in the later documentary distribution answer. Final royalties answer also restores the supported no-cast-royalties explanation. These are qualitative paired observations, not a claimed all-question accuracy percentage.
+- Median latency on the 20 real questions: baseline 13.478 seconds, final 13.582 seconds. Small uncontrolled sample; no meaningful speed gain claimed.
+- Remaining limits: some replies are verbose/cautious. The separate marketing-onboarding holdout no longer assumes a hired agency as fact, but gives conditional external-service routing and a vague internal-reference answer instead of the most helpful existing Money Mondays path. Seven other holdouts preserve the relevant boundaries/usefulness. Do not claim all holdouts or all questions are fully solved. No broad knowledge rewrite was attempted.
+- Preview dpl_D3yfMFJx3GxxmmpeY67KUoSD7mGi failed with Resource provisioning failed, before an application build. No preview success or database/env workaround is claimed. Hosted production verification remains pending.

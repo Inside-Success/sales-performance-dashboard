@@ -130,7 +130,8 @@ if (missingFiles.length === 0) {
 
   addCheck(
     "daily quality audit excludes configured admins and cannot publish knowledge",
-    qualityReviewStore.includes("parseEmailAllowlist(process.env.ASK_SALES_FAQ_ADMIN_EMAILS)") &&
+    qualityReviewStore.includes("Array.from(getSalesFaqAdminEmails())") &&
+      read("src/lib/admin-access-policy.ts").includes("...configuredEmails(process.env.ASK_SALES_FAQ_ADMIN_EMAILS)") &&
       qualityReviewStore.includes("2026-07-13T13:00:00.000Z") &&
       qualityAuditRoute.includes("isKnowledgeRefreshServiceToken") &&
       qualityReviewConsole.includes("No automatic KB changes") &&
