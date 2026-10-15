@@ -42,7 +42,7 @@ export function RepNoShowRepsCard({ reps, calls, periodLabel }: { reps: RepNoSho
         <div className="dashboard-scroll overflow-y-auto bg-slate-50/60 p-4 sm:p-6"><div className="space-y-3">
           {details.slice(0,limit).map(call=><article key={call.id} className="rounded-2xl border border-slate-200 bg-white p-4">
             <div className="flex flex-wrap items-start justify-between gap-2"><div><h3 className="font-semibold text-slate-950">{call.clientName}</h3><p className="mt-1 text-sm text-slate-500">{formatMiamiDateTime(call.callDate)}</p></div><span className="rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">{call.callNumber}</span></div>
-            <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">{call.attendanceReason || "No additional detection reason was saved."}</p>
+            <p className="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">{readableReason(call.attendanceReason)}</p>
             <div className="mt-3 flex flex-wrap gap-2">{[[call.transcriptLink,'Open transcript'],[call.meetingLink,'Open Zoom recording']].map(([href,label])=>href?<a key={label} href={href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm font-medium text-red-700 hover:bg-red-50">{label}<ExternalLink className="size-3.5" /></a>:<span key={label} className="text-xs text-slate-500">{label === 'Open transcript' ? 'Transcript unavailable' : 'Recording unavailable'}</span>)}</div>
           </article>)}
           {!details.length && <p className="text-sm text-slate-600">No matching evidence is available in this saved period.</p>}
@@ -51,4 +51,10 @@ export function RepNoShowRepsCard({ reps, calls, periodLabel }: { reps: RepNoSho
       </Dialog.Popup>
     </Dialog.Portal>
   </Dialog.Root>;
+}
+
+function readableReason(raw: string) {
+  const attendance = raw.match(/attendance_status\s*=\s*(?:sales_)?rep_no_show\s*:\s*([^|]+)/i);
+  const decision = raw.match(/(?:sales_)?rep_no_show\s*:\s*([^|]+)/i);
+  return (attendance?.[1] || decision?.[1] || raw || "No additional detection reason was saved.").replace(/\s+/g, " ").trim();
 }
