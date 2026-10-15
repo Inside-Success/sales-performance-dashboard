@@ -48,3 +48,8 @@ For dashboard/web changes:
 - See MAGIC-MIKE-PERFORMANCE-2026-10-15.md. Source Sheets/Airtable remain read-only. Successful snapshots and timestamps must survive failed refreshes; never cache empty failure results or show them as genuine zeros. Preserve auth before all admin reads. Attendance history and score matching remain complete and exact.
 
 - Daily rep no-show UI: see MAGIC-MIKE-NO-SHOW-DRILLDOWN-2026-10-15.md. Today/Yesterday use Miami calendar boundaries; selected rep popup counts must reconcile with evidence from the same read. Preserve prior rolling windows and authenticated full-history access.
+
+## Durable coaching recovery (October 15)
+
+- See MAGIC-MIKE-DURABLE-RECOVERY-2026-10-15.md. Official/manual coaching provider paths now use native internal workflow X9L4JtDbpkSCflxZ with exact-request Postgres checkpoints, owner leases and outage cooldown. Keep the normal factual/safety audit and source/report duplicate guards. Do not reintroduce same-instance public-webhook calls or nested provider HTTP retries.
+- Completion is confirmed from matching source receipts and actual report artifacts, not execution status alone. Transient failures stay queued with due-time backoff; uncertain writes/refusals/auth failures stay held for review. Preserve the source claim attempt check and accurate zero-new-cost accounting for reused results. Source Sheets, scoring and deferred compliance-policy work remain separate.

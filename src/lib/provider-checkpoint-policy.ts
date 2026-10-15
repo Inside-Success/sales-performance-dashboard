@@ -20,7 +20,8 @@ export function validProviderResult(result: Record<string, unknown>) {
 }
 
 export function retryableProviderFailure(message: string) {
-  return /timeout|timed out|aborted|524|429|50[0234]|529|overload|rate.?limit|temporar|ECONNRESET|ETIMEDOUT|fetch failed|socket|invalid.*json|JSON parse|structured.*invalid/i.test(message);
+  if (/\b401\b|\b403\b|\brefusal\b|invalid source/i.test(message)) return false;
+  return /timeout|timed out|aborted|524|429|50[0234]|529|overload|rate.?limit|temporar|ECONNRESET|ETIMEDOUT|EAI_AGAIN|fetch failed|socket|connection.*closed|empty response|invalid.*json|JSON parse|structured.*invalid/i.test(message);
 }
 
 export function retryDelaySeconds(attempt: number) {

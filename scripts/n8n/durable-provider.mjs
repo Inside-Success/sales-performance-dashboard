@@ -39,7 +39,7 @@ return [{json:{...s,checkpoint:c}}];`,900,0),
     iff("Cached Result?","={{ $json.checkpoint.status === 'cached' }}",1100,0),
     code("Restore Cached Result",`const s=$json;const r=s.checkpoint.result;
 if(!r || r.ok!==true || r.parse_error || !r.parsed_json)throw Error('Invalid cached provider result');
-return [{json:{...r,request_id:s.request_id,result_id:s.result_id,case_id:s.case_id,call_purpose:s.call_purpose,checkpoint_reused:true,checkpoint_original_costs:r.costs,costs:{input_cost_usd:0,cache_write_cost_usd:0,cache_read_cost_usd:0,output_cost_usd:0,total_cost_usd:0}}}];`,1320,-220),
+return [{json:{...r,request_id:s.request_id,result_id:s.result_id,case_id:s.case_id,call_purpose:s.call_purpose,started_at:s.started_at,finished_at:new Date().toISOString(),latency_ms:0,checkpoint_reused:true,checkpoint_original_costs:r.costs,checkpoint_original_usage:r.usage,usage:Object.fromEntries(Object.entries(r.usage||{}).map(([k,v])=>[k,typeof v==='number'?0:v])),costs:{input_cost_usd:0,cache_write_cost_usd:0,cache_read_cost_usd:0,output_cost_usd:0,total_cost_usd:0}}}];`,1320,-220),
     iff("If Anthropic","={{ $json.provider === 'anthropic' }}",1320,100)];
   for(const provider of ["Anthropic","DeepSeek"]) {
     const http=copy(provider+" HTTP");http.retryOnFail=false;http.maxTries=1;http.continueOnFail=true;delete http.onError;
@@ -52,7 +52,7 @@ if(s.call_purpose==='classifier') { const p=r.parsed_json; valid=valid && ['scor
 const providerError=(()=>{for(const name of ['Anthropic HTTP','DeepSeek HTTP']) {try {if($(name).isExecuted){const e=$(name).first().json.error;if(e)return typeof e==='string'?e:JSON.stringify(e);}}catch{}}return ''})();
 return [{json:{source_id:s.case_id||s.request_id,stage:s.call_purpose,provider:s.provider,request_hash:s.request_hash,token:s.checkpoint.token,result:r,valid:Boolean(valid),error:(providerError || r.parse_error || ('Invalid structured provider result: '+String(r.stop_reason||''))).slice(0,1500)}}];`,2000,0),
     iff("Valid Result?","={{ $json.valid }}",2220,0),
-    checkpoint("Complete Checkpoint","={{ JSON.stringify({action:'complete',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,result:$json.result}) }}",2440,-100),
+    checkpoint("Complete Checkpoint","={{ JSON.stringify({action:'complete',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,result:Object.fromEntries(Object.entries($json.result).filter(([key])=>key!=='raw_response'))}) }}",2440,-100),
     code("Return Provider Result","return [{json:$('Validate Result').first().json.result}];",2660,-100),
     checkpoint("Fail Checkpoint","={{ JSON.stringify({action:'fail',source_id:$json.source_id,stage:$json.stage,provider:$json.provider,request_hash:$json.request_hash,token:$json.token,error:$json.error}) }}",2440,160),
     {id:"provider-failure",name:"Provider Failure",type:"n8n-nodes-base.stopAndError",typeVersion:1,position:[2660,160],parameters:{errorType:"errorMessage",errorMessage:"={{ $('Validate Result').first().json.stage + ': ' + $('Validate Result').first().json.error }}"}});
