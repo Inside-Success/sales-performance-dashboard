@@ -100,7 +100,6 @@ export default async function RepNoShowPage({
         <StatusMessage analytics={analytics} />
 
 
-        {analytics.summary.warning ? <p role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{analytics.summary.warning}</p> : null}
         {!analytics.summary.error ? <>
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard
