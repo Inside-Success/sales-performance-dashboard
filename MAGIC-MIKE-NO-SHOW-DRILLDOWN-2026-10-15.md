@@ -20,3 +20,9 @@ Pre-release: 50 tests across9suites, scoped ESLint and TypeScript passed; webpac
 ## Rollback
 
 Revert the scoped Git release. Previous attendance v2 data remains in the dashboard-owned snapshot table, so the previous application can resume without source writes or deletions. Source attendance classification, identity resolution, scoring, coaching content and admin permissions remain unchanged.
+
+## Observed application acceptance
+
+PR308 merged e65dba6b7a66526b9e29da453c68e84a7ac910c8; production dpl_D2Zo56SukZqik3qvD7MYhbSk4jYV is READY on rose. The new attendance-v3 source completed at2026-10-15T13:03:29UTC with no failure or remaining lease, confirmed by bounded read-only database metadata. During population weekly v2 remained available; daily views withheld incomplete totals. Signed-in Today showed1no-show/11tracked calls and Bryce's popup1call/3tracked calls; Yesterday15no-shows/348tracked calls, agreeing with the bottom log's15entries. Popup keyboard opening/Escape close worked. Exact counts are cutoff-specific, not enduring totals.
+
+Owner's follow-up requested fewer top controls: Today/Yesterday remain visible; a single dropdown retains7/14/30/90-day ranges. Visual QA also removed internal status markers/repeated reasoning from popup text using the existing log's extraction pattern; original saved evidence is unchanged. Final scoped checks, deployment, full rep search, mobile UI and source-link verification are recorded after this follow-up release.

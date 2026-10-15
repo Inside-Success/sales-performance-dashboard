@@ -1,3 +1,4 @@
+import { RepNoShowPeriodSelect } from "@/components/dashboard/rep-no-show-period-select";
 import { normalizeAttendanceDay, type AttendanceDay } from "@/lib/rep-no-show-calendar";
 import { RepNoShowRepsCard } from "@/components/dashboard/rep-no-show-reps-card";
 import { LinkPending } from "@/components/dashboard/link-pending";
@@ -21,7 +22,6 @@ import { formatMiamiDateTime } from "@/lib/format";
 import {
   getRepNoShowAnalytics,
   normalizeRepNoShowWindow,
-  REP_NO_SHOW_WINDOWS,
   type RepNoShowAnalytics,
 } from "@/lib/rep-no-show";
 import { cn } from "@/lib/utils";
@@ -147,23 +147,9 @@ export default async function RepNoShowPage({
 
 function PeriodSelector({ selectedDays, calendarDay }: { selectedDays: number; calendarDay?: AttendanceDay }) {
   return (
-    <div className="grid grid-cols-2 gap-1 rounded-xl border bg-background/75 p-1 sm:flex sm:flex-wrap">
+    <div className="flex w-full flex-wrap items-center gap-1 rounded-xl border bg-background/75 p-1 sm:w-auto">
       {(["today", "yesterday"] as const).map(day => <Link key={day} href={`/manager/rep-no-show?day=${day}`} aria-current={calendarDay === day ? "page" : undefined} className={cn("inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-red-600", calendarDay === day ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}>{day === "today" ? "Today" : "Yesterday"}<LinkPending /></Link>)}
-      {REP_NO_SHOW_WINDOWS.map((days) => (
-        <Link
-          key={days}
-          href={`/manager/rep-no-show?days=${days}`}
-          aria-current={!calendarDay && selectedDays === days ? "page" : undefined}
-          className={cn(
-            "inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600",
-            !calendarDay && selectedDays === days
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          )}
-        >
-          {days} days<LinkPending />
-        </Link>
-      ))}
+      <RepNoShowPeriodSelect selectedDays={calendarDay ? undefined : selectedDays} />
     </div>
   );
 }
