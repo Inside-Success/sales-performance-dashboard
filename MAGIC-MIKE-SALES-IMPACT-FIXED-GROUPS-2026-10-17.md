@@ -29,4 +29,12 @@ Baseline production: commit e7ab38b05131916d1b2b8a0d1bd30646db2a81fc; deployment
 
 ## Live release receipt
 
-Pending deployment and authenticated UI verification; do not treat this section as a completion claim until populated.
+- PR [315](https://github.com/Inside-Success/sales-performance-dashboard/pull/315) merged as 99471ac23fd142a822da65e057ed66b445ed2821 (implementation e05c3742e416581e85c37b4a52f63298e79e54dc).
+- Production deployment dpl_7hj6V1rRNKLgarVRzihGpX5BESfY is READY / PROMOTED and assigned to the rose production URL. Production build succeeded. The branch preview failed before build with the existing infrastructure error “Resource provisioning failed”; this was not treated as successful preview verification.
+- Authenticated company Chrome: all four period filters match independently reconciled source values. Seven/fourteen-day empty 21+ groups say no reps, not zero revenue. Thirty-day default, scatterplot filter (two matched 21+ reps), dot selection, search-to-rep navigation, owner coverage and complete-period recalculation verified.
+- Verified real examples where total opened includes older reports: report coverage numerator stays restricted to reports received in the selected window, rather than exceeding 100%.
+- Deterministic live chat preset returns all four groups with means/counts matching the page. No paid AI test needed. Provider/model settings were not modified.
+- Mobile layout tested at requested QA viewport 390×844 (rendered client width 375): no page overflow; new bar labels and values remain readable. Override reset afterward. Desktop visually inspected; browser errors empty.
+- Admin directory, Rep Usage, Coaching rep selector and FAQ entry page smoke checks passed. No new report generation or workflow executions were triggered by this scoped verification.
+- Production error-log scan for the preceding 15 minutes returned no errors. This is scoped post-release verification, not a claim that every future pipeline execution is guaranteed.
+- Source Google Sheet remained read-only. No database migrations, bulk backups or model evaluation charges. Git and the prior deployment remain available for rollback.
