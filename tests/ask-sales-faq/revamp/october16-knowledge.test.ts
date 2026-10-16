@@ -4,7 +4,7 @@ import { retrieveEvidence } from '../../../src/lib/ask-sales-faq/revamp/retrieva
 import type { Plan } from '../../../src/lib/ask-sales-faq/revamp/types';
 
 const records = getRevampKnowledge();
-const evidence = (question: string, scope: Plan['scopes'][number] = 'shared') => retrieveEvidence(records, question, { intent: 'company_question', question, scopes: [scope], queries: [] }).map(x => x.record.text).join('\n');
+const evidence = (question: string, scope: Plan['scopes'][number] = 'main_istv') => retrieveEvidence(records, question, { intent: 'company_question', question, scopes: [scope], queries: [] }).map(x => x.record.text).join('\n');
 
 describe('October 16 source refresh', () => {
   it('retrieves current UK support without generalizing to international voice', () => {
