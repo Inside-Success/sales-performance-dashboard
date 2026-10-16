@@ -84,7 +84,7 @@ describe("sales impact read model", () => {
     expect(a.reps.find((r) => r.name === "Alice")?.revenue).toBeNull();
     expect(a.reps.find((r) => r.name === "Bob")?.revenue).toBe(0);
     expect(a.excludedUnmatched).toBe(1);
-    expect(a.groups[2].average).toBe(50);
+    expect(a.groups.find((g) => g.key === "none")?.average).toBe(50);
   });
   it("includes only finite positive New + Paid cash", () => {
     const a = analyzeSalesImpact(
@@ -103,21 +103,99 @@ describe("sales impact read model", () => {
     expect(a.reps[0].revenue).toBe(100);
     expect(a.reps[0].payments).toBe(1);
   });
-  it("defines top-third groups by opens rather than revenue", () => {
-    const reports = ["Alice", "Bob", "Carol", "Dan"].map((n, i) =>
-      report(i + 1, n),
+  it("uses fixed boundaries independently of revenue, matching, repeated opens and other reps", () => {
+    const counts = [0, 1, 5, 6, 20, 21, 100];
+    const reports = counts.flatMap((n, i) =>
+      Array.from({ length: Math.max(1, n) }, (_, j) =>
+        report(i * 1000 + j, `Rep ${i}`),
+      ),
     );
-    const events = [open(1), open(2), open(3), open(1, "2026-10-02T16:00:00Z")];
-    // Repeat opening the same report does not change the count; days used break a tie.
+    const events = counts.flatMap((n, i) =>
+      Array.from({ length: n }, (_, j) =>
+        open(i * 1000 + j, undefined, `rep-${i}`),
+      ),
+    );
+    events.push(...events);
     const a = analyzeSalesImpact(
       reports,
       events,
-      reports.map((r) => sale("2026-10-01", r.id * 10000, r.rep_name)),
+      counts
+        .slice(0, -1)
+        .map((_, i) => sale("2026-10-01", (6 - i) * 100, `Rep ${i}`)),
       30,
       now,
     );
-    expect(a.reps.find((r) => r.group === "high")?.name).toBe("Alice");
-    expect(a.groups[0].count).toBe(1);
+    expect(
+      counts.map((_, i) => a.reps.find((r) => r.name === `Rep ${i}`)?.group),
+    ).toEqual(["none", "low", "low", "medium", "medium", "high", "high"]);
+    expect(a.groups.map((g) => [g.key, g.count, g.average])).toEqual([
+      ["none", 1, 600],
+      ["low", 2, 450],
+      ["medium", 2, 250],
+      ["high", 1, 100],
+    ]);
+    expect(a.reps.find((r) => r.name === "Rep 6")?.revenue).toBeNull();
+  });
+  it("keeps empty groups null, matched zero-sales reps included, and a singleton sensitivity unavailable", () => {
+    const a = analyzeSalesImpact(
+      [report(1)],
+      [open(1)],
+      [sale("2026-08-01", 1)],
+      30,
+      now,
+    );
+    expect(a.groups.find((g) => g.key === "low")).toMatchObject({
+      count: 1,
+      average: 0,
+      median: 0,
+    });
+    expect(a.groups.find((g) => g.key === "high")).toMatchObject({
+      count: 0,
+      average: null,
+      median: null,
+    });
+    expect(a.sensitivity.highWithoutLargest).toBeNull();
+  });
+  it("distinguishes five of ten from five of fifty without old reports inflating coverage", () => {
+    const reports = [10, 50].flatMap((n, i) =>
+      Array.from({ length: n }, (_, j) =>
+        report(i * 100 + j, i ? "Bob" : "Alice", "2026-10-07T04:00:00Z"),
+      ),
+    );
+    reports.push(report(999), report(998, "Alice", "2026-10-14T04:00:00Z"));
+    const events = [0, 1].flatMap((i) =>
+      Array.from({ length: 5 }, (_, j) =>
+        open(i * 100 + j, "2026-10-13T23:59:00Z", i ? "bob" : "alice"),
+      ),
+    );
+    events.push(
+      open(999, "2026-10-13T23:59:00Z"),
+      open(0, "2026-10-13T23:59:00Z"),
+      open(5, "2026-10-14T04:00:00Z"),
+      open(6, "2026-10-13T23:59:00Z", "bob"),
+    );
+    const a = analyzeSalesImpact(reports, events, [], 7, now);
+    expect(a.reps.find((r) => r.name === "Alice")).toMatchObject({
+      opened: 6,
+      received: 10,
+      receivedOpened: 5,
+      receivedOpenRate: 0.5,
+      group: "medium",
+    });
+    expect(a.reps.find((r) => r.name === "Bob")).toMatchObject({
+      opened: 5,
+      received: 50,
+      receivedOpened: 5,
+      receivedOpenRate: 0.1,
+      group: "low",
+    });
+    const b = analyzeSalesImpact([report(1)], [open(1)], [], 30, now);
+    expect(b.reps[0]).toMatchObject({
+      opened: 1,
+      received: 0,
+      receivedOpened: 0,
+      receivedOpenRate: null,
+    });
   });
   it("compares equal completed periods and excludes the first-open day", () => {
     const a = analyzeSalesImpact(
@@ -200,5 +278,29 @@ describe("sales impact read model", () => {
         now,
       ).reps,
     ).toHaveLength(0);
+  });
+});
+
+it("normalizes database bigint report identifiers before cohort intersection", () => {
+  const r = {
+    ...report(1, "Alice", "2026-10-07T16:00:00Z"),
+    id: "1" as unknown as number,
+  };
+  const e = {
+    ...open(1, "2026-10-08T16:00:00Z"),
+    report_id: "1" as unknown as number,
+  };
+  const a = analyzeSalesImpact(
+    [r],
+    [e, open(1, "2026-10-08T17:00:00Z")],
+    [],
+    7,
+    now,
+  );
+  expect(a.reps[0]).toMatchObject({
+    opened: 1,
+    received: 1,
+    receivedOpened: 1,
+    receivedOpenRate: 1,
   });
 });

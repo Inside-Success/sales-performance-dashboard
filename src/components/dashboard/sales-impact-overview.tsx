@@ -7,6 +7,10 @@ import type {
   ImpactGroup,
   ImpactRep,
 } from "@/lib/sales-impact-analysis";
+import {
+  IMPACT_GROUPS,
+  IMPACT_GROUP_LABELS,
+} from "@/lib/sales-impact-analysis";
 const money = (n: number | null) =>
   n === null
     ? "Not matched"
@@ -15,15 +19,12 @@ const money = (n: number | null) =>
         currency: "USD",
         maximumFractionDigits: 0,
       }).format(n);
-const labels: Record<ImpactGroup, string> = {
-  high: "High usage",
-  some: "Some usage",
-  none: "No recorded opens",
-};
+const labels = IMPACT_GROUP_LABELS;
 const colors: Record<ImpactGroup, string> = {
-  high: "#c43132",
-  some: "#c78b43",
   none: "#94a3b8",
+  low: "#c78b43",
+  medium: "#d96768",
+  high: "#a42126",
 };
 export function SalesImpactOverview({
   data,
@@ -74,6 +75,65 @@ export function SalesImpactOverview({
     <>
       <section
         className="magic-card p-5 sm:p-7"
+        aria-labelledby="sales-by-usage-title"
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2
+            id="sales-by-usage-title"
+            className="text-xl font-bold text-slate-950"
+          >
+            Sales by coaching use
+          </h2>
+          <span className="text-xs text-slate-500">
+            {data.start} to {data.end}
+          </span>
+        </div>
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Average new paid revenue per rep, grouped by own reports opened.
+        </p>
+        <div className="mt-6 space-y-5">
+          {data.groups.map((g) => (
+            <div
+              key={g.key}
+              className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-3 sm:grid-cols-[7rem_minmax(0,1fr)_10rem]"
+            >
+              <span className="text-sm font-semibold text-slate-700">
+                {labels[g.key]}
+              </span>
+              <div
+                className="h-3 overflow-hidden rounded-full bg-slate-100"
+                aria-hidden="true"
+              >
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${g.average === null ? 0 : (g.average / Math.max(1, ...data.groups.map((group) => group.average ?? 0))) * 100}%`,
+                    backgroundColor: colors[g.key],
+                  }}
+                />
+              </div>
+              <div className="col-start-2 mt-1 sm:col-start-auto sm:mt-0 sm:text-right">
+                <span className="text-base font-bold tabular-nums text-slate-950">
+                  {g.average === null
+                    ? "No reps in this period"
+                    : money(g.average)}
+                </span>
+                {g.count > 0 ? (
+                  <p className="text-xs text-slate-500">
+                    {g.count} matched {g.count === 1 ? "rep" : "reps"}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-xs leading-5 text-slate-500">
+          Same period and scale for every group. Matched reps with zero sales
+          are included; group sizes can differ. Small groups can change sharply.
+        </p>
+      </section>
+      <section
+        className="magic-card p-5 sm:p-7"
         aria-label="Usage and sales comparison"
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -90,7 +150,7 @@ export function SalesImpactOverview({
             className="grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 sm:flex sm:flex-wrap"
             aria-label="Scatterplot usage group"
           >
-            {(["all", "high", "some", "none"] as const).map((k) => (
+            {(["all", ...IMPACT_GROUPS] as const).map((k) => (
               <button
                 key={k}
                 type="button"
@@ -98,11 +158,7 @@ export function SalesImpactOverview({
                 onClick={() => setFilter(k)}
                 className={`min-h-11 rounded-lg px-3 text-xs font-semibold ${filter === k ? "bg-white text-slate-950 shadow-sm" : "text-slate-500 hover:bg-white/70"}`}
               >
-                {k === "all"
-                  ? "All reps"
-                  : k === "none"
-                    ? "No opens"
-                    : labels[k]}
+                {k === "all" ? "All reps" : labels[k]}
               </button>
             ))}
           </div>
@@ -149,7 +205,7 @@ export function SalesImpactOverview({
               </span>
             </div>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-600">
-              {(["high", "some", "none"] as const).map((k) => (
+              {IMPACT_GROUPS.map((k) => (
                 <span className="inline-flex items-center gap-2" key={k}>
                   <span
                     className="size-2.5 rounded-full"
@@ -179,23 +235,11 @@ export function SalesImpactOverview({
                 <p className="mt-2 text-sm leading-6 text-slate-500">
                   Click a dot or choose a rep in the table below.
                 </p>
-                <div className="mt-6 space-y-5">
-                  {data.groups.map((g) => (
-                    <div key={g.key}>
-                      <div className="flex justify-between gap-2 text-sm">
-                        <span className="font-medium text-slate-600">
-                          {labels[g.key]}
-                        </span>
-                        <span className="font-bold text-slate-950">
-                          {g.average === null ? "—" : money(g.average)}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-slate-500">
-                        {g.count} matched reps · average new paid revenue
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <p className="mt-6 text-xs leading-5 text-slate-500">
+                  Their summary also shows how many reports received in this
+                  period they opened, so different call volumes are easier to
+                  compare.
+                </p>
               </>
             )}
           </aside>
@@ -333,6 +377,21 @@ function RepDetail({ rep }: { rep: ImpactRep }) {
           <dd className="mt-1 text-xl font-bold">{money(rep.revenue)}</dd>
         </div>
       </dl>
+      <div className="mt-5 border-t border-slate-200 pt-4">
+        <p className="text-xs font-semibold text-slate-600">
+          Reports received in this period
+        </p>
+        <p className="mt-1 text-sm font-semibold text-slate-900">
+          {rep.receivedOpenRate === null
+            ? "No reports received in this period"
+            : `${rep.receivedOpened} of ${rep.received} opened (${Math.round(rep.receivedOpenRate * 100)}%)`}
+        </p>
+        <p className="mt-2 text-xs leading-5 text-slate-500">
+          Both received and opened within the selected period. Older reports
+          opened still count toward total usage above. This is report coverage,
+          not the percentage of all sales calls.
+        </p>
+      </div>
       <p className="mt-5 text-xs font-semibold text-slate-600">
         Eight complete weeks of sales
       </p>

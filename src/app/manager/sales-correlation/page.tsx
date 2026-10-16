@@ -10,7 +10,10 @@ import {
 import { SalesImpactOverview } from "@/components/dashboard/sales-impact-overview";
 import { SalesAnalyticsChatPanel } from "@/components/dashboard/sales-analytics-chat-panel";
 import { formatMiamiDateTime } from "@/lib/format";
-import type { ImpactComparison } from "@/lib/sales-impact-analysis";
+import {
+  IMPACT_GROUP_LABELS,
+  type ImpactComparison,
+} from "@/lib/sales-impact-analysis";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -119,11 +122,6 @@ export default async function Page({
               ? `${paired.count} reps with complete ${period}-day before/after periods · ${money(paired.before)} → ${money(paired.after)} average new paid revenue.`
               : "No complete before/after comparison yet."}
           </p>
-          <p className="mt-2 text-sm text-slate-500">
-            Same-period comparison · High usage: {money(a.groups[0].average)}{" "}
-            across {a.groups[0].count} reps · No recorded opens:{" "}
-            {money(a.groups[2].average)} across {a.groups[2].count} reps.
-          </p>
           <p className="mt-2 text-xs leading-5 text-slate-500">
             Chart period: {a.start} to {a.end} · Complete Miami days · An
             association, not proof that coaching caused the difference.
@@ -161,12 +159,21 @@ export default async function Page({
               anonymous activity are excluded from this measure.
             </p>
             <p>
-              High usage is the top third of matched reps with opens, ranked by
-              report count, then days used. Groups are defined from usage before
-              examining sales. The comparison uses reps with official call
+              Fixed groups are 0, 1–5, 6–20 and 21+ opens (20 belongs to 6–20).
+              Group membership depends only on distinct reports opened, never
+              sales results. The comparison uses reps with official call
               activity in the last 30 days and an exact normalized sales-name
               match. {a.matched} matched reps; {a.excludedUnmatched} unmatched
               reps are listed separately and not treated as zero-sales reps.
+            </p>
+            <p>
+              In each rep summary, report coverage counts only reports received
+              in this period that were also opened during it, divided by all
+              official reports received in that same period. Five of ten is 50%;
+              five of fifty is 10%. Older-report opens do not enter that
+              numerator. With no reports received, coverage is unavailable, not
+              0%. Reports are not a denominator for every sales call, and
+              coverage does not measure time spent or learning.
             </p>
             <p>
               Revenue is the amount of New + Paid entries in the existing sales
@@ -185,12 +192,17 @@ export default async function Page({
               also reflect call volume, experience, offer changes and lead mix.
             </p>
             <p>
-              Robustness check: high-usage median {money(a.groups[0].median)};
-              no-open median {money(a.groups[2].median)}. High-usage average
-              without its largest sale-total rep:{" "}
-              {money(a.sensitivity.highWithoutLargest)}. All reps with opens
-              average: {money(a.sensitivity.allUsers)}. These checks are shown
-              regardless of whether they favour coaching.
+              Group medians:{" "}
+              {a.groups
+                .map(
+                  (g) =>
+                    `${IMPACT_GROUP_LABELS[g.key]}: ${money(g.median)} (${g.count} reps)`,
+                )
+                .join("; ")}
+              . The 21+ group average without its largest sale-total rep is{" "}
+              {money(a.sensitivity.highWithoutLargest)}. All matched reps with
+              opens average {money(a.sensitivity.allUsers)}. These checks are
+              shown regardless of whether they favour coaching.
             </p>
           </div>
         </details>

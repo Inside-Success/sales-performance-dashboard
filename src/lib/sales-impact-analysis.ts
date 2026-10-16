@@ -20,13 +20,31 @@ export type ImpactSale = {
   paymentStatus: string;
   paymentType: string;
 };
-export type ImpactGroup = "high" | "some" | "none";
+export const IMPACT_GROUPS = ["none", "low", "medium", "high"] as const;
+export type ImpactGroup = (typeof IMPACT_GROUPS)[number];
+export const IMPACT_GROUP_LABELS: Record<ImpactGroup, string> = {
+  none: "0 opens",
+  low: "1–5 opens",
+  medium: "6–20 opens",
+  high: "21+ opens",
+};
+export function impactGroup(opened: number): ImpactGroup {
+  return opened === 0
+    ? "none"
+    : opened <= 5
+      ? "low"
+      : opened <= 20
+        ? "medium"
+        : "high";
+}
 export type ImpactRep = {
   slug: string;
   reportSlug: string;
   name: string;
   opened: number;
   received: number;
+  receivedOpened: number;
+  receivedOpenRate: number | null;
   activeDays: number;
   group: ImpactGroup;
   revenue: number | null;
@@ -133,6 +151,7 @@ export function analyzeSalesImpact(
     .filter((r) => Number.isFinite(Date.parse(r.created_at)))
     .map((r) => ({
       ...r,
+      id: Number(r.id),
       key: impactRepKey(r.rep_name || r.rep_slug),
       createdDay: miamiDay(r.created_at),
       callDay: miamiDay(
@@ -168,6 +187,7 @@ export function analyzeSalesImpact(
     return [
       {
         ...e,
+        report_id: Number(e.report_id),
         rep_slug: impactRepKey(report.rep_name || report.rep_slug),
         day: miamiDay(e.created_at),
       },
@@ -228,16 +248,33 @@ export function analyzeSalesImpact(
         ).size,
       };
     });
+    // Coverage uses one cohort: reports made available AND opened in this window.
+    // Older reports can contribute to usage, but never to this numerator.
+    const receivedIds = new Set(
+      preparedReports
+        .filter(
+          (r) => r.key === slug && r.createdDay >= start && r.createdDay <= end,
+        )
+        .map((r) => r.id),
+    );
+    const opened = new Set(windowOpens.map((e) => e.report_id)).size;
+    const receivedOpened = new Set(
+      windowOpens
+        .filter((e) => receivedIds.has(Number(e.report_id)))
+        .map((e) => e.report_id),
+    ).size;
     return {
       slug,
       reportSlug,
       name,
-      opened: new Set(windowOpens.map((e) => e.report_id)).size,
-      received: preparedReports.filter(
-        (r) => r.key === slug && r.createdDay >= start && r.createdDay <= end,
-      ).length,
+      opened,
+      received: receivedIds.size,
+      receivedOpened,
+      receivedOpenRate: receivedIds.size
+        ? receivedOpened / receivedIds.size
+        : null,
       activeDays: new Set(windowOpens.map((e) => e.day)).size,
-      group: "none",
+      group: impactGroup(opened),
       revenue: matched ? revenue(slug, start, end) : null,
       payments: matched ? count(slug, start, end) : null,
       firstOpen,
@@ -249,22 +286,9 @@ export function analyzeSalesImpact(
       trend,
     };
   });
-  // Predefined top-third rule uses only deduplicated opens, never sales results.
-  const users = reps
-    .filter((r) => r.revenue !== null && r.opened > 0)
-    .sort(
-      (a, b) =>
-        b.opened - a.opened ||
-        b.activeDays - a.activeDays ||
-        a.slug.localeCompare(b.slug),
-    );
-  const highN = Math.ceil(users.length / 3);
-  users.forEach((r, i) => {
-    r.group = i < highN ? "high" : "some";
-  });
-  for (const r of reps.filter((r) => r.revenue === null && r.opened > 0))
-    r.group = "some";
-  const groups = (["high", "some", "none"] as ImpactGroup[]).map((key) => {
+  // Fixed, non-overlapping usage ranges; membership never depends on sales or other reps.
+  const users = reps.filter((r) => r.revenue !== null && r.opened > 0);
+  const groups = IMPACT_GROUPS.map((key) => {
     const values = reps
       .filter((r) => r.group === key && r.revenue !== null)
       .map((r) => r.revenue!);
@@ -312,8 +336,8 @@ export function analyzeSalesImpact(
       subsequentPairs.push([mean(unused)!, mean(used)!]);
   }
   const subsequent = summarizePairs(subsequentPairs);
-  const high = groups[0],
-    none = groups[2],
+  const high = groups.find((g) => g.key === "high")!,
+    none = groups.find((g) => g.key === "none")!,
     gap =
       high.average !== null && none.average !== null
         ? high.average - none.average
@@ -326,12 +350,12 @@ export function analyzeSalesImpact(
     }).format(Math.abs(n));
   const headline =
     gap === null
-      ? "More matched usage and sales data is needed for a comparison."
+      ? "Compare new paid revenue across the report-open groups below."
       : gap > 0
-        ? `High-usage reps averaged ${dollars(gap)} more in new paid revenue than reps with no recorded own opens.`
+        ? `Reps with 21+ opens averaged ${dollars(gap)} more in new paid revenue than reps with no recorded own opens.`
         : gap < 0
-          ? `High-usage reps averaged ${dollars(gap)} less in new paid revenue than reps with no recorded own opens.`
-          : "High-usage and no-open reps averaged the same new paid revenue.";
+          ? `Reps with 21+ opens averaged ${dollars(gap)} less in new paid revenue than reps with no recorded own opens.`
+          : "Reps with 21+ opens and no-open reps averaged the same new paid revenue.";
   const highSales = reps
     .filter((r) => r.group === "high" && r.revenue !== null)
     .map((r) => r.revenue!)
