@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-16",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "0492d8d294d53d729bc81946",
   "knowledgeVersion": "9c1ed0710f4d9b7e08415f1a",
   "activeRecordCount": 2563,
@@ -5205,5 +5205,44 @@
     "technicalFailures": 0,
     "estimatedCostUsd": 0.1411246,
     "assessment": "17 acceptable; one substantively useful answer with awkward wording relating purchase and Green Light status. No universal accuracy claim. No runtime/prompt changes."
+  },
+  "publication": {
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/313",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/107",
+    "dashboardCommit": "d43fa0c6aaddb425ee8ab890af72d2c32d7077aa",
+    "deploymentId": "dpl_DGzVVfY1t6eFCXiPXrbzmxTeuAVL",
+    "deploymentUrl": "https://sales-performance-dashboard-g5111eu2b-admin-insidesuccess.vercel.app",
+    "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+    "liveAnswers": [
+      {
+        "id": "faq_assistant_e052610f-d266-485a-9fd3-77b92887da74",
+        "createdAt": "2026-10-16T14:40:10.977Z",
+        "knowledgeVersion": "9c1ed0710f4d9b7e08415f1a",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 15375
+      },
+      {
+        "id": "faq_assistant_ef24f689-ab71-4cb8-8fb3-ff21935b4364",
+        "createdAt": "2026-10-16T14:40:53.445Z",
+        "knowledgeVersion": "9c1ed0710f4d9b7e08415f1a",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 6738
+      },
+      {
+        "id": "faq_assistant_622c0ad2-ae07-4ab2-9486-f568acda8d42",
+        "createdAt": "2026-10-16T14:41:17.168Z",
+        "knowledgeVersion": "9c1ed0710f4d9b7e08415f1a",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 9084
+      }
+    ],
+    "fullSuite": "417/417",
+    "staticSafety": "107/107",
+    "ci": "TypeScript, scoped ESLint, production build and paired FAQ validation passed",
+    "isolatedCases": 18,
+    "isolatedTechnicalFailures": 0,
+    "isolatedAssessment": "17 acceptable; one minor wording limitation documented",
+    "isolatedEstimatedCostUsd": 0.1411246,
+    "liveVerificationEstimatedCostUsd": 0.0235278
   }
 }
