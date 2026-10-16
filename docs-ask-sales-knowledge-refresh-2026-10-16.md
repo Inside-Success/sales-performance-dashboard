@@ -1,8 +1,8 @@
 # Magic Mike FAQ knowledge refresh — October 16, 2026
 
-Status: candidate; not yet published or a successful checkpoint.
+Status: published and verified on October 16, 2026.
 
-Resumed from the October 14 successful checkpoint (`0492d8d294d53d729bc81946`, 2555 active records), preserving the October 15 retrieval/context release. Candidate `9c1ed0710f4d9b7e08415f1a`, 2563 active records: eight additions and nineteen amendments. Slack and Google sources were read only; no Slack messages or source edits.
+Resumed from the October 14 successful checkpoint (`0492d8d294d53d729bc81946`, 2555 active records), preserving the October 15 retrieval/context release. Published `9c1ed0710f4d9b7e08415f1a`, 2563 active records: eight additions and nineteen amendments. Slack and Google sources were read only; no Slack messages or source edits.
 
 ## Knowledge changes
 
@@ -33,4 +33,16 @@ Eleven new retrieval/boundary tests cover the refresh. Two older tests were upda
 
 ## Release boundaries
 
-Only FAQ knowledge, tests, paired registry and refresh documentation. Model, medium reasoning, prompts, retrieval, runtime, diagnostics, schema, auth, environment, Coaching and n8n remain unchanged. Production baseline `ab5657fb67c0a2cc5e1715bd3f9d0e03420d6b43`, deployment `dpl_2UnHJ2VspTQeiqEZA2ji8LLfyq4i`; preserve its unrelated durable coaching recovery release. A successful checkpoint and admin publication date will only be recorded after authenticated live verification.
+Only FAQ knowledge, tests, paired registry and refresh documentation. Model, medium reasoning, prompts, retrieval, runtime, diagnostics, schema, auth, environment, Coaching and n8n remain unchanged. Production baseline `ab5657fb67c0a2cc5e1715bd3f9d0e03420d6b43`, deployment `dpl_2UnHJ2VspTQeiqEZA2ji8LLfyq4i`; preserve its unrelated durable coaching recovery release. The checkpoint is now published_verified; the admin date is updated in the verification receipt release.
+
+## Production verification
+
+Dashboard PR313 and FAQ PR107 merged. Full release CI passed: 417/417 FAQ tests, 107/107 static safety, TypeScript, scoped ESLint, production build and paired FAQ validations. CI initially caught a test-only invalid plan-scope default; corrected to main_istv without changing runtime. The local legacy ROI test passed separately in 3.6 seconds.
+
+Production deployment `dpl_DGzVVfY1t6eFCXiPXrbzmxTeuAVL` is READY on the rose alias, commit `d43fa0c6aaddb425ee8ab890af72d2c32d7077aa`. Preview resource provisioning failed as in prior refreshes; no preview success is claimed and no environment/database workaround was made.
+
+Three authenticated work-Chrome checks verified UK SMS versus international voice, the $20,000 sit-down interview versus full documentary, and Call 1 rejection notes versus no-show exception. All three persisted answers report knowledge `9c1ed0710f4d9b7e08415f1a`, 2563 records, GPT-5.6 Luna, successful plan/answer/review and no validation issues. Latencies: 15.375, 6.738 and 9.084 seconds. Estimated live verification cost $0.023528; combined isolated/live estimate $0.164652. Raw receipts and screenshot remain private.
+
+Resume the paired October 16 published_verified checkpoint, preserving all 772 tracked root/reply watermarks and recorded access gaps. No Slack messages, source-document edits or source-form submissions.
+
+Read-only browser smoke check: Coaching loaded its normal rep selector and page. No coaching submission, provider call or source workflow was triggered; this is a page-load check, not a new end-to-end coaching health audit.
