@@ -14,7 +14,8 @@ it("keeps the no-open baseline distinct from all-users and subsequent sales dist
   );
   a.groups = [
     { key: "high", count: 7, average: 8071, median: 7500 },
-    { key: "some", count: 12, average: 5625, median: 2500 },
+    { key: "low", count: 12, average: 5625, median: 2500 },
+    { key: "medium", count: 1, average: 1000, median: 1000 },
     { key: "none", count: 58, average: 10116, median: 3000 },
   ];
   a.beforeAfter = {
@@ -34,7 +35,7 @@ it("keeps the no-open baseline distinct from all-users and subsequent sales dist
     waiting: 0,
   };
   const answer = buildSalesImpactPresetAnswer(a, "Summarize this page.")!;
-  expect(answer).toContain("$10,116 for reps with no recorded own opens");
+  expect(answer).toContain("0 opens: $10,116 (58 matched reps)");
   expect(answer).toContain(
     "$2,830 in the 14 days after open weeks versus $4,022 after no-open weeks",
   );
@@ -43,7 +44,7 @@ it("keeps the no-open baseline distinct from all-users and subsequent sales dist
   const context = JSON.parse(
     buildCurrentSalesImpactChatMessages(a, [])[1].content.split("\n")[1],
   );
-  expect(context.samePeriodHighVsNoOpen.baseline).toBe(
+  expect(context.samePeriod21PlusVsNoOpen.baseline).toBe(
     "reps with no recorded own opens",
   );
   expect(context.subsequent.next14DaysAfterOpenWeeks).toBe(2830);

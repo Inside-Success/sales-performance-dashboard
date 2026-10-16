@@ -53,3 +53,5 @@ For dashboard/web changes:
 
 - See MAGIC-MIKE-DURABLE-RECOVERY-2026-10-15.md. Official/manual coaching provider paths now use native internal workflow X9L4JtDbpkSCflxZ with exact-request Postgres checkpoints, owner leases and outage cooldown. Keep the normal factual/safety audit and source/report duplicate guards. Do not reintroduce same-instance public-webhook calls or nested provider HTTP retries.
 - Completion is confirmed from matching source receipts and actual report artifacts, not execution status alone. Transient failures stay queued with due-time backoff; uncertain writes/refusals/auth failures stay held for review. Preserve the source claim attempt check and accurate zero-new-cost accounting for reused results. Source Sheets, scoring and deferred compliance-policy work remain separate.
+
+- Sales Impact October 17: fixed 0/1–5/6–20/21+ distinct-open groups replace the old top-third rule. Bar means/counts and chat use the same read model. Rep report-coverage percentages use only same-window received/opened reports, never all opens divided by new reports. See MAGIC-MIKE-SALES-IMPACT-FIXED-GROUPS-2026-10-17.md.

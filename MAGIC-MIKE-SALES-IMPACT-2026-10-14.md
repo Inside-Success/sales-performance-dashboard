@@ -1,3 +1,5 @@
+> October 17 follow-up: fixed usage groups and aligned report coverage now supersede the top-third grouping described below. See [release notes](MAGIC-MIKE-SALES-IMPACT-FIXED-GROUPS-2026-10-17.md).
+
 # Sales Impact: report opens and manager presentation
 
 ## Scope and boundaries
