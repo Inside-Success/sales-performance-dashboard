@@ -33,8 +33,9 @@ describe('October 14 source refresh', () => {
   it('retains prize and SMS limitations alongside the new guidance', () => {
     expect(evidence('Can I guarantee a $10,000 cash prize on Island?')).toContain('No $10,000–$20,000 cash prize was approved');
     const sms = evidence('How do I see the newest conversations first in Rep Home?', 'main_istv');
-    expect(sms).toContain('contacts with the latest messages first');
-    expect(sms).toContain('only US numbers are supported');
+    expect(sms).toContain('orders contacts by their latest messages');
+    expect(sms).toContain('UK SMS is now enabled');
+    expect(sms).toContain('Do not infer voice capability from UK SMS activation');
   });
   it('keeps sponsorship, housing and payment claims within the actual clarifications', () => {
     expect(evidence('Can we hold a reality spot while a prospect finds a presenting sponsor?')).toContain("Rudy replied 'No'");
