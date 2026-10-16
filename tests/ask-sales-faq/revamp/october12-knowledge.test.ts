@@ -24,8 +24,9 @@ describe('October 12 knowledge refresh', () => {
     expect(evidence('When are future reality seasons filming?', 'reality')).toContain('All future seasons April–June');
     expect(evidence('Does a reality buyer wait until filming to receive anything?', 'reality')).toContain('not a fixed delivery deadline');
   });
-  it('retrieves the international SMS limit and scoped platform announcement', () => {
-    expect(evidence('Can I text a UK number from HubSpot?')).toContain('only US numbers are supported');
+  it('retrieves current UK SMS scope and the scoped platform announcement', () => {
+    expect(evidence('Can I text a UK number from HubSpot?')).toContain('UK SMS is now enabled');
+    expect(evidence('Can I text a UK number from HubSpot?')).toContain('does not establish support for every other country');
     expect(evidence('Can I say we have content on Disney or Hulu now?', 'reality')).toContain('not proof it is already streaming');
   });
   it('keeps contract and background review boundaries available', () => {
