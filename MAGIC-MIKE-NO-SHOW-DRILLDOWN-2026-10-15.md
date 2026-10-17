@@ -1,3 +1,5 @@
+> October 17: the daily source architecture below is superseded by [daily attendance reliability](MAGIC-MIKE-DAILY-ATTENDANCE-RELIABILITY-2026-10-17.md). UI and prior rolling-period behavior remain.
+
 # Rep no-show daily views and rep evidence — October 15, 2026
 
 ## Approved scope
