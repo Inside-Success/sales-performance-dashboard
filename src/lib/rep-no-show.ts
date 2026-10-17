@@ -1,7 +1,17 @@
-import { attendanceDayKey, miamiDayKey, miamiMidnight, shiftCalendarDay, type AttendanceDay } from "@/lib/rep-no-show-calendar";
+import {
+  attendanceDayKey,
+  miamiDayKey,
+  miamiMidnight,
+  shiftCalendarDay,
+  type AttendanceDay,
+} from "@/lib/rep-no-show-calendar";
 import { unstable_cache } from "next/cache";
 import { slugify } from "@/lib/slug";
-import { getReadSnapshot, snapshotWarning, type SnapshotSpec } from "@/lib/dashboard-read-snapshot";
+import {
+  getReadSnapshot,
+  snapshotWarning,
+  type SnapshotSpec,
+} from "@/lib/dashboard-read-snapshot";
 import { readAirtablePage } from "@/lib/source-read";
 
 export const REP_NO_SHOW_WINDOWS = [7, 14, 30, 90] as const;
@@ -103,6 +113,7 @@ export type RepNoShowSummary = {
 export type RepNoShowAnalytics = {
   summary: RepNoShowSummary;
   historyCount?: number;
+  weeklyReadAt?: string;
   topReps: RepNoShowRepRow[];
   noShowLog: RepNoShowCall[];
   weekly: RepNoShowWeeklyPoint[];
@@ -114,7 +125,9 @@ type NormalizedCall = RepNoShowCall & {
   ingestedAt: string | null;
 };
 
-export function normalizeRepNoShowWindow(value: string | string[] | undefined): RepNoShowWindow {
+export function normalizeRepNoShowWindow(
+  value: string | string[] | undefined,
+): RepNoShowWindow {
   const rawValue = Array.isArray(value) ? value[0] : value;
   const parsed = Number(rawValue);
   return REP_NO_SHOW_WINDOWS.includes(parsed as RepNoShowWindow)
@@ -122,132 +135,401 @@ export function normalizeRepNoShowWindow(value: string | string[] | undefined): 
     : 7;
 }
 
-type AttendanceSnapshot = { periods: Record<RepNoShowWindow, RepNoShowAnalytics>; history: RepNoShowCall[]; daily?: Record<string, RepNoShowAnalytics> };
+type AttendanceSnapshot = {
+  periods: Record<RepNoShowWindow, RepNoShowAnalytics>;
+  history: RepNoShowCall[];
+  daily?: Record<string, RepNoShowAnalytics>;
+};
 function attendanceKey(version: string) {
   return `${version}:${process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID}:${process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID}:${process.env.REP_NO_SHOW_TRACKING_START_DATE || DEFAULT_TRACKING_START_DATE}`;
 }
-export function buildAttendanceSnapshot(records: AirtableRecord[], generatedAt = new Date()): AttendanceSnapshot {
-  const trackingStart = parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE);
+export function buildAttendanceSnapshot(
+  records: AirtableRecord[],
+  generatedAt = new Date(),
+): AttendanceSnapshot {
+  const trackingStart = parseDate(
+    process.env.REP_NO_SHOW_TRACKING_START_DATE,
+    DEFAULT_TRACKING_START_DATE,
+  );
   const periods = {} as AttendanceSnapshot["periods"];
   let history: RepNoShowCall[] = [];
   for (const days of REP_NO_SHOW_WINDOWS) {
-    const analysis = calculateAttendance(records, days, generatedAt, trackingStart);
+    const analysis = calculateAttendance(
+      records,
+      days,
+      generatedAt,
+      trackingStart,
+    );
     history = analysis.noShowLog;
-    periods[days] = { ...analysis, historyCount: history.length,
-      noShowLog: history.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analysis.summary.effectivePeriodStart)) };
+    periods[days] = {
+      ...analysis,
+      historyCount: history.length,
+      noShowLog: history.filter(
+        (call) =>
+          call.callDate &&
+          Date.parse(call.callDate) >=
+            Date.parse(analysis.summary.effectivePeriodStart),
+      ),
+    };
   }
   const daily: Record<string, RepNoShowAnalytics> = {};
   for (const offset of [0, -1]) {
     const date = shiftCalendarDay(miamiDayKey(generatedAt), offset);
-    const analysis = calculateAttendance(records, 7, generatedAt, trackingStart, date);
-    daily[date] = { ...analysis, historyCount: history.length, noShowLog: history.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(analysis.summary.effectivePeriodStart) && Date.parse(call.callDate) < Date.parse(analysis.summary.effectivePeriodEnd!)) };
+    const analysis = calculateAttendance(
+      records,
+      7,
+      generatedAt,
+      trackingStart,
+      date,
+    );
+    daily[date] = {
+      ...analysis,
+      historyCount: history.length,
+      noShowLog: history.filter(
+        (call) =>
+          call.callDate &&
+          Date.parse(call.callDate) >=
+            Date.parse(analysis.summary.effectivePeriodStart) &&
+          Date.parse(call.callDate) <
+            Date.parse(analysis.summary.effectivePeriodEnd!),
+      ),
+    };
   }
   return { periods, history, daily };
 }
 export function attendanceSnapshotSpec(): SnapshotSpec<AttendanceSnapshot> {
-  return { key: attendanceKey("attendance-v3"), maxAgeSeconds: Math.min(900, Math.max(1, (Date.now() - miamiMidnight(miamiDayKey(new Date())).getTime()) / 1000)), initializeOnRead: false, load: async () => {
-    const token = getAirtableToken();
-    if (!token) throw new Error("Airtable read access is not configured.");
-    const records = await fetchAirtableRecords(token, Math.max(HISTORY_DAYS, differenceInDays(parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE), new Date()) + 2));
-    return buildAttendanceSnapshot(records);
-  } };
+  return {
+    key: attendanceKey("attendance-v3"),
+    maxAgeSeconds: Math.min(
+      900,
+      Math.max(
+        1,
+        (Date.now() - miamiMidnight(miamiDayKey(new Date())).getTime()) / 1000,
+      ),
+    ),
+    initializeOnRead: false,
+    load: async () => {
+      const token = getAirtableToken();
+      if (!token) throw new Error("Airtable read access is not configured.");
+      const records = await fetchAirtableRecords(
+        token,
+        Math.max(
+          HISTORY_DAYS,
+          differenceInDays(
+            parseDate(
+              process.env.REP_NO_SHOW_TRACKING_START_DATE,
+              DEFAULT_TRACKING_START_DATE,
+            ),
+            new Date(),
+          ) + 2,
+        ),
+      );
+      return buildAttendanceSnapshot(records);
+    },
+  };
 }
-const legacyAttendanceRead = unstable_cache(getRepNoShowAnalyticsUncached, ["rep-no-show-analytics-performance-rollback-v2"], { revalidate: 900 });
-export async function getRepNoShowAnalytics(periodDays: RepNoShowWindow = 7, includeHistory = true, calendarDay?: AttendanceDay) {
-  return process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false" ? legacyAttendanceRead(periodDays, includeHistory, calendarDay) : getRepNoShowAnalyticsUncached(periodDays, includeHistory, calendarDay);
+/** Date-specific daily reads do not depend on the large history snapshot's two saved dates.
+ * Live and completed-day keys are separate so yesterday never reuses a partial live read. */
+export function attendanceDailySnapshotSpec(
+  day: AttendanceDay,
+  now = new Date(),
+): SnapshotSpec<RepNoShowAnalytics> {
+  const date = attendanceDayKey(day, now);
+  return {
+    key: `${attendanceKey("attendance-day-v1")}:${date}:${day === "today" ? "live" : "closed"}`,
+    maxAgeSeconds: 300,
+    initializeWaitMs: 20000,
+    load: async () => {
+      const token = getAirtableToken();
+      if (!token) throw new Error("Airtable read access is not configured.");
+      const trackingStart = parseDate(
+        process.env.REP_NO_SHOW_TRACKING_START_DATE,
+        DEFAULT_TRACKING_START_DATE,
+      );
+      const records = await fetchAirtableRecords(token, 0, {
+        from: miamiMidnight(shiftCalendarDay(date, -1)).toISOString(),
+        to: miamiMidnight(shiftCalendarDay(date, 1)).toISOString(),
+      });
+      const data = calculateAttendance(
+        records,
+        7,
+        new Date(),
+        trackingStart,
+        date,
+        trackingStart,
+      );
+      return {
+        ...data,
+        weekly: [],
+        noShowLog: data.noShowLog.filter(
+          (call) =>
+            call.callDate &&
+            Date.parse(call.callDate) >=
+              Date.parse(data.summary.effectivePeriodStart) &&
+            Date.parse(call.callDate) <
+              Date.parse(data.summary.effectivePeriodEnd!),
+        ),
+      };
+    },
+  };
 }
-async function getRepNoShowAnalyticsUncached(periodDays: RepNoShowWindow = 7, includeHistory = true, calendarDay?: AttendanceDay): Promise<RepNoShowAnalytics> {
-  const fallback = getFallbackAnalytics(new Date(), periodDays, parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE));
+async function getDailyAttendance(
+  day: AttendanceDay,
+  includeHistory: boolean,
+): Promise<RepNoShowAnalytics> {
+  const now = new Date();
+  const date = attendanceDayKey(day, now);
+  const dailyRead = getReadSnapshot(attendanceDailySnapshotSpec(day, now));
+  const contextRead = getReadSnapshot(attendanceSnapshotSpec()).catch(
+    () => null,
+  );
+  const read = await dailyRead.catch(async (error) => {
+    const saved = await contextRead;
+    const prior = saved?.data.daily?.[date];
+    // Keep a valid successful day if the small source read has a transient failure.
+    // A partial yesterday or a different date is never a completed day.
+    if (
+      !saved ||
+      !prior ||
+      Date.parse(saved.fetchedAt) < miamiMidnight(miamiDayKey(now)).getTime()
+    )
+      throw error;
+    return {
+      data: prior,
+      fetchedAt: saved.fetchedAt,
+      stale: true,
+      refreshFailed: true,
+    };
+  });
+  const context = await contextRead;
+  const daily = read.data;
+  const historic = context?.data.history || [];
+  const history = [
+    ...historic.filter(
+      (call) => !call.callDate || miamiDayKey(call.callDate) !== date,
+    ),
+    ...daily.noShowLog,
+  ].sort(sortCallsDesc);
+  return {
+    ...daily,
+    weekly: context?.data.periods[7].weekly || [],
+    weeklyReadAt: context?.fetchedAt,
+    historyCount: history.length,
+    noShowLog: includeHistory ? history : daily.noShowLog,
+    summary: {
+      ...daily.summary,
+      generatedAt: read.fetchedAt,
+      calendarDay: day,
+      calendarDate: date,
+      trackingStartedAt:
+        context?.data.periods[7].summary.trackingStartedAt ||
+        daily.summary.trackingStartedAt,
+      warning: snapshotWarning(read),
+    },
+  };
+}
+const legacyAttendanceRead = unstable_cache(
+  getRepNoShowAnalyticsUncached,
+  ["rep-no-show-analytics-performance-rollback-v2"],
+  { revalidate: 900 },
+);
+export async function getRepNoShowAnalytics(
+  periodDays: RepNoShowWindow = 7,
+  includeHistory = true,
+  calendarDay?: AttendanceDay,
+) {
+  return process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false"
+    ? legacyAttendanceRead(periodDays, includeHistory, calendarDay)
+    : getRepNoShowAnalyticsUncached(periodDays, includeHistory, calendarDay);
+}
+async function getRepNoShowAnalyticsUncached(
+  periodDays: RepNoShowWindow = 7,
+  includeHistory = true,
+  calendarDay?: AttendanceDay,
+): Promise<RepNoShowAnalytics> {
+  const fallback = getFallbackAnalytics(
+    new Date(),
+    periodDays,
+    parseDate(
+      process.env.REP_NO_SHOW_TRACKING_START_DATE,
+      DEFAULT_TRACKING_START_DATE,
+    ),
+  );
   try {
+    if (calendarDay)
+      return await getDailyAttendance(calendarDay, includeHistory);
     let read;
-    try { read = await getReadSnapshot(attendanceSnapshotSpec()); }
-    catch (error) {
+    try {
+      read = await getReadSnapshot(attendanceSnapshotSpec());
+    } catch (error) {
       if (calendarDay) throw error;
-      try { read = await getReadSnapshot<AttendanceSnapshot>({ ...attendanceSnapshotSpec(), key: attendanceKey("attendance-v2"), refreshOnRead: false }); }
-      catch {
-      // Keep the verified previous version available while the compact version is populated.
-      const previous = await getReadSnapshot<AirtableRecord[]>({ key: attendanceKey("attendance-v1"), maxAgeSeconds: 900,
-        initializeOnRead: false, refreshOnRead: false, load: async () => { throw new Error("Previous attendance read is unavailable."); } }).catch(() => { throw error; });
-      const result = calculateAttendance(previous.data, periodDays, new Date(previous.fetchedAt), parseDate(process.env.REP_NO_SHOW_TRACKING_START_DATE, DEFAULT_TRACKING_START_DATE));
-      return { ...result, historyCount: result.noShowLog.length, summary: { ...result.summary, warning: "Showing the previous successful attendance read while the compact read is prepared." },
-        noShowLog: includeHistory ? result.noShowLog : result.noShowLog.filter(call => call.callDate && Date.parse(call.callDate) >= Date.parse(result.summary.effectivePeriodStart)) };
+      try {
+        read = await getReadSnapshot<AttendanceSnapshot>({
+          ...attendanceSnapshotSpec(),
+          key: attendanceKey("attendance-v2"),
+          refreshOnRead: false,
+        });
+      } catch {
+        // Keep the verified previous version available while the compact version is populated.
+        const previous = await getReadSnapshot<AirtableRecord[]>({
+          key: attendanceKey("attendance-v1"),
+          maxAgeSeconds: 900,
+          initializeOnRead: false,
+          refreshOnRead: false,
+          load: async () => {
+            throw new Error("Previous attendance read is unavailable.");
+          },
+        }).catch(() => {
+          throw error;
+        });
+        const result = calculateAttendance(
+          previous.data,
+          periodDays,
+          new Date(previous.fetchedAt),
+          parseDate(
+            process.env.REP_NO_SHOW_TRACKING_START_DATE,
+            DEFAULT_TRACKING_START_DATE,
+          ),
+        );
+        return {
+          ...result,
+          historyCount: result.noShowLog.length,
+          summary: {
+            ...result.summary,
+            warning:
+              "Showing the previous successful attendance read while the compact read is prepared.",
+          },
+          noShowLog: includeHistory
+            ? result.noShowLog
+            : result.noShowLog.filter(
+                (call) =>
+                  call.callDate &&
+                  Date.parse(call.callDate) >=
+                    Date.parse(result.summary.effectivePeriodStart),
+              ),
+        };
       }
     }
-    const date = calendarDay ? attendanceDayKey(calendarDay, new Date()) : undefined;
-    const analysis = date ? read.data.daily?.[date] : read.data.periods[periodDays];
-    if (!analysis || (calendarDay === "yesterday" && date && Date.parse(read.fetchedAt) < miamiMidnight(shiftCalendarDay(date, 1)).getTime())) throw new Error("Daily attendance is being prepared. Please try again shortly.");
-    return { ...analysis, noShowLog: includeHistory ? read.data.history : analysis.noShowLog,
-      summary: { ...analysis.summary, generatedAt: read.fetchedAt, calendarDay, calendarDate: date, warning: snapshotWarning(read) } };
+    const analysis = read.data.periods[periodDays];
+    if (!analysis) throw new Error("Attendance period data is unavailable.");
+    return {
+      ...analysis,
+      noShowLog: includeHistory ? read.data.history : analysis.noShowLog,
+      summary: {
+        ...analysis.summary,
+        generatedAt: read.fetchedAt,
+        warning: snapshotWarning(read),
+      },
+    };
   } catch (error) {
-    return { ...fallback, summary: { ...fallback.summary, configured: true, error: error instanceof Error ? error.message : "Attendance data is unavailable." } };
+    return {
+      ...fallback,
+      summary: {
+        ...fallback.summary,
+        configured: true,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Attendance data is unavailable.",
+      },
+    };
   }
 }
-function calculateAttendance(records: AirtableRecord[], periodDays: RepNoShowWindow, generatedAt: Date, configuredTrackingStart: Date, calendarDate?: string): RepNoShowAnalytics {
-    const calls = dedupeTrackedCalls(
-      records.map(normalizeAirtableRecord).filter(isEligibleCall).filter(isTrackedCall),
-    );
-    // Before the first detected rep-no-show signal, historical rows cannot prove that
-    // the classifier was consistently emitting this status. Start comparisons at the
-    // first positive signal so missing historical labels never masquerade as improvement.
-    const firstDetectedNoShowAt = calls
-      .filter((call) => call.noShow && call.callDate)
-      .map((call) => new Date(call.callDate as string))
-      .filter((date) => Number.isFinite(date.getTime()))
-      .sort((a, b) => a.getTime() - b.getTime())[0];
-    const trackingStartedAt = firstDetectedNoShowAt
+function calculateAttendance(
+  records: AirtableRecord[],
+  periodDays: RepNoShowWindow,
+  generatedAt: Date,
+  configuredTrackingStart: Date,
+  calendarDate?: string,
+  knownTrackingStart?: Date,
+): RepNoShowAnalytics {
+  const calls = dedupeTrackedCalls(
+    records
+      .map(normalizeAirtableRecord)
+      .filter(isEligibleCall)
+      .filter(isTrackedCall),
+  );
+  // Before the first detected rep-no-show signal, historical rows cannot prove that
+  // the classifier was consistently emitting this status. Start comparisons at the
+  // first positive signal so missing historical labels never masquerade as improvement.
+  const firstDetectedNoShowAt = calls
+    .filter((call) => call.noShow && call.callDate)
+    .map((call) => new Date(call.callDate as string))
+    .filter((date) => Number.isFinite(date.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime())[0];
+  const trackingStartedAt =
+    knownTrackingStart ||
+    (firstDetectedNoShowAt
       ? maxDate(configuredTrackingStart, firstDetectedNoShowAt)
-      : configuredTrackingStart;
-    const periodEnd = calendarDate ? new Date(Math.min(generatedAt.getTime(), miamiMidnight(shiftCalendarDay(calendarDate, 1)).getTime())) : generatedAt;
-    const requestedPeriodStart = calendarDate ? miamiMidnight(calendarDate) : addDays(periodEnd, -periodDays);
-    const periodStart = maxDate(requestedPeriodStart, trackingStartedAt);
-    const previousStart = calendarDate ? miamiMidnight(shiftCalendarDay(calendarDate, -1)) : addDays(requestedPeriodStart, -periodDays);
-    const comparisonAvailable = previousStart >= trackingStartedAt && (!calendarDate || calendarDate !== miamiDayKey(generatedAt));
+      : configuredTrackingStart);
+  const periodEnd = calendarDate
+    ? new Date(
+        Math.min(
+          generatedAt.getTime(),
+          miamiMidnight(shiftCalendarDay(calendarDate, 1)).getTime(),
+        ),
+      )
+    : generatedAt;
+  const requestedPeriodStart = calendarDate
+    ? miamiMidnight(calendarDate)
+    : addDays(periodEnd, -periodDays);
+  const periodStart = maxDate(requestedPeriodStart, trackingStartedAt);
+  const previousStart = calendarDate
+    ? miamiMidnight(shiftCalendarDay(calendarDate, -1))
+    : addDays(requestedPeriodStart, -periodDays);
+  const comparisonAvailable =
+    previousStart >= trackingStartedAt &&
+    (!calendarDate || calendarDate !== miamiDayKey(generatedAt));
 
-    const currentCalls = calls.filter((call) => isInWindow(call.callDate, periodStart, periodEnd));
-    const previousCalls = comparisonAvailable
-      ? calls.filter((call) => isInWindow(call.callDate, previousStart, requestedPeriodStart))
-      : [];
-    const currentNoShows = currentCalls.filter((call) => call.noShow);
-    const previousNoShows = previousCalls.filter((call) => call.noShow);
-    const noShowLog = calls.filter((call) =>
-      call.noShow && isInWindow(call.callDate, trackingStartedAt, periodEnd)
-    );
-    const topReps = buildRepRows(currentCalls);
-    const weekly = buildTrend(calls, generatedAt, trackingStartedAt);
-    const weekOverWeekChange = comparisonAvailable
-      ? currentNoShows.length - previousNoShows.length
-      : 0;
-    const avoidedNoShows = comparisonAvailable
-      ? Math.max(0, previousNoShows.length - currentNoShows.length)
-      : 0;
+  const currentCalls = calls.filter((call) =>
+    isInWindow(call.callDate, periodStart, periodEnd),
+  );
+  const previousCalls = comparisonAvailable
+    ? calls.filter((call) =>
+        isInWindow(call.callDate, previousStart, requestedPeriodStart),
+      )
+    : [];
+  const currentNoShows = currentCalls.filter((call) => call.noShow);
+  const previousNoShows = previousCalls.filter((call) => call.noShow);
+  const noShowLog = calls.filter(
+    (call) =>
+      call.noShow && isInWindow(call.callDate, trackingStartedAt, periodEnd),
+  );
+  const topReps = buildRepRows(currentCalls);
+  const weekly = buildTrend(calls, generatedAt, trackingStartedAt);
+  const weekOverWeekChange = comparisonAvailable
+    ? currentNoShows.length - previousNoShows.length
+    : 0;
+  const avoidedNoShows = comparisonAvailable
+    ? Math.max(0, previousNoShows.length - currentNoShows.length)
+    : 0;
 
-    return {
-      summary: {
-        configured: true,
-        generatedAt: generatedAt.toISOString(),
-        periodDays,
-        effectivePeriodEnd: periodEnd.toISOString(),
-        trackingStartedAt: trackingStartedAt.toISOString(),
-        effectivePeriodStart: periodStart.toISOString(),
-        comparisonAvailable,
-        recordsRead: records.length,
-        eligibleCalls: currentCalls.length,
-        previousEligibleCalls: previousCalls.length,
-        repNoShows: currentNoShows.length,
-        previousRepNoShows: previousNoShows.length,
-        call1NoShows: currentNoShows.filter(isCallOne).length,
-        call2PlusNoShows: currentNoShows.filter((call) => !isCallOne(call)).length,
-        noShowRate: rate(currentNoShows.length, currentCalls.length),
-        previousNoShowRate: rate(previousNoShows.length, previousCalls.length),
-        weekOverWeekChange,
-        avoidedNoShows,
-      },
-      topReps,
-      noShowLog: noShowLog
-        .sort(sortCallsDesc)
-        .map(stripNoShowFlag),
-      weekly,
-    };
+  return {
+    summary: {
+      configured: true,
+      generatedAt: generatedAt.toISOString(),
+      periodDays,
+      effectivePeriodEnd: periodEnd.toISOString(),
+      trackingStartedAt: trackingStartedAt.toISOString(),
+      effectivePeriodStart: periodStart.toISOString(),
+      comparisonAvailable,
+      recordsRead: records.length,
+      eligibleCalls: currentCalls.length,
+      previousEligibleCalls: previousCalls.length,
+      repNoShows: currentNoShows.length,
+      previousRepNoShows: previousNoShows.length,
+      call1NoShows: currentNoShows.filter(isCallOne).length,
+      call2PlusNoShows: currentNoShows.filter((call) => !isCallOne(call))
+        .length,
+      noShowRate: rate(currentNoShows.length, currentCalls.length),
+      previousNoShowRate: rate(previousNoShows.length, previousCalls.length),
+      weekOverWeekChange,
+      avoidedNoShows,
+    },
+    topReps,
+    noShowLog: noShowLog.sort(sortCallsDesc).map(stripNoShowFlag),
+    weekly,
+  };
 }
 
 function getAirtableToken() {
@@ -259,41 +541,67 @@ function getAirtableToken() {
   ).trim();
 }
 
-async function fetchAirtableRecords(token: string, historyDays: number) {
+async function fetchAirtableRecords(
+  token: string,
+  historyDays: number,
+  range?: { from: string; to: string },
+) {
   const baseId = process.env.AIRTABLE_BASE_ID || DEFAULT_AIRTABLE_BASE_ID;
-  const tableId = process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID;
+  const tableId =
+    process.env.AIRTABLE_ZOOM_CALLS_TABLE_ID || DEFAULT_AIRTABLE_TABLE_ID;
   const records: AirtableRecord[] = [];
   let offset = "";
   const seenOffsets = new Set<string>();
-  const deadline = Date.now() + 240000;
+  const deadline = Date.now() + (range ? 20000 : 240000);
 
   do {
     const params = new URLSearchParams();
     params.set("pageSize", "100");
+    // Match the same call-date fallback as normalizeAirtableRecord; ingestion date alone can miss late arrivals.
+    const callDate =
+      "IF({Meeting Start Date}, {Meeting Start Date}, IF({Ingested At}, {Ingested At}, CREATED_TIME()))";
     params.set(
       "filterByFormula",
-      `AND({Processing Status} = 'Processed', FIND('attendance_status', LOWER({AI Decision Reason} & '')) > 0, OR(IS_AFTER({Ingested At}, DATEADD(NOW(), -${historyDays}, 'days')), IS_AFTER({Meeting Start Date}, DATEADD(NOW(), -${historyDays}, 'days'))))`,
+      range
+        ? `AND({Processing Status} = 'Processed', FIND('attendance_status', LOWER({AI Decision Reason} & '')) > 0, NOT(IS_BEFORE(${callDate}, DATETIME_PARSE('${range.from}'))), IS_BEFORE(${callDate}, DATETIME_PARSE('${range.to}')))`
+        : `AND({Processing Status} = 'Processed', FIND('attendance_status', LOWER({AI Decision Reason} & '')) > 0, OR(IS_AFTER({Ingested At}, DATEADD(NOW(), -${historyDays}, 'days')), IS_AFTER({Meeting Start Date}, DATEADD(NOW(), -${historyDays}, 'days'))))`,
     );
     params.set("sort[0][field]", "Ingested At");
     params.set("sort[0][direction]", "desc");
     AIRTABLE_FIELDS.forEach((field) => params.append("fields[]", field));
     if (offset) params.set("offset", offset);
 
-    const response = await readAirtablePage(`https://api.airtable.com/v0/${baseId}/${tableId}?${params}`, token, deadline);
+    const response = await readAirtablePage(
+      `https://api.airtable.com/v0/${baseId}/${tableId}?${params}`,
+      token,
+      deadline,
+    );
 
     const data = (await response.json()) as AirtableListResponse;
     if (!response.ok) {
-      throw new Error(data.error?.message || "Airtable rejected the rep no-show analytics request.");
+      throw new Error(
+        data.error?.message ||
+          "Airtable rejected the rep no-show analytics request.",
+      );
     }
 
-    if (!Array.isArray(data.records)) throw new Error("Attendance source returned an invalid page; incomplete totals are not published.");
+    if (!Array.isArray(data.records))
+      throw new Error(
+        "Attendance source returned an invalid page; incomplete totals are not published.",
+      );
     records.push(...data.records);
     offset = data.offset || "";
-    if (offset && seenOffsets.has(offset)) throw new Error("Attendance history pagination repeated; no partial totals are shown.");
+    if (offset && seenOffsets.has(offset))
+      throw new Error(
+        "Attendance history pagination repeated; no partial totals are shown.",
+      );
     if (offset) seenOffsets.add(offset);
   } while (offset);
 
-  if (!records.length) throw new Error("Attendance history was empty; keeping the previous successful read.");
+  if (!records.length && !range)
+    throw new Error(
+      "Attendance history was empty; keeping the previous successful read.",
+    );
   return records;
 }
 
@@ -346,11 +654,18 @@ function isRepNoShow(status: string, reason: string) {
   const text = normalizeText(`${status} ${reason}`);
   if (!text) return false;
 
-  if (/\b(present|attended|joined|normal|ok|clear|none|no issue)\b/.test(normalizedStatus)) {
+  if (
+    /\b(present|attended|joined|normal|ok|clear|none|no issue)\b/.test(
+      normalizedStatus,
+    )
+  ) {
     return false;
   }
 
-  if (/\b(prospect|client|customer)\b/.test(text) && !/\b(rep|sales|closer|host)\b/.test(text)) {
+  if (
+    /\b(prospect|client|customer)\b/.test(text) &&
+    !/\b(rep|sales|closer|host)\b/.test(text)
+  ) {
     return false;
   }
 
@@ -367,11 +682,19 @@ function isRepNoShow(status: string, reason: string) {
     "host no show",
   ];
 
-  if (explicitStatuses.some((needle) => normalizedStatus.includes(needle.replace(/_/g, " ")))) {
+  if (
+    explicitStatuses.some((needle) =>
+      normalizedStatus.includes(needle.replace(/_/g, " ")),
+    )
+  ) {
     return true;
   }
 
-  if (/\b(rep|sales|closer|host|salesperson)\b.*\b(absent|missing|did not join|never joined|no audio)\b/.test(normalizedStatus)) {
+  if (
+    /\b(rep|sales|closer|host|salesperson)\b.*\b(absent|missing|did not join|never joined|no audio)\b/.test(
+      normalizedStatus,
+    )
+  ) {
     return true;
   }
 
@@ -416,10 +739,7 @@ function getCallDedupeKey(call: NormalizedCall) {
   const meetingIdKey = normalizeIdentity(call.meetingId);
   const meetingTitleKey = normalizeIdentity(call.meetingTitle);
 
-  if (
-    !hasStrongIdentity(repKey) ||
-    !hasStrongIdentity(clientKey)
-  ) {
+  if (!hasStrongIdentity(repKey) || !hasStrongIdentity(clientKey)) {
     return "";
   }
 
@@ -435,8 +755,12 @@ function getCallDedupeKey(call: NormalizedCall) {
   return [repKey, clientKey, `title:${meetingTitleKey}`, timeKey].join("|");
 }
 
-function choosePreferredCall(current: NormalizedCall, candidate: NormalizedCall) {
-  const scoreDelta = getCallQualityScore(candidate) - getCallQualityScore(current);
+function choosePreferredCall(
+  current: NormalizedCall,
+  candidate: NormalizedCall,
+) {
+  const scoreDelta =
+    getCallQualityScore(candidate) - getCallQualityScore(current);
   if (scoreDelta > 0) return candidate;
   if (scoreDelta < 0) return current;
 
@@ -457,16 +781,18 @@ function getCallQualityScore(call: NormalizedCall) {
 }
 
 function normalizeIdentity(value: string) {
-  return normalizeText(value).replace(/[^a-z0-9]+/g, " ").trim();
+  return normalizeText(value)
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 function hasStrongIdentity(value: string) {
   return Boolean(
     value &&
-      value !== "unknown" &&
-      value !== "unknown rep" &&
-      value !== "client unavailable" &&
-      value !== "unavailable",
+    value !== "unknown" &&
+    value !== "unknown rep" &&
+    value !== "client unavailable" &&
+    value !== "unavailable",
   );
 }
 
@@ -483,7 +809,10 @@ function getSortableTime(value: string | null) {
 }
 
 function buildRepRows(calls: NormalizedCall[]): RepNoShowRepRow[] {
-  const byRep = new Map<string, { repName: string; repSlug: string; calls: NormalizedCall[] }>();
+  const byRep = new Map<
+    string,
+    { repName: string; repSlug: string; calls: NormalizedCall[] }
+  >();
 
   for (const call of calls) {
     const current = byRep.get(call.repSlug) || {
@@ -510,9 +839,7 @@ function buildRepRows(calls: NormalizedCall[]): RepNoShowRepRow[] {
     })
     .filter((rep) => rep.noShows > 0)
     .sort(
-      (a, b) =>
-        b.noShows - a.noShows ||
-        a.repName.localeCompare(b.repName),
+      (a, b) => b.noShows - a.noShows || a.repName.localeCompare(b.repName),
     );
 }
 
@@ -535,7 +862,9 @@ function buildDailyTrend(
   generatedAt: Date,
   trackingStartedAt: Date,
 ): RepNoShowWeeklyPoint[] {
-  const firstDay = startOfDay(maxDate(addDays(generatedAt, -13), trackingStartedAt));
+  const firstDay = startOfDay(
+    maxDate(addDays(generatedAt, -13), trackingStartedAt),
+  );
   const currentDay = startOfDay(generatedAt);
   const days = Math.max(1, differenceInDays(firstDay, currentDay) + 1);
 
@@ -544,7 +873,9 @@ function buildDailyTrend(
     const dayEnd = addDays(dayStart, 1);
     const pointStart = maxDate(dayStart, trackingStartedAt);
     const pointEnd = minDate(dayEnd, generatedAt);
-    const dayCalls = calls.filter((call) => isInWindow(call.callDate, pointStart, pointEnd));
+    const dayCalls = calls.filter((call) =>
+      isInWindow(call.callDate, pointStart, pointEnd),
+    );
     const noShows = dayCalls.filter((call) => call.noShow).length;
 
     return {
@@ -563,13 +894,19 @@ function buildWeeklyTrend(
 ): RepNoShowWeeklyPoint[] {
   const currentWeekStart = startOfWeek(generatedAt);
   return Array.from({ length: WEEK_COUNT }, (_, index) => {
-    const rawWeekStart = addDays(currentWeekStart, -7 * (WEEK_COUNT - 1 - index));
+    const rawWeekStart = addDays(
+      currentWeekStart,
+      -7 * (WEEK_COUNT - 1 - index),
+    );
     const rawWeekEnd = addDays(rawWeekStart, 7);
-    if (rawWeekEnd <= trackingStartedAt || rawWeekStart >= generatedAt) return null;
+    if (rawWeekEnd <= trackingStartedAt || rawWeekStart >= generatedAt)
+      return null;
 
     const weekStart = maxDate(rawWeekStart, trackingStartedAt);
     const weekEnd = minDate(rawWeekEnd, generatedAt);
-    const weekCalls = calls.filter((call) => isInWindow(call.callDate, weekStart, weekEnd));
+    const weekCalls = calls.filter((call) =>
+      isInWindow(call.callDate, weekStart, weekEnd),
+    );
     if (!weekCalls.length) return null;
     const noShows = weekCalls.filter((call) => call.noShow).length;
 
@@ -587,7 +924,10 @@ function getFallbackAnalytics(
   periodDays: RepNoShowWindow,
   trackingStartedAt: Date,
 ): RepNoShowAnalytics {
-  const effectivePeriodStart = maxDate(addDays(generatedAt, -periodDays), trackingStartedAt);
+  const effectivePeriodStart = maxDate(
+    addDays(generatedAt, -periodDays),
+    trackingStartedAt,
+  );
 
   return {
     summary: {
@@ -640,7 +980,9 @@ function isCallOne(call: Pick<RepNoShowCall, "callNumber">) {
 function fieldString(fields: Record<string, unknown>, key: string) {
   const value = fields[key];
   if (Array.isArray(value)) return value.map(String).join(", ").trim();
-  return typeof value === "string" || typeof value === "number" ? String(value).trim() : "";
+  return typeof value === "string" || typeof value === "number"
+    ? String(value).trim()
+    : "";
 }
 
 function fieldDate(fields: Record<string, unknown>, key: string) {
@@ -649,11 +991,7 @@ function fieldDate(fields: Record<string, unknown>, key: string) {
 }
 
 function normalizeText(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return value.toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function parseDate(value: string | undefined, fallback: string) {
@@ -687,7 +1025,9 @@ function isInWindow(value: string | null, start: Date, end: Date) {
 }
 
 function startOfWeek(date: Date) {
-  const weekStart = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const weekStart = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
   const day = weekStart.getUTCDay();
   const diff = day === 0 ? -6 : 1 - day;
   weekStart.setUTCDate(weekStart.getUTCDate() + diff);
@@ -695,12 +1035,20 @@ function startOfWeek(date: Date) {
 }
 
 function startOfDay(date: Date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
 }
 
 function differenceInDays(start: Date, end: Date) {
   const millisecondsPerDay = 24 * 60 * 60 * 1000;
-  return Math.max(0, Math.floor((startOfDay(end).getTime() - startOfDay(start).getTime()) / millisecondsPerDay));
+  return Math.max(
+    0,
+    Math.floor(
+      (startOfDay(end).getTime() - startOfDay(start).getTime()) /
+        millisecondsPerDay,
+    ),
+  );
 }
 
 function formatTrendLabel(date: Date) {
@@ -711,6 +1059,11 @@ function formatTrendLabel(date: Date) {
   }).format(date);
 }
 
-function sortCallsDesc(a: Pick<RepNoShowCall, "callDate">, b: Pick<RepNoShowCall, "callDate">) {
-  return new Date(b.callDate || 0).getTime() - new Date(a.callDate || 0).getTime();
+function sortCallsDesc(
+  a: Pick<RepNoShowCall, "callDate">,
+  b: Pick<RepNoShowCall, "callDate">,
+) {
+  return (
+    new Date(b.callDate || 0).getTime() - new Date(a.callDate || 0).getTime()
+  );
 }

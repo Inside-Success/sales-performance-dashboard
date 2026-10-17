@@ -55,3 +55,5 @@ For dashboard/web changes:
 - Completion is confirmed from matching source receipts and actual report artifacts, not execution status alone. Transient failures stay queued with due-time backoff; uncertain writes/refusals/auth failures stay held for review. Preserve the source claim attempt check and accurate zero-new-cost accounting for reused results. Source Sheets, scoring and deferred compliance-policy work remain separate.
 
 - Sales Impact October 17: fixed 0/1–5/6–20/21+ distinct-open groups replace the old top-third rule. Bar means/counts and chat use the same read model. Rep report-coverage percentages use only same-window received/opened reports, never all opens divided by new reports. See MAGIC-MIKE-SALES-IMPACT-FIXED-GROUPS-2026-10-17.md.
+
+- October 17 daily attendance repair: Today/Yesterday use bounded date-specific daily snapshots with separate live/completed-day keys, independent of the full-history refresh. Bottom daily evidence uses the same service. Preserve source read-only boundaries and last-successful data; see MAGIC-MIKE-DAILY-ATTENDANCE-RELIABILITY-2026-10-17.md.
