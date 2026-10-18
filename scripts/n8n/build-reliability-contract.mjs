@@ -22,7 +22,7 @@ export function buildPatches(baselines) {
   const provider='X9L4JtDbpkSCflxZ';
   let validate=node(provider,'Validate Result').parameters.jsCode;
   validate=replace(validate,'const r=$json;','const r={...$json};\nif(coachingStage(s.call_purpose)){r.parsed_json=normalizeCoaching(r.parsed_json);r.model_text=JSON.stringify(r.parsed_json);r.contract_revision=CONTRACT_REVISION;}\nconst contractErrors=coachingStage(s.call_purpose)?coachingContractErrors(r.parsed_json):[];');
-  validate=replace(validate,'const providerError=','valid=valid && !contractErrors.length;\nconst providerError=');
+  validate=replace(validate,'const providerError=','if(contractErrors.length)r.contract_errors=contractErrors;\nconst providerError=');
   validate=replace(validate,"providerError || r.parse_error || (", "providerError || r.parse_error || (contractErrors.length?'Invalid coaching contract: '+contractErrors.join('; '):'') || (");
   update(provider,'Validate Result',{'parameters.jsCode':contract+'\n'+validate});
   let restore=node(provider,'Restore Cached Result').parameters.jsCode;

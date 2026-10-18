@@ -2,7 +2,7 @@ import "server-only";
 import { createHash, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import { type CheckpointInput, retryableProviderFailure, validProviderResult } from "./provider-checkpoint-policy";
-import { coachingStage, normalizeCoaching, CONTRACT_REVISION } from "./coaching-reliability-policy.mjs";
+import { coachingStage, normalizeCoaching, coachingContractErrors, CONTRACT_REVISION } from "./coaching-reliability-policy.mjs";
 
 let schema: Promise<void> | null = null;
 function database() {
@@ -84,6 +84,20 @@ export async function providerCheckpoint(input: CheckpointInput) {
       normalized.parsed_json=normalizeCoaching(normalized.parsed_json);
       normalized.model_text=JSON.stringify(normalized.parsed_json);
       normalized.contract_revision=CONTRACT_REVISION;
+    }
+    if (coachingStage(input.stage) && !validProviderResult(normalized) && validProviderResult({...normalized,call_purpose:undefined})) {
+      // Parsed coaching must reach the existing bounded targeted repair. It must
+      // not become a completed/reusable provider checkpoint before that repair.
+      const reason='Invalid coaching contract: '+coachingContractErrors(normalized.parsed_json).join('; ');
+      const rejected={...normalized};delete rejected.raw_response;
+      const rows=await sql`update coaching_provider_checkpoints set status='failed',result=${JSON.stringify(rejected)}::jsonb,
+        last_error=${reason},next_attempt_at=now(),updated_at=now()
+        where checkpoint_key=${key} and owner_token=${input.token} and status='running' returning checkpoint_key`;
+      if(!rows.length) {
+        const prior=await sql`select status,owner_token,last_error from coaching_provider_checkpoints where checkpoint_key=${key}`;
+        if(prior[0]?.status!=='failed'||prior[0]?.owner_token!==input.token||prior[0]?.last_error!==reason)throw Error('Checkpoint ownership changed; rejection refused');
+      }
+      return {status:'rejected_contract',repair_required:true};
     }
     if (!validProviderResult(normalized)) throw Error("Invalid structured provider result; checkpoint refused");
     // raw_response duplicates the text and may contain reasoning; retain normalized fields only.

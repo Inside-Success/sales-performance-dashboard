@@ -24,7 +24,7 @@ jobs:
           node-version: '22.13.1'
           cache: npm
       - run: npm ci
-      - run: npx vitest run tests/coaching src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/provider-checkpoint-policy.test.ts
+      - run: npx vitest run tests/coaching src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/provider-checkpoint-policy.test.ts src/lib/provider-checkpoints.test.ts
       - run: node scripts/n8n/verify-recovery-retry-policy.mjs
       - run: node scripts/n8n/verify-durable-provider.mjs
       - run: node scripts/n8n/verify-crash-recovery.mjs
