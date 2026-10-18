@@ -23,7 +23,7 @@ for(const operations of Object.values(patches))for(const op of operations){
 }
 const allowed=new Set(['updateNode','addNode','rewireConnection','addConnection']);
 assert(Object.values(patches).flat().every(op=>allowed.has(op.type)));
-assert(patches.L8Nn7xncA9ZPDdWA.some(op=>op.node?.name==='MM Read Failure Diagnostics'));
+assert(patches.L8Nn7xncA9ZPDdWA.some(op=>op.node?.name==='MM Read Checkpoint State'));
 assert(!coverage.nodes.some(n=>/anthropic|deepseek|googleDrive|airtable|chainLlm/i.test(n.type)));
 assert(coverage.nodes.filter(n=>n.type==='n8n-nodes-base.httpRequest').every(n=>n.parameters.url.endsWith('/api/internal/coaching-coverage')));
 const names=new Set(coverage.nodes.map(n=>n.name));

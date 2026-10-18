@@ -30,7 +30,7 @@ export function buildPatches(baselines) {
   update(provider,'Restore Cached Result',{'parameters.jsCode':contract+'\n'+restore});
   const official='L8Nn7xncA9ZPDdWA';
   const lookup=structuredClone(node(provider,'Claim Checkpoint'));
-  lookup.id='mm-source-failure-diagnostics';lookup.name='MM Read Failure Diagnostics';lookup.position=[15000,8800];
+  lookup.id='mm-source-failure-diagnostics';lookup.name='MM Read Checkpoint State';lookup.position=[15000,8800];
   lookup.parameters.body="={{ JSON.stringify({action:'source_status',source_id:$('If').item.json['Source Airtable Record ID']}) }}";
   lookup.onError='continueRegularOutput';lookup.retryOnFail=true;lookup.maxTries=2;delete lookup.continueOnFail;
   (result[official]??=[]).push({type:'addNode',node:lookup},{type:'rewireConnection',source:'Set: agent_failed',from:'MM Queue Unfinished Coaching',to:lookup.name},{type:'addConnection',source:lookup.name,target:'MM Queue Unfinished Coaching'});

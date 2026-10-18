@@ -36,6 +36,10 @@ describe('bounded source-to-report coverage',()=>{
     const next=await coachingCoverage('scan');if(!('end' in next))throw Error('Expected ready scan');expect(next.end).toBe(windowEnd);
     expect(String(mocks.read.mock.calls[5][0])).toContain('offset=offset4');
   });
+  it('accounts for explicit intake exclusions without false missing-report alerts',async()=>{
+    mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[{id:'recNoShow',fields:{'AI Decision Reason':'sales_no_show: Waiting alone'}},{id:'recReal',fields:{'AI Decision Reason':'valid_sales_call: A close attempt'}}]})));
+    expect(await coachingCoverage('scan')).toMatchObject({status:'ready',checked:2,source_ids:['recReal']});
+  });
   it('does not advance cursor or publish empty success when source fails',async()=>{
     mocks.state={offset:'saved',end:'2026-10-18T00:00:00.000Z'};
     mocks.read.mockResolvedValue(new Response('unavailable',{status:503}));

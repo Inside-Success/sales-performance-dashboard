@@ -59,3 +59,10 @@ export function coveragePlan(scan, receipts) {
   const missing=scan.source_ids.filter(id=>!bySource.has(id)||bySource.get(id).status==='delivered');
   return {token:scan.token,missing_ids:missing,notify:missing.filter(id=>!reported.has(id)),checked:scan.checked};
 }
+
+// Intake records these attendance-only outcomes as Processed/Call 2+ too.
+// They do not require a coaching report. Never infer exclusions from prose.
+export function coverageIntakeExclusion(reason) {
+  const code=String(reason||'').match(/^([a-z_]+):/)?.[1];
+  return ['sales_no_show','sales_rep_no_show','sales_too_short'].includes(code);
+}
