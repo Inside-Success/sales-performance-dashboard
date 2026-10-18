@@ -21,7 +21,7 @@ describe("selector filtering leaves historical report access intact", () => {
   it("filters choices only, while requesting an active rep's historical date unchanged", async () => {
     getDashboardData.mockResolvedValue({ reps: [recent, archived], calls: [{ id: 10, rep_name: recent.rep_name }], configured: true });
     const html = renderToStaticMarkup(await CoachingHome({ searchParams: Promise.resolve({ rep: "current", date: "2025-01-01" }) }));
-    expect(getDashboardData).toHaveBeenCalledWith({ rep: "current", date: "2025-01-01", q: undefined, client: undefined, from: undefined, to: undefined });
+    expect(getDashboardData).toHaveBeenCalledWith({ rep: "current", date: "2025-01-01", q: undefined, client: undefined, from: undefined, to: undefined }, { libraryOnly: true, loadCalls: true });
     expect(html).toContain("Report 10");
     expect(html).toContain("Current Rep");
     expect(html).not.toContain("Archived Rep");
@@ -39,6 +39,6 @@ describe("selector filtering leaves historical report access intact", () => {
     getDashboardData.mockResolvedValue({ reps: [recent, archived], calls: [], configured: true });
     const html = renderToStaticMarkup(await CoachingHome({ searchParams: Promise.resolve({}) }));
     expect(html).toContain("Search 1 sales reps by name");
-    expect(getDashboardData).toHaveBeenCalledWith({});
+    expect(getDashboardData).toHaveBeenCalledWith({}, { libraryOnly: true, loadCalls: false });
   });
 });

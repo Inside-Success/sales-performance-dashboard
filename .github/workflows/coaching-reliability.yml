@@ -1,0 +1,33 @@
+name: Coaching reliability regression gate
+on:
+  pull_request:
+    paths:
+      - 'scripts/n8n/**'
+      - 'src/lib/coaching-*.ts'
+      - 'src/lib/coaching-*.mjs'
+      - 'src/lib/provider-checkpoint*'
+      - 'src/app/api/internal/**'
+      - 'tests/coaching/**'
+      - '.github/workflows/coaching-reliability.yml'
+permissions:
+  contents: read
+jobs:
+  reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/coaching src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/provider-checkpoint-policy.test.ts
+      - run: node scripts/n8n/verify-recovery-retry-policy.mjs
+      - run: node scripts/n8n/verify-durable-provider.mjs
+      - run: node scripts/n8n/verify-crash-recovery.mjs
+      - run: node scripts/n8n/verify-reliability-contract.mjs
+      - run: npx tsc --noEmit
+      - run: npm run build

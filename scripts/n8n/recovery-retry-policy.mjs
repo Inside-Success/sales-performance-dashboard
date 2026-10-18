@@ -1,15 +1,16 @@
 // Shared source-level retry policy. Business-write uncertainty must remain held.
+import { failureDecision } from '../../src/lib/coaching-reliability-policy.mjs';
 export function retryable(message) {
-  if (/\b401\b|\b403\b|\brefusal\b|invalid source/i.test(message)) return false;
-  return /timeout|timed out|aborted|524|429|50[0234]|529|overload|rate.?limit|temporar|ECONNRESET|ETIMEDOUT|EAI_AGAIN|fetch failed|socket|connection.*closed|empty response|JSON parse|invalid structured|checkpoint (deferred|unavailable)/i.test(message);
+  return failureDecision(message).retryable;
 }
-export function queueFailure(sourceId, executionId, message, attempt=0, now=Date.now()) {
+export function queueFailure(sourceId, executionId, message, attempt=0, now=Date.now(), checkpoints=[]) {
   if (!/^rec[A-Za-z0-9]+$/.test(sourceId)) throw Error("Invalid recovery source");
-  const eligible=retryable(message);
+  const decision=failureDecision(message,checkpoints,attempt,now);
+  const eligible=decision.retryable;
   const delay=attempt>=3?86400000:[300000,900000,3600000][Math.max(0,attempt)];
   return {source_id:sourceId,execution_id:String(executionId),updated_at:new Date(now).toISOString(),report_id:"",
     status:eligible?"queued":"needs_review",attempts:attempt,
-    message:(eligible?`retry_at=${new Date(now+delay).toISOString()} | `:"")+String(message).slice(0,900)};
+    message:(eligible?`retry_at=${new Date(Math.max(now+delay,decision.retryAt||0)).toISOString()} | `:"")+`kind=${decision.kind}${decision.stage?' stage='+decision.stage:''} | `+String(message).slice(0,850)};
 }
 export function dueCalls(rows, now=Date.now()) {
   return rows.filter(r=>r.status==="queued" && /^rec[A-Za-z0-9]+$/.test(r.source_id||""))

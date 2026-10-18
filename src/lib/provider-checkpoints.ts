@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import { type CheckpointInput, retryableProviderFailure, validProviderResult } from "./provider-checkpoint-policy";
+import { coachingStage, normalizeCoaching, CONTRACT_REVISION } from "./coaching-reliability-policy.mjs";
 
 let schema: Promise<void> | null = null;
 function database() {
@@ -31,10 +32,28 @@ async function ensureSchema() {
 export async function providerCheckpoint(input: CheckpointInput) {
   await ensureSchema();
   const sql = database();
+  if (input.action === "source_status") {
+    const checkpoints = await sql`select stage,status,attempts,lease_until::text,next_attempt_at::text,updated_at::text,last_error
+      from coaching_provider_checkpoints where source_id=${input.source_id} and status<>'completed'
+      order by updated_at desc limit 10`;
+    return {source_id:input.source_id,checkpoints};
+  }
   const key = createHash("sha256").update(JSON.stringify([input.source_id, input.stage, input.provider, input.request_hash])).digest("hex");
   if (input.action === "claim") {
     const existing = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='completed'`;
-    if (existing[0]) return { status: "cached", result: existing[0].result };
+    if (existing[0]) {
+      const result = {...existing[0].result};
+      if (coachingStage(input.stage)) {
+        result.call_purpose=input.stage;
+        result.parsed_json=normalizeCoaching(result.parsed_json);
+        result.model_text=JSON.stringify(result.parsed_json);
+        result.contract_revision=CONTRACT_REVISION;
+      }
+      if (validProviderResult(result)) return { status: "cached", result };
+      // Retain the rejected output for diagnosis. Only this exact invalid request can be retried.
+      await sql`update coaching_provider_checkpoints set status='failed',last_error='Invalid coaching contract in cached result',
+        next_attempt_at=now(),updated_at=now() where checkpoint_key=${key} and status='completed'`;
+    }
     await sql`delete from coaching_provider_checkpoints where checkpoint_key in
       (select checkpoint_key from coaching_provider_checkpoints where status<>'running' and updated_at<now()-interval '14 days' limit 100)`;
     await sql`insert into coaching_provider_health(provider) values (${input.provider}) on conflict do nothing`;
@@ -60,9 +79,15 @@ export async function providerCheckpoint(input: CheckpointInput) {
     return { status: "deferred", retry_at: row?.status === "running" ? row.lease_until : row?.next_attempt_at };
   }
   if (input.action === "complete") {
-    if (!validProviderResult(input.result)) throw Error("Invalid structured provider result; checkpoint refused");
+    const normalized:Record<string,unknown> = {...input.result,call_purpose:input.stage};
+    if (coachingStage(input.stage)) {
+      normalized.parsed_json=normalizeCoaching(normalized.parsed_json);
+      normalized.model_text=JSON.stringify(normalized.parsed_json);
+      normalized.contract_revision=CONTRACT_REVISION;
+    }
+    if (!validProviderResult(normalized)) throw Error("Invalid structured provider result; checkpoint refused");
     // raw_response duplicates the text and may contain reasoning; retain normalized fields only.
-    const result = { ...input.result };
+    const result = { ...normalized };
     delete result.raw_response;
     const rows = await sql`update coaching_provider_checkpoints set status='completed',result=${JSON.stringify(result)}::jsonb,
       last_error=null,updated_at=now() where checkpoint_key=${key} and owner_token=${input.token} and status='running'
