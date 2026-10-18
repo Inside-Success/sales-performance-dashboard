@@ -1,0 +1,68 @@
+{
+  "release": "coaching-reliability-2026-10-18",
+  "backend_commit": "dda6680aa04bf4de0ba0d9679763af0b601d50c5",
+  "backend_deployment": "dpl_AKspENiWroRZL9t6qyuFTNvdopYx",
+  "pull_requests": [
+    319,
+    320
+  ],
+  "regression_tests": 147,
+  "source_sweep_records": 932,
+  "source_sweep_unaccounted_candidates": 17,
+  "workflows": {
+    "FShnTde2OGhIUZE4": {
+      "baseline_version": "9d588fe7-3b84-49b2-beeb-0c5227a84c9b",
+      "published_version": "4675bde3-bc49-42f0-998a-22143e43f8cb",
+      "patch_sha256": "3dc94ef64f133106ad59e08a86f18e3340ed02060f4b46613e66c4a969d0ecc5",
+      "changed_nodes": [
+        "Validate Draft",
+        "Validate Repaired Draft",
+        "Build Factual Audit",
+        "Render Reviewed Report",
+        "Render Repaired Audit"
+      ]
+    },
+    "X9L4JtDbpkSCflxZ": {
+      "baseline_version": "9d7f9a49-9852-4194-b134-9566601a7df7",
+      "published_version": "091579f2-e286-4b20-ba2d-85c808fbfd18",
+      "patch_sha256": "bae89082b3d2f63a894049632edbfb1c064dc79d387ecb88bcb9f3b41107d2c9",
+      "changed_nodes": [
+        "Validate Result",
+        "Restore Cached Result"
+      ]
+    },
+    "BMRrGxHyXMcgO6j3": {
+      "baseline_version": "edc7c64f-4f67-42c3-9ea8-683e66d0d185",
+      "published_version": "4b04505e-9827-497d-bebf-458cb795244f",
+      "patch_sha256": "80eddb32b2b1f0441318325c5c0ad6681cf5594930a6385ec978691948d5ca2a",
+      "changed_nodes": [
+        "MM Manual Build Factual Audit",
+        "MM Manual Render Audited Coaching"
+      ]
+    },
+    "mIsdpJO71D8DMrxe": {
+      "baseline_version": "7c7f39e2-7518-4cbd-b1c5-75dff2d0f33c",
+      "published_version": "b6ae5900-4077-4f82-a661-8821c60e5618",
+      "patch_sha256": "e0688ac5697ec9185da9ac128a9e76b710b555c56755469650502eac93b4b81c",
+      "changed_nodes": [
+        "Read Failed Executions",
+        "Read Crashed Executions",
+        "Select Unscanned Failures"
+      ]
+    },
+    "L8Nn7xncA9ZPDdWA": {
+      "baseline_version": null,
+      "published_version": "13195c8c-093d-4f26-a49b-f70ceeb6b6e7",
+      "patch_sha256": "1aee39c8d65cc859d52eef5883458b8dabb853e2e7ba12f7ccbca32f8f09af3f",
+      "changed_nodes": [
+        "MM Read Checkpoint State",
+        "MM Queue Unfinished Coaching"
+      ],
+      "baseline_scope": "Selected node definitions and complete connection graph in the compressed private baseline; full baseline version ID unavailable."
+    },
+    "yL5XsZPtVP1rsW8X": {
+      "baseline_version": null,
+      "published_version": "fbe4f93a-4c71-45ef-b06f-e820838c7e56"
+    }
+  }
+}
