@@ -5,7 +5,7 @@ import {buildPatches,buildCoverage} from './build-reliability-contract.mjs';
 import {failureDecision,normalizeCoaching,coachingContractErrors} from '../../src/lib/coaching-reliability-policy.mjs';
 const code=(name,jsCode)=>({id:name,name,type:'n8n-nodes-base.code',parameters:{jsCode}});
 const http={id:'claim',name:'Claim Checkpoint',type:'n8n-nodes-base.httpRequest',typeVersion:4.4,position:[0,0],parameters:{url:'checkpoint',options:{timeout:30000}},credentials:{httpHeaderAuth:{id:'existing-reference'}}};
-const validator="const s=$('Validate Claim').first().json;const r=$json;let valid=true;const providerError='';return [{json:{valid,error:providerError || r.parse_error || ('invalid')}}];";
+const validator="const s=$('Validate Claim').first().json;const r=$json;let valid=true;const providerError='';return [{json:{valid,result:r,error:providerError || r.parse_error || ('invalid')}}];";
 const renderer="function renderCoaching(analysis,blocks,options={}) {return analysis;}return [];";
 const baseline={
   X9L4JtDbpkSCflxZ:{nodes:[http,code('Validate Result',validator),code('Restore Cached Result','const s=$json;const r=s.checkpoint.result;return [{json:r}];')]},
@@ -23,7 +23,7 @@ for(const operations of Object.values(patches))for(const op of operations){
 }
 const allowed=new Set(['updateNode','addNode','rewireConnection','addConnection']);
 assert(Object.values(patches).flat().every(op=>allowed.has(op.type)));
-assert(patches.L8Nn7xncA9ZPDdWA.some(op=>op.node?.name==='MM Read Failure Diagnostics'));
+assert(patches.L8Nn7xncA9ZPDdWA.some(op=>op.node?.name==='MM Read Checkpoint State'));
 assert(!coverage.nodes.some(n=>/anthropic|deepseek|googleDrive|airtable|chainLlm/i.test(n.type)));
 assert(coverage.nodes.filter(n=>n.type==='n8n-nodes-base.httpRequest').every(n=>n.parameters.url.endsWith('/api/internal/coaching-coverage')));
 const names=new Set(coverage.nodes.map(n=>n.name));
@@ -35,6 +35,9 @@ const body=patches.X9L4JtDbpkSCflxZ.find(op=>op.nodeName==='Validate Result').up
 if(!process.argv[2]){
  const output=new Function('$json','$',body)({ok:true,parsed_json:parsed},()=>({first:()=>({json:{call_purpose:'call2_sonnet5_writer',checkpoint:{}}})}));
  assert.equal(output[0].json.valid,true);
+ const malformed=new Function('$json','$',body)({ok:true,parsed_json:{...parsed,call_status:'transcript_too_short'}},()=>({first:()=>({json:{call_purpose:'call2_sonnet5_writer',checkpoint:{}}})}));
+ assert.equal(malformed[0].json.valid,true,'Transport-valid drafts must reach the existing targeted repair');
+ assert(malformed[0].json.result.contract_errors.includes('invalid coaching status'));
 }
 assert.equal(coachingContractErrors(normalizeCoaching(parsed)).length,0);
 assert.equal(failureDecision('Missing strength | Transcript chars: 40503',[],2).retryable,false);

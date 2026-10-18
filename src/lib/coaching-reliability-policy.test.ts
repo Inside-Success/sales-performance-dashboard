@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {normalizeCoaching,coachingContractErrors,failureDecision,coveragePlan} from './coaching-reliability-policy.mjs';
+import {normalizeCoaching,coachingContractErrors,failureDecision,coveragePlan,coverageIntakeExclusion} from './coaching-reliability-policy.mjs';
 const outcome={payment:'not_confirmed',summary:'No payment confirmed.',evidence_ids:['T1']};
 const good=()=>({status:'completed',call_status:'scored',outcome,payment_actions:[],strengths:[{observation:'A supported observation',evidence_ids:['T1']}],improvements:[],blockers:[],next_steps:[]});
 describe('saved coaching incident contracts',()=>{
@@ -52,5 +52,14 @@ describe('coverage outcomes are independent of n8n execution colour',()=>{
   it('deduplicates alerts and rejects incomplete reads',()=>{
     expect(coveragePlan({status:'busy'},[])).toBe(null);
     expect(coveragePlan({status:'ready',token:'scan',source_ids:['recA'],reported:['recA']},[])?.notify).toEqual([]);
+  });
+});
+
+describe('source intake exclusions',()=>{
+  it('recognizes only exact existing no-report categories',()=>{
+    for(const reason of ['sales_no_show: Waiting alone','sales_rep_no_show: Rep absent','sales_too_short: Two lines'])expect(coverageIntakeExclusion(reason)).toBe(true);
+  });
+  it('never excludes a real or disconnected call because its narrative mentions a no-show',()=>{
+    for(const reason of ['valid_sales_call: Discussed a previous sales_no_show','sales_disconnected: Brief conversation','',null])expect(coverageIntakeExclusion(reason)).toBe(false);
   });
 });

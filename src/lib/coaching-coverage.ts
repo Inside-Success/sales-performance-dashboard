@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import { readAirtablePage } from "./source-read";
+import { coverageIntakeExclusion } from "./coaching-reliability-policy.mjs";
 
 type ScanState = {offset?:string; end?:string; reported?:string[]; pending?:{token:string; source_ids:string[]; checked:number; nextOffset?:string; end:string; reported:string[]}};
 // Dashboard-owned cursor only. Source calls are read through Airtable GETs.
@@ -42,6 +43,7 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
     for(let page=0;page<5;page++) {
       const params=new URLSearchParams({pageSize:'100',filterByFormula:`AND({Processing Status}='Processed',{Call #}='Call 2+',{Meeting Transcript Link}!='',NOT(IS_BEFORE(CREATED_TIME(),DATETIME_PARSE('${start}'))),IS_BEFORE(CREATED_TIME(),DATETIME_PARSE('${end}')))`});
       params.append('fields[]','Call #');
+      params.append('fields[]','AI Decision Reason');
       if(offset) params.set('offset',offset);
       const response=await readAirtablePage(`https://api.airtable.com/v0/${base}/${table}?${params}`,access,deadline);
       if(!response.ok) {
@@ -50,7 +52,7 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
       }
       const data=await response.json();
       if(!Array.isArray(data.records)||data.records.some((r:{id?:string})=>!/^rec[A-Za-z0-9]+$/.test(r.id||''))) throw Error('Invalid coverage page');
-      checked+=data.records.length;ids.push(...data.records.map((r:{id:string})=>r.id));
+      checked+=data.records.length;ids.push(...data.records.filter((r:{fields?:Record<string,unknown>})=>!coverageIntakeExclusion(r.fields?.['AI Decision Reason'])).map((r:{id:string})=>r.id));
       offset=data.offset;
       if(!offset) break;
     }
