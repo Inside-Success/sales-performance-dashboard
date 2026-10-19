@@ -15,6 +15,10 @@ on:
       - 'src/components/dashboard/**'
       - 'src/lib/db.ts'
       - 'src/lib/manual-*.ts'
+      - 'src/lib/coaching-review/**'
+      - 'src/app/manager/coaching-review/**'
+      - 'tests/coaching-review/**'
+      - 'scripts/publish-coaching-review.ts'
       - 'tests/coaching*'
       - 'tests/coaching/**'
       - '.github/workflows/coaching-reliability.yml'
@@ -33,7 +37,7 @@ jobs:
           node-version: '22.13.1'
           cache: npm
       - run: npm ci
-      - run: npx vitest run tests/coaching src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/provider-checkpoint-policy.test.ts src/lib/provider-checkpoints.test.ts
+      - run: npx vitest run tests/coaching tests/coaching-review src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/provider-checkpoint-policy.test.ts src/lib/provider-checkpoints.test.ts
       - run: node scripts/n8n/verify-recovery-retry-policy.mjs
       - run: node scripts/n8n/verify-durable-provider.mjs
       - run: node scripts/n8n/verify-crash-recovery.mjs
