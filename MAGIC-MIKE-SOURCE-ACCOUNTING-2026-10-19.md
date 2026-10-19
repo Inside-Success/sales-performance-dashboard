@@ -23,6 +23,14 @@ Local checks: 150 coaching/provider/coverage tests; existing retry, provider, cr
 
 Production publication, recovery receipts, cost and final acceptance will be recorded below after independent verification. Until then, do not describe the seventeen cases as recovered.
 
+### First live acceptance
+
+- PR #324 merged as `3a343af`; production deployment `dpl_Amu6hVUPb4StnbyV5LopT91XfVoW` is READY and promoted. The preview encountered the existing integration `Resource provisioning failed` before application compilation; GitHub's tests, TypeScript and production build passed.
+- Official published revision `c07aa463-4163-4e0b-99e5-447b85645d93`; coverage revision `63f866b4-f73e-48e3-8309-3a268b3392d9`. Official structural/expression validation has zero errors; the same seven pre-existing advisories remain. Full Code-node static validation emits eight pre-existing helper-array diagnostics; compiled runtime tests and real execution verify the return paths rather than rewriting unrelated working nodes.
+- Canary execution `1174101` recovered source `recLnLCo3x8Vu7dku` as dashboard report `/call/8191`; matching receipt is delivered, normal Slack top-level/thread sends succeeded, and the populated generated Google Doc and authenticated report were independently read. Its original classifier checkpoint was reused; writer, factual audit, compliance and safety remained intact. No numerical rescore was run.
+- The four insufficient technical/interrupted recordings have explicit reviewed `transcript_too_short` exclusion receipts. No source content was edited and no report was fabricated. An unmatched rep label in the technical fragment is not asserted to prove rep absence.
+- Follow-up regression distinguishes an unresolved queued call from a notification actually sent: acknowledgement retains queued work without suppressing its later warning. The consumer sends both unresolved and notified IDs explicitly. The endpoint remains compatible with the prior consumer during publication.
+
 ## Rollback
 
 Retain small private before/after node patches and affected connections, without source transcripts or credential values. Revert only this release's node changes and repository commit; do not replace unrelated concurrent FAQ work or alter source systems. Append-only source-attempt metadata is safe to retain on rollback. Retain unresolved coverage IDs when reverting cursor/query logic.

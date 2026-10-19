@@ -14,7 +14,7 @@ export async function observeCoachingSource(sourceId:string,executionId:string) 
   return {status:'observed'};
 }
 // Dashboard-owned cursor only. Source calls are read through Airtable GETs.
-export async function coachingCoverage(action:"scan"|"ack", token?:string, missingIds:string[]=[]) {
+export async function coachingCoverage(action:"scan"|"ack", token?:string, missingIds:string[]=[], notifiedIds?:string[]) {
   if (!process.env.DATABASE_URL) throw Error("Coverage storage unavailable");
   const sql=neon(process.env.DATABASE_URL);
   await sql`create table if not exists coaching_coverage_cursor (id integer primary key, payload jsonb not null default '{}', owner uuid, lease_until timestamptz, updated_at timestamptz not null default now())`;
@@ -24,7 +24,9 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
   if(action==='ack') {
     if(!token || state.pending?.token!==token) return {status:'superseded'};
     if(missingIds.some(id=>!state.pending!.source_ids.includes(id))) throw Error('Coverage acknowledgement mismatch');
-    const reported=[...new Set([...(state.reported||[]),...missingIds])].slice(-5000);
+    const notified=notifiedIds??missingIds; // Compatibility with the previous consumer during deployment.
+    if(notified.some(id=>!missingIds.includes(id)))throw Error('Coverage notification acknowledgement mismatch');
+    const reported=[...new Set([...(state.reported||[]),...notified])].slice(-5000);
     const unresolved=[...new Set([...(state.unresolved||state.reported||[]).filter(id=>!state.pending!.source_ids.includes(id)),...missingIds])];
     const next:ScanState={revision:REVISION,reported,unresolved,reminder_at:state.reminder_at||new Date(Date.now()+86400000).toISOString(),...(state.revision===REVISION&&state.pending.nextOffset?{offset:state.pending.nextOffset,end:state.pending.end}:{})};
     const saved=await sql`update coaching_coverage_cursor set payload=${JSON.stringify(next)}::jsonb,updated_at=now()
