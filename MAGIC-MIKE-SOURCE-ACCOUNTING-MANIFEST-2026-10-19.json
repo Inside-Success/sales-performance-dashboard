@@ -1,0 +1,143 @@
+{
+  "release": "coaching-source-accounting-2026-10-19",
+  "status": "verified",
+  "pull_requests": [
+    324,
+    325,
+    326
+  ],
+  "backend_commit": "23ce682b3eb4e296bb8bbd67b3f5be3e4b8806f3",
+  "verified_commit": "b6df463f9abf0ba1cdb4e89fe8d07d30a562a438",
+  "deployment": "dpl_ZFTxCR4VczLtbxyu5e7kgL4baxT3",
+  "workflows": {
+    "L8Nn7xncA9ZPDdWA": {
+      "published_version": "a8b774bd-6765-4b6e-a1ac-b59330726577",
+      "saved_version": "a8b774bd-6765-4b6e-a1ac-b59330726577"
+    },
+    "yL5XsZPtVP1rsW8X": {
+      "published_version": "672b2ff6-e3a5-4452-844e-1246d079a180",
+      "saved_version": "672b2ff6-e3a5-4452-844e-1246d079a180"
+    }
+  },
+  "candidate_count": 17,
+  "recovered_reports": [
+    {
+      "source_id": "recLnLCo3x8Vu7dku",
+      "report_id": "8191",
+      "airtable_report_id": "recNxRc5B5WIBJQ30",
+      "execution_id": "1174101"
+    },
+    {
+      "source_id": "reck2GsQKaqBuuhAG",
+      "report_id": "8192",
+      "airtable_report_id": "rec3Cxng2qYSPo3tD",
+      "execution_id": "1174127"
+    },
+    {
+      "source_id": "rec6nPOD2LQf33nwe",
+      "report_id": "8193",
+      "airtable_report_id": "rec63XFWhLDE9m56t",
+      "execution_id": "1174176"
+    },
+    {
+      "source_id": "rec7N46SVGcMv6FYe",
+      "report_id": "8194",
+      "airtable_report_id": "recRhvRKxuiNS9CGF",
+      "execution_id": "1174194"
+    },
+    {
+      "source_id": "recMHjE6Vw4lOlIUw",
+      "report_id": "8195",
+      "airtable_report_id": "rec6nynRidv2J6WYU",
+      "execution_id": "1174237"
+    },
+    {
+      "source_id": "recQgIaUzC8nJEpCr",
+      "report_id": "8196",
+      "airtable_report_id": "reca98S8WzMreXMcG",
+      "execution_id": "1174246"
+    },
+    {
+      "source_id": "recQjIkdYiLdf4DX6",
+      "report_id": "8197",
+      "airtable_report_id": "reczzoV7xVobUk0JQ",
+      "execution_id": "1174266"
+    },
+    {
+      "source_id": "recb9sA41k8Ye7fE9",
+      "report_id": "8198",
+      "airtable_report_id": "recDx2SDlPvqxjNS3",
+      "execution_id": "1174291"
+    },
+    {
+      "source_id": "recjkPzJOvYY4qR60",
+      "report_id": "8199",
+      "airtable_report_id": "recCG8N4RVP9c7H30",
+      "execution_id": "1174322"
+    },
+    {
+      "source_id": "reckfyF9wU8tuA7Ym",
+      "report_id": "8200",
+      "airtable_report_id": "recRzBdU9tyrcVRYJ",
+      "execution_id": "1174337"
+    },
+    {
+      "source_id": "recsVwOeST9zoyng8",
+      "report_id": "8201",
+      "airtable_report_id": "reckKqmvH9q7OvkT1",
+      "execution_id": "1174353"
+    },
+    {
+      "source_id": "recv76K9XAdpsuiEn",
+      "report_id": "8202",
+      "airtable_report_id": "rec1RImmquwIwoXR7",
+      "execution_id": "1174374"
+    },
+    {
+      "source_id": "recKWOh5Vhe3sNXQ4",
+      "report_id": "8203",
+      "airtable_report_id": "recV9SflRgqel73we",
+      "execution_id": "1174395"
+    }
+  ],
+  "excluded_sources": [
+    {
+      "source_id": "rec53976TvpW48WAl",
+      "reason_code": "transcript_too_short"
+    },
+    {
+      "source_id": "recFtC3sHNiKmZ29p",
+      "reason_code": "transcript_too_short"
+    },
+    {
+      "source_id": "recKP5zFAahjUuwta",
+      "reason_code": "transcript_too_short"
+    },
+    {
+      "source_id": "recyDooS7S5iZsPsi",
+      "reason_code": "transcript_too_short"
+    }
+  ],
+  "verification": {
+    "automated_tests": 151,
+    "identity_checks": 24,
+    "source_transcript_replays": 17,
+    "independent_populated_documents": 13,
+    "paired_slack_receipts": 13,
+    "identity_matches": true,
+    "duplicate_source_matches": 0,
+    "coverage": {
+      "execution": "1174466",
+      "status": "success",
+      "checked": 433,
+      "unresolved": [],
+      "notify": [],
+      "acknowledged": "acknowledged"
+    },
+    "synthetic_ai_testing_cost_usd": 0
+  },
+  "estimated_new_recovery_cost_usd": 4.25049326,
+  "repeated_provider_claims": 0,
+  "source_writes": false,
+  "new_ai_nodes": 0
+}
