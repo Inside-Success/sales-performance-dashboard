@@ -8,7 +8,10 @@ export function identityKey(value) {
     .replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
 export function identityBot(value) {
-  return /\b(?:fireflies|otter|notetaker|note\s*taker|read\.ai|fathom|tl;?dv|tldv|avoma|grain\s+notetaker|gong\s+notetaker|zoom\s*ai|ai\s*companion|recording\s*bot)\b/i.test(identityText(value))
+  // Some calendar bots use visually identical Cyrillic letters in their display labels.
+  // Fold these for bot detection only; human names and transcript evidence stay unchanged.
+  const label=identityText(value).replace(/[аеіорсух]/gi,c=>({'а':'a','е':'e','і':'i','о':'o','р':'p','с':'c','у':'y','х':'x'}[c.toLowerCase()]||c));
+  return /\b(?:fireflies|otter|notetaker|note\s*taker|read\.ai|fathom|tl;?dv|tldv|avoma|grain\s+notetaker|gong\s+notetaker|zoom\s*ai|ai\s*companion|recording\s*bot)\b/i.test(label)
     || /^(?:audio shared by|screen share|shared screen|recording|system)\b/i.test(identityText(value));
 }
 export function identityDevice(value) {

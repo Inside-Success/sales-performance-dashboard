@@ -1,13 +1,19 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildSourceAccounting} from './build-source-accounting.mjs';
-import {identityRep,identityPerson} from './prospect-identity.mjs';
+import {identityRep,identityPerson,identityBot,resolveProspectIdentity} from './prospect-identity.mjs';
+import {fileURLToPath} from 'node:url';
 assert(identityRep('GARRETT MOORE - Casting Manager',{repName:'Garrett Moore'}));
 assert(identityRep('Jones - Casting Manager',{repName:'Jones Mumba'}));
 assert(!identityRep('Jones',{repName:'Jones Mumba'}),'Bare first names must not globally bind another person');
 assert(!identityPerson('My Meeting'));
-if(process.argv[2]) {
- const b=JSON.parse(fs.readFileSync(process.argv[2]));
+assert(identityBot("Calendar Nоtеtаkеr"));
+assert(!identityBot('Мария Иванова'),'Human Cyrillic names are not bots');
+assert.equal(resolveProspectIdentity({repName:'Taylor Rep',clientName:'Calendar Nоtеtаkеr',mergedTranscript:'[00:01] Taylor Rep: Hello.\n[00:02] Jamie Actual: Hello.'}).clientName,'Jamie Actual');
+{
+ // Sanitized production-function fixture: no source transcripts, prompts or credential values.
+ const baselinePath=process.argv[2]||fileURLToPath(new URL('../../tests/fixtures/coaching-source-accounting-baseline.json',import.meta.url));
+ const b=JSON.parse(fs.readFileSync(baselinePath));
  const patches=buildSourceAccounting(b);
  for(const op of patches.official){const code=op.node?.parameters?.jsCode||op.updates?.['parameters.jsCode'];if(code)new Function(code);}
  const code=patches.official.find(op=>op.nodeName==='MM Parse Classifier').updates['parameters.jsCode'];
@@ -18,6 +24,7 @@ if(process.argv[2]) {
  assert.equal(gate(fixture('[00:00] Assigned Rep: '+long+'\n[00:01] Jamie,  Safe2Talk2: Yes, please explain.','Assigned Rep','Jamie Tedrick-Monroe',['Jamie, Safe2Talk2']),scored).call_status,'scored');
  assert.equal(gate(fixture('[00:00] Assigned Rep: '+long+'\n[00:01] Unexpected human label: Yes, please explain.'),scored).call_status,'scored','Name mismatch alone is not absence');
  assert.equal(gate(fixture('[00:00] Assigned Rep: '+long+'\n[00:01] Audio shared by Assigned Rep: '+long),scored).call_status,'transcript_too_short','Presentation audio is not a prospect');
+  assert.equal(gate(fixture('[00:00] Assigned Rep: '+long+'\n[00:01] Calendar Nоtеtаkеr: Recording.'),scored).call_status,'transcript_too_short','A bot with visually substituted letters is not a prospect');
  assert.equal(gate(fixture('[00:00] Guest Person: Can you hear me?'),{call_status:'transcript_too_short'}).call_status,'transcript_too_short','Unmatched names do not establish rep absence');
  const restore=patches.official.find(op=>op.node?.name==='MM Restore Source Start').node;
  const input={'Source Airtable Record ID':'recFixture','Transcript Doc':'original'};

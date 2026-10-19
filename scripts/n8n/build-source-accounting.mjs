@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {identityRep,identityPerson} from './prospect-identity.mjs';
+import {identityRep,identityPerson,identityBot} from './prospect-identity.mjs';
 import {coveragePlan} from '../../src/lib/coaching-reliability-policy.mjs';
 
 function once(text,from,to) {
@@ -18,6 +18,9 @@ export function buildSourceAccounting(b) {
   const personStart=clean.indexOf('function identityPerson('),personEnd=clean.indexOf('function identityFirst(',personStart);
   if(personStart<0||personEnd<0)throw Error('Missing person anchor');
   clean=clean.slice(0,personStart)+identityPerson.toString()+'\n'+clean.slice(personEnd);
+  const botStart=clean.indexOf('function identityBot('),botEnd=clean.indexOf('function identityDevice(',botStart);
+  if(botStart<0||botEnd<0)throw Error('Missing bot anchor');
+  clean=clean.slice(0,botStart)+identityBot.toString()+'\n'+clean.slice(botEnd);
   clean=once(clean,'.filter(name => present.includes(name))',`.map(identityText).filter(name => present.includes(name))`);
   update('Clean Response','parameters.jsCode',clean);
   let parser=node('MM Parse Classifier').parameters.jsCode;
@@ -28,6 +31,13 @@ export function buildSourceAccounting(b) {
   parser=once(parser,'const speaker = match[1].trim();',`const speaker = match[1].normalize('NFKC').replace(/\\s+/g,' ').trim();`);
   parser=once(parser,"rawAliases.slice(0, 8).filter(alias =>", "rawAliases.slice(0, 8).map(alias => typeof alias === 'string' ? alias.normalize('NFKC').replace(/\\s+/g,' ').trim() : alias).filter(alias =>");
   parser=once(parser,'if (isNotetakerName(value)) return false;',`if (isNotetakerName(value) || /^(?:audio shared by|screen share|shared screen|recording|system)\\b/i.test(value)) return false;`);
+  const noteStart=parser.indexOf('function isNotetakerName(value) {'),noteEnd=parser.indexOf('function isHumanSpeakerLabel(',noteStart);
+  if(noteStart<0||noteEnd<0)throw Error('Missing notetaker anchor');
+  let note=parser.slice(noteStart,noteEnd);
+  note=once(note,'function isNotetakerName(value) {',`function isNotetakerName(value) {
+  const label=String(value||'').normalize('NFKC').replace(/[аеіорсух]/gi,c=>({'а':'a','е':'e','і':'i','о':'o','р':'p','с':'c','у':'y','х':'x'}[c.toLowerCase()]||c));`);
+  note=once(note,'.test(String(value || ""))','.test(label)');
+  parser=parser.slice(0,noteStart)+note+parser.slice(noteEnd);
   parser=once(parser,'const credibleClientPresent = clientPresent || (clientNameWasNotetaker && longSalesTranscript && (humanNonRepSpeakers.length > 0 || upstreamNormal));', 'const credibleClientPresent = clientPresent || (longSalesTranscript && (humanNonRepSpeakers.length > 0 || (clientNameWasNotetaker && upstreamNormal)));');
   parser=once(parser,'clientNameWasNotetaker, upstreamNormal, body };','clientNameWasNotetaker, upstreamNormal, upstreamStatus, body };');
   parser=once(parser,'next.call_status === "transcript_too_short" && !signals.repPresent && signals.humanNonRepSpeakers.length > 0', 'next.call_status === "transcript_too_short" && !signals.repPresent && signals.humanNonRepSpeakers.length > 0 && /^(?:sales_)?rep_no_show$/.test(signals.upstreamStatus)');
