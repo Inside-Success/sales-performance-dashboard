@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-19",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "9c1ed0710f4d9b7e08415f1a",
   "knowledgeVersion": "9340492393e3dd4dfd65e279",
   "activeRecordCount": 2568,
@@ -6010,5 +6010,41 @@
     "technicalFailures": 0,
     "estimatedCostUsd": 0.1506398,
     "assessment": "Two cross-family questions initially missed relevant records. Scope metadata corrected for the two comparison records; original cases and two independent paraphrases then answered substantively. One partial status correctly leaves immediate production scheduling unconfirmed. No prompt/runtime/model changes; not a universal accuracy claim."
+  },
+  "publication": {
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/322",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/109",
+    "dashboardCommit": "947775f854ea29bccfa9ccadedbe6f062d12704c",
+    "deploymentId": "dpl_6X7cjaW3M79UwjX6Eo2sw2VNrvZ2",
+    "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+    "liveAnswers": [
+      {
+        "id": "faq_assistant_789618ac-5a32-4570-8b08-7c457039e091",
+        "createdAt": "2026-10-19T11:04:59.690Z",
+        "knowledgeVersion": "9340492393e3dd4dfd65e279",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 17154
+      },
+      {
+        "id": "faq_assistant_51672341-779e-4386-9474-4e786e1e042e",
+        "createdAt": "2026-10-19T11:05:51.170Z",
+        "knowledgeVersion": "9340492393e3dd4dfd65e279",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 10508
+      },
+      {
+        "id": "faq_assistant_66d975af-fcf8-488e-8d1a-ca1db5abf61e",
+        "createdAt": "2026-10-19T11:06:33.808Z",
+        "knowledgeVersion": "9340492393e3dd4dfd65e279",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 10839
+      }
+    ],
+    "fullSuite": "424/424",
+    "staticSafety": "107/107",
+    "ci": "TypeScript, scoped ESLint, production build and paired FAQ checks passed",
+    "isolatedAnswerChecks": 19,
+    "isolatedEstimatedCostUsd": 0.1506398,
+    "liveVerificationEstimatedCostUsd": 0.026953800000000003
   }
 }

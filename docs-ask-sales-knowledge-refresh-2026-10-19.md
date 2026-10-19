@@ -1,8 +1,8 @@
 # Magic Mike FAQ knowledge refresh — October 19, 2026
 
-Status: candidate; not yet a successful published checkpoint.
+Status: published and live-verified on October 19, 2026.
 
-Resumes the October 16 successful checkpoint `9c1ed0710f4d9b7e08415f1a` (2563 records), preserving the October 15 retrieval improvements and latest main coaching work. Candidate `9340492393e3dd4dfd65e279`: 2568 active records, five additions and sixteen amendments. Slack and Google sources were read only. No Slack messages, source edits or source-form submissions.
+Resumes the October 16 successful checkpoint `9c1ed0710f4d9b7e08415f1a` (2563 records), preserving the October 15 retrieval improvements and latest main coaching work. Published `9340492393e3dd4dfd65e279`: 2568 active records, five additions and sixteen amendments. Slack and Google sources were read only. No Slack messages, source edits or source-form submissions.
 
 ## Supported knowledge updates
 
@@ -30,10 +30,18 @@ Coverage means the maintained source map and four maintained channels, not every
 
 ## Verification and release boundaries
 
-Initial full FAQ suite before final scope correction: 423/423; static safety validator: 107/107. Seven new retrieval tests cover the major SOP and entitlement boundaries. Final release CI will rerun all checks against the exact final knowledge. Isolated answer evaluation and live receipts will be recorded after review.
+Initial full FAQ suite before final scope correction: 423/423; static safety validator: 107/107. Seven new retrieval tests cover the major SOP and entitlement boundaries. Final release CI passed 424/424 tests and all other release checks against the exact final knowledge. Isolated answer evaluation and live receipts are recorded below.
 
-Only FAQ knowledge, tests, paired registry and refresh documentation. Model/reasoning, prompts, retrieval, runtime, diagnostics, schema, auth, environment, Coaching and n8n unchanged. Production baseline `7efd60b59fc4fd74d2b0f6615942addac98b8e14`, deployment `dpl_4XABStEQsEwwEvKU6Ud8KVxMq5VU`. The candidate does not advance the successful checkpoint or admin publication date until deployment and authenticated live verification succeed.
+Only FAQ knowledge, tests, paired registry and refresh documentation. Model/reasoning, prompts, retrieval, runtime, diagnostics, schema, auth, environment, Coaching and n8n unchanged. Production baseline `7efd60b59fc4fd74d2b0f6615942addac98b8e14`, deployment `dpl_4XABStEQsEwwEvKU6Ud8KVxMq5VU`. The successful checkpoint and admin publication receipt were advanced only after deployment and authenticated live verification succeeded.
 
 ## Isolated answer review
 
 19 answer checks across 17 distinct questions cost an estimated $0.1506398 with no technical failures. The initial 15 checks produced 13 acceptable answers and two incomplete cross-family answers: the planner chose documentary for a reality/Legacy Makers comparison, and reality for a Mompreneurs video question. Corrected only the two comparison records’ scope metadata to make them available to either family. Both original cases plus two independent paraphrases then produced supported answers. One partial label correctly leaves an immediate filming date unconfirmed while answering entitlement. Seven focused retrieval tests pass, including cross-family scope coverage. Existing pricing exception, Raul training and UK SMS controls remained sound. This is bounded acceptance evidence, not universal accuracy or a model comparison.
+
+## Production verification
+
+Dashboard PR322 and FAQ PR109 merged. Exact release CI passed: 424 FAQ tests, 107 static safety checks, TypeScript, scoped ESLint, production build and paired FAQ validations. Production deployment `dpl_6X7cjaW3M79UwjX6Eo2sw2VNrvZ2` is READY at commit `947775f854ea29bccfa9ccadedbe6f062d12704c`. Preview provisioning failed; no preview success or database/environment workaround is claimed.
+
+Three authenticated work-Chrome answers verified booked-audition contact requirements, anniversary VIP marketing support, and Mompreneurs video/episode guidance. Persisted receipts confirm knowledge `9340492393e3dd4dfd65e279`, 2568 records, GPT-5.6 Luna, successful plan/answer/review and no validation issues. Estimated live API cost $0.026954; total isolated/live estimate $0.177594. Raw receipts and screenshot remain private.
+
+The paired checkpoint is now published_verified with 907 tracked roots and retained unavailable-source watermarks. The publication-date receipt follows this verified release. No Slack messages or source-document changes.
