@@ -39,6 +39,12 @@ The final pre-publication inventory covered **59 affected executions and 71 dist
 
 Execution `1179002` at 17:26 UTC was a newly arriving production Call 1. Its actual Set, early-outcome accounting and durable exclusion write all completed successfully under the new published version, with no accounting incident. Signed-in report 8208 loaded its existing numeric score and the explanation control expanded correctly. Both restored Docs were independently confirmed populated through Drive.
 
+New real Call 2 execution `1178957` (17:24–17:29 UTC) completed the normal AI/coaching, report, Slack root/thread, compliance row, document link and dashboard delivery path as report8210, with a matching delivered receipt. Independent coverage execution `1179059` at17:30 recognized both restored sources among actual dashboard deliveries; its500-source page had no missing IDs and was durably acknowledged. This is a bounded page check, not a new claim that all historical meetings are eligible coaching calls.
+
+PR328 merged as `ceea6dbaf61f29ae9b8a35e44c29d2d94a8deea6`. GitHub run `39294492504` passed the complete reliability gate, including the new verifier, TypeScript and production build. Production deployment `dpl_3FMPwfVnr5bbixBoiHq5yaaNfmBP` is READY and owns the rose alias. The separate preview deployment failed before a build started; it is not counted as a successful verification. Authenticated report/admin reads and both daily no-show filters were verified on production. Core intake/provider/validator/recovery/weekly workflows remain active; recent runs succeed. Manual workflow is active with no recent submissions to verify; no paid synthetic manual submission was invented. All three retired predecessors remain inactive.
+
+Final readback at approximately17:33 UTC: no queued, processing or needs-review recovery receipts remained. The new natural Call 2 has one matching Postgres report row and a document link. A production error-log query covering the preceding30minutes returned no error entries. Unauthenticated page probes reached sign-in and are counted only as availability/auth-boundary checks; the separate signed-in browser verification establishes actual report/admin access.
+
 ## Rollback and operation
 
 - Scoped rollback is stored privately outside Git at `.codex-backups/coaching-accounting-containment-2026-10-19.json.gz` (4,738 bytes, mode 0600), containing the selected baseline and inverse operations. Existing earlier backup remains intact. No new dependency copy or transcript archive was made.
