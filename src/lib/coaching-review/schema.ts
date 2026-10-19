@@ -31,6 +31,13 @@ export const reportSchema = z.object({
   strengths: z.array(z.object({ title: text, observation: text, why_it_matters: text, evidence_ids: ids }).strict()).max(6),
 }).strict().superRefine((r, ctx) => {
   const issue = (message: string) => ctx.addIssue({code:"custom", message});
+  const inspect = (value: unknown, key = "") => {
+    if(key === "evidence_ids" || key === "counterevidence_ids") return;
+    if(typeof value === "string" && (/\bT\d{4}\b/.test(value) || /_{3,}|\[insert\b/i.test(value))) issue("Internal evidence IDs or unfinished placeholders in reader-facing text");
+    else if(Array.isArray(value)) value.forEach(v=>inspect(v));
+    else if(value && typeof value === "object") Object.entries(value).forEach(([k,v])=>inspect(v,k));
+  };
+  inspect(r);
   const raised = new Set(r.objections.map(o=>o.category));
   if(new Set(r.not_raised).size !== r.not_raised.length) issue("Duplicate absent category");
   for(const c of r.not_raised) if(raised.has(c)) issue("Raised category marked absent");

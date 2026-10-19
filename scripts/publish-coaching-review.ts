@@ -10,6 +10,7 @@ import { reportSchema, validateEvidence, REVIEW_RUN_ID } from "../src/lib/coachi
 const input=z.object({
   reviewed:z.literal(true),
   prompt_hash:z.string().regex(/^[a-f0-9]{64}$/),
+  experiment_context:z.record(z.string(),z.unknown()),
   source_versions:z.record(z.string(),z.string()),
   cost_usd:z.number().nonnegative().max(40),
   reserved_cost_usd:z.number().nonnegative().max(40),
@@ -37,7 +38,7 @@ async function main(){
  // One transaction. Duplicate run/result IDs abort instead of overwriting an existing experiment.
  const queries=[
   sql`insert into prompt_benchmark_runs (run_id,title,status,finished_at,total_cost_usd,total_provider_calls,source_payload)
-      values (${REVIEW_RUN_ID},'Objection-first coaching review','completed',now(),${payload.cost_usd},${payload.provider_calls},${JSON.stringify({prompt_hash:payload.prompt_hash,source_versions:payload.source_versions,reserved_cost_usd:payload.reserved_cost_usd})}::jsonb)`,
+      values (${REVIEW_RUN_ID},'Objection-first coaching review','completed',now(),${payload.cost_usd},${payload.provider_calls},${JSON.stringify({prompt_hash:payload.prompt_hash,source_versions:payload.source_versions,experiment_context:payload.experiment_context,reserved_cost_usd:payload.reserved_cost_usd})}::jsonb)`,
   ...payload.reports.map(r=>sql`insert into prompt_benchmark_outputs
     (result_id,run_id,case_id,case_label,case_type,call_status,model,provider,call_mode,coaching_mode,output,ai_eval)
     values (${REVIEW_RUN_ID+"-"+r.meta.number},${REVIEW_RUN_ID},${String(r.meta.call_id)},${"Report "+r.meta.number},'isolated_review','scored',${r.writer},'anthropic','isolated','objection-review-v1',

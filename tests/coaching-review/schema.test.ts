@@ -9,6 +9,10 @@ function report() {
  strengths:[{title:"Clear next step",observation:"You confirmed the next step.",why_it_matters:"Both parties know what happens next.",evidence_ids:["T0001"]}]};
 }
 describe("publication contract",()=>{
+ it("rejects internal IDs and unfinished reader-facing placeholders",()=>{
+  expect(reportSchema.safeParse({...report(),summary:"At T0012 you asked."}).success).toBe(false);
+  expect(reportSchema.safeParse({...report(),summary:"Meet at ___ Eastern."}).success).toBe(false);
+ });
  it("accepts a genuine no-objection/no-improvement call",()=>expect(reportSchema.parse(report()).objections).toEqual([]));
  it("rejects unknown evidence even when JSON is valid",()=>expect(()=>validateEvidence(reportSchema.parse(report()),[])).toThrow("Unknown evidence"));
  it("rejects a category simultaneously raised and absent",()=>{
