@@ -22,6 +22,7 @@ export function identityPerson(value) {
     && !identityBot(name) && !identityDevice(name) && !/@|https?:|\d/u.test(name)
     && !/\b(?:assistant|zoom meeting|personal meeting room|casting manager|sales rep|closer)\b/i.test(name)
     && !/\s+x\s+|\[|\]/i.test(name)
+    && !/^(?:my|our|your|personal) meeting(?: room)?$/i.test(name)
     && !/^(?:client|prospect|customer|host|sales call|casting call|call|show|tv show|inside success|inside success tv)$/i.test(name)
     && !/^(?:interested|excited|happy|good|fine|ready|sorry|thinking|calling|doing|glad|here|okay|ok|sure|not|just|really)(?:\s|$)/i.test(name);
 }
@@ -50,7 +51,7 @@ export function identityRep(value, source) {
   const names = [source.repName, ...(source.salesGroupMembers || []).map(member =>
     [member.first_name, member.last_name].filter(Boolean).join(' ') || member.display_name || member.name)];
   return Boolean(key && names.some(name => identityKey(name) === key
-    || (roleLabel && withoutRole && identityFirst(name) === withoutRole)));
+    || (roleLabel && withoutRole && (identityKey(name) === withoutRole || identityFirst(name) === withoutRole))));
 }
 export function identityBody(value) {
   const text = String(value || '').replace(/\r/g, '');

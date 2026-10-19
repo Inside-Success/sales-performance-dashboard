@@ -38,5 +38,6 @@ jobs:
       - run: node scripts/n8n/verify-durable-provider.mjs
       - run: node scripts/n8n/verify-crash-recovery.mjs
       - run: node scripts/n8n/verify-reliability-contract.mjs
+      - run: node scripts/n8n/verify-source-accounting.mjs
       - run: npx tsc --noEmit
       - run: npm run build

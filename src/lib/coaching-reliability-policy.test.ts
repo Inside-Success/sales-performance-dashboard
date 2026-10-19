@@ -47,7 +47,8 @@ describe('incident retry causes',()=>{
 describe('coverage outcomes are independent of n8n execution colour',()=>{
   it('flags absent receipts and false delivered receipts, not legitimate exclusions or queued work',()=>{
     const scan={status:'ready',token:'scan',source_ids:['recA','recB','recC','recD'],reported:[],checked:4};
-    expect(coveragePlan(scan,[{source_id:'recB',status:'excluded'},{source_id:'recC',status:'queued'},{source_id:'recD',status:'delivered'}])?.notify).toEqual(['recA','recD']);
+    const plan=coveragePlan(scan,[{source_id:'recB',status:'excluded'},{source_id:'recC',status:'queued',updated_at:new Date().toISOString()},{source_id:'recD',status:'delivered'}]);
+    expect(plan?.notify).toEqual(['recA','recD']);expect(plan?.missing_ids).toEqual(['recA','recC','recD']);
   });
   it('deduplicates alerts and rejects incomplete reads',()=>{
     expect(coveragePlan({status:'busy'},[])).toBe(null);
