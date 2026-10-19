@@ -78,7 +78,7 @@ promotion.
 - Private input dry-run, then explicit offline publication:
   `vite-node --config vitest.config.ts scripts/publish-coaching-review.ts PRIVATE_FILE --publish`
   with server-only DATABASE_URL supplied securely.
-- GitHub preview, authenticated list/detail/evidence/navigation checks,
+- GitHub build gate, authenticated list/detail/evidence/navigation checks,
   unauthorized HTTP checks, then production verification.
 - Confirm existing admin directory, coaching and FAQ surfaces still work.
 
@@ -91,6 +91,55 @@ separate approval.
 
 ## Release evidence
 
-Implementation checks and model evaluation are in progress. Final results,
-costs, deployment and verification will be recorded after completion.
+- Feature PR: https://github.com/Inside-Success/sales-performance-dashboard/pull/330
+- Production commit: `0f96f68`; deployment `dpl_BeJkuwFzohEYYC6SNYiNM1g1WPep`
+  reached READY and was assigned the official rose.vercel.app alias.
+- CI run 39324874789 passed: 160 tests in 26 files, six workflow static
+  verifiers, TypeScript and production build. Nine tests specifically cover
+  the new review schema, evidence and authorization boundaries. Scoped lint
+  and the local production build also passed.
+- Vercel preview provisioning failed before application compilation, as on
+  preceding preview deployments. The unchanged production deployment path
+  built successfully; no integration or environment settings were changed.
+- Ten reports published atomically to the isolated benchmark run: eight
+  without an on-call confirmed payment and two with one. No later sales
+  outcome is inferred. Two reports correctly identify no actual objections.
+- Authenticated official-site checks loaded all ten reports with all four
+  sections. Evidence and absent-category disclosures expand; section anchors
+  work and the desktop layout has clear separated cards. Next-report navigation
+  was verified from report 5 to report 6. Existing coaching home loaded its
+  165-rep selector; FAQ loaded its normal interface and chat history; original
+  report 8212 retained its existing coaching sections. No paid FAQ question
+  or live coaching generation was triggered by these checks.
+- Signed-out list and detail requests both returned 307 sign-in redirects,
+  without report content. Non-manager rejection is covered by access tests;
+  no other person's account was impersonated.
+- Model testing used 24 paid requests. Recorded usage-derived cost is
+  **$4.9725149**. Conservative reservations including a possible second native
+  gateway attempt total **$18.9990086**, below the $40 hard ceiling. This is
+  receipt-derived usage accounting, not an independently audited invoice.
+- Nine final drafts used Opus 5.5 with Sonnet 5.5 medium review. One used a
+  Sonnet 5.5 draft with Opus 5.5 correction. All ten received independent
+  source adjudication by Codex. The private run preserves prompts, source
+  versions/hashes, receipt ledger and adjudication notes.
+- Rejected drafts/reviewer changes included ordinary attorney review treated
+  as resistance, duplicated value/cost categories, an incorrect show rename,
+  and advice based on garbled transcript fragments. One timed-out HTTP
+  response was recovered from its successful saved n8n execution without a
+  repeat provider request. Output-cap failures are included in cost.
+- Final visual review removed one redundant sentence from review 1 and
+  corrected writer provenance for review 3. These bounded changes touched
+  only the two isolated benchmark output rows, after full schema validation.
+
+### Acceptance boundary
+
+The reviewed set is ready for Mike and Rich to evaluate. It does not prove
+unattended report generation is error-free: the reviewer model also made
+incorrect suggestions that were rejected during source adjudication. Do not
+promote this prompt or model combination into live report generation solely
+because these ten corrected examples look good. Review feedback and a further
+held-out evaluation are needed before a separately approved promotion.
+
+No production n8n workflow, original call/report, scoring or usage record,
+Google Sheet, authentication policy or FAQ answer generation was changed.
 
