@@ -78,4 +78,11 @@ describe('bounded source-to-report coverage',()=>{
     mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[]})));
     expect(await coachingCoverage('scan')).toMatchObject({source_ids:['recOld'],reported:[]});
   });
+  it('retains fresh queued work without pretending its warning was already sent',async()=>{
+    mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[{id:'recQueued'}]})));
+    const scan=await coachingCoverage('scan');if(!('token'in scan))throw Error('Expected ready');
+    await expect(coachingCoverage('ack',scan.token,['recQueued'],['recOther'])).rejects.toThrow('notification acknowledgement mismatch');
+    await coachingCoverage('ack',scan.token,['recQueued'],[]);
+    expect(mocks.state).toMatchObject({unresolved:['recQueued'],reported:[]});
+  });
 });

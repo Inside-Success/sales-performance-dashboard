@@ -24,6 +24,11 @@ if(process.argv[2]) {
  assert.deepEqual(new Function('$',restore.parameters.jsCode)(()=>({item:{json:input}})),{json:input,pairedItem:{item:0}});
  const early=patches.official.find(op=>op.node?.name==='MM Queue Transcript Fetch').node.parameters.jsCode;
  assert(!early.includes("$('If')"));assert(early.includes("$('Loop Over Items').item"));
+  const runFailure=message=>new Function('$','$json','$execution',early)(name=>({isExecuted:false,item:{json:name==='Loop Over Items'?input:{error_details:message}}}),{}, {id:'12345'}).json;
+  assert.equal(runFailure('The service was not able to process your request').status,'queued');
+  assert.equal(runFailure('HTTP 401 Unauthorized').status,'needs_review');
+  assert.equal(runFailure('Unknown permission condition').status,'needs_review');
+  assert.equal(runFailure('HTTP 503 Service Unavailable').source_id,'recFixture');
  assert(!patches.official.some(op=>/Classify Sales Call|Scoring|Compliance/.test(op.nodeName||'')));
  assert(patches.official.some(op=>op.type==='addConnection'&&op.source==='MM Observe Source Start'&&op.sourceIndex===1&&op.target==='MM Restore Source Start'));
 }
