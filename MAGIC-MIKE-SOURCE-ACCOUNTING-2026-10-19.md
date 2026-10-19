@@ -1,0 +1,28 @@
+# Coaching source accounting — October 19
+
+## Scope
+
+Owner-approved reliability follow-up for the seventeen source candidates identified by the October 18 sweep. Source Airtable records and source Google documents remain read-only. Model selection, numerical scoring, compliance policy, FAQ, access and dashboard presentation are outside this release.
+
+## Changes
+
+- Normalize speaker whitespace/NFKC consistently through the cleaner and attendance guard. Recognize full assigned-rep names with role suffixes and explicit role-qualified first names. Do not bind bare first names globally.
+- Treat generic meeting titles as labels rather than human identities. Correct the coaching-side handoff where a stored rep alias displaced the actual external speaker. Preserve transcript text and evidence verbatim.
+- A name mismatch alone cannot turn a substantive two-sided sales dialogue into a no-show. Shared presentation audio/bots do not establish prospect attendance. An unmatched rep label alone cannot convert a short technical recording into a rep no-show.
+- Preserve the classifier's original status/reason alongside the deterministic outcome and guard revision. Persist ordinary classifier exclusions as well as recovery exclusions. Empty transcripts are held for inspection; Call 1 exclusions are recorded.
+- Retry the read-only Google Docs fetch three times. After exhausted temporary failures, use the existing source-level recovery queue/backoff. Auth/unknown/uncertain-write cases remain held. Early failures reference the loop's paired source, not an unexecuted downstream node.
+- Record source/execution receipt metadata in owned Postgres before transcript fetch. An observation failure falls back to normal source processing, preserving item pairing. It must not become an additional hard dependency for delivery.
+- Discover by existing `Ingested At` readiness time, falling back to creation time only when absent. Reset old query cursors during migration, preserving unresolved sources and pending-page acknowledgement safety.
+- Keep unresolved calls independently of the rolling discovery window. Verify delivered records against actual dashboard rows; close legitimate recorded exclusions; keep queued/processing/held work unresolved. Repeat attention for unresolved/stale work after 24 hours, without automatically replaying unknown deliveries.
+
+## Verification and release
+
+Implementation prepared on a clean isolated checkout from current main. No local development server. Regression replay uses source documents in memory; no transcript fixture copies are committed. Thirteen substantive sales cases pass the new deterministic cleaner-to-classifier handoff; four interrupted/technical cases are assessed separately and must not be forced into fabricated full reports. A deterministic replay is not a fresh model review or proof of delivery.
+
+Local checks: 150 coaching/provider/coverage tests; existing retry, provider, crash-recovery and reliability-contract verifier scripts; role/alias/source-accounting verifier; TypeScript. Standard Turbopack build encounters the existing external node_modules symlink restriction in this checkout; webpack production build succeeds without changing deployed build configuration.
+
+Production publication, recovery receipts, cost and final acceptance will be recorded below after independent verification. Until then, do not describe the seventeen cases as recovered.
+
+## Rollback
+
+Retain small private before/after node patches and affected connections, without source transcripts or credential values. Revert only this release's node changes and repository commit; do not replace unrelated concurrent FAQ work or alter source systems. Append-only source-attempt metadata is safe to retain on rollback. Retain unresolved coverage IDs when reverting cursor/query logic.

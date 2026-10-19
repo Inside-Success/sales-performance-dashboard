@@ -25,7 +25,7 @@ describe('bounded source-to-report coverage',()=>{
     await expect(coachingCoverage('ack',first.token,['recOther'])).rejects.toThrow('mismatch');
     expect(await coachingCoverage('ack','stale')).toEqual({status:'superseded'});
     expect(await coachingCoverage('ack',first.token,['recMissing'])).toEqual({status:'acknowledged'});
-    expect(mocks.state).toEqual({reported:['recMissing']});
+    expect(mocks.state).toMatchObject({reported:['recMissing'],unresolved:['recMissing'],revision:'source-accounting-2026-10-19'});
   });
   it('paginates at most five pages and resumes the frozen window only after acknowledgement',async()=>{
     for(let i=0;i<5;i++)mocks.read.mockResolvedValueOnce(new Response(JSON.stringify({records:[{id:'recPage'+i}],offset:'offset'+i})));
@@ -47,13 +47,35 @@ describe('bounded source-to-report coverage',()=>{
     expect(mocks.state).toEqual({offset:'saved',end:'2026-10-18T00:00:00.000Z'});
   });
   it('restarts an expired source cursor safely and retains notification deduplication',async()=>{
-    mocks.state={offset:'expired',end:'2026-10-18T00:00:00.000Z',reported:['recKnown']};
+    mocks.state={revision:'source-accounting-2026-10-19',offset:'expired',end:'2026-10-18T00:00:00.000Z',reported:['recKnown'],unresolved:['recKnown']};
     mocks.read.mockResolvedValue(new Response('expired',{status:422}));
-    await expect(coachingCoverage('scan')).rejects.toThrow('HTTP 422');expect(mocks.state).toEqual({reported:['recKnown']});
+    await expect(coachingCoverage('scan')).rejects.toThrow('HTTP 422');expect(mocks.state).toMatchObject({reported:['recKnown'],unresolved:['recKnown']});expect(mocks.state.offset).toBeUndefined();
   });
   it('refuses malformed source pages and respects a competing scan lease',async()=>{
     mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[{id:'not-a-source'}]})));
     await expect(coachingCoverage('scan')).rejects.toThrow('Invalid coverage page');
     mocks.busy=true;expect(await coachingCoverage('scan')).toEqual({status:'busy',source_ids:[]});
+  });
+  it('discovers by readiness time, migrates the old query cursor and retains older unresolved calls',async()=>{
+    mocks.state={offset:'old-query-token',reported:['recOld']};
+    mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[]})));
+    const scan=await coachingCoverage('scan');
+    expect(scan).toMatchObject({source_ids:['recOld']});
+    const url=new URL(mocks.read.mock.calls[0][0]);
+    expect(url.searchParams.get('filterByFormula')).toContain('IF({Ingested At},{Ingested At},CREATED_TIME())');
+    expect(url.searchParams.has('offset')).toBe(false);
+  });
+  it('closes retained calls only after a confirmed report or an accounted exclusion',async()=>{
+    mocks.state={revision:'source-accounting-2026-10-19',unresolved:['recOld','recExcluded']};
+    mocks.delivered=[{source_id:'recOld'}];
+    mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[]})));
+    const scan=await coachingCoverage('scan');if(!('token'in scan))throw Error('Expected ready');
+    expect(scan).toMatchObject({source_ids:['recOld','recExcluded'],delivered_ids:['recOld']});
+    await coachingCoverage('ack',scan.token,[]);expect(mocks.state.unresolved).toEqual([]);
+  });
+  it('renotifies unresolved cases after a day without dropping them outside the discovery window',async()=>{
+    mocks.state={revision:'source-accounting-2026-10-19',unresolved:['recOld'],reported:['recOld'],reminder_at:'2020-01-01'};
+    mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[]})));
+    expect(await coachingCoverage('scan')).toMatchObject({source_ids:['recOld'],reported:[]});
   });
 });

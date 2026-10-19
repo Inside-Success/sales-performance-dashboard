@@ -56,8 +56,14 @@ export function coveragePlan(scan, receipts) {
   if(scan.status!=='ready' || !scan.token || !Array.isArray(scan.source_ids)) return null;
   const bySource=new Map(receipts.map(row=>[row.source_id,row]));
   const reported=new Set(scan.reported||[]);
-  const missing=scan.source_ids.filter(id=>!bySource.has(id)||bySource.get(id).status==='delivered');
-  return {token:scan.token,missing_ids:missing,notify:missing.filter(id=>!reported.has(id)),checked:scan.checked};
+  const delivered=new Set(scan.delivered_ids||[]);
+  const missing=scan.source_ids.filter(id=>!delivered.has(id)&&bySource.get(id)?.status!=='excluded');
+  // Queued/processing are unresolved, not success. Alert only when stale, or held for review.
+  const attention=missing.filter(id=>{
+    const row=bySource.get(id);
+    return !row || !['queued','processing'].includes(row.status) || !row.updated_at || Date.now()-Date.parse(row.updated_at)>86400000;
+  });
+  return {token:scan.token,missing_ids:missing,notify:attention.filter(id=>!reported.has(id)),checked:scan.checked};
 }
 
 // Intake records these attendance-only outcomes as Processed/Call 2+ too.
