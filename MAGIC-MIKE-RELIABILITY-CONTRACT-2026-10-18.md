@@ -1,5 +1,7 @@
 # Coaching reliability contract — October 18, 2026
 
+> October19 follow-up is completed: see `MAGIC-MIKE-SOURCE-ACCOUNTING-2026-10-19.md` and its manifest. The seventeen candidates discussed below were resolved as thirteen independently verified reports8191–8203 and four justified short/technical exclusions. Readiness-based discovery and retained unresolved accounting supersede the original created-time/notification-only checker description. The historical October18 evidence below is retained unchanged.
+
 ## Release scope and status
 
 Owner approved implementation and staged production release. The scoped reliability release is live and the three release-time recoveries are independently verified below. The first full source sweep also exposed older unaccounted candidates; these are explicitly separated from confirmed report failures and have not been replayed blindly.
