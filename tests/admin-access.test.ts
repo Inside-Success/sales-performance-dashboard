@@ -56,6 +56,6 @@ describe("Approved leadership access", () => {
   });
   it("keeps the external team link exact and all internal directory routes distinct", () => {
     expect(ADMIN_DIRECTORY_LINKS.find(link => link.name === "Mock Call Agent Team Admin")?.href).toBe("https://mockcallagent.insidesuccess.ai/admin/team");
-    expect(new Set(ADMIN_DIRECTORY_LINKS.map(link => link.href)).size).toBe(9);
+    expect(new Set(ADMIN_DIRECTORY_LINKS.map(link => link.href)).size).toBe(ADMIN_DIRECTORY_LINKS.length);
   });
 });

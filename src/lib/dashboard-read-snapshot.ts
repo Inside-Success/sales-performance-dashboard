@@ -1,5 +1,3 @@
-import { gzipSync, gunzipSync } from "node:zlib";
-import { unstable_cache } from "next/cache";
 import { after } from "next/server";
 import { formatMiamiDateTime } from "@/lib/format";
 import "server-only";
@@ -55,25 +53,6 @@ async function ensureActivityColumn() {
       });
   await activityColumn;
 }
-class MissingSnapshot extends Error {}
-class OversizedSnapshot extends Error {
-  constructor(readonly row: Row) {
-    super("Snapshot exceeds shared cache size budget");
-  }
-}
-const cachedReadRow = unstable_cache(
-  async (key: string) => {
-    const row = await readRow(key);
-    if (row?.payload == null || !row.fetched_at) throw new MissingSnapshot();
-    const compressed = gzipSync(JSON.stringify(row)).toString("base64");
-    // Keep comfortably below the framework cache entry limit; large reads remain usable.
-    if (compressed.length > 1500000) throw new OversizedSnapshot(row);
-    return compressed;
-  },
-  ["dashboard-successful-source-read-v2"],
-  { revalidate: 30 },
-);
-
 type Row = {
   payload: unknown;
   fetched_at: string | null;
@@ -118,17 +97,7 @@ export async function getReadSnapshot<T>(
   } catch {
     console.warn("dashboard_snapshot_activity_write_failed");
   }
-  let row: Row | undefined;
-  try {
-    row = JSON.parse(
-      gunzipSync(Buffer.from(await cachedReadRow(spec.key), "base64")).toString(
-        "utf8",
-      ),
-    ) as Row;
-  } catch (error) {
-    if (error instanceof OversizedSnapshot) row = error.row;
-    else if (!(error instanceof MissingSnapshot)) row = await readRow(spec.key);
-  }
+  const row = await readRow(spec.key);
   // Stale successful data stays immediately available. Scheduled refresh owns source I/O.
   if (row?.payload != null && row.fetched_at) {
     const value = result<T>(row, spec);
@@ -145,6 +114,8 @@ export async function getReadSnapshot<T>(
         /* Direct scripts have no request context; scheduled refresh handles recent activity. */
       }
     }
+    if (Date.now() - Date.parse(row.fetched_at) > 24 * 60 * 60 * 1000)
+      throw new Error("Source data has not refreshed within 24 hours. Please try again after the next refresh.");
     return value;
   }
   if (spec.initializeOnRead === false) {
@@ -189,7 +160,7 @@ export async function refreshReadSnapshot<T>(
   const claim = await db().query(
     `insert into dashboard_read_snapshots(key,lease_token,lease_until,last_requested_at)
     select $1,$2,now()+interval '330 seconds',case when $4::bool then null else now() end
-    where not $4::bool or exists(select 1 from dashboard_read_snapshots where key=$1 and last_requested_at>now()-interval '30 minutes') on conflict(key) do update
+    on conflict(key) do update
     set lease_token=$2,lease_until=now()+interval '330 seconds'
     where (dashboard_read_snapshots.lease_until is null or dashboard_read_snapshots.lease_until<now())
       and (dashboard_read_snapshots.fetched_at is null or dashboard_read_snapshots.fetched_at<now()-make_interval(secs=>$3))

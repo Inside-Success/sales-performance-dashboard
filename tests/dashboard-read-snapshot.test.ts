@@ -11,7 +11,7 @@ import {
 } from "@/lib/dashboard-read-snapshot";
 const old = {
   payload: { count: 12 },
-  fetched_at: "2026-10-01T00:00:00Z",
+  fetched_at: new Date(Date.now() - 3600000).toISOString(),
   failed_at: null,
 };
 beforeEach(() => {
@@ -76,12 +76,12 @@ describe("last successful dashboard reads", () => {
       false,
     );
   });
-  it("requires recent dashboard activity for scheduled source refreshes", async () => {
+  it("keeps scheduled refreshes eligible after inactivity", async () => {
     query.mockResolvedValue([]);
     const load = vi.fn();
     await refreshReadSnapshot({ key: "test", maxAgeSeconds: 300, load }, true);
     const claim = query.mock.calls.find(([sql]) => sql.startsWith("insert"));
-    expect(claim?.[0]).toContain("last_requested_at");
+    expect(claim?.[0]).not.toContain("interval '30 minutes'");
     expect(claim?.[1][3]).toBe(true);
     expect(load).not.toHaveBeenCalled();
   });

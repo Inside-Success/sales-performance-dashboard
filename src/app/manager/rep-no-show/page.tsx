@@ -1,3 +1,5 @@
+import { miamiDayKey } from "@/lib/rep-no-show-calendar";
+import { SnapshotRefresh } from "@/components/dashboard/snapshot-refresh";
 import { RepNoShowPeriodSelect } from "@/components/dashboard/rep-no-show-period-select";
 import {
   normalizeAttendanceDay,
@@ -62,6 +64,7 @@ export default async function RepNoShowPage({
 
   return (
     <main className="magic-page magic-no-show-theme">
+      <SnapshotRefresh scope="attendance" fetchedAt={analytics.summary.generatedAt} day={calendarDay || undefined} calendarDate={miamiDayKey(new Date())} />
       <div className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 px-5 py-6 sm:px-8">
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
