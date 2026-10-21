@@ -1,0 +1,3092 @@
+{
+  "official": {
+    "nodes": [
+      {
+        "id": "098afd7c-4ba0-436e-a743-568e7f83fde3",
+        "name": "Normalize Airtable Row",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5984,
+          7216
+        ],
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nconst clean = (value) => {\n  if (value === null || value === undefined) return '';\n  if (Array.isArray(value)) return value.map(clean).filter(Boolean).join(', ');\n  return String(value).trim();\n};\n\nconst pick = (source, names) => {\n  for (const name of names) {\n    const value = source[name];\n    if (clean(value)) return value;\n  }\n  return '';\n};\n\nconst docIdFromUrl = (url) => {\n  const value = clean(url);\n  const match = value.match(/\\/document\\/d\\/([^/]+)/);\n  return match ? match[1] : '';\n};\n\nconst attendanceFromReason = (reason) => {\n  const text = clean(reason);\n  const match = text.match(/attendance_status\\s*=\\s*([a-z_]+)/i);\n  return match ? match[1].toLowerCase() : '';\n};\n\nconst attendanceReasonFromDecision = (reason) => {\n  const text = clean(reason);\n  const match = text.match(/attendance_status\\s*=\\s*[a-z_]+\\s*:\\s*([^|]+)/i);\n  return match ? clean(match[1]) : '';\n};\n\nreturn items.map((item, index) => {\n  const raw = item.json || {};\n  const fields = raw.fields && typeof raw.fields === 'object' ? raw.fields : raw;\n  const recordId = clean(raw.id || raw.recordId || fields.id || fields.recordId);\n  const transcriptDoc = clean(pick(fields, ['Meeting Transcript Link', 'Transcript Doc', 'meeting_transcript_link', 'Meeting Transcript']));\n  const transcriptDocId = clean(pick(fields, ['Transcript Google Doc ID', 'Google Doc ID'])) || docIdFromUrl(transcriptDoc);\n  const meetingId = clean(pick(fields, ['Meeting ID', 'meeting_id']));\n  const repEmail = clean(pick(fields, ['Rep Email', 'Sales Rep Email', 'rep_email']));\n  const repName = clean(pick(fields, ['Rep Name', 'Sales Rep', 'rep_name'])) || (repEmail ? repEmail.split('@')[0].replace(/[._-]+/g, ' ') : '');\n  const processingStatus = clean(pick(fields, ['Processing Status', 'processing_status']));\n  const aiDecisionReason = clean(pick(fields, ['AI Decision Reason', 'ai_decision_reason']));\n  const upstreamAttendanceStatus = clean(pick(fields, ['Attendance Status', 'attendance_status'])) || attendanceFromReason(aiDecisionReason);\n  const upstreamAttendanceReason = clean(pick(fields, ['Attendance Reason', 'attendance_reason'])) || attendanceReasonFromDecision(aiDecisionReason);\n  const scorecardKey = clean(pick(fields, ['Automation Key', 'Scorecard Key', 'scorecard_key'])) || (recordId ? `airtable:${recordId}` : [meetingId, transcriptDocId].filter(Boolean).join(':'));\n\n  return {\n    json: {\n      ...fields,\n      'Date/Time': clean(pick(fields, ['Meeting Start Date', 'Date/Time', 'call_date', 'Ingested At'])),\n      'Meeting ID': meetingId,\n      'Sales Rep Email': repEmail,\n      'Sales Rep': repName,\n      'Client Name': clean(pick(fields, ['Client Name', 'client_name'])),\n      'Title Of Meeting': clean(pick(fields, ['Meeting Title', 'Title Of Meeting', 'meeting_title'])),\n      'Meeting Duration': clean(pick(fields, ['Meeting Duration', 'Duration Minutes', 'Duration', 'durationMinutes', 'minutes'])),\n      'Transcript Doc': transcriptDoc,\n      'Transcript Google Doc ID': transcriptDocId,\n      'Zoom Url': clean(pick(fields, ['Meeting Link', 'Zoom Url', 'meeting_link'])),\n      'Show Name': clean(pick(fields, ['Show Name', 'show_name'])),\n      'Scorecard Key': scorecardKey,\n      'Source Airtable Record ID': recordId,\n      'Source Airtable Created Time': clean(raw.createdTime || fields.createdTime || fields['Created Time']),\n      'Source Airtable Ingested At': clean(pick(fields, ['Ingested At', 'source_airtable_ingested_at'])),\n      'Source Airtable Processing Status': processingStatus,\n      'Upstream Attendance Status': upstreamAttendanceStatus,\n      'Upstream Attendance Reason': upstreamAttendanceReason\n    },\n    pairedItem: { item: index }\n  };\n}).filter((item) => {\n  return item.json['Source Airtable Processing Status'] === 'Processed' && item.json['Transcript Doc'];\n});"
+        }
+      },
+      {
+        "id": "14546a37-25be-4fe4-ac1b-271583c2a501",
+        "name": "MM Queue Unfinished Coaching",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "function failureDecision(message, checkpoints=[], attempt=0, now=Date.now()) {\n  const raw=String(message || 'Unknown coaching failure');\n  const msg=(raw.split(/\\|\\s*Error:\\s*/).pop() || raw).split(/\\|\\s*(?:Transcript chars|Meeting ID|Source Record|Execution ID):/)[0].trim();\n  const httpCode=msg.match(/(?:^|\\bHTTP\\s+|\\bstatus(?:Code)?\\s*[:=]\\s*)(401|403|429|500|502|503|504|524|529)\\b/i)?.[1];\n  // Prefer the original typed cause. Never search transcript/meeting numbers for HTTP codes.\n  if (['401','403'].includes(httpCode) || /\\brefusal\\b|invalid source|source mismatch|ownership changed|uncertain|partial delivery|report write detected/i.test(msg)) return {kind:'safety_hold',retryable:false};\n  const incomplete=checkpoints.filter(c=>['running','failed'].includes(c.status)).sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0];\n  if (/Error executing workflow|checkpoint deferred|task request timed out/i.test(msg) && incomplete) {\n    if (incomplete.status==='running') return {kind:'checkpoint_incomplete',stage:incomplete.stage,retryable:true,retryAt:Math.max(now+60000,Date.parse(incomplete.lease_until)||now+300000)};\n    const cause=failureDecision(incomplete.last_error,[],attempt,now);\n    return {...cause,stage:incomplete.stage,retryAt:Math.max(now+60000,Date.parse(incomplete.next_attempt_at)||now+300000)};\n  }\n  if (/invalid coaching contract|Missing strength|draft remains invalid|Invalid transcript evidence|Invalid coaching audit|Incomplete improvement audit|Conflicting improvement audit|Incomplete factual audit|Invalid audited outcome/i.test(msg)) return {kind:'content_contract',retryable:attempt<2};\n  if (['429','500','502','503','504','524','529'].includes(httpCode) || /timeout|timed out|aborted|overload|rate.?limit|temporar|ECONNRESET|ETIMEDOUT|EAI_AGAIN|fetch failed|socket|connection.*closed|empty response|JSON parse|invalid structured|checkpoint (deferred|unavailable)/i.test(msg)) return {kind:'transient',retryable:true};\n  return {kind:'unknown',retryable:false};\n}\nfunction queueFailure(sourceId, executionId, message, attempt=0, now=Date.now(), checkpoints=[]) {\n  if (!/^rec[A-Za-z0-9]+$/.test(sourceId)) throw Error(\"Invalid recovery source\");\n  const decision=failureDecision(message,checkpoints,attempt,now);\n  const eligible=decision.retryable;\n  const delay=attempt>=3?86400000:[300000,900000,3600000][Math.max(0,attempt)];\n  return {source_id:sourceId,execution_id:String(executionId),updated_at:new Date(now).toISOString(),report_id:\"\",\n    status:eligible?\"queued\":\"needs_review\",attempts:attempt,\n    message:(eligible?`retry_at=${new Date(Math.max(now+delay,decision.retryAt||0)).toISOString()} | `:\"\")+`kind=${decision.kind}${decision.stage?' stage='+decision.stage:''} | `+String(message).slice(0,850)};\n}\nconst recovery=$('MM Recovery Entry').isExecuted;\nconst attempt=recovery?Number($('MM Recovery Entry').first().json.recovery_attempt||1):0;\nconst failure=$('Set: agent_failed').item.json;\nconst source=String($('If').item.json['Source Airtable Record ID']||'');\nconst diagnostics=$json.source_id===source&&Array.isArray($json.checkpoints)?$json.checkpoints:[];\nlet message=String(failure.error_details||failure.error?.message||failure.message||'Coaching failed');\nif($json.error && /Error executing workflow/.test(message))message+=' | checkpoint unavailable';\nreturn {json:queueFailure(source,$execution.id,message,attempt,Date.now(),diagnostics),pairedItem:{item:0}};"
+        }
+      },
+      {
+        "id": "58ecf6b0-8a3a-4e68-bd1a-ed0b362e0943",
+        "name": "MM Save Unfinished Coaching",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "resource": "row",
+          "operation": "upsert",
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "VLIchjpKA0NJLknv"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "source_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.source_id }}"
+              }
+            ]
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_id": "={{ $json.source_id }}",
+              "status": "={{ $json.status }}",
+              "execution_id": "={{ $json.execution_id }}",
+              "message": "={{ $json.message }}",
+              "attempts": "={{ $json.attempts }}",
+              "report_id": "={{ $json.report_id }}",
+              "updated_at": "={{ $json.updated_at }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "source_id",
+                "displayName": "source_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "execution_id",
+                "displayName": "execution_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "message",
+                "displayName": "message",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "attempts",
+                "displayName": "attempts",
+                "required": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "report_id",
+                "displayName": "report_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "updated_at",
+                "displayName": "updated_at",
+                "required": false,
+                "display": true,
+                "type": "date",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "6c5a0f95-51aa-48a6-9c34-de5a53a09931",
+        "name": "MM Recovery Guard",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "if(!Array.isArray($json.records))throw Error('Unverified recovery duplicate check');const raw=$('MM Recovery Source Record').item.json;if(raw.id!==$('MM Recovery Entry').item.json.source_id)throw Error('Recovery source mismatch');if(raw.fields?.['Processing Status']!=='Processed'||!raw.fields?.['Meeting Transcript Link'])throw Error('Source transcript not ready');return {json:{raw,exists:$json.records.length>0,report_id:$json.records[0]?.id||''}};"
+        }
+      },
+      {
+        "id": "4e91bb39-dd7d-4fc7-ac95-17d7729d01b5",
+        "name": "MM Recovery Existing Receipt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "return {json:{source_id:$('MM Recovery Entry').item.json.source_id,status:'existing_report',attempts:1,execution_id:String($execution.id),message:'Replay skipped: source already has Airtable report; verify dashboard delivery independently.',report_id:$json.report_id,updated_at:new Date().toISOString()}};"
+        }
+      },
+      {
+        "id": "8e072ba7-001b-44e1-8962-4744a2dd8d1c",
+        "name": "MM Restore Recovery Source",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "return {json:$json.raw};"
+        }
+      },
+      {
+        "id": "mm-observe-source-start",
+        "name": "MM Observe Source Start",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1500,
+        "onError": "continueErrorOutput",
+        "position": [
+          0,
+          1000
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/coaching-coverage",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({action:'observe',source_id:$json['Source Airtable Record ID'],execution_id:String($execution.id)}) }}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "E3CMQbjt6fZ5gPXw",
+            "name": "Sales Performance Dashboard Ingest"
+          }
+        }
+      },
+      {
+        "id": "mm-restore-source-start",
+        "name": "MM Restore Source Start",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          200,
+          1000
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "return {json:$('Loop Over Items').item.json,pairedItem:{item:0}};"
+        }
+      },
+      {
+        "id": "49948963-1c5e-4e0f-b203-c594d81ec5d0",
+        "name": "MM Coaching Completed",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "c5f72da6-0a26-4714-add3-6becfd4060bb",
+                "leftValue": "={{ $json.parsed_json?.status === 'completed' }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "2942e419-4225-47b4-a04a-7582dece5e0c",
+        "name": "MM Coaching Delivery Receipt",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "let body=$json;\nif (body?.body!==undefined) body=body.body;\nif (typeof body==='string') {try{body=JSON.parse(body)}catch{body={}}}\nif(body?._readableState?.buffer){try{body=JSON.parse(body._readableState.buffer.map(b=>String.fromCharCode(...(b.data||[]))).join(''))}catch{body={}}}\nconst report_id=String($('Create a record').item.json.id);\nconst verified=body?.ok===true&&String(body.airtable_record_id||'')===report_id&&Boolean(body.id);\nreturn {json:{source_id:String($('If').item.json['Source Airtable Record ID']||''),execution_id:String($execution.id),updated_at:new Date().toISOString(),report_id,status:verified?'delivered':'needs_review',attempts:$('MM Recovery Entry').isExecuted?Number($('MM Recovery Entry').first().json.recovery_attempt||1):0,message:verified?'Dashboard confirmed report '+String(body.id)+'; source report and document created.':'Dashboard response did not confirm the matching report; inspect before retrying delivery.'}};"
+        }
+      },
+      {
+        "id": "98370b27-efbf-4e24-8564-78893def5743",
+        "name": "MM Save Coaching Delivery",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "resource": "row",
+          "operation": "upsert",
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "VLIchjpKA0NJLknv"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "source_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.source_id }}"
+              }
+            ]
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_id": "={{ $json.source_id }}",
+              "status": "={{ $json.status }}",
+              "execution_id": "={{ $json.execution_id }}",
+              "message": "={{ $json.message }}",
+              "attempts": "={{ $json.attempts }}",
+              "report_id": "={{ $json.report_id }}",
+              "updated_at": "={{ $json.updated_at }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "source_id",
+                "displayName": "source_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "execution_id",
+                "displayName": "execution_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "message",
+                "displayName": "message",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "attempts",
+                "displayName": "attempts",
+                "required": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "report_id",
+                "displayName": "report_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "updated_at",
+                "displayName": "updated_at",
+                "required": false,
+                "display": true,
+                "type": "date",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "938ef86a-f33c-40ae-9fdc-7dac1ad2e3fe",
+        "name": "MM Recovery Entry",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "source_id",
+                "type": "string"
+              },
+              {
+                "name": "recovery_attempt",
+                "type": "number"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "c51d3526-071f-425e-9821-82bc404533aa",
+        "name": "MM Validate Recovery Source",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "if(!/^rec[a-zA-Z0-9]{14}$/.test($json.source_id||''))throw Error('Invalid recovery source');return {json:$json};"
+        }
+      },
+      {
+        "id": "086bccd0-7c28-4dcc-9811-34d272528a83",
+        "name": "MM Recovery Existing Reports",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "method": "GET",
+          "url": "https://api.airtable.com/v0/appNIvRt5uouRrcZ6/tblxMPJTnMFvrlY2d",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "airtableTokenApi",
+          "options": {
+            "timeout": 30000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          },
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "filterByFormula",
+                "value": "={{ \"{source_airtable_record_id}='\" + $('MM Recovery Entry').item.json.source_id + \"'\" }}"
+              },
+              {
+                "name": "maxRecords",
+                "value": "2"
+              }
+            ]
+          }
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "jzyRlXOdp1z6G1s8",
+            "name": "Airtable - Zoom Sales Calls"
+          }
+        }
+      },
+      {
+        "id": "mm-save-classifier-exclusion",
+        "name": "MM Save Classifier Exclusion",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 1000,
+        "onError": "continueErrorOutput",
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "resource": "row",
+          "operation": "upsert",
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "VLIchjpKA0NJLknv"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "source_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.source_id }}"
+              }
+            ]
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_id": "={{ $json.source_id }}",
+              "status": "={{ $json.status }}",
+              "execution_id": "={{ $json.execution_id }}",
+              "message": "={{ $json.message }}",
+              "attempts": "={{ $json.attempts }}",
+              "report_id": "={{ $json.report_id }}",
+              "updated_at": "={{ $json.updated_at }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "source_id",
+                "displayName": "source_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "execution_id",
+                "displayName": "execution_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "message",
+                "displayName": "message",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "attempts",
+                "displayName": "attempts",
+                "required": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "report_id",
+                "displayName": "report_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "updated_at",
+                "displayName": "updated_at",
+                "required": false,
+                "display": true,
+                "type": "date",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "f8b1c4ce-e579-4d99-b5c3-45db05d29e2e",
+        "name": "MM Save Coaching Exclusion",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "resource": "row",
+          "operation": "upsert",
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "VLIchjpKA0NJLknv"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "source_id",
+                "condition": "eq",
+                "keyValue": "={{ $json.source_id }}"
+              }
+            ]
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "source_id": "={{ $json.source_id }}",
+              "status": "={{ $json.status }}",
+              "execution_id": "={{ $json.execution_id }}",
+              "message": "={{ $json.message }}",
+              "attempts": "={{ $json.attempts }}",
+              "report_id": "={{ $json.report_id }}",
+              "updated_at": "={{ $json.updated_at }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "source_id",
+                "displayName": "source_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "execution_id",
+                "displayName": "execution_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "message",
+                "displayName": "message",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "attempts",
+                "displayName": "attempts",
+                "required": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "report_id",
+                "displayName": "report_id",
+                "required": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "updated_at",
+                "displayName": "updated_at",
+                "required": false,
+                "display": true,
+                "type": "date",
+                "canBeUsedToMatch": true
+              }
+            ]
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "64de338e-c8e1-4768-96df-37a51f38c861",
+        "name": "MM Recovery Source Record",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "position": [
+          12000,
+          8200
+        ],
+        "parameters": {
+          "method": "GET",
+          "url": "={{ 'https://api.airtable.com/v0/appNIvRt5uouRrcZ6/tblD1VHKC49agh9QZ/' + $json.source_id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "airtableTokenApi",
+          "options": {
+            "timeout": 30000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          }
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "jzyRlXOdp1z6G1s8",
+            "name": "Airtable - Zoom Sales Calls"
+          }
+        }
+      },
+      {
+        "id": "mm-recovered-classifier-exclusion",
+        "name": "MM Recovered Classifier Exclusion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "onError": "continueErrorOutput",
+        "position": [
+          12000,
+          8500
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "const g=$json.gate_output;if(!['call_1','prospect_no_show','rep_no_show','transcript_too_short','internal_training'].includes(g?.call_status)||!g.classification_reason)throw Error('Unverified classifier exclusion');return {json:{source_id:String($('If').item.json['Source Airtable Record ID']),status:'excluded',execution_id:String($execution.id),attempts:$('MM Recovery Entry').isExecuted?Number($('MM Recovery Entry').first().json.recovery_attempt||1):0,report_id:'',updated_at:new Date().toISOString(),message:JSON.stringify({revision:g.guard_revision||'source-accounting-2026-10-19',status:g.call_status,reason:g.classification_reason,original_status:g.classifier_original_status,original_reason:g.classifier_original_reason})}};"
+        }
+      },
+      {
+        "id": "mm-accounting-incident",
+        "name": "MM Accounting Incident",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          12400,
+          9100
+        ],
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "let source='';try{source=$('Loop Over Items').item.json['Source Airtable Record ID']||'';}catch{}\nconst message=String($json.error?.message||$json.error||$json.message||'Source outcome receipt failed').replace(/Bearer\\s+\\S+/gi,'Bearer [redacted]').replace(/https?:\\/\\/\\S+/g,'[url]').slice(0,800);\nconsole.error('Magic Mike accounting failure',String($execution.id),source,message);\nreturn {json:{event_key:'accounting:'+$execution.id+':'+source,workflow_id:$workflow.id,execution_id:String($execution.id),call_key:source,stage:'source_accounting',status:'needs_review',message,occurred_at:new Date().toISOString()},pairedItem:{item:0}};"
+        }
+      }
+    ],
+    "connections": {
+      "Get a document": {
+        "main": [
+          [
+            {
+              "node": "Clean Response",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: fetch_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean Response": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Set: too_short",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Airtable Call 1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a record": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Checkpoint Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Build Compliance Alert",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: airtable_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Send Top Level",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Performance Agent": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: call_1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Create a record",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Rep No Show",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: too_short": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Account Early Outcome",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: call_1": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Account Early Outcome",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: prospect_no_show": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: fetch_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Queue Transcript Fetch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: agent_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Read Checkpoint State",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: airtable_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Ops Alert": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Rep No Show": {
+        "main": [
+          [
+            {
+              "node": "Set: rep_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If Agent Transcript Too Short",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Agent Transcript Too Short": {
+        "main": [
+          [
+            {
+              "node": "Set: agent_transcript_too_short",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: prospect_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: rep_no_show": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: agent_transcript_too_short": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Top Level": {
+        "main": [
+          [
+            {
+              "node": "Send Thread Reply",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Thread Reply": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: slack_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Airtable Row Trigger": {
+        "main": [
+          [
+            {
+              "node": "Normalize Airtable Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Airtable Row": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Ops Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Ops Alert",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "If Rep No Show Alert Channel",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "If Folder Exists",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: pdf_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Folder Exists": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Build PDF HTML",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Store Folder Mapping",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build PDF HTML": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "Parse Doc Response",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Checkpoint Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse Doc Response": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Is Folder Valid",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Folder Valid": {
+        "main": [
+          [
+            {
+              "node": "Build PDF HTML",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Delivery Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Policy Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: dashboard_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Airtable Call 1": {
+        "main": [
+          [
+            {
+              "node": "If Upstream Rep No Show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Fetch Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Compliance Alert": {
+        "main": [
+          [
+            {
+              "node": "If Compliance Payload Exists",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Expand Compliance Sheet Rows",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Compliance Payload Exists": {
+        "main": [
+          [
+            {
+              "node": "Send Compliance Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Compliance Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Compliance Thread Reply",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Upstream Rep No Show": {
+        "main": [
+          [
+            {
+              "node": "Set: rep_no_show",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: call_1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Rep No Show Alert Channel": {
+        "main": [
+          [
+            {
+              "node": "Dedupe Rep No Show Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dedupe Rep No Show Alert": {
+        "main": [
+          [
+            {
+              "node": "Send Rep No Show Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Fetch Context Pack": {
+        "main": [
+          [
+            {
+              "node": "MM Attach Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Attach Context Pack",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Attach Context Pack": {
+        "main": [
+          [
+            {
+              "node": "MM Build Classifier Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Classifier Request": {
+        "main": [
+          [
+            {
+              "node": "MM Classifier Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Classifier Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Parse Classifier",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Parse Classifier": {
+        "main": [
+          [
+            {
+              "node": "MM If Scored",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM If Scored": {
+        "main": [
+          [
+            {
+              "node": "MM Build Coaching Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Record Recovery Classifier Gate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Coaching Request": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Coaching Only",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Reliable Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Compliance Request": {
+        "main": [
+          [
+            {
+              "node": "MM Compliance Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Compliance Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Build Safety Screen Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Safety Screen Request": {
+        "main": [
+          [
+            {
+              "node": "MM Safety Screen Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Safety Screen Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Prepare Repair",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Prepare Repair": {
+        "main": [
+          [
+            {
+              "node": "MM If Repair Needed",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM If Repair Needed": {
+        "main": [
+          [
+            {
+              "node": "MM Repair Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Repair Provider": {
+        "main": [
+          [
+            {
+              "node": "Performance Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append Compliance Sheet Row": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Set: compliance_sheet_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Compliance Thread Reply": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Set: slack_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: compliance_sheet_failed": {
+        "main": [
+          [
+            {
+              "node": "Build Ops Alert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Expand Compliance Sheet Rows": {
+        "main": [
+          [
+            {
+              "node": "Append Compliance Sheet Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Call 2 Coaching + Evidence Score": {
+        "main": [
+          [
+            {
+              "node": "MM Prepare VNext Score Persistence",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Adapt VNext Coaching Result": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Coaching Request Fallback": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Provider",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Prepare VNext Score Persistence": {
+        "main": [
+          [
+            {
+              "node": "MM Persist VNext Manager Score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Recovery Event": {
+        "main": [
+          [
+            {
+              "node": "MM Store Recovery Event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Lookup Rep Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Lookup Rep Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Verified Folder Missing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Verify Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Create Drive Folder": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Create Coaching Doc": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Coaching Doc",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Insert Doc Content": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Insert Doc Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Scorecard PDF Link": {
+        "main": [
+          [],
+          [
+            {
+              "node": "MM Retry Policy Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: pdf_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Update Scorecard PDF Link": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Update Scorecard PDF Link",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Checkpoint Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Policy Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Retry Allowed Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Retry Allowed Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Backoff Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Build Recovery Event",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Set: dashboard_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Backoff Post to Dashboard": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Post to Dashboard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Verified Folder Missing": {
+        "main": [
+          [
+            {
+              "node": "MM Checkpoint Create Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Retry Allowed Verify Drive Folder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Factual Audit": {
+        "main": [
+          [
+            {
+              "node": "MM Factual Audit Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Factual Audit Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Render Audited Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Build Audit Confirmation": {
+        "main": [
+          [
+            {
+              "node": "MM Audit Confirmation Provider",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Audit Confirmation Provider": {
+        "main": [
+          [
+            {
+              "node": "MM Render Audited Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Render Audited Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Exclusion": {
+        "main": [
+          [
+            {
+              "node": "MM Save Coaching Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Save Coaching Exclusion": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Reliable Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Completed",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: agent_failed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Completed": {
+        "main": [
+          [
+            {
+              "node": "MM Build Compliance Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Coaching Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Queue Unfinished Coaching": {
+        "main": [
+          [
+            {
+              "node": "MM Save Unfinished Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Coaching Delivery Receipt": {
+        "main": [
+          [
+            {
+              "node": "MM Save Coaching Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Entry": {
+        "main": [
+          [
+            {
+              "node": "MM Validate Recovery Source",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Validate Recovery Source": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Source Record",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Source Record": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Existing Reports",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Existing Reports": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Guard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Guard": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Already Exists",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Already Exists": {
+        "main": [
+          [
+            {
+              "node": "MM Recovery Existing Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Recovery Source",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Existing Receipt": {
+        "main": [
+          [
+            {
+              "node": "MM Save Existing Receipt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Recovery Source": {
+        "main": [
+          [
+            {
+              "node": "Normalize Airtable Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovery Coaching Only": {
+        "main": [
+          [
+            {
+              "node": "MM Read Recovery Cache",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Call 2 Coaching + Evidence Score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Read Recovery Cache": {
+        "main": [
+          [
+            {
+              "node": "MM Has Reviewed Recovery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Has Reviewed Recovery": {
+        "main": [
+          [
+            {
+              "node": "MM Restore Reviewed Recovery",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Read Unreviewed Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Reviewed Recovery": {
+        "main": [
+          [
+            {
+              "node": "MM Coaching Completed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Record Recovery Classifier Gate": {
+        "main": [
+          [
+            {
+              "node": "MM Recovered Classifier Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Recovered Classifier Exclusion": {
+        "main": [
+          [
+            {
+              "node": "MM Save Classifier Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Accounting Incident",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Read Unreviewed Draft": {
+        "main": [
+          [
+            {
+              "node": "MM Validate Unreviewed Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Validate Unreviewed Draft": {
+        "main": [
+          [
+            {
+              "node": "MM Draft Matches Current Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Draft Matches Current Request": {
+        "main": [
+          [
+            {
+              "node": "MM Restore Unreviewed Draft",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Coaching Request Fallback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Unreviewed Draft": {
+        "main": [
+          [
+            {
+              "node": "MM Reliable Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Read Checkpoint State": {
+        "main": [
+          [
+            {
+              "node": "MM Queue Unfinished Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Queue Transcript Fetch": {
+        "main": [
+          [
+            {
+              "node": "MM Save Unfinished Coaching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Account Early Outcome": {
+        "main": [
+          [
+            {
+              "node": "MM Save Classifier Exclusion",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Accounting Incident",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "MM Observe Source Start",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Observe Source Start": {
+        "main": [
+          [
+            {
+              "node": "MM Restore Source Start",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "MM Restore Source Start",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Restore Source Start": {
+        "main": [
+          [
+            {
+              "node": "Get a document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Save Classifier Exclusion": {
+        "main": [
+          [],
+          [
+            {
+              "node": "MM Accounting Incident",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MM Accounting Incident": {
+        "main": [
+          [
+            {
+              "node": "MM Store Accounting Incident",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "MM Notify Accounting Incident",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "coverage": {
+    "nodes": [
+      {
+        "id": "coverage-schedule",
+        "name": "Every Fifteen Minutes",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 15
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "read-coverage-page",
+        "name": "Read Coverage Page",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1500,
+        "position": [
+          200,
+          0
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/coaching-coverage",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({action:\"scan\"}) }}",
+          "options": {
+            "timeout": 60000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "E3CMQbjt6fZ5gPXw",
+            "name": "Sales Performance Dashboard Ingest"
+          }
+        }
+      },
+      {
+        "id": "Coverage Ready",
+        "name": "Coverage Ready",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          400,
+          0
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "Coverage Ready",
+                "leftValue": "={{ $json.status === \"ready\" }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "read-source-receipts",
+        "name": "Read Source Receipts",
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "alwaysOutputData": true,
+        "position": [
+          600,
+          0
+        ],
+        "parameters": {
+          "resource": "row",
+          "operation": "get",
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "VLIchjpKA0NJLknv"
+          },
+          "options": {},
+          "returnAll": true
+        }
+      },
+      {
+        "id": "coverage-plan",
+        "name": "Plan Coverage Outcome",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          800,
+          0
+        ],
+        "parameters": {
+          "jsCode": "function coveragePlan(scan, receipts) {\n  if(scan.status!=='ready' || !scan.token || !Array.isArray(scan.source_ids)) return null;\n  const bySource=new Map(receipts.map(row=>[row.source_id,row]));\n  const reported=new Set(scan.reported||[]);\n  const delivered=new Set(scan.delivered_ids||[]);\n  const missing=scan.source_ids.filter(id=>!delivered.has(id)&&bySource.get(id)?.status!=='excluded');\n  // Queued/processing are unresolved, not success. Alert only when stale, or held for review.\n  const attention=missing.filter(id=>{\n    const row=bySource.get(id);\n    return !row || !['queued','processing'].includes(row.status) || !row.updated_at || Date.now()-Date.parse(row.updated_at)>86400000;\n  });\n  return {token:scan.token,missing_ids:missing,notify:attention.filter(id=>!reported.has(id)),checked:scan.checked};\n}\nconst plan=coveragePlan($('Read Coverage Page').first().json,$input.all().map(x=>x.json));return plan?[{json:plan,pairedItem:{item:0}}]:[];"
+        }
+      },
+      {
+        "id": "New Coverage Gap",
+        "name": "New Coverage Gap",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1000,
+          0
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "New Coverage Gap",
+                "leftValue": "={{ $json.notify.length > 0 }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        }
+      },
+      {
+        "id": "notify-coverage-gap",
+        "name": "Notify Coverage Gap",
+        "webhookId": "de399a1b-9076-4d5d-b0b2-7304c668ece1",
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "position": [
+          1200,
+          0
+        ],
+        "parameters": {
+          "resource": "message",
+          "operation": "post",
+          "select": "channel",
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "C0B09AVJ35Z"
+          },
+          "messageType": "text",
+          "text": "={{ 'Magic Mike delivery coverage needs attention. '+$('Plan Coverage Outcome').first().json.notify.length+' source call(s) remain unresolved after checking dashboard artifacts and source outcome receipts. Sources: '+$('Plan Coverage Outcome').first().json.notify.slice(0,10).join(', ')+'. No reports were replayed automatically; inspect source artifacts before recovery.' }}",
+          "otherOptions": {
+            "includeLinkToWorkflow": false
+          }
+        },
+        "credentials": {
+          "slackApi": {
+            "id": "y8as5xzcjlsJ1haG",
+            "name": "Moonis - n8n integration bot"
+          }
+        }
+      },
+      {
+        "id": "acknowledge-coverage-page",
+        "name": "Acknowledge Coverage Page",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "retryOnFail": true,
+        "maxTries": 2,
+        "waitBetweenTries": 1500,
+        "position": [
+          1400,
+          0
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/coaching-coverage",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({action:'ack',token:$('Plan Coverage Outcome').first().json.token,missing_ids:$('Plan Coverage Outcome').first().json.missing_ids,notified_ids:$('Plan Coverage Outcome').first().json.notify}) }}",
+          "options": {
+            "timeout": 60000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "E3CMQbjt6fZ5gPXw",
+            "name": "Sales Performance Dashboard Ingest"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Every Fifteen Minutes": {
+        "main": [
+          [
+            {
+              "node": "Read Coverage Page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Coverage Page": {
+        "main": [
+          [
+            {
+              "node": "Coverage Ready",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Coverage Ready": {
+        "main": [
+          [
+            {
+              "node": "Read Source Receipts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Source Receipts": {
+        "main": [
+          [
+            {
+              "node": "Plan Coverage Outcome",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Plan Coverage Outcome": {
+        "main": [
+          [
+            {
+              "node": "New Coverage Gap",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "New Coverage Gap": {
+        "main": [
+          [
+            {
+              "node": "Notify Coverage Gap",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Acknowledge Coverage Page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notify Coverage Gap": {
+        "main": [
+          [
+            {
+              "node": "Acknowledge Coverage Page",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "executionHttp": {
+    "id": "4ebc4838-f27f-4d2e-9ed7-69a9bf522c5c",
+    "name": "Read Claim Execution",
+    "type": "n8n-nodes-base.httpRequest",
+    "typeVersion": 4.2,
+    "retryOnFail": true,
+    "maxTries": 3,
+    "waitBetweenTries": 5000,
+    "position": [
+      960,
+      400
+    ],
+    "parameters": {
+      "url": "={{ 'https://insidesuccess.app.n8n.cloud/api/v1/executions/' + $json.execution_id }}",
+      "authentication": "genericCredentialType",
+      "genericAuthType": "httpHeaderAuth",
+      "options": {
+        "timeout": 60000
+      }
+    },
+    "credentials": {
+      "httpHeaderAuth": {
+        "id": "XcCS3vVwByTltQDi",
+        "name": "Moonis - Magic Mike failure recovery API"
+      }
+    }
+  }
+}

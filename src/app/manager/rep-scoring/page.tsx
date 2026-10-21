@@ -1,3 +1,4 @@
+import { SnapshotRefresh } from "@/components/dashboard/snapshot-refresh";
 import { formatMiamiDateTime } from "@/lib/format";
 import { scorecardVersion } from "@/lib/rep-scoring/scorer-version";
 import type { Metadata } from "next";
@@ -23,6 +24,7 @@ export default async function ManagerRepScoringPage({ searchParams }: { searchPa
 
   return (
     <main className="magic-page">
+      <SnapshotRefresh scope="scorecard" fetchedAt={data.generatedAt} />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-5 pb-16 pt-8 sm:px-8">
         <header className="magic-card magic-hero p-5 md:p-7">
           <div className="max-w-3xl">

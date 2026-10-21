@@ -77,6 +77,9 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
     // Include delivered IDs from the retained backlog so acknowledgement can close them.
     const retained=new Set(claimed.unresolved||[]);
     const pending={token:randomUUID(),source_ids:[...new Set(ids)].filter(id=>!delivered.has(id)||retained.has(id)),delivered_ids:[...delivered],checked,nextOffset:offset,end,reported:claimed.reported||[]};
+    const attempts=await sql`select distinct source_id from coaching_source_attempts where source_id=any(${pending.source_ids}::text[])`;
+    const started=new Set(attempts.map(r=>r.source_id));
+    Object.assign(pending,{never_started_ids:pending.source_ids.filter(id=>!delivered.has(id)&&!started.has(id))});
     const saved=await sql`update coaching_coverage_cursor set payload=${JSON.stringify({...claimed,pending})}::jsonb,updated_at=now()
       where id=1 and owner=${owner} returning id`;
     if(!saved.length) throw Error('Coverage ownership changed');
