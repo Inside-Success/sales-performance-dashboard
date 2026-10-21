@@ -2,7 +2,7 @@
   "reviewDate": "2026-10-21",
   "status": "candidate awaiting production verification",
   "previousKnowledgeVersion": "9340492393e3dd4dfd65e279",
-  "knowledgeVersion": "6903f38ab7ec09d2e8d76bcb",
+  "knowledgeVersion": "1a752acd729e087ee0cbfa68",
   "activeRecordCount": 2575,
   "slack": {
     "C09AF0NQJE7": {
@@ -7156,7 +7156,7 @@
     "Reality package discrepancies and training footer mismatch remain; no invented resolution.",
     "Peer-proposed casting questions, personal trainee copies and individual customer terms excluded from general policy."
   ],
-  "sourceReviewCompletedAt": "2026-10-21T14:24:57.955194+00:00",
+  "sourceReviewCompletedAt": "2026-10-21T14:26:40.559259+00:00",
   "changedKnowledgeIds": [
     "active-show-list-resource",
     "new-rep-training-sessions-2026-10-01",

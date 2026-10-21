@@ -2,7 +2,7 @@
 
 Status: candidate; production verification pending.
 
-Resumes the October 19 published checkpoint `9340492393e3dd4dfd65e279` (2568 records). Candidate `6903f38ab7ec09d2e8d76bcb` has 2575 active records: seven additions and sixteen amendments. Only FAQ knowledge, tests, paired registry, and refresh documentation change. Preserve GPT-5.6 Luna medium, runtime, prompts, retrieval, diagnostics, auth, environment, schema, Coaching and n8n. Sources were read only; no Slack messages or source-form submissions.
+Resumes the October 19 published checkpoint `9340492393e3dd4dfd65e279` (2568 records). Candidate `1a752acd729e087ee0cbfa68` has 2575 active records: seven additions and sixteen amendments. Only FAQ knowledge, tests, paired registry, and refresh documentation change. Preserve GPT-5.6 Luna medium, runtime, prompts, retrieval, diagnostics, auth, environment, schema, Coaching and n8n. Sources were read only; no Slack messages or source-form submissions.
 
 ## Knowledge changes
 
@@ -36,6 +36,10 @@ Seven new retrieval tests pass; full local FAQ suite 431/431 and static safety 1
 
 ## Isolated answer review
 
-Twenty distinct questions reviewed, including prior pricing/VIP controls: 21 successful responses and one initial provider HTTP 500 across 22 attempts. The failed training question passed its single retry. Partial labels for contract-walkthrough availability and pre-sale studio access correctly retained unconfirmed details while answering the supported parts. Estimated total cost $0.17459912. These are bounded checks, not a universal accuracy claim. Core knowledge was tested before three additional source amendments; those amendments received four targeted final checks, followed by one cast-capacity check on final knowledge `6903f38ab7ec09d2e8d76bcb`. No failed result was deleted or hidden.
+Twenty distinct questions reviewed, including prior pricing/VIP controls: 22 successful responses and one initial provider HTTP 500 across 23 attempts. The failed training question passed its single retry. Partial labels for contract-walkthrough availability and pre-sale studio access correctly retained unconfirmed details while answering the supported parts. Estimated total cost $0.18364486. These are bounded checks, not a universal accuracy claim. Core knowledge was tested before three additional source amendments; those amendments received four targeted final checks, followed by one cast-capacity check and a final dated-report correction check on knowledge `1a752acd729e087ee0cbfa68`. No failed result was deleted or hidden.
 
 A new reply encountered during the thread scan gives a total cast limit of 20 in the cast-report context. The knowledge preserves that total capacity is not available slots or a reopened season; the final answer check respected this. Two newly linked historical SOPs were registered for future monitoring, bringing the next source registry to 81.
+
+Final source consistency correction: the first cast-capacity answer retained an outdated statement that the October 5 report was still being reconciled. Saad’s October 20 report explicitly excludes refunded and zero-value sales. Updated that dated record rather than changing the model or retrieval; repeated the capacity check once. The no-live-vacancy distinction remains.
+
+The corrected capacity answer passed: it states Season 1 remains full, total capacity is not available slots, and the newer report excludes refunds/zero-value sales without claiming an ongoing error. Final isolated estimate: $0.18364486.
