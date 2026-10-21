@@ -1,8 +1,8 @@
 # Magic Mike FAQ knowledge refresh — October 21, 2026
 
-Status: candidate; production verification pending.
+Status: published and live-verified on October 21, 2026.
 
-Resumes the October 19 published checkpoint `9340492393e3dd4dfd65e279` (2568 records). Candidate `1a752acd729e087ee0cbfa68` has 2575 active records: seven additions and sixteen amendments. Only FAQ knowledge, tests, paired registry, and refresh documentation change. Preserve GPT-5.6 Luna medium, runtime, prompts, retrieval, diagnostics, auth, environment, schema, Coaching and n8n. Sources were read only; no Slack messages or source-form submissions.
+Resumes the October 19 published checkpoint `9340492393e3dd4dfd65e279` (2568 records). Published `1a752acd729e087ee0cbfa68` has 2575 active records: seven additions and sixteen amendments. Only FAQ knowledge, tests, paired registry, and refresh documentation change. Preserve GPT-5.6 Luna medium, runtime, prompts, retrieval, diagnostics, auth, environment, schema, Coaching and n8n. Sources were read only; no Slack messages or source-form submissions.
 
 ## Knowledge changes
 
@@ -32,7 +32,7 @@ Two previously inaccessible Google sources still return 404. No claim to have tr
 
 ## Verification
 
-Seven new retrieval tests pass; full local FAQ suite 431/431 and static safety 107/107. Isolated answer checks and exact-release CI results follow after completion. Baseline production was READY at `22ee2d77fd036bf49935438d98741d90c4978a03`, deployment `dpl_DD2p5VpAiNAWULwau72neM4YgfeE`. Production checkpoint and admin freshness receipt will advance only after deployed answers are verified.
+Seven new retrieval tests pass; full local FAQ suite 431/431 and static safety 107/107. Isolated answer checks and exact-release CI results are recorded below. Baseline production was READY at `22ee2d77fd036bf49935438d98741d90c4978a03`, deployment `dpl_DD2p5VpAiNAWULwau72neM4YgfeE`. The production checkpoint was advanced after the deployed answers were verified.
 
 ## Isolated answer review
 
@@ -42,4 +42,14 @@ A new reply encountered during the thread scan gives a total cast limit of 20 in
 
 Final source consistency correction: the first cast-capacity answer retained an outdated statement that the October 5 report was still being reconciled. Saad’s October 20 report explicitly excludes refunded and zero-value sales. Updated that dated record rather than changing the model or retrieval; repeated the capacity check once. The no-live-vacancy distinction remains.
 
-The corrected capacity answer passed: it states Season 1 remains full, total capacity is not available slots, and the newer report excludes refunds/zero-value sales without claiming an ongoing error. Final isolated estimate: $0.18364486.
+The corrected capacity answer passed: it states Season 1 remains full and total capacity is not available slots, without repeating the stale ongoing-reconciliation claim. Final isolated estimate: $0.18364486.
+
+## Production verification
+
+Dashboard PR332 and FAQ PR111 merged. Exact release CI passed: 431 FAQ tests, 107 static safety checks, TypeScript, scoped ESLint, production build and paired FAQ validations. Production deployment `dpl_2oBYzUq2qUA47iUQNoV6JKfPwdq3` is READY at commit `9296142940ba1a9f2d3b8afd98ae691107526106`. Preview provisioning failed; no preview success or database/environment workaround is claimed.
+
+Three authenticated work-Chrome answers verified Tuesday training, current show status, and Island welcome acknowledgments. Persisted receipts confirm knowledge `1a752acd729e087ee0cbfa68`, 2575 records, GPT-5.6 Luna, successful plan/answer/review and no validation issues. Estimated live API cost $0.021821; total isolated/live estimate $0.205466. Raw receipts and screenshot remain private.
+
+The paired checkpoint is now published_verified with 1102 tracked roots and retained unavailable-source watermarks. The publication-date receipt follows this verified release. No Slack messages or source-document changes.
+
+Vercel did not automatically create the merged production deployment during the release check. Requested a build from the exact merged GitHub commit through the existing Vercel project, with no environment or project-setting changes. The resulting deployment became READY and served the three verified answers.
