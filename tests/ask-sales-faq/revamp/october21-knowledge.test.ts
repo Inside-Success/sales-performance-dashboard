@@ -6,7 +6,7 @@ const records = getRevampKnowledge();
 const evidence = (question: string, scope: Plan['scopes'][number] = 'main_istv') => retrieveEvidence(records, question, { intent: 'company_question', question, scopes: [scope], queries: [] }).map(x => x.record.text).join('\n');
 describe('October 21 source refresh', () => {
   it('retrieves current show status without losing the scheduled-call exception', () => {
-    const text = evidence('Are Entrepreneurs Jungle and Built for More still being offered?', 'shared');
+    const text = evidence('Are Entrepreneurs Jungle and Built for More still being offered?', 'reality');
     expect(text).toContain('Entrepreneurs Jungle Off');
     expect(text).toContain('Built for More Off');
     expect(text).toContain('actually scheduled call');
