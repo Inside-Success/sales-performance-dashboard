@@ -26,3 +26,9 @@ describe('dashboard snapshot freshness',()=>{
  expect(m.query.mock.calls.some(([q])=>q.includes('set payload='))).toBe(false);
  });
 });
+
+it('does not present a snapshot older than one day as usable statistics',async()=>{
+ process.env.DATABASE_URL='test';
+ m.query.mockImplementation(async(q:string)=>q.startsWith('select payload')?[{payload:{count:12},fetched_at:new Date(Date.now()-25*3600000).toISOString(),failed_at:null}]:[]);
+ await expect(getReadSnapshot({key:'expired',maxAgeSeconds:300,load:vi.fn()})).rejects.toThrow('24 hours');
+});
