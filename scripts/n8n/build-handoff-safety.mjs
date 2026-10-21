@@ -36,13 +36,21 @@ export function buildHandoffSafety(b) {
  const reserve=http('Reserve Missing Start',"={{ JSON.stringify({action:'reserve',source_id:$json.queue_ids[0]}) }}");delete reserve.onError;
  const save=get('MM Save Unfinished Coaching');save.id=save.name='Queue Missing Start';
  const prepare=code('Prepare Missing Start',"return [{json:{source_id:$json.source_id,status:'queued',execution_id:String($execution.id),updated_at:new Date().toISOString(),report_id:'',attempts:0,message:'kind=missing_handoff | verified never-started source; recover through normal coaching checks'},pairedItem:{item:0}}];");
- const restorePlan=code('Restore Coverage Plan',"return [{json:$('Plan Coverage Outcome').first().json,pairedItem:{item:0}}];");
+ const restorePlan=code('Restore Coverage Plan',"const plan={...$('Plan Coverage Outcome').first().json};const result=$('Reserve Missing Start').first().json;if(result.resolved===true){plan.missing_ids=plan.missing_ids.filter(id=>id!==result.source_id);plan.notify=plan.notify.filter(id=>id!==result.source_id);}return [{json:plan,pairedItem:{item:0}}];");
  const coverage=[{type:'updateNode',nodeName:'Plan Coverage Outcome',updates:{'parameters.jsCode':plan}},
  add(iff('Has Missing Start','={{ $json.queue_ids.length > 0 }}')),add(reserve),add(iff('Missing Start Reserved','={{ $json.reserved === true }}')),add(prepare),add(save),add(restorePlan),
  {type:'rewireConnection',source:'Plan Coverage Outcome',from:'New Coverage Gap',to:'Has Missing Start'},
  edge('Has Missing Start','Reserve Missing Start'),edge('Has Missing Start','New Coverage Gap',1),edge('Reserve Missing Start','Missing Start Reserved'),
  edge('Missing Start Reserved','Prepare Missing Start'),edge('Missing Start Reserved','Restore Coverage Plan',1),edge('Prepare Missing Start','Queue Missing Start'),edge('Queue Missing Start','Restore Coverage Plan'),edge('Restore Coverage Plan','New Coverage Gap'),
  {type:'updateNode',nodeName:'Notify Coverage Gap',updates:{'parameters.text':"={{ 'Magic Mike coverage: '+$('Plan Coverage Outcome').first().json.notify.length+' unresolved source(s). Sources: '+$('Plan Coverage Outcome').first().json.notify.slice(0,10).join(', ')+'. Verified never-started calls are eligible for bounded recovery; partial or uncertain deliveries remain held.' }}"}}];
+ const finalPlan=code('Final Coverage Plan',"return $input.all();");
+ coverage.push(add(finalPlan),{type:'rewireConnection',source:'Has Missing Start',from:'New Coverage Gap',to:'Final Coverage Plan',sourceIndex:1},{type:'rewireConnection',source:'Restore Coverage Plan',from:'New Coverage Gap',to:'Final Coverage Plan'},edge('Final Coverage Plan','New Coverage Gap'));
+ for(const name of ['Acknowledge Coverage Page','Notify Coverage Gap']) {
+   const original=b.coverage.nodes.find(n=>n.name===name);
+   const field=name==='Acknowledge Coverage Page'?'body':'text';
+   const prior=coverage.find(o=>o.nodeName===name)?.updates?.['parameters.'+field]||original.parameters[field];
+   coverage.push({type:'updateNode',nodeName:name,updates:{['parameters.'+field]:prior.replaceAll("$('Plan Coverage Outcome')","$('Final Coverage Plan')")}});
+ }
  return {official:ops,coverage};
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))fs.writeFileSync(process.argv[3],JSON.stringify(buildHandoffSafety(JSON.parse(fs.readFileSync(process.argv[2]))),null,2));

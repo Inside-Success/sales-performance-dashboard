@@ -27,6 +27,6 @@ describe('shared source ownership',()=>{
  });
  it('never reserves a source with a saved Airtable report',async()=>{
  m.read.mockResolvedValueOnce({ok:true,json:async()=>({id:'recA',fields:{'Processing Status':'Processed','Call #':'Call 2+','Meeting Transcript Link':'doc','Ingested At':'2026-01-01','Automation Key':'zoom:one'}})}).mockResolvedValueOnce({ok:true,json:async()=>({records:[{id:'report'}]})});
- expect(await reserveMissingSource('recA')).toMatchObject({reserved:false,reason:'existing_artifact'});expect(m.query).not.toHaveBeenCalled();
+ expect(await reserveMissingSource('recA')).toMatchObject({reserved:false,reason:'existing_artifact'});expect(m.query.mock.calls.some(([q])=>q.startsWith('insert'))).toBe(false);
  });
 });

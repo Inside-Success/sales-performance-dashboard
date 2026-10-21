@@ -52,6 +52,8 @@ export async function reserveMissingSource(sourceId:string) {
   if(!artifact.ok)throw Error('Artifact read failed');
   const reports=await artifact.json();
   if(!Array.isArray(reports.records))throw Error('Invalid artifact response');
+  const delivered=await sql().query(`select id from performance_calls where scorecard_key=$1 or source_payload->>'source_airtable_record_id'=$2 limit 1`,[identity,sourceId]);
+  if(delivered.length)return {reserved:false,resolved:true,source_id:sourceId,reason:'verified_dashboard_report'};
   if(reports.records.length)return {reserved:false,reason:'existing_artifact'};
   await ensureSourceClaims();
   // The normal path claims before observing/processing; this INSERT races safely with it.
