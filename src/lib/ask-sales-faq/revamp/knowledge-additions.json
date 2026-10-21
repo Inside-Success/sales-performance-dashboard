@@ -1350,13 +1350,14 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc/edit"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
     "routeKey": null,
     "conditions": [
-      "Apply to regular pass-off calls, not automatically dummy calls."
+      "Apply to regular pass-off calls, not automatically dummy calls.",
+      "governing_evidence:passoff-access-first-sale"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -1457,15 +1458,16 @@
     "decisionKey": "passoff-access-first-sale",
     "title": "Pass-off channel access after the first sale",
     "questions": [],
-    "text": "Kent confirmed that joining the pass-off channel requires the first sale. If the rep lacks access, contact M Zubair or Rich for approval and assistance. Sending planned pass-off calls to Zubair still follows Rich approval; receiving channel access is a different action from reassigning a particular call.",
+    "text": "Kent confirmed that joining the pass-off channel requires the first sale. If the rep lacks access, contact M Zubair or Rich for approval and assistance. Sending planned pass-off calls to Zubair still follows Rich approval; receiving channel access is a different action from reassigning a particular call. October 20 Kent adds that the dummy/pass-off channels are now only for reps currently on schedule/live calls, and any pass-off must be pre-approved. A first sale alone is not sufficient to bypass that current access/approval condition. Reps removed from the live schedule should ask Rich/Kent before taking pass-offs; do not apply older off-calendar recovery advice as unrestricted access.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789487052277239",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789489742758169"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789489742758169",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792513391222539"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2118,7 +2120,7 @@
     "decisionKey": "active-show-list-resource",
     "title": "Current active ISTV show list: ISTV Offers spreadsheet",
     "questions": [],
-    "text": "The maintained source for the approved show catalog is the ISTV Offers spreadsheet: https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Share this actual source link for questions about where to find the list, and use the accepted current catalog for membership. Listing is sales/casting availability, not evidence that an episode aired or is watchable. Do not send reps to internal repository keys as though those were accessible documents. October 8 Rich replies to a question about Project Beauty and Love Experts that shows are sometimes turned back on; if a rep receives a scheduled call, go ahead with it. Do not automatically reject that scheduled call based only on an old retired label. This is guidance for an actually scheduled call, not a blanket reopening of every paused show, permission to promise a filming slot or proof a program has aired. Confirm the current specific offer when needed. The October 19 read of the maintained sheet marks these Docs rows On: Legacy Makers, Women in Power, Americas Best Doctors and Mompreneurs. Blue Collar America and Clean and Thriving are now marked Off. Its Reality tab marks Mansion of Money, Entrepreneurs Island and Entrepreneurs Jungle On; its Daymond tab marks Next Level CEO and Built for More On. This is the sheet status, not a complete list of every separately announced offering or proof of a particular season vacancy. A missing row or Off label must not by itself overturn a newer show-specific announcement or the existing scheduled-call exception. Clean and Thriving has the listed site https://www.cleanandthrivingtv.com but no niche description in the sheet; do not invent its format, prices or package terms.",
+    "text": "The maintained source for the approved show catalog is the ISTV Offers spreadsheet: https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Share this actual source link for questions about where to find the list, and use the accepted current catalog for membership. Listing is sales/casting availability, not evidence that an episode aired or is watchable. Do not send reps to internal repository keys as though those were accessible documents. October 8 Rich replies to a question about Project Beauty and Love Experts that shows are sometimes turned back on; if a rep receives a scheduled call, go ahead with it. Do not automatically reject that scheduled call based only on an old retired label. This is guidance for an actually scheduled call, not a blanket reopening of every paused show, permission to promise a filming slot or proof a program has aired. Confirm the current specific offer when needed. The October 21 read of the maintained sheet marks these Docs rows On: Legacy Makers, Women in Power, Americas Best Doctors and Mompreneurs. Blue Collar America and Clean and Thriving are now marked Off. Its Reality tab marks Mansion of Money and Entrepreneurs Island On, and Entrepreneurs Jungle Off; its Daymond tab marks Next Level CEO On and Built for More Off. This is the sheet status, not a complete list of every separately announced offering or proof of a particular season vacancy. A missing row or Off label must not by itself overturn a newer show-specific announcement or the existing scheduled-call exception. Clean and Thriving has the listed site https://www.cleanandthrivingtv.com but no niche description in the sheet; do not invent its format, prices or package terms.",
     "scopes": [
       "shared"
     ],
@@ -2126,7 +2128,7 @@
       "https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791495375652339"
     ],
-    "reviewedAt": "2026-10-19",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2841,7 +2843,7 @@
       "Where do I send texts now?",
       "Do I use Google Voice or HubSpot for SMS and calls?"
     ],
-    "text": "Rich’s September 23 instruction is to send SMS text messages through HubSpot, not Google Voice. His thread explicitly says Zoom for phone calls; Igor clarifies HubSpot SMS uses Twilio, not the rep’s Zoom number. This newer instruction governs over the welcome document and older training references to Zoom texting or Google Voice texting. Part 1 was updated September 24 to refer to HubSpot for the text/dial-out workflow; this does not turn a Twilio SMS number into the Zoom voice number. Use the official video for current screen instructions. Never use a personal cell/number. For account access, SMS character limits, missing inbound notifications or unexpected automated reminders, ask Sales Tech; the reviewed thread does not establish that those reported issues are fixed. Do not invent settings or claim the bot can send messages. October 16 Zoom Phone reconnect guidance from Tech: sign into HubSpot and Zoom in the same browser window, open and sign into the Zoom desktop app, then switch the HubSpot calling selector to HubSpot Phone and back to Zoom Phone. The documented user confirmed this resolved that connection issue. Setup video: https://drive.google.com/file/d/1hf0ZkiFmbyyjpuiY6tuZA7fK5m5W4OMP/view . Voice uses connected Zoom Phone, not an unassigned HubSpot number. If still unable to connect, ask Tech for screen-share help; do not claim every login/no-device error is fixed by this step.",
+    "text": "Rich’s September 23 instruction is to send SMS text messages through HubSpot, not Google Voice. His thread explicitly says Zoom for phone calls; Igor clarifies HubSpot SMS uses Twilio, not the rep’s Zoom number. This newer instruction governs over the welcome document and older training references to Zoom texting or Google Voice texting. Part 1 was updated September 24 to refer to HubSpot for the text/dial-out workflow; this does not turn a Twilio SMS number into the Zoom voice number. Use the official video for current screen instructions. Never use a personal cell/number. For account access, SMS character limits, missing inbound notifications or unexpected automated reminders, ask Sales Tech; the reviewed thread does not establish that those reported issues are fixed. Do not invent settings or claim the bot can send messages. October 16 Zoom Phone reconnect guidance from Tech: sign into HubSpot and Zoom in the same browser window, open and sign into the Zoom desktop app, then switch the HubSpot calling selector to HubSpot Phone and back to Zoom Phone. The documented user confirmed this resolved that connection issue. Setup video: https://drive.google.com/file/d/1hf0ZkiFmbyyjpuiY6tuZA7fK5m5W4OMP/view . Voice uses connected Zoom Phone, not an unassigned HubSpot number. If still unable to connect, ask Tech for screen-share help; do not claim every login/no-device error is fixed by this step. A later October 19 oversized-payment-link incident had a one-off Rich-approved Zoom delivery exception; it did not replace HubSpot SMS as the normal channel. See the current inbox/long-link guidance.",
     "scopes": [
       "shared"
     ],
@@ -2850,9 +2852,10 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790177115541629",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790177519228129",
       "https://drive.google.com/file/d/1OHJwHfXmwEnefOFegV8mOoFeZsTP8B9-/view",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792175112457539"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792175112457539",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792433493838899"
     ],
-    "reviewedAt": "2026-10-19T11:00:00Z",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3751,7 +3754,7 @@
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
     "title": "Current five live new-rep training sessions with Mike and Raul",
-    "text": "The October 12 Part 1 onboarding sheet, Basic Setup item 5, lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Call 1 Sales Training with Raul; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts & Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. Monday replaces the previous 1–2 PM session with Raul. The former separate Wednesday 11 AM Call 2 session with Mike remains absent. The signoff footer still refers to six sessions, but item 5 lists five; do not invent a sixth session. Wednesday's HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For session-specific joining links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
+    "text": "The October 21 Part 1 onboarding sheet, Basic Setup item 5, lists FIVE live new-sales-rep training sessions. Attend at least one of each: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Pre Call and Call 1 Sales Training with Raul; Wednesday 3–4 PM EST COMBINED Call 2 Sales Training and Procedural Training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts & Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep & Checklist with Raul. Monday replaces the previous 1–2 PM session with Raul. The former separate Wednesday 11 AM Call 2 session with Mike remains absent. The signoff footer still refers to six sessions, but item 5 lists five; do not invent a sixth session. Wednesday's HERE link is https://insidesuccess.zoom.us/j/3557599820#success . For session-specific joining links open Basic Setup item 5 in the Part 1 document. These are internal rep trainings, not customer onboarding. Raul's separate first-two-weeks-live sales Q&A remains distinct. This is the recurring published schedule, not a guarantee a particular dated session is not cancelled. The document labels times EST; keep that source label and verify timezone before converting a dated occurrence.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3764,7 +3767,7 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-12T18:26:53.334911+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3884,7 +3887,7 @@
     "id": "payment-failed-attempts-2026-10-01",
     "decisionKey": "payment-failed-attempts-2026-10-01",
     "title": "Regular payment link first; approved emergency route after a failure",
-    "text": "October 6 Tech clarification: always try the regular payment link first. If it does not work, the rep can immediately use the approved emergency payment link without making the buyer retry multiple times; this supersedes the earlier instruction to wait for two or three failures. Use the current Contract Automation sheet, correct product family, package and installment row; the anniversary tab has its own Emergency Payment Links column. If HubSpot's payment view is unavailable, use that approved sheet. Do not select arbitrary historical links, change the amount, waive an installment, or use emergency links as the default. Confirm whether payment actually succeeded before retrying to avoid duplicate charges; if uncertain, check with Finance/Tech. A contract appearing is not payment proof. Wire/ACH settlement still needs confirmation. The legacy emergency PayPal tab expressly limits its route to the first payment; do not generalize fallback permission into PayPal for all recurring payments. A sheet row marked LIVE does not authorize an old discount or revive deprecated pricing. Rich reconfirmed October 7 that approved spreadsheet payment links may be used when HubSpot's payment-link generator fails. Use the current exact product/package/plan row; this does not authorize inventing a custom price or using deprecated links. October 12 review of the updated onboarding and live-call closing Docs: create the payment link in HubSpot first and paste it into the Zoom chat. Keep the approved Payment and Contract spreadsheet bookmarked as the emergency fallback. Use only available approved plans; never enter card details on the client's behalf. The closing Doc identifies the Slack channel named \"ft docs legacy wip googleform contracts\" for checking a signed-contract confirmation. That confirms signature, not cleared payment; verify both separately. When completing an already approved pay-in-full balance after a partial payment, Tech clarified that the custom HubSpot link must be one-time, not recurring, and cover only the remaining amount. The example was $2,000 already paid plus a $6,000 balance; it is not blanket approval to change package pricing, deposits or payment deadlines. Verify actual prior payment and the correct deal before generating a balance link.",
+    "text": "October 6 Tech clarification: always try the regular payment link first. If it does not work, the rep can immediately use the approved emergency payment link without making the buyer retry multiple times; this supersedes the earlier instruction to wait for two or three failures. Use the current Contract Automation sheet, correct product family, package and installment row; the anniversary tab has its own Emergency Payment Links column. If HubSpot's payment view is unavailable, use that approved sheet. Do not select arbitrary historical links, change the amount, waive an installment, or use emergency links as the default. Confirm whether payment actually succeeded before retrying to avoid duplicate charges; if uncertain, check with Finance/Tech. A contract appearing is not payment proof. Wire/ACH settlement still needs confirmation. The legacy emergency PayPal tab expressly limits its route to the first payment; do not generalize fallback permission into PayPal for all recurring payments. A sheet row marked LIVE does not authorize an old discount or revive deprecated pricing. Rich reconfirmed October 7 that approved spreadsheet payment links may be used when HubSpot's payment-link generator fails. Use the current exact product/package/plan row; this does not authorize inventing a custom price or using deprecated links. October 12 review of the updated onboarding and live-call closing Docs: create the payment link in HubSpot first and paste it into the Zoom chat. Keep the approved Payment and Contract spreadsheet bookmarked as the emergency fallback. Use only available approved plans; never enter card details on the client's behalf. The closing Doc identifies the Slack channel named \"ft docs legacy wip googleform contracts\" for checking a signed-contract confirmation. That confirms signature, not cleared payment; verify both separately. When completing an already approved pay-in-full balance after a partial payment, Tech clarified that the custom HubSpot link must be one-time, not recurring, and cover only the remaining amount. The example was $2,000 already paid plus a $6,000 balance; it is not blanket approval to change package pricing, deposits or payment deadlines. Verify actual prior payment and the correct deal before generating a balance link. The October 20 Contract Automation workbook replaces multiple documentary/anniversary Whop URL paths with plan-parameter links. Use the current exact workbook/HubSpot link instead of reconstructing or reusing an old saved URL; the URL migration does not authorize a different price or revive deprecated offers. A pending bank debit, failed 3DS attempt or contradictory Slack notification is not enough to decide whether to charge again: Finance must verify actual receipt before another attempt when status is uncertain.",
     "questions": [
       "What if their card failed three times?",
       "Where are emergency payment links?",
@@ -3901,9 +3904,10 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791409490737359",
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1YyqlqJHPQzcnlyDluhmpxuFuFtVGzdbwO1MJ33P2rac/edit",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792171706933419"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792171706933419",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792520802829839"
     ],
-    "reviewedAt": "2026-10-19T11:00:00Z",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3963,7 +3967,7 @@
     "id": "reality-buyer-welcome-2026-10-01",
     "decisionKey": "reality-buyer-welcome-2026-10-01",
     "title": "Reality buyer welcome and production communications expectations",
-    "text": "Use the dedicated reality buyer welcome template after the sale, CC support@insidesuccesstv.com, and ask the buyer to reply Received and save that address. All future production/support questions go to that shared inbox. Use the template's acceptance-letter and show-specific announcement-graphics links. Production will arrange onboarding after casting closes; do not put reality buyers on ordinary weekly documentary onboarding or promise a Miami studio visit. The September 30 template explains approximate reality production phases: casting 1–3 months, pre-production 3–5 months, location/schedule around 60 days before shooting, filming 2–3 weeks, post-production around six months, pre-promotion about two weeks before launch. It describes overall production as around twelve months; these are illustrative averages, not additive guarantees or a participant's fixed schedule. It says cast may hear little during casting/early pre-production, with many updates near the final 30–60 days and sometimes 7–14 days before shooting. Production prioritizes main episodes before subsequent social cuts. Do not turn the template's time-relative 'we are here' or '1–2 more months' into a permanent current-stage claim for every season. Confirm individual dates with Production through support. Direct template link: https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit . Provide this link when asked for the welcome email; acceptance and graphics links are inside that document. October 7 template update: the initial onboarding form https://form.typeform.com/to/yO8sUq2m is required to create the cast bio, press release and social graphics. Complete it carefully with accurate information; the template warns changes cannot be made after the assets are created. A separate detailed onboarding form follows closer to filming. This initial form is not an ordinary weekly documentary onboarding call. The Entrepreneurs Island-specific welcome also tells the buyer to watch the full CEO/executive-producer onboarding video https://www.loom.com/share/e404e280dba14b8481e156f3a4776564 and reply WATCHED afterward. Preserve the separate Received acknowledgement and shared support inbox. Do not apply the Island video instruction to every reality title. Use the document for the full current template.",
+    "text": "Use the dedicated reality buyer welcome template after the sale, CC support@insidesuccesstv.com, and ask the buyer to reply Received and save that address. All future production/support questions go to that shared inbox. Use the template's acceptance-letter and show-specific announcement-graphics links. Production will arrange onboarding after casting closes; do not put reality buyers on ordinary weekly documentary onboarding or promise a Miami studio visit. The September 30 template explains approximate reality production phases: casting 1–3 months, pre-production 3–5 months, location/schedule around 60 days before shooting, filming 2–3 weeks, post-production around six months, pre-promotion about two weeks before launch. It describes overall production as around twelve months; these are illustrative averages, not additive guarantees or a participant's fixed schedule. It says cast may hear little during casting/early pre-production, with many updates near the final 30–60 days and sometimes 7–14 days before shooting. Production prioritizes main episodes before subsequent social cuts. Do not turn the template's time-relative 'we are here' or '1–2 more months' into a permanent current-stage claim for every season. Confirm individual dates with Production through support. Direct template link: https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit . Provide this link when asked for the welcome email; acceptance and graphics links are inside that document. October 7 template update: the initial onboarding form https://form.typeform.com/to/yO8sUq2m is required to create the cast bio, press release and social graphics. Complete it carefully with accurate information; the template warns changes cannot be made after the assets are created. A separate detailed onboarding form follows closer to filming. This initial form is not an ordinary weekly documentary onboarding call. The Entrepreneurs Island-specific welcome also tells the buyer to watch the full CEO/executive-producer onboarding video https://www.loom.com/share/e404e280dba14b8481e156f3a4776564. The October 20 template edit removes the instruction to reply WATCHED; watching the Island onboarding video remains required. Preserve the separate Received acknowledgement and shared support inbox. Do not apply the Island video instruction to every reality title. Use the document for the full current template.",
     "questions": [
       "What email do I send after a reality sale?",
       "Does reality have an onboarding call or welcome email?"
@@ -3976,7 +3980,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789672190970179",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789677744306379"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4066,7 +4070,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report is being reconciled for refunds/recurring-payment counting errors and must not be used to calculate available spaces. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional. October 20 follow-up: Rudy could not confirm whether Island Season 2 would fall late enough in April for a particular applicant; he mentioned Season 3 in June/July as a possible alternative. These remain planning estimates, not guaranteed dates or confirmed availability. He says a passport would be needed if filming is overseas in the Caribbean; this is conditional, not confirmation that Season 2 has a secured overseas destination. In the October 20 cast-report thread, Saad answered the October 21 question about the cast-member limit for each show with 20. This is a reported total cast limit in that report context, not 20 open slots, a live availability check, or a guarantee that a specific season can accept another buyer. Confirm the actual show/season and remaining space with Production before promising a place.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -4098,12 +4102,14 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791820068205409",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825500414719",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792116725273589"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792116725273589",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792502500020049"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-16T14:07:45.233219+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4123,19 +4129,20 @@
     "id": "spanish-ads-and-existing-leads-2026-10-03",
     "decisionKey": "spanish-ads-and-existing-leads-2026-10-03",
     "title": "Legacy Makers Spanish ads paused; existing pipeline may close",
-    "text": "Timothy's October 2 announcement pauses Legacy Makers Spanish ADVERTISING due to low response and says it may be tried again. In the same thread he explicitly confirms sales already in the pipeline can close normally. This is not cancellation of the show or permission to cancel existing Call 2 appointments. Business Race UK ads are now live in the UK, after previously running to the US. Do not treat ad targeting as cast-nationality eligibility or a show-location guarantee.",
+    "text": "Timothy's October 2 announcement pauses Legacy Makers Spanish ADVERTISING due to low response and says it may be tried again. In the same thread he explicitly confirms sales already in the pipeline can close normally. This is not cancellation of the show or permission to cancel existing Call 2 appointments. Business Race UK ads are now live in the UK, after previously running to the US. Do not treat ad targeting as cast-nationality eligibility or a show-location guarantee. October 20 Rich directs Spanish-speaking handoff requests to Jackeline Medina or Mariano Miquelarena. Coordinate an agreed handoff with the team and preserve contact/meeting assignment and approval rules; the FAQ cannot transfer a call or guarantee either rep is available. This does not itself restart Spanish advertising.",
     "questions": [
       "Can I close an existing Spanish Legacy Makers lead?",
       "Is Legacy Makers Spanish cancelled?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790971999709329",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790974053176749"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790974053176749",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792533549477539"
     ],
     "scopes": [
       "main_istv"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4262,7 +4269,7 @@
     "id": "regular-lite-video-corrections-2026-10-03",
     "decisionKey": "regular-lite-video-corrections-2026-10-03",
     "title": "Anniversary Lite excludes podcast/email blast; two-thousand urgency reduction removed",
-    "text": "In Rudy's October 1 new-documentary-video feedback thread, reps spotted podcast and email-blast benefits mistakenly shown on the $8k Lite slide. Rudy explicitly replied 'Removing those 2 from the lite', then said the slides were fixed for re-upload. Do NOT promise a podcast or email blast with regular anniversary Lite based on that mistaken video. Use current approved package materials; this correction does not remove those benefits from another package where included. Rudy explicitly removed the $2,000 urgency reduction: it is too salesy and not affordable at the new lower prices. Do not stack or apply that old reduction to the current $8k/$12k offer. The new video separates license and marketing/PR components; it does not authorize an invented itemized price breakdown. Rudy says red carpet is mentioned verbally with the two-day event and is an award rather than a marketing/PR asset; do not infer its removal solely because absent from that slide. His 'may go back' to $12k/$20k around mid-October is a possible future change, NOT an announced expiry or permission to automatically switch prices then. October 17: Celia again says no podcast in Lite when a rep spots it in a remaining video. This corroborates Rudy’s earlier correction, not a new benefit. The same question does not establish a Lite promotional-view guarantee; the current Lite exclusions remain.",
+    "text": "In Rudy's October 1 new-documentary-video feedback thread, reps spotted podcast and email-blast benefits mistakenly shown on the $8k Lite slide. Rudy explicitly replied 'Removing those 2 from the lite', then said the slides were fixed for re-upload. Do NOT promise a podcast or email blast with regular anniversary Lite based on that mistaken video. Use current approved package materials; this correction does not remove those benefits from another package where included. Rudy explicitly removed the $2,000 urgency reduction: it is too salesy and not affordable at the new lower prices. Do not stack or apply that old reduction to the current $8k/$12k offer. The new video separates license and marketing/PR components; it does not authorize an invented itemized price breakdown. Rudy says red carpet is mentioned verbally with the two-day event and is an award rather than a marketing/PR asset; do not infer its removal solely because absent from that slide. His 'may go back' to $12k/$20k around mid-October is a possible future change, NOT an announced expiry or permission to automatically switch prices then. October 17: Celia again says no podcast in Lite when a rep spots it in a remaining video. This corroborates Rudy’s earlier correction, not a new benefit. The same question does not establish a Lite promotional-view guarantee; the current Lite exclusions remain. October 20 Rich advises not to pitch the documentary price as a reduction; focus on the current $12k sale rather than saying the old $20k offer was discounted. This does not authorize a custom price, expired anniversary terms or transferring documentary pricing to reality.",
     "questions": [
       "Does 8000 Lite include podcast and email blast?",
       "Can I still offer the 2000 same-call discount?",
@@ -4273,12 +4280,13 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790894614200159",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790898377669489",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790909428421669",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792248413362889"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792248413362889",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792521351401859"
     ],
     "scopes": [
       "main_istv"
     ],
-    "reviewedAt": "2026-10-19T10:45:59.083493+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4522,24 +4530,27 @@
     "id": "hubspot-missing-passoff-meeting-2026-10-05",
     "decisionKey": "hubspot-missing-passoff-meeting-2026-10-05",
     "title": "Find a pass-off meeting using My Meetings, All Meetings and Cast Email",
-    "text": "Tech's October 3 instructions for an assigned pass-off missing from the rep's HubSpot view: check Today's - My Meetings for today's call. For an earlier pass-off, open All Meetings and search the client name or email; if it does not show, select the Cast Email filter. Updating dual ownership does not itself prove the meeting is visible in the current filtered tab. If still missing, ask Sales Tech with the relevant lead details; do not create duplicate meetings, invent a cast score, or assume a penalty is waived. Use the actual meeting record to update status/score/notes and keep the existing pass-off/Green Light process. For a pass-off that failed to post automatically, Alexander requests the lead email or at least the Zoom meeting ID so Tech can investigate. A missing channel post does not itself prove that someone joined or that a global outage is fixed. Report the affected meeting and follow the existing approved pass-off process; the FAQ cannot replay or repair automation.",
+    "text": "Tech's October 3 instructions for an assigned pass-off missing from the rep's HubSpot view: check Today's - My Meetings for today's call. For an earlier pass-off, open All Meetings and search the client name or email; if it does not show, select the Cast Email filter. Updating dual ownership does not itself prove the meeting is visible in the current filtered tab. If still missing, ask Sales Tech with the relevant lead details; do not create duplicate meetings, invent a cast score, or assume a penalty is waived. Use the actual meeting record to update status/score/notes and keep the existing pass-off/Green Light process. For a pass-off that failed to post automatically, Alexander requests the lead email or at least the Zoom meeting ID so Tech can investigate. A missing channel post does not itself prove that someone joined or that a global outage is fixed. Report the affected meeting and follow the existing approved pass-off process; the FAQ cannot replay or repair automation. For the current dated meeting bookmarks use the October 20 My Meetings links; stale saved views can hide an otherwise present meeting.",
     "questions": [
       "My passoff is assigned but Call 2 is missing from HubSpot Meetings. What should I check?",
       "Where do I score yesterday pass off?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791010040119019",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792247810946019"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792247810946019",
+      "https://istvoffical.slack.com/archives/C0A8S3JSR1Q/p1792504448794859"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-19T11:00:00Z",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:hubspot-meeting-view-bookmarks-2026-10-21"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -4547,7 +4558,7 @@
     "id": "outbound-hubspot-assignment-2026-10-07",
     "decisionKey": "outbound-hubspot-assignment-2026-10-07",
     "title": "20% outbound leads now assigned through HubSpot outreach channel",
-    "text": "Rich's October 6 final instruction stops the daily outbound spreadsheet: obtain leads through #hubspot-outreach-20percent (https://istvoffical.slack.com/archives/C0C1R8BBVR6). His October 8 updated SOP specifies the HubSpot workflow: post exactly Assign, without extra text/emojis/punctuation, to receive 20 leads from the 0–7 day list. Complete each batch before requesting the next; Assign up to three times gives the first 60. After completing those 60, post Extra for 20 from the 7–30 day list, up to twice (40 more), maximum grand total 100 leads per representative. The SOP does not specify a reset period; do not invent one. Allow up to 15 minutes to process. Dial every lead in each batch and immediately record Outreach Call Outcome and Outreach Call Note in HubSpot before requesting more; this applies to Assign and Extra, with removal from the channel for skipping completion. Use the SOP's assigned-lead view https://app-eu1.hubspot.com/contacts/148285209/objects/0-1/views/156768977/list . Ask Olivia about outcomes/notes, Igor about bot/assignment failures. Preserve first-contact ownership, opt-outs and outreach requirements; if a lead is already booked/owned, resolve it rather than contacting it just to satisfy a batch count. Do not resume spreadsheet claiming, the old 75-lead spreadsheet limit, or parallel lead pools. A no-ready-unowned-contacts error is not proof all leads are permanently exhausted; report persistent failures to Tech. The October 15 edit of the older 20% Outbound Dialing SOP replaces Keap record checks and call-status updates with HubSpot and requires dialing/updating by 8 PM Eastern. That document still contains leftover spreadsheet/20-lead wording beside a 100-total statement. Use the dedicated HubSpot assignment SOP above for batch allocation; do not restart spreadsheet claiming or combine parallel pools. Always check for existing bookings and ownership before contacting a lead.",
+    "text": "Rich's October 6 final instruction stops the daily outbound spreadsheet: obtain leads through #hubspot-outreach-20percent (https://istvoffical.slack.com/archives/C0C1R8BBVR6). His October 8 updated SOP specifies the HubSpot workflow: post exactly Assign, without extra text/emojis/punctuation, to receive 20 leads from the 0–7 day list. Complete each batch before requesting the next; Assign up to three times gives the first 60. After completing those 60, post Extra for 20 from the 7–30 day list, up to twice (40 more), maximum grand total 100 leads per representative. The SOP does not specify a reset period; do not invent one. Allow up to 15 minutes to process. Dial every lead in each batch and immediately record Outreach Call Outcome and Outreach Call Note in HubSpot before requesting more; this applies to Assign and Extra, with removal from the channel for skipping completion. Use the SOP's assigned-lead view https://app-eu1.hubspot.com/contacts/148285209/objects/0-1/views/156768977/list . Ask Olivia about outcomes/notes, Igor about bot/assignment failures. Preserve first-contact ownership, opt-outs and outreach requirements; if a lead is already booked/owned, resolve it rather than contacting it just to satisfy a batch count. Do not resume spreadsheet claiming, the old 75-lead spreadsheet limit, or parallel lead pools. A no-ready-unowned-contacts error is not proof all leads are permanently exhausted; report persistent failures to Tech. The October 15 edit of the older 20% Outbound Dialing SOP replaces Keap record checks and call-status updates with HubSpot and requires dialing/updating by 8 PM Eastern. That document still contains leftover spreadsheet/20-lead wording beside a 100-total statement. Use the dedicated HubSpot assignment SOP above for batch allocation; do not restart spreadsheet claiming or combine parallel pools. Always check for existing bookings and ownership before contacting a lead. October 20 leadership guidance: Rudy asks reps to dial at least 60 leads per day, says fresh and previously contacted leads can be mixed, and mentions commenting EXTRA twice daily. His expectation of about five good next-day calls is coaching guidance, not a guaranteed booking result. The written allocation SOP still specifies the Assign-first completion sequence and 20-lead Extra batches; a rep reports two Extra requests yield 40. Do not claim two Extra messages alone deliver 60 or bypass the completed-batch requirement. Follow the documented allocation sequence and ask Igor/Tech if actual allocation differs.",
     "questions": [
       "Where do I get my 20% outbound leads now?",
       "Do I still use the daily dial out spreadsheet?",
@@ -4561,12 +4572,14 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791367158609599",
       "https://docs.google.com/document/d/1s8K1RFwUW0IOCJEYeh83QtDNk1WrKVoLd9-zTsN8NTY/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791460458162349",
-      "https://docs.google.com/document/d/1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y/edit"
+      "https://docs.google.com/document/d/1KsgYA-jW8LsYC-Zqmp1fVr0Hel9dtAr2xRdDz2u154Y/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792529828461459",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792529958105199"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-16T14:07:45.233219+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4824,13 +4837,14 @@
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
     "conditions": [
-      "governing_evidence:outbound-first-contact-2026-09-22"
+      "governing_evidence:outbound-first-contact-2026-09-22",
+      "governing_evidence:passoff-access-first-sale"
     ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
@@ -4867,7 +4881,7 @@
     "id": "hubspot-sms-inbox-2026-10-08",
     "decisionKey": "hubspot-sms-inbox-2026-10-08",
     "title": "Current SMS inbox and Zoom texting limitation",
-    "text": "Send SMS through the Twilio card inside HubSpot, not Zoom SMS. Twilio is integrated; reps do not need their own separate Twilio account. Use the SMS inbox https://app-eu1.hubspot.com/app/148285209/51316600 and enable Auto refresh. UK SMS is now enabled: Alexander confirmed on October 14 that UK numbers are activated in Twilio/HubSpot; Igor advised clearing the cache when the old restriction persisted, and the reporting rep confirmed it worked. This supersedes the October 8 US-only limitation and the blanket instruction to email instead of texting UK numbers. It does not establish support for every other country or universal delivery success. If a UK text still fails, clear the browser cache as Tech advised, retry appropriately and provide Tech the actual contact/error if it persists; respect opt-outs. International Zoom voice calls are separate: Alexander described one international Zoom Phone package being tested, not general activation for every rep. Do not infer voice capability from UK SMS activation. Sayim's current app guidance retains a 160-character SMS limit; use the short approved templates and do not present this as a universal SMS protocol limit. The Sales Rep HubSpot app has predefined SMS templates, Auto refresh and top-right bell notifications; this is not proof audible/mobile push notifications work. The October 14 Rep Home update orders contacts by their latest messages, including search and Needs reply results; this is conversation-list order, not a claim about message ordering inside a contact. Missing number/access, delivery or notification problems still require their specific account/error checked. October 17 Tech support confirmed the current SMS composer’s 160-character limitation in response to a request to expand it. Keep texts concise and use approved templates; do not promise that longer messages are supported by this company tool or switch to personal texting as a workaround. Treat this as the observed tool limit, not a universal technical statement that all SMS systems can never send multipart messages.",
+    "text": "Send SMS through the Twilio card inside HubSpot, not Zoom SMS. Twilio is integrated; reps do not need their own separate Twilio account. Use the SMS inbox https://app-eu1.hubspot.com/app/148285209/51316600 and enable Auto refresh. UK SMS is now enabled: Alexander confirmed on October 14 that UK numbers are activated in Twilio/HubSpot; Igor advised clearing the cache when the old restriction persisted, and the reporting rep confirmed it worked. This supersedes the October 8 US-only limitation and the blanket instruction to email instead of texting UK numbers. It does not establish support for every other country or universal delivery success. If a UK text still fails, clear the browser cache as Tech advised, retry appropriately and provide Tech the actual contact/error if it persists; respect opt-outs. International Zoom voice calls are separate: Alexander described one international Zoom Phone package being tested, not general activation for every rep. Do not infer voice capability from UK SMS activation. Sayim's current app guidance retains a 160-character SMS limit; use the short approved templates and do not present this as a universal SMS protocol limit. The Sales Rep HubSpot app has predefined SMS templates, Auto refresh and top-right bell notifications; this is not proof audible/mobile push notifications work. The October 14 Rep Home update orders contacts by their latest messages, including search and Needs reply results; this is conversation-list order, not a claim about message ordering inside a contact. Missing number/access, delivery or notification problems still require their specific account/error checked. October 17 Tech support confirmed the current SMS composer’s 160-character limitation in response to a request to expand it. Keep texts concise and use approved templates; do not promise that longer messages are supported by this company tool or switch to personal texting as a workaround. Treat this as the observed tool limit, not a universal technical statement that all SMS systems can never send multipart messages. October 19 long-payment-link exception: Tech and Rich first advised email when the approved payment link exceeds the company SMS composer limit. Rich then specifically approved Celia sending that one link through Zoom; the buyer ultimately accepted email. This is a case-specific manager-approved workaround, not a general return to Zoom texting or Google Voice. Use email by default for an oversized link; seek specific approval for an alternative company channel if necessary. Do not truncate payment URLs, invent short links or use a personal number.",
     "questions": [
       "Where can I see HubSpot text replies?",
       "Can we send texts from Zoom now?",
@@ -4889,12 +4903,13 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791986873741169",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791989631548529",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792085790027989",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792252171147909"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792252171147909",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792433493838899"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-19T11:00:00Z",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5146,7 +5161,7 @@
       "Does the paid production clause mean they must say they paid, or disclose being part of the production?",
       "Do reality participants still need ad or promotion disclosures?"
     ],
-    "text": "Rudy's latest October 12 clarification of the PAID PRODUCTION CONTRACT CLAUSE says it is about participants disclosing that they are part of the production, like influencers using #ad or #promotion; it is not about saying that they paid to participate. Explain both parts together: no requirement to announce their own payment under this company explanation, but promotional/production-relationship disclosure still applies. Do not shorten this to 'no disclosure is needed' or assume end credits remove participants' promotional disclosure obligations. Earlier statements remain context: on September 29 Rudy wrote 'No he doesn't need to say that on all his posts. We have to just add it in the credits somewhere at some point'; on October 9, when asked whether participants have to say it is a paid thing, his exact reply was 'No they don’t', with a separate statement about disclaimers at the end of shows/trailers. The newer October 12 message resolves what the paid-production wording means; it must accompany those earlier quotes when explaining the current position. The attached screenshots are general online explanations of promotional disclosure, not a new signed agreement or company legal opinion. These replies do not establish that a revised agreement has been issued or provide final replacement contractual wording. Answer the meaning directly; if someone specifically requests legal's final written clause, obtain the applicable approved wording rather than inventing it. Do not tell reps to edit or disregard an agreement. Rudy says the company uses US/Florida terms and reps must not edit contracts. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved. In the October 12 early-departure discussion Rich said they would not sue the particular participant for having to leave, while Rudy distinguished simply quitting from ruining a costly production, which could create liability. This is not a blanket no-liability promise, contract amendment, refund right or approved liability cap. October 14–15 follow-up: Rudy says the paid-production clause cannot be removed and reiterates disclosure of the production affiliation when promoting the show, not disclosure of the participant's own payment. On October 15 he distinguishes general announcements from endorsements. For a general announcement he suggests a footer such as #tv #castmember #paidcast; for an endorsement such as 'This is the best new reality show go watch it' he gives #paidcastmember #ad, emphasizing the affiliation when influencing others. Mike points the rep to that answer. These are Rudy's company examples, not a guarantee that those exact hashtags alone satisfy every legal/platform requirement or replacement contract wording. Do not omit the disclosure entirely, waive the existing clause, or claim legal has issued a revised agreement.",
+    "text": "Rudy's latest October 12 clarification of the PAID PRODUCTION CONTRACT CLAUSE says it is about participants disclosing that they are part of the production, like influencers using #ad or #promotion; it is not about saying that they paid to participate. Explain both parts together: no requirement to announce their own payment under this company explanation, but promotional/production-relationship disclosure still applies. Do not shorten this to 'no disclosure is needed' or assume end credits remove participants' promotional disclosure obligations. Earlier statements remain context: on September 29 Rudy wrote 'No he doesn't need to say that on all his posts. We have to just add it in the credits somewhere at some point'; on October 9, when asked whether participants have to say it is a paid thing, his exact reply was 'No they don’t', with a separate statement about disclaimers at the end of shows/trailers. The newer October 12 message resolves what the paid-production wording means; it must accompany those earlier quotes when explaining the current position. The attached screenshots are general online explanations of promotional disclosure, not a new signed agreement or company legal opinion. These replies do not establish that a revised agreement has been issued or provide final replacement contractual wording. Answer the meaning directly; if someone specifically requests legal's final written clause, obtain the applicable approved wording rather than inventing it. Do not tell reps to edit or disregard an agreement. Rudy says the company uses US/Florida terms and reps must not edit contracts. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved. In the October 12 early-departure discussion Rich said they would not sue the particular participant for having to leave, while Rudy distinguished simply quitting from ruining a costly production, which could create liability. This is not a blanket no-liability promise, contract amendment, refund right or approved liability cap. October 14–15 follow-up: Rudy says the paid-production clause cannot be removed and reiterates disclosure of the production affiliation when promoting the show, not disclosure of the participant's own payment. On October 15 he distinguishes general announcements from endorsements. For a general announcement he suggests a footer such as #tv #castmember #paidcast; for an endorsement such as 'This is the best new reality show go watch it' he gives #paidcastmember #ad, emphasizing the affiliation when influencing others. Mike points the rep to that answer. These are Rudy's company examples, not a guarantee that those exact hashtags alone satisfy every legal/platform requirement or replacement contract wording. Do not omit the disclosure entirely, waive the existing clause, or claim legal has issued a revised agreement. October 20 Rudy advises scanning through the contract during reality Call 2 and says he will make a Loom. The reviewed discussion does not supply that promised Loom; do not invent a link or claim it is already available. Keep material terms accurate, do not rewrite the contract or provide final legal confirmation.",
     "scopes": [
       "reality"
     ],
@@ -5166,9 +5181,10 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980879965669",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980918566449",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792084687211519",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792084784434489"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792084784434489",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792501972886709"
     ],
-    "reviewedAt": "2026-10-16T14:23:18.955541+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5460,7 +5476,7 @@
       "What must I sign on my first day of training?",
       "How long should onboarding and the final mock take?"
     ],
-    "text": "The current Part 1 onboarding sheet adds a mandatory Day 1 Training Expectations acknowledgment: read it, make a copy, sign and date it, then post it in New Sales Closers Onboarding. The linked acknowledgment requires an EOD TRAINING progress update every Monday through Friday before the end of the day: what was completed, current training progress, and questions or blockers. Proactively tell the onboarding team if unable to train or report. Its goal is to finish onboarding, including final mock preparation and completion, within 10 days; this is a target, not automatic approval to go live. A missed report may result in a warning; repeated failures after reminders or consecutive required reporting days without an update may result in removal. Do not invent automatic removal after a single miss or a specific number of missed days. This current explicit requirement supersedes older welcome wording that daily trainee updates are unnecessary. It is separate from live-rep HubSpot sales stats and daily call self-reviews; the non-DJ Slack sales-stats cutover does not exempt trainees from these training progress updates. The existing rule that onboarding-channel progress posts end once live on calls is not changed.",
+    "text": "The current Part 1 onboarding sheet adds a mandatory Day 1 Training Expectations acknowledgment: read it, make a copy, sign and date it, then post it in New Sales Closers Onboarding. The linked acknowledgment requires an EOD TRAINING progress update every Monday through Friday before the end of the day: what was completed, current training progress, and questions or blockers. Proactively tell the onboarding team if unable to train or report. Its goal is to finish onboarding, including final mock preparation and completion, within 10 days; this is a target, not automatic approval to go live. A missed report may result in a warning; repeated failures after reminders or consecutive required reporting days without an update may result in removal. Do not invent automatic removal after a single miss or a specific number of missed days. This current explicit requirement supersedes older welcome wording that daily trainee updates are unnecessary. It is separate from live-rep HubSpot sales stats and daily call self-reviews; the non-DJ Slack sales-stats cutover does not exempt trainees from these training progress updates. The existing rule that onboarding-channel progress posts end once live on calls is not changed. The October 20 wording targets completion of onboarding within 10 days; it no longer says the goal itself puts the trainee onto live sales calls within 10 days. Required readiness/signoffs still govern.",
     "scopes": [
       "shared"
     ],
@@ -5468,7 +5484,7 @@
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1XGQ4jKXZr77PovynpM2jSLqmUD69yrIzxYFfTThHNGc/edit"
     ],
-    "reviewedAt": "2026-10-16T14:07:45.233219+00:00",
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5773,6 +5789,181 @@
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "cast-member-hq-training-2026-10-21",
+    "decisionKey": "cast-member-hq-training-2026-10-21",
+    "title": "Cast Member HQ walkthrough and how much to cover in sales calls",
+    "questions": [
+      "Where is the cast member portal training video?",
+      "Should I demonstrate the member portal on a reality sales call?",
+      "Can I show documentary buyers their media resources?"
+    ],
+    "text": "Part 2 onboarding now links Cast Member HQ - VIDEO LINK instead of the former Studio Tour row. The linked Cast Member Portal Walkthrough folder is https://drive.google.com/drive/folders/12IMA5mTlIm0ZJIgKkYvBuCV2NRh2IUcj and contains the walkthrough recording. Use that resource; do not invent screen steps from an untranscribed video. In the October 20–21 discussion Rudy says not to go deep into the portal during a sales call: the offer is TV, not a marketing course; spend time on media kit, assets and trailers. His final clarification is that portal discussion is less relevant for reality, while he sees the benefit for documentary clients. A brief relevant documentary demonstration can help; this is not a blanket ban on portal demonstrations or a promise that every resource applies to every package. Keep current package entitlements and content-use restrictions.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792505738086349"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-back-to-back-calls-2026-10-21",
+    "decisionKey": "reality-back-to-back-calls-2026-10-21",
+    "title": "Reality buyer ready on the first call: complete Call 1 and Call 2 back to back",
+    "questions": [
+      "A reality applicant wants to pay immediately. Do I still need a second call?",
+      "Can we do both reality calls in one session?"
+    ],
+    "text": "Rich answered an October 20 reality question about a buyer ready to commit on the first call by allowing Call 1 and Call 2 back to back. Complete both stages rather than treating readiness to pay as permission to skip Call 2, the required presentation, recording/consent, applicable qualification, contract or actual Green Light approval. His informal instruction to improvise the green-light story must not be turned into a fabricated approval. This is a reality sequence exception, not a blanket change to ordinary documentary Call 1 pricing rules. The question called $20k VIP, but that wording does not authorize renaming the packages: use the current reality Standard/VIP terms and correct approved price.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792528418190459"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-studio-visit-2026-10-21",
+    "decisionKey": "reality-studio-visit-2026-10-21",
+    "title": "Reality applicants do not get an automatic Miami studio tour",
+    "questions": [
+      "Can my reality prospect tour the Miami studio before paying?",
+      "Can a signed reality buyer visit the office lobby?"
+    ],
+    "text": "Rich clarified October 20 that the reality shows are not filmed at the Miami studio and the team cannot accommodate random pre-sale tours. He said a signed buyer seeing the lobby might be fine. That is not an included tour entitlement or a confirmed booking: coordinate a specific request with the team before promising access. Do not present the documentary studio or a lobby visit as the reality filming location.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792522145622059"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-no-business-story-2026-10-21",
+    "decisionKey": "documentary-no-business-story-2026-10-21",
+    "title": "Documentary prospect with a strong story but no business",
+    "questions": [
+      "Does a documentary prospect have to own a business?",
+      "Can a nurse with a powerful personal story qualify for a documentary?"
+    ],
+    "text": "Asked about a nurse with no business but a strong personal story who might refer to a past employer, Rich confirmed October 20 that reps can still sell to those people. Lack of business ownership alone is therefore not an automatic documentary disqualification. Continue the full story/fit and financial qualification, truthful positioning, recording and Green Light process; do not promise acceptance, employer participation or approval. This does not waive separate reality business-angle or casting requirements, and does not remove the rare Call 1 price-based disqualification exception for a clearly financially unqualified prospect.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792514526855369"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-meeting-view-bookmarks-2026-10-21",
+    "decisionKey": "hubspot-meeting-view-bookmarks-2026-10-21",
+    "title": "Current HubSpot My Meetings bookmarks and duplicate-record support",
+    "questions": [
+      "Where are the current Today Tomorrow Yesterday and Week meeting views?",
+      "HubSpot is missing a meeting from my view. What should I check?",
+      "Duplicate meetings are affecting my stats. What do I do?"
+    ],
+    "text": "Igor published these current HubSpot meeting bookmarks on October 20: Today https://app-eu1.hubspot.com/contacts/148285209/objects/0-47/views/159778853/list ; Tomorrow https://app-eu1.hubspot.com/contacts/148285209/objects/0-47/views/159949186/list ; Yesterday https://app-eu1.hubspot.com/contacts/148285209/objects/0-47/views/159779665/list ; Week https://app-eu1.hubspot.com/contacts/148285209/objects/0-47/views/157585853/list . Use the correct dated view and current bookmark before assuming the meeting was lost. The update walkthrough is https://www.loom.com/share/54ce553ea9824ce18c4fbfef49e46725 . For duplicate meetings, report the affected record/time and screenshot to Igor/Sales Tech; he says the prevention fix is still being worked on and different time slots can evade duplicate detection. Do not treat a resolved individual duplicate as proof all duplicates are fixed, create another meeting, or give blanket permission to delete records or alter stats. Preserve actual status, score and notes.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0A8S3JSR1Q/p1792504448794859",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792493242573279",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792439342244059",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792434805885199"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "zoom-recording-retention-2026-10-21",
+    "decisionKey": "zoom-recording-retention-2026-10-21",
+    "title": "Old company Zoom recordings may have expired after one year",
+    "questions": [
+      "Why can Tech no longer find a Zoom recording from over a year ago?",
+      "How long do our Zoom recordings remain available?"
+    ],
+    "text": "On October 20 Dickson from Tech said the requested company recordings auto-delete after one year and were no longer in the system. For a missing recording, provide Tech the meeting date/time and identifying meeting details so they can check. Do not promise recovery of an expired recording, assume the chatbot stores every recording, or present this company retention statement as a universal Zoom product rule. Recent missing links still need checking; age alone is not proof a particular recording was deleted.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792490939112149"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-payme-onboarding-field-2026-10-21",
+    "decisionKey": "reality-payme-onboarding-field-2026-10-21",
+    "title": "Reality PayMe onboarding-date field: separate form discussed, not confirmed released",
+    "questions": [
+      "PayMe requires an onboarding call date for reality but we do not have one. What do I enter?",
+      "Is there a separate reality PayMe form now?"
+    ],
+    "text": "In the October 20 fulfillment thread Angelina confirms reality buyers do not have the ordinary onboarding call. Saad says the existing PayMe form cannot make the onboarding-date field conditional by show; he proposes a separate PayMe form - Reality in the same channel, and Angelina agrees to that approach. The reviewed thread does not explicitly confirm that the new form has been deployed. Check whether that option is actually present; if not, ask Finance/Angelina/Saad to confirm the supported submission route. Do not invent an onboarding booking/date or treat the alternative suggestion to enter the current date as an approved standing procedure. Keep the reality welcome email/initial onboarding form and normal commission verification requirements.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09MZH52J7L/p1791903342334299",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792516924123269"
+    ],
+    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
     "routeKey": null,
     "conditions": [],
     "supersedes": [],
