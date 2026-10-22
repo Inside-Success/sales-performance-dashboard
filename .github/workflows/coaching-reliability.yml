@@ -45,5 +45,6 @@ jobs:
       - run: node scripts/n8n/verify-reliability-contract.mjs
       - run: node scripts/n8n/verify-source-accounting.mjs
       - run: node scripts/n8n/verify-accounting-handoffs.mjs
+      - run: node scripts/n8n/verify-upstream-no-show-accounting.mjs
       - run: npx tsc --noEmit
       - run: npm run build
