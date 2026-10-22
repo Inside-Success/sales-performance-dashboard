@@ -43,7 +43,15 @@ This writes a local validated snapshot only. `--publish` explicitly enables the 
 - Read-model tests cover authorization before DB access, isolated read-only storage, filtering before pagination and out-of-range page correction.
 - Existing admin authorization tests remain included in the verification run.
 - Local webpack production build passed. Default local Turbopack cannot resolve the pre-existing shared `node_modules` symlink; no project configuration was changed to work around that. Vercel uses its normal fresh install/build.
-- Release and signed-in production checks are recorded below after deployment.
+- 37 focused tests passed, along with scoped ESLint and the local production webpack build.
+- Isolated snapshot publication and read-back count passed (1,117 entries).
+- Signed-in existing Admin Insights and coaching homepage remained accessible during verification.
+
+## Release status: blocked before build
+
+PR #337 is open and **not merged**. Vercel preview attempts `dpl_9ktYDMhLjGVaQN36gBPWrmcy9CFG`, `dpl_GFtU6ZtwCsrtpjVxZdsRqZ3qen1M`, and `dpl_SGD57hFpBzo8vBRJXgE9mJZzmLFw` failed with `BUILD_FAILED: Resource provisioning failed`, with empty build arrays and no application build logs. The third attempt targeted commit `ff4cdab67faa94cc07468cf3a3961b8409e1f59d`. This does not establish a source-code build failure. The status page reported no active incident at the time checked.
+
+Production remained at `dpl_HGsE8u9pcqPDCEgnjGRhH62Vcnir`; the new page is not live. Do not report successful release or completed authenticated library UI verification. After Vercel can provision a preview: verify that build, test the library with manager authorization, merge the scoped PR, and verify the production commit, filters, pagination, expandable details, report links and unauthorized redirects. The already-stored isolated snapshot needs no re-generation or AI spend.
 
 ## Cost and rollback
 
