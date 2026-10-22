@@ -47,11 +47,13 @@ This writes a local validated snapshot only. `--publish` explicitly enables the 
 - Isolated snapshot publication and read-back count passed (1,117 entries).
 - Signed-in existing Admin Insights and coaching homepage remained accessible during verification.
 
-## Release status: blocked before build
+## Release status: live
 
-PR #337 is open and **not merged**. Vercel preview attempts `dpl_9ktYDMhLjGVaQN36gBPWrmcy9CFG`, `dpl_GFtU6ZtwCsrtpjVxZdsRqZ3qen1M`, and `dpl_SGD57hFpBzo8vBRJXgE9mJZzmLFw` failed with `BUILD_FAILED: Resource provisioning failed`, with empty build arrays and no application build logs. The third attempt targeted commit `ff4cdab67faa94cc07468cf3a3961b8409e1f59d`. This does not establish a source-code build failure. The status page reported no active incident at the time checked.
+The Git-source staged production deployment `dpl_5LPrdbK5BwtuCh1F34HDW1vgEVbf` (commit `65c36fca5e3d9e8301267a3bd7cf805e8bd9828b`) passed the Vercel production build and was promoted after the existing tests and snapshot read-back checks. Automatic custom-domain assignment was disabled during staging. Previous preview attempts failed before application build with `Resource provisioning failed`; the staged production build succeeded without changes to application code, billing or project settings.
 
-Production remained at `dpl_HGsE8u9pcqPDCEgnjGRhH62Vcnir`; the new page is not live. Do not report successful release or completed authenticated library UI verification. After Vercel can provision a preview: verify that build, test the library with manager authorization, merge the scoped PR, and verify the production commit, filters, pagination, expandable details, report links and unauthorized redirects. The already-stored isolated snapshot needs no re-generation or AI spend.
+Live page: https://sales-performance-dashboard-rose.vercel.app/manager/closed-sales
+
+Authenticated live verification confirmed 1,117 entries, expandable recording/report/source details, DJ / NLCEO filtering (five entries), page-two pagination and exact client search. The staged hostname redirected sign-in to the main domain; authenticated UI verification was therefore performed immediately after promotion. Previous production deployment `dpl_HGsE8u9pcqPDCEgnjGRhH62Vcnir` remains the rollback reference. PR #337 records the scoped implementation. Source systems and coaching generation remain unchanged.
 
 ## Cost and rollback
 
