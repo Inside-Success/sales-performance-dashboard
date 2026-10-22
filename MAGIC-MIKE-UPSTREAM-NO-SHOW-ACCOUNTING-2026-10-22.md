@@ -35,6 +35,8 @@ After reconciliation: 142 done claims, zero running claims. AI recovery cost: $0
 - Live workflow validation: zero errors/invalid connections; six unchanged legacy unreachable-node warnings.
 - Direct authenticated n8n read confirmed active and draft versions match, and the published code and branch contain the fix.
 - Receipt IDs and owner-specific settlement were verified independently; this is reconciliation, not evidence of a new organic no-show passing through the new branch. Natural post-release traffic verification is recorded below when available.
+- Post-release coverage execution `1247356` checked seven sources: no missing IDs, no queued recoveries, page acknowledged. Authenticated Today no-show view and Colin Urquhart popup matched one detected no-show; recent normal report `/call/8389` loaded with its complete coaching content and source links.
+- GitHub reliability run `39787208412` passed the full regression gate, TypeScript and production build. Vercel's PR preview failed with `Resource provisioning failed`; no dashboard runtime code changed in this release. Production deployment verification is a separate check and must not be inferred from that preview.
 
 ## Rollback
 
