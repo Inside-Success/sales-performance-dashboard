@@ -79,12 +79,13 @@ export default async function ClosedSalesPage({
             submissions. Choose a sale to see its recordings and source.
           </p>
           <p className="mt-2 text-sm text-slate-500">
-            {date(data.from)}–{date(data.through)} ·{" "}
+            Entries posted {date(data.from)}–{date(data.through)} ·{" "}
             {data.entries.toLocaleString()} sales entries · Collected{" "}
             {date(data.capturedAt)}
           </p>
         </header>
         <form
+          key={JSON.stringify(filters)}
           className="magic-card space-y-4 p-5"
           action="/manager/closed-sales"
         >

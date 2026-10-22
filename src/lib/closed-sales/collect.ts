@@ -247,6 +247,10 @@ export function buildSnapshot(
       row.reviewNote =
         "Follow-up replies discuss a refund or cancellation. Check the sales entry for its latest status. " +
         row.reviewNote;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(purchase))
+      row.reviewNote =
+        "The source has no valid purchase date; the date shown is the sales-entry posting date. " +
+        row.reviewNote;
     const previous = grouped.get(id);
     if (previous) {
       previous.sources.push(source);
