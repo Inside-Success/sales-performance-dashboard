@@ -1,8 +1,8 @@
 # Magic Mike FAQ knowledge refresh — October 24, 2026
 
-Status: candidate, awaiting production verification.
+Status: published and live-verified (October 24 Pakistan / October 23 Miami).
 
-Resumes the October 21 published checkpoint `1a752acd729e087ee0cbfa68` (2575 records). Candidate `a3b3aa94864365987ee9c945` has 2583 active records: eight additions and thirteen amendments. Knowledge, tests, paired registry and documentation only. GPT-5.6 Luna medium, prompts, retrieval, runtime, diagnostics, auth, environment, database schema, Coaching and n8n unchanged. Slack and Google sources read only; no messages, reactions, forms or document edits.
+Resumes the October 21 published checkpoint `1a752acd729e087ee0cbfa68` (2575 records). Published `a3b3aa94864365987ee9c945` has 2583 active records: eight additions and thirteen amendments. Knowledge, tests, paired registry and documentation only. GPT-5.6 Luna medium, prompts, retrieval, runtime, diagnostics, auth, environment, database schema, Coaching and n8n unchanged. Slack and Google sources read only; no messages, reactions, forms or document edits.
 
 ## Changes
 
@@ -30,6 +30,12 @@ No claim to have read every private Slack conversation or transcribed all record
 
 ## Verification
 
-431 existing FAQ tests passed; seven new retrieval tests passed. Static safety: 107 checks passed. TypeScript and scoped lint passed. Isolated 20-question model review completed with no technical failures; two final targeted checks cover calendar correction and dial-out resource. Answers preserve required-video use, two-license boundary, buyer/rep acknowledgment distinction, pricing exception and distribution/ROI restrictions. Full exact-release CI and authenticated production checks pending. These bounded checks are not a universal accuracy claim.
+431 existing FAQ tests passed; seven new retrieval tests passed. Static safety: 107 checks passed. TypeScript and scoped lint passed. Isolated 20-question model review completed with no technical failures; two final targeted checks cover calendar correction and dial-out resource. Answers preserve required-video use, two-license boundary, buyer/rep acknowledgment distinction, pricing exception and distribution/ROI restrictions. Exact-release CI passed: 438 FAQ tests, 107 static checks, TypeScript, scoped ESLint, production build and paired FAQ validations. These bounded checks are not a universal accuracy claim.
 
-Baseline production: READY deployment `dpl_4TgMe4QQk2Av1xDoCM8BD9KNbwKk`, commit `4a090d646588801795466da6f4d6aa6a6591f780`. Publication checkpoint/admin freshness advance only after live verification.
+Baseline production: READY deployment `dpl_4TgMe4QQk2Av1xDoCM8BD9KNbwKk`, commit `4a090d646588801795466da6f4d6aa6a6591f780`. The published checkpoint was advanced after authenticated live verification.
+
+## Production verification
+
+Dashboard PR338 and FAQ PR113 merged. Git-triggered production deployment `dpl_CvuKvdGr5k2vR8TwsHeHKGdSoXwi` is READY at `e79158b47de1dfa7b56e1ee477b7e51dca65d318`, assigned to the rose alias. Preview failed resource provisioning before build; no preview success or infrastructure change is claimed.
+
+Three answers in the authenticated work Chrome profile verified mandatory Call 1 videos, couples licensing/team participation and the rep webinar acknowledgment. Persisted production receipts confirm knowledge `a3b3aa94864365987ee9c945`, GPT-5.6 Luna, successful plan/answer/review, and no validation issues. Live estimate $0.02941440; combined isolated/live estimate $0.22582880. The admin publication-date receipt follows this verified release. Sources were not changed and no Slack messages were sent.

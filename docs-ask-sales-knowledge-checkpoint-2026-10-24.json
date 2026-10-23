@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-24",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "1a752acd729e087ee0cbfa68",
   "knowledgeVersion": "a3b3aa94864365987ee9c945",
   "activeRecordCount": 2583,
@@ -8677,5 +8677,41 @@
     "daymond-rejection-reality-transfer-2026-10-24",
     "rebooking-calendar-current-directory",
     "outbound-hubspot-assignment-2026-10-07"
-  ]
+  ],
+  "publication": {
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/338",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/113",
+    "dashboardCommit": "e79158b47de1dfa7b56e1ee477b7e51dca65d318",
+    "deploymentId": "dpl_CvuKvdGr5k2vR8TwsHeHKGdSoXwi",
+    "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+    "liveAnswers": [
+      {
+        "id": "faq_assistant_8dbb86d7-de65-49c4-93ce-07c389f57a09",
+        "createdAt": "2026-10-23T19:45:35.024Z",
+        "knowledgeVersion": "a3b3aa94864365987ee9c945",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 9179
+      },
+      {
+        "id": "faq_assistant_e9a46634-0602-4b17-b96b-fb2e9d6116b4",
+        "createdAt": "2026-10-23T19:46:00.050Z",
+        "knowledgeVersion": "a3b3aa94864365987ee9c945",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 7503
+      },
+      {
+        "id": "faq_assistant_9006ae8a-1ce0-41cc-aff6-f3c018039f85",
+        "createdAt": "2026-10-23T19:46:21.105Z",
+        "knowledgeVersion": "a3b3aa94864365987ee9c945",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 7944
+      }
+    ],
+    "fullSuite": "438/438",
+    "staticSafety": "107/107",
+    "ci": "TypeScript, scoped ESLint, production build and paired FAQ checks passed",
+    "isolatedAnswerChecks": 22,
+    "isolatedEstimatedCostUsd": 0.1964144,
+    "liveVerificationEstimatedCostUsd": 0.0294144
+  }
 }
