@@ -663,3 +663,12 @@ Read-only query reads existing history in one request for owner history, repeat-
 ## 2026-09-14 — Compact rep usage follow-up
 
 Removed consistency column, weekly indicators, Regular users filter and unused weekly SQL/aggregation. Shortened summary/row copy, moved trend methodology into Comparison details, removed repeated guidance, and replaced repeated overdue sentences with a numeric Unopened 2+ days column. Retained rates/counts, engagement, trend, search, overdue/never/inactive filters, expandable report links and existing URLs. No tracking or other-page changes. Baseline rollback: 03f5b53 / dpl_7jvCV4dYvfHmbgTkwezqg14dXFkY. Thirteen tests, scoped lint and webpack build passed. Live read-only old/new comparisons matched every retained per-rep field, summary and trend for 7/30/all periods. Production verification follows deployment.
+
+
+## September 15 coaching reliability release and recovery
+
+Read [MAGIC-MIKE-COACHING-RELIABILITY-2026-09-15.md](MAGIC-MIKE-COACHING-RELIABILITY-2026-09-15.md) before further production changes. The 37-alert sample is reconciled: two reports already existed, 23 missing reports were recovered, and 12 calls were correctly excluded. No historical queue entries remain unresolved. Live Airtable and dashboard both contain the expected 25 unique reports. Two natural deliveries and a duplicate-safe replay were also verified.
+
+Official coaching now uses bounded draft/audit repair and an internal coaching provider to avoid webhook proxy timeouts. New workflows: reliability FShnTde2OGhIUZE4, internal provider UGDHDrhhaqooSiEd, bounded recovery Zx3S5B1gYHRrbv2F. Completion table VLIchjpKA0NJLknv records delivered/excluded/queued/needs_review outcomes. Recovery is coaching-only and does not rerun numeric scoring. The original provider CiDBJxWJZCDRJChK, compliance prompts/context, manual workflow, scoring rubric, Ask Sales and manager pages remain unchanged. Do not restore the September 14 official-workflow snapshot over this release.
+
+One Google Docs 502 was recovered by restoring the confirmed-empty report document with a revision guard and completing dashboard delivery, without repeating AI or Slack. Temporary helper endpoints were removed/deactivated. The n8n recovery worker is scheduled every five minutes; this is not a Codex monitoring automation. External API failures cannot be ruled out forever; ambiguous writes remain visible rather than being blindly repeated.
