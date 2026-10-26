@@ -1,6 +1,17 @@
 # Closed Sales Library — October 22, 2026
 
-## Scope
+## Current decision — October 27, 2026
+
+**Remove only the library page and its Admin Insights entry; retain all research data.** Moonis requested retirement because the static library is not needed in the normal application, while its source index may help future documentary or other winning-call analysis. The historical release notes below describe the original launch, not current page availability.
+
+- Removed route: `/manager/closed-sales`. Existing coaching report routes remain unchanged.
+- Retained database: `closed_sales_library_snapshots`, key `six-month-2026-10-22`, 1,117 sales entries. Pre-removal payload MD5: `03440c8fa8520320e8b1e6a0140d63b1`; snapshot updated October 22, 2026 at 18:10:02 UTC. No database migration or data deletion is part of retirement.
+- Retained private extracts: workspace sibling `.magic-mike-closed-sales-2026-10-22/`, containing `slack-entries.json`, `threads.json`, `reports.json`, `snapshot.json`, and `sheet-export/closed-sales-library.xlsx`. Keep these private and outside Git. Existing Google Sheets exports are untouched.
+- Retained reusable code: `src/lib/closed-sales/` (schema, collection, authorized read model and tests) and `scripts/import-closed-sales.ts`. No collection or publication was rerun.
+- Future use: filter the retained snapshot for Documentary or the desired show, follow source links, verify eligibility and call identity, and refresh records after October 22 only when needed. The snapshot is an index, not proof of a winning Call 1 or a current sale status.
+- To restore the page if explicitly requested later, recover `src/app/manager/closed-sales/page.tsx` and its directory entry from commit `5485b4982eeb63960fa8766af10294472cb04bfc`; do not overwrite or reimport the retained snapshot merely to restore the UI.
+
+## Original scope
 
 Admin Insights links to `/manager/closed-sales`, using the existing exact-email manager authorization. The page offers client/rep/show search, show-family and rep filters, a reports-available filter, 25 entries per page, and clearly expandable call details. Existing coaching reports open at their original `/call/:id` URLs.
 
@@ -47,11 +58,11 @@ This writes a local validated snapshot only. `--publish` explicitly enables the 
 - Isolated snapshot publication and read-back count passed (1,117 entries).
 - Signed-in existing Admin Insights and coaching homepage remained accessible during verification.
 
-## Release status: live
+## Historical launch status — October 22
 
 The Git-source staged production deployment `dpl_5LPrdbK5BwtuCh1F34HDW1vgEVbf` (commit `65c36fca5e3d9e8301267a3bd7cf805e8bd9828b`) passed the Vercel production build and was promoted after the existing tests and snapshot read-back checks. Automatic custom-domain assignment was disabled during staging. Previous preview attempts failed before application build with `Resource provisioning failed`; the staged production build succeeded without changes to application code, billing or project settings.
 
-Live page: https://sales-performance-dashboard-rose.vercel.app/manager/closed-sales
+Former page (retired): https://sales-performance-dashboard-rose.vercel.app/manager/closed-sales
 
 Authenticated live verification confirmed 1,117 entries, expandable recording/report/source details, DJ / NLCEO filtering (five entries), page-two pagination and exact client search. The staged hostname redirected sign-in to the main domain; authenticated UI verification was therefore performed immediately after promotion. Previous production deployment `dpl_HGsE8u9pcqPDCEgnjGRhH62Vcnir` remains the rollback reference. PR #337 records the scoped implementation. Source systems and coaching generation remain unchanged.
 
