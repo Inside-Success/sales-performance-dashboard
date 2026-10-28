@@ -1,4 +1,5 @@
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
+import { OBJECTION_VERSION, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { z } from "zod";
 import { resolveCloseSection } from "@/lib/close-section";
 import { normalizeStringList } from "@/lib/list-format";
@@ -54,6 +55,9 @@ export type NormalizedIngestPayload = ReturnType<typeof normalizeIngestPayload>;
 
 export function normalizeIngestPayload(raw: unknown) {
   const parsed = ingestPayloadSchema.parse(raw);
+  if (parsed.call_status === "scored" && parsed.coaching_version === OBJECTION_VERSION && !readObjectionCoaching(parsed, parsed.source_airtable_record_id)) {
+    throw new Error("Enhanced report is missing valid source-aligned coaching");
+  }
   const airtableRecordId =
     parsed.airtable_record_id || parsed.source_airtable_record_id;
 

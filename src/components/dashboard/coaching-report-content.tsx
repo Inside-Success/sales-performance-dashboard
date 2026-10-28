@@ -1,5 +1,6 @@
 import { CoachingImprovement } from "@/components/dashboard/coaching-improvement";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
+import { readObjectionCoaching, objectionSections } from "@/lib/objection-coaching.cjs";
 import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import {
   coachingEvidence,
@@ -24,7 +25,8 @@ export function CoachingReportContent({
   const source = report.source_payload;
   const sourceId = reportType === "manual" ? reportId : (source && typeof source === "object" ? String((source as Record<string, unknown>).source_airtable_record_id || "") : "");
   const reviewed = readReviewedCoaching(source, sourceId);
-  const sections = reviewed ? [
+  const objectionReport = readObjectionCoaching(source, sourceId);
+  const sections = objectionReport ? objectionSections(objectionReport) : reviewed ? [
     { key: "outcome", title: "Call outcome", items: [reviewed.outcome.summary + (reviewed.outcome.evidence.length ? ` [${reviewed.outcome.evidence.join(", ")}]` : "")] },
     { key: "improvements", title: "What to improve", items: reviewed.improvements.length ? reviewed.improvements.map(x => [x.title ? `Focus: ${x.title}` : "", x.observation, `Why it matters: ${x.possible_effect}`, `Next time: ${x.better_action}`, x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join("\n")) : ["No specific sales-execution improvement was supported by this call."] },
     { key: "strengths", title: "What you did well", items: reviewed.strengths.map(x=>[x.observation,x.why_useful,x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join(" ")) },
@@ -34,7 +36,7 @@ export function CoachingReportContent({
   return (
     <div className="space-y-4">
       {sections.map((section) => (
-        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!reviewed || isRecentCoachingReport(report)} />
+        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
       ))}
     </div>
   );
@@ -72,7 +74,7 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, rec
                 {grouped ? <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-red-50 text-sm font-bold text-red-700" aria-label={`Improvement ${index+1}`}>{index+1}</span> : section.items.length > 1 ? (
                   <span className={`mt-2 size-1.5 shrink-0 rounded-full ${isImprovement ? "bg-[#c43132]" : "bg-slate-400"}`} aria-hidden="true" />
                 ) : null}
-                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */}>{grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}</CoachingImprovement> : <CoachingText text={text} isClosingDetail={section.key === "close"} />}
+                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */}>{grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}</CoachingImprovement> : <CoachingText text={text} isClosingDetail={section.key === "close"} isObjection={section.key === "objections" && text.includes("\nConcern:")} />}
               </div>
               {!grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
             </li>
@@ -83,12 +85,13 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, rec
   );
 }
 
-function CoachingText({ text, isClosingDetail }: { text: string; isClosingDetail: boolean }) {
+function CoachingText({ text, isClosingDetail, isObjection }: { text: string; isClosingDetail: boolean; isObjection: boolean }) {
   const lines = text.split(/\n+/).filter(Boolean);
   const firstHeadingIndex = lines.findIndex((line) => /^(Observed concerns:|Agreed next steps:)$/.test(line));
   return (
     <div className="min-w-0 flex-1 space-y-2 text-[15.5px] leading-7 text-slate-700 md:text-base">
       {lines.map((line, index) => {
+        if (isObjection && index === 0) return <h3 key={index} className="text-lg font-semibold text-slate-950">{line}</h3>;
         if (isClosingDetail && /^(Observed concerns:|Agreed next steps:)$/.test(line)) {
           return <h3 key={index} className="pt-1 text-sm font-semibold text-slate-900">{line}</h3>;
         }
@@ -99,7 +102,7 @@ function CoachingText({ text, isClosingDetail }: { text: string; isClosingDetail
 }
 
 function CoachingLine({ line, asBullet }: { line: string; asBullet: boolean }) {
-  const note = line.match(/^(Why it matters:|Next time:)/);
+  const note = line.match(/^(Why it matters:|Next time:|Concern:|Your response:|You could say:)/);
   if (note) {
     return (
       <p className="rounded-lg bg-slate-50 px-3 py-2 text-[14.5px] leading-6 text-slate-600 md:text-[15px]">

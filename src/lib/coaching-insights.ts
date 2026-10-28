@@ -1,4 +1,5 @@
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
+import { OBJECTION_CATEGORIES, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { groupRecentImprovements } from "@/lib/coaching-dashboard-sections";
 import { coachingEvidence } from "@/lib/coaching-presentation";
 import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
@@ -40,6 +41,24 @@ export function concernMatches(value: string, pattern: RegExp) {
   });
 }
 export function summarizeCoachingInsights(calls: InsightCall[]) {
+  const bySource = new Map<string,InsightCall>();
+  for(const call of calls){const key=call.report_type+":"+(call.source_id||call.id);if(!bySource.has(key))bySource.set(key,call);}
+  const unique = [...bySource.values()];
+  const enhanced = unique.flatMap(call=>{const report=readObjectionCoaching(call.source_payload,call.source_id);return report?[{call,report}]:[];});
+  const enhancedIds=new Set(enhanced.map(x=>x.call));
+  calls=unique.filter(call=>!enhancedIds.has(call));
+  const categories=Object.entries(OBJECTION_CATEGORIES).map(([key,label])=>{
+    const matching=enhanced.flatMap(({call,report})=>{const objections=report.objections.filter(o=>o.category===key);return objections.length?[{call,evidence:objections.map(o=>o.concern).join(" "),objections}]:[];});
+    const objections=matching.flatMap(x=>x.objections);
+    return {key,label,calls:matching,objections:objections.length,
+      handledWell:objections.filter(o=>o.handling==='handled_well').length,
+      needsImprovement:objections.filter(o=>o.handling==='could_be_handled_better').length,
+      handlingUnclear:objections.filter(o=>o.handling==='not_enough_evidence').length,
+      resolved:objections.filter(o=>o.resolution==='resolved').length,
+      partlyResolved:objections.filter(o=>o.resolution==='partly_resolved').length,
+      unresolved:objections.filter(o=>o.resolution==='unresolved').length,
+      resolutionUnclear:objections.filter(o=>o.resolution==='unclear').length};
+  }).filter(x=>x.calls.length).sort((a,b)=>b.calls.length-a.calls.length);
   const topicRows = themes.map(t => ({ key: t.key, label: t.label, calls: [] as { call: InsightCall; evidence: string }[] }));
   const trainingRows = training.map(t => ({ key: t.key, label: t.label, calls: [] as { call: InsightCall; evidence: string }[] }));
   let structured = 0, withImprovements = 0;
@@ -63,6 +82,9 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
   });
   if(unmatched.length)topicRows.push({key:'other',label:'Other reported concerns',calls:unmatched});
   return { total: calls.length, structured, withImprovements, unmatchedConcerns:unmatched.length,
+    enhanced:{total:enhanced.length,objections:enhanced.reduce((n,x)=>n+x.report.objections.length,0),
+      noObjections:enhanced.filter(x=>x.report.evidence_quality==='sufficient'&&!x.report.objections.length).length,
+      limited:enhanced.filter(x=>x.report.evidence_quality==='limited').length,categories},
     topics: topicRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length),
     training: trainingRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length) };
 }

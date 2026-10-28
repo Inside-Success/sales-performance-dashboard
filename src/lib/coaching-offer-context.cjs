@@ -42,7 +42,9 @@ function readOfferField(payload, names) {
 
 function resolveCoachingOfferFamily(input) {
   const payload = input.sourcePayload || {};
-  const show = normalizeOfferText(input.showName || readOfferField(payload, ["show_name", "Show Name", "showName"]));
+  const header=String(input.transcriptText||"").split(/^\[\d{1,2}:\d{2}:\d{2}/m)[0].slice(0,3000);
+  const headerShow=header.match(/^Show Name:\s*([^\r\n]+)$/m)?.[1]||"";
+  const show = normalizeOfferText(input.showName || readOfferField(payload, ["show_name", "Show Name", "showName"]) || headerShow);
   const title = normalizeOfferText(input.meetingTitle || readOfferField(payload, ["meeting_title", "Meeting Title", "meetingTitle"]));
   const format = normalizeOfferText(readOfferField(payload, ["show_format", "show_type", "program_type", "offer_family", "Show Format"]));
   const transcript = normalizeOfferText(input.transcriptText).slice(0, 120000);
@@ -76,6 +78,10 @@ function resolveCoachingOfferFamily(input) {
   }
   if (/\b(next level ceo|nl ceo|nlceo)\b/.test(transcript) && !realityMentions) {
     return { family: "next_level_ceo", reason: "transcript_show_identity" };
+  }
+  const mainIdentities=MAIN_SHOW_EXAMPLES.filter(name=>name!=='inside success' && transcript.split(name).length-1>=2);
+  if(mainIdentities.length===1 && /\b(documentary|documentaries|documentary series)\b/.test(transcript) && !realityMentions && !/\b(next level ceo|nlceo)\b/.test(transcript)) {
+    return {family:'main_istv',reason:'repeated_documentary_show_identity'};
   }
   if (hasPhrase(show, "inside success") || hasPhrase(title, "inside success")) {
     return { family: "main_istv", reason: "generic_main_metadata" };

@@ -1,3 +1,4 @@
+import { OBJECTION_VERSION } from "@/lib/objection-coaching.cjs";
 import { Suspense } from "react";
 import type { PerformanceCall } from "@/lib/types";
 import { CoachingReportContent } from "@/components/dashboard/coaching-report-content";
@@ -118,7 +119,7 @@ export default async function CallPage({
               </div>
             </header>
 
-          {(call.source_payload.coaching_version === "magic-mike-call2-coaching-2026-09-08") ? <CoachingReportContent report={call} reportType="official" reportId={String(call.id)} transcriptUrl={call.transcript_link} /> : <>
+          {(["magic-mike-call2-coaching-2026-09-08",OBJECTION_VERSION].includes(String(call.source_payload.coaching_version))) ? <CoachingReportContent report={call} reportType="official" reportId={String(call.id)} transcriptUrl={call.transcript_link} /> : <>
           <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
             <p className="text-base leading-8 md:text-lg">{call.one_line_verdict || "Not provided"}</p>
           </ReportSection>

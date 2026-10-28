@@ -4,6 +4,10 @@ import { buildManualReportChatMessages, buildReportChatMessages } from "@/lib/re
 import type { ManualFeedbackReport, PerformanceCall } from "@/lib/types";
 
 describe("coaching offer routing", () => {
+  it("recognizes a documentary identity in the transcript header without using a passing reference",()=>{
+    expect(resolveCoachingOfferFamily({transcriptText:"Show Name: Mompreneurs\n[00:01:00] Buyer: Hello"}).family).toBe("main_istv");
+    expect(resolveCoachingOfferFamily({transcriptText:"[00:01:00] Buyer: I saw Mompreneurs yesterday"}).family).toBe("unknown");
+  });
   it("recognizes the launch reality shows without applying their terms to existing shows", () => {
     expect(resolveCoachingOfferFamily({ showName: "Entrepreneurs Island" }).family).toBe("reality");
     expect(resolveCoachingOfferFamily({ meetingTitle: "Flipping for Fortune - Casting Call" }).family).toBe("reality");
