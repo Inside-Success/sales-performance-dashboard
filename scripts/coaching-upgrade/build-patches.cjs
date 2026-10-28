@@ -4,6 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const {coachingSystem,writerPrompt,reviewerPrompt,MODELS,POLICY_REVISION}=require('./prompts.cjs');
 const {policyPack}=require('./policy.cjs');
 const {manualLocalSafetyRepairs}=require('./manual-safety.cjs');
+const {checkpointJsonOrder}=require('./checkpoint-json.cjs');
 const {OBJECTION_VERSION}=require('../../src/lib/objection-coaching.cjs');
 const {replaceOnce}=require('../coaching-insights/patches.cjs');
 const root=path.resolve(__dirname,'../..');
@@ -93,6 +94,8 @@ state.l1_hits = runL1(state.coaching_raw,`);
  const durable='X9L4JtDbpkSCflxZ';
  edit(durable,'Validate Result',s=>runtime+'\n'+replaceOnce(s,'const contractErrors=coachingStage(s.call_purpose)?coachingContractErrors(r.parsed_json):[];','const contractErrors=objectionProviderStage(s.call_purpose)?objectionProviderErrors(s.call_purpose,r.parsed_json):coachingStage(s.call_purpose)?coachingContractErrors(r.parsed_json):[];'));
  edit(durable,'Restore Cached Result',s=>runtime+'\n'+`const ep=$('Validate Claim').first().json;if(objectionProviderStage(ep.call_purpose)){const errors=objectionProviderErrors(ep.call_purpose,ep.checkpoint.result?.parsed_json);if(errors.length)throw Error('Invalid cached objection coaching contract: '+errors.join('; '));}\n`+s);
+ const cached=patches[durable].find(p=>p.nodeName==='Restore Cached Result');
+ cached.updates['parameters.jsCode']=checkpointJsonOrder.toString()+'\n'+replaceOnce(cached.updates['parameters.jsCode'],'const s=$json;const r={...s.checkpoint.result};','const s=$json;const r={...s.checkpoint.result};if(objectionProviderStage(s.call_purpose))r.parsed_json=checkpointJsonOrder(r.parsed_json,r.model_text);');
  // Delivery adapters preserve the same reviewed object; no new model calls.
  const post=get(official,'Post to Dashboard');(patches[official]??=[]).push({type:'updateNode',nodeName:post.name,updates:{'parameters.body':replaceOnce(post.parameters.body,"reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,","reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null, reviewed_coaching_v2: $('Performance Agent').item.json.reviewed_coaching_v2 || null,")}});
  return patches;

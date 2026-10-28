@@ -195,7 +195,7 @@ Published versions, independently read back and compared against exact candidate
 | Workflow | Published version | Nodes |
 | --- | --- | --- |
 | Official | a51f2201-5154-4820-9182-5edd5ce76818 | 155 |
-| Manual | b7edb147-8785-415a-bbab-11f0d1635fc3 | 55 |
+| Manual | e197ed7e-dc00-4ddb-bca0-aab7871f246d | 55 |
 | Review | 6a9c27cf-2d23-4930-8f6b-dd6d76949c75 | 15 |
 | Durable provider | d337d466-ce72-40b8-9207-580907a415a7 | 18 |
 
@@ -263,3 +263,9 @@ The actual saved failing input was executed through the corrected compiled final
 all three exact wording repairs applied, full report validation passed, and safety
 review/repair provenance remained present. All ten compiled handoff checks passed
 again. This local check is recorded separately from live document delivery.
+
+Checkpoint restoration also preserves the original parsed JSON field order when the
+saved model text is structurally identical to the validated JSONB object. Different
+values or array positions cannot overwrite the validated object. This prevents the
+same storage-order issue from changing downstream safety prompts after a cached audit.
+Legacy coaching stages are unchanged; model calls and costs remain zero on reuse.

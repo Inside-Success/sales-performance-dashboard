@@ -106,3 +106,15 @@ describe('manual local safety repair',()=>{
   expect(()=>manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],before:'Promise a refund.'}]})).toThrow('unsupported local repair');
  });
 });
+
+
+describe('checkpoint downstream identity',()=>{
+ it('restores original object order only when values and array order match',()=>{
+  const {checkpointJsonOrder}=require('../../scripts/coaching-upgrade/checkpoint-json.cjs');
+  const original={z:{b:2,a:1},rows:[{y:4,x:3}]};const stored={rows:[{x:3,y:4}],z:{a:1,b:2}};
+  expect(JSON.stringify(checkpointJsonOrder(stored,JSON.stringify(original)))).toBe(JSON.stringify(original));
+  expect(checkpointJsonOrder(stored,JSON.stringify({...original,z:{b:9,a:1}}))).toBe(stored);
+  expect(checkpointJsonOrder(stored,'invalid JSON')).toBe(stored);
+  expect(checkpointJsonOrder([1,2],'[2,1]')).toEqual([1,2]);
+ });
+});
