@@ -3,6 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {coachingSystem,writerPrompt,reviewerPrompt,MODELS,POLICY_REVISION}=require('./prompts.cjs');
 const {policyPack}=require('./policy.cjs');
+const {manualLocalSafetyRepairs}=require('./manual-safety.cjs');
 const {OBJECTION_VERSION}=require('../../src/lib/objection-coaching.cjs');
 const {replaceOnce}=require('../coaching-insights/patches.cjs');
 const root=path.resolve(__dirname,'../..');
@@ -54,6 +55,8 @@ function build(baselines,{writer='claude-sonnet-5-5',reviewer='claude-opus-5-5'}
  edit(official,'MM Build Compliance Request',s=>replaceOnce(s,'state.reviewed_coaching_v1 = reviewedResult.reviewed_coaching_v1 || null;','state.reviewed_coaching_v1 = reviewedResult.reviewed_coaching_v1 || null;\nstate.reviewed_coaching_v2 = reviewedResult.reviewed_coaching_v2 || null;'));
  edit(official,'Performance Agent',s=>embedded+'\n'+replaceOnce(replaceOnce(s,'const output = buildScoredOutput(state, complete.coaching);',`const reviewed_coaching_v2=complete.coaching.reviewed_coaching_v2||null;\nif(state.coaching_version===OBJECTION_VERSION&&!reviewed_coaching_v2)throw Error('Enhanced coaching safety hold: missing reviewed report');\nconst output = buildScoredOutput(state, complete.coaching);`),'output, reviewed_coaching_v1, agent_version:','output, reviewed_coaching_v1, reviewed_coaching_v2, agent_version:'));
  edit(manual,'MM Manual Finalize Coaching',s=>embedded+'\n'+replaceOnce(s,'const final = { ...complete.coaching, reviewed_coaching_v1, status:',`const reviewed_coaching_v2=complete.coaching.reviewed_coaching_v2||null;\nif(state.coaching_version===OBJECTION_VERSION&&!reviewed_coaching_v2)throw Error('Enhanced coaching safety hold: missing reviewed report');\nconst final = { ...complete.coaching, reviewed_coaching_v1, reviewed_coaching_v2, status:`));
+ const manualFinal=patches[manual].find(p=>p.nodeName==='MM Manual Finalize Coaching');
+ manualFinal.updates['parameters.jsCode']=manualLocalSafetyRepairs.toString()+'\n'+replaceOnce(manualFinal.updates['parameters.jsCode'],'try { const parsed = providerParsed($json, "manual coaching safety repair"); repairs = parsed.repairs || []; state.provider_results.push({ purpose: "manual_coaching_safety_repair", result: $json }); } catch (error) { state.repair_error = error.message; }',`if(state.coaching_version===OBJECTION_VERSION && $json.state){repairs=manualLocalSafetyRepairs(state);}else{try { const parsed = providerParsed($json, "manual coaching safety repair"); repairs = parsed.repairs || []; state.provider_results.push({ purpose: "manual_coaching_safety_repair", result: $json }); } catch (error) { state.repair_error = error.message; }}`);
  // Existing safety stages operate on the reviewed structure, not duplicated flat
  // presentation or internal policy metadata. Repairs therefore reach every output.
  for(const [id,name] of [[official,'MM Build Safety Screen Request'],[manual,'MM Manual Build Safety Screen Request']])edit(id,name,s=>{

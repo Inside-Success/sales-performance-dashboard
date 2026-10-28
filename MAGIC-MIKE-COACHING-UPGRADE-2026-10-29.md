@@ -248,3 +248,18 @@ fix affects only the manual and review audit builders, with no additional nodes.
 After the serialization fix, all 191 tests across 30 files passed. All ten saved
 call receipts also passed the newly compiled official/manual audit, safety, cache,
 Google Doc and callback handoffs. No new model calls were needed for these checks.
+
+The live replay 1390936 reached safety successfully, then exposed an existing manual
+branch mismatch: both repair-IF branches go directly to finalization, but finalization
+attempted to parse an absent model repair response. Enhanced validation correctly
+held the result. The manual branch now supports a bounded local wording repair when
+the independent safety screen passes and the only flagged targets are certification
+wording in future-action advice. It changes “exact approved [payment] plan” to
+“current [payment] plan”, preserving the instruction to confirm the real plan.
+Historical responses, numeric terms, evidence and classifications cannot be edited
+by this rule. Substantive or unsupported repairs remain held. No AI node was added.
+
+The actual saved failing input was executed through the corrected compiled finalizer:
+all three exact wording repairs applied, full report validation passed, and safety
+review/repair provenance remained present. All ten compiled handoff checks passed
+again. This local check is recorded separately from live document delivery.

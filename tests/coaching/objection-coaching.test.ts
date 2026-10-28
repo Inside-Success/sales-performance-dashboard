@@ -94,3 +94,15 @@ describe('audit checkpoint request identity',()=>{
   expect(reviewerPrompt(metadata,blocks,{...report(),summary:'Changed advice'})).not.toBe(first);
  });
 });
+
+
+describe('manual local safety repair',()=>{
+ it('preserves useful advice without inventing a missing model response',()=>{
+  const {manualLocalSafetyRepairs}=require('../../scripts/coaching-upgrade/manual-safety.cjs');
+  const state={safety_screen:{case_pass:true,unsupported_specifics:[],collisions:[],additional_safety_hits:[]},repair_targets:[{id:'r1',layer:'L1',rule:'certification',path:'objections.0.recommendation',before:'Confirm the exact approved payment plan and explain the total.'}]};
+  expect(manualLocalSafetyRepairs(state)[0].after).toBe('Confirm the current payment plan and explain the total.');
+  expect(()=>manualLocalSafetyRepairs({...state,safety_screen:{...state.safety_screen,case_pass:false}})).toThrow('requires review');
+  expect(()=>manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],path:'objections.0.response'}]})).toThrow('unsupported local repair');
+  expect(()=>manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],before:'Promise a refund.'}]})).toThrow('unsupported local repair');
+ });
+});
