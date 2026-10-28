@@ -1,7 +1,10 @@
 # Objection-first production coaching upgrade
 
-Status: dashboard and all four n8n workflows are live; final delivery acceptance
-is being observed. PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b.
+Status: dashboard and all four n8n workflows are live. A labeled manual canary
+completed real Google Doc and dashboard delivery with an acknowledged receipt.
+Shared n8n Cloud database-lock delays still affect ordinary queued work; this is
+not a claim that the whole instance is healthy or that a new official report has
+completed its natural scheduled delivery. PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b.
 Production dashboard deployment dpl_6FqhVnk19eeV21fV6eWWACqzWzGF is Ready.
 Historical report lists and an opened historical report were verified authenticated
 with Legacy labels. Source-bound new reports use Enhanced.
@@ -61,7 +64,7 @@ historical failure and recovery regression tests; lint/types/build; CI and Verce
 authenticated UI and actual report/receipt delivery evidence. No release claim
 from passing tests alone. Rollback stops new generation without erasing history.
 
-## Spend and current progress
+## Historical pre-publication checkpoint
 
 Paid evaluation remains in progress. Recorded provider-receipt cost so far: USD 7.2442. The private ledger reserves conservative upper bounds, including possible unobserved retries, before every request. This is computed from provider usage and configured rates, not a billing invoice.
 Original pilot spend belongs to a different run and is not reused as this ledger.
@@ -273,3 +276,39 @@ Legacy coaching stages are unchanged; model calls and costs remain zero on reuse
 The local wording regression includes all three adjective variants. Both actual
 saved manual failures (1390936 and 1391464) pass corrected compiled finalization
 with all three target edits applied and no additional model request.
+
+## Final live canary acceptance
+
+Execution 1391820 succeeded on October 28 at 23:11 UTC (October 29, 04:11 Pakistan).
+Its writer, factual audit and safety screen each returned checkpoint_reused=true
+with zero new tokens/cost. The existing local safety branch applied all three
+wording repairs. The actual Google report and source transcript were created and
+placed in their existing folders. The dashboard callback was acknowledged and the
+durable manual delivery row is delivered, attempts=0. The one original public ID
+now has status=completed, the correct new generation and matching rich source ID.
+Safety-reviewed and safety-repaired provenance are both true.
+
+Authenticated production UI showed Enhanced, the clean section layout and expandable
+transcript evidence. The opened Google document showed “Call Coaching Report —
+Enhanced” and matching takeaway/outcome content. No evaluation-only metadata or
+policy text appeared in the report. Historical Legacy reports remain readable.
+Private snapshots retain complete receipts, failed-run evidence and the final report.
+
+The final code gate passed 193 tests across 30 files, all eight existing recovery
+verification scripts, TypeScript and the production build. All ten original
+evaluation cases passed compiled handoffs after the changes.
+
+Recorded evaluation plus canary model usage cost is USD 8.52479277, including paid
+failed-attempt results and the extra audits that revealed the cache-order issue.
+The final cached recovery incurred zero new model cost. These are provider-usage
+calculations, not invoice reconciliation; the conservative reservation ledger stays
+under the USD 40 ceiling. No additional routine AI stage/node was introduced.
+
+Remaining infrastructure limitation: a naturally running official recovery exposed
+“Timeout waiting for lock SqliteWriteConnectionMutex to become available”; its
+source was retained as queued by the existing recovery flow. Long gaps between
+otherwise millisecond nodes also caused the first canary provider timeout after
+its result was saved. No instance restart, unrelated cancellation or timeout
+increase was used to hide this problem. Normal queue throughput needs separate
+n8n Cloud recovery; the manual canary proves the live application path, not the
+health of every scheduled execution in the shared instance.
