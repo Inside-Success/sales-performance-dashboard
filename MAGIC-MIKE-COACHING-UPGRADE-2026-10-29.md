@@ -163,3 +163,19 @@ evidence retained. The identical audit was then submitted once as execution
 recover them by exact request identity, do not blindly retry. Conservative ledger
 reservation is USD 36.0454 including possible unobserved retries; recorded receipts
 are USD 7.2442, not an invoice. No production n8n workflow has been changed.
+
+## User-requested test cleanup
+
+The user requested safely stopping unnecessary agent test executions. Audited all
+316 retained executions in the isolated benchmark workflow. The only outstanding
+test was 1388502; stopped it and verified canceled, startedAt null, and no executed
+nodes. Earlier audit 1387726 was already canceled. Safety 1387893 and wording-repair
+1388450 completed successfully; saved their receipts without rerunning them. The
+repair receipt awaits full final-output validation. No test execution remains active
+or queued in the inspected benchmark history. No production execution was stopped,
+no workflow was deactivated, and no execution history or saved reports were deleted.
+
+Recorded provider cost including the repair receipt is USD 7.302545155. The tenth
+call audit remains outstanding and must be deliberately restarted only when safe;
+there is no background test left running on our behalf. Production generation remains
+on its previous version; only the compatible dashboard deployment is live.
