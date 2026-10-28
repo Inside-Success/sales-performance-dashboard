@@ -18,6 +18,11 @@ const run=async(id,name,json,nodes={},extra={})=>{
  const generated={ok:true,stop_reason:'end_turn',request_id:'test-writer',parsed_json:draft,model:'test',costs:{total_cost_usd:0},usage:{input_tokens:0}};
  const state={case_id:'recTest',coaching_version:OBJECTION_VERSION,coaching_policy_revision:draft.provenance.policy_revision,coaching_policy_text:draft.provenance.policy_text,coaching_evidence_index:blocks.map(({id,timestamp})=>({id,timestamp})),result_id:'upgrade-safety-'+call.id,coaching_model:'test',provider_results:[],gate_output:{call_status:'scored'},selectedCard:{fact_card_id:'main_istv'},compliance_post_filter:{red_flags:[]},caseItem:{case_id:'recTest',metadata:{airtable_record_id:'recTest',rep_name:'Test',client_name:'Buyer'},source:{'Source Airtable Record ID':'recTest'},cleaned_transcript:call.transcript}};
  const prepared={state,blocks,provider_request:{request_id:'test-writer',system:'test'}};
+ const actualWriter=(await run('L8Nn7xncA9ZPDdWA','MM Build Coaching Request',{state})).json;
+ assert.equal(actualWriter.provider_request.model,'claude-sonnet-5-5');assert.equal(actualWriter.provider_request.prompt_cache,true);
+ assert.equal(actualWriter.provider_request.call_purpose,'objection_v2_writer');assert.equal(actualWriter.blocks.length,blocks.length);
+ assert.equal(actualWriter.state.coaching_evidence_index.length,blocks.length);
+
  const checked=(await run('FShnTde2OGhIUZE4','Validate Draft',{prepared,generated})).json;assert.equal(checked.needs_repair,false);
  const auditPrepared=(await run('FShnTde2OGhIUZE4','Build Factual Audit',checked)).json;
  const audit={ok:true,stop_reason:'end_turn',request_id:auditPrepared.provider_request.request_id,parsed_json:{pass:true,findings:[],corrected_report:null},model:'test',costs:{total_cost_usd:0},usage:{input_tokens:0}};
@@ -49,6 +54,10 @@ const run=async(id,name,json,nodes={},extra={})=>{
  assert.equal(transport.valid,true);assert.ok(transport.result.contract_errors.length); // API rejects reusable cache; draft still reaches bounded repair.
  const manualInput={public_id:'manual-test',rep_name:'Test',client_name:'Buyer',cleaned_transcript:call.transcript};
  const manualPrepared={...prepared,state:{...state,input:manualInput,provider_results:[]}};
+ const manualWriter=(await run('BMRrGxHyXMcgO6j3','MM Manual Build Structured Coaching',{state:manualPrepared.state})).json;
+ assert.equal(manualWriter.provider_request.model,'claude-sonnet-5-5');assert.equal(manualWriter.provider_request.prompt_cache,true);
+ assert.equal(manualWriter.blocks.length,blocks.length);
+
  const manualAuditPrepared=(await run('BMRrGxHyXMcgO6j3','MM Manual Build Factual Audit',generated,{'MM Manual Build Structured Coaching':manualPrepared})).json;
  const manualReviewed=(await run('BMRrGxHyXMcgO6j3','MM Manual Render Audited Coaching',{...audit,request_id:manualAuditPrepared.provider_request.request_id},{'MM Manual Build Factual Audit':manualAuditPrepared})).json;
  const manualSafety=(await run('BMRrGxHyXMcgO6j3','MM Manual Build Safety Screen Request',manualReviewed)).json;
