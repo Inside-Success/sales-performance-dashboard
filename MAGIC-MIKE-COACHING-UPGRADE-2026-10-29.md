@@ -1,10 +1,10 @@
 # Objection-first production coaching upgrade
 
-Status: compatible dashboard deployed; new coaching generation is not yet published.
-PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b. Production
-deployment dpl_6FqhVnk19eeV21fV6eWWACqzWzGF is Ready on the normal alias.
-Authenticated production report listings display historical reports as Legacy.
-The four n8n workflow candidates remain unpublished pending final live checks.
+Status: dashboard and all four n8n workflows are live; final delivery acceptance
+is being observed. PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b.
+Production dashboard deployment dpl_6FqhVnk19eeV21fV6eWWACqzWzGF is Ready.
+Historical report lists and an opened historical report were verified authenticated
+with Legacy labels. Source-bound new reports use Enhanced.
 
 ## Authorized scope and acceptance
 
@@ -179,3 +179,41 @@ Recorded provider cost including the repair receipt is USD 7.302545155. The tent
 call audit remains outstanding and must be deliberately restarted only when safe;
 there is no background test left running on our behalf. Production generation remains
 on its previous version; only the compatible dashboard deployment is live.
+
+## October 29 published rollout
+
+All ten original evaluation calls passed full audit-contract validation and compiled
+handoffs through official/manual writers, review, safety adapters, report rendering,
+cache validation, Google Doc and callback structures. The actual saved safety-repair
+provider result also passed finalization with both repaired sentences applied.
+The last audit ran once in the existing isolated workflow's manual test mode, avoiding
+the congested production queue. No test node, credential or workflow definition was
+added or changed. Recorded evaluation receipts total USD 7.681527155.
+
+Published versions, independently read back and compared against exact candidates:
+
+| Workflow | Published version | Nodes |
+| --- | --- | --- |
+| Official | a51f2201-5154-4820-9182-5edd5ce76818 | 155 |
+| Manual | 18df8ab9-55b5-47d6-a7e6-15436f99f166 | 55 |
+| Review | 9b7d7d30-d8fa-4f9f-996a-693bf18bdd83 | 15 |
+| Durable provider | d337d466-ce72-40b8-9207-580907a415a7 | 18 |
+
+Node counts, all connections, credentials, workflow settings and unrelated parameters
+match the baseline. Draft and published graphs match exactly. No AI stage was added.
+The evidence-scoring workflow was not edited. The official connector update timed
+out and restored the prior graph; that restoration was verified before retrying the
+same patch through the existing authenticated API with a longer timeout. The retry
+succeeded. Review's earlier connector timeout had saved successfully and was not
+repeated. Direct readback distinguishes these two outcomes.
+
+Embedded helper arrays trigger the static Code-node return-shape heuristic (review
+five; manual six; provider two), despite compiled runtime nodes returning the correct
+n8n item envelopes. Connection/expression verification passes; old unreachable-node
+warnings remain unchanged. Earlier baseline-only validation counts in this history
+are not a claim that the updated static validator returns zero diagnostics.
+
+A naturally submitted manual report was accepted at 03:19 Pakistan time using the new
+published manual version (execution 1389950). It is queued behind shared instance
+traffic. Existing official executions created before cutover retain the old version
+and must remain Legacy even if delivered later. Do not restart them to force a badge.

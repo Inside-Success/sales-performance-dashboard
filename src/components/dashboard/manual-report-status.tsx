@@ -128,7 +128,9 @@ export function ManualReportStatus({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
+                {report.status === "completed" ? (
+                  <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
+                ) : null}
                 {report.status !== "completed" ? (
                   <>
                     <StatusBadge status={report.status} />
