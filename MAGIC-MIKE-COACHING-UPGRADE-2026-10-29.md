@@ -195,8 +195,8 @@ Published versions, independently read back and compared against exact candidate
 | Workflow | Published version | Nodes |
 | --- | --- | --- |
 | Official | a51f2201-5154-4820-9182-5edd5ce76818 | 155 |
-| Manual | 18df8ab9-55b5-47d6-a7e6-15436f99f166 | 55 |
-| Review | 9b7d7d30-d8fa-4f9f-996a-693bf18bdd83 | 15 |
+| Manual | b7edb147-8785-415a-bbab-11f0d1635fc3 | 55 |
+| Review | 6a9c27cf-2d23-4930-8f6b-dd6d76949c75 | 15 |
 | Durable provider | d337d466-ce72-40b8-9207-580907a415a7 | 18 |
 
 Node counts, all connections, credentials, workflow settings and unrelated parameters
@@ -235,3 +235,16 @@ checkpoint reuse must be verified before acceptance. Existing provider deadlines
 ten-minute leases and disabled nested retries remain unchanged. No unrelated job was
 stopped, and the shared Cloud instance was not restarted. Pending-report copy now
 avoids promising delivery in one or two minutes.
+
+The replay confirmed writer checkpoint reuse with zero new cost (child 1390967).
+It also exposed a genuine audit cache-identity defect: JSONB reordered nested draft
+object keys, changing the serialized prompt despite identical content. The audit
+therefore ran once more within the canary reservation. Reviewer prompt serialization
+now sorts object keys recursively, preserving arrays and exact values. A regression
+checks reordered database objects produce the same request, while reordered dialogue
+or changed advice does not. This does not weaken exact-match cache validation. The
+fix affects only the manual and review audit builders, with no additional nodes.
+
+After the serialization fix, all 191 tests across 30 files passed. All ten saved
+call receipts also passed the newly compiled official/manual audit, safety, cache,
+Google Doc and callback handoffs. No new model calls were needed for these checks.

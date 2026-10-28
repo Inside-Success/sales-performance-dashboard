@@ -81,3 +81,16 @@ describe('objection report evidence and delivery contract',()=>{
   expect(result.enhanced.total).toBe(1);expect(result.enhanced.objections).toBe(1);expect(result.enhanced.categories[0]).toMatchObject({key:'approval',handledWell:1,unresolved:1,resolved:0});expect(result.total).toBe(1);
  });
 });
+
+
+describe('audit checkpoint request identity',()=>{
+ it('reuses the same request after JSONB changes object key order, but not changed evidence',()=>{
+  const {reviewerPrompt}=require('../../scripts/coaching-upgrade/prompts.cjs');
+  const reorder=(value:unknown):unknown=>Array.isArray(value)?value.map(reorder):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).reverse().map(([k,v])=>[k,reorder(v)])):value;
+  const metadata={rep_name:'Rep',show_name:'Example'};
+  const first=reviewerPrompt(metadata,blocks,report());
+  expect(reviewerPrompt(reorder(metadata),reorder(blocks),reorder(report()))).toBe(first);
+  expect(reviewerPrompt(metadata,[...blocks].reverse(),report())).not.toBe(first);
+  expect(reviewerPrompt(metadata,blocks,{...report(),summary:'Changed advice'})).not.toBe(first);
+ });
+});
