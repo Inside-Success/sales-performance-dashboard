@@ -1,13 +1,13 @@
 # Objection-first production coaching upgrade
 
-Status: dashboard and all four n8n workflows are live. A labeled manual canary
-completed real Google Doc and dashboard delivery with an acknowledged receipt.
-Shared n8n Cloud database-lock delays still affect ordinary queued work; this is
-not a claim that the whole instance is healthy or that a new official report has
-completed its natural scheduled delivery. PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b.
-Production dashboard deployment dpl_6FqhVnk19eeV21fV6eWWACqzWzGF is Ready.
-Historical report lists and an opened historical report were verified authenticated
-with Legacy labels. Source-bound new reports use Enhanced.
+Status: dashboard and all four n8n workflows are live. Both the labeled manual
+canary and a naturally recovered official call completed Google Doc/dashboard
+delivery with acknowledged receipts. The official call also completed the existing
+Slack and compliance delivery paths. Authenticated live views showed Enhanced and
+readable, evidence-linked coaching. Shared n8n Cloud queue/database-lock delays
+remain an infrastructure limitation; this is not an instance-wide health guarantee.
+PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b. PR #342 contains the
+acceptance fixes, updated tests and final rollout record.
 
 ## Authorized scope and acceptance
 
@@ -312,3 +312,26 @@ its result was saved. No instance restart, unrelated cancellation or timeout
 increase was used to hide this problem. Normal queue throughput needs separate
 n8n Cloud recovery; the manual canary proves the live application path, not the
 health of every scheduled execution in the shared instance.
+
+## Official production acceptance
+
+Natural recovery execution 1391322 completed at 23:13:15 UTC. It processed the same
+source that had encountered the internal n8n write-lock timeout earlier. Dashboard
+report 8800 has the new generation, a matching source-bound rich report and completed
+safety review. Its source claim is done with owner 1391322. The source delivery
+receipt is delivered. Existing top-level Slack, thread reply, compliance alert,
+compliance thread and compliance Sheet append all succeeded; both report document
+creation/content insertion and dashboard posting succeeded. No manual replay or
+source mutation was used to force this official acceptance example.
+
+Authenticated /call/8800 shows Enhanced and the expected objection-first sections,
+including separate value and childcare concerns with concrete recommendations. The
+manual canary's timestamp evidence also loaded the exact highlighted transcript.
+This adds actual official delivery evidence to the manual acceptance above; ordinary
+scheduled executions still remain queued on the shared instance.
+
+Cleanup verified all seven tracked test/canary executions are terminal. The three
+queued copies stopped by this rollout were confirmed never-started; no production
+execution was canceled. The final canary reservation is reconciled to USD 0.843265615,
+leaving conservative total reserved exposure at USD 35.84448167 and recorded cost
+at USD 8.52479277. Private outputs and history are retained for investigation.
