@@ -128,7 +128,9 @@ export function ManualReportStatus({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
+                {report.status === "completed" ? (
+                  <ReportVersionBadge coachingVersion={report.source_payload.coaching_version} />
+                ) : null}
                 {report.status !== "completed" ? (
                   <>
                     <StatusBadge status={report.status} />
@@ -301,7 +303,7 @@ function PendingPanel({ reason }: { reason: string | null }) {
       <Loader2 className="mx-auto mb-3 size-8 animate-spin text-primary" />
       <h2 className="text-lg font-semibold text-slate-950">{reason ? "Your report is taking longer" : "Your report is being prepared"}</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">
-        {reason || "This usually takes about 1-2 minutes. You can leave this page open and the report will appear automatically."}
+        {reason || "Your report will appear here automatically when it is ready. Keep this link so you can return to it."}
       </p>
     </section>
   );

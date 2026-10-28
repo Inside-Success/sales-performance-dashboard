@@ -71,3 +71,9 @@ For dashboard/web changes:
 - October 22 upstream no-show accounting: see MAGIC-MIKE-UPSTREAM-NO-SHOW-ACCOUNTING-2026-10-22.md. The upstream no-show true branch writes an excluded receipt before owner-specific claim settlement. Preserve exact source pairing and upstream reason; do not add another receipt writer to the shared `Set: rep_no_show`, because AI-classified exclusions already have one.
 
 - Closed Sales Library page retired at Moonis’s request on October 27, 2026: route and Admin Insights link removed; data retained for future documentary/other winning-call research. See the retirement and reuse notes in MAGIC-MIKE-CLOSED-SALES-LIBRARY-2026-10-22.md. Preserve `closed_sales_library_snapshots`, the private extracts, import/read-model code and tests. The October 22 snapshot is not a live feed; recording order does not establish which call closed the sale.
+
+## Objection-first coaching (October 29)
+
+- See MAGIC-MIKE-COACHING-UPGRADE-2026-10-29.md for rollout evidence and rollback. Official/manual coaching now uses generation `magic-mike-objection-coaching-2026-10-29` and source-bound `objection-coaching-v2`. Only this generation is Enhanced; older and in-flight prior generations are Legacy without rewriting history.
+- Keep Tyler V3 objection classification separate from observed handling, resolution, questions and payment outcome. Report prose hides internal metadata; evidence remains available. Report chat, Docs and dashboard derive from the same reviewed, safety-repaired record. Never bypass a safety edit with stale structured content.
+- Sonnet 5.5 writes and Opus 5.5 reviews within the existing stages. Preserve caching, exact request/source identity, bounded repair, scoring/compliance separation and original node count. The current scoped three-family policy pack is versioned; later source changes require an explicit policy refresh and validation.

@@ -81,3 +81,41 @@ describe('objection report evidence and delivery contract',()=>{
   expect(result.enhanced.total).toBe(1);expect(result.enhanced.objections).toBe(1);expect(result.enhanced.categories[0]).toMatchObject({key:'approval',handledWell:1,unresolved:1,resolved:0});expect(result.total).toBe(1);
  });
 });
+
+
+describe('audit checkpoint request identity',()=>{
+ it('reuses the same request after JSONB changes object key order, but not changed evidence',()=>{
+  const {reviewerPrompt}=require('../../scripts/coaching-upgrade/prompts.cjs');
+  const reorder=(value:unknown):unknown=>Array.isArray(value)?value.map(reorder):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).reverse().map(([k,v])=>[k,reorder(v)])):value;
+  const metadata={rep_name:'Rep',show_name:'Example'};
+  const first=reviewerPrompt(metadata,blocks,report());
+  expect(reviewerPrompt(reorder(metadata),reorder(blocks),reorder(report()))).toBe(first);
+  expect(reviewerPrompt(metadata,[...blocks].reverse(),report())).not.toBe(first);
+  expect(reviewerPrompt(metadata,blocks,{...report(),summary:'Changed advice'})).not.toBe(first);
+ });
+});
+
+
+describe('manual local safety repair',()=>{
+ it('preserves useful advice without inventing a missing model response',()=>{
+  const {manualLocalSafetyRepairs}=require('../../scripts/coaching-upgrade/manual-safety.cjs');
+  const state={safety_screen:{case_pass:true,unsupported_specifics:[],collisions:[],additional_safety_hits:[]},repair_targets:[{id:'r1',layer:'L1',rule:'certification',path:'objections.0.recommendation',before:'Confirm the exact approved payment plan and explain the total.'}]};
+  expect(manualLocalSafetyRepairs(state)[0].after).toBe('Confirm the current payment plan and explain the total.');
+  for(const prefix of ['current approved','approved'])expect(manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],before:`Confirm the ${prefix} payment plan and explain the total.`}]} )[0].after).toBe('Confirm the current payment plan and explain the total.');
+  expect(()=>manualLocalSafetyRepairs({...state,safety_screen:{...state.safety_screen,case_pass:false}})).toThrow('requires review');
+  expect(()=>manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],path:'objections.0.response'}]})).toThrow('unsupported local repair');
+  expect(()=>manualLocalSafetyRepairs({...state,repair_targets:[{...state.repair_targets[0],before:'Promise a refund.'}]})).toThrow('unsupported local repair');
+ });
+});
+
+
+describe('checkpoint downstream identity',()=>{
+ it('restores original object order only when values and array order match',()=>{
+  const {checkpointJsonOrder}=require('../../scripts/coaching-upgrade/checkpoint-json.cjs');
+  const original={z:{b:2,a:1},rows:[{y:4,x:3}]};const stored={rows:[{x:3,y:4}],z:{a:1,b:2}};
+  expect(JSON.stringify(checkpointJsonOrder(stored,JSON.stringify(original)))).toBe(JSON.stringify(original));
+  expect(checkpointJsonOrder(stored,JSON.stringify({...original,z:{b:9,a:1}}))).toBe(stored);
+  expect(checkpointJsonOrder(stored,'invalid JSON')).toBe(stored);
+  expect(checkpointJsonOrder([1,2],'[2,1]')).toEqual([1,2]);
+ });
+});
