@@ -174,7 +174,7 @@ export function ManualSubmitForm() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-slate-200 bg-white p-4 shadow-[0_12px_32px_rgba(15,23,42,0.05)]">
         <p className="text-sm font-medium text-slate-500">
-          Reports usually take about 1-2 minutes and update automatically.
+          Your report updates automatically when it is ready.
         </p>
         <Button
           type="submit"

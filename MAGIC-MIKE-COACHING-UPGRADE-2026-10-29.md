@@ -217,3 +217,21 @@ A naturally submitted manual report was accepted at 03:19 Pakistan time using th
 published manual version (execution 1389950). It is queued behind shared instance
 traffic. Existing official executions created before cutover retain the old version
 and must remain Legacy even if delivered later. Do not restart them to force a badge.
+
+## Live canary transport recovery
+
+The labeled manual canary uses one public ID throughout. Its initial production-queue
+execution 1390097 was canceled only after confirming it never started and had no node
+outputs. Manual execution 1390189 then ran the unchanged published workflow. Writer
+and factual audit both completed and checkpointed (one paid attempt each). Provider
+child 1390388 timed out at the existing 420-second workflow bound after its Complete
+Checkpoint node succeeded; the final Return Provider Result node had not run. Its
+Anthropic HTTP node took 47 seconds, while gaps between otherwise millisecond nodes
+consumed minutes. This is evidence of orchestration delay, not an AI response timeout.
+
+Recovery was started once against the same public ID and exact input, after confirming
+no document/callback had been created and no active canary owner remained. Exact
+checkpoint reuse must be verified before acceptance. Existing provider deadlines,
+ten-minute leases and disabled nested retries remain unchanged. No unrelated job was
+stopped, and the shared Cloud instance was not restarted. Pending-report copy now
+avoids promising delivery in one or two minutes.
