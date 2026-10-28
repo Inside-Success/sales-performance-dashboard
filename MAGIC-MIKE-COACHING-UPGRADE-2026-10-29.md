@@ -1,6 +1,10 @@
 # Objection-first production coaching upgrade
 
-Status: implementation in progress; not released. Production is unchanged.
+Status: compatible dashboard deployed; new coaching generation is not yet published.
+PR #341 merged as 2b4529e23c2665d07417f22a5e8566a79eec463b. Production
+deployment dpl_6FqhVnk19eeV21fV6eWWACqzWzGF is Ready on the normal alias.
+Authenticated production report listings display historical reports as Legacy.
+The four n8n workflow candidates remain unpublished pending final live checks.
 
 ## Authorized scope and acceptance
 
@@ -59,7 +63,7 @@ from passing tests alone. Rollback stops new generation without erasing history.
 
 ## Spend and current progress
 
-Paid evaluation remains in progress. Recorded provider-receipt cost so far: USD 6.7328. The private ledger reserves conservative upper bounds, including possible unobserved retries, before every request. This is computed from provider usage and configured rates, not a billing invoice.
+Paid evaluation remains in progress. Recorded provider-receipt cost so far: USD 7.2442. The private ledger reserves conservative upper bounds, including possible unobserved retries, before every request. This is computed from provider usage and configured rates, not a billing invoice.
 Original pilot spend belongs to a different run and is not reused as this ledger.
 Current error-list reads returned no retained error executions for official,
 manual and reliability workflows; this is a retention/coverage limit, not proof
@@ -138,3 +142,24 @@ At the pre-release check the shared n8n instance had a large queue of unrelated
 executions. Audit execution 1387726 and isolated safety execution 1387893 were
 accepted but had not started; do not repeat those requests. No production workflow
 has been changed. Resume by inspecting these exact execution IDs and receipts.
+
+## Queue follow-up
+
+At 02:32 Pakistan time on October 29, authenticated n8n displayed 58/50
+active executions. Other workflows continued completing, so this is observed
+congestion, not evidence of a total outage. The two isolated evaluation executions
+above still displayed Starting soon / queued. Do not resubmit them or stop unrelated
+company workflows. Their saved request identities and budget reservations remain
+intact. No complete-generation rollout or end-to-end delivery claim is made.
+
+At the resumed check, safety execution 1387893 completed and its exact request
+receipt was recovered: the provider screen passed, cost USD 0.015656955. Existing
+local safety rules still selected two wording repairs; the bounded repair test is
+execution 1388450, request upgrade-8163-safety-repair-v8. Audit 1387726 was stopped
+only after remaining queued; API verification confirmed canceled, no startedAt,
+and no executed nodes. Its zero-spend reservation was released with cancellation
+evidence retained. The identical audit was then submitted once as execution
+1388502. Both new jobs were accepted but queued and their HTTP responses timed out;
+recover them by exact request identity, do not blindly retry. Conservative ledger
+reservation is USD 36.0454 including possible unobserved retries; recorded receipts
+are USD 7.2442, not an invoice. No production n8n workflow has been changed.
