@@ -195,9 +195,9 @@ Published versions, independently read back and compared against exact candidate
 | Workflow | Published version | Nodes |
 | --- | --- | --- |
 | Official | a51f2201-5154-4820-9182-5edd5ce76818 | 155 |
-| Manual | e197ed7e-dc00-4ddb-bca0-aab7871f246d | 55 |
+| Manual | 3aa9983c-539f-4c15-bfff-1c8f110c9605 | 55 |
 | Review | 6a9c27cf-2d23-4930-8f6b-dd6d76949c75 | 15 |
-| Durable provider | d337d466-ce72-40b8-9207-580907a415a7 | 18 |
+| Durable provider | 44f5d842-8467-4bdd-a9c1-de584a747ed6 | 18 |
 
 Node counts, all connections, credentials, workflow settings and unrelated parameters
 match the baseline. Draft and published graphs match exactly. No AI stage was added.
@@ -254,7 +254,7 @@ branch mismatch: both repair-IF branches go directly to finalization, but finali
 attempted to parse an absent model repair response. Enhanced validation correctly
 held the result. The manual branch now supports a bounded local wording repair when
 the independent safety screen passes and the only flagged targets are certification
-wording in future-action advice. It changes “exact approved [payment] plan” to
+wording in future-action advice. It changes “approved [payment] plan” (including “exact” and “current” variants) to
 “current [payment] plan”, preserving the instruction to confirm the real plan.
 Historical responses, numeric terms, evidence and classifications cannot be edited
 by this rule. Substantive or unsupported repairs remain held. No AI node was added.
@@ -269,3 +269,7 @@ saved model text is structurally identical to the validated JSONB object. Differ
 values or array positions cannot overwrite the validated object. This prevents the
 same storage-order issue from changing downstream safety prompts after a cached audit.
 Legacy coaching stages are unchanged; model calls and costs remain zero on reuse.
+
+The local wording regression includes all three adjective variants. Both actual
+saved manual failures (1390936 and 1391464) pass corrected compiled finalization
+with all three target edits applied and no additional model request.
