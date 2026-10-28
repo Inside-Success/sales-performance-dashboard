@@ -7,6 +7,7 @@ async function main(){
  if(prior){if(prior.status==='validated'){console.log('Saved '+prior.id);return;}throw Error('Inspect existing request before retry: '+prior.id);}
  if(!process.env.REVIEW_PROVIDER_URL)throw Error('Verified isolated provider URL required');
  const entry=reserve(ledgerPath,request),out=path.join(dir,entry.id+'.json');
+ fs.writeFileSync(path.join(dir,entry.id+'.submitted.request.json'),JSON.stringify(request));
  const update=()=>{const lock=ledgerPath+'.lock',fd=fs.openSync(lock,'wx');try{const rows=JSON.parse(fs.readFileSync(ledgerPath));rows[rows.findIndex(r=>r.id===entry.id)]=entry;fs.writeFileSync(ledgerPath,JSON.stringify(rows,null,2));}finally{fs.closeSync(fd);fs.unlinkSync(lock);}};
  console.log(JSON.stringify({id:entry.id,reserved:entry.reserved}));
  try{

@@ -25,7 +25,7 @@ const run=async(id,name,json,nodes={},extra={})=>{
  assert.equal(reviewed.parsed_json.reviewed_coaching_v2.version,'objection-coaching-v2');
  const flat=reviewed.parsed_json;state.coaching_raw=flat;state.reviewed_coaching_v2=flat.reviewed_coaching_v2;
  const safety=(await run('L8Nn7xncA9ZPDdWA','MM Build Safety Screen Request',{ok:true,parsed_json:{red_flags:[]}}, {'MM Build Compliance Request':{state}})).json;
- fs.writeFileSync(dir+'/safety-'+call.id+'.request.json',JSON.stringify({...safety.provider_request,request_id:'upgrade-'+call.id+'-safety-v7'}));
+ fs.writeFileSync(dir+'/safety-'+call.id+'.request.json',JSON.stringify({...safety.provider_request,request_id:'upgrade-'+call.id+'-safety-v8'}));
  fs.writeFileSync(dir+'/safety-'+call.id+'.prepared.json',JSON.stringify(safety));
  assert.ok(!JSON.stringify(safety.state.coaching_raw).includes('policy_text'));
  const screen={ok:true,request_id:safety.provider_request.request_id,parsed_json:{case_pass:true,unsupported_specifics:[],collisions:[],additional_safety_hits:[]}};
