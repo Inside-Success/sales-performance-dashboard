@@ -27,6 +27,25 @@ function acceptEnhancedAudit(prepared,response,expectedId) {
  const provenance={generation:OBJECTION_VERSION,policy_revision:prepared.state.coaching_policy_revision,policy_hash:prepared.state.coaching_policy_hash,policy_text:prepared.state.coaching_policy_text,writer_model:prepared.generated.model,reviewer_model:response.model,writer_request_id:prepared.generated.request_id,audit_request_id:response.request_id};
  return renderObjectionReport(report,prepared.blocks,'pending',provenance);
 }
+function enhancedSafetyView(record) {
+ assertObjectionReport(record);
+ const {provenance,evidence_times,source_id,...analysis}=record;
+ void provenance;void evidence_times;void source_id;
+ return JSON.parse(JSON.stringify(analysis));
+}
+function finishEnhancedSafety(state,analysis,sourceId) {
+ const original=state.reviewed_coaching_v2;
+ if(!original)throw Error('Enhanced coaching safety hold: missing reviewed report');
+ if((state.repair_targets||[]).some(target=>!(state.repair_rows||[]).some(row=>row.id===target.id&&row.applied)))throw Error('Enhanced coaching safety hold: unapplied repair');
+ if(state.safety_screen_error||state.repair_error)throw Error('Enhanced coaching safety hold: incomplete safety stage');
+ const index=state.coaching_evidence_index;
+ if(!Array.isArray(index)||!index.length)throw Error('Enhanced coaching safety hold: missing evidence index');
+ const validated=assertObjectionReport(normalizeObjectionReport(analysis),index);
+ // Safety may reduce prose, but cannot silently reclassify the call or its buyers.
+ const identity=r=>({version:r.version,offer_family:r.offer_family,evidence_quality:r.evidence_quality,payment:r.outcome?.payment,objections:r.objections?.map(o=>[o.category,o.handling,o.resolution,o.evidence_ids,o.counterevidence_ids]),not_raised:r.not_raised});
+ if(JSON.stringify(identity(validated))!==JSON.stringify(identity(original)))throw Error('Enhanced coaching safety hold: classification changed');
+ return renderObjectionReport(validated,index,String(sourceId||''),{...original.provenance,safety_repaired:!!state.repair_rows?.some(r=>r.applied),safety_reviewed:true});
+}
 function bindEnhancedAfterSafety(record,before,after,sourceId) {
  if(!record)return null;
  if(!sourceId)throw Error('Enhanced coaching source identity missing');
@@ -37,4 +56,4 @@ function bindEnhancedAfterSafety(record,before,after,sourceId) {
  if(fields.some(k=>JSON.stringify(before[k])!==JSON.stringify(after[k])))throw Error('Enhanced coaching safety hold: structured report changed after review');
  return {...record,source_id:String(sourceId)};
 }
-module.exports={enhancedPrepared,validateEnhancedDraft,acceptEnhancedAudit,bindEnhancedAfterSafety};
+module.exports={enhancedSafetyView,finishEnhancedSafety,enhancedPrepared,validateEnhancedDraft,acceptEnhancedAudit,bindEnhancedAfterSafety};

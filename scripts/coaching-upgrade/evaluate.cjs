@@ -14,7 +14,8 @@ function reserve(ledgerPath,request,attempts=2){
   if(ledger.some(x=>x.fingerprint===fingerprint||x.id===request.request_id))throw Error('Request already reserved: inspect saved result before any retry');
   const p=request.pricing;
   // UTF-8 bytes upper-bound tokens conservatively, including protocol overhead.
-  const amount=attempts*((Buffer.byteLength(request.system+request.prompt)+4096)*Math.max(p.cache_write_mtok,p.input_mtok)+request.max_tokens*p.output_mtok)/1e6;
+  const amount=attempts*((Buffer.byteLength(request.system+request.prompt)+4096)*Math.max(p.cache_write_mtok??p.input_mtok,p.input_mtok)+request.max_tokens*p.output_mtok)/1e6;
+  if(!Number.isFinite(amount)||amount<=0)throw Error('Invalid cost reservation');
   const committed=ledger.reduce((s,x)=>s+x.reserved,0);
   if(committed+amount>40)throw Error('USD 40 hard ceiling would be exceeded');
   const row={id:request.request_id,fingerprint,reserved:amount,actual:null,status:'reserved',created_at:new Date().toISOString()};

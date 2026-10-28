@@ -4,7 +4,7 @@ import {OBJECTION_VERSION,OBJECTION_CATEGORIES,objectionErrors,objectionProvider
 import {validProviderResult} from '../../src/lib/provider-checkpoint-policy';
 import {summarizeCoachingInsights,type InsightCall} from '../../src/lib/coaching-insights';
 const require=createRequire(import.meta.url);
-const {validateEnhancedDraft,acceptEnhancedAudit,bindEnhancedAfterSafety}=require('../../scripts/coaching-upgrade/stages.cjs');
+const {validateEnhancedDraft,acceptEnhancedAudit,bindEnhancedAfterSafety,enhancedSafetyView,finishEnhancedSafety}=require('../../scripts/coaching-upgrade/stages.cjs');
 const blocks=[{id:'T0001',timestamp:'00:01:20',text:'Buyer: I need my co-owner to approve this.'},{id:'T0002',timestamp:'00:02:10',text:'Seller: Shall we speak together tomorrow? Buyer: Yes.'}];
 function report(){return {version:'objection-coaching-v2' as const,source_id:'recExample',show:'Example',offer_family:'main_istv',evidence_quality:'sufficient' as const,summary:'Agree a joint conversation with the co-owner.',outcome:{payment:'not_confirmed' as const,summary:'A joint follow-up was agreed; no payment was confirmed.',evidence_ids:['T0002']},objections:[{category:'approval',title:'Co-owner approval needed',concern:'The buyer needs joint approval.',response:'You offered a joint conversation.',handling:'handled_well' as const,resolution:'unresolved' as const,assessment:'The follow-up addresses the decision process; approval remains pending.',recommendation:'',suggested_words:'',evidence_ids:['T0001','T0002'],counterevidence_ids:[]}],no_objections_reason:'',not_raised:Object.keys(OBJECTION_CATEGORIES).filter(k=>!['approval','unclassified'].includes(k)),improvements:[],strengths:[],next_steps:[{kind:'agreed' as const,observation:'Speak with both owners tomorrow.',evidence_ids:['T0002']}]};}
 const response=(parsed_json:unknown,request_id='req')=>({ok:true,stop_reason:'end_turn',parsed_json,request_id,model:'test'});
@@ -41,6 +41,18 @@ describe('objection report evidence and delivery contract',()=>{
   expect(saved.summary).toBe('Ask a direct question and listen.');
   expect(flat.rudys_note).toBe(saved.summary);
   expect(saved.provenance.policy_text).toBe('Keep policy wording properly unchanged.');
+ });
+ it('renders safety repairs consistently without changing classifications or leaking metadata',()=>{
+  const original={...report(),provenance:{policy_text:'Private policy context'}};
+  const analysis=enhancedSafetyView(original);expect(JSON.stringify(analysis)).not.toContain('policy_text');
+  analysis.objections[0].assessment='A supported, safer explanation.';
+  const state={reviewed_coaching_v2:original,coaching_evidence_index:blocks,repair_rows:[{applied:true}]};
+  const result=finishEnhancedSafety(state,analysis,'recExample');
+  expect(result.objections_surfaced).toContain('A supported, safer explanation.');
+  expect(result.reviewed_coaching_v2.objections[0].assessment).toBe('A supported, safer explanation.');
+  expect(result.reviewed_coaching_v2.provenance.safety_repaired).toBe(true);
+  analysis.objections[0].resolution='resolved';expect(()=>finishEnhancedSafety(state,analysis,'recExample')).toThrow('classification changed');
+  expect(()=>finishEnhancedSafety({...state,safety_screen_error:'timeout'},enhancedSafetyView(original),'recExample')).toThrow('incomplete safety');
  });
  it('requires exact request alignment and only one repair for a malformed writer result',()=>{
   const p={prepared:{state:{coaching_version:OBJECTION_VERSION},blocks,provider_request:{request_id:'req'}},provider_request:{request_id:'req-schema-repair'}};

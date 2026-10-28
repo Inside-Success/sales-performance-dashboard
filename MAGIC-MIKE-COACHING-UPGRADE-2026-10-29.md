@@ -109,7 +109,7 @@ Compiled-node verification runs each accepted report through official finalizati
 Slack block rendering, manual finalization, Google Doc rendering and callback.
 It caught a wording-cleanup mismatch on a longer case. The existing deterministic
 wording rules now run before deriving both structured and flat presentation fields;
-a substantive downstream safety edit still holds the report. Provenance and policy
+substantive downstream safety edits must remain aligned with the structured report. Provenance and policy
 text are not scrubbed. No additional model is involved.
 
 Full workflow validation has existing static Code-node return-shape false positives
@@ -117,3 +117,24 @@ Full workflow validation has existing static Code-node return-shape false positi
 these against the post-change result instead of treating existing warnings as a
 new outage or changing unrelated code. All 22 targeted live node parameter sets
 matched their saved baseline before preparing release.
+
+## Safety-stage integration
+
+The existing safety screen and bounded repair now operate on the reviewed structured
+report for this generation. Internal policy/provenance stays outside the screened
+report; the screen receives the same current scoped policy separately. Finalization
+validates repaired prose and renders every output from that one result. Classification,
+resolution, payment status and evidence references cannot silently change in safety
+repair. Missing evidence, invalid/mismatched safety responses and unapplied repairs
+hold delivery. No safety stage or routine AI pass has been added.
+
+Compiled checks include the real safety-request builders, existing repair-target
+mapping and applied sentence repairs. 190 coaching/reliability tests pass. The
+existing provider failure for source recTK6qUzYMLBSCLt reconciles to completed
+report 8716 and its Google document; the failed draft checkpoint is intentionally
+non-reusable, not an undelivered report.
+
+At the pre-release check the shared n8n instance had a large queue of unrelated
+executions. Audit execution 1387726 and isolated safety execution 1387893 were
+accepted but had not started; do not repeat those requests. No production workflow
+has been changed. Resume by inspecting these exact execution IDs and receipts.
