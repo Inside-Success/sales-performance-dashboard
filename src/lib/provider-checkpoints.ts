@@ -1,3 +1,4 @@
+import {objectionProviderStage,objectionProviderErrors} from "./objection-coaching.cjs";
 import "server-only";
 import { createHash, randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
@@ -42,7 +43,7 @@ export async function providerCheckpoint(input: CheckpointInput) {
   if (input.action === "claim") {
     const existing = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='completed'`;
     if (existing[0]) {
-      const result = {...existing[0].result};
+      const result = {...existing[0].result,call_purpose:input.stage};
       if (coachingStage(input.stage)) {
         result.call_purpose=input.stage;
         result.parsed_json=normalizeCoaching(result.parsed_json);
@@ -75,7 +76,7 @@ export async function providerCheckpoint(input: CheckpointInput) {
     if (claimed.length) return { status: "acquired", token };
     const rows = await sql`select status,result,lease_until,next_attempt_at from coaching_provider_checkpoints where checkpoint_key=${key}`;
     const row = rows[0];
-    if (row?.status === "completed") return { status: "cached", result: row.result };
+    if (row?.status === "completed" && validProviderResult({...row.result,call_purpose:input.stage})) return { status: "cached", result: {...row.result,call_purpose:input.stage} };
     return { status: "deferred", retry_at: row?.status === "running" ? row.lease_until : row?.next_attempt_at };
   }
   if (input.action === "complete") {
@@ -85,10 +86,10 @@ export async function providerCheckpoint(input: CheckpointInput) {
       normalized.model_text=JSON.stringify(normalized.parsed_json);
       normalized.contract_revision=CONTRACT_REVISION;
     }
-    if (coachingStage(input.stage) && !validProviderResult(normalized) && validProviderResult({...normalized,call_purpose:undefined})) {
+    if ((coachingStage(input.stage)||objectionProviderStage(input.stage)) && !validProviderResult(normalized) && validProviderResult({...normalized,call_purpose:undefined})) {
       // Parsed coaching must reach the existing bounded targeted repair. It must
       // not become a completed/reusable provider checkpoint before that repair.
-      const reason='Invalid coaching contract: '+coachingContractErrors(normalized.parsed_json).join('; ');
+      const reason='Invalid coaching contract: '+(objectionProviderStage(input.stage)?objectionProviderErrors(input.stage,normalized.parsed_json):coachingContractErrors(normalized.parsed_json)).join('; ');
       const rejected={...normalized};delete rejected.raw_response;
       const rows=await sql`update coaching_provider_checkpoints set status='failed',result=${JSON.stringify(rejected)}::jsonb,
         last_error=${reason},next_attempt_at=now(),updated_at=now()

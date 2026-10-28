@@ -1,3 +1,4 @@
+import {objectionProviderErrors} from "./objection-coaching.cjs";
 import { z } from "zod";
 import { coachingStage, normalizeCoaching, coachingContractErrors, failureDecision } from "./coaching-reliability-policy.mjs";
 
@@ -19,7 +20,7 @@ export function validProviderResult(result: Record<string, unknown>) {
   const valid = result.ok === true && !result.parse_error && result.parsed_json !== null &&
     typeof result.parsed_json === "object" && !Array.isArray(result.parsed_json) &&
     !["max_tokens", "refusal", "length"].includes(String(result.stop_reason));
-  return valid && (!coachingStage(String(result.call_purpose)) || coachingContractErrors(normalizeCoaching(result.parsed_json)).length === 0);
+  return valid && objectionProviderErrors(String(result.call_purpose),result.parsed_json).length === 0 && (!coachingStage(String(result.call_purpose)) || coachingContractErrors(normalizeCoaching(result.parsed_json)).length === 0);
 }
 
 export function retryableProviderFailure(message: string) {

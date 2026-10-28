@@ -1,4 +1,5 @@
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
+import { OBJECTION_VERSION, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { z } from "zod";
 import { resolveCloseSection } from "@/lib/close-section";
 import { normalizeStringList } from "@/lib/list-format";
@@ -139,6 +140,9 @@ export function normalizeManualCallback(raw: unknown) {
 
   if (parsed.reviewed_coaching_v1 !== undefined) {
     parsed.reviewed_coaching_v1 = readReviewedCoaching(parsed, parsed.public_id) || null;
+  }
+  if (parsed.status === "completed" && parsed.coaching_version === OBJECTION_VERSION && !readObjectionCoaching(parsed, parsed.public_id)) {
+    throw new Error("Enhanced report is missing valid source-aligned coaching");
   }
   const whatWentWell = normalizeStringList(parsed.what_went_well);
   const whatToImprove = normalizeStringList(parsed.what_to_improve);

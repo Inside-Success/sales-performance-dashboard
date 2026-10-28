@@ -45,3 +45,4 @@ next-env.d.ts
 
 # Private experiment inputs and provider receipts
 /.private-review/
+/.private-upgrade/

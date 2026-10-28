@@ -1,5 +1,5 @@
 // Generation identity avoids mislabeling delayed or in-flight reports at cutover.
-export const ENHANCED_COACHING_VERSION = "magic-mike-call2-coaching-2026-09-08";
+export const ENHANCED_COACHING_VERSION = "magic-mike-objection-coaching-2026-10-29";
 
 export type ReportVersion = "legacy" | "enhanced";
 

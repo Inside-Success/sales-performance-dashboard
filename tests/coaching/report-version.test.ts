@@ -7,7 +7,7 @@ describe("coaching generation labels", () => {
     expect(isEnhancedReport(ENHANCED_COACHING_VERSION)).toBe(true);
   });
   it("keeps old, missing, malformed and unknown generation markers Legacy", () => {
-    for (const marker of [undefined, null, "", "magic-mike-manual-candidate-2026-06-17", "2026-09-09T12:00:00Z", {}, true, "future-unverified-version"]) {
+    for (const marker of [undefined, null, "", "magic-mike-call2-coaching-2026-09-08", "magic-mike-manual-candidate-2026-06-17", "2026-09-09T12:00:00Z", {}, true, "future-unverified-version"]) {
       expect(getReportVersion(marker)).toBe("legacy");
       expect(isEnhancedReport(marker)).toBe(false);
     }

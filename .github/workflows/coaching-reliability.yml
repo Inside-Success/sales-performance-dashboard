@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - 'scripts/n8n/**'
+      - 'scripts/coaching-upgrade/**'
+      - 'src/lib/objection-coaching*'
+      - 'src/lib/report-version.ts'
+      - 'src/lib/report-chat.ts'
+      - 'src/app/manager/coaching-insights/**'
       - 'src/lib/coaching-*.ts'
       - 'src/lib/coaching-*.mjs'
       - 'src/lib/provider-checkpoint*'

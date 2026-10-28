@@ -1,4 +1,5 @@
 import { resolveCloseSection } from "@/lib/close-section";
+import { readObjectionCoaching, objectionSections } from "@/lib/objection-coaching.cjs";
 import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
 import { realityCoachingReference, resolveCoachingOfferFamily } from "@/lib/coaching-offer-context.cjs";
 import type { JsonObject, ManualFeedbackReport, PerformanceCall } from "@/lib/types";
@@ -122,7 +123,7 @@ export function buildReportChatMessages(
     transcriptText,
     sourcePayload: call.source_payload,
   });
-  return buildMessages(buildReportContext(call, transcriptText), history, offer.family);
+  return buildMessages(buildReportContext(call, transcriptText), history, offer.family, readObjectionCoaching(call.source_payload, String(call.source_payload?.source_airtable_record_id||""))?.provenance?.policy_text);
 }
 
 export function buildManualReportChatMessages(
@@ -134,11 +135,14 @@ export function buildManualReportChatMessages(
     transcriptText,
     sourcePayload: report.source_payload,
   });
-  return buildMessages(buildManualReportContext(report, transcriptText), history, offer.family);
+  return buildMessages(buildManualReportContext(report, transcriptText), history, offer.family, readObjectionCoaching(report.source_payload, report.public_id)?.provenance?.policy_text);
 }
 
-function buildMessages(reportContext: string, history: ReportChatMessage[], offerFamily: string) {
-  const realityInstructions = offerFamily === "reality" ? [
+function buildMessages(reportContext: string, history: ReportChatMessage[], offerFamily: string, savedPolicy?: unknown) {
+  const realityInstructions = typeof savedPolicy === "string" && savedPolicy ? [
+    "The following approved policy snapshot was used when this report was generated. It constrains coaching advice but does not establish present-day terms. Do not use a historical call or this snapshot to assert a current price or policy. Keep policy judgments out of coaching.",
+    savedPolicy,
+  ] : offerFamily === "reality" ? [
     "For what happened on this call, use only the supplied coaching report fields and transcript. For a question about the current reality offer, use the reference below and clearly distinguish it from what was said on this call. If the reference does not answer the question, say so; never treat a historical transcript amount as current policy.",
     realityCoachingReference(),
   ] : [];
@@ -179,6 +183,8 @@ function buildMessages(reportContext: string, history: ReportChatMessage[], offe
 }
 
 function buildReportContext(call: PerformanceCall, transcriptText: string) {
+  const enhanced=readObjectionCoaching(call.source_payload, String(call.source_payload?.source_airtable_record_id||""));
+  if(enhanced)return "Opened official coaching report " + call.id + "\nRep: " + call.rep_name + "\nClient: " + call.client_name + "\nCall date: " + call.call_date + "\n" + objectionSections(enhanced).map(s=>s.title+"\n"+s.items.join("\n\n")).join("\n\n") + "\nHandling quality, resolution and payment are independent. Agreed next steps differ from recommended steps.\nMandatory transcript text:\n"+transcriptText;
   const closeSection = resolveCloseSection({
     whyNoClose: call.why_no_close,
     closeWorks: call.what_made_this_close_work,
@@ -217,6 +223,8 @@ function buildReportContext(call: PerformanceCall, transcriptText: string) {
 }
 
 function buildManualReportContext(report: ManualFeedbackReport, transcriptText: string) {
+  const enhanced=readObjectionCoaching(report.source_payload,report.public_id);
+  if(enhanced)return "Opened self-submitted coaching report " + report.public_id + "\nRep: " + report.rep_name + "\nClient: " + report.client_name + "\n" + objectionSections(enhanced).map(s=>s.title+"\n"+s.items.join("\n\n")).join("\n\n") + "\nHandling quality, resolution and payment are independent. Agreed next steps differ from recommended steps.\nMandatory transcript text:\n"+transcriptText;
   const closeSection = resolveCloseSection({
     whyNoClose: report.why_no_close,
     closeWorks: report.what_made_this_close_work,

@@ -31,6 +31,17 @@ export default async function CoachingInsightsPage({ searchParams }: { searchPar
       <button className="min-h-11 rounded-xl bg-[#c43132] px-6 font-semibold text-white shadow-sm transition-colors hover:bg-[#a9292a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" type="submit">Apply filters</button>
     </form>
     {unavailable ? <div role="alert" className="magic-card border-red-200 p-6 text-red-800">Coaching insights could not be loaded. Please try again. Missing data is not shown as zero.</div> : <>
+    <section className="magic-card p-5 md:p-6" aria-label="Enhanced report objections">
+      <h2 className="text-xl font-bold text-slate-950">Enhanced report objections</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{data.enhanced.total} reports · {data.enhanced.objections} distinct objections · {data.enhanced.noObjections} calls with no objections identified{data.enhanced.limited ? ` · ${data.enhanced.limited} calls with limited evidence` : ""}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-500">Each category counts a call once; a call can contain several categories. Handling and resolution are separate. These figures do not establish why a deal closed.</p>
+      {data.enhanced.total ? <div className="mt-4 space-y-3">{data.enhanced.categories.map(row=><details key={row.key} className="rounded-xl border border-slate-200 p-4">
+        <summary className="cursor-pointer font-semibold text-slate-900">{row.label}<span className="mt-1 block text-sm font-normal text-slate-600">{row.calls.length} of {data.enhanced.total} calls ({Math.round(row.calls.length/data.enhanced.total*100)}%) · {row.objections} objections</span></summary>
+        <p className="mt-3 text-sm leading-6 text-slate-600">Handling: {row.handledWell} well · {row.needsImprovement} could improve · {row.handlingUnclear} insufficient evidence.<br/>Resolution: {row.resolved} resolved · {row.partlyResolved} partly resolved · {row.unresolved} unresolved · {row.resolutionUnclear} unclear.</p>
+        <ul className="mt-4 max-h-96 space-y-3 overflow-y-auto">{row.calls.map(({call,evidence})=><li key={call.report_type+call.id} className="border-t border-slate-100 pt-3"><Link className="font-semibold text-red-700 hover:underline" href={call.report_type==='official'?`/call/${call.id}`:`/self-report/${call.id}`}>{call.rep_name} · {call.client_name||'Call report'}</Link><p className="mt-1 text-sm leading-6 text-slate-600">{evidence}</p></li>)}</ul>
+      </details>)}</div> : <p className="mt-4 text-sm text-slate-600">No Enhanced reports in this selection yet. Earlier reports remain available below.</p>}
+    </section>
+    <details className="magic-card p-5"><summary className="cursor-pointer text-lg font-semibold">Legacy report themes · {data.total} reports</summary><div className="mt-5 space-y-5">
     <div className="grid gap-4 sm:grid-cols-3">{[[data.total,"Completed coaching reports"],[data.withImprovements,"Reports with coaching actions"],[data.topics.length,"Concern themes mentioned"]].map(([value,label])=><div className="magic-card p-5" key={label}><p className="text-sm font-medium text-slate-600">{label}</p><p className="mt-2 text-3xl font-bold tabular-nums text-slate-950">{value}</p></div>)}</div>
     <p className="text-sm leading-6 text-slate-500">The total is existing completed reports in this period; no new review of these calls was run. Themes count saved report mentions, once per report. A resolved concern can still be mentioned. These counts do not show unresolved blockers, lost sales or rep mistakes.</p>
     {data.total === 0 ? <section className="magic-card p-8 text-center"><h2 className="text-xl font-bold">No completed reports in this selection</h2><p className="mt-2 text-slate-600">Try another period or choose all reps.</p></section> : <div className="grid items-start gap-6 lg:grid-cols-2">
@@ -38,6 +49,7 @@ export default async function CoachingInsightsPage({ searchParams }: { searchPar
       <ThemeList title="Where to focus coaching" description="Themes in the report’s recommended improvements." rows={data.training} total={data.total} />
     </div>}
     <p className="text-xs leading-5 text-slate-500">Based on available completed reports, not every recorded meeting. {data.structured} of {data.total} reports include the new structured coaching record; older reports use their saved text. Theme matching uses the saved observations and can miss synonyms or context. {data.unmatchedConcerns} reports are grouped under Other reported concerns because they do not match the six defined themes. Verify the examples before deciding on training.</p>
+    </div></details>
     </>}
   </div></main>;
 }
