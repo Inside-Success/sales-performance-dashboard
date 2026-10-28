@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Explicit isolated paid evaluation. Never writes production reports or sends Slack.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {MODELS,coachingSystem,writerPrompt,reviewerPrompt,POLICY_REVISION}=require('./prompts.cjs');

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Isolated, resumable evaluation. Bounded repair mirrors the existing production stage.
 const {spawnSync}=require('node:child_process');
 const fs=require('node:fs');

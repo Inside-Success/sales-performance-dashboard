@@ -59,7 +59,7 @@ from passing tests alone. Rollback stops new generation without erasing history.
 
 ## Spend and current progress
 
-Paid evaluation remains in progress. Recorded provider-receipt cost so far: USD 3.7284. The private ledger reserves conservative upper bounds, including possible unobserved retries, before every request. This is computed from provider usage and configured rates, not a billing invoice.
+Paid evaluation remains in progress. Recorded provider-receipt cost so far: USD 6.7328. The private ledger reserves conservative upper bounds, including possible unobserved retries, before every request. This is computed from provider usage and configured rates, not a billing invoice.
 Original pilot spend belongs to a different run and is not reused as this ledger.
 Current error-list reads returned no retained error executions for official,
 manual and reliability workflows; this is a retention/coverage limit, not proof
@@ -97,3 +97,23 @@ snapshots, leaving backward-compatible readers in place for already-generated
 Enhanced reports. Do not erase completed reports or replay delivery. Restore any
 changed shared provider/audit code only after checking in-flight generation;
 old and new branches must coexist while new-generation runs remain in flight.
+
+## Resumed evaluation and compatibility fixes
+
+The client interruption did not erase saved work. Completed benchmark results were
+recovered by exact request ID from server executions after HTTP 524 responses;
+these requests were not repeated. The isolated webhook response deadline differs
+from the production native workflow handoff (300-second provider HTTP timeout).
+
+Compiled-node verification runs each accepted report through official finalization,
+Slack block rendering, manual finalization, Google Doc rendering and callback.
+It caught a wording-cleanup mismatch on a longer case. The existing deterministic
+wording rules now run before deriving both structured and flat presentation fields;
+a substantive downstream safety edit still holds the report. Provenance and policy
+text are not scrubbed. No additional model is involved.
+
+Full workflow validation has existing static Code-node return-shape false positives
+(eight official, two provider); baseline connection validation is clean. Compare
+these against the post-change result instead of treating existing warnings as a
+new outage or changing unrelated code. All 22 targeted live node parameter sets
+matched their saved baseline before preparing release.

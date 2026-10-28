@@ -85,7 +85,7 @@ function objectionProviderErrors(stage,value) {
  const errors=[];
  if(value.pass&&(value.findings.length||value.corrected_report!==null))errors.push('Conflicting audit verdict');
  if(!value.pass){if(!value.findings.length)errors.push('Missing audit findings');errors.push(...objectionErrors(normalizeObjectionReport(value.corrected_report)));}
- for(const f of value.findings)if(!f||typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||!f.evidence_ids.length||f.evidence_ids.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id)))errors.push('Invalid audit finding');
+ for(const f of value.findings)if(!f||typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||f.evidence_ids.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id)))errors.push('Invalid audit finding');
  return errors;
 }
 
@@ -112,10 +112,40 @@ function objectionSections(r, blocks=[]) {
   ].filter(s=>s.items.length);
 }
 
+function cleanObjectionProse(text) {
+  const before = String(text || "");
+  let after = before
+    .replace(/\bClean and forward-moving\./g, "Forward-moving.")
+    .replace(/\bclean and forward-moving\b/gi, "forward-moving")
+    .replace(/\bclean workaround\b/gi, "practical workaround")
+    .replace(/\bclean decision\b/gi, "clear decision")
+    .replace(/\bclean question\b/gi, "direct question")
+    .replace(/\bclean line\b/gi, "direct line")
+    .replace(/\bclean ask\b/gi, "direct ask")
+    .replace(/\bcleanly\b/gi, "")
+    .replace(/\bcorrectly\b/gi, "")
+    .replace(/\bproperly\b/gi, "")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+  after = after.replace(/\bclean\b/gi, "clear").replace(/[ \t]{2,}/g, " ").trim();
+  return after;
+}
+
+// Match the established deterministic wording cleanup before deriving any display
+// fields. Taxonomy, identifiers, evidence and policy provenance are untouched.
+function cleanObjectionReport(record) {
+ const prose=new Set(['summary','title','concern','response','assessment','recommendation','suggested_words','no_objections_reason','observation','why_it_matters','action']);
+ const visit=value=>Array.isArray(value)?value.map(visit):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([k,v])=>[k,prose.has(k)&&typeof v==='string'?cleanObjectionProse(v):visit(v)])):value;
+ return visit(record);
+}
+
 function renderObjectionReport(r,blocks,sourceId,provenance={}) {
   assertObjectionReport(r,blocks);
   if(r.status==='refused')return {status:'refused',call_status:r.call_status,refusal_reason:r.refusal_reason};
   if(typeof sourceId!=='string'||!sourceId)throw Error('Missing coaching source identity');
+  r=cleanObjectionReport(r);
+  assertObjectionReport(r,blocks);
   const evidence_times=Object.fromEntries(blocks.filter(b=>b.timestamp).map(b=>[b.id,b.timestamp]));
   const saved={...r,source_id:sourceId,evidence_times,provenance};
   const sections=objectionSections(saved,blocks), section=k=>sections.find(s=>s.key===k)?.items.join('\n\n')||'';

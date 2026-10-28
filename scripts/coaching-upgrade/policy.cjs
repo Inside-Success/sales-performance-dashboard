@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Deterministic selection from the governed FAQ corpus. No model retrieval pass.
 const knowledge=require('../../src/lib/ask-sales-faq/revamp/knowledge-additions.json');
 const SOURCE_IDS=[

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Build scoped Code-node changes from private live snapshots. Never deploys.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {coachingSystem,writerPrompt,reviewerPrompt,MODELS,POLICY_REVISION}=require('./prompts.cjs');
@@ -29,7 +30,7 @@ if(enhancedPrepared(ep)){
  const analysis=${manual?'normalizeObjectionReport(generated.parsed_json)':'assertObjectionReport(normalizeObjectionReport(generated.parsed_json),ep.blocks)'};
  if(!analysis||typeof analysis!=='object')throw Error('Missing coaching draft');
  if(analysis.status==='refused'){assertObjectionReport(analysis,ep.blocks);${manual?`return {json:{...ep.state.input,state:ep.state,manual_parsed:renderObjectionReport(analysis,ep.blocks,'pending'),skip_safety:true}};`:`throw Error('Unexpected coaching exclusion at audit');`}}
- return {json:{...ep,generated,analysis,skip_safety:false,provider_request:{...ep.provider_request,...${JSON.stringify(MODELS[reviewer])},request_id:ep.provider_request.request_id+'-audit',call_purpose:'objection_v2_audit',prompt:reviewerPrompt(ep.state.coaching_evidence_metadata||{},ep.blocks,analysis)+'\\nContract errors to correct: '+JSON.stringify(objectionErrors(analysis,ep.blocks))}}};
+ return {json:{...ep,generated,analysis,skip_safety:false,provider_request:{...ep.provider_request,...${JSON.stringify(MODELS[reviewer])},request_id:ep.provider_request.request_id+'-audit',call_purpose:'objection_v2_audit',prompt:reviewerPrompt(ep.state.coaching_evidence_metadata||{},ep.blocks,analysis)+(objectionErrors(analysis,ep.blocks).length?'\\nContract errors to correct: '+JSON.stringify(objectionErrors(analysis,ep.blocks)):'')}}};
 }
 ${original}`;}
 function renderAudit(original,manual,repaired){return embedded+`\nconst ep=$(${JSON.stringify(manual?'MM Manual Build Factual Audit':'Build Factual Audit')}).item.json;
@@ -59,12 +60,18 @@ function build(baselines,{writer='claude-sonnet-5-5',reviewer='claude-opus-5-5'}
    op.updates['parameters.jsCode']=replaceOnce(op.updates['parameters.jsCode'],'const scrubbed = dedupeRepeatedSentencesText(scrubSafetyLanguageText(before));','const scrubbed = state.coaching_version===OBJECTION_VERSION?scrubSafetyLanguageText(before):dedupeRepeatedSentencesText(scrubSafetyLanguageText(before));');
  }
  // Preserve exact reviewed content through every delivery surface.
- edit(manual,'Parse AI Output',s=>replaceOnce(s,'reviewed_coaching_v1: parsed.reviewed_coaching_v1 || null,','reviewed_coaching_v1: parsed.reviewed_coaching_v1 || null, reviewed_coaching_v2: parsed.reviewed_coaching_v2 || null, coaching_version: first.coaching_version || null,'));
+ edit(manual,'Parse AI Output',s=>`let upgraded=false;try{upgraded=$('MM Manual Build Structured Coaching').item.json.state?.coaching_version===${JSON.stringify(OBJECTION_VERSION)};}catch{}\nif(upgraded&&$json.error)throw Error('Enhanced coaching safety hold: '+JSON.stringify($json.error));\n`+replaceOnce(s,'reviewed_coaching_v1: parsed.reviewed_coaching_v1 || null,','reviewed_coaching_v1: parsed.reviewed_coaching_v1 || null, reviewed_coaching_v2: parsed.reviewed_coaching_v2 || null, coaching_version: first.coaching_version || null,'));
  edit(manual,'Build Complete Callback',s=>replaceOnce(s,'reviewed_coaching_v1: report.reviewed_coaching_v1 || null,','reviewed_coaching_v1: report.reviewed_coaching_v1 || null, reviewed_coaching_v2: report.reviewed_coaching_v2 || null,'));
  for(const [id,name] of [[official,'Build PDF HTML'],[manual,'Build Google Doc']])edit(id,name,s=>{
    let code=replaceOnce(s,'function coachingSections(report){',`function coachingSections(report){\n if(report.reviewed_coaching_v2)return objectionSections(report.reviewed_coaching_v2);`);
    if(id===official)code=replaceOnce(code,"const report={reviewed_coaching_v1:","const report={reviewed_coaching_v2:$('Performance Agent').itemMatching(0).json.reviewed_coaching_v2||null,reviewed_coaching_v1:");
    code=replaceOnce(code,"text:'Call Coaching Report'","text:'Call Coaching Report — '+(report.reviewed_coaching_v2?'Enhanced':'Legacy')");
+   return runtime+'\n'+code;
+ });
+ edit(official,'Code in JavaScript',s=>{
+   let code=replaceOnce(s,"function coachingSections(report, { splitClosingLabels = true } = {}) {","function coachingSections(report, { splitClosingLabels = true } = {}) {\n if(report.reviewed_coaching_v2)return objectionSections(report.reviewed_coaching_v2);");
+   code=replaceOnce(code,"const report={...output.airtable?.scorecard_record,","const report={reviewed_coaching_v2:$('Performance Agent').itemMatching(0).json.reviewed_coaching_v2||null,...output.airtable?.scorecard_record,");
+   code=replaceOnce(code,"('Call coaching · '+rep)","('Call coaching · '+(report.reviewed_coaching_v2?'Enhanced':'Legacy')+' · '+rep)");
    return runtime+'\n'+code;
  });
  const durable='X9L4JtDbpkSCflxZ';

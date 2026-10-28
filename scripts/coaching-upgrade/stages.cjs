@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Pure stage adapters: replace existing writer/reviewer work, never add AI passes.
-const {OBJECTION_VERSION,OBJECTION_SCHEMA_VERSION,objectionErrors,normalizeObjectionReport,assertObjectionReport,renderObjectionReport}=require('../../src/lib/objection-coaching.cjs');
+const {OBJECTION_VERSION,objectionErrors,normalizeObjectionReport,assertObjectionReport,renderObjectionReport}=require('../../src/lib/objection-coaching.cjs');
 function enhancedPrepared(p){return p?.state?.coaching_version===OBJECTION_VERSION;}
 function validateEnhancedDraft(p,generated,repaired=false) {
  const expected=repaired?p.provider_request.request_id:p.prepared.provider_request.request_id;
@@ -18,7 +19,7 @@ function acceptEnhancedAudit(prepared,response,expectedId) {
  if(response.ok===false||['length','max_tokens'].includes(response.stop_reason))throw Error('Coaching audit generation failed');
  const audit=response.parsed_json,known=new Set(prepared.blocks.map(b=>b.id));
  if(typeof audit?.pass!=='boolean'||!Array.isArray(audit.findings))throw Error('Incomplete factual audit');
- for(const f of audit.findings)if(typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||!f.evidence_ids.length||f.evidence_ids.some(id=>!known.has(id)))throw Error('Invalid coaching audit evidence');
+ for(const f of audit.findings)if(typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||f.evidence_ids.some(id=>!known.has(id)))throw Error('Invalid coaching audit evidence');
  if(audit.pass && (audit.findings.length||audit.corrected_report!==null))throw Error('Conflicting coaching audit verdict');
  if(!audit.pass && !audit.findings.length)throw Error('Correction requires explicit findings');
  const report=assertObjectionReport(normalizeObjectionReport(audit.pass?prepared.analysis:audit.corrected_report),prepared.blocks);

@@ -34,6 +34,14 @@ describe('objection report evidence and delivery contract',()=>{
   expect(bindEnhancedAfterSafety(flat.reviewed_coaching_v2,flat,{...flat},'recExample').source_id).toBe('recExample');
   expect(()=>bindEnhancedAfterSafety(flat.reviewed_coaching_v2,flat,{...flat,coaching_tip:'Safety replacement'},'recExample')).toThrow('safety hold');
  });
+ it('keeps deterministic wording cleanup consistent across structured and flat content',()=>{
+  const r=report();r.summary='Ask a clean question and listen properly.';
+  const flat=renderObjectionReport(r,blocks,'recExample',{policy_text:'Keep policy wording properly unchanged.'});
+  const saved=flat.reviewed_coaching_v2 as {summary:string;provenance:{policy_text:string}};
+  expect(saved.summary).toBe('Ask a direct question and listen.');
+  expect(flat.rudys_note).toBe(saved.summary);
+  expect(saved.provenance.policy_text).toBe('Keep policy wording properly unchanged.');
+ });
  it('requires exact request alignment and only one repair for a malformed writer result',()=>{
   const p={prepared:{state:{coaching_version:OBJECTION_VERSION},blocks,provider_request:{request_id:'req'}},provider_request:{request_id:'req-schema-repair'}};
   expect(()=>validateEnhancedDraft(p,response(report(),'wrong'))).toThrow('alignment');

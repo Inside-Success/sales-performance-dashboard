@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS is embedded in n8n Code nodes and run directly by Node. */
 // Execute candidate Code nodes against saved isolated evidence, without network.
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const {transcriptBlocks}=require('../coaching-release/structured-coaching.cjs');
-const {normalizeObjectionReport,renderObjectionReport,OBJECTION_VERSION}=require('../../src/lib/objection-coaching.cjs');
+const {OBJECTION_VERSION}=require('../../src/lib/objection-coaching.cjs');
 const dir=process.argv[2],inputs=process.argv[3];
 if(!dir||!inputs)throw Error('Private snapshots and evaluation input file required');
 const ops=JSON.parse(fs.readFileSync(dir+'/candidate-operations.json'));
@@ -12,9 +13,8 @@ const run=async(id,name,json,nodes={},extra={})=>{
  return new (Object.getPrototypeOf(async function(){}).constructor)('$json','$','$input',...Object.keys(extra),code)(json,$,$input,...Object.values(extra));
 };
 (async()=>{
- const calls=JSON.parse(fs.readFileSync(inputs));const call=calls.find(c=>String(c.id)==='8212');const blocks=transcriptBlocks(call.transcript);
- const saved=JSON.parse(fs.readFileSync(dir+'/upgrade-8212-review-claude-opus-5-5-v6.json'));
- const draft=normalizeObjectionReport(saved.parsed_json.corrected_report||JSON.parse(fs.readFileSync(dir+'/upgrade-8212-write-claude-sonnet-5-5-v6.json')).parsed_json);
+ const calls=JSON.parse(fs.readFileSync(inputs));for(const call of calls.filter(c=>fs.existsSync(dir+'/final-'+c.id+'-v7.json'))){const blocks=transcriptBlocks(call.transcript);
+ const draft=JSON.parse(fs.readFileSync(dir+'/final-'+call.id+'-v7.json')).reviewed_coaching_v2;
  const generated={ok:true,stop_reason:'end_turn',request_id:'test-writer',parsed_json:draft,model:'test',costs:{total_cost_usd:0},usage:{input_tokens:0}};
  const state={case_id:'recTest',coaching_version:OBJECTION_VERSION,coaching_policy_revision:'test',coaching_policy_text:'Test policy',coaching_model:'test',provider_results:[],gate_output:{call_status:'scored'},selectedCard:{fact_card_id:'main_istv'},caseItem:{case_id:'recTest',metadata:{airtable_record_id:'recTest',rep_name:'Test',client_name:'Buyer'},source:{'Source Airtable Record ID':'recTest'},cleaned_transcript:call.transcript}};
  const prepared={state,blocks,provider_request:{request_id:'test-writer',system:'test'}};
@@ -26,6 +26,9 @@ const run=async(id,name,json,nodes={},extra={})=>{
  const flat=reviewed.parsed_json;state.coaching_raw=flat;state.reviewed_coaching_v2=flat.reviewed_coaching_v2;
  const final=(await run('L8Nn7xncA9ZPDdWA','Performance Agent',{state})).json;
  assert.equal(final.reviewed_coaching_v2.source_id,'recTest');assert.equal(final.agent_version,OBJECTION_VERSION);
+ const slack=(await run('L8Nn7xncA9ZPDdWA','Code in JavaScript',{'Sales Rep':'Test','Client Name':'Buyer'}, {'Performance Agent':final,'If':{}}))[0].json;
+ assert.ok(JSON.parse(slack.top_level_payload).blocks[0].text.text.includes('Enhanced'));
+ assert.ok(slack.thread_payload.includes('Objections and responses'));
  const cached=(await run('X9L4JtDbpkSCflxZ','Restore Cached Result',{call_purpose:'objection_v2_writer',request_id:'new-request',checkpoint:{result:generated}},{'Validate Claim':{call_purpose:'objection_v2_writer',checkpoint:{result:generated}}}))[0].json;
  assert.equal(cached.request_id,'new-request');assert.equal(cached.costs.total_cost_usd,0);assert.equal(cached.checkpoint_reused,true);
  const invalid={...generated,parsed_json:{version:'objection-coaching-v2'}};
@@ -36,12 +39,14 @@ const run=async(id,name,json,nodes={},extra={})=>{
  const manualAuditPrepared=(await run('BMRrGxHyXMcgO6j3','MM Manual Build Factual Audit',generated,{'MM Manual Build Structured Coaching':manualPrepared})).json;
  const manualReviewed=(await run('BMRrGxHyXMcgO6j3','MM Manual Render Audited Coaching',{...audit,request_id:manualAuditPrepared.provider_request.request_id},{'MM Manual Build Factual Audit':manualAuditPrepared})).json;
  const manualFinal=(await run('BMRrGxHyXMcgO6j3','MM Manual Finalize Coaching',manualReviewed)).json;
- const manualParsed=(await run('BMRrGxHyXMcgO6j3','Parse AI Output',manualFinal,{'Build AI Prompt':manualInput}))[0].json;
+ const manualParsed=(await run('BMRrGxHyXMcgO6j3','Parse AI Output',manualFinal,{'Build AI Prompt':manualInput,'MM Manual Build Structured Coaching':manualPrepared}))[0].json;
  assert.equal(manualParsed.reviewed_coaching_v2.source_id,'manual-test');assert.equal(manualParsed.coaching_version,OBJECTION_VERSION);
  const doc=(await run('BMRrGxHyXMcgO6j3','Build Google Doc',manualParsed))[0].json;
  assert.ok(doc.doc_text.includes('Enhanced'));assert.ok(doc.doc_text.includes('Objections and responses'));assert.ok(!doc.doc_text.includes('not_raised'));
  const callback=(await run('BMRrGxHyXMcgO6j3','Build Complete Callback',{}, {'Build Google Doc':doc,'Create Google Doc':{id:'doc-test'}}))[0].json;
  assert.equal(callback.coaching_version,OBJECTION_VERSION);assert.equal(callback.reviewed_coaching_v2.source_id,'manual-test');
+ console.log('Passed compiled handoffs for case '+call.id);
+ }
  console.log('Compiled manual audit, safety binding, parse, Google Doc and callback handoffs passed.');
  console.log('Compiled official validation, audit, final safety binding, cache reuse and malformed-draft handoff passed.');
 })().catch(e=>{console.error(e.stack);process.exitCode=1;});
