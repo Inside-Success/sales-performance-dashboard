@@ -57,7 +57,8 @@ export function coveragePlan(scan, receipts) {
   const bySource=new Map(receipts.map(row=>[row.source_id,row]));
   const reported=new Set(scan.reported||[]);
   const delivered=new Set(scan.delivered_ids||[]);
-  const missing=scan.source_ids.filter(id=>!delivered.has(id)&&bySource.get(id)?.status!=='excluded');
+  const excludedAliases=new Set((scan.source_aliases||[]).filter(a=>bySource.get(a.canonical_source_id)?.status==='excluded').map(a=>a.source_id));
+  const missing=scan.source_ids.filter(id=>!delivered.has(id)&&bySource.get(id)?.status!=='excluded'&&!excludedAliases.has(id));
   // Queued/processing are unresolved, not success. Alert only when stale, or held for review.
   const attention=missing.filter(id=>{
     const row=bySource.get(id);

@@ -52,11 +52,13 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
     const start=new Date(Date.parse(end)-14*86400000).toISOString();
     let offset=claimed.offset;
     const ids:string[]=[];
+    const identities=new Map<string,string>();
     let checked=0;
     const deadline=Date.now()+45000;
     for(let page=0;page<5;page++) {
       const params=new URLSearchParams({pageSize:'100',filterByFormula:`AND({Processing Status}='Processed',{Call #}='Call 2+',{Meeting Transcript Link}!='',NOT(IS_BEFORE(IF({Ingested At},{Ingested At},CREATED_TIME()),DATETIME_PARSE('${start}'))),IS_BEFORE(IF({Ingested At},{Ingested At},CREATED_TIME()),DATETIME_PARSE('${end}')))`});
       params.append('fields[]','Call #');
+      params.append('fields[]','Automation Key');
       params.append('fields[]','AI Decision Reason');
       if(offset) params.set('offset',offset);
       const response=await readAirtablePage(`https://api.airtable.com/v0/${base}/${table}?${params}`,access,deadline);
@@ -66,6 +68,10 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
       }
       const data=await response.json();
       if(!Array.isArray(data.records)||data.records.some((r:{id?:string})=>!/^rec[A-Za-z0-9]+$/.test(r.id||''))) throw Error('Invalid coverage page');
+      for(const record of data.records) {
+        const identity=record.fields?.['Automation Key'];
+        if(typeof identity==='string' && identity.trim())identities.set(record.id,identity.trim());
+      }
       checked+=data.records.length;ids.push(...data.records.filter((r:{fields?:Record<string,unknown>})=>!coverageIntakeExclusion(r.fields?.['AI Decision Reason'])).map((r:{id:string})=>r.id));
       offset=data.offset;
       if(!offset) break;
@@ -77,6 +83,15 @@ export async function coachingCoverage(action:"scan"|"ack", token?:string, missi
     // Include delivered IDs from the retained backlog so acknowledgement can close them.
     const retained=new Set(claimed.unresolved||[]);
     const pending={token:randomUUID(),source_ids:[...new Set(ids)].filter(id=>!delivered.has(id)||retained.has(id)),delivered_ids:[...delivered],checked,nextOffset:offset,end,reported:claimed.reported||[]};
+    // A duplicate intake row can share a completed recording claim. The consumer
+    // must still verify its canonical exclusion receipt; a done claim alone is not proof.
+    const owners=identities.size?await sql`select identity,source_id,status from coaching_source_claims where identity=any(${[...identities.values()]}::text[])`:[];
+    const byIdentity=new Map(owners.map(row=>[row.identity,row]));
+    const source_aliases=[...identities].flatMap(([source_id,identity])=>{
+      const owner=byIdentity.get(identity);
+      return owner?.status==='done' && owner.source_id!==source_id ? [{source_id,canonical_source_id:owner.source_id}]:[];
+    });
+    Object.assign(pending,{source_aliases});
     const attempts=await sql`select distinct source_id from coaching_source_attempts where source_id=any(${pending.source_ids}::text[])`;
     const started=new Set(attempts.map(r=>r.source_id));
     Object.assign(pending,{never_started_ids:pending.source_ids.filter(id=>!delivered.has(id)&&!started.has(id))});

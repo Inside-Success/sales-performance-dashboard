@@ -1,15 +1,16 @@
 import {beforeEach,describe,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({state:{} as Record<string,unknown>,busy:false,sql:vi.fn(),read:vi.fn(),delivered:[] as {source_id:string}[]}));
+const mocks=vi.hoisted(()=>({state:{} as Record<string,unknown>,busy:false,sql:vi.fn(),read:vi.fn(),owners:[] as {identity:string,source_id:string,status:string}[],delivered:[] as {source_id:string}[]}));
 vi.mock('@neondatabase/serverless',()=>({neon:()=>mocks.sql}));
 vi.mock('./source-read',()=>({readAirtablePage:mocks.read}));
 import {coachingCoverage} from './coaching-coverage';
 beforeEach(()=>{
   vi.stubEnv('DATABASE_URL','isolated-test');vi.stubEnv('AIRTABLE_API_KEY','isolated-test');
-  mocks.state={};mocks.busy=false;mocks.delivered=[];mocks.sql.mockReset();mocks.read.mockReset();
+  mocks.state={};mocks.busy=false;mocks.delivered=[];mocks.owners=[];mocks.sql.mockReset();mocks.read.mockReset();
   mocks.sql.mockImplementation(async(strings:TemplateStringsArray,...args:unknown[])=>{
     const query=strings.join('?');
     if(query.includes('select payload'))return [{payload:mocks.state}];
     if(query.includes('set owner=?'))return mocks.busy?[]:[{payload:mocks.state}];
+    if(query.includes('from coaching_source_claims'))return mocks.owners;
     if(query.includes('from performance_calls'))return mocks.delivered;
     if(query.includes('set payload=')){mocks.state=JSON.parse(args[0] as string);return [{id:1}];}
     return [];
@@ -85,4 +86,10 @@ describe('bounded source-to-report coverage',()=>{
     await coachingCoverage('ack',scan.token,['recQueued'],[]);
     expect(mocks.state).toMatchObject({unresolved:['recQueued'],reported:[]});
   });
+});
+
+it('only supplies aliases for exact completed recording identities',async()=>{
+ mocks.read.mockResolvedValue(new Response(JSON.stringify({records:[{id:'recDuplicate',fields:{'Automation Key':'zoom:exact'}},{id:'recActive',fields:{'Automation Key':'zoom:active'}}]})));
+ mocks.owners=[{identity:'zoom:exact',source_id:'recOriginal',status:'done'},{identity:'zoom:active',source_id:'recOwner',status:'running'}];
+ expect(await coachingCoverage('scan')).toMatchObject({source_aliases:[{source_id:'recDuplicate',canonical_source_id:'recOriginal'}]});
 });
