@@ -54,11 +54,25 @@ export function planMissing(e, receipts, now = new Date().toISOString()) {
   return out;
 }
 export function staleClaims(rows, now=Date.now()) {
-  return rows.filter(r=>r.status==='processing' && /^\d+$/.test(String(r.execution_id)) &&
+  const eligible = rows.filter(r=>r.status==='processing' && /^\d+$/.test(String(r.execution_id)) &&
     Number.isFinite(Date.parse(r.updated_at)) && now-Date.parse(r.updated_at)>25*60*1000)
-    .sort((a,b)=>Date.parse(a.updated_at)-Date.parse(b.updated_at)).slice(0,1);
+    .sort((a,b)=>Date.parse(a.updated_at)-Date.parse(b.updated_at) || String(a.id).localeCompare(String(b.id)));
+  // One read per sweep, rotating over unchanged claims. A legitimate long-running
+  // worker must not prevent every later claim from being inspected indefinitely.
+  return eligible.length ? [eligible[Math.floor(now / 300000) % eligible.length]] : [];
 }
 export function canHoldClaim(row, execution) {
   return row.status==='processing' && String(execution.id)===String(row.execution_id) &&
     execution.workflowId==='Zx3S5B1gYHRrbv2F' && ['crashed','error','success','canceled'].includes(execution.status);
+}
+export function inspectClaimResponse(row, response) {
+  if (row.status !== 'processing' || !/^\d+$/.test(String(row.execution_id))) return null;
+  if (response.statusCode === 404) return {...row,
+    hold_reason: 'Recovery execution is unavailable (HTTP 404). Delivery is unverified; inspect source owner, child execution and artifacts before retry. This is not proof the call failed.'};
+  if (response.statusCode !== 200) throw Error(`Recovery execution lookup failed (HTTP ${Number(response.statusCode) || 'unknown'}); claim preserved.`);
+  const execution = response.body;
+  if (!execution || String(execution.id) !== String(row.execution_id) || execution.workflowId !== 'Zx3S5B1gYHRrbv2F')
+    throw Error('Recovery execution identity mismatch; claim preserved.');
+  return canHoldClaim(row, execution) ? {...row,
+    hold_reason: 'Recovery worker ended before a final receipt. Held safely: inspect parent/child execution and partial writes before retry.'} : null;
 }

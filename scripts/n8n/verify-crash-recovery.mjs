@@ -26,3 +26,25 @@ assert.equal(canHoldClaim(row,execution),false);
 assert.equal(canHoldClaim(row,{...execution,status:'crashed'}),true);
 assert.equal(canHoldClaim(row,{...execution,id:'23',status:'crashed'}),false);
 console.log('17 recovery assertions passed: alignment, stale drafts, deduplication, per-source writes, stale/active claims.');
+
+const {inspectClaimResponse}=await import('./crash-recovery.mjs');
+const {buildRecoveryLookupSafety}=await import('./build-recovery-lookup-safety.mjs');
+const held=inspectClaimResponse(row,{statusCode:404,body:{message:'not found'}});
+assert.equal(held.status,'processing'); // The existing CAS node alone changes ledger status.
+assert.match(held.hold_reason,/not proof/);
+for(const statusCode of [401,403,429,500,503,undefined])assert.throws(()=>inspectClaimResponse(row,{statusCode}));
+assert.throws(()=>inspectClaimResponse(row,{statusCode:200,body:{...execution,id:'wrong'}}));
+assert.throws(()=>inspectClaimResponse(row,{statusCode:200,body:{...execution,workflowId:'other'}}));
+for(const status of ['running','waiting','new'])assert.equal(inspectClaimResponse(row,{statusCode:200,body:{...execution,status}}),null);
+for(const status of ['error','crashed','canceled','success'])assert.ok(inspectClaimResponse(row,{statusCode:200,body:{...execution,status}}));
+assert.equal(inspectClaimResponse({...row,status:'delivered'},{statusCode:404}),null);
+const rows=Array.from({length:6},(_,i)=>({...row,id:i,execution_id:String(22+i)}));
+const start=Date.parse('2026-10-29T12:00:00Z');
+assert.equal(new Set(rows.map((_,i)=>staleClaims(rows,start+i*300000)[0].id)).size,6);
+assert.deepEqual(staleClaims([],start),[]);
+const baseline={nodes:['Select Stale Processing Claim','Read Claim Execution','Confirm Terminal Stale Claim','Hold Crashed Recovery Claim','Close Unfinished Attempt'].map(name=>({name,parameters:{options:{timeout:60000},filters:{conditions:[{keyName:'status',keyValue:'processing'}]}}}))};
+const ops=buildRecoveryLookupSafety(baseline);
+assert.equal(ops.length,5);
+assert.equal(ops[1].updates['parameters.options'].response.response.fullResponse,true);
+assert.ok(ops[4].updates['parameters.filters'].conditions.some(c=>c.keyName==='execution_id'));
+console.log('Recovery lookup regressions passed: missing vs unavailable, exact identity, active owners, fair selection, owner-specific close.');
