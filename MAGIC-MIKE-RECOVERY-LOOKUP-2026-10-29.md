@@ -39,7 +39,7 @@ Exact saved failing input passed patched preparation and finalization locally wi
 
 ## Final acceptance
 
-- Official published version: `5ac1d197-6a7d-4431-bc70-bb8888420eff`; manual: `708f6f1f-5dd4-4e8d-b5a8-d20f5a8bed23`. Every node was compared to the baseline plus the three intended code changes per workflow. Published and saved graphs match; connections, credentials, models and node counts are unchanged.
+- Official published version: `8956df32-a0af-4df5-af9a-36348659d8ec`; manual: `5e981383-61b5-456e-bebf-12d7b15fe610`. Every node was compared to the baseline plus the three intended code changes per workflow. Published and saved graphs match; connections, credentials, models and node counts are unchanged.
 - 176 focused tests passed. Full CI includes the broader reliability suite, TypeScript and production build. A separate offline replay of the saved successful manual submission also passed the published prepare/finalizer code without a provider request.
 - The generic static Code-node checker reported the same nested-helper array-return errors on unchanged baseline code and candidate code. These are not runtime failures: actual compiled input replays pass. Full connection/expression validation has zero errors and only the existing legacy-node/expression warnings.
 
