@@ -8,7 +8,8 @@ function enhancedSafetyProsePath(path) {
 }
 function guardEnhancedSafetyTargets(coaching,item,targets) {
  if(coaching?.version!=='objection-coaching-v2')return targets;
- const explicit=typeof item==='object'?item?.path:typeof item==='string'?item.match(/^([a-z_]+(?:\.\w+)*)\s*:/i)?.[1]:null;
+ const prefix=typeof item==='string'?item.match(/^([a-z_]+(?:\.\w+)*)\s*:/i)?.[1]:null;
+ const explicit=typeof item==='object'?item?.path:prefix&&(prefix.includes('.')||Object.hasOwn(coaching,prefix.toLowerCase()))?prefix.toLowerCase():null;
  if(explicit&&!enhancedSafetyProsePath(explicit))throw Error('Enhanced coaching safety hold: finding targets non-prose metadata');
  if(!targets.length||targets.some(t=>!enhancedSafetyProsePath(t.path)))throw Error('Enhanced coaching safety hold: unmapped prose finding');
  return targets;

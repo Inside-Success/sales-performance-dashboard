@@ -23,6 +23,7 @@ describe('safety repair prose boundary',()=>{
  it('does not target show identity merely because a longer flagged recommendation includes it',()=>{
   const r=runtime();const targets=r.targets('recExample',report,'next_steps.3.observation: '+report.next_steps[0].observation,'unsupported',0);
   expect(targets).toHaveLength(2);expect(targets.every((t:{path:string})=>t.path==='next_steps.0.observation')).toBe(true);
+  expect(r.targets('recExample',report,'Finding: '+report.next_steps[0].observation,'unsupported',0)).toEqual(targets);
   expect(r.sentences(report).map((t:{path:string})=>t.path)).toEqual(['next_steps.0.observation','next_steps.0.observation']);
  });
  it('holds explicit metadata and unmappable findings instead of silently dropping safety findings',()=>{
