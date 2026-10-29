@@ -358,3 +358,12 @@ successful document/delivery and no active run for that submission. Preserve exa
 provider checkpoint identity and safety checks. Never clear safety errors merely
 to force a report through, resubmit under a new public ID, or duplicate delivery.
 No additional AI node, general retry loop or change to the shared queue is needed.
+
+Recovery acceptance: manual execution 1393934 completed successfully. The existing
+public report is completed and Enhanced; Google Doc creation/content insertion,
+dashboard callback and durable delivered receipt all succeeded. Authenticated UI
+verification showed the report sections and corrected next-step wording. The writer
+reused its saved checkpoint at zero cost; the current canonical audit and downstream
+safety screen cost USD 0.185393358 combined. No extra AI stage was introduced.
+The one queued recovery copy (1393774) was canceled before starting; no unrelated
+execution was stopped. Temporary editor debug data was removed after recovery.
