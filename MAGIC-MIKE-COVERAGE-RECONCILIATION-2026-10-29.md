@@ -17,4 +17,10 @@ Focused tests cover exact aliases, unmatched/active claims, non-exclusion receip
 
 ## Rollback
 
-Revert the application commit; restore the previous coverage plan code. Remove the two newly added write-failure accounting nodes and their new edges only. Do not revert business artifacts or settled recovery receipts. Private baseline workflow snapshots are retained outside Git.
+Revert the application commit; restore the previous coverage plan code. Restore Set: airtable_failed directly to Build Ops Alert, then remove the four newly added write-failure accounting nodes and their new edges only. Do not revert business artifacts or settled recovery receipts. Private baseline workflow snapshots are retained outside Git.
+
+## Published workflow verification
+
+Official published graph: `b99e27de-0323-4d5e-8af2-b2e1d5486105` (159 nodes; no added AI nodes). Coverage graph: `9600d728-5338-44f9-bfd7-88c048c8fbd1` (15 nodes). Both validate with zero errors and zero invalid connections. Existing official unreachable-legacy-node warnings remain unchanged.
+
+The scorecard error path is sequential: prepare hold, persist receipt, settle matching source owner, restore the original alert context, then send the existing alert/continue the loop. Its added fallible stages route to the existing accounting incident handler. Exact saved and published graphs match, and all original nodes and unrelated connections are preserved. Exact Code payload replays verify source pairing and exclusion matching without external writes or AI calls.
