@@ -7,8 +7,8 @@ const evidence = (question: string, scope: Plan['scopes'][number] = 'main_istv')
 describe('October 24 source refresh', () => {
   it('does not retrieve the superseded send-afterwards Call 1 permission', () => {
     const text = evidence('We are running late on our reality first call. Can I send the show video later?', 'reality');
-    expect(text).toContain('both the introductory master video');
-    expect(text).toContain('sending it afterward is not a substitute');
+    expect(text).toContain('Both videos are required during the call');
+    expect(text).toContain('Show required videos in the approved live call sequence');
     expect(text).not.toContain('otherwise send that show-specific video afterwards');
   });
   it('retains two licenses while allowing couples on the same team', () => {

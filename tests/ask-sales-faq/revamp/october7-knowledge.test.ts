@@ -11,8 +11,8 @@ describe('October 7 knowledge refresh',()=>{
  });
  it('keeps current training and the cancellation exception retrievable',()=>{
   const training=rows('Who teaches Call 1 and closing training?').map(r=>r.text).join('\n');
-  expect(training).toContain('Call 1 Sales Training with Raul');
-  expect(training).toContain('Contracts & Onboarding with Raul');
+  expect(training).toContain('Call 1 with Raul');
+  expect(training).toContain('Contracts and Onboarding with Raul');
   expect(rows('The client texted to cancel but OnceHub will not let me after the start time').map(r=>r.id)).toContain('client-requested-cancellation-2026-10-07');
  });
  it('preserves product scope for the media pack and email-close exception',()=>{

@@ -7,9 +7,9 @@ const rows = (question: string, scope: Plan['scopes'][number] = 'main_istv') => 
 describe('October 8 source refresh', () => {
   it('retrieves the updated allocation rather than retired spreadsheet limits', () => {
     const evidence = rows('I finished sixty dial outs, how do I get more leads?').map(r => r.text).join('\n');
-    expect(evidence).toContain('post Extra');
-    expect(evidence).toContain('maximum grand total 100');
-    expect(evidence).toContain('does not specify a reset period');
+    expect(evidence).toContain('Extra uses the SAME rules');
+    expect(evidence).toContain('Maximum 100 leads per day');
+    expect(evidence).toContain('previous batch before requesting more, even on a later day');
   });
   it('answers the changed training time without retaining the previous hour', () => {
     const evidence = rows('What time is Thursday closing training with Raul?').map(r => r.text).join('\n');

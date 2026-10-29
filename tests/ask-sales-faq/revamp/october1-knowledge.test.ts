@@ -29,7 +29,7 @@ describe("October 1 knowledge refresh", () => {
     const rows = retrieve("When is Mike Wednesday call two training?", "main_istv");
     expect(rows.map(r => r.id)).toContain("new-rep-training-sessions-2026-10-01");
     expect(records.some(r => r.id === "new-rep-six-training-sessions-2026-09-21")).toBe(false);
-    expect(rows.find(r => r.id === "new-rep-training-sessions-2026-10-01")?.text).toContain("COMBINED Call 2 Sales Training and Procedural Training with Raul");
+    expect(rows.find(r => r.id === "new-rep-training-sessions-2026-10-01")?.text).toContain("Call 2 and HubSpot/OnceHub procedural training with Raul");
   });
   it("carries show-status changes with generic catalog and season questions", () => {
     expect(retrieve("What reality shows do we offer?", "reality").map(r => r.id)).toContain("reality-catalog-status-2026-10-03");

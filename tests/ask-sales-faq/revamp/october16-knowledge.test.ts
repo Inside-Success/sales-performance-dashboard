@@ -70,8 +70,8 @@ describe('October 16 source refresh', () => {
   });
   it('keeps the current assignment process despite stale spreadsheet wording', () => {
     const outbound = evidence('Do I still claim outbound leads on the sheet and log them in Keap?');
-    expect(outbound).toContain('dedicated HubSpot assignment SOP');
-    expect(outbound).toContain('do not restart spreadsheet claiming');
+    expect(outbound).toContain('HubSpot Outreach Lead Request SOP');
+    expect(outbound).toContain('Do not resume spreadsheet claiming');
     expect(outbound).toContain('100 leads');
   });
 });

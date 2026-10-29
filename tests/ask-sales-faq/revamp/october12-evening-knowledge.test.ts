@@ -26,7 +26,7 @@ describe('October 12 evening source refresh', () => {
   it('retrieves the current schedule without the superseded Monday session', () => {
     const text = evidence('When does the training for new reps happen?', 'main_istv');
     expect(text).toContain('Monday 11 AM–noon EST Compliance with Mike');
-    expect(text).toContain('Wednesday 3–4 PM EST COMBINED');
+    expect(text).toContain('Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub');
     expect(text).not.toContain('Monday 1–2 PM EST Compliance with Raul');
   });
   it('keeps housing distinctions and duplicate-meeting caution available', () => {
