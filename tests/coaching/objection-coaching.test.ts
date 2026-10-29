@@ -109,6 +109,24 @@ describe('manual local safety repair',()=>{
 });
 
 
+describe('queued manual submission safety regression',()=>{
+ it('repairs next-step plan wording while preserving evidence and objection judgments',()=>{
+  const {manualLocalSafetyRepairs}=require('../../scripts/coaching-upgrade/manual-safety.cjs');
+  const original=report();
+  original.next_steps[0].observation='Before then, confirm the exact approved payment plan for the licence that fits his goals.';
+  const target={id:'next-step-plan',layer:'L1',rule:'certification',path:'next_steps.0.observation',before:original.next_steps[0].observation};
+  const state={reviewed_coaching_v2:original,coaching_evidence_index:blocks,safety_screen:{case_pass:true,unsupported_specifics:[],collisions:[],additional_safety_hits:[]},repair_targets:[target],repair_rows:[{id:target.id,applied:true}]};
+  const analysis=enhancedSafetyView(original);
+  analysis.next_steps[0].observation=manualLocalSafetyRepairs(state)[0].after;
+  const result=finishEnhancedSafety(state,analysis,'recExample');
+  expect(result.reviewed_coaching_v2.next_steps[0]).toEqual({...original.next_steps[0],observation:'Before then, confirm the current payment plan for the licence that fits his goals.'});
+  expect(result.reviewed_coaching_v2.objections).toEqual(original.objections);
+  expect(result.reviewed_coaching_v2.provenance).toMatchObject({safety_reviewed:true,safety_repaired:true});
+  expect(original.next_steps[0].observation).toBe(target.before);
+  expect(()=>finishEnhancedSafety({...state,repair_error:'Missing old repair response'},analysis,'recExample')).toThrow('incomplete safety');
+ });
+});
+
 describe('checkpoint downstream identity',()=>{
  it('restores original object order only when values and array order match',()=>{
   const {checkpointJsonOrder}=require('../../scripts/coaching-upgrade/checkpoint-json.cjs');

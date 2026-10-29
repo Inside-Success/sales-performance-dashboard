@@ -335,3 +335,26 @@ queued copies stopped by this rollout were confirmed never-started; no productio
 execution was canceled. The final canary reservation is reconciled to USD 0.843265615,
 leaving conservative total reserved exposure at USD 35.84448167 and recorded cost
 at USD 8.52479277. Private outputs and history are retained for investigation.
+
+## Queued manual submission recovery (October 29)
+
+A real manual submission accepted before the final safety fix later ran its saved,
+older workflow snapshot. Its writer, factual audit and safety screen completed,
+but the older finalizer treated the local wording repair as a missing AI response.
+The error was correctly held and surfaced as failed; no report was delivered.
+
+The currently published manual workflow already contains the scoped correction.
+Running the exact saved repair input through its compiled finalizer and parser
+passed without any model call. The only target was future next-step wording about
+confirming an approved payment plan. The repair preserves evidence, source identity,
+objection judgments and safety provenance. A regression test now covers this
+next-step path through final safety rendering, including rejection of an unresolved
+old repair error. All 15 tests in objection-coaching.test.ts pass.
+
+For this failure mode, a retry starting at the failed parser is insufficient: it
+would reuse the previous finalizer's error-shaped output. Recover the original
+submission with the current workflow and the same public ID, after verifying no
+successful document/delivery and no active run for that submission. Preserve exact
+provider checkpoint identity and safety checks. Never clear safety errors merely
+to force a report through, resubmit under a new public ID, or duplicate delivery.
+No additional AI node, general retry loop or change to the shared queue is needed.
