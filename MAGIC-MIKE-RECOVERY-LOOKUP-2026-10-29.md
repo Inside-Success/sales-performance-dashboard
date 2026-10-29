@@ -27,3 +27,11 @@ The observed FAQ failure was a provider timeout. The existing request has an 18-
 ## Rollback
 
 Private pre-change workflow snapshot is retained under `.private-upgrade/recovery-2026-10-29/`. Restore only the five changed node parameters from that snapshot, validate, inspect connections, then publish. Do not restore historical receipt statuses or replay delivered calls. No source transcripts, workflow credentials or private execution payloads belong in GitHub.
+
+## Live recovery and follow-up defect
+
+PR 346 merged as `2e5d1208b19b78621b4e91c3e49d26279e6682b5`; production deployment `dpl_BRytVyFXfRqwqaxbRPV1kXLJiGV2` is Ready. Published recovery version `5aba4d89-c427-42c4-a5a4-881ba41ce9b4` preserves the graph and credentials. Scheduled execution `1407616` delivered report 8831 and then handled a real missing-parent 404 as a durable review hold, with the existing operations alert, and finished successfully.
+
+Five verified terminal sources recovered as reports 8831–8835. The sixth exposed a separate safety-targeting defect: substring matching of a prose finding also selected the required `show` metadata field. The repair deleted that field; the final contract correctly stopped delivery. The correction restricts Enhanced sentence targets to explicit prose paths in both official and manual workflows, carries the safety rationale/current offer knowledge into the existing repair prompt, and preserves audited show identity in the finalizer. Explicit metadata findings or unmatched findings remain held rather than ignored. Legacy behavior, models, caching, taxonomy, source identity and node count remain unchanged.
+
+Exact saved failing input passed patched preparation and finalization locally with no model requests: the show remained intact and objection judgments/evidence were preserved. Live sixth-call delivery remains pending until separately verified.

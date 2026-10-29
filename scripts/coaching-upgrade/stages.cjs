@@ -42,7 +42,7 @@ function finishEnhancedSafety(state,analysis,sourceId) {
  if(!Array.isArray(index)||!index.length)throw Error('Enhanced coaching safety hold: missing evidence index');
  const validated=assertObjectionReport(normalizeObjectionReport(analysis),index);
  // Safety may reduce prose, but cannot silently reclassify the call or its buyers.
- const identity=r=>({version:r.version,offer_family:r.offer_family,evidence_quality:r.evidence_quality,payment:r.outcome?.payment,objections:r.objections?.map(o=>[o.category,o.handling,o.resolution,o.evidence_ids,o.counterevidence_ids]),not_raised:r.not_raised});
+ const identity=r=>({version:r.version,show:r.show,offer_family:r.offer_family,evidence_quality:r.evidence_quality,payment:r.outcome?.payment,objections:r.objections?.map(o=>[o.category,o.handling,o.resolution,o.evidence_ids,o.counterevidence_ids]),not_raised:r.not_raised});
  if(JSON.stringify(identity(validated))!==JSON.stringify(identity(original)))throw Error('Enhanced coaching safety hold: classification changed');
  return renderObjectionReport(validated,index,String(sourceId||''),{...original.provenance,safety_repaired:!!state.repair_rows?.some(r=>r.applied),safety_reviewed:true});
 }
