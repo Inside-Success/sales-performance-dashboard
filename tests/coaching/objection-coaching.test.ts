@@ -137,3 +137,11 @@ describe('checkpoint downstream identity',()=>{
   expect(checkpointJsonOrder([1,2],'[2,1]')).toEqual([1,2]);
  });
 });
+
+describe('safety preserves audited show identity',()=>{
+ it('rejects changing even a nonempty show while allowing prose repairs',()=>{
+  const original=report();const state={reviewed_coaching_v2:original,coaching_evidence_index:blocks,repair_targets:[]};
+  expect(()=>finishEnhancedSafety(state,{...original,show:'Different show'},'recExample')).toThrow('classification changed');
+  expect(finishEnhancedSafety(state,{...original,summary:'Ask for a joint follow-up.'},'recExample').reviewed_coaching_v2.show).toBe(original.show);
+ });
+});

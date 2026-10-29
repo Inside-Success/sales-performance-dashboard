@@ -5,6 +5,7 @@ const {coachingSystem,writerPrompt,reviewerPrompt,MODELS,POLICY_REVISION}=requir
 const {policyPack}=require('./policy.cjs');
 const {manualLocalSafetyRepairs}=require('./manual-safety.cjs');
 const {checkpointJsonOrder}=require('./checkpoint-json.cjs');
+const {patchSafetyProse}=require('./build-safety-prose.cjs');
 const {OBJECTION_VERSION}=require('../../src/lib/objection-coaching.cjs');
 const {replaceOnce}=require('../coaching-insights/patches.cjs');
 const root=path.resolve(__dirname,'../..');
@@ -98,6 +99,10 @@ state.l1_hits = runL1(state.coaching_raw,`);
  cached.updates['parameters.jsCode']=checkpointJsonOrder.toString()+'\n'+replaceOnce(cached.updates['parameters.jsCode'],'const s=$json;const r={...s.checkpoint.result};','const s=$json;const r={...s.checkpoint.result};if(objectionProviderStage(s.call_purpose))r.parsed_json=checkpointJsonOrder(r.parsed_json,r.model_text);');
  // Delivery adapters preserve the same reviewed object; no new model calls.
  const post=get(official,'Post to Dashboard');(patches[official]??=[]).push({type:'updateNode',nodeName:post.name,updates:{'parameters.body':replaceOnce(post.parameters.body,"reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,","reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null, reviewed_coaching_v2: $('Performance Agent').item.json.reviewed_coaching_v2 || null,")}});
+ for(const id of [official,manual])for(const op of patches[id]){
+  if(['MM Build Safety Screen Request','MM Manual Build Safety Screen Request','MM Prepare Repair','MM Manual Prepare Repair'].includes(op.nodeName))
+   op.updates['parameters.jsCode']=patchSafetyProse(op.updates['parameters.jsCode'],op.nodeName.includes('Prepare Repair'));
+ }
  return patches;
 }
 module.exports={build,wrapWriter,auditBuilder,renderAudit,embedded};

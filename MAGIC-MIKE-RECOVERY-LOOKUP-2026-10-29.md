@@ -22,8 +22,38 @@ The observed FAQ failure was a provider timeout. The existing request has an 18-
 
 - Regression cases cover 404 versus other failures, exact execution/workflow identity, active owners, all terminal statuses, fair selection and owner-specific closure.
 - Candidate workflow validation: 14 nodes, 15 valid connections, zero errors/warnings.
-- Production acceptance and affected-call outcomes: pending live verification; do not treat the local tests as delivery proof.
+- Production acceptance is recorded below from actual scheduled executions and delivered artifacts; local tests alone are not delivery proof.
 
 ## Rollback
 
 Private pre-change workflow snapshot is retained under `.private-upgrade/recovery-2026-10-29/`. Restore only the five changed node parameters from that snapshot, validate, inspect connections, then publish. Do not restore historical receipt statuses or replay delivered calls. No source transcripts, workflow credentials or private execution payloads belong in GitHub.
+
+## Live recovery and follow-up defect
+
+PR 346 merged as `2e5d1208b19b78621b4e91c3e49d26279e6682b5`; production deployment `dpl_BRytVyFXfRqwqaxbRPV1kXLJiGV2` is Ready. Published recovery version `5aba4d89-c427-42c4-a5a4-881ba41ce9b4` preserves the graph and credentials. Scheduled execution `1407616` delivered report 8831 and then handled a real missing-parent 404 as a durable review hold, with the existing operations alert, and finished successfully.
+
+Five verified terminal sources recovered as reports 8831–8835. The sixth exposed a separate safety-targeting defect: substring matching of a prose finding also selected the required `show` metadata field. The repair deleted that field; the final contract correctly stopped delivery. The correction restricts Enhanced sentence targets to explicit prose paths in both official and manual workflows, carries the safety rationale/current offer knowledge into the existing repair prompt, and preserves audited show identity in the finalizer. Explicit metadata findings or unmatched findings remain held rather than ignored. Legacy behavior, models, caching, taxonomy, source identity and node count remain unchanged.
+
+Exact saved failing input passed patched preparation and finalization locally with no model requests: the show remained intact and objection judgments/evidence were preserved. The sixth call subsequently delivered as report 8839 through execution 1408558; see final acceptance below.
+
+
+## Final acceptance
+
+- Official published version: `8956df32-a0af-4df5-af9a-36348659d8ec`; manual: `5e981383-61b5-456e-bebf-12d7b15fe610`. Every node was compared to the baseline plus the three intended code changes per workflow. Published and saved graphs match; connections, credentials, models and node counts are unchanged.
+- 176 focused tests passed. Full CI includes the broader reliability suite, TypeScript and production build. A separate offline replay of the saved successful manual submission also passed the published prepare/finalizer code without a provider request.
+- The generic static Code-node checker reported the same nested-helper array-return errors on unchanged baseline code and candidate code. These are not runtime failures: actual compiled input replays pass. Full connection/expression validation has zero errors and only the existing legacy-node/expression warnings.
+
+| Source | Successful official execution | Dashboard report |
+|---|---|---|
+| recWIOSN84CrsoXMd | 1407618 | 8831 |
+| recTRQqYyjF32smih | 1407719 | 8832 |
+| rec3djhRSZCAwrpcx | 1407876 | 8833 |
+| recWUAmu6eVfoQ08x | 1407977 | 8834 |
+| rec3hN1il8GrBo7k9 | 1408061 | 8835 |
+| recfKF3cIgiBrYGe5 | 1408558 | 8839 |
+
+All six have exactly one matching dashboard report, valid source-bound Enhanced content and safety provenance, a linked Google Doc, successful top-level/thread Slack delivery, persisted delivery receipts and `done` source claims. Authenticated dashboard pages 8831 and 8839 were visually read. The final recovery parent 1408556 succeeded. Its child reused writer, factual review, compliance and safety-screen checkpoints at zero new cost; only the changed targeted repair cost $0.080328. No paid benchmark or extra AI stage was added.
+
+The earlier October 22 claim with unavailable execution history was not replayed or treated as failed merely because its history is missing. These six reconciled sources are the recent incident cohort; this release does not claim to have reconciled every historical orphan.
+
+FAQ remained unchanged. Eight later assistant replies after the observed timeout had no recorded provider error at the final focused check. Provider timeouts remain possible; masking them or adding unbounded retries would not improve reliability.
