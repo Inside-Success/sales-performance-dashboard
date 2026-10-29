@@ -64,5 +64,7 @@ export async function reserveMissingSource(sourceId:string) {
     on conflict(identity) do update set updated_at=now()
     where coaching_source_claims.source_id=$2 and coaching_source_claims.owner='coverage' and coaching_source_claims.status='queued'
     returning source_id`,[identity,sourceId]);
-  return {reserved:rows.length>0,source_id:sourceId};
+  if(rows.length)return {reserved:true,source_id:sourceId};
+  const held=await sql().query(`select source_id,owner,status from coaching_source_claims where identity=$1`,[identity]);
+  return {reserved:false,source_id:sourceId,reason:held.length?'recording_claim_exists':'source_already_started',canonical_source_id:held[0]?.source_id,claim_status:held[0]?.status};
 }
