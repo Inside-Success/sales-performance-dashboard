@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Candidate knowledge refresh from the last successful October 24 checkpoint (October 23 Miami), `a3b3aa94864365987ee9c945`. Candidate `edfba01a62afd58943561e57` contains 2592 active records: nine additions and 23 amended records. Production verification pending. No changes to model, prompts, retrieval/runtime, Coaching, n8n, auth, environment, database schema or source systems. Slack and Google were read only; no messages, reactions or source edits.
+Published knowledge refresh from the last successful October 24 checkpoint (October 23 Miami), `a3b3aa94864365987ee9c945`. Published `edfba01a62afd58943561e57` contains 2592 active records: nine additions and 23 amended records. Production is READY and three authenticated live answers were verified with the matching stored knowledge version. No changes to model, prompts, retrieval/runtime, Coaching, n8n, auth, environment, database schema or source systems. Slack and Google were read only; no messages, reactions or source edits.
 
 ## Source-backed changes
 
@@ -24,8 +24,8 @@ Two previously inaccessible Google sources and two Slack roots remain unavailabl
 
 ## Validation
 
-443 FAQ tests passed, including five new retrieval/boundary checks. Six older assertions updated only where authoritative source wording/rules changed. 107 static safety checks passed. Twenty-two isolated answer checks completed without technical failures; one trainee reporting-channel ambiguity was corrected from Part 1, with a further three final-version checks. Final CI/build and authenticated live checks pending. These bounded checks do not establish universal accuracy.
+443 FAQ tests passed, including five new retrieval/boundary checks. Six older assertions updated only where authoritative source wording/rules changed. 107 static safety checks passed. Twenty-two isolated answer checks completed without technical failures; one trainee reporting-channel ambiguity was corrected from Part 1, with a further three final-version checks. Exact-release CI/build and paired FAQ validation passed. Three authenticated live answers passed and were checked against stored provider/version metadata. Isolated evaluation cost approximately $0.20. These bounded checks do not establish universal accuracy.
 
 ## Continuity
 
-Candidate checkpoint: `docs-ask-sales-knowledge-checkpoint-2026-10-29.json` / paired `KNOWLEDGE-CHECKPOINT-2026-10-29.json`. Advance the successful checkpoint only after production evidence. Rollback is a scoped revert of this knowledge/receipt change, preserving unrelated concurrent work. Source access limitations remain explicit.
+Successful checkpoint: `docs-ask-sales-knowledge-checkpoint-2026-10-29.json` / paired `KNOWLEDGE-CHECKPOINT-2026-10-29.json`. Dashboard PR344 and FAQ PR115 are merged. Deployment `dpl_4jZxmkaBoHt5S4K98rMucsnaFxnr` serves commit `00d2c90948f974a25434e0cef1a05847db81c201`. Rollback is a scoped revert of this knowledge/receipt change, preserving unrelated concurrent work. Source access limitations remain explicit.

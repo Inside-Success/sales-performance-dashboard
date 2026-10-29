@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-29",
-  "status": "candidate awaiting production verification",
+  "status": "published and verified",
   "previousKnowledgeVersion": "a3b3aa94864365987ee9c945",
   "knowledgeVersion": "edfba01a62afd58943561e57",
   "activeRecordCount": 2592,
@@ -9800,5 +9800,40 @@
     "meeting-ai-notetakers-2026-10-29",
     "reality-pr-specifics-2026-10-24",
     "payment-plans-no-interest-2026-10-29"
-  ]
+  ],
+  "publication": {
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/344",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/115",
+    "dashboardCommit": "00d2c90948f974a25434e0cef1a05847db81c201",
+    "deploymentId": "dpl_4jZxmkaBoHt5S4K98rMucsnaFxnr",
+    "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+    "liveAnswers": [
+      {
+        "id": "faq_assistant_344514e6-ee8b-4cda-b3db-54128e7580d2",
+        "createdAt": "2026-10-29T13:38:36.326Z",
+        "knowledgeVersion": "edfba01a62afd58943561e57",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 8050
+      },
+      {
+        "id": "faq_assistant_6543f287-6389-477a-8040-119c9fc0521a",
+        "createdAt": "2026-10-29T13:39:15.116Z",
+        "knowledgeVersion": "edfba01a62afd58943561e57",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 14115
+      },
+      {
+        "id": "faq_assistant_58021d14-15bc-4dc1-bfe0-5a990ffeb14c",
+        "createdAt": "2026-10-29T13:39:37.229Z",
+        "knowledgeVersion": "edfba01a62afd58943561e57",
+        "model": "gpt-5.6-luna",
+        "latencyMs": 8298
+      }
+    ],
+    "fullSuite": "443/443",
+    "staticSafety": "107/107",
+    "ci": "TypeScript, scoped ESLint, production build and paired FAQ validations passed",
+    "isolatedAnswerChecks": 25,
+    "isolatedEstimatedCostUsd": 0.20131968
+  }
 }
