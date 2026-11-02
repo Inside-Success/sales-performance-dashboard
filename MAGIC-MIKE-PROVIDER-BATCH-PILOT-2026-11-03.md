@@ -35,3 +35,9 @@ This is a manually operated bounded pilot harness, not a deployed unattended sch
 Both batches must finish; evaluate classifications, action-status changes and video omissions against saved reviewed results and original evidence. Record actual cost, cached tokens, stage and overall turnaround. Recollect a completed stage and confirm no duplicate charge. Check accepted-call totals and activation flags remain unchanged. Do not describe a submitted batch as a successful pilot.
 
 Official references: https://developers.openai.com/api/docs/guides/batch and https://developers.openai.com/api/docs/pricing .
+
+## Asynchronous continuation checkpoint
+
+Draft batch passed provider validation and reached 10/12 completed, zero failed; remaining requests are still provider-pending. Accepted-call baseline is 46 rows with result digest `48346bfb7b1aeb35173847865a53999a`. The $6 draft reservation is not actual spend; pre-pilot settled spend remains $6.504344 until usage receipts are collected. Full local adherence suite: 70 tests pass; GitHub adherence/reliability checks and preview build passed. A duplicate submit invocation returned the existing batch ID without another provider request.
+
+Scoped chat heartbeat `finish-magic-mike-batch-pilot` checks every ten minutes, continues to the single review batch when ready, verifies all results and ledger idempotence, and pauses after completion or an actionable blocker. It must remain quiet on unchanged pending states. This continuation does not authorize company-wide processing or backfill. Draft PR: https://github.com/Inside-Success/sales-performance-dashboard/pull/362 .
