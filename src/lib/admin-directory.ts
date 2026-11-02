@@ -1,4 +1,5 @@
 export const ADMIN_DIRECTORY_LINKS = [
+  { name: "Sales Script Adherence · Pilot", href: "/manager/script-adherence", scope: "manager" },
   { name: "AI Coaching Rep Usage", href: "/manager/usage", scope: "manager" },
   { name: "AI Coaching Sales Impact", href: "/manager/sales-correlation", scope: "manager" },
   { name: "AI Coaching Objection Library", href: "/manager/coaching-insights", scope: "manager" },
