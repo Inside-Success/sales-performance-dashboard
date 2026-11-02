@@ -23,7 +23,7 @@ if(!['draft','review'].includes(stage))throw Error('Invalid stage');
 const label=`batch-pilot-2026-11-03-${stage}`;
 if(command==='prepare'){
  if(load(stage)){console.log('Already prepared; reuse saved manifest');process.exit(0);}
- const prior=stage==='review'?load('draft-results'):null;if(stage==='review'&&(!prior||prior.length!==indices.length||prior.some((x:any)=>!x.raw||x.transportError)))throw Error('Complete draft receipts required');
+ const prior=stage==='review'?load('draft-results'):null;if(stage==='review'){for(const m of load('draft')?.manifest||[]){if(m.transcriptHash!==hash(source(m.index)))throw Error('Source changed since draft; hold');}}if(stage==='review'&&(!prior||prior.length!==indices.length||prior.some((x:any)=>!x.raw||x.transportError)))throw Error('Complete draft receipts required');
  const manifest=[];
  for(const index of indices){
   const c=calls[index],body:any=buildAnalysisRequest('gpt-6.1-terra',source(index),{title:c.source['Meeting Title'],rep:c.source['Rep Name']},prior?.find((x:any)=>x.index===index)?.raw);
@@ -37,7 +37,8 @@ if(command==='prepare'){
  save(stage,{label,manifest,preparedAt:new Date().toISOString()});console.log({prepared:manifest.length,stage,reservedMaximumUSD:manifest.length*.5});
 }else if(command==='submit'){
  const state=load(stage);if(!state)throw Error('Prepare first');if(state.batchId){console.log({batchId:state.batchId,status:'already submitted'});process.exit(0);}if(state.submissionStartedAt)throw Error('Submission outcome uncertain: reconcile by metadata, never blindly resubmit');
- const rows=await sql`select id,status from script_adherence_requests where stage=${label}`;if(rows.length!==indices.length||rows.some((r:any)=>r.status!=='reserved'))throw Error('Reservation state mismatch');
+ const rows=await sql`select id,status,request_hash from script_adherence_requests where stage=${label}`;if(rows.length!==indices.length||rows.some((r:any)=>r.status!=='reserved'))throw Error('Reservation state mismatch');
+ for(const m of state.manifest){if(m.transcriptHash!==hash(source(m.index))||rows.find((r:any)=>r.id===m.id)?.request_hash!==hash(JSON.stringify(m.body)))throw Error('Saved source or request changed; hold');}
  if(!state.fileId){const form=new FormData();form.set('purpose','batch');form.set('file',new Blob([state.manifest.map((m:any)=>JSON.stringify({custom_id:m.id,method:'POST',url:'/v1/chat/completions',body:m.body})).join('\n')+'\n'],{type:'application/jsonl'}),label+'.jsonl');const file=await api('files',form);state.fileId=file.id;save(stage,state);}
  state.submissionStartedAt=new Date().toISOString();save(stage,state);
  const batch=await api('batches',{input_file_id:state.fileId,endpoint:'/v1/chat/completions',completion_window:'24h',metadata:{pilot:label,scope:'isolated-no-publication'}});state.batchId=batch.id;state.batch=batch;save(stage,state);
@@ -46,6 +47,7 @@ if(command==='prepare'){
 }else if(command==='status'||command==='collect'){
  const state=load(stage);if(!state?.batchId)throw Error('No batch ID');const b=await api(`batches/${state.batchId}`);state.batch=b;save(stage,state);console.log({stage,id:b.id,status:b.status,counts:b.request_counts,created_at:b.created_at,completed_at:b.completed_at,errors:b.errors});
  if(command==='status'||!['completed','expired','cancelled','failed'].includes(b.status))process.exit(0);
+ for(const m of state.manifest){if(m.transcriptHash!==hash(source(m.index)))throw Error('Source changed since submission; hold');}
  const receipts=[];
  for(const file of [b.output_file_id,b.error_file_id].filter(Boolean)){const content=await api(`files/${file}/content`);save(file,{content});receipts.push(...content.trim().split('\n').filter(Boolean).map((l:string)=>JSON.parse(l)));}
  save(stage+'-receipts',receipts);
