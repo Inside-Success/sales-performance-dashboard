@@ -1,0 +1,71 @@
+export const RUBRIC_VERSION = "script-adherence-2026-11-02-v1";
+export type ScriptId = "documentary_call_1" | "documentary_call_2" | "reality_call_1";
+export type Action = { id: string; label: string; components: string[]; when?: string; video?: string; unobservable?: boolean };
+const a = (id: string, label: string, components: string[], extra: Partial<Action> = {}): Action => ({ id, label, components, ...extra });
+const opening = [
+  a("consent", "Recording consent", ["Rep discloses recording", "Prospect agrees"]),
+  a("double_booking", "Explain shared audition", ["Explains shared call and fair time", "Explains review and next individual call"], {when:"Two unrelated prospects share the audition"}),
+  a("purpose", "Explain the call's purpose", ["Assess casting fit", "Understand business or promotion goals"]),
+  a("knowledge", "Ask what they know about the show", ["Asks prior knowledge"]),
+  a("business", "Understand their business", ["What business does", "Stage of business"]),
+  a("video_1", "Video 1 — Introduction", ["At least half of the introduction video played"], {video:"Network/CEO introduction; separate from show-specific pitch. Do not use duration or order alone to identify it."}),
+];
+const readiness = [
+  a("challenge", "Explore the business challenge", ["Problem", "Desired change", "Cost of inaction"]),
+  a("sell_yourself", "Ask why they should be selected", ["Invites prospect to make their casting case"]),
+  a("readiness", "Confirm readiness", ["Decision-making authority", "Onboarding and agreements", "Travel or filming availability", "Licensing or promotion costs acknowledged"]),
+  a("financial_fit", "Check affordability when needed", ["Explains approximate investment", "Asks whether continuing is suitable"], {when:"Prospect explicitly indicates early-stage or financial difficulty; never assume from appearance or occupation"}),
+  a("selection", "Explain why they are moving forward", ["Communicates next-stage selection", "Gives a prospect-specific reason"], {when:"Prospect is being advanced"}),
+];
+const followup = [
+  a("next_call", "Arrange the next call", ["Offers next-day or within-24-hour appointment", "Agrees a date and time"], {when:"Prospect is being advanced"}),
+  a("partner", "Check who else needs to attend", ["Asks about relevant spouse or business partner", "If relevant, arranges their attendance"], {when:"Prospect is being advanced"}),
+  a("invite", "Confirm the calendar invitation", ["Checks receipt", "Asks for acceptance"], {when:"Next call is booked"}),
+  a("prework", "Set episode and media-kit preparation", ["Asks prospect to watch an episode", "Shows or explains media kit", "Asks commitment to review before next call"], {when:"Prospect is being advanced"}),
+  a("email", "Confirm follow-up email", ["Sends or announces sending materials", "Checks prospect received them"], {when:"Prospect is being advanced"}),
+];
+export const RUBRICS: Record<ScriptId, {label: string; source: string; actions: Action[]}> = {
+  documentary_call_1: {label:"Documentary · Call 1", source:"1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ", actions:[...opening,
+    a("research", "Research the prospect", ["Reviews correct person's online presence"], {unobservable:true}),
+    a("story", "Explore their story", ["Asks business backstory", "Asks what makes it TV-worthy"]),
+    a("expertise", "Explore expertise", ["Asks expertise", "Asks lessons or inspiration for viewers"]),
+    a("benefit", "Explore why TV and why now", ["Business use", "Reason for TV or timing"]),
+    ...readiness,
+    a("video_2", "Video 2 — Congratulations", ["At least half of the congratulations/next-steps video played"], {video:"Documentary congratulations and next-steps video; not the reality show pitch",when:"Prospect is being advanced"}), ...followup]},
+  reality_call_1: {label:"Reality · Call 1", source:"1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE", actions:[...opening,
+    a("personality", "Explore personality", ["Asks about personality or on-screen suitability"]),
+    a("story", "Explore their story", ["Asks deeper backstory", "Asks what makes it TV-worthy"]),
+    a("applied", "Explore why they applied", ["Reason for applying", "Reality-show fit"]),
+    a("benefit", "Explore business benefit", ["Benefit to brand or business", "Probes why"]), ...readiness,
+    a("video_2", "Video 2 — Show pitch", ["At least half of the correct show-specific pitch played"], {video:"Pitch for the actual reality show: Entrepreneurs Island, Business Race, Mansion of Money, Operation Profit or Business Race UK. Embedded network/CEO segment does NOT independently prove Video 1."}), ...followup]},
+  documentary_call_2: {label:"Documentary · Call 2",source:"1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo",actions:[
+    opening[0], a("video_1","Video 1 — Studio tour",["At least half of the studio tour played"],{video:"Studio tour and shoot-day overview"}),
+    a("selection","Explain selection and agenda",["Reason for greenlight", "Explains next steps or licensing agenda"]),
+    a("story_review","Review the proposed storyline",["Checks greenlight/storyline review", "Explains outline will develop after onboarding"]),
+    a("highlights","Discuss personal story highlights",["First specific highlight", "Second specific highlight"]),
+    a("emotion","Connect story to audience",["Explains emotional connection or trust"]),
+    a("brand","Connect episode to their brand",["Brand differentiation or authority", "Practical marketing or distribution uses"]),
+    a("shared","Ask about previous public sharing",["Asks whether story has been shared publicly"]),
+    a("mission","Explore their mission",["Discusses specific mission", "Asks whether others understand it"]),
+    a("expertise","Explore lessons for viewers",["Discusses teachable expertise", "Asks about useful insights"]),
+    a("future","Explore future reputation",["Asks what they want to be known for", "Asks how episode helps"]),
+    a("soft_yes","Confirm interest in moving forward",["Asks how they feel", "Gets permission to discuss next steps"]),
+    a("partner","Check family or partner alignment",["Asks about relevant family or partner alignment"]),
+    a("video_2","Video 2 — License",["At least half of one relevant license video played"],{video:"License rights and fees video; one appropriate offer, not all three price videos"}),
+    a("proceed","Ask to proceed",["Asks to book onboarding and start payment"]),
+    a("objections","Address stated concerns",["Acknowledges actual concern", "Responds to that concern"],{when:"Prospect raises a concern; this measures occurrence, not handling quality"}),
+    a("payment_link","Guide payment",["Provides payment link", "Explains show and rep name entry"],{when:"Prospect agrees to proceed with payment"}),
+    a("terms","Explain payment terms",["Amount due now", "Remaining amounts and schedule if installments"],{when:"Prospect proceeds with payment"}),
+    a("payment_confirm","Confirm payment",["Verifies completed payment"],{when:"Payment is attempted"}),
+    a("contract","Guide contract signing",["Explains contract step", "Requests signature or acknowledges legal review"],{when:"Payment completed or contract requested"}),
+    a("onboarding","Arrange onboarding",["Offers next-day onboarding", "Agrees date and time"],{when:"Prospect proceeds to onboarding"}),
+    a("contact","Confirm onboarding contact details",["Confirms email", "Confirms phone"],{when:"Onboarding is being booked"}),
+    a("invite","Confirm onboarding invitation",["Checks receipt", "Requests acceptance", "Checks calendar visibility"],{when:"Onboarding is booked"}),
+    a("form","Explain onboarding form",["Shows or explains form", "Explains assets it enables", "Asks completion within seven days"],{when:"Prospect proceeds to onboarding"}),
+    a("welcome","Review welcome email",["Sends or shows welcome email", "Reviews steps"],{when:"Prospect proceeds to onboarding"}),
+    a("backup","Explain rescheduling",["Shows backup booking link or times", "Emphasizes prompt rebooking"],{when:"Onboarding is booked"}),
+    a("questions","Explain where remaining questions are answered",["Explains onboarding call covers remaining questions"],{when:"Prospect proceeds to onboarding"}),
+    a("recap","Recap next steps",["Onboarding call", "Onboarding form", "Contract"],{when:"Prospect proceeds to onboarding"}),
+    a("celebrate","Celebrate and invite sharing",["Congratulates prospect", "Asks whom they will tell or when they will share"],{when:"Prospect proceeds to onboarding"}),
+  ]},
+};

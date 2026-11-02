@@ -1,0 +1,21 @@
+import {describe,it,expect} from "vitest";
+import {actionStatus,summarize,validateAnalysis,scriptFor,type Analysis} from "../../src/lib/script-adherence/contract";
+import {RUBRICS} from "../../src/lib/script-adherence/rubric";
+const fixture=():Analysis=>({eligibleForChecklist:true,exclusionReason:"",family:"reality",stage:"call_1",attendance:"conversation",show:"Business Race",classificationReason:"Casting interview",transcriptComplete:true,actions:RUBRICS.reality_call_1.actions.map(a=>({id:a.id,applicability:"yes",reason:"Source reviewed",playbackFraction:null,components:a.components.map(()=>({state:"unknown",quote:"",timestamp:""}))}))});
+describe("Adherence measurement",()=>{
+  it("counts exactly half complete, below half not complete",()=>{const r=fixture(),a=r.actions.find(a=>a.id==="readiness")!;a.components.forEach((c,i)=>c.state=i<2?"done":"not_done");expect(actionStatus(r,a.id)).toBe("Complete");a.components[1].state="not_done";expect(actionStatus(r,a.id)).toBe("Not complete");});
+  it("does not confuse unknown with omitted",()=>{const r=fixture(),a=r.actions.find(a=>a.id==="readiness")!;a.components[0].state="done";a.components[1].state="not_done";expect(actionStatus(r,a.id)).toBe("Not observable");});
+  it("excludes conditional steps that were not due",()=>{const r=fixture();r.actions[0].applicability="no";expect(actionStatus(r,"consent")).toBe("Not applicable");expect(()=>validateAnalysis(r,"source")).toThrow("Required action");});
+  it("rejects fabricated source quotes",()=>{const r=fixture();Object.assign(r.actions[0].components[0],{state:"done",quote:"not in source",timestamp:"00:01"});expect(()=>validateAnalysis(r,"00:01 hello")).toThrow("absent from source");});
+  it("rejects fake evidence timestamps",()=>{const r=fixture();Object.assign(r.actions[0].components[0],{state:"done",quote:"hello",timestamp:"00:02"});expect(()=>validateAnalysis(r,"00:01 hello")).toThrow("timestamp");});
+  it("does not infer omissions from incomplete transcripts",()=>{const r=fixture();r.transcriptComplete=false;r.actions[0].components[0].state="not_done";expect(()=>validateAnalysis(r,"source")).toThrow("Missing evidence");});
+  it("requires the whole selected checklist",()=>{const r=fixture();r.actions.pop();expect(()=>validateAnalysis(r,"source")).toThrow("Incomplete");});
+  it("rejects duplicate actions",()=>{const r=fixture();r.actions[1]=r.actions[0];expect(()=>validateAnalysis(r,"source")).toThrow("duplicate");});
+  it("keeps unsupported Reality Call 2 out of scores",()=>{const r=fixture();r.stage="call_2";expect(scriptFor(r)).toBe(null);expect(()=>validateAnalysis(r,"source")).toThrow("Unsupported");r.actions=[];expect(summarize([r]).completion).toBe(null);});
+  it("keeps no-shows out of scores",()=>{const r=fixture();r.attendance="no_show";r.actions=[];expect(scriptFor(r)).toBe(null);expect(summarize([r]).assessed).toBe(0);});
+  it("does not accept unsupported video fraction",()=>{const r=fixture();r.actions.find(a=>a.id==="video_1")!.playbackFraction=1;expect(()=>validateAnalysis(r,"source")).toThrow("Playback extent");});
+  it("counts 50% playback but does not change it to 100%",()=>{const r=fixture(),v=r.actions.find(a=>a.id==="video_1")!;v.playbackFraction=.5;expect(actionStatus(r,v.id)).toBe("Complete");expect(v.playbackFraction).toBe(.5);v.playbackFraction=.49;expect(actionStatus(r,v.id)).toBe("Not complete");});
+  it("calculates totals from actions, not average rep rates",()=>{const a=fixture(),b=fixture();a.actions=a.actions.slice(0,1);a.actions[0].components.forEach(x=>x.state="done");b.actions=b.actions.slice(0,3);b.actions.forEach(x=>x.components.forEach(c=>c.state="not_done"));const s=summarize([a,b]);expect(s.completion).toBe(.25);expect(s.coverage).toBe(1);});
+  it("keeps all-unknown results blank rather than 0%",()=>{const s=summarize([fixture()]);expect(s.completion).toBe(null);expect(s.coverage).toBe(0);});
+  it("keeps video roles separate by script",()=>{expect(RUBRICS.reality_call_1.actions.find(a=>a.id==="video_2")!.label).toContain("Show pitch");expect(RUBRICS.documentary_call_1.actions.find(a=>a.id==="video_2")!.label).toContain("Congratulations");expect(RUBRICS.documentary_call_2.actions.find(a=>a.id==="video_2")!.label).toContain("License");});
+});
