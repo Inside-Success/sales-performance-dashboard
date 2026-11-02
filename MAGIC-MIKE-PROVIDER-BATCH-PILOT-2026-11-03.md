@@ -45,3 +45,11 @@ Scoped chat heartbeat `finish-magic-mike-batch-pilot` checks every ten minutes, 
 ## Draft completion and review submission
 
 All twelve draft requests completed with zero provider failures and all twelve passed source/schema validation. Provider draft turnaround: 2,453 seconds (40 minutes 53 seconds). Usage-priced Batch cost: $0.126193. The same twelve drafts and full transcripts were submitted for Terra review under batch `batch_6ae8f9d1a2148190a36587363cdc417a`, initially validating. No duplicate draft or review jobs were submitted. Review completion, substantive comparison and final ledger replay checks remain pending.
+
+## Interim draft comparison and recovery verification
+
+At the user's request to finish the remaining checks, review batch was confirmed in progress with zero completed/failed at that read. Draft recollection was exercised against the live isolated ledger: before/after budget and request totals were identical; settled draft cost remained $0.126193, with twelve review reservations outstanding. All 46 accepted-call results retained the original digest and activation remained false.
+
+Draft comparison against the saved earlier reviewed outputs: 11/12 classifications, 172/176 existing reference action statuses, and 16/16 video statuses matched. One newly assigned documentary Call 2 checklist is not included in that 176-action denominator because the old reference classified the call as follow-up. These figures are consistency measurements, not accuracy. Private details: `draft-comparison.json`.
+
+Differences requiring final source adjudication: call 5 invite applicability after lost connection; call 6 challenge discovery versus the rep's own business-maturity assessment; call 9 conditional financial-fit applicability before interruption; call 10 Call 2 versus follow-up (casting approval/media pack do not by themselves prove a prior full presentation); call 15 whether the payment/onboarding proposal satisfies the proceed request. The prior reference must not be assumed correct. Review receipts and inspection of all final differences are still required before any rollout recommendation.
