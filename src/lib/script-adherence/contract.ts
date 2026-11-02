@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {historicalRequirement} from "./timeline";
 import { RUBRICS, RUBRIC_VERSION, type ScriptId } from "./rubric";
 export const resultSchema = z.object({
   family:z.enum(["documentary","reality","other","unknown"]),
@@ -44,10 +45,15 @@ export function validateAnalysis(raw:unknown, transcript:string): Analysis {
   }
   return r;
 }
-export function actionStatus(r:Analysis,id:string):Status {
+export function actionStatus(r:Analysis,id:string,startedAt?:string):Status {
   const script=scriptFor(r), a=r.actions.find(a=>a.id===id);
   if(!script||!a) return "Not observable";
   const def=RUBRICS[script].actions.find(x=>x.id===id)!;
+  if(startedAt!==undefined){
+    const historical=historicalRequirement(script,id,startedAt);
+    if(historical==="outside_window")return "Not applicable";
+    if(historical==="unknown_date")return "Not observable";
+  }
   if(a.applicability==="no") return "Not applicable";
   if(a.applicability==="unknown") return "Not observable";
   if(def.video){
@@ -61,9 +67,9 @@ export function actionStatus(r:Analysis,id:string):Status {
   if((done+unknown)/applicable.length>=.5) return "Not observable";
   return "Not complete";
 }
-export function summarize(results:Analysis[]){
+export function summarize(results:Analysis[],startedAt?:string[]){
   const totals={complete:0,notComplete:0,unknown:0,notApplicable:0,assessedCalls:0};
-  for(const r of results){if(!scriptFor(r))continue; totals.assessedCalls++; for(const a of r.actions){const s=actionStatus(r,a.id); if(s==="Complete")totals.complete++;else if(s==="Not complete")totals.notComplete++;else if(s==="Not observable")totals.unknown++;else totals.notApplicable++;}}
+  for(const [index,r] of results.entries()){if(!scriptFor(r))continue; totals.assessedCalls++; for(const a of r.actions){const s=actionStatus(r,a.id,startedAt?.[index]); if(s==="Complete")totals.complete++;else if(s==="Not complete")totals.notComplete++;else if(s==="Not observable")totals.unknown++;else totals.notApplicable++;}}
   const assessed=totals.complete+totals.notComplete;
   return {...totals,assessed,completion:assessed?totals.complete/assessed:null,coverage:assessed+totals.unknown?assessed/(assessed+totals.unknown):null};
 }
