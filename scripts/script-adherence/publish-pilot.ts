@@ -7,8 +7,10 @@ import {RUBRIC_VERSION} from '../../src/lib/script-adherence/rubric';
 import {canonicalShow} from '../../src/lib/script-adherence/show';
 const sql=neon(process.env.DATABASE_URL!);
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
-const calls=JSON.parse(readFileSync('.private-adherence/pilot-calls.json','utf8'));
-const manifest=JSON.parse(readFileSync('.private-adherence/reviewed-manifest.json','utf8')) as {index:number;requestId:string;reviewed:boolean}[];
+const expanded=process.env.ADHERENCE_COHORT==='expanded-calls.json';
+if(process.env.ADHERENCE_COHORT&&!['pilot-calls.json','expanded-calls.json'].includes(process.env.ADHERENCE_COHORT))throw Error('Unknown cohort');
+const calls=JSON.parse(readFileSync('.private-adherence/'+(expanded?'expanded-calls.json':'pilot-calls.json'),'utf8'));
+const manifest=JSON.parse(readFileSync('.private-adherence/'+(expanded?'expanded-reviewed-manifest.json':'reviewed-manifest.json'),'utf8')) as {index:number;requestId:string;reviewed:boolean}[];
 if(manifest.length!==calls.length||new Set(manifest.map(x=>x.index)).size!==calls.length||manifest.some(x=>!x.reviewed))throw Error('Incomplete review manifest');
 const statements=[],results=[];
 for(const m of manifest){
@@ -27,4 +29,4 @@ for(const m of manifest){
  statements.push(sql`insert into script_adherence_calls(source_key,account_id,meeting_uuid,transcript_hash,rep,title,started_at,source_url,rubric_version,result,request_id,review_status) values (${key},${account},${uuid},${hash(c.transcript)},${c.source['Rep Name']},${c.source['Meeting Title']},${c.source['Meeting Start Date']}::timestamptz,${c.source['Meeting Transcript Link']||c.source['Meeting Link']||''},${RUBRIC_VERSION},${JSON.stringify(result)}::jsonb,${row.id},'pilot') on conflict(source_key) do update set result=excluded.result,request_id=excluded.request_id,rubric_version=excluded.rubric_version,transcript_hash=excluded.transcript_hash,review_status='pilot',updated_at=now()`);
 }
 if(process.argv.includes('--publish')){await sql.transaction(statements);console.log('Pilot published atomically');}
-console.log({calls:results.length,summary:summarize(results)});
+console.log({calls:results.length,summary:summarize(results,manifest.map(m=>calls[m.index].source['Meeting Start Date']))});

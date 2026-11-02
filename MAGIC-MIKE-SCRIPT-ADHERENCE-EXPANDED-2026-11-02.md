@@ -27,3 +27,11 @@ In progress. No expanded results are accepted merely because they pass schema va
 
 ## Rollback
 Revert this scoped PR to restore the prior UI/dispatch. Raw saved results and original pilot receipts are preserved. The source/pilot workflows remain isolated and are deactivated after bounded runs; official coaching is not edited.
+
+## Follow-up verification and corrections
+- UI PR355 merged as `41a4edd`; authenticated testing caught a percent-encoded rep route mismatch. PR356 (`ebed48a`) fixed exact name resolution. Live Tara drilldown now works with inherited show filter, call expansion, original transcript link and action evidence. Responsive overview checked at 390px and viewport restored.
+- Both models classified the same 30 unseen transcripts: 26 legacy-workspace recordings and four main-workspace recordings, covering 20 reps. This is a deliberately varied bounded sample, not a random estimate of company-wide performance.
+- First extraction pass: Haiku 11/14 structurally valid; three held (invalid evidence ID, required-action applicability, checklist shape). Terra 16/16 structurally valid. These are validation rates, NOT measured accuracy.
+- Source review corrected an early-decline eligibility mistake, an initial audition with detailed pricing incorrectly treated as Call 2, and outbound voicemail taxonomy. Late disqualification after a substantive audition remains assessable. Network names are not show names. Unsupported Reality Call 2 and later Q&A remain visible without fabricated scripts.
+- Fixed checklist/part keys and shared exact evidence-ID definitions prevent missing/extra components and fabricated references. An initial review attempt exceeded the provider's 1,000-enum schema limit; all 15 requests were rejected before generation, safely held and recorded at zero generation cost. Shared schema definitions fixed this without disabling strict output. Unknown transport errors retain budget reservations.
+- The final directed review uses the complete transcript plus explicitly recorded source findings. It is a correction pass, not a blind accuracy benchmark. Raw model comparisons and rejected outputs remain in the private audit files.

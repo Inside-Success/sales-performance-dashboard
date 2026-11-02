@@ -1,0 +1,25 @@
+name: Script adherence regression gate
+on:
+  pull_request:
+    paths:
+      - 'src/lib/script-adherence/**'
+      - 'src/app/manager/script-adherence/**'
+      - 'src/app/api/internal/script-adherence/**'
+      - 'scripts/script-adherence/**'
+      - 'tests/script-adherence/**'
+      - '.github/workflows/script-adherence.yml'
+permissions:
+  contents: read
+jobs:
+  adherence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/script-adherence tests/admin-access.test.ts
+      - run: npx tsc --noEmit
