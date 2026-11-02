@@ -11,12 +11,18 @@ export async function POST(request:Request){
   const raw=await request.text();if(Buffer.byteLength(raw)>3_000_000)return Response.json({error:'Payload too large'},{status:413});
   const parsed=input.safeParse(JSON.parse(raw));if(!parsed.success)return Response.json({error:'Invalid request'},{status:400});
   const sql=neon(process.env.DATABASE_URL!),claimed=[];
+  // Validate the entire batch before claiming any request.
+  for(const {body} of parsed.data.requests){
+   const cap=body.model==='gpt-6.1-terra'?body.max_completion_tokens:body.max_tokens;
+   if(!['claude-haiku-5-5','gpt-6.1-terra'].includes(String(body.model))||!Number.isInteger(cap)||Number(cap)<1||Number(cap)>16000||Buffer.byteLength(JSON.stringify(body))>260000)throw Error('Invalid bounds');
+   if(body.model==='gpt-6.1-terra'&&(body.service_tier!=='default'||body.tools!==undefined||body.stream===true))throw Error('Unsupported billing configuration');
+  }
   for(const item of parsed.data.requests){
-   if(item.body.model!=='claude-haiku-5-5'||typeof item.body.max_tokens!=='number'||item.body.max_tokens>16000||Buffer.byteLength(JSON.stringify(item.body))>260000)throw Error('Invalid bounds');
+   const reserve=item.body.model==='gpt-6.1-terra'?500000:200000;
    const hash=createHash('sha256').update(JSON.stringify(item.body)).digest('hex');
    // Atomic compare-and-set: duplicate/concurrent delivery never gets a second dispatch.
    // A lost response remains submitted for receipt reconciliation, never automatic replay.
-   const rows=await sql`update script_adherence_requests r set status='submitted',updated_at=now() where r.id=${item.id} and r.request_hash=${hash} and r.project='pilot-2026-11-02' and r.model='claude-haiku-5-5' and r.status='reserved' and r.reserved_microusd>=200000 and exists(select 1 from script_adherence_budget b where b.project=r.project and b.committed_microusd<=b.ceiling_microusd) returning r.id`;
+   const rows=await sql`update script_adherence_requests r set status='submitted',updated_at=now() where r.id=${item.id} and r.request_hash=${hash} and r.project='pilot-2026-11-02' and r.model=${String(item.body.model)} and r.status='reserved' and r.reserved_microusd>=${reserve} and exists(select 1 from script_adherence_budget b where b.project=r.project and b.committed_microusd<=b.ceiling_microusd) returning r.id`;
    if(rows.length)claimed.push(item);
   }
   return Response.json({requests:claimed},{headers:{'Cache-Control':'no-store'}});

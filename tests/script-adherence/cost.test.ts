@@ -5,3 +5,5 @@ it("accounts for Anthropic's separately reported cache writes",()=>expect(usageC
 it("charges higher Haiku tier for whole long prompt",()=>expect(usageCost("claude-haiku-5-5",{input_tokens:100001,output_tokens:1000})).toBe(52501));
 it("refuses incomplete billing receipts",()=>expect(()=>usageCost("gpt-6-luna",{})).toThrow());
 it("refuses unpriced models",()=>expect(()=>usageCost("other",{})).toThrow());
+it('prices Terra standard cache reads, writes and inclusive reasoning output',()=>expect(usageCost('gpt-6.1-terra',{prompt_tokens:10000,completion_tokens:1000,prompt_tokens_details:{cached_tokens:2000,cache_write_tokens:4000}})).toBe(14100));
+it('prices Terra long-context tier for the whole request',()=>expect(usageCost('gpt-6.1-terra',{prompt_tokens:300000,completion_tokens:1000})).toBe(607500));

@@ -11,7 +11,11 @@ import {indexTranscript,indexedText,resolveEvidence} from "../../src/lib/script-
 const sql=neon(process.env.DATABASE_URL!),dir=".private-adherence/",project="pilot-2026-11-02";
 const hash=(s:string)=>createHash("sha256").update(s).digest("hex");
 type Call={source:Record<string,string>;transcript:string};
-const calls:Call[]=JSON.parse(readFileSync(dir+"pilot-calls.json","utf8"));
+const cohort=process.env.ADHERENCE_COHORT||"pilot-calls.json";
+if(!["pilot-calls.json","expanded-calls.json"].includes(cohort))throw Error("Unknown cohort");
+const model=process.env.ADHERENCE_MODEL||"claude-haiku-5-5";
+if(!["claude-haiku-5-5","gpt-6.1-terra"].includes(model))throw Error("Unpriced model");
+const calls:Call[]=JSON.parse(readFileSync(dir+cohort,"utf8"));
 const sourceKey=(c:Call)=>hash(JSON.stringify([c.source["Automation Key"]?.includes("ELrPk")?"ELrPkucySZ2nxcs4fpyAaA":"nTC8wAG7SsijjSRAP3IOng",c.source["Zoom Meeting UUID"]]));
 const text=(c:Call)=>`Title (unreliable): ${c.source["Meeting Title"]}\nRep: ${c.source["Rep Name"]}\nTRANSCRIPT:\n${c.transcript.split("Full Transcript").slice(1).join("Full Transcript").trim()}`;
 const args=process.argv.slice(2),command=args[0];
@@ -26,24 +30,34 @@ if(command==="schema"){
   if(args[2]&&!args[2].split(",").map(Number).includes(callIndex))continue;
   const source=sourceKey(c);let classification:Classification|undefined;
   if(stage!=="classify"){
-   const rows=await sql`select result,status from script_adherence_requests where source_key=${source} and stage='classify' order by created_at desc limit 1`;
+   const rows=await sql`select result,status from script_adherence_requests where source_key=${source} and stage='classify' and model=${model} order by created_at desc limit 1`;
    if(!rows.length||rows[0].status!=="completed")continue;classification=classificationSchema.parse(rows[0].result);if(!scriptFor(classification))continue;
   }
   const script=classification?scriptFor(classification):null;
   const turns=indexTranscript(c.transcript.split("Full Transcript").slice(1).join("Full Transcript"));if(!turns.length)throw Error("No indexed source evidence");
   const evidenceIds=["",...turns.map(t=>t.id)] as [string,...string[]];
   let draft:unknown=null;
-  if(stage==="review"){const rows=await sql`select result,status from script_adherence_requests where source_key=${source} and stage='extract' order by created_at desc limit 1`;if(!rows.length||rows[0].status!=="completed")continue;draft=rows[0].result;}
+  if(stage==="review"){const rows=await sql`select result,status from script_adherence_requests where source_key=${source} and stage='extract' and model=${model} order by created_at desc limit 1`;if(!rows.length||rows[0].status!=="completed")continue;draft=rows[0].result;}
   const system=(stage==="classify"?classificationPrompt:analysisPrompt().split("Rubrics:\n")[0]+`\nThe classification is already established: ${JSON.stringify(classification)}. Extract ONLY the supplied checklist. Do not return classification or any action from another script. Return an actions array containing each supplied action ID exactly once. Return components as an array in the stated rubric order. No omitted or extra actions or components.\n${JSON.stringify(RUBRICS[script!])}`)+"\nEVIDENCE FORMAT OVERRIDE: The transcript is indexed T0001, T0002 etc. Return ONLY one exact T-ID in familyEvidence, stageEvidence, priorPresentationEvidence, and component quote fields, not copied or paraphrased text. Choose the most decisive passage. The application resolves IDs to the original source text and timestamps. Return empty string for absent/unknown evidence; component timestamp may be empty because the application supplies it. Read all indexed passages; timestamps preserve chronology even in long recorded-video passages.";
   const reviewInstruction=stage==="review"?"\nAudit the draft against the FULL transcript, independently checking every completed, omitted and conditional component. Return the corrected full actions array. Do not merely agree. Distinguish asking/confirming from announcing/explaining, and live rep speech from recorded playback. A broad question with a substantive prospect answer can satisfy the action; literal wording is not required. Do not penalize omitted steps whose explicit trigger never happened. For conditional financial fit, if the rep actually performs the affordability check, the action is observable and applicable; otherwise apply its trigger. For video fractions, do not invent exact percentages such as .7 or .9. Use .5 as the conservative lower bound only when the content supports at least half; use 1 only when beginning/end demonstrably establish the whole distinct video. Video1 and Video2 must remain separate playback roles, never divide one pitch into both. Re-check source evidence for each claim; a relevant quote is not proof if it does not show the defined action.\n":"";
-  const findings=stage==="review"&&existsSync(dir+"audit-findings.json")?JSON.parse(readFileSync(dir+"audit-findings.json","utf8"))[callIndex]||"":"";
+  const findings=stage==="review"&&cohort==="pilot-calls.json"&&existsSync(dir+"audit-findings.json")?JSON.parse(readFileSync(dir+"audit-findings.json","utf8"))[callIndex]||"":"";
   const outputSchema=stage==="classify"?classificationSchema.extend({familyEvidence:z.enum(evidenceIds),stageEvidence:z.enum(evidenceIds),priorPresentationEvidence:z.enum(evidenceIds)}):providerExtractionSchema(script!);
   const schema=z.toJSONSchema(outputSchema);delete schema.$schema;
   const providerSchema=JSON.parse(JSON.stringify(schema,(key,value)=>["minimum","maximum"].includes(key)?undefined:value));
-  const body={model:"claude-haiku-5-5",max_tokens:16000,system:[{type:"text",text:system+reviewInstruction,cache_control:{type:"ephemeral"}}],messages:[{role:"user",content:`Title (unreliable): ${c.source["Meeting Title"]}\nRep: ${c.source["Rep Name"]}\n${indexedText(turns)}${draft?"\nDRAFT FOR INDEPENDENT AUDIT (not ground truth):\n"+JSON.stringify(draft)+"\nSOURCE-CHECKED REVIEW FINDINGS TO VERIFY AND APPLY:\n"+findings:""}`}],output_config:{effort:stage==="extract"?"low":"medium",format:{type:"json_schema",schema:providerSchema}}};
+  const haikuBody={model:"claude-haiku-5-5",max_tokens:16000,system:[{type:"text",text:system+reviewInstruction,cache_control:{type:"ephemeral"}}],messages:[{role:"user",content:`Title (unreliable): ${c.source["Meeting Title"]}\nRep: ${c.source["Rep Name"]}\n${indexedText(turns)}${draft?"\nDRAFT FOR INDEPENDENT AUDIT (not ground truth):\n"+JSON.stringify(draft)+"\nSOURCE-CHECKED REVIEW FINDINGS TO VERIFY AND APPLY:\n"+findings:""}`}],output_config:{effort:stage==="extract"?"low":"medium",format:{type:"json_schema",schema:providerSchema}}};
+  const strictSchema=(value:unknown):unknown=>{
+    if(Array.isArray(value))return value.map(strictSchema);
+    if(value&&typeof value==='object'){
+      const v=value as Record<string,unknown>,out=Object.fromEntries(Object.entries(v).filter(([k])=>k!=='default').map(([k,x])=>[k,strictSchema(x)]));
+      if(v.type==='object'&&v.properties){out.required=Object.keys(v.properties);out.additionalProperties=false;}
+      return out;
+    }return value;
+  };
+  const body=model==='gpt-6.1-terra'?{model,service_tier:'default',max_completion_tokens:16000,reasoning_effort:stage==='extract'?'low':'medium',messages:[{role:'system',content:system+reviewInstruction},...haikuBody.messages],response_format:{type:'json_schema',json_schema:{name:'script_adherence',strict:true,schema:strictSchema(providerSchema)}}}:haikuBody;
+  const reserve=model==='gpt-6.1-terra'?500000:200000;
   if(Buffer.byteLength(text(c))>200000||Buffer.byteLength(system)>30000)throw Error("Input too large");
   const requestHash=hash(JSON.stringify(body)),id=hash(source+requestHash);
-  const reserved=await sql`with budget as (select * from script_adherence_budget where project=${project} for update),inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage) select ${id},${project},${source},${requestHash},'claude-haiku-5-5',200000,'reserved',${stage} from budget where committed_microusd+200000<=ceiling_microusd on conflict do nothing returning id), debited as (update script_adherence_budget set committed_microusd=committed_microusd+200000 where project=${project} and exists(select 1 from inserted) returning project) select id from inserted`;
+  const reserved=await sql`with budget as (select * from script_adherence_budget where project=${project} for update),inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage) select ${id},${project},${source},${requestHash},${model},${reserve},'reserved',${stage} from budget where committed_microusd+${reserve}<=ceiling_microusd on conflict do nothing returning id), debited as (update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project=${project} and exists(select 1 from inserted) returning project) select id from inserted`;
   if(reserved.length)requests.push({id,body,classification,script});
  }
  writeFileSync(dir+"structured-requests.json",JSON.stringify({requests}),{mode:0o600});console.log({stage,prepared:requests.length});
@@ -51,7 +65,9 @@ if(command==="schema"){
  const results=JSON.parse(readFileSync(dir+args[1],"utf8"));
  for(const item of results){
   const rows=await sql`select * from script_adherence_requests where id=${item.id}`;if(!rows.length)throw Error("Unreserved receipt");const req=rows[0];if(req.actual_microusd!==null)continue;
-  const r=item.response;if(!r.usage){await sql`update script_adherence_requests set status='held',validation_error='No usage receipt' where id=${item.id}`;continue;}
+  const provider=item.response;
+  const r=req.model==='gpt-6.1-terra'?{...provider,stop_reason:provider.choices?.[0]?.finish_reason==='stop'?'end_turn':'incomplete',content:[{type:'text',text:provider.choices?.[0]?.message?.content||''}]}:provider;
+  if(!r.usage){await sql`update script_adherence_requests set status='held',validation_error='No usage receipt' where id=${item.id}`;continue;}
   const cost=usageCost(req.model,r.usage);if(cost>req.reserved_microusd)throw Error("Reservation exceeded");
   let parsed:unknown=null,error="";
   try{
