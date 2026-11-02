@@ -1,10 +1,10 @@
 # Magic Mike FAQ knowledge refresh — November 2, 2026
 
-Candidate knowledge refresh. Production verification pending.
+Published and verified knowledge refresh. Three authenticated production answers passed and match the new stored knowledge version.
 
 ## Scope and source coverage
 
-Resume from the successful October 29 checkpoint `edfba01a62afd58943561e57`. Candidate `62dc0173aa88b171ed8e20b4` contains 2,601 active records: nine additions and ten amendments. Only FAQ knowledge and release documentation change. Model, prompts, retrieval, runtime, Coaching, n8n, permissions and source systems are unchanged. No Slack messages were sent.
+Resume from the successful October 29 checkpoint `edfba01a62afd58943561e57`. Published `62dc0173aa88b171ed8e20b4` contains 2,601 active records: nine additions and ten amendments. Only FAQ knowledge and release documentation change. Model, prompts, retrieval, runtime, Coaching, n8n, permissions and source systems are unchanged. No Slack messages were sent.
 
 Read all 84 registered Drive sources, all twelve maintained Sheet ranges, four maintained video-folder listings, and all recent messages in the four registered Slack channels using overlapping history plus fully paginated search after October 28. Reviewed 130 complete threads, including older-root replies; 1,015 unique recent search messages. Retain 1,634 historical thread watermarks and source-specific cutoffs. All twelve Sheet ranges and four folder listings are unchanged against prior raw reads. The separate calendar directory document adds three rep rows; continue using its current directory link.
 
@@ -28,6 +28,6 @@ No new reality Sunday deadline, blanket discount, Call 1 price permission, Slack
 
 ## Verification and release
 
-443/443 FAQ tests and 107/107 static safety checks passed. 18/18 isolated answer checks passed manual source-bound review, estimated $0.1375. Exact-release CI/live checks pending. Advance the successful checkpoint only after production evidence. Rollback knowledge by reverting this scoped knowledge commit and its paired FAQ export; preserve unrelated releases. Old checkpoints remain intact.
+443/443 FAQ tests and 107/107 static safety checks passed. 18/18 isolated answer checks passed manual source-bound review, estimated $0.1375. Exact-release CI passed (FAQ tests, static safety, TypeScript, scoped ESLint and production build). Three separate live chats passed; stored response metadata confirms the new knowledge version, gpt-5.6-luna and no provider errors. Dashboard PR350 and FAQ PR117 merged; production deployment `dpl_2Uy78BNoAyM8dcNtTDBQbhkzC37p` serves commit `976f1af240b0f95e80c30e87a56168dc18ce8f9d`. Rollback knowledge by reverting this scoped knowledge commit and its paired FAQ export; preserve unrelated releases. Old checkpoints remain intact.
 
-Candidate checkpoint: `KNOWLEDGE-CHECKPOINT-2026-11-02.json` (dashboard mirror `docs-ask-sales-knowledge-checkpoint-2026-11-02.json`). Private evidence: `.magic-mike-knowledge-refresh-2026-11-02/` (not committed; includes source reads, test/evaluation and deployment receipts).
+Successful checkpoint: `KNOWLEDGE-CHECKPOINT-2026-11-02.json` (dashboard mirror `docs-ask-sales-knowledge-checkpoint-2026-11-02.json`). Private evidence: `.magic-mike-knowledge-refresh-2026-11-02/` (not committed; includes source reads, test/evaluation and deployment receipts).
