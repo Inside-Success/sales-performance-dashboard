@@ -1,0 +1,24 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
+import { neon } from '@neondatabase/serverless';
+import { z } from 'zod';
+export const runtime='nodejs';
+export const maxDuration=30;
+const input=z.object({requests:z.array(z.object({id:z.string().regex(/^[a-f0-9]{64}$/),body:z.record(z.string(),z.unknown()),classification:z.unknown().optional(),script:z.string().nullable().optional()}).strict()).max(24)}).strict();
+export async function POST(request:Request){
+ const expected=process.env.INGEST_SECRET||'',supplied=request.headers.get('authorization')?.replace(/^Bearer\s+/i,'').trim()||'';
+ if(!expected||Buffer.byteLength(expected)!==Buffer.byteLength(supplied)||!timingSafeEqual(Buffer.from(expected),Buffer.from(supplied)))return Response.json({error:'Unauthorized'},{status:401});
+ try{
+  const raw=await request.text();if(Buffer.byteLength(raw)>3_000_000)return Response.json({error:'Payload too large'},{status:413});
+  const parsed=input.safeParse(JSON.parse(raw));if(!parsed.success)return Response.json({error:'Invalid request'},{status:400});
+  const sql=neon(process.env.DATABASE_URL!),claimed=[];
+  for(const item of parsed.data.requests){
+   if(item.body.model!=='claude-haiku-5-5'||typeof item.body.max_tokens!=='number'||item.body.max_tokens>16000||Buffer.byteLength(JSON.stringify(item.body))>260000)throw Error('Invalid bounds');
+   const hash=createHash('sha256').update(JSON.stringify(item.body)).digest('hex');
+   // Atomic compare-and-set: duplicate/concurrent delivery never gets a second dispatch.
+   // A lost response remains submitted for receipt reconciliation, never automatic replay.
+   const rows=await sql`update script_adherence_requests r set status='submitted',updated_at=now() where r.id=${item.id} and r.request_hash=${hash} and r.project='pilot-2026-11-02' and r.model='claude-haiku-5-5' and r.status='reserved' and r.reserved_microusd>=200000 and exists(select 1 from script_adherence_budget b where b.project=r.project and b.committed_microusd<=b.ceiling_microusd) returning r.id`;
+   if(rows.length)claimed.push(item);
+  }
+  return Response.json({requests:claimed},{headers:{'Cache-Control':'no-store'}});
+ }catch{return Response.json({error:'Dispatch held; reconcile before retry'},{status:503});}
+}

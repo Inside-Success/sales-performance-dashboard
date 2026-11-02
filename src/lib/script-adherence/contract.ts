@@ -6,6 +6,7 @@ export const resultSchema = z.object({
   attendance:z.enum(["conversation","no_show","internal","unknown"]),
   show:z.string().max(150), classificationReason:z.string().min(1).max(1000),
   transcriptComplete:z.boolean(),
+  eligibleForChecklist:z.boolean().default(true),exclusionReason:z.string().default(""),
   actions:z.array(z.object({id:z.string(), applicability:z.enum(["yes","no","unknown"]), reason:z.string().max(800),
     components:z.array(z.object({state:z.enum(["done","not_done","unknown","not_applicable"]),quote:z.string().max(1400),timestamp:z.string().max(40)})),
     playbackFraction:z.number().min(0).max(1).nullable(),
@@ -13,8 +14,8 @@ export const resultSchema = z.object({
 }).strict();
 export type Analysis = z.infer<typeof resultSchema>;
 export type Status = "Complete" | "Not complete" | "Not observable" | "Not applicable";
-export function scriptFor(r: Pick<Analysis,"family"|"stage"|"attendance">): ScriptId | null {
-  if(r.attendance!=="conversation") return null;
+export function scriptFor(r: Pick<Analysis,"family"|"stage"|"attendance"> & {eligibleForChecklist?:boolean}): ScriptId | null {
+  if(r.attendance!=="conversation"||r.eligibleForChecklist===false) return null;
   const key=`${r.family}_${r.stage}`;
   return Object.hasOwn(RUBRICS,key) ? key as ScriptId : null;
 }

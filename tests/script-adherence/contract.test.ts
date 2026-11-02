@@ -1,7 +1,7 @@
 import {describe,it,expect} from "vitest";
 import {actionStatus,summarize,validateAnalysis,scriptFor,type Analysis} from "../../src/lib/script-adherence/contract";
 import {RUBRICS} from "../../src/lib/script-adherence/rubric";
-const fixture=():Analysis=>({family:"reality",stage:"call_1",attendance:"conversation",show:"Business Race",classificationReason:"Casting interview",transcriptComplete:true,actions:RUBRICS.reality_call_1.actions.map(a=>({id:a.id,applicability:"yes",reason:"Source reviewed",playbackFraction:null,components:a.components.map(()=>({state:"unknown",quote:"",timestamp:""}))}))});
+const fixture=():Analysis=>({eligibleForChecklist:true,exclusionReason:"",family:"reality",stage:"call_1",attendance:"conversation",show:"Business Race",classificationReason:"Casting interview",transcriptComplete:true,actions:RUBRICS.reality_call_1.actions.map(a=>({id:a.id,applicability:"yes",reason:"Source reviewed",playbackFraction:null,components:a.components.map(()=>({state:"unknown",quote:"",timestamp:""}))}))});
 describe("Adherence measurement",()=>{
   it("counts exactly half complete, below half not complete",()=>{const r=fixture(),a=r.actions.find(a=>a.id==="readiness")!;a.components.forEach((c,i)=>c.state=i<2?"done":"not_done");expect(actionStatus(r,a.id)).toBe("Complete");a.components[1].state="not_done";expect(actionStatus(r,a.id)).toBe("Not complete");});
   it("does not confuse unknown with omitted",()=>{const r=fixture(),a=r.actions.find(a=>a.id==="readiness")!;a.components[0].state="done";a.components[1].state="not_done";expect(actionStatus(r,a.id)).toBe("Not observable");});

@@ -21,3 +21,5 @@ create table if not exists script_adherence_scans (
   id text primary key, account_id text not null, from_at timestamptz not null,to_at timestamptz not null,
   summary jsonb not null, created_at timestamptz not null default now()
 );
+alter table script_adherence_requests add column if not exists stage text not null default 'combined';
+alter table script_adherence_requests add column if not exists validation_error text;
