@@ -1,7 +1,14 @@
 export type EvidenceTurn={id:string;timestamp:string;text:string};
 export function indexTranscript(transcript:string):EvidenceTurn[]{
   const out:EvidenceTurn[]=[];
+  const lines:string[]=[];
   for(const line of transcript.split("\n")){
+    if(!line.trim())continue;
+    if(/^\[[^\]]+\]/.test(line))lines.push(line);
+    else if(lines.length)lines[lines.length-1]+=" "+line.trim();
+    else throw Error("Unindexed transcript prefix");
+  }
+  for(const line of lines){
     const match=line.match(/^\[([^\]]+)\]\s*(.*)$/);if(!match)continue;
     // Split long playback monologues at sentence boundaries, retaining exact text.
     // Never drop a passage or manufacture a more precise timestamp.

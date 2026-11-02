@@ -4,6 +4,7 @@
     {
       "id": "trigger",
       "name": "Pilot request",
+      "webhookId": "5fd20ffe-04d2-4506-83dd-4ba9ae523405",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
@@ -25,8 +26,8 @@
       }
     },
     {
-      "id": "validate",
-      "name": "Validate reserved pilot requests",
+      "id": "v2-validate",
+      "name": "Validate structured requests",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -34,77 +35,18 @@
         0
       ],
       "parameters": {
-        "jsCode": "const r=$input.first().json.body?.requests;if(!Array.isArray(r)||!r.length||r.length>20)throw Error('Pilot limited to 20 reserved requests');const seen=new Set();for(const x of r){if(!/^[a-f0-9]{64}$/.test(x.id)||seen.has(x.id)||!['gpt-6-luna','claude-haiku-5-5'].includes(x.model)||typeof x.system!=='string'||typeof x.text!=='string'||Buffer.byteLength(x.text)>200000||Buffer.byteLength(x.system)>30000)throw Error('Invalid pilot request');seen.add(x.id);}return r.map(x=>({json:x}));"
+        "jsCode": "const requests=$input.first().json.requests;if(!Array.isArray(requests)||requests.length>24)throw Error('Invalid claimed pilot batch');return requests.map(r=>({json:r}));"
       }
     },
     {
-      "id": "oa-select",
-      "name": "Luna requests",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        480,
-        -120
-      ],
-      "parameters": {
-        "jsCode": "return $input.all().filter(x=>x.json.model==='gpt-6-luna').map(x=>({json:{...x.json,body:{model:'gpt-6-luna',messages:[{role:'system',content:x.json.system},{role:'user',content:x.json.text}],max_completion_tokens:10000,reasoning_effort:'low',response_format:{type:'json_object'}}}}));"
-      }
-    },
-    {
-      "id": "an-select",
-      "name": "Haiku requests",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        480,
-        120
-      ],
-      "parameters": {
-        "jsCode": "return $input.all().filter(x=>x.json.model==='claude-haiku-5-5').map(x=>({json:{...x.json,body:{model:'claude-haiku-5-5',max_tokens:10000,output_config:{effort:'low'},system:[{type:'text',text:x.json.system,cache_control:{type:'ephemeral'}}],messages:[{role:'user',content:x.json.text}]}}}));"
-      }
-    },
-    {
-      "id": "oa",
-      "name": "Luna analysis",
+      "id": "v2-http",
+      "name": "Haiku structured analysis",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
+      "onError": "continueRegularOutput",
       "position": [
-        720,
-        -120
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.openai.com/v1/chat/completions",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "openAiApi",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.body) }}",
-        "options": {
-          "timeout": 180000,
-          "batching": {
-            "batch": {
-              "batchSize": 1,
-              "batchInterval": 100
-            }
-          }
-        }
-      },
-      "credentials": {
-        "openAiApi": {
-          "id": "kaytW2ogFtybfuuw",
-          "name": "Magic Mike Script Adherence - OpenAI - Moonis"
-        }
-      }
-    },
-    {
-      "id": "an",
-      "name": "Haiku analysis",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        720,
-        120
+        480,
+        0
       ],
       "parameters": {
         "method": "POST",
@@ -127,8 +69,8 @@
           "timeout": 180000,
           "batching": {
             "batch": {
-              "batchSize": 1,
-              "batchInterval": 100
+              "batchSize": 2,
+              "batchInterval": 250
             }
           }
         }
@@ -141,158 +83,86 @@
       }
     },
     {
-      "id": "oa-pack",
-      "name": "Luna receipts",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        960,
-        -120
-      ],
-      "parameters": {
-        "jsCode": "return $input.all().map((x,i)=>({json:{id:$('Luna requests').all()[i].json.id,response:x.json}}));"
-      }
-    },
-    {
-      "id": "an-pack",
-      "name": "Haiku receipts",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        960,
-        120
-      ],
-      "parameters": {
-        "jsCode": "return $input.all().map((x,i)=>({json:{id:$('Haiku requests').all()[i].json.id,response:x.json}}));"
-      }
-    },
-    {
-      "id": "merge",
-      "name": "Merge receipts",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1200,
-        0
-      ],
-      "parameters": {
-        "mode": "append",
-        "numberInputs": 2
-      }
-    },
-    {
-      "id": "result",
+      "id": "v2-result",
       "name": "Pilot receipts",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1440,
+        720,
         0
       ],
       "parameters": {
-        "jsCode": "return [{json:{results:$input.all().map(x=>x.json)}}];"
+        "jsCode": "return [{json:{results:$input.all().map((x,i)=>({id:$('Validate structured requests').all()[i].json.id,classification:$('Validate structured requests').all()[i].json.classification,script:$('Validate structured requests').all()[i].json.script,response:x.json}))}}];"
+      }
+    },
+    {
+      "id": "dispatch-claim",
+      "name": "Claim reserved requests",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        250,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/dispatch",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "Sales Performance Dashboard Ingest"
+        }
       }
     }
   ],
   "connections": {
-    "Pilot request": {
+    "Validate structured requests": {
       "main": [
         [
           {
-            "node": "Validate reserved pilot requests",
+            "node": "Haiku structured analysis",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate reserved pilot requests": {
-      "main": [
-        [
-          {
-            "node": "Luna requests",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Haiku requests",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Luna requests": {
-      "main": [
-        [
-          {
-            "node": "Luna analysis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Haiku requests": {
-      "main": [
-        [
-          {
-            "node": "Haiku analysis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Luna analysis": {
-      "main": [
-        [
-          {
-            "node": "Luna receipts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Haiku analysis": {
-      "main": [
-        [
-          {
-            "node": "Haiku receipts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Luna receipts": {
-      "main": [
-        [
-          {
-            "node": "Merge receipts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Haiku receipts": {
-      "main": [
-        [
-          {
-            "node": "Merge receipts",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge receipts": {
+    "Haiku structured analysis": {
       "main": [
         [
           {
             "node": "Pilot receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pilot request": {
+      "main": [
+        [
+          {
+            "node": "Claim reserved requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim reserved requests": {
+      "main": [
+        [
+          {
+            "node": "Validate structured requests",
             "type": "main",
             "index": 0
           }
@@ -304,10 +174,9 @@
     "saveExecutionProgress": false,
     "saveManualExecutions": false,
     "saveDataErrorExecution": "all",
-    "saveDataSuccessExecution": "none",
+    "saveDataSuccessExecution": "all",
     "executionTimeout": 900,
     "timezone": "America/New_York",
     "executionOrder": "v1"
-  },
-  "active": false
+  }
 }

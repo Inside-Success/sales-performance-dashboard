@@ -14,7 +14,7 @@ const readiness = [
   a("challenge", "Explore the business challenge", ["Problem", "Desired change", "Cost of inaction"]),
   a("sell_yourself", "Ask why they should be selected", ["Invites prospect to make their casting case"]),
   a("readiness", "Confirm readiness", ["Decision-making authority", "Onboarding and agreements", "Travel or filming availability", "Licensing or promotion costs acknowledged"]),
-  a("financial_fit", "Check affordability when needed", ["Explains approximate investment", "Asks whether continuing is suitable"], {when:"Prospect explicitly indicates early-stage or financial difficulty; never assume from appearance or occupation"}),
+  a("financial_fit", "Check affordability when needed", ["Explains approximate investment", "Asks whether continuing is suitable"], {when:"Prospect explicitly indicates early-stage or financial difficulty, or the rep actually performs the affordability check; never assume from appearance or occupation"}),
   a("selection", "Explain why they are moving forward", ["Communicates next-stage selection", "Gives a prospect-specific reason"], {when:"Prospect is being advanced"}),
 ];
 const followup = [
@@ -54,10 +54,10 @@ export const RUBRICS: Record<ScriptId, {label: string; source: string; actions: 
     a("video_2","Video 2 — License",["At least half of one relevant license video played"],{video:"License rights and fees video; one appropriate offer, not all three price videos"}),
     a("proceed","Ask to proceed",["Asks to book onboarding and start payment"]),
     a("objections","Address stated concerns",["Acknowledges actual concern", "Responds to that concern"],{when:"Prospect raises a concern; this measures occurrence, not handling quality"}),
-    a("payment_link","Guide payment",["Provides payment link", "Explains show and rep name entry"],{when:"Prospect agrees to proceed with payment"}),
+    a("payment_link","Guide payment",["Provides payment link", "Explains show and rep name entry"],{when:"Prospect agrees to proceed with payment, or payment instructions are actually provided"}),
     a("terms","Explain payment terms",["Amount due now", "Remaining amounts and schedule if installments"],{when:"Prospect proceeds with payment"}),
     a("payment_confirm","Confirm payment",["Verifies completed payment"],{when:"Payment is attempted"}),
-    a("contract","Guide contract signing",["Explains contract step", "Requests signature or acknowledges legal review"],{when:"Payment completed or contract requested"}),
+    a("contract","Guide contract signing",["Explains contract step", "Requests signature or acknowledges legal review"],{when:"Payment completed, contract requested, or contract actually provided for review"}),
     a("onboarding","Arrange onboarding",["Offers next-day onboarding", "Agrees date and time"],{when:"Prospect proceeds to onboarding"}),
     a("contact","Confirm onboarding contact details",["Confirms email", "Confirms phone"],{when:"Onboarding is being booked"}),
     a("invite","Confirm onboarding invitation",["Checks receipt", "Requests acceptance", "Checks calendar visibility"],{when:"Onboarding is booked"}),

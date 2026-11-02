@@ -18,12 +18,40 @@ The dedicated OpenAI credential and approved Sales call analyzer Anthropic crede
 
 Workflow `2xX5gVtc1BKlhyG3` is an authenticated isolated pilot transport with no schedule. It compares Luna and Haiku without calling the production coaching workflow. The runner reserves a conservative amount in a persistent $40 project ledger before submission. Ambiguous submissions are held; never blindly replay them. Actual usage includes cached reads, cache writes and reasoning within output tokens.
 
-Install schema explicitly using `scripts/script-adherence/schema.sql`; page reads do not install or modify tables. Prepare and reconcile with `scripts/script-adherence/pilot.ts`. Do not publish model output merely because a request succeeded or a schema passed. Keep raw provider receipts for recovery.
+Install schema explicitly using `scripts/script-adherence/schema.sql`; page reads do not install or modify tables. Baseline comparison is retained in `scripts/script-adherence/pilot.ts`; the current classify/extract/review runner is `structured-pilot.ts`, and `publish-pilot.ts` is the reviewed-manifest publisher. Only the deployed dispatch route can claim current requests; do not manually mark them submitted. Do not publish model output merely because a request succeeded or a schema passed. Keep raw provider receipts for recovery.
 
 ## Required release evidence
 
-In progress: model comparison, semantic review, Zoom closer membership verification, authenticated deployed UI review and pilot publication. The full recurring collector/batch workflow is not yet released. Do not describe this document as evidence of completed rollout.
+Model comparison, source review, closer-membership verification and guarded infrastructure release are complete. Final manager-view verification and final spend reconciliation are recorded below. The full recurring collector/batch workflow is not released. Do not describe this pilot as a completed company-wide rollout.
 
 ## Rollback
 
 Disable only the new adherence workflow; remove only the new manager link/route if needed. Retain isolated result and spend tables. No changes to existing reports or source records are required. Full backfill stays deferred.
+
+## November 2 pilot infrastructure release
+
+PR352 merged as `f5002eeb614c857d50a91cb9c4db07c2408459ab`; production manager route and isolated dispatch API deployed. The authenticated manager page was opened successfully. Existing coaching workflows were not modified. The initial route is intentionally not a claim that a full company-wide collector has been released.
+
+One-time dispatch is database-enforced: only a reserved exact request hash may change to submitted. Duplicate dispatch execution 1489301 returned zero requests and never reached the AI node. The initial production dispatch batch is execution 1489293. No credential domain restriction was widened for preview testing.
+
+Classifier uses full indexed source passages, not titles or prerecorded marketing language. A separate current-call-purpose field distinguishes prior-offer Q&A from a new offer presentation. Latest classification regression: twelve sampled calls; four supported checklists, four Reality Call 2, one later documentary follow-up, one early disqualification, two insufficient transcripts. All twelve hosts matched configured closer membership. Both fragment recordings were checked directly in Zoom and had only one tiny available transcript each; these are real evidence limits, not proof of no-show.
+
+Provider structured-output limits rejected three extraction schema variants before generation (numeric bounds, nullable-field count, grammar size). Each was recorded and its reservation reconciled; these are pilot integration failures, not production coaching failures. The accepted transport uses a compact actions-array schema, then validates exact action IDs, component counts, source references and scoring rules locally. Current workflow preserves each provider error alongside successful sibling responses. No blind paid retries.
+
+## Remaining rollout gate
+
+This authorization is for a small initial test. Full one-week backfill remains deferred. The twice-daily automated collector and recovery/pagination integration are not yet enabled or accepted. Before company-wide use, retain account + recording identity, scan both closer groups with pagination, overlap readiness windows for delayed transcripts, persist cursors/holds, and account for every source recording including unsupported stages. Group membership is maintained by the owner. Use two bounded scheduled batch runs, not one n8n execution per call; retries must reuse receipts and must not replay uncertain provider submissions. Historical scores must retain their source-script version.
+
+## Reviewed pilot results
+
+Twelve calls were accounted for, with four scored calls spanning all three supported checklists. The reviewed checklist has 92 action slots: 60 Complete, 15 Not complete, 1 Not observable (internal prospect research), 16 Not applicable. Completion is 60/75 = 80% of assessed actions; this is a deliberately small pilot sample, not a company performance estimate. Two calls with insufficient source transcripts remain visible without fabricated scores.
+
+Video results: both Reality Call 1 calls contain the show pitch (Video 2) but no distinct introduction playback (Video 1). Documentary Call 1 contains both introduction and congratulations videos. Documentary Call 2 contains both studio tour and license videos. Lower-bound playback evidence is retained; no invented exact playback duration.
+
+Final source-bound classification execution: 1489315. Accepted extraction: 1489399. Initial model review: 1489431. Final targeted review using source-checked findings: 1489506. The final four results required source review beyond automatic schema checks: generic recorded narration, old versus new email checks, semantic discovery credit, and conditional partner attendance were corrected. This is a reviewed pilot, **not evidence of unattended model accuracy**. Preserve the private audit findings and original outputs. A fresh unseen sample is required before claiming that these corrections generalize.
+
+The dashboard presents only clean labels, counts, video roles and expandable evidence. Raw model attempts, request hashes, provider usage, reservations and source versions stay in isolated storage. Publisher requires an exact reviewed manifest and publishes all twelve rows atomically. It cannot publish a supported classification without a validated action extraction.
+
+Final recorded model usage: **$0.229374**, including invalid-output attempts and all paid reruns, against the $40 ceiling. No outstanding reserved/submitted model requests remained at reconciliation. This is token-receipt accounting at the verified provider rates, not an invoice or a steady-state cost-per-call estimate. Infrastructure subscription costs are not included. Provider schema rejections incurred no generation usage. Both new pilot/source-verification workflows are switched off after the pilot; no schedule or full backfill is running.
+
+The pilot uses Haiku for separate classification and selected-script extraction, with medium-effort source review during evaluation. Luna remains a comparison option, not a selected unattended production configuration. Generic narration and previous-call evidence still required directed review in this sample; do not claim either model is flawless or auto-publish future runs. For expansion, use unseen calls to test these exact failure categories before enabling the twice-daily ingestion path.
