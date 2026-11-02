@@ -13,9 +13,9 @@ export async function POST(request:Request){
   const sql=neon(process.env.DATABASE_URL!),claimed=[];
   // Validate the entire batch before claiming any request.
   for(const {body} of parsed.data.requests){
-   const cap=body.model==='gpt-6.1-terra'?body.max_completion_tokens:body.max_tokens;
-   if(!['claude-haiku-5-5','gpt-6.1-terra'].includes(String(body.model))||!Number.isInteger(cap)||Number(cap)<1||Number(cap)>16000||Buffer.byteLength(JSON.stringify(body))>260000)throw Error('Invalid bounds');
-   if(body.model==='gpt-6.1-terra'&&(body.service_tier!=='default'||body.tools!==undefined||body.stream===true))throw Error('Unsupported billing configuration');
+   const cap=String(body.model).startsWith('gpt-')?body.max_completion_tokens:body.max_tokens;
+   if(!['claude-haiku-5-5','gpt-6.1-terra','gpt-6-luna'].includes(String(body.model))||!Number.isInteger(cap)||Number(cap)<1||Number(cap)>16000||Buffer.byteLength(JSON.stringify(body))>260000)throw Error('Invalid bounds');
+   if(String(body.model).startsWith('gpt-')&&(body.service_tier!=='default'||body.tools!==undefined||body.stream===true))throw Error('Unsupported billing configuration');
   }
   for(const item of parsed.data.requests){
    const reserve=item.body.model==='gpt-6.1-terra'?500000:200000;

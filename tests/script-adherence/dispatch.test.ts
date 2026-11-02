@@ -26,3 +26,11 @@ it('dispatches Terra only with standard billing and its separate reservation flo
  const r=new Request('https://example.test',{method:'POST',headers:{authorization:'Bearer test'},body:JSON.stringify({requests:[{id,body:payload}]})});
  expect((await (await POST(r)).json()).requests).toHaveLength(1);expect(sql.mock.calls[0]).toContain(500000);expect(sql.mock.calls[0]).toContain('gpt-6.1-terra');
 });
+it('dispatches Luna with the low-cost reservation and standard billing only',async()=>{
+ const payload={model:'gpt-6-luna',max_completion_tokens:16000,service_tier:'default',messages:[]};
+ const req=(body:unknown)=>new Request('https://example.test',{method:'POST',headers:{authorization:'Bearer test'},body:JSON.stringify({requests:[{id,body}]})});
+ sql.mockResolvedValueOnce([{id}]);
+ expect((await (await POST(req(payload))).json()).requests).toHaveLength(1);
+ expect(sql.mock.calls[0]).toContain(200000);
+ sql.mockReset();expect((await POST(req({...payload,service_tier:'priority'}))).status).toBe(503);expect(sql).not.toHaveBeenCalled();
+});
