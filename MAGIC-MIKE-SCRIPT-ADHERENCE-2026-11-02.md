@@ -63,3 +63,7 @@ PR353 merged as `94cb236bac2515df86898d086c01f77bfc83352e`. Production deploymen
 Final checks: 53 adherence/access tests passed, TypeScript passed, scoped ESLint passed, Vercel production build passed. PR352 also passed the existing coaching-reliability CI suite and production build. Credential-pattern scan found no API keys in the changed tracked files. The official coaching, manual coaching, Zoom intake and bounded recovery workflows remain active, with update dates preceding this pilot. No Slack messages were sent.
 
 The reviewed pilot is available for owner assessment. Company-wide unattended operation is not accepted: it still requires the twice-daily collector/recovery integration and fresh unseen-call evaluation. The four final checklists include directed source-review corrections; presenting those as raw-model accuracy would be misleading. All original requests, paid usage, final results and review findings have been retained.
+
+
+## Expanded pilot completed November 2
+See `MAGIC-MIKE-SCRIPT-ADHERENCE-EXPANDED-2026-11-02.md` for PR355–357, improved rep drilldowns/date policy, 30 additional reviewed calls (42 total), Terra/Haiku comparison, $1.868395 cumulative API cost and authenticated acceptance. Original 12 saved rows are unchanged. No full-week backfill or twice-daily all-company activation.
