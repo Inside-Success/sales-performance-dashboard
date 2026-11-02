@@ -1,0 +1,11 @@
+import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
+import { readAdherence } from "@/lib/script-adherence/data";
+import { AdherenceView } from "./view";
+export const dynamic="force-dynamic";
+export const metadata={title:"Script Adherence | Magic Mike",robots:{index:false,follow:false}};
+export default async function Page(){
+  await requireRepScoringAdmin();
+  const data=await readAdherence().catch(()=>null);
+  if(!data)return <main className="magic-page"><div className="mx-auto max-w-5xl p-8"><h1 className="text-3xl font-bold">Script Adherence</h1><p role="status" className="mt-5">Results are temporarily unavailable. This does not mean there were no calls. Please try again later.</p></div></main>;
+  return <AdherenceView {...data}/>;
+}
