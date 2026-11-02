@@ -10,3 +10,4 @@ describe('dated reporting rules',()=>{
  it('does not turn an invalid date into failure',()=>{expect(actionStatus(result,'video_1','invalid')).toBe('Not observable');});
  it('accepts only scalar bounded navigation filters',()=>{expect(parseFilters({from:['2026-10-01'],stage:'arbitrary',show:'x'.repeat(500)})).toEqual({from:'',to:'',stage:'',show:'x'.repeat(150)});});
 });
+it('rejects impossible calendar dates before SQL casts',()=>{expect(parseFilters({from:'2026-02-30',to:'2026-13-01'}).from).toBe('');expect(parseFilters({to:'2026-13-01'}).to).toBe('');});
