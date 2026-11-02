@@ -1,8 +1,8 @@
-# Unattended script-adherence implementation — in progress
+# Unattended script-adherence implementation and verification record
 
 Authorization: Moonis requested a fair Haiku/Terra/Luna comparison, independent factual review experiments, and an implementation suitable for unattended company-wide processing. The existing $40 total ceiling applies. Full-week backfill remains off. No Slack messages are authorized.
 
-## Current boundaries
+## Initial checkpoint — superseded by release evidence below
 
 - Existing coaching, intake, recovery and accepted 42-call sample are preserved.
 - PR359 adds Luna to the isolated cost-reserved dispatch allowlist. It does not enable scheduled analysis.

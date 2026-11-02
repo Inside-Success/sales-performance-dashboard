@@ -32,7 +32,7 @@ create index if not exists script_adherence_metrics_filters on script_adherence_
 
 create table if not exists script_adherence_control (
  id boolean primary key default true check(id), enabled boolean not null default false,
- draft_model text not null default 'gpt-6-luna',review_model text not null default 'gpt-6.1-terra',
+ draft_model text not null default 'gpt-6.1-terra',review_model text not null default 'gpt-6.1-terra',
  start_at timestamptz not null default now(),canary_keys jsonb not null default '[]',updated_at timestamptz not null default now()
 );
 insert into script_adherence_control(id) values(true) on conflict do nothing;
@@ -44,3 +44,5 @@ create table if not exists script_adherence_coverage (
 create index if not exists script_adherence_metrics_local_date on script_adherence_metrics(((started_at at time zone 'America/New_York')::date));
 create table if not exists script_adherence_closers(account_id text not null,member_id text not null,name text not null,updated_at timestamptz not null default now(),primary key(account_id,member_id));
 alter table script_adherence_jobs add column if not exists attribution jsonb;
+
+alter table script_adherence_control alter column draft_model set default 'gpt-6.1-terra';
