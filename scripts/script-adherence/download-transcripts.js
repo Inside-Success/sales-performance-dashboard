@@ -6,7 +6,7 @@ return await Promise.all(work.map(async job=>{
  try{
   if(!tokens[job.account_id])throw Error('Missing account');
   for(const file of job.files){
-   const url=new URL(file.url);if(url.protocol!=='https:'||!/(^|\.)zoom\.us$/.test(url.hostname)||url.username||url.password)throw Error('Invalid source URL');
+   if(!/^https:\/\/(?:[a-z0-9-]+\.)*zoom\.us(?::443)?\//i.test(file.url))throw Error('Invalid source URL');
    const vtt=await this.helpers.httpRequest({method:'GET',url:file.url,headers:{Authorization:'Bearer '+tokens[job.account_id]},returnFullResponse:false,json:false,timeout:60000});
    if(typeof vtt!=='string'||vtt.length>250000)throw Error('Invalid transcript body');files.push({id:file.id,vtt});
   }

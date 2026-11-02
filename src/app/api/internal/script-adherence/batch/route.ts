@@ -51,7 +51,7 @@ export async function POST(request:Request){
    if(first){const work=[first],provider=String(first.body.model).startsWith('gpt-')?'openai':'anthropic';for(let i=1;i<6;i++){const item=await claimModel(work.map(w=>w.id),provider);if(!item)break;work.push(item);}result={kind:provider,work};}
    else{const work=[];for(let i=0;i<6;i++){const source=await claimSource(p.owner);if(!source)break;work.push(source);}result=work.length?{kind:'source',work}:{kind:'done'};}
   }else if(p.operation==='source'){
-   try{result=await saveSource(p.id,p.owner,p.files,p.error);}catch(e){await saveSource(p.id,p.owner,[],e instanceof Error?e.message:'Invalid source');throw e;}
+   try{result=await saveSource(p.id,p.owner,p.files,p.error);}catch(e){await saveSource(p.id,p.owner,[],e instanceof Error?e.message:'Invalid source');result={saved:false,retained:true};}
   }else if(p.operation==='receipt')result=await receive(p.id,p.jobId,p.payload);
   else{
    const states=await sql`select state,count(*)::int as count,min(created_at)::text as oldest from script_adherence_jobs group by state`;
