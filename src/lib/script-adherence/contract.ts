@@ -4,7 +4,7 @@ import { RUBRICS, RUBRIC_VERSION, type ScriptId } from "./rubric";
 export const resultSchema = z.object({
   family:z.enum(["documentary","reality","other","unknown"]),
   stage:z.enum(["call_1","call_2","followup","other","unknown"]),
-  attendance:z.enum(["conversation","no_show","internal","unknown"]),
+  attendance:z.enum(["conversation","no_show","internal","outreach","unknown"]),
   show:z.string().max(150), classificationReason:z.string().min(1).max(1000),
   transcriptComplete:z.boolean(),
   eligibleForChecklist:z.boolean().default(true),exclusionReason:z.string().default(""),

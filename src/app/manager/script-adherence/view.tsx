@@ -15,7 +15,8 @@ function callLabel(c:AdherenceCall){
   if(scriptFor(c.result))return "Assessed";
   if(c.result.attendance==="no_show")return "No-show";
   if(c.result.attendance==="internal")return "Internal call";
-  if(c.result.attendance==="unknown")return "Recording incomplete";
+  if(c.result.attendance==="outreach")return "Outreach / voicemail";
+  if(c.result.attendance==="unknown")return "Insufficient evidence";
   if(!c.result.eligibleForChecklist)return "Checklist not applicable";
   return "No matching script";
 }
