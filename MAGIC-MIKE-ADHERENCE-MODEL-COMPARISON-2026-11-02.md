@@ -41,3 +41,9 @@ Use Terra for drafting and independent full-source factual review. It is materia
 Do not claim 100% real-world accuracy. Some old reference labels are ambiguous on substantive prior-call portions and conditional advancement. No reference labels were silently rewritten to inflate scores. Unsupported scripts and genuinely incomplete evidence remain unscored rather than scored as rep failures.
 
 Full-company activation and one-week backfill remain disabled pending end-to-end release acceptance.
+
+## Native integration cost and consistency
+
+Four longer canary calls, using native Zoom VTT rather than the Google Doc rendering, cost $0.277555 for all eight Terra requests (about $0.0694/call). All final action statuses matched the separate holdout review. Input formatting and call length materially affect costs; the benchmark average is not a guaranteed production rate. Total recorded project spend after the canary is $6.504344 of the $40 ceiling.
+
+On the original equal-condition reference set, Terra→Terra corrected four action decisions and regressed one; Terra→Haiku corrected two and regressed four; Terra→Luna corrected two and regressed sixteen. This is why a cheaper reviewer was not chosen just to minimize API cost.

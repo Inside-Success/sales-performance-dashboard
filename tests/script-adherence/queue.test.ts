@@ -36,3 +36,12 @@ it('holds oversized sources without truncation or repeated download retries',asy
  const result=await saveSource('id','owner',[{id:'a',vtt:'WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.000\n'+ 'speech '.repeat(30000)}]);
  expect(result).toEqual({saved:false,held:true});expect(sql.mock.calls[1][0].join('')).toContain("state='held'");expect(sql).toHaveBeenCalledTimes(2);
 });
+it('accepts a semantically identical saved receipt without settling twice',async()=>{
+ sql.mockResolvedValueOnce([{status:'completed',actual_microusd:100,job_state:'complete'}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{matches:true}]);
+ expect(await receive('id','job',{usage:{input_tokens:10},id:'response'})).toEqual({duplicate:true,published:true});
+ expect(sql).toHaveBeenCalledTimes(3);expect(sql.mock.calls[2][0].join('')).toContain('::jsonb as matches');
+});
+it('rejects changed receipt content even after the first receipt was settled',async()=>{
+ sql.mockResolvedValueOnce([{status:'completed',actual_microusd:100,job_state:'complete'}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{matches:false}]);
+ await expect(receive('id','job',{id:'different'})).rejects.toThrow('Conflicting');expect(sql).toHaveBeenCalledTimes(3);
+});

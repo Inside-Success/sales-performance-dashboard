@@ -70,7 +70,7 @@ export async function receive(id:string,jobId:string,payload:Record<string,unkno
  if(!['submitted','completed','held'].includes(r.status))throw Error('Request not dispatched');
  const payloadHash=digest(JSON.stringify(payload));
  await sql`insert into script_adherence_receipts(request_id,job_id,payload_hash,payload) values(${id},${jobId},${payloadHash},${JSON.stringify(payload)}::jsonb) on conflict do nothing`;
- const receipts=await sql`select payload_hash from script_adherence_receipts where request_id=${id}`;if(receipts[0].payload_hash!==payloadHash)throw Error('Conflicting provider receipt');
+ const receipts=await sql`select payload=${JSON.stringify(payload)}::jsonb as matches from script_adherence_receipts where request_id=${id}`;if(!receipts[0]?.matches)throw Error('Conflicting provider receipt');
  if(r.actual_microusd!==null)return {duplicate:true,published:r.job_state==='complete'};
  const usage=payload.usage as Record<string,unknown>|undefined;
  if(!usage){await sql`update script_adherence_jobs set state='held',error='Provider result uncertain; reconcile saved receipt without replay',updated_at=now() where id=${jobId} and state in ('draft_pending','review_pending')`;return {held:true};}

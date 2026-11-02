@@ -22,7 +22,7 @@ export async function POST(request:Request){
    const hash=createHash('sha256').update(JSON.stringify(item.body)).digest('hex');
    // Atomic compare-and-set: duplicate/concurrent delivery never gets a second dispatch.
    // A lost response remains submitted for receipt reconciliation, never automatic replay.
-   const rows=await sql`update script_adherence_requests r set status='submitted',updated_at=now() where r.id=${item.id} and r.request_hash=${hash} and r.project='pilot-2026-11-02' and r.model=${String(item.body.model)} and r.status='reserved' and r.reserved_microusd>=${reserve} and exists(select 1 from script_adherence_budget b where b.project=r.project and b.committed_microusd<=b.ceiling_microusd) returning r.id`;
+   const rows=await sql`update script_adherence_requests r set status='submitted',updated_at=now() where r.id=${item.id} and (r.request_hash=${hash} or (r.request_body is not null and r.request_body=${JSON.stringify(item.body)}::jsonb)) and r.project='pilot-2026-11-02' and r.model=${String(item.body.model)} and r.status='reserved' and r.reserved_microusd>=${reserve} and exists(select 1 from script_adherence_budget b where b.project=r.project and b.committed_microusd<=b.ceiling_microusd) returning r.id`;
    if(rows.length)claimed.push(item);
   }
   return Response.json({requests:claimed},{headers:{'Cache-Control':'no-store'}});
