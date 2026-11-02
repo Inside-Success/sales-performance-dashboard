@@ -1505,14 +1505,15 @@
     "decisionKey": "payment-contract-redirect-fallback",
     "title": "When the contract does not open after payment",
     "questions": [],
-    "text": "Sales Tech confirms that when the contract does not pop up automatically after payment, the correct direct Jotform Sign link may be sent separately for signing. Payment and signature are both required; an ACH transfer being initiated or pending is not cleared payment. Match the agreement to the purchased show and package; do not invent a direct contract URL.",
+    "text": "Sales Tech confirms that when the contract does not pop up automatically after payment, the correct direct Jotform Sign link may be sent separately for signing. Payment and signature are both required; an ACH transfer being initiated or pending is not cleared payment. Match the agreement to the purchased show and package; do not invent a direct contract URL. October 30 Sales Tech identifies the column “Vanity Link (To use for contract signing)” in the maintained payment/contract spreadsheet for direct signing links; scroll right to find it. Select the correct show family (documentary or reality), package AND payment terms. A generic form, payment URL or another customer’s link is not interchangeable with the correct agreement.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789492629373809"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789492629373809",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793383950896799"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -1526,15 +1527,16 @@
     "decisionKey": "zoom-recording-find-by-meeting-id",
     "title": "Finding a missing call recording",
     "questions": [],
-    "text": "Kent recommends searching Zoom by meeting ID. A recording can still be processing before it appears in HubSpot. If a completed call recording is inaccessible, particularly a pass-off recording belonging to another rep, ask Sales Tech to locate it. A booking ID is not necessarily the Zoom meeting ID. The chatbot cannot retrieve live private recordings.",
+    "text": "Kent recommends searching Zoom by meeting ID. A recording can still be processing before it appears in HubSpot. If a completed call recording is inaccessible, particularly a pass-off recording belonging to another rep, ask Sales Tech to locate it. A booking ID is not necessarily the Zoom meeting ID. The chatbot cannot retrieve live private recordings. October 31 Sales Tech also confirms that reps can search the meeting ID under HubSpot All Meetings to find a recording. This is a navigation path, not proof that a recording exists, has finished processing or that the bot can open a private client call.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789443249932259",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789486684132179"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1789486684132179",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793445740212019"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2125,7 +2127,7 @@
     "decisionKey": "active-show-list-resource",
     "title": "Current active ISTV show list: ISTV Offers spreadsheet",
     "questions": [],
-    "text": "The maintained source for the approved show catalog is the ISTV Offers spreadsheet: https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Share this actual source link for questions about where to find the list, and use the accepted current catalog for membership. Listing is sales/casting availability, not evidence that an episode aired or is watchable. Do not send reps to internal repository keys as though those were accessible documents. October 8 Rich replies to a question about Project Beauty and Love Experts that shows are sometimes turned back on; if a rep receives a scheduled call, go ahead with it. Do not automatically reject that scheduled call based only on an old retired label. This is guidance for an actually scheduled call, not a blanket reopening of every paused show, permission to promise a filming slot or proof a program has aired. Confirm the current specific offer when needed. The October 24 read of the maintained sheet marks these Docs rows On: Legacy Makers, Women in Power, Americas Best Doctors and Mompreneurs. Blue Collar America and Clean and Thriving are now marked Off. Its Reality tab marks Mansion of Money and Entrepreneurs Island On, and Entrepreneurs Jungle Off; its Daymond tab marks Next Level CEO On and Built for More Off. This is the sheet status, not a complete list of every separately announced offering or proof of a particular season vacancy. A missing row or Off label must not by itself overturn a newer show-specific announcement or the existing scheduled-call exception. Clean and Thriving has the listed site https://www.cleanandthrivingtv.com but no niche description in the sheet; do not invent its format, prices or package terms. October 22 Rudy explicitly confirms the reality shows currently being cast are Business Race, Entrepreneurs Island and Mansion of Money. Timothy gave the same three-show direction. This newer explicit casting instruction includes Business Race even though the maintained sheet does not list it as On. For documentary Off labels, Timothy is still checking which mean ads off versus fully closed; do not invent that unresolved distinction or remove the existing scheduled-call exception. October 29 review: the offers sheet now marks Built for More On. Mike clarifies the Best Doctors Off label means ads are not running and existing sales conversations are fine; do not treat every Off as cancellation, nor assume every Off show is open without scoped confirmation. Mike also endorses redirecting a Flipping for Fortune prospect BEFORE closing to an active best-fit reality offer (Island, Mansion or Race), because that pilot is parked; do not sell the parked pilot and plan to move them later.",
+    "text": "The maintained source for the approved show catalog is the ISTV Offers spreadsheet: https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Share this actual source link for questions about where to find the list, and use the accepted current catalog for membership. Listing is sales/casting availability, not evidence that an episode aired or is watchable. Do not send reps to internal repository keys as though those were accessible documents. October 8 Rich replies to a question about Project Beauty and Love Experts that shows are sometimes turned back on; if a rep receives a scheduled call, go ahead with it. Do not automatically reject that scheduled call based only on an old retired label. This is guidance for an actually scheduled call, not a blanket reopening of every paused show, permission to promise a filming slot or proof a program has aired. Confirm the current specific offer when needed. The October 24 read of the maintained sheet marks these Docs rows On: Legacy Makers, Women in Power, Americas Best Doctors and Mompreneurs. Blue Collar America and Clean and Thriving are now marked Off. Its Reality tab marks Mansion of Money and Entrepreneurs Island On, and Entrepreneurs Jungle Off; its Daymond tab marks Next Level CEO On and Built for More Off. This is the sheet status, not a complete list of every separately announced offering or proof of a particular season vacancy. A missing row or Off label must not by itself overturn a newer show-specific announcement or the existing scheduled-call exception. Clean and Thriving has the listed site https://www.cleanandthrivingtv.com but no niche description in the sheet; do not invent its format, prices or package terms. October 22 Rudy explicitly confirms the reality shows currently being cast are Business Race, Entrepreneurs Island and Mansion of Money. Timothy gave the same three-show direction. This newer explicit casting instruction includes Business Race even though the maintained sheet does not list it as On. For documentary Off labels, Timothy is still checking which mean ads off versus fully closed; do not invent that unresolved distinction or remove the existing scheduled-call exception. October 29 review: the offers sheet now marks Built for More On. Mike clarifies the Best Doctors Off label means ads are not running and existing sales conversations are fine; do not treat every Off as cancellation, nor assume every Off show is open without scoped confirmation. Mike also endorses redirecting a Flipping for Fortune prospect BEFORE closing to an active best-fit reality offer (Island, Mansion or Race), because that pilot is parked; do not sell the parked pilot and plan to move them later. October 29 Timothy announced Dropout to CEO as a newly launching DOCUMENTARY/docuseries, not a reality competition. It spotlights entrepreneurs who dropped out of school or left the expected path and built successful businesses. Official page: https://www.dropouttoceotv.com/dtc-main . Ads/leads were announced for that night or following day; this announcement does not establish an aired episode, a specific filming slot, or new license/package terms. The November 2 reread of the maintained offers sheet has not yet added this title; that omission does not negate the explicit launch announcement.",
     "scopes": [
       "shared"
     ],
@@ -2136,9 +2138,10 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792595168081689",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792692326240279",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793133206579769",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793105893201009"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793105893201009",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793303735114059"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2757,14 +2760,14 @@
       "What training sessions does Raul host?",
       "When is Mike Call 1 Call 2 compliance training?"
     ],
-    "text": "The October 29 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "text": "The October 30 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2786,7 +2789,7 @@
       "What is the new rep sales questions meeting?",
       "Do I need to attend Raul morning meetings after going live?"
     ],
-    "text": "Part 1 Admin Procedures distinguishes the New Rep Sales Questions Meetings with Raul from the six onboarding training Zooms. The new-rep Q&A is Tuesday through Friday, 9:00–9:30 AM EST, mandatory for the FIRST TWO WEEKS after completing training and passing the final mock. Reps receive the meeting invitation when ready to go live; DM Raul if unable to attend or unable to be on camera. They may drop this particular Q&A after two weeks. It is not the Wednesday 3–4 PM combined Call 2 Sales and Procedural Training or Friday 11 AM–noon Final Mock Call Prep with Raul; those are separate mandatory onboarding sessions. The main sales team meeting is also separate: Part 1 lists Rich/Rudy Tuesday–Friday 9:30–10:00 AM EST. Madeline’s September 17 clarification says the daily main-team meeting is no longer on everyone’s calendar: join the link Olivia posts in the main sales Slack channel about ten minutes before start. Follow the current daily main-team post for the actual start time: some September posts say 9:20 AM, so the sheet’s 9:30 time must not override the day’s announcement. That main-team link instruction does not replace the individual HERE links for the six training Zooms or the Raul Q&A invitation. Published times are labelled EST in the document; live cancellations or calendar exceptions are not established here.",
+    "text": "Part 1 Admin Procedures distinguishes the New Rep Sales Questions Meetings with Raul from the six onboarding training Zooms. The new-rep Q&A is Tuesday through Friday, 9:00–9:30 AM EST, mandatory for the FIRST TWO WEEKS after completing training and passing the final mock. Reps receive the meeting invitation when ready to go live; DM Raul if unable to attend or unable to be on camera. They may drop this particular Q&A after two weeks. It is not the Wednesday 3–4 PM combined Call 2 Sales and Procedural Training or Friday noon–1 PM Final Mock Call Prep with Raul; those are separate mandatory onboarding sessions. The main sales team meeting is also separate: Part 1 lists Rich/Rudy Tuesday–Friday 9:30–10:00 AM EST. Madeline’s September 17 clarification says the daily main-team meeting is no longer on everyone’s calendar: join the link Olivia posts in the main sales Slack channel about ten minutes before start. Follow the current daily main-team post for the actual start time: some September posts say 9:20 AM, so the sheet’s 9:30 time must not override the day’s announcement. That main-team link instruction does not replace the individual HERE links for the six training Zooms or the Raul Q&A invitation. Published times are labelled EST in the document; live cancellations or calendar exceptions are not established here.",
     "scopes": [
       "shared"
     ],
@@ -2795,7 +2798,7 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789654736520409",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650600703149"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -3771,7 +3774,7 @@
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
     "title": "Current live new-rep training schedule and unscheduled Thursday objection session",
-    "text": "The October 29 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "text": "The October 30 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3784,7 +3787,7 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4329,7 +4332,7 @@
     "id": "new-rep-first-two-weeks-qa-2026-10-03",
     "decisionKey": "new-rep-first-two-weeks-qa-2026-10-03",
     "title": "New-rep Q&A 9–9:20; main sales meeting 9:20–10 Eastern",
-    "text": "The October 1 Part 1 document updates new-rep sales Q&A with Raul to Tuesday–Friday 9:00–9:20 AM EST, mandatory for the first two weeks AFTER training and passing the final mock. The invitation arrives when ready to go live; tell Raul if absent or off camera. Reps may stop this particular Q&A after two weeks. The separate main sales meeting with Rich/Rudy is Tuesday–Friday 9:20–10 AM EST. Follow Olivia's daily main-channel meeting link and actual announcement; explain an absence/camera-off in that daily meeting thread. These replace the old 9–9:30 Q&A/9:30 main-meeting times. Neither replaces the FIVE live onboarding training sessions, including Wednesday 3–4 PM combined Call 2/Procedural training and Friday 11–noon mock prep. Keep EST as the document's label; verify timezone for dated conversions. Part 1 also labels first-call booking as public calendar and second-call booking as Call 2/personal calendar; follow the relevant booking SOP rather than swapping links.",
+    "text": "The October 1 Part 1 document updates new-rep sales Q&A with Raul to Tuesday–Friday 9:00–9:20 AM EST, mandatory for the first two weeks AFTER training and passing the final mock. The invitation arrives when ready to go live; tell Raul if absent or off camera. Reps may stop this particular Q&A after two weeks. The separate main sales meeting with Rich/Rudy is Tuesday–Friday 9:20–10 AM EST. Follow Olivia's daily main-channel meeting link and actual announcement; explain an absence/camera-off in that daily meeting thread. These replace the old 9–9:30 Q&A/9:30 main-meeting times. Neither replaces the FIVE live onboarding training sessions, including Wednesday 3–4 PM combined Call 2/Procedural training and Friday noon–1 PM mock prep. Keep EST as the document's label; verify timezone for dated conversions. Part 1 also labels first-call booking as public calendar and second-call booking as Call 2/personal calendar; follow the relevant booking SOP rather than swapping links.",
     "questions": [
       "When is Raul new rep morning Q&A?",
       "What time is the main sales team meeting?",
@@ -4339,14 +4342,13 @@
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
-      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789654736520409",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650600703149"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4460,18 +4462,20 @@
     "id": "greenlight-rejection-owner-2026-10-03",
     "decisionKey": "greenlight-rejection-owner-2026-10-03",
     "title": "Rep handles rejection email and cancellation after failed Green Light",
-    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists.",
+    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists. Mike’s November 1 clarification says send the approved rejection letter the NEXT DAY, matching the maintained Green Light cheat sheet. His short reply does not establish a new HubSpot “unqualified” value or remove existing required Meeting Status/Reject Call Notes; follow the documented reporting fields for the actual outcome.",
     "questions": [
       "Who emails rejection after failed greenlight and cancels call two?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790946952130479",
-      "https://docs.google.com/document/d/105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do/edit"
+      "https://docs.google.com/document/d/105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793558785147189",
+      "https://docs.google.com/document/d/12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk/edit"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-03",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6224,14 +6228,16 @@
       "What are n24hour_text_sent and mot_text_sent?",
       "Why did a prospect get the wrong reminder time?"
     ],
-    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties.",
+    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1uJljWXe9L12sRKUSfLxnjfHweBQ_NHifg111rpA1Q3w/edit"
+      "https://docs.google.com/document/d/1uJljWXe9L12sRKUSfLxnjfHweBQ_NHifg111rpA1Q3w/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793303151391209",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793296521099739"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6339,14 +6345,16 @@
     "questions": [
       "Can I call with Zoom Phone inside HubSpot mobile?"
     ],
-    "text": "Sales Tech confirms Zoom Phone integration works in HubSpot desktop; there is no native in-app Zoom Phone integration in HubSpot mobile in the reviewed guidance. Use the supported desktop workflow. Do not promise mobile has the same embedded dialer or that separately calling with another app automatically logs everything.",
+    "text": "Sales Tech confirms Zoom Phone integration works in HubSpot desktop; there is no native in-app Zoom Phone integration in HubSpot mobile in the reviewed guidance. Use the supported desktop workflow. Do not promise mobile has the same embedded dialer or that separately calling with another app automatically logs everything. October 30 Sales Tech clarifies iPad browser limitations as well: for the embedded HubSpot dialer, try a Mac or Windows computer with an updated supported browser. The setup walkthrough is https://drive.google.com/file/d/1hf0ZkiFmbyyjpuiY6tuZA7fK5m5W4OMP/view . A setup video link does not prove a particular device is connected; report the actual error to Tech if it persists.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793117585193899"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793117585193899",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793374184643129",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793389021684729"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6418,6 +6426,228 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793032964972049"
     ],
     "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "dropout-to-ceo-documentary-2026-11-02",
+    "decisionKey": "dropout-to-ceo-documentary-2026-11-02",
+    "title": "Dropout to CEO: new documentary launch and audience",
+    "questions": [
+      "What is Dropout to CEO?",
+      "Is Dropout to CEO a reality show?"
+    ],
+    "text": "Timothy announced Dropout to CEO on October 29 as a new documentary/docuseries spotlighting entrepreneurs who dropped out of school or walked away from the expected path, bet on themselves and built successful businesses. The official page is https://www.dropouttoceotv.com/dtc-main . This is a documentary offer, not the Island/Mansion/Race reality competition family. Ads and leads were announced to begin that night or following day. The maintained offers spreadsheet has not yet listed it as of the November 2 review; the explicit launch announcement governs its existence. Do not invent special prices, packages, filming dates, distribution promises or an episode-release status from this announcement.",
+    "scopes": [
+      "istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793303735114059"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "manual-sms-template-optout-2026-11-02",
+    "decisionKey": "manual-sms-template-optout-2026-11-02",
+    "title": "Manual HubSpot texts: follow the approved template for opt-out wording",
+    "questions": [
+      "Do I add STOP to opt out to every manual HubSpot text?",
+      "Do manual no-show and rebooking texts need the same footer as automated reminders?"
+    ],
+    "text": "In response to the question about adding “STOP to opt out” to manual HubSpot/Twilio no-show and rebooking texts, Mike clarified November 1: if it is not in the template, reps do not need to add it. Follow the approved template as written, including any opt-out wording already present. This narrow internal template instruction is not blanket legal clearance for arbitrary SMS content, permission to remove existing opt-out text, or permission to message someone who has opted out. Automated reminders retain their own approved wording and delivery checks.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793488712573429",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793537220949229"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-documentary-amazon-upgrade-2026-11-02",
+    "decisionKey": "reality-documentary-amazon-upgrade-2026-11-02",
+    "title": "Reality VIP documentary: Amazon pitch upgrade is not currently available",
+    "questions": [
+      "Can a reality VIP buyer upgrade the included documentary to pitch it to Amazon?"
+    ],
+    "text": "Mike answered October 30 that an upgrade to pitch the documentary included with reality VIP to Amazon is not available at this moment. Earlier replies in the same thread speculated about an additional $30,000 or a later upgrade; those are not approved offers and must not be quoted. Keep this scoped to the documentary included in reality VIP; it does not change separately approved regular documentary distribution packages or authorize an Amazon placement guarantee.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793280365735649",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793353717471299"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-owned-contacts-meeting-filters-2026-11-02",
+    "decisionKey": "hubspot-owned-contacts-meeting-filters-2026-11-02",
+    "title": "Find your HubSpot contacts and meetings before reporting missing data",
+    "questions": [
+      "How do I find all my old assigned contacts in HubSpot?",
+      "My Google Calendar meeting is missing in HubSpot; where should I check?"
+    ],
+    "text": "Sales Tech explains: to revisit contacts you own, open All ISTV Contacts, choose the Contact Owner filter and select Me. To inspect meetings for a particular person, open that contact record and click Meetings. Check date/view filters, including Today, before assuming a scheduled meeting is missing. If it still cannot be found, provide Tech the contact and meeting details; do not create duplicate records or take ownership from another rep just to make something appear.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793385208876629",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793466485707319",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793286347457879"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-wrong-account-payment-tools-2026-11-02",
+    "decisionKey": "hubspot-wrong-account-payment-tools-2026-11-02",
+    "title": "Missing HubSpot payment tools: check the company account",
+    "questions": [
+      "Why can I not see payment links in HubSpot?"
+    ],
+    "text": "Sales Tech identified a missing-payment-tools case where the rep was in a separate HubSpot account rather than Inside Success TV. First verify the selected account is Inside Success TV (148285209), then sign out/in if needed and follow the maintained HubSpot SOPs. Ask Tech to check access if the correct account still lacks tools. Do not create another portal, delete accounts yourself or assume this is the cause of every missing permission.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793293248031199",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793293420592749",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793293539791229"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "zoom-video-share-troubleshooting-2026-11-02",
+    "decisionKey": "zoom-video-share-troubleshooting-2026-11-02",
+    "title": "Zoom video playback, screen sharing and camera troubleshooting",
+    "questions": [
+      "The sales video has feedback or choppy sound in Zoom; what can I try?",
+      "Zoom browser screen sharing or camera is failing."
+    ],
+    "text": "Sales Tech recommends the Zoom desktop app rather than the browser app, checking connectivity, updating Zoom, signing out/in and restarting the computer if needed. When sharing an approved sales video, check Share Sound; test Optimize for Video Sharing enabled and disabled. Tech can help obtain the approved downloadable copy. One rep reported a restart/update resolved persistent playback feedback, but this is troubleshooting, not a guaranteed cure. If it persists, report the specific video, device/browser/app and error to Tech. This does not waive required presentation videos or authorize replacing them with an improvised pitch.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793284727653349",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793289639017139",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793384983573459"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "split-sale-leaderboard-credit-2026-11-02",
+    "decisionKey": "split-sale-leaderboard-credit-2026-11-02",
+    "title": "Shared commission and leaderboard sale credit are different",
+    "questions": [
+      "Why does a split sale only appear under one rep on the leaderboard?"
+    ],
+    "text": "Sales Tech explained October 29 that a single sale cannot be split between two people on the leaderboard; the person who submitted the PayMe form appears there. Commission can be split separately when approved; a missing leaderboard entry is not proof that commission was lost. Keep a factual personal note for a shared sale and confirm the actual commission arrangement with Finance. The example of a half split does not establish a mandatory percentage for every shared sale.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793292568202589"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "two-participant-email-board-2026-11-02",
+    "decisionKey": "two-participant-email-board-2026-11-02",
+    "title": "Two reality participants: second email on PayMe and board",
+    "questions": [
+      "Where do I add a second participant email when two brothers join a reality show?"
+    ],
+    "text": "For the two-brothers reality question, Saad confirmed November 1 that the second email can be included when creating the PayMe form so Finance can add both to the board. He explicitly did not confirm the HubSpot or contract procedure. Do not infer that two distinct participants should be merged into one contact or one contract; ask Tech for that setup if unclear and preserve separate reality licensing per participant. A rep suggestion to put both in one HubSpot contact is not a verified universal process.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793478641742819",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793482416774979"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "tax-writeoff-qualification-2026-11-02",
+    "decisionKey": "tax-writeoff-qualification-2026-11-02",
+    "title": "Tax questions: possible business use is not a promised write-off",
+    "questions": [
+      "Can a client get a tax rebate or write off the license?",
+      "How much tax will a cast member save?"
+    ],
+    "text": "Finance clarified October 29 that potential deductibility depends on how the content is used: promoting a business may be relevant, while mainly personal-story/personal use is different. Reps must not promise a write-off, rebate eligibility, a deduction amount or specific tax savings. Refer the prospect to their own qualified tax adviser for their situation. A tax rebate and a deduction are not interchangeable; do not treat another rep’s guess or an AI answer as confirmation.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793293720584879",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793289894535179"
+    ],
+    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
