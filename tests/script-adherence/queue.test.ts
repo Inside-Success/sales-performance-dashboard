@@ -31,3 +31,8 @@ it('authenticates batch operations before reading source or budget',async()=>{
 it('does not advance coverage when any closer has no durable terminal page',async()=>{
  sql.mockResolvedValue([{member_id:'first'}]);const response=await POST(new Request('https://test',{method:'POST',headers:{authorization:'Bearer test'},body:JSON.stringify({operation:'finish_scan',accountId:'nTC8wAG7SsijjSRAP3IOng',runId:'run',from:'2026-11-01T00:00:00Z',to:'2026-11-02T00:00:00Z',members:['first','missing']})}));expect(response.status).toBe(503);expect(sql).toHaveBeenCalledTimes(1);
 });
+it('holds oversized sources without truncation or repeated download retries',async()=>{
+ sql.mockResolvedValueOnce([{files:[{id:'a',start:'1'}],rep:'Rep'}]).mockResolvedValueOnce([]);
+ const result=await saveSource('id','owner',[{id:'a',vtt:'WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.000\n'+ 'speech '.repeat(30000)}]);
+ expect(result).toEqual({saved:false,held:true});expect(sql.mock.calls[1][0].join('')).toContain("state='held'");expect(sql).toHaveBeenCalledTimes(2);
+});

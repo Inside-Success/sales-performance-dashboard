@@ -21,12 +21,15 @@ export function transcriptFromVtt(input:string){
 export const recordingSchema=z.object({accountId:z.enum(ACCOUNTS),uuid:z.string().min(1).max(200),rep:z.string().min(1).max(200),title:z.string().max(1000),startedAt:z.string().datetime(),sourceUrl:z.union([z.string().url(),z.literal('')]),files:z.array(z.object({id:z.string().min(1),url:z.string().url(),start:z.string(),ready:z.boolean()}).strict()).max(100)}).strict();
 export function safeZoomUrl(value:string){const u=new URL(value);if(u.protocol!=='https:'||!/(^|\.)zoom\.us$/.test(u.hostname)||u.username||u.password)throw Error('Untrusted Zoom download');return value;}
 export async function discover(recordings:z.infer<typeof recordingSchema>[]){
- const sql=db();let saved=0;
- for(const raw of recordings){const r=recordingSchema.parse(raw);for(const f of r.files)safeZoomUrl(f.url);const key=sourceIdentity(r.accountId,r.uuid);
-  // Record every meeting, including recordings with no ready transcript. Keep unresolved meetings indefinitely.
-  await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url) values(${key},${key},${r.accountId},${r.uuid},${JSON.stringify(r.files)}::jsonb,${r.rep},${r.title},${r.startedAt},${r.sourceUrl},${r.files[0]?.url||''}) on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
-  saved++;
- }return {saved};
+ const sql=db();const rows=recordings.map(raw=>{const r=recordingSchema.parse(raw);for(const f of r.files)safeZoomUrl(f.url);return {id:sourceIdentity(r.accountId,r.uuid),account_id:r.accountId,meeting_uuid:r.uuid,files:r.files,rep:r.rep,title:r.title,started_at:r.startedAt,source_url:r.sourceUrl,download_url:r.files[0]?.url||''};});
+ if(new Set(rows.map(r=>r.id)).size!==rows.length)throw Error('Duplicate meeting in coverage page');
+ if(!rows.length)return {saved:0};
+ // One bounded page write avoids a network round trip per recording.
+ await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url)
+ select r.id,r.id,r.account_id,r.meeting_uuid,r.files,r.rep,r.title,r.started_at,r.source_url,r.download_url
+ from jsonb_to_recordset(${JSON.stringify(rows)}::jsonb) as r(id text,account_id text,meeting_uuid text,files jsonb,rep text,title text,started_at timestamptz,source_url text,download_url text)
+ on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
+ return {saved:rows.length};
 }
 export async function claimSource(owner:string){
  const sql=db();const rows=await sql`with candidate as (select j.id from script_adherence_jobs j,script_adherence_control c where (c.enabled or c.canary_keys ? j.id) and j.state='awaiting_transcript' and j.started_at<now()-interval '2 hours' and j.next_attempt_at<=now() and (j.lease_until is null or j.lease_until<now()) and jsonb_array_length(j.files)>0 and not exists(select 1 from jsonb_array_elements(j.files) f where (f->>'ready')::boolean=false) order by j.created_at for update of j skip locked limit 1) update script_adherence_jobs j set lease_owner=${owner},lease_until=now()+interval '5 minutes',attempts=attempts+1 from candidate c where j.id=c.id returning j.id,j.account_id,j.files`;
@@ -88,5 +91,8 @@ export async function receive(id:string,jobId:string,payload:Record<string,unkno
 }
 export async function reconcileReceipts(){
  const sql=db(),rows=await sql`select p.request_id,p.job_id,p.payload from script_adherence_receipts p join script_adherence_requests r on r.id=p.request_id where r.actual_microusd is null and p.payload ? 'usage' order by p.created_at limit 20`;
- for(const r of rows)await receive(r.request_id,r.job_id,r.payload);return {reconciled:rows.length};
+ for(const r of rows)await receive(r.request_id,r.job_id,r.payload);
+ // A lost provider response must become visible, not silently retry and double-charge.
+ await sql`update script_adherence_jobs j set state='held',error='Provider receipt overdue; reconcile before any paid retry',updated_at=now() from script_adherence_requests r where r.id=case when j.state='review_pending' then j.review_request_id else j.draft_request_id end and j.state in ('draft_pending','review_pending') and r.status='submitted' and r.updated_at<now()-interval '45 minutes' and not exists(select 1 from script_adherence_receipts p where p.request_id=r.id)`;
+ return {reconciled:rows.length};
 }
