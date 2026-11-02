@@ -35,3 +35,15 @@ Private artifacts live in `.private-adherence/` (ignored, not committed): `bench
 Owned test workflows: provider transport `2xX5gVtc1BKlhyG3`; read-only source retrieval `N4p6MUMGBcQyRwtH`. Activate only for a scoped run and deactivate afterwards. Production coaching workflows are out of scope.
 
 No release acceptance or company-wide quality claim has been made at this checkpoint.
+
+## Second checkpoint: bounded processing and comparison
+
+- All three writers and nine writer/reviewer pairs completed on the same 30-call development set. Terra alone agreed on 325/339 reference actions; Terra/Terra agreed on 328/339 but introduced one false video omission. The refined review prompt restored that video decision, with 325/339 action agreement. These are reference-agreement measurements, not a claim of perfect ground truth.
+- Same-source independent review is not automatically more accurate. Source audit also found ambiguity in several older reference labels; the frozen reference has not been silently changed.
+- Twenty unused calls are being evaluated under the refined prompt. Terra draft/review returned complete valid checklists after deterministic removal of one extra known out-of-script action. Haiku returned 17/20 valid outputs; remaining failures include an unsupported inapplicable action, an unsupported omission and an invalid evidence reference. Luna is still running at this checkpoint.
+- Provider outputs remain private benchmark artifacts; no new accepted dashboard calls are published.
+- Worker `WqvZP7IX0YwlxfTZ` handles at most twelve six-item work batches or twenty minutes, with at most three provider requests concurrently. Coordinator `hb3M0O7fYx04oVEs` invokes workers sequentially on a twice-daily schedule. Both are inactive. This deliberately uses a small number of bounded worker executions, rather than one execution per call or one unbounded transcript-heavy execution.
+- Successful execution payload retention and progress snapshots are disabled for the new workflows. Durable database receipts, reservations and job state are authoritative. Error executions retain debugging evidence.
+- Exact roster plus explicit rep-role evidence can correct recording-host attribution; ambiguous identity does not guess another person's name. Source attribution is retained.
+- Oversized complete transcripts are held without truncation or repeated paid processing. Coverage freshness requires both workspace checkpoints.
+- Verification so far: 62 script-adherence tests passed, TypeScript passed, both new workflow graphs validated with no errors/warnings. Native end-to-end execution and authenticated dashboard verification remain outstanding; schedules and full backfill remain disabled.

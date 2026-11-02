@@ -1,3 +1,4 @@
+import {observedRep} from './attribution';
 import {createHash} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
 import {z} from 'zod';
@@ -17,7 +18,7 @@ export function transcriptFromVtt(input:string){
   const text=lines.slice(i+1).join(' ').replace(/<[^>]*>/g,'').trim();return text?[`[${timestamp}] ${text}`]:[];
  });if(!cues.length)throw Error('Transcript contains no speech');return cues.join('\n');
 }
-export const recordingSchema=z.object({accountId:z.enum(ACCOUNTS),uuid:z.string().min(1).max(200),rep:z.string().min(1).max(200),title:z.string().max(1000),startedAt:z.string().datetime(),sourceUrl:z.string().url(),files:z.array(z.object({id:z.string().min(1),url:z.string().url(),start:z.string(),ready:z.boolean()}).strict()).max(100)}).strict();
+export const recordingSchema=z.object({accountId:z.enum(ACCOUNTS),uuid:z.string().min(1).max(200),rep:z.string().min(1).max(200),title:z.string().max(1000),startedAt:z.string().datetime(),sourceUrl:z.union([z.string().url(),z.literal('')]),files:z.array(z.object({id:z.string().min(1),url:z.string().url(),start:z.string(),ready:z.boolean()}).strict()).max(100)}).strict();
 export function safeZoomUrl(value:string){const u=new URL(value);if(u.protocol!=='https:'||!/(^|\.)zoom\.us$/.test(u.hostname)||u.username||u.password)throw Error('Untrusted Zoom download');return value;}
 export async function discover(recordings:z.infer<typeof recordingSchema>[]){
  const sql=db();let saved=0;
@@ -33,22 +34,27 @@ export async function claimSource(owner:string){
 }
 export async function saveSource(id:string,owner:string,files:Array<{id:string;vtt:string}>,error?:string){
  const sql=db();if(error){await sql`update script_adherence_jobs set error=${error.slice(0,1000)},next_attempt_at=now()+interval '12 hours',lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;return {saved:false};}
- const rows=await sql`select files from script_adherence_jobs where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
+ const rows=await sql`select files,rep from script_adherence_jobs where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
  if(!rows.length)throw Error('Source lease no longer owned');
  const expected=rows[0].files as Array<{id:string;start:string}>;
  if(files.length!==expected.length||new Set(files.map(f=>f.id)).size!==expected.length||expected.some(f=>!files.some(x=>x.id===f.id)))throw Error('Incomplete recording segments');
  // Relative timecodes restart per recording segment; retain segment label and source chronology.
  const text=[...expected].sort((a,b)=>a.start.localeCompare(b.start)).map((f,i)=>transcriptFromVtt(files.find(x=>x.id===f.id)!.vtt).replace(/^\[/gm,`[segment ${i+1} `)).join('\n');
- if(Buffer.byteLength(text)>180000)throw Error('Long source held; never truncate');
- const updated=await sql`update script_adherence_jobs set transcript=${text},transcript_hash=${digest(text)},state='ready',lease_owner=null,lease_until=null,error=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript' returning id`;
+ if(Buffer.byteLength(text)>180000){
+  await sql`update script_adherence_jobs set state='held',error='Full transcript exceeds supported size; retained for review without truncation',lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
+  return {saved:false,held:true};
+ }
+ const roster=await sql`select distinct name from script_adherence_closers`;
+ const attribution=observedRep(text,rows[0].rep,roster.map(r=>String(r.name)));
+ const updated=await sql`update script_adherence_jobs set rep=${attribution.rep},attribution=${JSON.stringify(attribution)}::jsonb,transcript=${text},transcript_hash=${digest(text)},state='ready',lease_owner=null,lease_until=null,error=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript' returning id`;
  return {saved:updated.length===1};
 }
 export function metrics(result:Analysis,startedAt:string){const s=summarize([result],[startedAt]);return {...s,script:scriptFor(result),actions:result.actions.map(a=>({id:a.id,status:actionStatus(result,a.id,startedAt)}))};}
-export async function claimModel(){
+export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthropic'){
  const sql=db();const configs=await sql`select * from script_adherence_control where id=true`;if(!configs.length)return null;const c=configs[0];
- const reserved=await sql`select r.id,r.request_body,j.id as job_id,r.stage from script_adherence_requests r join script_adherence_jobs j on r.id=j.draft_request_id or r.id=j.review_request_id where r.status='reserved' and r.request_body is not null and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? j.id) order by r.created_at limit 1`;
+ const reserved=await sql`select r.id,r.request_body,j.id as job_id,r.stage from script_adherence_requests r join script_adherence_jobs j on r.id=j.draft_request_id or r.id=j.review_request_id where r.status='reserved' and not (r.id=any(${exclude}::text[])) and (${provider||''}='' or (r.model like 'gpt-%')=${provider==='openai'}) and r.request_body is not null and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? j.id) order by r.created_at limit 1`;
  if(reserved.length)return {id:reserved[0].id,jobId:reserved[0].job_id,body:reserved[0].request_body,stage:reserved[0].stage==='unattended-review'?'review':'draft',pipeline:PIPELINE_VERSION};
- const rows=await sql`select * from script_adherence_jobs where state in ('ready','review_ready') and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? id) order by case when state='review_ready' then 0 else 1 end,created_at limit 1`;
+ const rows=await sql`select * from script_adherence_jobs where state in ('ready','review_ready') and (${provider||''}='' or ((case when state='review_ready' then ${c.review_model} else ${c.draft_model} end) like 'gpt-%')=${provider==='openai'}) and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? id) order by case when state='review_ready' then 0 else 1 end,created_at limit 1`;
  if(!rows.length)return null;const j=rows[0],review=j.state==='review_ready',model=(review?c.review_model:c.draft_model) as AdherenceModel;if(!MODELS.includes(model))throw Error('Unpriced model');
  const body=buildAnalysisRequest(model,j.transcript,{title:j.title,rep:j.rep},review?j.draft:undefined),requestHash=digest(JSON.stringify(body)),id=digest(j.source_key+requestHash),reserve=model==='gpt-6.1-terra'?500000:200000;
  const result=await sql`with budget as (select * from script_adherence_budget where project='pilot-2026-11-02' for update),job as (update script_adherence_jobs set state=${review?'review_pending':'draft_pending'},draft_request_id=case when ${review} then draft_request_id else ${id} end,review_request_id=case when ${review} then ${id} else review_request_id end,updated_at=now() where id=${j.id} and state=${j.state} and exists(select 1 from budget where committed_microusd+${reserve}<=ceiling_microusd) returning id), inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage,request_body) select ${id},'pilot-2026-11-02',${j.source_key},${requestHash},${model},${reserve},'reserved',${review?'unattended-review':'unattended-draft'},${JSON.stringify(body)}::jsonb from job returning id),debited as(update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project='pilot-2026-11-02' and exists(select 1 from inserted) returning project) select id from inserted`;

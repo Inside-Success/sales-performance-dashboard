@@ -6,7 +6,8 @@ import {MODELS,buildAnalysisRequest,parseAnalysis,type AdherenceModel} from '../
 import {usageCost} from '../../src/lib/script-adherence/cost';
 const dir='.private-adherence/',sql=neon(process.env.DATABASE_URL!),project='pilot-2026-11-02';
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
-const calls: Array<{source:Record<string,string>;transcript:string}>=JSON.parse(readFileSync(dir+'expanded-calls.json','utf8'));
+const cohort=process.env.ADHERENCE_COHORT||'expanded-calls.json';if(!['expanded-calls.json','holdout-calls.json'].includes(cohort))throw Error('Unknown cohort');
+const calls: Array<{source:Record<string,string>;transcript:string}>=JSON.parse(readFileSync(dir+cohort,'utf8'));
 const sourceKey=(c:typeof calls[number])=>hash(JSON.stringify([c.source['Automation Key']?.includes('ELrPk')?'ELrPkucySZ2nxcs4fpyAaA':'nTC8wAG7SsijjSRAP3IOng',c.source['Zoom Meeting UUID']]));
 const transcript=(c:typeof calls[number])=>{if(!c.transcript.includes('Full Transcript'))throw Error('Missing source boundary');return c.transcript.split('Full Transcript').slice(1).join('Full Transcript').trim();};
 const save=(name:string,v:unknown)=>writeFileSync(dir+name,JSON.stringify(v,null,2),{mode:0o600});
@@ -26,7 +27,7 @@ if(command==='freeze'){
   const body=buildAnalysisRequest(model,transcript(c),{title:c.source['Meeting Title'],rep:c.source['Rep Name']},draft?draft.raw:undefined);
   const source=sourceKey(c),requestHash=hash(JSON.stringify(body)),id=hash(source+requestHash),reserve=model==='gpt-6.1-terra'?500000:200000;
   const rows=await sql`with budget as (select * from script_adherence_budget where project=${project} for update),inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage) select ${id},${project},${source},${requestHash},${model},${reserve},'reserved',${drafts?'benchmark-review':'benchmark-draft'} from budget where committed_microusd+${reserve}<=ceiling_microusd on conflict do nothing returning id), debited as (update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project=${project} and exists(select 1 from inserted) returning project) select id from inserted`;
-  manifest.push({index,id,model,source,transcriptHash:hash(transcript(c)),draftId:draft?.id||null});
+  manifest.push({index,id,model,cohort,source,transcriptHash:hash(transcript(c)),draftId:draft?.id||null});
   if(rows.length)requests.push({id,body});
   else {const prior=await sql`select status from script_adherence_requests where id=${id}`;if(!prior.length)throw Error('Budget exhausted');if(prior[0].status==='reserved')requests.push({id,body});else if(!['completed','held'].includes(prior[0].status))throw Error('Unresolved request; reconcile');}
  }

@@ -19,3 +19,11 @@ it.each(MODELS)('includes the same full source and independent review contract f
 it('holds oversized sources instead of silently truncating',()=>{
  expect(()=>buildAnalysisRequest('gpt-6-luna','[00:00] '+('long source. '.repeat(20000)),{title:'',rep:''})).toThrow('bounded context');
 });
+it('removes only extraneous known-script actions while still requiring the complete selected checklist',async()=>{
+ const {RUBRICS}=await import('@/lib/script-adherence/rubric');
+ const actions=RUBRICS.reality_call_1.actions.map(a=>({id:a.id,applicability:'unknown',reason:'Incomplete evidence',components:a.components.map(()=>({state:'unknown',quote:'',timestamp:''})),playbackFraction:null}));
+ const raw={...base,family:'reality',stage:'call_1',currentCallPurpose:'first_audition',transcriptComplete:false,actions:[...actions,{id:'research',applicability:'unknown',reason:'Internal',components:[{state:'unknown',quote:'',timestamp:''}],playbackFraction:null}]};
+ const result=parseAnalysis(raw,text);expect(result.analysis.actions).toHaveLength(actions.length);expect(result.normalization.droppedActions).toEqual(['research']);
+ expect(()=>parseAnalysis({...raw,actions:raw.actions.filter(a=>a.id!=='personality')},text)).toThrow('checklist');
+ expect(()=>parseAnalysis({...raw,actions:[...raw.actions,raw.actions[0]]},text)).toThrow('Duplicate');
+});

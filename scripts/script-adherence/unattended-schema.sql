@@ -42,3 +42,5 @@ create table if not exists script_adherence_coverage (
  account_id text primary key,through_at timestamptz not null,updated_at timestamptz not null default now()
 );
 create index if not exists script_adherence_metrics_local_date on script_adherence_metrics(((started_at at time zone 'America/New_York')::date));
+create table if not exists script_adherence_closers(account_id text not null,member_id text not null,name text not null,updated_at timestamptz not null default now(),primary key(account_id,member_id));
+alter table script_adherence_jobs add column if not exists attribution jsonb;
