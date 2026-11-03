@@ -32,7 +32,28 @@ Evaluation found long useful answers finishing just below the old 18-second cuto
 
 ## Verified checks before publication
 
-- 465 FAQ tests passed in GitHub CI after the provenance correction, with TypeScript, scoped ESLint and production build passing. 107 static safety checks passed locally.
+- 469 FAQ tests passed locally and in GitHub CI after the provenance and refund-relationship corrections, with TypeScript, scoped ESLint and production build passing. 107 static safety checks passed locally.
 - The offline direct-query/prior-user-context retrieval audit covered 504 questions: 213 candidate sets changed; all stayed within 36 records. This is coverage/budget evidence, not 504 fact-checked answers or an accuracy score.
 - Hosted preview builds and its sign-in boundary work. Preview intentionally has Google sign-in disabled; do not change auth to bypass that. Verify the authorized production release with the existing work-profile session and persisted answer metadata.
-- A broad reality-materials request timed out in both the baseline and final candidate. In the candidate its answer-stage retry recovered, but its subsequent review timed out and correctly withheld the draft. Keep this result; do not repeatedly rerun it to manufacture a pass. The retry is resilience, not an outage-proof guarantee.
+- A broad reality-materials request timed out in both the baseline and the first complete candidate run. Its answer-stage retry recovered, but its subsequent review timed out and correctly withheld the draft. The full post-refund-correction evaluation retains the earlier results and all new failures; it is not a retry-until-pass process. Recovery is resilience, not an outage-proof guarantee.
+
+## Matched answer evaluation (completed before release)
+
+Baseline `2a311e3228f32d41` / knowledge `54cf9e5a767fbf779b44d058`; initial complete candidate `c763cf322d60f28f` / knowledge `a97a64fc5b2e132a397f084b`; corrected final candidate `cd8fae8b12b1ea77` / knowledge `b1200af630bfa49e3b132326`. Each has all 60 frozen real questions with bounded real history. The final candidate has 2,592 active records (16 obsolete records retired, two resources added). The 30 initially held-out cases stopped being unseen after the first complete comparison. Final evaluation was a complete rerun after the refund relationship correction, not selective replacement of failures. All intermediate outputs and conservative failed-call cost reservations are retained privately.
+
+Observed practical changes:
+
+- The broad 20% SOP question now explains HubSpot Assign, 100/day, actual outbound Call records and separate Outreach fields instead of the old sheet/75-lead/Keap instructions.
+- The KPI question now supplies documented rolling-30-day expectations and the current dashboard while explicitly retaining the missing RPC/RPCT denominator. It does not invent the formula.
+- The no-show follow-up now contains approved copy, truthful prior-attempt wording and the distinction between one supplied template and the two-text requirement.
+- The documentary refund question now includes the product-specific rule rather than only an old insolvency fragment. An initial candidate incorrectly introduced a generic three-day term; the family-level governing link corrected that before publication.
+- Coaching navigation is now available in evidence and produced a useful reviewed answer in the first complete candidate. The final matched run hit an unclassified provider-response failure during review for that question; do not count its unseen draft as a successful delivered answer.
+- Current payment plans, opt-out handling, separate reality/documentary rules and provisional filming dates remained represented in the inspected comparison. Exact template sources, terminology such as DFD, KPI formulas and individual account actions still have genuine coverage limits. This is not proof that every answer is correct.
+
+Technical outcomes: baseline 1/60 failure; first complete candidate 1/60; final candidate 2/60 (one provider-invalid-response at review and one answer-timeout/recovery followed by review timeout). Final recovery succeeded for two other questions. Small sequential runs cannot establish an improved production failure rate. Median latency was 16.78 seconds baseline and 15.93 seconds final; final p95 was 53.97 seconds versus 34.36 seconds baseline because recovery allows a longer wait. The user-visible tradeoff is fewer immediate aborts for some transient failures, at the cost of occasional roughly one-minute waits. Do not claim zero failures or a statistically proven reliability gain.
+
+The final model labels were 25 answer, 19 partial, four clarification, four action_route, three sales_advice, two knowledge_gap, one conflict and two technical_failure. These labels are not accuracy grades. A supported clarification, source limitation or human-only action can still be useful; a full-looking answer can still require review. No overall accuracy percentage is asserted.
+
+Six additional fresh-wording checks completed without technical failures: current outreach, outbound hours, main documentary refund, DJ refund, separately scoped deposit uncertainty and Coaching/self-submission access. Their answers were inspected; the deposit question correctly did not transfer a one-on-one refund note to an unverified filming package. Total isolated evaluation spend, including intermediate runs and conservative failed-call reservations: approximately $1.8817 of the authorized $20 ceiling. No further broad model tuning was performed.
+
+Release decision: accept the scoped source reconciliation and bounded recovery after passing automated checks and reviewed examples. Content usefulness improved on the targeted failures; there is no basis to claim perfect answers or a lower overall failure rate from this sample. Preserve the recorded source gaps and provider limitations for later observational review.
