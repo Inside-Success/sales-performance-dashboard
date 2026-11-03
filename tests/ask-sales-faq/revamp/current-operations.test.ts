@@ -26,7 +26,10 @@ describe('current operating rules remain attached to historical evidence',()=>{
   expect(dependent.length).toBeGreaterThan(10);
   for(const record of dependent){
    const q=record.title;const ids=retrieveEvidence(corpus,q,plan(q),36).map(r=>r.record.id);
-   if(ids.includes(record.id)) expect(ids.indexOf('outbound-hubspot-assignment-2026-10-07')).toBeGreaterThanOrEqual(0);
+   if(ids.includes(record.id)) {
+    expect(ids.indexOf('outbound-hubspot-assignment-2026-10-07')).toBeGreaterThanOrEqual(0);
+    expect(ids.indexOf('outbound-hubspot-assignment-2026-10-07')).toBeLessThan(ids.indexOf(record.id));
+   }
   }
  });
  it('retains distinct Slack coordination and real ownership checks',()=>{

@@ -28,3 +28,10 @@ Private evidence is in `.magic-mike-faq-consistency-2026-11-03/` outside both re
 Revert this scoped FAQ change and its paired export if needed, preserving later independent changes. Knowledge-publication receipt must match the actual active hash. The November 3 source checkpoint remains the source coverage baseline; this reconciliation does not change which Slack/Drive material was scanned.
 
 Evaluation found long useful answers finishing just below the old 18-second cutoff and repeated 18-second timeouts on two detailed questions. The recovery attempt therefore has a bounded 30-second allowance rather than repeating the same inadequate timeout. Normal calls remain at 18 seconds; there is still only one retry, with a 90-second total work deadline and no model/context expansion.
+
+## Verified checks before publication
+
+- 465 FAQ tests passed in GitHub CI after the provenance correction, with TypeScript, scoped ESLint and production build passing. 107 static safety checks passed locally.
+- The offline direct-query/prior-user-context retrieval audit covered 504 questions: 213 candidate sets changed; all stayed within 36 records. This is coverage/budget evidence, not 504 fact-checked answers or an accuracy score.
+- Hosted preview builds and its sign-in boundary work. Preview intentionally has Google sign-in disabled; do not change auth to bypass that. Verify the authorized production release with the existing work-profile session and persisted answer metadata.
+- A broad reality-materials request timed out in both the baseline and final candidate. In the candidate its answer-stage retry recovered, but its subsequent review timed out and correctly withheld the draft. Keep this result; do not repeatedly rerun it to manufacture a pass. The retry is resilience, not an outage-proof guarantee.
