@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {buildAnalysisRequest,parseAnalysis,MODELS} from '@/lib/script-adherence/model';
+import {buildAnalysisRequest,parseAnalysis,MODELS,CONDITIONS} from '@/lib/script-adherence/model';
 const text='[00:00] Rep: This is a follow-up about your documentary offer.\n[00:03] Buyer: We went through the presentation yesterday; today I have questions.';
 const base={family:'documentary',stage:'call_2',attendance:'conversation',show:'Inside Success TV',classificationReason:'Questions on prior presentation',transcriptComplete:true,eligibleForChecklist:true,exclusionReason:'',familyEvidence:'T0001',stageEvidence:'T0002',currentCallPurpose:'questions_after_prior_presentation',priorPresentationEvidence:'T0002',actions:[]};
 it('review can correct a draft classification using original source evidence',()=>{
@@ -26,4 +26,18 @@ it('removes only extraneous known-script actions while still requiring the compl
  const result=parseAnalysis(raw,text);expect(result.analysis.actions).toHaveLength(actions.length);expect(result.normalization.droppedActions).toEqual(['research']);
  expect(()=>parseAnalysis({...raw,actions:raw.actions.filter(a=>a.id!=='personality')},text)).toThrow('checklist');
  expect(()=>parseAnalysis({...raw,actions:[...raw.actions,raw.actions[0]]},text)).toThrow('Duplicate');
+});
+it('applies one shared condition while preserving only evidenced action exceptions',async()=>{
+ const {RUBRICS}=await import('@/lib/script-adherence/rubric');
+ const actions=RUBRICS.documentary_call_2.actions.map(a=>({id:a.id,applicability:'yes',reason:'Source evidence',components:a.components.map(()=>({state:'unknown',quote:'',timestamp:''})),playbackFraction:null}));
+ const welcome=actions.find(a=>a.id==='welcome')!;
+ welcome.components.forEach(c=>Object.assign(c,{state:'deferred',quote:'T0002'}));
+ const conditions=Object.fromEntries(CONDITIONS.map((_,i)=>[`condition_${i}`,{state:'no',quote:'T0002',reason:'Not proceeding with the general process yet'}]));
+ const raw={...base,currentCallPurpose:'full_offer_presentation',priorPresentationEvidence:'',actions,conditions};
+ const result=parseAnalysis(raw,text).analysis;
+ expect(result.actions.find(a=>a.id==='welcome')?.applicability).toBe('yes');
+ expect(result.actions.find(a=>a.id==='onboarding')?.applicability).toBe('no');
+ expect(result.actions.find(a=>a.id==='form')?.components.every(c=>c.state==='not_applicable')).toBe(true);
+ expect(result.actions.find(a=>a.id==='welcome')?.components.every(c=>c.state==='deferred')).toBe(true);
+ conditions.condition_0.quote='T9999';expect(()=>parseAnalysis({...raw,conditions},text)).toThrow('Unknown evidence');
 });

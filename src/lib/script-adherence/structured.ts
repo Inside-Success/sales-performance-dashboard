@@ -23,13 +23,13 @@ export function extractionSchema(script:ScriptId,evidenceIds?:[string,...string[
   const quoteSchema=evidenceIds?z.enum(evidenceIds):z.string();
   for(const a of RUBRICS[script].actions){
     const parts:Record<string,z.ZodType>={};
-    a.components.forEach((label,i)=>{parts[`part_${i+1}`]=z.object({state:z.enum(["done","not_done","unknown","not_applicable"]),quote:quoteSchema,timestamp:z.string()}).strict().describe(label);});
+    a.components.forEach((label,i)=>{parts[`part_${i+1}`]=z.object({state:z.enum(["done","not_done","unknown","not_applicable","deferred"]),quote:quoteSchema,timestamp:z.string()}).strict().describe(label);});
     actions[a.id]=z.object({applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.object(parts).strict(),...(a.video?{playbackFraction:z.number().min(0).max(1).nullable()}:{} )}).strict().describe(JSON.stringify(a));
   }
   return z.object({actions:z.object(actions).strict()}).strict();
 }
 export function providerExtractionSchema(script:ScriptId){
- return z.object({actions:z.array(z.object({id:z.enum(RUBRICS[script].actions.map(a=>a.id) as [string,...string[]]),applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.array(z.object({state:z.enum(["done","not_done","unknown","not_applicable"]),quote:z.string(),timestamp:z.string()}).strict()),playbackFraction:z.number().nullable()}).strict())}).strict();
+ return z.object({actions:z.array(z.object({id:z.enum(RUBRICS[script].actions.map(a=>a.id) as [string,...string[]]),applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.array(z.object({state:z.enum(["done","not_done","unknown","not_applicable","deferred"]),quote:z.string(),timestamp:z.string()}).strict()),playbackFraction:z.number().nullable()}).strict())}).strict();
 }
 export function unpackExtraction(script:ScriptId,classification:Classification,raw:unknown):Analysis{
   if(Array.isArray((raw as {actions:unknown}).actions)){
