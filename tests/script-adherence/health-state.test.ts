@@ -8,3 +8,5 @@ it('never displays healthy when runner, receipt, source or budget needs attentio
 it('does not demand company-wide coverage from a scoped canary',()=>expect(healthState({...base,enabled:false,canary:4,coverage:null},now).label).toBe('Limited test'));
 
 it('keeps ordinary source waiting visible without treating it as a failure',()=>expect(healthState({...base,waitingSources:3},now).label).toBe('Waiting for transcripts'));
+
+it('reports budget blocking when there is not enough headroom to reserve the next request',()=>expect(healthState({...base,committed:39800000,ceiling:40000000,pendingRequests:1},now).label).toBe('Budget limit'));
