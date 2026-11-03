@@ -45,3 +45,17 @@ it('retains the entire source rather than returning partial segments when the do
  const clock=vi.spyOn(Date,'now').mockReturnValueOnce(0).mockReturnValueOnce(1).mockReturnValue(41000);
  try{const output=await fn.call({helpers:{httpRequest:vi.fn().mockResolvedValue('WEBVTT')}},nodes,{id:'owner'});expect(output[0].json.files).toEqual([]);expect(output[0].json.error).toContain('retained');}finally{clock.mockRestore();}
 });
+
+it('source-only resume cannot clear an unresolved coverage fault, while daily intake still scans',async()=>{
+ const workflow=JSON.parse(readFileSync('scripts/script-adherence/unattended-workflow.json','utf8'));
+ const init=workflow.nodes.find((n:any)=>n.name==='Initialize coordinator').parameters.jsCode;
+ const finish=workflow.nodes.find((n:any)=>n.name==='Start provider processing').parameters.jsonBody;
+ for(const sourceOnly of [true,false]){
+  const [item]=await new AsyncFunction('$input','$execution',init)({first:()=>({json:{body:{sourceOnly}}})},{id:'run'});
+  const payload=new Function('$',`return (${finish.slice(3,-2).trim()});`)(()=>({first:()=>item}));
+  expect(payload).toEqual(sourceOnly?{}:{event:'source_success'});
+ }
+ const schedule=workflow.nodes.find((n:any)=>n.type==='n8n-nodes-base.scheduleTrigger');
+ expect(workflow.connections[schedule.name].main[0][0].node).toBe('Read coverage window');
+ expect(workflow.nodes.find((n:any)=>n.name==='Scoped verification').parameters.authentication).toBe('headerAuth');
+});

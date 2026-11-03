@@ -4,7 +4,7 @@
 
 Implementation authorized November 3 following the completed 12-call provider Batch pilot. Hosted integration and a bounded live cohort are in scope. Company-wide intake and the full one-week backfill remain disabled pending acceptance. Existing coaching, report delivery, FAQ policy and historical results are not rewritten.
 
-**In progress — not yet release acceptance.** Tests and the webpack production build pass; hosted end-to-end verification follows deployment.
+**Hosted implementation deployed; bounded provider review still pending.** Builds and regression checks pass, authenticated UI and source ingestion are verified. Final quality/cost/publication acceptance awaits the five new two-pass results.
 
 ## Processing
 
@@ -50,3 +50,17 @@ The four-source canary (two recordings per workspace) then exposed the pre-exist
 The scanner now prepares a list of closer/pending-recording tasks and uses a native one-item loop. Each Code invocation handles one closer's paginated recordings or one retained pending recording, with a 35-second pagination guard and 10-second HTTP timeout. Every result page is acknowledged before advancing the loop. The final per-account cursor receipt cannot run before all preceding work. This remains one coverage workflow execution, not one execution per call. Source failures are recorded separately from provider-check failures, so a healthy provider poll cannot hide failed intake. A completion event clears the source fault only after intake/source processing finishes.
 
 Validation adds pagination, empty/repeated group, pending-recording retention, loop completion ordering and independent source-fault tests. The loop validator's warning about the coordinator on the Done output is intentional: source workers must start after coverage tasks finish, not once per closer.
+
+## Successful bounded intake and provider processing (pending review)
+
+PR #365 merged as `6987e16398001f3321e7ed3ff7cd0a23bcd41317`; Vercel production `dpl_5ERhHa5b7hvtMMwGoYmgXcGr185f` is Ready. The corrected full scan/source run 1509805 completed successfully. The coordinator is inactive between scoped verification runs; the provider checker is active only to finish the bounded cohort.
+
+The initial four recordings yielded three transcripts and one confirmed upstream Zoom 404. Two transcripts contain only two short utterances. The cohort was therefore expanded to six exact recording keys, adding one interrupted audition and one substantial documentary follow-up, without enabling general intake. Source-only resume 1509895 successfully collected the two added transcripts without rescanning all closer accounts. This authenticated resume does not clear a coverage fault; only a complete source scan does. The daily schedule always takes the full coverage path.
+
+Five draft requests are pending in provider batches `batch_6ae9cf70f6708190acf6cfcb9b5bc31e` and `batch_6ae9d099ef6c8190af7586ca705f17d3`. The unavailable recording remains retained with backoff and has no AI request. No reviewed result or live cohort accuracy claim is made yet. The two-line sources must not produce invented adherence scores; interrupted calls must preserve observed actions without treating unobserved later actions as omissions.
+
+At 2026-11-03T12:25Z the original 46 accepted calls still match digest `48346bfb7b1aeb35173847865a53999a`. Actual settled project spend is $6.758526; $2.50 is reserved for the five new draft requests (reservation is not actual cost). All five are submitted, none duplicated, with no provider error. Source-only execution 1509895 is complete, and the checker execution 1509874 completed in under one second. No n8n execution is held open waiting for the provider.
+
+Authenticated live UI verification: owner status changed from Needs attention during the failed scan to Processing after successful recovery; overall historical totals remain 313/409 assessable actions across 23 assessed of 46 saved calls. Clicking Samantha Forcash opens her two-call summary (25/38), filtering to America's Best Doctors yields one call (12/19), and expanding it shows action-level details and the source link. This is the previously saved first call, distinct from the new follow-up under analysis.
+
+Independent source review is saved privately in `.private-adherence/hosted-manual-review.md`. Use `.private-adherence/hosted-audit.mjs` for read-only preservation, request, cost and batch checks and `.private-adherence/hosted-export.mjs` for complete sources/results. Never rerun a paid request or reset an unresolved submission. After all five reviews settle, compare every action against the full sources; clear the exact canary list, keep general intake disabled, and deactivate the scoped checker only after all paid work is accounted for. Preserve the unavailable sixth source for later retry.
