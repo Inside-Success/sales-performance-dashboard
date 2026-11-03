@@ -83,7 +83,7 @@ while(!stopping && next<cases.length) {
  const path=resolve(output,`${providerName}-${snapshot.version}-${runVersion}-${item.id}-${caseVersion}.json`);
  if(existsSync(path)) {console.log(JSON.stringify({id:item.id,cached:true}));continue;}
  const outputs:Array<{purpose:string;value:unknown}>=[];
- const observedProvider:JsonProvider=async(system,input,purpose)=>{const response=await provider(system,input,purpose);outputs.push({purpose,value:response.value});return response;};
+ const observedProvider:JsonProvider=async(system,input,purpose,options)=>{const response=await provider(system,input,purpose,options);outputs.push({purpose,value:response.value});return response;};
  const result=await runAskSalesRevamp(item.question,item.messages||[],{provider:observedProvider,evidence:snapshot.records,knowledgeVersion:snapshot.version});
  writeFileSync(path,JSON.stringify({id:item.id,question:item.question,model,runVersion,result,outputs},null,2),{mode:0o600});
  console.log(JSON.stringify({id:item.id,status:result.runtimeMetadata?.revamp?.status,latencyMs:result.latencyMs,errorClass:result.errorClass,estimatedTotalUsd:ledger.estimatedUsd}));

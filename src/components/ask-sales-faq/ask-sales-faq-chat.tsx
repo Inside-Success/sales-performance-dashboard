@@ -817,10 +817,11 @@ export function AskSalesFaqChat() {
             <div className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white p-2 pl-4 shadow-[0_1px_2px_rgba(17,17,26,.04),0_8px_22px_-14px_rgba(17,17,26,.18)] focus-within:border-slate-300">
               <Textarea
                 ref={inputRef}
+                aria-label="Ask a sales question"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
+                  if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
                     event.preventDefault();
                     void submitQuestion();
                   }
@@ -1755,7 +1756,7 @@ function FeedbackControls({
 
 function LoadingAnswer() {
   return (
-    <div className="flex items-center gap-3">
+    <div role="status" aria-live="polite" className="flex items-center gap-3">
       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#DC2626] text-white">
         <MessageCircleQuestion className="size-5" />
       </span>

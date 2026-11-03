@@ -12,7 +12,7 @@ export function createRevampProvider(config: {
   beforeCall?: (request: { promptChars: number; maxOutputTokens: number; purpose: string }) => Promise<void>;
   afterCall?: (attempt: Attempt) => Promise<void>;
 }): JsonProvider {
-  return async (system, input, purpose) => {
+  return async (system, input, purpose, options) => {
     const user = JSON.stringify(input);
     const maxOutputTokens = purpose === "plan" ? 1200 : 4800;
     const start = Date.now();
@@ -29,7 +29,7 @@ export function createRevampProvider(config: {
       const response = await (config.fetcher || fetch)(config.provider === "openai"
         ? "https://api.openai.com/v1/chat/completions" : "https://api.deepseek.com/chat/completions", {
         method: "POST", headers: { "Authorization": `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(config.timeoutMs ?? 18000),
+        signal: AbortSignal.timeout(Math.max(1,Math.min(config.timeoutMs ?? 18000,options?.timeoutMs ?? 18000))),
         body: JSON.stringify({ model: config.model, messages: [{ role: "system", content: system }, { role: "user", content: user }],
           response_format: config.provider === "openai" ? {
             type: "json_schema", json_schema: { name: purpose === "plan" ? "intent_plan" : "sales_answer", strict: true,

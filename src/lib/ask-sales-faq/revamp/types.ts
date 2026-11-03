@@ -29,4 +29,4 @@ export type Plan = Omit<z.infer<typeof planSchema>, "historyMode"> & { historyMo
 export type Answer = z.infer<typeof answerSchema>;
 export type Usage = { inputTokens: number; cachedTokens: number; outputTokens: number };
 export type Attempt = Usage & { provider: "openai" | "deepseek"; model: string; purpose: string; latencyMs: number; status: "success" | "failed"; error?: string };
-export type JsonProvider = (system: string, input: unknown, purpose: string) => Promise<{ value: unknown; attempt: Attempt }>;
+export type JsonProvider = (system: string, input: unknown, purpose: string, options?: { timeoutMs: number }) => Promise<{ value: unknown; attempt: Attempt }>;

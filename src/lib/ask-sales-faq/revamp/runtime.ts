@@ -47,6 +47,7 @@ export function validateEvidenceReferences(answer: Answer, evidence: Evidence[])
 
 export function stripInternalCitations(text: string) {
   return text.replace(/\[E\d+(?:\s*[,;]\s*E\d+)*\]/g, "")
+    .replace(/[ \t]*\(E\d+(?:\s*[,;]\s*E\d+)*\)/g, "")
     .replace(/\uE200cite\uE202[^\uE201]*\uE201/g, "")
     .replace(/[\uE200-\uE202]/g, "").trim();
 }
@@ -82,9 +83,29 @@ export async function runAskSalesRevamp(
   let failure: {stage:string;reason:string;issue?:EvidenceIssue} | null=null;
   let referenceIssue: EvidenceIssue | null=null;
   let validationIssues: Array<{code:string;path:string}> = [];
-  async function call(system:string,input:unknown,purpose:string) {
-    try {stage=purpose;const result=await provider(system,input,purpose);attempts.push(result.attempt);return result.value;}
-    catch(error) {if(error instanceof RevampProviderError) attempts.push(error.attempt);throw error;}
+  // One recovery attempt across the entire request, never a pipeline restart.
+  // Leave headroom within the route's 120-second limit for persistence/response.
+  const deadline = start + 80000;
+  let retries = 0;
+  async function call(system:string,input:unknown,purpose:string): Promise<unknown> {
+    stage=purpose;
+    for (;;) {
+      const remainingMs=deadline-Date.now();
+      if(remainingMs<=0) throw new Error("runtime_deadline");
+      try {
+        const result=await provider(system,input,purpose,{timeoutMs:Math.min(18000,remainingMs)});
+        attempts.push(result.attempt);
+        return result.value;
+      } catch(error) {
+        if(!(error instanceof RevampProviderError)) throw error;
+        attempts.push(error.attempt);
+        // Do not retry authentication, billing/quota, invalid output, evidence
+        // validation or accounting failures. A recovered draft still gets review.
+        const transient=/^provider_(timeout|http_50[234])$/.test(error.attempt.error||"");
+        if(!transient || retries>=1 || deadline-Date.now()<18000) throw error;
+        retries++;
+      }
+    }
   }
   try {
     const companyContext=corpus.filter(r=>r.domains?.includes("company_context") && r.scopes.includes("shared"));
@@ -132,9 +153,11 @@ export async function runAskSalesRevamp(
   } catch(error) {
     if(error instanceof ZodError) validationIssues=error.issues.map(issue=>({code:issue.code,path:issue.path.join(".")}));
     failure={stage,reason:error instanceof RevampProviderError ? error.attempt.error || "provider_failure" :
+      error instanceof Error && error.message === "runtime_deadline" ? "runtime_deadline" :
       error instanceof ZodError ? "schema_validation" : referenceIssue ? referenceIssue.code : "unexpected_runtime_error",
       ...(referenceIssue ? {issue:referenceIssue} : {})};
-    errorClass=error instanceof RevampProviderError ? `revamp_${error.attempt.error}` : "revamp_invalid_output";
+    errorClass=error instanceof RevampProviderError ? `revamp_${error.attempt.error}` :
+      error instanceof Error && error.message === "runtime_deadline" ? "revamp_runtime_deadline" : "revamp_invalid_output";
     answer={status:"knowledge_gap",paragraphs:[{text:"I couldn’t complete that answer because of a technical problem. Please try again shortly.",kind:"uncertainty",evidenceIds:[]}],routeKey:null};
   }
   const selectedIds=[...new Set(answer.paragraphs.flatMap(p=>p.evidenceIds))];
@@ -155,7 +178,7 @@ export async function runAskSalesRevamp(
     provider:lastAttempt?.provider||null,model:lastAttempt?.model||null,redactions:safe.redactions,
     latencyMs:Date.now()-start,sanitizedQuestion:safe.text,contextualQuestion,matchedArticleId:null,errorClass,
     runtimeMetadata:{pipelineVersion:"revamp",knowledgeVersion,providerAttempts:attempts.map(a=>({...a,totalTokens:a.inputTokens+a.outputTokens,completionTokens:a.outputTokens})),
-      revamp:{failure,validationIssues,status:errorClass?"technical_failure":answer.status,plan,reviewed,routingMetadataDiscarded,selectedEvidenceIds:selectedIds,
+      revamp:{failure,validationIssues,retryCount:retries,status:errorClass?"technical_failure":answer.status,plan,reviewed,routingMetadataDiscarded,selectedEvidenceIds:selectedIds,
         candidateIds:candidates.map(c=>c.id),corpusSize:corpus.length,answerParagraphs:answer.paragraphs,historyMessages:history.length}},
   };
 }
