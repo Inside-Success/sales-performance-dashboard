@@ -363,6 +363,34 @@
           "name": "Sales Performance Dashboard Ingest"
         }
       }
+    },
+    {
+      "id": "07cb621e-f443-4525-8b36-e1eff42809dd",
+      "name": "Start provider processing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3500,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/provider",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 190000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "SalesPerformanceDashboardIngest"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
     }
   ],
   "connections": {
@@ -499,6 +527,17 @@
         [
           {
             "node": "Complete coverage windows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final batch status": {
+      "main": [
+        [
+          {
+            "node": "Start provider processing",
             "type": "main",
             "index": 0
           }
