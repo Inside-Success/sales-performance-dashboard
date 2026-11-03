@@ -38,3 +38,15 @@ Pause new work by clearing the canary list and leaving enabled=false. Keep the b
 Final deployment, cohort receipts, quality review, spend and authenticated UI evidence will be appended after verification. This document does not assert company-wide readiness from tests alone.
 
 Scoped n8n resources: daily coverage `hb3M0O7fYx04oVEs` (inactive), provider checker `8OFKaWAX89AsgpoG` (inactive until hosted verification), error recorder `ReqYiNj0X6YHOSKe` (published, no schedule or messaging nodes). Dedicated production secret installed on Vercel project `prj_DwQt5q1eNv9WZwwc1IIa5zQvIH5e`, team `team_qG4moATpNnuhyxhDJjdvqZYY`.
+
+## First production verification and intake correction
+
+PR #362 merged as `0e1deb4119d4ed17280fc18d756434cd2c031a77`; Vercel production `dpl_CpaQj65Wz8BgYmhzsW3ot62NmpF5` is Ready. Authenticated owner UI showed Paused; unauthenticated provider POST returned 401. All release CI checks passed.
+
+A metadata-only source refresh completed both accounts through 2026-11-03T11:43:11Z (run 1509471; 202 durable page records). Existing 46 accepted results and $6.758526 spending remained unchanged.
+
+The four-source canary (two recordings per workspace) then exposed the pre-existing monolithic scanner's 60-second n8n Code task timeout in execution 1509617. No transcripts, AI requests or accepted results were created by that failed run. The checker was paused while fixing ingestion. This is an actual live finding, not an inferred defect.
+
+The scanner now prepares a list of closer/pending-recording tasks and uses a native one-item loop. Each Code invocation handles one closer's paginated recordings or one retained pending recording, with a 35-second pagination guard and 10-second HTTP timeout. Every result page is acknowledged before advancing the loop. The final per-account cursor receipt cannot run before all preceding work. This remains one coverage workflow execution, not one execution per call. Source failures are recorded separately from provider-check failures, so a healthy provider poll cannot hide failed intake. A completion event clears the source fault only after intake/source processing finishes.
+
+Validation adds pagination, empty/repeated group, pending-recording retention, loop completion ordering and independent source-fault tests. The loop validator's warning about the coordinator on the Done output is intentional: source workers must start after coverage tasks finish, not once per closer.

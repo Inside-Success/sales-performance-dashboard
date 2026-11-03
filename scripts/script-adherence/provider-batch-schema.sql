@@ -16,3 +16,5 @@ create table if not exists script_adherence_runner (
  id boolean primary key default true check(id),lease_owner text,lease_until timestamptz,last_started_at timestamptz,last_success_at timestamptz,error text
 );
 insert into script_adherence_runner(id) values(true) on conflict do nothing;
+
+alter table script_adherence_runner add column if not exists source_error text;

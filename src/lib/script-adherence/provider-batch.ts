@@ -98,6 +98,8 @@ export async function runProviderBatch(){
  finally{await sql`update script_adherence_runner set lease_owner=null,lease_until=null where id=true and lease_owner=${owner}`;}
 }
 
-export async function recordSchedulerFailure(){
- const sql=db();await sql`update script_adherence_runner set error='Scheduled processing reported an error; inspect the scoped n8n execution' where id=true`;
+export async function recordSchedulerFailure(workflowId?:string){
+ const sql=db();if(workflowId==='hb3M0O7fYx04oVEs')await sql`update script_adherence_runner set source_error='Source scan reported an error; inspect the scoped n8n execution' where id=true`;else await sql`update script_adherence_runner set error='Provider check reported an error; inspect the scoped n8n execution' where id=true`;
 }
+
+export async function recordSourceSuccess(){const sql=db();await sql`update script_adherence_runner set source_error=null where id=true`;}

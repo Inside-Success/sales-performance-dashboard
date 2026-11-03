@@ -160,7 +160,7 @@
     },
     {
       "id": "caa71e8b-3650-417c-96e5-b666ebf17f69",
-      "name": "Collect both workspaces",
+      "name": "Read one coverage task",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -168,8 +168,11 @@
         0
       ],
       "parameters": {
-        "jsCode": "// n8n Code node. Native OAuth HTTP nodes supply account-scoped tokens.\n// Outputs metadata only, never OAuth tokens. Every page is persisted downstream.\nconst window=$('Read coverage window').first().json;\nconst tokens={nTC8wAG7SsijjSRAP3IOng:$('Zoom main token').first().json.access_token,ELrPkucySZ2nxcs4fpyAaA:$('Zoom legacy token').first().json.access_token};\nconst output=[],finishes=[],started=Date.now(),runId=String($execution.id);\nconst get=async(account,path,query={})=>{\n if(Date.now()-started>600000)throw Error('Coverage scan reached bounded runtime; cursor not advanced');\n const qs=Object.entries(query).filter(([,v])=>v!=='').map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(String(v))).join('&');\n return await this.helpers.httpRequest({method:'GET',url:'https://api.zoom.us/v2'+path+(qs?'?'+qs:''),headers:{Authorization:'Bearer '+tokens[account]},json:true,timeout:30000});\n};\nfunction recording(account,meeting,member){\n const files=meeting.recording_files||[],transcripts=files.filter(f=>f.file_type==='TRANSCRIPT'||f.recording_type==='audio_transcript');\n const mediaStarts=[...new Set(files.filter(f=>['MP4','M4A'].includes(f.file_type)).map(f=>f.recording_start).filter(Boolean))];\n const missingSegment=mediaStarts.some(start=>!transcripts.some(f=>f.recording_start===start));\n const settled=Date.parse(meeting.start_time)+Number(meeting.duration||0)*60000<Date.now()-30*60000;\n return {accountId:account,uuid:meeting.uuid,rep:[member.first_name,member.last_name].filter(Boolean).join(' ')||member.email||member.id,title:meeting.topic||'Untitled Zoom meeting',startedAt:meeting.start_time,sourceUrl:meeting.share_url||'',files:transcripts.map(f=>({id:f.id,url:f.download_url,start:f.recording_start||meeting.start_time,ready:!missingSegment&&settled&&f.status==='completed'}))};\n}\nfor(const account of window.accounts){\n if(!tokens[account.id])throw Error('Missing account token');\n const members=[];let token='',seen=new Set();\n do{\n  if(seen.has(token))throw Error('Repeated member pagination token');seen.add(token);\n  const r=await get(account.id,'/groups/'+encodeURIComponent(account.group)+'/members',{page_size:300,next_page_token:token});\n  if(!Array.isArray(r.members))throw Error('Invalid closer group response');members.push(...r.members);token=r.next_page_token||'';\n }while(token);\n if(!members.length)throw Error('Empty closer group; coverage not advanced');\n const unique=[...new Map(members.map(m=>[m.id,m])).values()];\n output.push({json:{operation:'closers',accountId:account.id,members:unique.map(m=>({id:m.id,name:[m.first_name,m.last_name].filter(Boolean).join(' ')||m.email||m.id}))}});\n for(const member of unique){\n  token='';seen=new Set();\n  do{\n   if(seen.has(token))throw Error('Repeated recordings pagination token');seen.add(token);\n   const r=await get(account.id,'/users/'+encodeURIComponent(member.id)+'/recordings',{from:account.from.slice(0,10),to:account.to.slice(0,10),page_size:300,next_page_token:token});\n   if(!Array.isArray(r.meetings))throw Error('Invalid recording page');\n   const meetings=r.meetings.filter(m=>Date.parse(m.start_time)>=Date.parse(account.from)&&Date.parse(m.start_time)<=Date.parse(account.to));\n   output.push({json:{operation:'discover',accountId:account.id,runId,memberId:member.id,from:account.from,to:account.to,page:token,next:r.next_page_token||'',recordings:meetings.map(m=>recording(account.id,m,member))}});\n   token=r.next_page_token||'';\n  }while(token);\n }\n for(const pending of window.pending.filter(p=>p.account_id===account.id)){\n  const raw=pending.meeting_uuid,encoded=raw.startsWith('/')||raw.includes('//')?encodeURIComponent(encodeURIComponent(raw)):encodeURIComponent(raw);\n  try{\n   const meeting=await get(account.id,'/meetings/'+encoded+'/recordings'),member=unique.find(m=>m.id===meeting.host_id)||{id:meeting.host_id,first_name:pending.rep,last_name:''};\n   // A removed closer's already-discovered recording remains retained, not silently reassigned.\n   if(!member)continue;\n   output.push({json:{operation:'discover',accountId:account.id,runId,memberId:'pending:'+raw,from:account.from,to:account.to,page:'',next:'',recordings:[recording(account.id,meeting,member)]}});\n  }catch{output.push({json:{operation:'pending_checked',accountId:account.id,uuid:raw,error:'Recording metadata unavailable; retained for retry'}});}\n }\n finishes.push({operation:'finish_scan',accountId:account.id,runId,from:account.from,to:account.to,members:unique.map(m=>m.id)});\n}\n// Finish receipts run only after ALL discovery pages have been durably acknowledged.\nreturn output.map((v,i)=>({json:{...v.json,...(i===0?{finishRequests:finishes}:{})}}));\n"
-      }
+        "jsCode": "// One loop item per Code invocation avoids the shared 60-second task limit.\nconst task=$input.first().json;if(task.kind==='persist')return [{json:task.payload}];\nconst account=task.account,runId=task.runId,started=Date.now();\nconst tokens={nTC8wAG7SsijjSRAP3IOng:$('Zoom main token').first().json.access_token,ELrPkucySZ2nxcs4fpyAaA:$('Zoom legacy token').first().json.access_token};\nconst get=async(path,query={})=>{if(Date.now()-started>35000)throw Error('Member pagination reached bounded runtime; coverage not advanced');return await this.helpers.httpRequest({method:'GET',url:'https://api.zoom.us/v2'+path,qs:query,headers:{Authorization:'Bearer '+tokens[account.id]},json:true,timeout:10000});};\nfunction recording(account,meeting,member){\n const files=meeting.recording_files||[],transcripts=files.filter(f=>f.file_type==='TRANSCRIPT'||f.recording_type==='audio_transcript');\n const mediaStarts=[...new Set(files.filter(f=>['MP4','M4A'].includes(f.file_type)).map(f=>f.recording_start).filter(Boolean))];\n const missingSegment=mediaStarts.some(start=>!transcripts.some(f=>f.recording_start===start));\n const settled=Date.parse(meeting.start_time)+Number(meeting.duration||0)*60000<Date.now()-30*60000;\n return {accountId:account,uuid:meeting.uuid,rep:[member.first_name,member.last_name].filter(Boolean).join(' ')||member.email||member.id,title:meeting.topic||'Untitled Zoom meeting',startedAt:meeting.start_time,sourceUrl:meeting.share_url||'',files:transcripts.map(f=>({id:f.id,url:f.download_url,start:f.recording_start||meeting.start_time,ready:!missingSegment&&settled&&f.status==='completed'}))};\n}\n\nif(task.kind==='pending'){\n const p=task.pending,raw=p.meeting_uuid,encoded=raw.startsWith('/')||raw.includes('//')?encodeURIComponent(encodeURIComponent(raw)):encodeURIComponent(raw);\n try{const m=await get('/meetings/'+encoded+'/recordings');return [{json:{operation:'discover',accountId:account.id,runId,memberId:'pending:'+raw,from:account.from,to:account.to,page:'',next:'',recordings:[recording(account.id,m,{id:m.host_id,first_name:p.rep,last_name:''})]}}];}\n catch{return [{json:{operation:'pending_checked',accountId:account.id,uuid:raw,error:'Recording metadata unavailable; retained for retry'}}];}\n}\nif(task.kind!=='member')throw Error('Unknown coverage task');\nconst output=[],seen=new Set();let token='';\ndo{\n if(seen.has(token))throw Error('Repeated recordings pagination token');seen.add(token);\n const r=await get('/users/'+encodeURIComponent(task.member.id)+'/recordings',{from:account.from.slice(0,10),to:account.to.slice(0,10),page_size:300,next_page_token:token});\n if(!Array.isArray(r.meetings))throw Error('Invalid recording page');\n output.push({json:{operation:'discover',accountId:account.id,runId,memberId:task.member.id,from:account.from,to:account.to,page:token,next:r.next_page_token||'',recordings:r.meetings.filter(m=>Date.parse(m.start_time)>=Date.parse(account.from)&&Date.parse(m.start_time)<=Date.parse(account.to)).map(m=>recording(account.id,m,task.member))}});\n token=r.next_page_token||'';\n}while(token);\nreturn output;\n"
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000
     },
     {
       "id": "3e8768d7-b689-403c-823e-fe51e733c9e4",
@@ -181,56 +184,6 @@
       "waitBetweenTries": 1000,
       "position": [
         0,
-        230
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/batch",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json }}",
-        "options": {
-          "timeout": 65000,
-          "batching": {
-            "batch": {
-              "batchSize": 3,
-              "batchInterval": 100
-            }
-          }
-        }
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "E3CMQbjt6fZ5gPXw",
-          "name": "Sales Performance Dashboard Ingest"
-        }
-      }
-    },
-    {
-      "id": "50865de2-dbd0-4c54-af9c-1b3e08fa1a09",
-      "name": "Coverage completion receipts",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        270,
-        230
-      ],
-      "parameters": {
-        "jsCode": "return $('Collect both workspaces').first().json.finishRequests.map(json=>({json}));"
-      }
-    },
-    {
-      "id": "e70674a7-82b0-4350-9c12-768fa705ef6b",
-      "name": "Complete coverage windows",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000,
-      "position": [
-        540,
         230
       ],
       "parameters": {
@@ -380,7 +333,10 @@
         "genericAuthType": "httpHeaderAuth",
         "options": {
           "timeout": 190000
-        }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"event\":\"source_success\"}"
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -391,20 +347,39 @@
       "retryOnFail": true,
       "maxTries": 2,
       "waitBetweenTries": 5000
+    },
+    {
+      "id": "101bd14a-cc61-402e-a62a-d51d85f68699",
+      "name": "Prepare coverage tasks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Runs once: only group pagination, never every closer's recordings.\nconst window=$('Read coverage window').first().json;\nconst tokens={nTC8wAG7SsijjSRAP3IOng:$('Zoom main token').first().json.access_token,ELrPkucySZ2nxcs4fpyAaA:$('Zoom legacy token').first().json.access_token};\nconst tasks=[],started=Date.now(),runId=String($execution.id);\nfor(const account of window.accounts){\n const members=[];let token='';const seen=new Set();\n do{\n  if(Date.now()-started>35000)throw Error('Group pagination reached bounded runtime; coverage retained');\n  if(seen.has(token))throw Error('Repeated group pagination token');seen.add(token);\n  const r=await this.helpers.httpRequest({method:'GET',url:'https://api.zoom.us/v2/groups/'+encodeURIComponent(account.group)+'/members',qs:{page_size:300,next_page_token:token},headers:{Authorization:'Bearer '+tokens[account.id]},json:true,timeout:10000});\n  if(!Array.isArray(r.members))throw Error('Invalid closer group');members.push(...r.members);token=r.next_page_token||'';\n }while(token);\n const unique=[...new Map(members.map(m=>[m.id,m])).values()];if(!unique.length)throw Error('Empty closer group; coverage not advanced');\n tasks.push({json:{kind:'persist',payload:{operation:'closers',accountId:account.id,members:unique.map(m=>({id:m.id,name:[m.first_name,m.last_name].filter(Boolean).join(' ')||m.email||m.id}))}}});\n for(const member of unique)tasks.push({json:{kind:'member',account,member,runId}});\n for(const pending of window.pending.filter(p=>p.account_id===account.id))tasks.push({json:{kind:'pending',account,pending,runId}});\n // The loop reaches this receipt only after every earlier page was acknowledged.\n tasks.push({json:{kind:'persist',payload:{operation:'finish_scan',accountId:account.id,runId,from:account.from,to:account.to,members:unique.map(m=>m.id)}}});\n}\nreturn tasks;\n"
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000
+    },
+    {
+      "id": "cc01a29e-43ce-4905-b067-bbe036554c73",
+      "name": "Each coverage task",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1400,
+        0
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
     }
   ],
   "connections": {
-    "Complete coverage windows": {
-      "main": [
-        [
-          {
-            "node": "Initialize coordinator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Initialize coordinator": {
       "main": [
         [
@@ -493,18 +468,7 @@
       "main": [
         [
           {
-            "node": "Collect both workspaces",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Collect both workspaces": {
-      "main": [
-        [
-          {
-            "node": "Persist coverage pages",
+            "node": "Prepare coverage tasks",
             "type": "main",
             "index": 0
           }
@@ -515,18 +479,7 @@
       "main": [
         [
           {
-            "node": "Coverage completion receipts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Coverage completion receipts": {
-      "main": [
-        [
-          {
-            "node": "Complete coverage windows",
+            "node": "Each coverage task",
             "type": "main",
             "index": 0
           }
@@ -538,6 +491,46 @@
         [
           {
             "node": "Start provider processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare coverage tasks": {
+      "main": [
+        [
+          {
+            "node": "Each coverage task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Each coverage task": {
+      "main": [
+        [
+          {
+            "node": "Initialize coordinator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read one coverage task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read one coverage task": {
+      "main": [
+        [
+          {
+            "node": "Persist coverage pages",
             "type": "main",
             "index": 0
           }

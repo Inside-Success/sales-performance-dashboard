@@ -31,7 +31,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\"event\":\"scheduler_error\"}"
+        "jsonBody": "={{ {event:\"scheduler_error\",workflowId:$json.workflow.id} }}"
       },
       "credentials": {
         "httpHeaderAuth": {
