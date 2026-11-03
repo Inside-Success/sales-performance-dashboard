@@ -27,3 +27,14 @@ Some semantic judgments remain interpretive (for example asking about audience f
 104 script-adherence tests passed; TypeScript and production webpack build passed. A read-only production-data integration test passed against all 51 saved calls and pagination. Original 46-record digest must remain `48346bfb7b1aeb35173847865a53999a`.
 
 Release and authenticated dashboard verification are pending below. Preserve prior accepted result, source transcript and original provider receipts when correcting the single affected pilot record. Fresh research calls are not published into the accepted dashboard.
+
+### Completed verification
+PR371 merged as `3e143b06729771b0a788c28a4837febf1d3b65ed`; Vercel production deployment `dpl_GnVCsHpVhmJeyUipzwo6JQcw2vUW` is Ready and owns the canonical dashboard alias. GitHub's adherence regression gate passed.
+
+The single pilot correction was applied with an exact prior-request/result compare-and-set and an atomic call/metric update. Its prior accepted record is archived privately and its original provider review remains in the database. Repeating the correction was a no-op. The other 50 accepted records have an unchanged digest, and the original 46-record baseline also matches. All 51 calls remain saved; 25 have supported checklists, with 342 completed / 453 assessable actions. No fresh research calls were published.
+
+Authenticated canonical dashboard and rep drilldown were verified: the affected call displays 58% (14/24), both videos Not complete, payment Not observable, and Arrange onboarding Deferred with the exact postponement quote. The rep aggregate reconciles to 39/62 (63%). The help panel distinguishes not applicable, unclear and deferred, and the owner status reports Paused, zero active batches and zero held calls. The read-only production integration check passed again after correction.
+
+Final v9 usage: 470,359 input tokens, including 186,700 cached; 55,219 output tokens. Individual API requests took 5.162–50.144 seconds. All 30 final requests settled without validation errors. Recollecting an existing draft/review pair incurred no new request or charge. Project usage-priced total is $8.330047, with zero outstanding reservations; this round added $1.481814. Both pilot n8n schedules were verified inactive.
+
+Assessment: the scoped defect is fixed and the implementation is suitable for a controlled wider rollout. This sample does not prove zero errors across all unseen calls, and unsupported scripts remain unscored by design. Company-wide activation and the one-week backfill remain separate decisions. Preserve the current Batch transport and disabled control until that decision.

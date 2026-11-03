@@ -80,3 +80,6 @@ Independent source assessment:
 Authenticated dashboard verification:51 saved calls,25 assessed,342/455 actions,75%; owner status Paused,0 in analysis. Original46 results retain digest `48346bfb7b1aeb35173847865a53999a`. Five new results and the unavailable source are preserved.
 
 Cleanup verified: enabled=false, transport=batch, empty canary list; both scoped coordinator and provider checker inactive; coordinator successful-execution retention restored to none. No unresolved paid work remains. No company-wide intake, backfill, Slack messages or coaching/FAQ changes. The next focused correction should preserve completed actions and observed videos while keeping explicitly deferred steps out of misleading omission follow-up; it must not infer completion from a promise or require arbitrary chronological script order.
+
+## November 4 follow-up
+The interrupted-call scoring issue was addressed and deployed through PR371. See MAGIC-MIKE-ADHERENCE-DEFERRAL-2026-11-04.md for the general deferral/applicability rule, fresh normal-API evaluation, exact single-record correction, costs and authenticated dashboard verification. Original Batch receipts remain settled and untouched. Broad intake/backfill remain disabled.
