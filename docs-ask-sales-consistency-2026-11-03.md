@@ -14,7 +14,7 @@ This change is limited to Ask Sales FAQ. Preserve the current GPT-5.6 Luna mediu
 - Add actual approved pre-audition/morning/no-show message copy to the existing SOP records, including truthful prior-attempt wording and rebooking eligibility. Preserve the distinction from after-Call-1 and buyer welcome messages.
 - Expand the existing booking SOP with documented First Call Public Calendar and Call 2 Personal Calendar notification verification. No invented automatic-delivery schedule.
 - Add source-grounded KPI expectations with an explicit RPC/RPCT formula gap. Add verified Magic Mike Coaching/report/self-submission navigation and call-stage eligibility. The FAQ explains actions; it cannot perform them.
-- Retry only the failed provider stage, once per entire request, for timeout or HTTP 502/503/504. Keep 18-second per-call limits and an 80-second provider-work deadline inside the 120-second route budget. All recovered answers still pass review/schema/evidence validation. Auth, quota/balance, malformed response and accounting failures are not retried. Existing attempt diagnostics plus retryCount expose recovery without storing rejected drafts.
+- Retry only the failed provider stage, once per entire request, for timeout or HTTP 502/503/504. Keep the normal 18-second per-call limit, allow up to 30 seconds only for the one recovery attempt, and enforce a 90-second provider-work deadline inside the 120-second route budget. All recovered answers still pass review/schema/evidence validation. Auth, quota/balance, malformed response and accounting failures are not retried. Existing attempt diagnostics plus retryCount expose recovery without storing rejected drafts.
 - Remove parenthesized internal evidence aliases from displayed prose. Label the composer, announce loading accessibly, and avoid submitting during IME composition. No layout redesign or new UI dependencies.
 
 ## Validation approach
@@ -26,3 +26,5 @@ Private evidence is in `.magic-mike-faq-consistency-2026-11-03/` outside both re
 ## Rollback
 
 Revert this scoped FAQ change and its paired export if needed, preserving later independent changes. Knowledge-publication receipt must match the actual active hash. The November 3 source checkpoint remains the source coverage baseline; this reconciliation does not change which Slack/Drive material was scanned.
+
+Evaluation found long useful answers finishing just below the old 18-second cutoff and repeated 18-second timeouts on two detailed questions. The recovery attempt therefore has a bounded 30-second allowance rather than repeating the same inadequate timeout. Normal calls remain at 18 seconds; there is still only one retry, with a 90-second total work deadline and no model/context expansion.

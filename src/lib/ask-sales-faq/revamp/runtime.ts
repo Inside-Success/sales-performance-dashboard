@@ -85,15 +85,16 @@ export async function runAskSalesRevamp(
   let validationIssues: Array<{code:string;path:string}> = [];
   // One recovery attempt across the entire request, never a pipeline restart.
   // Leave headroom within the route's 120-second limit for persistence/response.
-  const deadline = start + 80000;
+  const deadline = start + 90000;
   let retries = 0;
   async function call(system:string,input:unknown,purpose:string): Promise<unknown> {
     stage=purpose;
+    let recovering=false;
     for (;;) {
       const remainingMs=deadline-Date.now();
       if(remainingMs<=0) throw new Error("runtime_deadline");
       try {
-        const result=await provider(system,input,purpose,{timeoutMs:Math.min(18000,remainingMs)});
+        const result=await provider(system,input,purpose,{timeoutMs:Math.min(recovering ? 30000 : 18000,remainingMs)});
         attempts.push(result.attempt);
         return result.value;
       } catch(error) {
@@ -104,6 +105,7 @@ export async function runAskSalesRevamp(
         const transient=/^provider_(timeout|http_50[234])$/.test(error.attempt.error||"");
         if(!transient || retries>=1 || deadline-Date.now()<18000) throw error;
         retries++;
+        recovering=true;
       }
     }
   }

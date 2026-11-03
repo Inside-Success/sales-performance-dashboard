@@ -6,21 +6,22 @@ const attempt=(purpose:string,error?:string):Attempt=>({provider:'openai',model:
 const plan={historyMode:'new_subject',intent:'conversation',question:'Hello',queries:[],scopes:[]};
 const answer={status:'conversation',paragraphs:[{text:'Hello! How can I help?',kind:'conversation',evidenceIds:[]}],routeKey:null};
 function scripted(failures: Record<number,string>, before?: (n:number)=>void) {
- const calls:string[]=[];
+ const calls:string[]=[]; const timeouts:number[]=[];
  const provider:JsonProvider=async(_system,_input,purpose,options)=>{
-  const n=calls.push(purpose); before?.(n);
-  expect(options?.timeoutMs).toBeGreaterThan(0);expect(options?.timeoutMs).toBeLessThanOrEqual(18000);
+  const n=calls.push(purpose); timeouts.push(options?.timeoutMs||0); before?.(n);
+  expect(options?.timeoutMs).toBeGreaterThan(0);expect(options?.timeoutMs).toBeLessThanOrEqual(30000);
   if(failures[n]) throw new RevampProviderError(attempt(purpose,failures[n]));
   return {value:purpose==='plan'?plan:answer,attempt:attempt(purpose)};
  };
- return {provider,calls};
+ return {provider,calls,timeouts};
 }
 describe('bounded recovery of transient provider failures',()=>{
  it.each([1,2,3])('retries only the failed stage %s and still reviews',async(stage)=>{
-  const {provider,calls}=scripted({[stage]:'provider_timeout'});
+  const {provider,calls,timeouts}=scripted({[stage]:'provider_timeout'});
   const r=await runAskSalesRevamp('Hello',[],{provider,evidence:[]});
   expect(r.errorClass).toBeNull();expect(calls).toHaveLength(4);
   expect(calls[stage]).toBe(calls[stage-1]);expect(calls.at(-1)).toBe('review');
+  expect(timeouts[stage]).toBe(30000);expect(timeouts.filter(t=>t===30000)).toHaveLength(1);
   expect(r.runtimeMetadata?.providerAttempts).toHaveLength(4);
   expect(r.runtimeMetadata?.revamp?.retryCount).toBe(1);
  });
@@ -37,7 +38,7 @@ describe('bounded recovery of transient provider failures',()=>{
  it('does not retry a failed review when the overall deadline lacks a full attempt',async()=>{
   let time=0;const clock=vi.spyOn(Date,'now').mockImplementation(()=>time);
   try {
-   const {provider,calls}=scripted({3:'provider_timeout'},n=>{if(n===3)time=70000;});
+   const {provider,calls}=scripted({3:'provider_timeout'},n=>{if(n===3)time=80000;});
    const r=await runAskSalesRevamp('Hello',[],{provider,evidence:[]});
    expect(calls).toHaveLength(3);expect(r.runtimeMetadata?.revamp?.retryCount).toBe(0);expect(r.errorClass).toBeTruthy();
   } finally {clock.mockRestore();}

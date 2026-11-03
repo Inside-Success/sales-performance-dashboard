@@ -39,7 +39,7 @@ const syncReserved=()=>{ledger.reservedUsd=[...reservations.values()].reduce((a,
 function workerProvider(workerId:number) {
 let reservation=0;
 return createRevampProvider({provider:providerName,model,apiKey:env[providerName==="openai"?"OPENAI_API_KEY":"DEEPSEEK_API_KEY"],
- timeoutMs:18000,
+ timeoutMs:30000,
  beforeCall:async({promptChars,maxOutputTokens})=>{
   // One character per token is deliberately conservative for these English prompts.
   // DeepSeek V4 Pro peak rates verified 2026-09-15; off-peak bills may be lower.

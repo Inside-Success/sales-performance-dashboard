@@ -29,7 +29,7 @@ export function createRevampProvider(config: {
       const response = await (config.fetcher || fetch)(config.provider === "openai"
         ? "https://api.openai.com/v1/chat/completions" : "https://api.deepseek.com/chat/completions", {
         method: "POST", headers: { "Authorization": `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(Math.max(1,Math.min(config.timeoutMs ?? 18000,options?.timeoutMs ?? 18000))),
+        signal: AbortSignal.timeout(Math.max(1,Math.min(config.timeoutMs ?? 30000,options?.timeoutMs ?? 18000))),
         body: JSON.stringify({ model: config.model, messages: [{ role: "system", content: system }, { role: "user", content: user }],
           response_format: config.provider === "openai" ? {
             type: "json_schema", json_schema: { name: purpose === "plan" ? "intent_plan" : "sales_answer", strict: true,
