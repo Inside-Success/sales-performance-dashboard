@@ -1,6 +1,6 @@
 {
-  "knowledgeVersion": "54cf9e5a767fbf779b44d058",
+  "knowledgeVersion": "b1200af630bfa49e3b132326",
   "publishedDateMiami": "2026-11-03",
-  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/363",
+  "release": "https://github.com/Inside-Success/sales-performance-dashboard/pull/369",
   "note": "Update this receipt only after a verified knowledge publication. The UI hides its date if the active registry hash differs."
 }

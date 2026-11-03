@@ -1,6 +1,6 @@
 # FAQ consistency and usefulness — November 3, 2026
 
-Candidate implementation; release and final evaluation acceptance pending. Do not interpret this file as proof of production deployment.
+Released and production-answer verified. Dashboard PR369 merged as `02520a82417f90d3cca297818cf750135f469ad3`; paired FAQ PR121 merged as `7a5f0b87f8b9aa707d99e6f734cb0d82caec1fdd`.
 
 ## Problem and scope
 
@@ -33,7 +33,7 @@ Evaluation found long useful answers finishing just below the old 18-second cuto
 ## Verified checks before publication
 
 - 469 FAQ tests passed locally and in GitHub CI after the provenance and refund-relationship corrections, with TypeScript, scoped ESLint and production build passing. 107 static safety checks passed locally.
-- The offline direct-query/prior-user-context retrieval audit covered 504 questions: 213 candidate sets changed; all stayed within 36 records. This is coverage/budget evidence, not 504 fact-checked answers or an accuracy score.
+- The offline direct-query/prior-user-context retrieval audit covered 504 questions: 233 candidate sets changed in the final corrected audit; all stayed within 36 records. This is coverage/budget evidence, not 504 fact-checked answers or an accuracy score.
 - Hosted preview builds and its sign-in boundary work. Preview intentionally has Google sign-in disabled; do not change auth to bypass that. Verify the authorized production release with the existing work-profile session and persisted answer metadata.
 - A broad reality-materials request timed out in both the baseline and the first complete candidate run. Its answer-stage retry recovered, but its subsequent review timed out and correctly withheld the draft. The full post-refund-correction evaluation retains the earlier results and all new failures; it is not a retry-until-pass process. Recovery is resilience, not an outage-proof guarantee.
 
@@ -57,3 +57,9 @@ The final model labels were 25 answer, 19 partial, four clarification, four acti
 Six additional fresh-wording checks completed without technical failures: current outreach, outbound hours, main documentary refund, DJ refund, separately scoped deposit uncertainty and Coaching/self-submission access. Their answers were inspected; the deposit question correctly did not transfer a one-on-one refund note to an unverified filming package. Total isolated evaluation spend, including intermediate runs and conservative failed-call reservations: approximately $1.8817 of the authorized $20 ceiling. No further broad model tuning was performed.
 
 Release decision: accept the scoped source reconciliation and bounded recovery after passing automated checks and reviewed examples. Content usefulness improved on the targeted failures; there is no basis to claim perfect answers or a lower overall failure rate from this sample. Preserve the recorded source gaps and provider limitations for later observational review.
+
+## Production verification
+
+Production deployment `dpl_GMvNuwAwwUR8iLFfhppTDFC3GMSi` is READY and owns the rose alias at the exact PR369 merge. Three authenticated work-profile questions (outreach SOP, Coaching/self-submission and documentary versus DJ refunds) returned correct inspected answers, saved history and knowledge hash `b1200af630bfa49e3b132326`. All three completed plan, answer and review with no provider or validation errors; latencies were 23.986s, 11.829s and 9.181s. Persisted message receipts are retained privately. GPT-5.6 Luna remains selected. Approximate total evaluation plus these live checks: $1.9031.
+
+The publication receipt update records this already-verified knowledge release. Source coverage remains `KNOWLEDGE-CHECKPOINT-2026-11-03.json`; no source watermark was advanced. Desktop and 390px-wide work-profile checks verified readable headings/lists, wrapped links, visible composer, keyboard submission, source details, saved-chat reload and mobile conversation navigation. The temporary viewport was reset. The hash-matched receipt preserves the November 3 source-coverage date; it does not claim a new scan.
