@@ -1,10 +1,10 @@
 # Magic Mike FAQ knowledge refresh — November 3, 2026
 
-Candidate refresh; production verification pending.
+Published and verified knowledge refresh. Three authenticated production answers passed and match the new stored knowledge version.
 
 ## Scope
 
-Resume from the successful November 2 checkpoint `62dc0173aa88b171ed8e20b4`. Candidate `54cf9e5a767fbf779b44d058` has 2,606 active records, with five additions and six amendments. Only FAQ knowledge, its paired export, checkpoints and release notes change. Model, prompts, retrieval/runtime, Coaching, n8n, permissions and source systems are unchanged. No Slack messages sent.
+Resume from the successful November 2 checkpoint `62dc0173aa88b171ed8e20b4`. Published `54cf9e5a767fbf779b44d058` has 2,606 active records, with five additions and six amendments. Only FAQ knowledge, its paired export, checkpoints and release notes change. Model, prompts, retrieval/runtime, Coaching, n8n, permissions and source systems are unchanged. No Slack messages sent.
 
 ## Source review
 
@@ -29,14 +29,14 @@ Focused Drive discovery also read the daily Green Light conversion reporting SOP
 
 ## Deliberate holds
 
-Mike's audio files F0CDX36BT98 and F0CF26SLY64 return metadata but no readable text/media reference. No package/contract/audio content inferred. Preserve the separate written one-call clarification only. Two previously unavailable Google sources and two historical Slack roots remain recorded gaps; old watermarks are not falsely advanced. Historical Master FAQ pagination remains partial; current recent-message search was completed separately.
+Mike's audio files F0CDX36BT98 and F0CF26SLY64 return metadata but no readable text/media reference. No package/contract/audio content inferred. Preserve the separate written one-call clarification only. Two unavailable Google sources and two historical Slack roots were rechecked and remain unavailable; old watermarks are not falsely advanced. Historical Master FAQ pagination remains partial; current recent-message search was completed separately.
 
 Unanswered ownership/recycled-lead disputes, package amendments, raw-footage rights, tentative production dates, generic 48-hour ACH comments and peer speculation were not promoted as new blanket rules. Training times and current pricing/approval safeguards retained. This is coverage of the maintained registry and relevant linked sources, not every private conversation or every recording transcript. Later source arrivals belong to the next refresh.
 
 ## Verification and release
 
-443/443 FAQ tests and 107/107 static safety checks passed. Isolated answer evaluation, exact-release CI and authenticated production checks pending. Checkpoints remain candidate until production is verified. Rollback by reverting only this refresh's knowledge change and paired FAQ export; retain unrelated releases and historical checkpoints.
+443/443 FAQ tests and 107/107 static safety checks passed. Final isolated evaluation: 16/16 completed without technical failures; manual answer review retained correct uncertainty. Estimated isolated API spend including initial runs: $0.24994. Exact-release CI passed. Three authenticated live checks passed with stored matching knowledge metadata. Rollback by reverting only this refresh's knowledge change and paired FAQ export; retain unrelated releases and historical checkpoints.
 
 Private evidence: `.magic-mike-knowledge-refresh-2026-11-03/`. Dashboard checkpoint: `docs-ask-sales-knowledge-checkpoint-2026-11-03.json`; FAQ mirror: `KNOWLEDGE-CHECKPOINT-2026-11-03.json`.
 
-Initial evaluation caught a corrupted character in an opaque Zoom replay URL twice; the existing unsupported-URL validator blocked it. The resource entry now points to the authoritative Slack post containing that recording. No validator/prompt/runtime change; final candidate rerun pending.
+Initial evaluation caught a corrupted character in an opaque Zoom replay URL twice; the existing unsupported-URL validator blocked it. The resource entry now points to the authoritative Slack post containing that recording. No validator/prompt/runtime change; final 16-case rerun passed with exact Slack source-post URLs.
