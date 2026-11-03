@@ -1,4 +1,6 @@
 "use client";
+import {OperatorStatus} from './operator-status';
+import type {OperatorHealth} from '@/lib/script-adherence/health';
 import Link from "next/link";
 import {useRouter,usePathname} from "next/navigation";
 import {useState,useTransition} from "react";
@@ -21,7 +23,7 @@ function callLabel(c:AdherenceCall){
   if(!c.result.eligibleForChecklist)return "Checklist not applicable";
   return "No matching script";
 }
-export function AdherenceView({calls,updatedAt,pilot,repName,initialFilters={},total,page,overall:all,reps:repTotals,groups:groupTotals,shows,processing}:AdherenceData&{repName?:string;initialFilters?:Filters}){
+export function AdherenceView({calls,updatedAt,pilot,repName,initialFilters={},total,page,overall:all,reps:repTotals,groups:groupTotals,shows,processing,operatorHealth}:AdherenceData&{operatorHealth?:OperatorHealth|null;repName?:string;initialFilters?:Filters}){
  const [filters,setFilters]=useState(initialFilters),[sort,setSort]=useState("name"),[pending,startTransition]=useTransition();
  const router=useRouter(),pathname=usePathname();
  const update=(key:keyof Filters,value:string)=>setFilters(f=>({...f,[key]:value}));
@@ -51,7 +53,7 @@ export function AdherenceView({calls,updatedAt,pilot,repName,initialFilters={},t
   <section className="space-y-3"><h2 className="text-xl font-bold">Videos played</h2>{!groups.length&&<p className="magic-card p-5 text-sm text-slate-600">No assessable videos in this view.</p>}<div className="grid gap-4 lg:grid-cols-3">{groups.map(g=><div className="magic-card p-5" key={g.id}><h3 className="font-bold">{g.rubric.label}</h3><div className="mt-4 space-y-4">{g.rubric.actions.filter(a=>a.video).map(a=>{const metric=g.actions.find(x=>x.id===a.id),done=metric?.complete??0,total=(metric?.complete??0)+(metric?.notComplete??0),excluded=(metric?.unknown??0)+(metric?.notApplicable??0);return <div key={a.id}><div className="flex items-start justify-between gap-3"><p className="text-sm font-medium">{a.label}</p><span className="font-bold">{pct(total?done/total:null)}</span></div><div className="my-2 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true"><div className="h-full rounded-full bg-red-700" style={{width:`${total?100*done/total:0}%`}}/></div><p className="text-xs text-slate-500">{done} of {total} assessable calls{excluded?` · ${excluded} excluded`:""}</p></div>;})}</div></div>)}</div></section>
   {repName&&<section className="space-y-3"><h2 className="text-xl font-bold">Actions to follow up</h2>{groups.map(g=><div className="magic-card p-5" key={g.id}><h3 className="font-semibold">{g.rubric.label}</h3><ul className="mt-3 divide-y">{g.rubric.actions.map(a=>({a,missed:g.actions.find(x=>x.id===a.id)?.notComplete??0,total:(g.actions.find(x=>x.id===a.id)?.complete??0)+(g.actions.find(x=>x.id===a.id)?.notComplete??0)})).filter(a=>a.missed>0).sort((a,b)=>b.missed-a.missed).map(({a,missed,total})=><li key={a.id} className="flex justify-between gap-4 py-3 text-sm"><span>{a.label}</span><span className="shrink-0 text-amber-900">Not complete in {missed} / {total}</span></li>)}</ul>{!g.actions.some(a=>a.notComplete>0)&&<p className="mt-3 text-sm text-slate-600">No incomplete actions identified.</p>}</div>)}</section>}
   <section className="space-y-3"><h2 className="text-xl font-bold">{repName?"Individual calls":"Calls in this view"}</h2>{!visible.length&&<p className="magic-card p-5 text-slate-600">No calls match these filters.</p>}{visible.map(c=><CallDetail key={c.sourceKey} call={c} showRep={!repName}/>)}{pages>1&&<nav aria-label="Call pages" className="flex items-center justify-between gap-3"><button disabled={page===1||pending} onClick={()=>navigate(initialFilters,page-1)} className="min-h-11 rounded-lg border px-4 disabled:opacity-40">Previous</button><span className="text-sm">Page {page} of {pages}</span><button disabled={page===pages||pending} onClick={()=>navigate(initialFilters,page+1)} className="min-h-11 rounded-lg border px-4 disabled:opacity-40">Next</button></nav>}</section>
-  <footer className="text-xs text-slate-500">{updatedAt?`Results saved ${new Date(updatedAt).toLocaleString("en-US",{timeZone:"America/New_York"})} · Miami time`:"No results published yet."}</footer>
+  <footer className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500"><span>{updatedAt?`Results saved ${new Date(updatedAt).toLocaleString("en-US",{timeZone:"America/New_York"})} · Miami time`:"No results published yet."}</span>{operatorHealth&&<OperatorStatus health={operatorHealth}/>}</footer>
  </div></main>;
 }
 function CallDetail({call:c,showRep}:{call:AdherenceCall;showRep:boolean}){

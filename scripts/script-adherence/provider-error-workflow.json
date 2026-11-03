@@ -1,0 +1,68 @@
+{
+  "name": "Magic Mike Script Adherence - Record scheduler failure",
+  "nodes": [
+    {
+      "id": "02344137-7ebc-4c72-a80f-8e2623ce24c7",
+      "name": "Scoped workflow failure",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "5ee30633-ec3e-4bcb-ad94-16ae5a148de7",
+      "name": "Record operator status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/provider",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 190000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"event\":\"scheduler_error\"}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "SalesPerformanceDashboardIngest"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Scoped workflow failure": {
+      "main": [
+        [
+          {
+            "node": "Record operator status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "saveExecutionProgress": false,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 120
+  }
+}
