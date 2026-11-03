@@ -37,6 +37,14 @@ describe('current operating rules remain attached to historical evidence',()=>{
   expect(r?.text).toContain('separate HubSpot Outreach Assign');
   expect(corpus.some(r=>r.id==='v3src_previously_claimed_twenty_percent_lead')).toBe(true);
  });
+ it.each(['Does the documentary agreement let them cancel and get money back?', 'Has the Standard license video changed its three day refund term?', 'What happens to the refund if the company closes?'])('keeps product-specific refund rules with historical contract excerpts: %s',q=>{
+  const ids=retrieveEvidence(corpus,q,{...plan(q),scopes:['main_istv']}).map(r=>r.record.id);
+  expect(ids).toContain('claim_ce9f5058746b4fdc');
+ });
+ it('preserves separately scoped event fees and conditional Daymond deposits',()=>{
+  expect(corpus.find(r=>r.id==='operational_0116cf89a3be99fd')?.text).toContain('deposit is refunded');
+  expect(corpus.find(r=>r.id==='claim_002a5b2b3b9b75cd')?.text).toContain('non-refundable');
+ });
  it('does not invent a KPI denominator or automated notification schedule',()=>{
   expect(corpus.find(r=>r.id==='sales-kpi-expectations-and-definition-boundary-2026-11-03')?.text).toContain('does not explicitly define');
   expect(corpus.find(r=>r.id==='manual-booking-calendar-sops-2026-10-07')?.text).toContain('Do not invent a universal');

@@ -64,6 +64,16 @@ const withAuthorityContext = inherited.filter(p=>!globallyRetired.has(p.id)).map
 // Related maintained records travel together: a price table alone cannot answer
 // a benefits comparison, and a catalog without its resource cannot answer where.
 const maintainedRelationships: Record<string, string[]> = {
+  // Ordinary contract/refund fragments require the explicit current product boundary.
+  "claim_407005bb8ba3ef2b": ["claim_ce9f5058746b4fdc"],
+  "claim_2190cec7f93b1291": ["claim_ce9f5058746b4fdc"],
+  "operational_11ac837f5772b0f5": ["claim_ce9f5058746b4fdc"],
+  "claim_bafeb9e8cf19b664": ["claim_ce9f5058746b4fdc"],
+  "claim_a9e1fc91f85db317": ["claim_ce9f5058746b4fdc"],
+  "claim_40f77c8772f7951d": ["claim_ce9f5058746b4fdc"],
+  "claim_f454b61a8849685c": ["claim_ce9f5058746b4fdc"],
+  "claim_7a2727b67c19d243": ["claim_ce9f5058746b4fdc"],
+
   // November 3 source reconciliation: current workflow accompanies retained historical context.
   "claim_44284fbaae3d3309__a1": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "outbound-calling-hours-2026-10-14"],
   "claim_44284fbaae3d3309__a2": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
