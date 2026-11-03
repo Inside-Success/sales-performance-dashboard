@@ -12,8 +12,7 @@ export default async function RepPage({params,searchParams}:{params:Promise<{rep
  const {rep:segment}=await params;
  const names=await readRepNames(),rep=resolveRep(segment,names);if(!rep)notFound();
  const raw=await searchParams,filters=parseFilters(raw),page=Math.floor(Math.max(1,Math.min(1000000,Number(raw.page)||1)));
- const data=await readAdherence(filters,rep,page).catch(()=>null);
+ const [data,operatorHealth]=await Promise.all([readAdherence(filters,rep,page).catch(()=>null),readOperatorHealth(session?.user?.email)]);
  if(!data)return <main className="magic-page p-8"><h1 className="text-2xl font-bold">Rep results unavailable</h1><p role="status" className="mt-4">Please try again later. No saved results have been removed.</p></main>;
- const operatorHealth=await readOperatorHealth(session?.user?.email);
  return <AdherenceView operatorHealth={operatorHealth} {...data} repName={rep} key={JSON.stringify(filters)} initialFilters={filters}/>;
 }
