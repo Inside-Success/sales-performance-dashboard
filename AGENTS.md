@@ -81,3 +81,5 @@ For dashboard/web changes:
 - Sonnet 5.5 writes and Opus 5.5 reviews within the existing stages. Preserve caching, exact request/source identity, bounded repair, scoring/compliance separation and original node count. The current scoped three-family policy pack is versioned; later source changes require an explicit policy refresh and validation.
 
 - October 29 coverage reconciliation: exact-recording aliases require a completed canonical claim plus its exclusion receipt; never infer delivery from a claim alone. Scorecard-create failures must persist an uncertain-write hold and settle the matching owner. See MAGIC-MIKE-COVERAGE-RECONCILIATION-2026-10-29.md.
+
+- November 3 coaching safety boundary: see MAGIC-MIKE-SAFETY-BOUNDARY-2026-11-03.md. Enhanced repair paths canonicalize numeric bracket indexes before prose-only targeting. Final wording and placeholder cleanup must never edit show identity, classification or evidence metadata. Preserve fail-closed safety checks and exact-source duplicate controls. Apply the scoped boundary builder after historical coaching builders when regenerating compatible workflows.
