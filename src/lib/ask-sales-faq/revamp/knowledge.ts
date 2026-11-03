@@ -64,6 +64,41 @@ const withAuthorityContext = inherited.filter(p=>!globallyRetired.has(p.id)).map
 // Related maintained records travel together: a price table alone cannot answer
 // a benefits comparison, and a catalog without its resource cannot answer where.
 const maintainedRelationships: Record<string, string[]> = {
+  // Ordinary contract/refund fragments require the explicit current product boundary.
+  "claim_407005bb8ba3ef2b": ["claim_ce9f5058746b4fdc"],
+  "claim_2190cec7f93b1291": ["claim_ce9f5058746b4fdc"],
+  "operational_11ac837f5772b0f5": ["claim_ce9f5058746b4fdc"],
+  "claim_bafeb9e8cf19b664": ["claim_ce9f5058746b4fdc"],
+  "claim_a9e1fc91f85db317": ["claim_ce9f5058746b4fdc"],
+  "claim_40f77c8772f7951d": ["claim_ce9f5058746b4fdc"],
+  "claim_f454b61a8849685c": ["claim_ce9f5058746b4fdc"],
+  "claim_7a2727b67c19d243": ["claim_ce9f5058746b4fdc"],
+
+  // November 3 source reconciliation: current workflow accompanies retained historical context.
+  "claim_44284fbaae3d3309__a1": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "outbound-calling-hours-2026-10-14"],
+  "claim_44284fbaae3d3309__a2": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "claim_44284fbaae3d3309__a3": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "claim_44284fbaae3d3309__a4": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "claim_60ebbff4be4c3fc1": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "claim_1b3623fea25694d7": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "claim_5cc7c529898c8f79": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "v3src_previously_claimed_twenty_percent_lead": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "operational_7bd80e74045b0333": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "outbound-calling-hours-2026-10-14"],
+  "operational_e416847def7d68fc": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "operational_3f0e7982ef5cf57d": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "operational_13a17126f8833d97": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "operational_f7ffe30528561fc2": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "operational_002f4a0766bfd646": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22"],
+  "operational_a83d5a26c0ee7e4b": ["outbound-hubspot-assignment-2026-10-07", "outbound-first-contact-2026-09-22", "outbound-calling-hours-2026-10-14"],
+  "claim_822bc33285ea3b9e": ["outbound-calling-hours-2026-10-14"],
+  "operational_c4c153bd184e219e": ["outbound-calling-hours-2026-10-14"],
+  "claim_52d7384e800657ad": ["sales-kpi-expectations-and-definition-boundary-2026-11-03", "sales-rep-dashboard-2026-10-07"],
+  "operational_6b5aca2a21c7aa4c": ["sales-kpi-expectations-and-definition-boundary-2026-11-03", "sales-rep-dashboard-2026-10-07"],
+  "claim_85639c3b8fd0cd47": ["outbound-hubspot-assignment-2026-10-07", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "claim_912a6a45e81a35c7": ["outbound-hubspot-assignment-2026-10-07", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "operational_f09f94f35981e15e": ["outbound-hubspot-assignment-2026-10-07", "didnt-book-lead-slack-coordination-2026-11-03"],
+  "operational_fbdd69b56f69182b": ["outbound-hubspot-assignment-2026-10-07", "didnt-book-lead-slack-coordination-2026-11-03"],
+
   // October 2 reporting cutover: retain older facts, attach current scope/exception.
   "claim_8a9cf2f0ece51838": ["hubspot-daily-stats-cutover-2026-10-03"],
   "claim_23274f39a5e133fd": ["hubspot-daily-stats-cutover-2026-10-03"],

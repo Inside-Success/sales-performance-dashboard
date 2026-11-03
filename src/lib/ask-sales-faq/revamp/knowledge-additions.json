@@ -4597,12 +4597,30 @@
   {
     "id": "outbound-hubspot-assignment-2026-10-07",
     "decisionKey": "outbound-hubspot-assignment-2026-10-07",
-    "title": "20% outbound leads now assigned through HubSpot outreach channel",
+    "title": "20 Percent Dial-Out SOP: current HubSpot outreach lead allocation and logging",
     "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules.",
     "questions": [
       "Where do I get my 20% outbound leads now?",
       "Do I still use the daily dial out spreadsheet?",
-      "HubSpot says no ready unowned contacts found"
+      "HubSpot says no ready unowned contacts found",
+      "20% dial-out sheet: leads must be dialed and updated by 8pm EST",
+      "20% dial-out sheet: do not change filters or cherry pick",
+      "Daily dial-out list: max 75 leads, must be dialed and updated by 8 PM EST",
+      "20% dial-out limit",
+      "20% lead list eligibility",
+      "20% list unclaimed leads after rep quota",
+      "CRM notes after 20% dial-out calls",
+      "`istv-didnt-book-20-percent` picking rules",
+      "Call list posting timing",
+      "Unassigned leads can be claimed before 8pm EST",
+      "Put the rep's name on the outbound sheet to mark a lead as taken and being contacted",
+      "20% sheet cutoff time",
+      "Outbound dialing requires reporting in both Keap and the Google Sheet",
+      "Locating the 20% Lead Sheet",
+      "20% leads are open to anyone who can commit to 20 calls",
+      "Select any 20 available leads from the 20% channel and sheet",
+      "Dial-Out and Channel Lead Limits",
+      "Calling unclaimed leads"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791299399935619",
@@ -4626,10 +4644,27 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "The October HubSpot cutover replaces historical spreadsheet claiming, allocation limits and Keap logging instructions for this outreach workflow; it does not replace separate DJ reporting rules.",
+      "governing_evidence:outbound-calling-hours-2026-10-14"
+    ],
     "supersedes": [
       "outbound-sheet-edit-columns",
-      "outbound-75-leads-2026-09-18"
+      "outbound-75-leads-2026-09-18",
+      "kr_228ec25c70ffbd72",
+      "kr_50efb5f8e2039bab",
+      "kr_13fd4e32e065948a",
+      "claim_c8360576a8830750",
+      "claim_0a782d4fe42d8650",
+      "claim_ef1fc51efca963fa",
+      "operational_3d4042cf86c0078a",
+      "operational_f8c95725a7d19864",
+      "curated_v43_outbound_sheet_name_marker",
+      "operational_c66d33f545686d3d",
+      "operational_25df0b0148a10e6b",
+      "operational_db34f82caf317e10",
+      "operational_b4a50a7c23e5de42",
+      "operational_b99e95f1007f0ef8"
     ],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -4780,7 +4815,7 @@
     "id": "manual-booking-calendar-sops-2026-10-07",
     "decisionKey": "manual-booking-calendar-sops-2026-10-07",
     "title": "Manual Call 1 uses Public; Call 2 Green Light uses Personal calendar",
-    "text": "The linked booking SOPs distinguish three OnceHub calendars: Master is reserved for marketing/automatic distribution and must not be used or modified for manual bookings; Public is for manually booking first calls after an interested lead agrees; Personal is for second/follow-up calls. For Call 2 choose the correct show (Other only if absent), Meeting Type Green Light Approval, accurate name/email/mobile and agreed timezone, send booking notifications and verify the record. Book Call 2 directly at the end of Call 1 for the next day, except exceptional circumstances, subject to Green Light approval. A booking label does not itself grant Green Light approval. Use the current team rebooking directory for the rep's actual link rather than guessing it. Rudy explicitly reconfirmed October 9 that the Call 2 SOP is next day, not routinely two or three days later. October 10: do not book a Call 3 or existing follow-up on the Public calendar; it misclassifies the booking as cold outreach and distorts outbound statistics. Use the appropriate Personal follow-up calendar and accurate meeting context. This does not bypass approval/readiness rules or impose regular documentary cohort rules on reality. Rich's October 13 announcement makes the linked end-of-Call-1 script compulsory except exceptional circumstances. Congratulate the prospect on moving to the next phase subject to overnight Green Light review; offer actual available times tomorrow, book the agreed slot and ask them to confirm. The script describes an approval email by approximately 10 AM tomorrow and cancellation if not approved; this is approximate process wording, not a guaranteed email-delivery SLA. Its sample 1 PM, 2 PM, 5 PM and 8 PM slots must not be invented as the rep's actual availability. Booking does not itself grant approval. Call 2 covers recap, logistics, contracts, onboarding, potential shoot dates and production requirements. Use the published script, accurate availability and timezone, without changing pricing/disclosure policy. October 18 Tech clarification: use OnceHub for bookings, not direct scheduling in HubSpot or Google Calendar. Ask Tech to configure the appropriate public Call 1 and personal/second-call schedules; Google Calendar blocks are for unavailability after the booking schedules are set. A HubSpot availability display alone is not the authoritative booking schedule. The particular rep’s published hours in that support thread are not company-wide hours. If OnceHub has no availability, have Tech check the actual calendar and existing bookings rather than inventing availability or silently overriding conflicts. For a longer Call 2, Kent clarified October 16 that the shared booking slots remain 30 minutes; a 45-minute booking template would leave an unusable 15-minute segment. After the call is booked, extend that event in Google Calendar to block the extra time you need. This is blocking time around an existing booking, not creating a new booking directly in Google Calendar or permission to overlap another meeting.",
+    "text": "The linked booking SOPs distinguish three OnceHub calendars: Master is reserved for marketing/automatic distribution and must not be used or modified for manual bookings; Public is for manually booking first calls after an interested lead agrees; Personal is for second/follow-up calls. For Call 2 choose the correct show (Other only if absent), Meeting Type Green Light Approval, accurate name/email/mobile and agreed timezone, send booking notifications and verify the record. Book Call 2 directly at the end of Call 1 for the next day, except exceptional circumstances, subject to Green Light approval. A booking label does not itself grant Green Light approval. Use the current team rebooking directory for the rep's actual link rather than guessing it. Rudy explicitly reconfirmed October 9 that the Call 2 SOP is next day, not routinely two or three days later. October 10: do not book a Call 3 or existing follow-up on the Public calendar; it misclassifies the booking as cold outreach and distorts outbound statistics. Use the appropriate Personal follow-up calendar and accurate meeting context. This does not bypass approval/readiness rules or impose regular documentary cohort rules on reality. Rich's October 13 announcement makes the linked end-of-Call-1 script compulsory except exceptional circumstances. Congratulate the prospect on moving to the next phase subject to overnight Green Light review; offer actual available times tomorrow, book the agreed slot and ask them to confirm. The script describes an approval email by approximately 10 AM tomorrow and cancellation if not approved; this is approximate process wording, not a guaranteed email-delivery SLA. Its sample 1 PM, 2 PM, 5 PM and 8 PM slots must not be invented as the rep's actual availability. Booking does not itself grant approval. Call 2 covers recap, logistics, contracts, onboarding, potential shoot dates and production requirements. Use the published script, accurate availability and timezone, without changing pricing/disclosure policy. October 18 Tech clarification: use OnceHub for bookings, not direct scheduling in HubSpot or Google Calendar. Ask Tech to configure the appropriate public Call 1 and personal/second-call schedules; Google Calendar blocks are for unavailability after the booking schedules are set. A HubSpot availability display alone is not the authoritative booking schedule. The particular rep’s published hours in that support thread are not company-wide hours. If OnceHub has no availability, have Tech check the actual calendar and existing bookings rather than inventing availability or silently overriding conflicts. For a longer Call 2, Kent clarified October 16 that the shared booking slots remain 30 minutes; a 45-minute booking template would leave an unusable 15-minute segment. After the call is booked, extend that event in Google Calendar to block the extra time you need. This is blocking time around an existing booking, not creating a new booking directly in Google Calendar or permission to overlap another meeting. The First Call Public Calendar SOP requires checking accurate name, email, mobile and timezone, completing the booking, ensuring applicable confirmations/reminders are sent, and verifying the appointment appears on your calendar. The Personal Call 2 SOP explicitly says to confirm the send-booking-notifications option and that the lead receives the notification. These are steps the rep performs; the FAQ cannot inspect actual delivery or toggle OnceHub settings. If a notification is missing, check those documented details and the correct calendar before asking Tech to inspect delivery. Do not invent a universal automatic-email or SMS schedule.",
     "questions": [
       "Which calendar do I use for a manual Call 1?",
       "Do I book Green Light on the public or personal calendar?",
@@ -5455,8 +5490,13 @@
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
-    "supersedes": [],
+    "conditions": [
+      "The old 9 PM outbound cutoff and after-8-PM extra dialing permission are superseded for unbooked outbound dialing only. SMS and appointment emails have separate guidance."
+    ],
+    "supersedes": [
+      "operational_1871230cd437435b",
+      "operational_99ea0cc592bb5ce5"
+    ],
     "sourceKind": "source_reviewed_governed_policy"
   },
   {
@@ -5730,7 +5770,7 @@
       "Do I keep calling after the applicant confirms?",
       "Can a busy rep reduce the reminder calls?"
     ],
-    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, the day-before sequence is four calls with three texts: suggested 9 AM call then Text 1 (Hey, is this [First Name]?); noon call then Text 2 identifying the rep, show/audition tomorrow and asking for two minutes to prepare; 3 PM call then Text 3 asking whether they still plan to attend or prefer to cancel; final 5–7 PM call with no additional text required. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details.",
+    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, the day-before sequence is four calls with three texts: suggested 9 AM call then Text 1 (Hey, is this [First Name]?); noon call then Text 2 identifying the rep, show/audition tomorrow and asking for two minutes to prepare; 3 PM call then Text 3 asking whether they still plan to attend or prefer to cancel; final 5–7 PM call with no additional text required. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details. Approved day-before text copy (fill truthful placeholders and use the correct show): Text 1: “Hey, is this [First Name]?” Text 2: “Hey [First Name], it's [Rep Name] from Inside Success TV. I'm trying to reach you about your reality TV casting audition tomorrow. I just need two minutes to help you prepare. When's a good time to chat?” Text 3: “Hey [First Name], I've tried reaching you a few times. This is [Rep Name] from Inside Success TV regarding casting for [Show Name]. You're booked for your CASTING AUDITION tomorrow, and I wanted to help you prepare. Are you still planning to attend, or would you prefer to cancel your appointment? Please reply or give me a quick call.” The quoted reality wording must not mislabel a documentary applicant; drafts can adapt the correct known show and actual prior attempts without inventing a new policy.",
     "scopes": [
       "shared"
     ],
@@ -5756,7 +5796,7 @@
       "They ignored all reminders. Should I cancel their audition?",
       "How long do I wait for an audition no-show?"
     ],
-    "text": "The Pre-Audition Contact SOP calls for a 2–4 minute preparation conversation, not a full audition: introduce yourself and confirm the application/time, ask what they know and why they applied, explain the camera-on quiet-place Zoom audition and Green Light review, establish seriousness about relevant commitments without inventing costs or benefits, confirm they received the correct Zoom invite, and close with the confirmed date/time. If the invitation is missing, verify email, resend through the approved process and ask them to verify receipt. If no calls or texts were answered the previous day, call again on the audition morning and, if unanswered, send the approved confirmation text requesting YES. Do not automatically cancel solely for nonresponse; keep the appointment active unless cancelled through an approved process. At the scheduled audition, join on time, allow approximately 1–2 minutes, then if absent send the approved no-show/rebooking text, record the no-show in HubSpot and move to an available pass-off/dummy call under scheduling rules. Only say you previously called/texted if those attempts actually occurred. Preserve consent, opt-outs and truthful company claims. The new no-show procedure does not grant permission to reject or cancel a live appointment merely because the applicant was hard to reach.",
+    "text": "The Pre-Audition Contact SOP calls for a 2–4 minute preparation conversation, not a full audition: introduce yourself and confirm the application/time, ask what they know and why they applied, explain the camera-on quiet-place Zoom audition and Green Light review, establish seriousness about relevant commitments without inventing costs or benefits, confirm they received the correct Zoom invite, and close with the confirmed date/time. If the invitation is missing, verify email, resend through the approved process and ask them to verify receipt. If no calls or texts were answered the previous day, call again on the audition morning and, if unanswered, send the approved confirmation text requesting YES. Do not automatically cancel solely for nonresponse; keep the appointment active unless cancelled through an approved process. At the scheduled audition, join on time, allow approximately 1–2 minutes, then if absent send the approved no-show/rebooking text, record the no-show in HubSpot and move to an available pass-off/dummy call under scheduling rules. Only say you previously called/texted if those attempts actually occurred. Preserve consent, opt-outs and truthful company claims. The new no-show procedure does not grant permission to reject or cancel a live appointment merely because the applicant was hard to reach. Approved morning-of text: “Good morning [First Name], it's [Rep Name] from Inside Success TV. You're scheduled for your CASTING AUDITION today at [Time] for [Show Name]. I've been trying to reach you to help you prepare. Can you please confirm you're attending? Just reply YES so I know you're all set.” Approved no-show text: “Hey [First Name], it's [Rep Name] from Inside Success TV. I joined your CASTING AUDITION at the scheduled time, but you weren't there. I tried reaching you by text and phone yesterday, so I'm assuming you're not attending. If you'd like to rebook, you can do that here: [Rebooking Link]. You'll need to reply to our texts so we can confirm and prepare you for your appointment.” Omit or correct statements about prior attempts if they did not occur. Use the actual approved rebooking link and preserve show-specific eligibility; the template is not permission to bypass reapplication restrictions.",
     "scopes": [
       "shared"
     ],
@@ -6787,5 +6827,59 @@
     "conditions": [],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "sales-kpi-expectations-and-definition-boundary-2026-11-03",
+    "decisionKey": "sales-kpi-expectations-and-definition-boundary-2026-11-03",
+    "title": "Sales closer KPI expectations, RPC/RPCT and calendar progression",
+    "questions": [
+      "Where are the KPI expectations?",
+      "What do RPC and RPCT measure?",
+      "How does calendar progression work?"
+    ],
+    "text": "The Performance KPI Expectations document says Rudy reviews a rolling 30-day RPC (Cash Collected/Contracted) every Wednesday morning, and Rich communicates calendar changes. The thresholds are guided estimates at Rudy’s discretion, not automatic entitlements. A new closer may receive a full five-hour calendar above the stated $100/200 threshold with at least two contracted sales. Existing closers may return to 2.5 hours at that threshold, move to five hours or LQ double bookings above $150/300, and HQ double bookings above $200/400. Regression thresholds and a discretionary improvement process are in the linked document. Preserve the document’s paired figures: it does not explicitly define the RPC/RPCT denominator or a calculation formula. Do not assert that RPC means cash divided by contracted revenue, invent how no-shows enter the denominator, or promise live rankings. The newer HubSpot-fed dashboard uses CALL 2s TAKEN for close rate; that is not proof of the RPC formula. For an exact metric calculation or disputed rank, ask Sales Tech to confirm the dashboard definition while providing the documented KPI guidance. Older Slack remarks about sorting by RPCT or show rate not being tracked were historical and do not describe every feature of the newer dashboard. Current reporting rules govern over the older document’s Slack daily-stats references.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1lTyOFkCdym6H67_Oswr421jRyeuF89t2AoIBliAW1XE/edit"
+    ],
+    "reviewedAt": "2026-11-03",
+    "authority": 12,
+    "kind": "resource",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [
+      "governing_evidence:sales-rep-dashboard-2026-10-07",
+      "governing_evidence:hubspot-daily-stats-cutover-2026-10-03"
+    ],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_resource"
+  },
+  {
+    "id": "magic-mike-coaching-report-access-2026-11-03",
+    "decisionKey": "magic-mike-coaching-report-access-2026-11-03",
+    "title": "Find and review a call in Magic Mike Coaching",
+    "questions": [
+      "Where do I find my call feedback?",
+      "Can Magic Mike review my call?"
+    ],
+    "text": "To review an existing Magic Mike call report, open Coaching at https://sales-performance-dashboard-rose.vercel.app/coaching and select the rep. The call reports appear newest first; use the report search/date filters and open the relevant report. If no report matches, clear filters and verify the correct rep before treating the report as missing. Ask Sales FAQ is a separate tool: it can explain this navigation and help draft sales wording, but cannot open private call records on the user’s behalf, assess an unseen recording, submit a recording, or claim a call was processed. A missing report requires checking its actual recording/submission and processing status with the responsible support team, not promising it will appear after a fixed delay. The sales KPI dashboard is a different product from Magic Mike’s call coaching library. To request new self-submitted coaching, the REP can open Get feedback at https://sales-performance-dashboard-rose.vercel.app/submit , choose Zoom link or Paste transcript, provide one recording link or transcript plus the required rep name, and select Generate feedback. Optional details include rep email/client name. This flow accepts Call 2 or later closing-stage conversations; Call 1, internal/training calls, no-shows and very short transcripts do not generate a report. If no usable transcript is found from the recording, submit its transcript text instead. Results appear under Self-submitted reports at https://sales-performance-dashboard-rose.vercel.app/manual-reports and the submission page updates when ready. The FAQ itself cannot submit it. Do not confuse self-submitted reports with the ordinary Coaching library or promise a processing time.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://sales-performance-dashboard-rose.vercel.app/coaching",
+      "https://sales-performance-dashboard-rose.vercel.app/submit",
+      "https://sales-performance-dashboard-rose.vercel.app/manual-reports"
+    ],
+    "reviewedAt": "2026-11-03",
+    "authority": 12,
+    "kind": "resource",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_resource"
   }
 ]
