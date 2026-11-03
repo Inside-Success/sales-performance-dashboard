@@ -1186,14 +1186,15 @@
     "decisionKey": "hubspot-greenlight-meeting-status",
     "title": "Meeting status after the rep greenlights Call 1",
     "questions": [],
-    "text": "When asked whether a rep who has decided to greenlight a prospect should mark Conducted or Greenlight Approved in HubSpot meetings, Pramod answered Greenlight Approved on September 3. Selecting that meeting outcome does not itself prove that a background check has completed or passed.",
+    "text": "When asked whether a rep who has decided to greenlight a prospect should mark Conducted or Greenlight Approved in HubSpot meetings, Pramod answered Greenlight Approved on September 3. Selecting that meeting outcome does not itself prove that a background check has completed or passed. The November Greenlight Approval Email SOP separately uses the DEAL stage Greenlight Approved and the Deal property Greenlight Email Sent, checked after 15 minutes. A Meeting Status update alone is not confirmation of this email being sent; follow the Deal-stage SOP after actual approval and do not toggle stages to resend.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "slack:1788391804.809909"
+      "slack:1788391804.809909",
+      "https://docs.google.com/document/d/1nSbsarKyhSH4kK6ZCQT39MvUWwL0ujcaQpVeZZZj9WY/edit"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 10,
     "kind": "policy",
     "risk": "high",
@@ -1759,16 +1760,18 @@
     "decisionKey": "rebooking-calendar-current-directory",
     "title": "Current team rebooking calendar directory",
     "questions": [],
-    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking.",
+    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking. November 2 Tech confirms the public calendar may allow bookings further out than the incoming calendar; Kent tentatively described a week. This does not establish a guaranteed universal window. Check the actual correct calendar and current Tech configuration rather than treating the directory’s header as a live availability limit.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/spreadsheets/d/1jaUiw0cz5OCdBD5J7A1dUaTIo6dxqQgTCw3hpbCS0rg/edit#gid=0",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792347648297579",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792670378630849"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792670378630849",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633497181699",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633527125309"
     ],
-    "reviewedAt": "2026-10-23T19:39:12.306026+00:00",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "resource",
     "risk": "medium",
@@ -2821,7 +2824,7 @@
       "What training do I complete in my first two weeks live?",
       "When do I get HubSpot access during onboarding?"
     ],
-    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions plus a Thursday Objection Handling entry whose time is not supplied), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs.",
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions plus a Thursday Objection Handling entry whose time is not supplied), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs. The November 2 NEW REP – PASSED RAMP UP update says to post the completed Part 1 copy link in the onboarding channel and tag Raul; Rudy and Rich have been removed from that signoff tagging instruction. Its support section reserves personal DMs for personal matters; normal sales questions should use the documented sales support/FAQ channels. This does not remove training/readiness requirements or authorize going live without the required approval.",
     "scopes": [
       "shared"
     ],
@@ -2829,9 +2832,10 @@
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit",
       "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit",
       "https://docs.google.com/document/d/1XGQ4jKXZr77PovynpM2jSLqmUD69yrIzxYFfTThHNGc/edit",
-      "https://docs.google.com/spreadsheets/d/1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc/edit"
+      "https://docs.google.com/spreadsheets/d/1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc/edit",
+      "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -4895,7 +4899,7 @@
     "id": "hubspot-outreach-outcome-2026-10-08",
     "decisionKey": "hubspot-outreach-outcome-2026-10-08",
     "title": "Record each outbound dial attempt before Call 1",
-    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules.",
+    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules. November 2 Tech clarifies that Today’s View can hide contacts assigned on Friday or Saturday. Open the contacts linked in the blocked request and inspect the correct owner/date view rather than concluding they were never assigned. Verify actual call logs and the separate Outreach Call Note; do not fabricate a call to clear the block.",
     "questions": [
       "Where do I record outreach calls in HubSpot?",
       "Is Already Booked the same as Booked?",
@@ -4904,12 +4908,14 @@
     "sourceIds": [
       "https://docs.google.com/document/d/12zzF5nqu4uTsMcLo_1ovxWNhgxJOummEX-zknRzWb30/edit",
       "https://docs.google.com/document/d/1s8K1RFwUW0IOCJEYeh83QtDNk1WrKVoLd9-zTsN8NTY/edit",
-      "https://drive.google.com/file/d/19AgFs07snplYygCnXPnbQLi3ugyhLSlL/view"
+      "https://drive.google.com/file/d/19AgFs07snplYygCnXPnbQLi3ugyhLSlL/view",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793635114734559",
+      "https://istvoffical.slack.com/archives/C0C1R8BBVR6/p1793635091524399"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5617,7 +5623,7 @@
     "id": "reality-between-call-email-2026-10-16",
     "decisionKey": "reality-between-call-email-2026-10-16",
     "title": "Reality between-call preparation email is separate from the buyer welcome email",
-    "text": "On October 15, when a rep asked whether to send the normal between-Call-1-and-Call-2 email after a reality first call, Celia confirmed they can send that template. She explicitly corrected a reply linking the post-sale welcome email: that is a different stage. Use the approved between-call preparation template at https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit with the relevant reality materials and accurate completed actions. Do not claim Green Light approval, payment or signing has happened when it has not; do not carry over documentary pricing, deadlines or benefits merely because the template is reusable. The separate reality buyer welcome/onboarding process remains after purchase. This reply approves reuse of the template; it does not impose every ordinary-show timing rule on reality.",
+    "text": "On October 15, when a rep asked whether to send the normal between-Call-1-and-Call-2 email after a reality first call, Celia confirmed they can send that template. She explicitly corrected a reply linking the post-sale welcome email: that is a different stage. Use the approved between-call preparation template at https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit with the relevant reality materials and accurate completed actions. Do not claim Green Light approval, payment or signing has happened when it has not; do not carry over documentary pricing, deadlines or benefits merely because the template is reusable. The separate reality buyer welcome/onboarding process remains after purchase. This reply approves reuse of the template; it does not impose every ordinary-show timing rule on reality. Mike confirmed November 2, in direct response to whether the mandatory email between Call 1 and Call 2 is the same for documentary and reality, that it is. Use the shared preparation template with the correct show-specific materials and factual actions; this does not make the separate post-sale welcome email interchangeable or transfer documentary cohort deadlines/benefits to reality.",
     "questions": [
       "What email do I send after reality Call 1 before Call 2?",
       "Is the reality welcome email the same as the between-call email?"
@@ -5626,12 +5632,14 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792088952247269",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792089683784999",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792093439035329",
-      "https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit"
+      "https://docs.google.com/document/d/1ODrKDDK9jko48uXTQVFhOr-RxwBMmCrCjrtkDCVKUQc/edit",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793640340323679",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793644479625319"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-16T14:23:18.955541+00:00",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6228,16 +6236,19 @@
       "What are n24hour_text_sent and mot_text_sent?",
       "Why did a prospect get the wrong reminder time?"
     ],
-    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label.",
+    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1uJljWXe9L12sRKUSfLxnjfHweBQ_NHifg111rpA1Q3w/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793303151391209",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793296521099739"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793296521099739",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793644419861019",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793646274459429",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793648251450349"
     ],
-    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6648,6 +6659,127 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793289894535179"
     ],
     "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-greenlight-approval-email-2026-11-03",
+    "decisionKey": "hubspot-greenlight-approval-email-2026-11-03",
+    "title": "Greenlight approval email: Deal stage, 15-minute check and duplicate prevention",
+    "questions": [
+      "How do I send the Greenlight approval email in HubSpot?",
+      "Greenlight Email Sent is blank after approval; should I toggle the Deal stage?"
+    ],
+    "text": "The November Greenlight Approval Email SOP says: when the client is approved, open their Deal in HubSpot > Deals and change the Deal stage to Greenlight Approved. After 15 minutes, check the Deal property Greenlight Email Sent is True. This is the DEAL stage and delivery flag, not merely a Meeting Status selection. Do not move the Deal in and out of Greenlight Approved or toggle it to speed up delivery; moving it back into that stage can send another email. If the flag remains blank/false, first check that the Deal stayed in Greenlight Approved for the full 15 minutes and that the contact has a usable email address. Do not re-stage it; give Tech the Deal link and the time the stage changed. This documents sending after actual approval, not authority to approve a prospect or bypass review/background checks. It does not prove a particular customer received or read an email and does not replace the separate between-call preparation email.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1nSbsarKyhSH4kK6ZCQT39MvUWwL0ujcaQpVeZZZj9WY/edit"
+    ],
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "one-call-close-rare-exception-2026-11-03",
+    "decisionKey": "one-call-close-rare-exception-2026-11-03",
+    "title": "One-call closes are rare, call-dependent exceptions",
+    "questions": [
+      "Should we aim to close every prospect on Call 1?",
+      "Does a one-call close mean we can skip Green Light approval?"
+    ],
+    "text": "Mike clarified November 2 that the team is not trying to do one-call closes. They may potentially make sense based on an individual call and have been very rare. His “potentially” reply does not establish blanket permission to skip Green Light review or approval, omit required presentation elements, or routinely introduce price on Call 1. Keep the normal two-call process and existing narrow Call 1 pricing exceptions. The preceding audio instructions are not available as verified text; obtain Mike’s specific process clarification before bypassing a required step. Do not present the rep’s proposed shortcut as an approved universal procedure.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793478238455629",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793644568561859"
+    ],
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "didnt-book-lead-slack-coordination-2026-11-03",
+    "decisionKey": "didnt-book-lead-slack-coordination-2026-11-03",
+    "title": "Didn’t-book Slack leads: mark the lead thread before working it",
+    "questions": [
+      "How do I let others know I am working a lead from the didn’t-book Slack channel?"
+    ],
+    "text": "Usman clarified November 2: add a message in the specific lead’s Slack thread and an eyes emoji reaction so others know you are working it. To open the thread, hover over the message and use the thread/reply icon. This is coordination for the didn’t-book lead post, not proof of HubSpot ownership reassignment, permission to take another rep’s protected lead, or a substitute for the separate HubSpot Outreach Assign workflow. Check ownership and existing contact history before outreach; preserve opt-outs and lead protections.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793642878829389",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793643142078559"
+    ],
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-duplicate-booking-reminder-2026-11-03",
+    "decisionKey": "hubspot-duplicate-booking-reminder-2026-11-03",
+    "title": "Texts from two reps: check duplicate bookings and coordinate",
+    "questions": [
+      "Why did my prospect get reminder texts from me and another rep?"
+    ],
+    "text": "In a November 2 case, Sales Tech confirmed duplicate bookings were producing the conflicting rep reminders. Check whether the same prospect has more than one appointment or rep, coordinate with the other rep, cancel the genuinely duplicate appointment and inform the client which booking remains. Do not delete a contact, cancel a valid meeting without checking, or assume every duplicate text has this cause. Preserve ownership and report unresolved SMS delivery problems to Tech.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793636696121269"
+    ],
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-qa-recordings-november-2026",
+    "decisionKey": "hubspot-qa-recordings-november-2026",
+    "title": "HubSpot Q&A recordings: November 2 and corrected October 30 replay",
+    "questions": [
+      "Where is the November 2 HubSpot Q&A recording?",
+      "The October 30 HubSpot Q&A replay is only five minutes and blank; where is the full one?"
+    ],
+    "text": "For the November 2 HubSpot Q&A replay, open Igor’s recording post: https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793650191528869 . It contains the November 2 recording and the corrected full October 30 replay. For the October 30 replay that was initially only five minutes/blank, use Igor’s corrected-link message directly: https://istvoffical.slack.com/archives/C08QGKL39J6/p1793647504241789 . Open the Zoom recording linked in that post. These are source posts containing the recording links, not Zoom playback pages themselves or a transcript of the sessions. Do not invent the contents or confuse the replays with the recurring onboarding-training calendar.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793650191528869",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793647504241789"
+    ],
+    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
