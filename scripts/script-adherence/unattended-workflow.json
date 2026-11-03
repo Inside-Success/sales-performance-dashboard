@@ -221,7 +221,7 @@
         230
       ],
       "parameters": {
-        "jsCode": "return [{json:{started:Date.now(),runId:String($execution.id)}}];"
+        "jsCode": "return [{json:{started:Date.now(),runId:String($execution.id),sourceOnly:$input.first().json.body?.sourceOnly===true}}];"
       }
     },
     {
@@ -336,7 +336,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\"event\":\"source_success\"}"
+        "jsonBody": "={{ $(\"Initialize coordinator\").first().json.sourceOnly ? {} : {event:\"source_success\"} }}"
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -376,6 +376,21 @@
       "parameters": {
         "batchSize": 1,
         "options": {}
+      }
+    },
+    {
+      "id": "d5477cc7-2c2f-411b-9d4f-452c43d5326b",
+      "name": "Scoped resume mode",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        200
+      ],
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 2,
+        "output": "={{ $json.body?.sourceOnly === true ? 1 : 0 }}"
       }
     }
   ],
@@ -435,7 +450,7 @@
       "main": [
         [
           {
-            "node": "Read coverage window",
+            "node": "Scoped resume mode",
             "type": "main",
             "index": 0
           }
@@ -531,6 +546,24 @@
         [
           {
             "node": "Persist coverage pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scoped resume mode": {
+      "main": [
+        [
+          {
+            "node": "Read coverage window",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Initialize coordinator",
             "type": "main",
             "index": 0
           }
