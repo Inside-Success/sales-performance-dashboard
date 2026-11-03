@@ -4,7 +4,7 @@
 
 Implementation authorized November 3 following the completed 12-call provider Batch pilot. Hosted integration and a bounded live cohort are in scope. Company-wide intake and the full one-week backfill remain disabled pending acceptance. Existing coaching, report delivery, FAQ policy and historical results are not rewritten.
 
-**Hosted implementation deployed; bounded provider review still pending.** Builds and regression checks pass, authenticated UI and source ingestion are verified. Final quality/cost/publication acceptance awaits the five new two-pass results.
+**Hosted bounded run finished; wider rollout held for a deferred-action presentation issue.** All five two-pass results are saved and cost-settled. Infrastructure and authenticated UI verification passed. A paused sales conversation exposes a distinction between actions not yet completed and actions skipped; resolve this before company-wide scoring.
 
 ## Processing
 
@@ -64,3 +64,19 @@ At 2026-11-03T12:25Z the original 46 accepted calls still match digest `48346bfb
 Authenticated live UI verification: owner status changed from Needs attention during the failed scan to Processing after successful recovery; overall historical totals remain 313/409 assessable actions across 23 assessed of 46 saved calls. Clicking Samantha Forcash opens her two-call summary (25/38), filtering to America's Best Doctors yields one call (12/19), and expanding it shows action-level details and the source link. This is the previously saved first call, distinct from the new follow-up under analysis.
 
 Independent source review is saved privately in `.private-adherence/hosted-manual-review.md`. Use `.private-adherence/hosted-audit.mjs` for read-only preservation, request, cost and batch checks and `.private-adherence/hosted-export.mjs` for complete sources/results. Never rerun a paid request or reset an unresolved submission. After all five reviews settle, compare every action against the full sources; clear the exact canary list, keep general intake disabled, and deactivate the scoped checker only after all paid work is accounted for. Preserve the unavailable sixth source for later retry.
+
+## Final bounded verification — November 4 Pakistan time
+
+PR366 merged as `01f7802360187a3d004493c709763703e376e7ed`; production deployment `sales-performance-dashboard-dbptyr7f9-admin-insidesuccess.vercel.app` was verified Ready. Ten requests (five draft, five factual review) completed across four batches with no provider request failures. All five reviewed records were published. The sixth source remains awaiting its unavailable Zoom transcript, without an AI request.
+
+Usage-priced incremental cost: **$0.089707**; settled project total **$6.848233**; reservations **$0**. Input129,106 tokens, including43,516 cached (33.71%). Provider durations: first draft10m35s; second draft5h28m34s; first review7h1m51s; second review2h0m43s. Final collection at20:00UTC, approximately7h49m after first submission. The long waits were independently verified directly through provider GET responses, not inferred from workflow success. Repeated scheduled checks did not duplicate request membership, settlement or publication.
+
+Independent source assessment:
+- Derrick: reality Call1, both separate videos observed;15/20 actions complete under the user-approved50% rule. Review corrected general praise being counted as a prospect-specific selection reason.
+- Thomas and James: insufficient conversation evidence, no invented score or attendance outcome.
+- Chris: actual speaking rep Baker correctly attributed; interrupted audition with unknown offer family receives no matching checklist rather than a fabricated score. Earlier private notes considered the title as show context; the model correctly follows the stricter transcript-only classification rule.
+- Jessica: documentary Call2 correctly recognized despite the Casting Call title; no studio-tour or license-video playback. However, the call explicitly pauses for patient appointments and a same-day continuation. Its pending payment/onboarding steps are presented as Not complete in the14/26 score. This accurately describes the current recording but does not distinguish deferred work from an omission, which risks misleading rep follow-up. Wider rollout is held until this distinction is handled and tested; the51-row pilot remains labeled as a sample. No historical accepted output was overwritten to hide this finding.
+
+Authenticated dashboard verification:51 saved calls,25 assessed,342/455 actions,75%; owner status Paused,0 in analysis. Original46 results retain digest `48346bfb7b1aeb35173847865a53999a`. Five new results and the unavailable source are preserved.
+
+Cleanup verified: enabled=false, transport=batch, empty canary list; both scoped coordinator and provider checker inactive; coordinator successful-execution retention restored to none. No unresolved paid work remains. No company-wide intake, backfill, Slack messages or coaching/FAQ changes. The next focused correction should preserve completed actions and observed videos while keeping explicitly deferred steps out of misleading omission follow-up; it must not infer completion from a promise or require arbitrary chronological script order.
