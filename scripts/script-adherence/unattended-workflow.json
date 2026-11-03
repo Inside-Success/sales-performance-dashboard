@@ -512,6 +512,7 @@
     "saveDataSuccessExecution": "none",
     "executionTimeout": 5400,
     "timezone": "America/New_York",
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "errorWorkflow": "ReqYiNj0X6YHOSKe"
   }
 }

@@ -69,6 +69,7 @@
     "saveExecutionProgress": false,
     "saveDataErrorExecution": "all",
     "saveDataSuccessExecution": "all",
-    "executionTimeout": 240
+    "executionTimeout": 240,
+    "errorWorkflow": "ReqYiNj0X6YHOSKe"
   }
 }

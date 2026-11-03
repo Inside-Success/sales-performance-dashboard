@@ -36,3 +36,5 @@ Pause new work by clearing the canary list and leaving enabled=false. Keep the b
 - Additive schema applied with enabled=false, transport=realtime, empty canary list. No accepted call changed.
 
 Final deployment, cohort receipts, quality review, spend and authenticated UI evidence will be appended after verification. This document does not assert company-wide readiness from tests alone.
+
+Scoped n8n resources: daily coverage `hb3M0O7fYx04oVEs` (inactive), provider checker `8OFKaWAX89AsgpoG` (inactive until hosted verification), error recorder `ReqYiNj0X6YHOSKe` (published, no schedule or messaging nodes). Dedicated production secret installed on Vercel project `prj_DwQt5q1eNv9WZwwc1IIa5zQvIH5e`, team `team_qG4moATpNnuhyxhDJjdvqZYY`.
