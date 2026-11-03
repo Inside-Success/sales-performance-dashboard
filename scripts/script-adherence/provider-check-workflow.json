@@ -1,0 +1,75 @@
+{
+  "name": "Magic Mike Script Adherence - Provider batch checks",
+  "nodes": [
+    {
+      "id": "9f370d15-920a-439b-aa71-4fa6f16ee565",
+      "name": "Every 15 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/15 * * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "d01c683e-bebf-4e29-a3a4-25a880a7e148",
+      "name": "Check durable batches",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/provider",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 190000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "SalesPerformanceDashboardIngest"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Every 15 minutes": {
+      "main": [
+        [
+          {
+            "node": "Check durable batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "saveExecutionProgress": false,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionTimeout": 240,
+    "errorWorkflow": "ReqYiNj0X6YHOSKe"
+  }
+}

@@ -1,9 +1,9 @@
 {
-  "name": "Magic Mike Script Adherence - Durable twice-daily batches",
+  "name": "Magic Mike Script Adherence - Daily coverage batches",
   "nodes": [
     {
       "id": "60adb0ee-88d2-45bd-a8fe-883f32543f35",
-      "name": "Twice daily",
+      "name": "Daily coverage",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.4,
       "position": [
@@ -15,7 +15,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "0 6,18 * * *"
+              "expression": "0 6 * * *"
             }
           ]
         }
@@ -24,6 +24,7 @@
     {
       "id": "c8541a10-d655-41a5-9ee3-cbd84b789834",
       "name": "Scoped verification",
+      "webhookId": "61014cd7-fabf-454b-a545-adbee53f8a10",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
@@ -37,7 +38,6 @@
         "responseMode": "onReceived",
         "options": {}
       },
-      "webhookId": "61014cd7-fabf-454b-a545-adbee53f8a10",
       "credentials": {
         "httpHeaderAuth": {
           "id": "au0Tm3M76yHHp84e",
@@ -50,6 +50,9 @@
       "name": "Read coverage window",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
       "position": [
         540,
         0
@@ -72,9 +75,6 @@
           }
         }
       },
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000,
       "credentials": {
         "httpHeaderAuth": {
           "id": "E3CMQbjt6fZ5gPXw",
@@ -116,7 +116,7 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "nWUaX5HvL9hWEWXI",
-          "name": "Zoom main token"
+          "name": "Zoom S2S OAuth Authorization Header"
         }
       }
     },
@@ -154,7 +154,7 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "E6ZpEp2RIzKV1WR7",
-          "name": "Zoom legacy token"
+          "name": "Zoom S2S OAuth Authorization Header - Legacy Makers TV LLC"
         }
       }
     },
@@ -176,6 +176,9 @@
       "name": "Persist coverage pages",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
       "position": [
         0,
         230
@@ -198,9 +201,6 @@
           }
         }
       },
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000,
       "credentials": {
         "httpHeaderAuth": {
           "id": "E3CMQbjt6fZ5gPXw",
@@ -226,6 +226,9 @@
       "name": "Complete coverage windows",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
       "position": [
         540,
         230
@@ -248,9 +251,6 @@
           }
         }
       },
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000,
       "credentials": {
         "httpHeaderAuth": {
           "id": "E3CMQbjt6fZ5gPXw",
@@ -332,6 +332,9 @@
       "name": "Final batch status",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
       "position": [
         0,
         460
@@ -354,15 +357,40 @@
           }
         }
       },
-      "retryOnFail": true,
-      "maxTries": 3,
-      "waitBetweenTries": 1000,
       "credentials": {
         "httpHeaderAuth": {
           "id": "E3CMQbjt6fZ5gPXw",
           "name": "Sales Performance Dashboard Ingest"
         }
       }
+    },
+    {
+      "id": "07cb621e-f443-4525-8b36-e1eff42809dd",
+      "name": "Start provider processing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3500,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/provider",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 190000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "SalesPerformanceDashboardIngest"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
     }
   ],
   "connections": {
@@ -417,7 +445,7 @@
         ]
       ]
     },
-    "Twice daily": {
+    "Daily coverage": {
       "main": [
         [
           {
@@ -504,14 +532,26 @@
           }
         ]
       ]
+    },
+    "Final batch status": {
+      "main": [
+        [
+          {
+            "node": "Start provider processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
-    "executionOrder": "v1",
+    "saveExecutionProgress": false,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
     "executionTimeout": 5400,
     "timezone": "America/New_York",
-    "saveExecutionProgress": false,
-    "saveDataSuccessExecution": "none",
-    "saveDataErrorExecution": "all"
+    "executionOrder": "v1",
+    "errorWorkflow": "ReqYiNj0X6YHOSKe"
   }
 }
