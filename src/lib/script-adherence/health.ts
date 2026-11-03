@@ -7,7 +7,7 @@ export async function readOperatorHealth(email:string|null|undefined):Promise<Op
  if(email?.trim().toLowerCase()!=='syed.haider@insidesuccess.com')return null;
  try{
  const sql=neon(process.env.DATABASE_URL!);
- const [rows]=await sql`select c.enabled,jsonb_array_length(c.canary_keys)::int as canary,r.last_success_at::text as last_check,r.error is not null as runner_error,b.committed_microusd,b.ceiling_microusd,
+ const [rows]=await sql`select c.enabled,jsonb_array_length(c.canary_keys)::int as canary,r.last_success_at::text as last_check,(r.error is not null or r.source_error is not null) as runner_error,b.committed_microusd,b.ceiling_microusd,
  (select count(*)::int from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting')) as active,
  (select min(created_at)::text from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting')) as oldest,
  (select count(*)::int from script_adherence_provider_batches where state='held' or error is not null) as errors,

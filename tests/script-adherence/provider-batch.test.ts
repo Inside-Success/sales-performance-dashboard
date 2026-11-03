@@ -42,3 +42,8 @@ it('recollection skips settled requests and only settles the missing successful 
  fetcher.mockResolvedValueOnce(new Response(JSON.stringify({id:'batch_1',status:'completed',output_file_id:'file_1'}))).mockResolvedValueOnce(new Response([{custom_id:'new',response:{status_code:200,body:{usage:{prompt_tokens:10}}}},{custom_id:'settled',response:{status_code:200,body:{usage:{prompt_tokens:10}}}}].map(x=>JSON.stringify(x)).join('\n')));
  await runProviderBatch();expect(receive).toHaveBeenCalledTimes(1);expect(receive.mock.calls[0].slice(0,2)).toEqual(['new','j2']);
 });
+it('records source failures separately so a successful provider poll cannot hide them',async()=>{
+ const {recordSchedulerFailure,recordSourceSuccess}=await import('@/lib/script-adherence/provider-batch');
+ await recordSchedulerFailure('hb3M0O7fYx04oVEs');expect(sql.mock.calls[0][0].join('')).toContain('set source_error=');
+ await recordSourceSuccess();expect(sql.mock.calls[1][0].join('')).toContain('set source_error=null');
+});
