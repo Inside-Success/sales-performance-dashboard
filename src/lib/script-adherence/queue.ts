@@ -25,10 +25,10 @@ export async function discover(recordings:z.infer<typeof recordingSchema>[]){
  if(new Set(rows.map(r=>r.id)).size!==rows.length)throw Error('Duplicate meeting in coverage page');
  if(!rows.length)return {saved:0};
  // One bounded page write avoids a network round trip per recording.
- await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url)
- select r.id,r.id,r.account_id,r.meeting_uuid,r.files,r.rep,r.title,r.started_at,r.source_url,r.download_url
+ await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url,state)
+ select r.id,r.id,r.account_id,r.meeting_uuid,r.files,r.rep,r.title,r.started_at,r.source_url,r.download_url,case when exists(select 1 from script_adherence_calls c where c.source_key=r.id) then 'complete' else 'awaiting_transcript' end
  from jsonb_to_recordset(${JSON.stringify(rows)}::jsonb) as r(id text,account_id text,meeting_uuid text,files jsonb,rep text,title text,started_at timestamptz,source_url text,download_url text)
- on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
+ on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,state=excluded.state,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
  return {saved:rows.length};
 }
 export async function claimSource(owner:string){

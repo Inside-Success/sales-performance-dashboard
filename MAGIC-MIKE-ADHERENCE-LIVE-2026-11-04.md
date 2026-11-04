@@ -13,3 +13,5 @@ User authorized daily production processing and the previous week's backfill. Su
 
 ## Verification
 127 tests passed and TypeScript passed before release. Build, release, activation and first-run receipts will be appended after verification. The acceptance boundary is a live scheduler, acknowledged source coverage, durable provider submissions and authenticated UI; submitting a Batch is not proof that final call results have arrived.
+
+Recording identity audit confirmed all 51 accepted rows use canonical workspace/recording identities. Discovery now marks an already-accepted recording complete in the queue instead of leaving an undownloadable phantom pending job. Existing paid/in-progress jobs cannot be reset by discovery. This preserves both no-recharge behavior and accurate backlog counts during backfill.
