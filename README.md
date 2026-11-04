@@ -4,6 +4,10 @@ Vercel-hosted dashboard for n8n-generated sales coaching reports.
 
 The app does not read Google Docs after creation. n8n posts the same structured coaching content it already generated into `/api/ingest`, and the dashboard stores one row per scored call.
 
+## Tyler's V2 — Documentary Call 2 overhaul
+
+[Tyler's V2](https://github.com/Inside-Success/magic-mike-sales-ai-coach) is a distinct overhaul track within the broader Magic Mike work. Authoring continues in the original `Documentary Call 2 Coaching` folder; the separate repo holds reviewed handoff snapshots and does not automatically sync newer local work. We may later integrate selected improvements into the existing coach after separate review and testing. Sharing a snapshot does not update live Magic Mike.
+
 ## Stack
 
 - Next.js App Router
