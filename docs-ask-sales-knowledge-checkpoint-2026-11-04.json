@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-11-04",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "6839e960c76ed03d05c6b50a",
   "knowledgeVersion": "b34d16420bf7dff04d1be866",
   "activeRecordCount": 2599,
@@ -13,7 +13,9 @@
       "paginationComplete": false,
       "latestSearchMessageTs": "1793805569.636789",
       "recentSearchMessages": 270,
-      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained."
+      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained.",
+      "recentSearchPaginationComplete": true,
+      "historyReachedPreviousCheckpoint": true
     },
     "C0AUQKNR8CF": {
       "previousRootTs": "1793662182.328489",
@@ -22,7 +24,9 @@
       "paginationComplete": false,
       "latestSearchMessageTs": "1793772538.325279",
       "recentSearchMessages": 68,
-      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained."
+      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained.",
+      "recentSearchPaginationComplete": true,
+      "historyReachedPreviousCheckpoint": true
     },
     "C08QGKL39J6": {
       "previousRootTs": "1793671784.584339",
@@ -31,7 +35,9 @@
       "paginationComplete": false,
       "latestSearchMessageTs": "1793803041.435939",
       "recentSearchMessages": 111,
-      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained."
+      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained.",
+      "recentSearchPaginationComplete": true,
+      "historyReachedPreviousCheckpoint": true
     },
     "C0A8S3JSR1Q": {
       "previousRootTs": "1793678308.057709",
@@ -40,7 +46,9 @@
       "paginationComplete": false,
       "latestSearchMessageTs": "1793805407.075369",
       "recentSearchMessages": 18,
-      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained."
+      "coverage": "Channel history plus fully paginated native recent search after November 2 overlap. Full relevant threads expanded. Historical gaps and indexing limitations retained.",
+      "recentSearchPaginationComplete": true,
+      "historyReachedPreviousCheckpoint": true
     }
   },
   "expandedThreadWatermarks": [
@@ -10643,7 +10651,7 @@
   ],
   "expandedThreadCount": 1766,
   "successfulThreadReads": 91,
-  "olderThreadsExplicitlyRevisited": 18,
+  "olderThreadsExplicitlyRevisited": 30,
   "unavailableThreads": [
     {
       "channel": "C09AF0NQJE7",
@@ -11190,5 +11198,27 @@
     "reality-season-schedule-2026-10-03",
     "reality-coproduction-comparison-resource-2026-11-04",
     "documentary-casting-versus-filming-dates-2026-11-04"
-  ]
+  ],
+  "publication": {
+    "verifiedAt": "2026-11-04T15:55:47.240721+00:00",
+    "dashboardPr": 375,
+    "faqPr": 125,
+    "dashboardCommit": "d1997f56c35271557bf5f499c1659b50aa234d96",
+    "faqCommit": "d4b97ac8d28bca2299a03d790623032769619dde",
+    "deploymentId": "dpl_5tTsr7tRKwYBMHckQwG7rxWHe81Z",
+    "productionAlias": "https://sales-performance-dashboard-rose.vercel.app",
+    "authenticatedChecks": 3,
+    "assistantMessageIds": [
+      "faq_assistant_8593af1a-dfef-4cf4-b557-4bae11603e4a",
+      "faq_assistant_a45624d2-082d-4b98-bf3a-1e51e849e1bf",
+      "faq_assistant_b00e0d35-288a-4b1a-9d6c-cf8eb0edf98f"
+    ],
+    "faqTestsPassed": 492,
+    "staticChecksPassed": 107,
+    "evaluationNontechnical": 15,
+    "evaluationCases": 16,
+    "evaluationKnownFailure": "Markdown bold URL rejected by unchanged validator on combined training/practice-link question",
+    "evaluationCostUsd": 0.23648246,
+    "adminFreshnessVerification": "pending receipt deployment"
+  }
 }
