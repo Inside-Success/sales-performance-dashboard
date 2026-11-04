@@ -1,6 +1,6 @@
 # FAQ Markdown resource-link validation — November 5, 2026
 
-Candidate targeted repair; production verification pending.
+Published and authenticated-production-verified targeted repair.
 
 ## Confirmed problem
 
@@ -21,3 +21,7 @@ The parser packages were already locked transitively through the renderer; decla
 - Fresh isolated model checks and authenticated live verification recorded below when complete.
 
 Private evidence: `.magic-mike-faq-markdown-links-2026-11-05/`. Rollback: revert only this repair's parser/runtime/tests/dependency declarations. Preserve knowledge and unrelated Script Adherence releases. This repair prevents formatting-based false rejection; it does not remove real grounding failures or guarantee every future provider response succeeds.
+
+## Release verification
+
+Fresh isolated model checks: 3/3 passed; estimated API cost $0.024365. Dashboard PR379 merged at `deed065a37922e312b56bd08611090ad46e885ab`, READY production deployment `dpl_8U2KbdfJU3b1vaNuz2o5otkJ2NA8`. Four signed-in work-browser answers passed: original Mike check-in/practice question, formatted coaching links, active-show directory and an explicitly bold full URL. Stored metadata confirms unchanged knowledge and no errors. Latencies: 9.9s, 13.4s, 9.2s, 7.2s. GitHub release tests, static checks, TypeScript, lint and production build passed.

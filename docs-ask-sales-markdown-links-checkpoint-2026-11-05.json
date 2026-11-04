@@ -1,0 +1,42 @@
+{
+  "status": "published_verified",
+  "verifiedAt": "2026-11-04T21:12:09.926378+00:00",
+  "dashboardPr": 379,
+  "faqDocumentationPr": 127,
+  "dashboardCommit": "deed065a37922e312b56bd08611090ad46e885ab",
+  "deploymentId": "dpl_8U2KbdfJU3b1vaNuz2o5otkJ2NA8",
+  "productionUrl": "https://sales-performance-dashboard-rose.vercel.app",
+  "knowledgeVersion": "b34d16420bf7dff04d1be866",
+  "sourceCheckpoint": "KNOWLEDGE-CHECKPOINT-2026-11-04.json",
+  "sourceWatermarksAdvanced": false,
+  "faqTests": 527,
+  "newRegressionCases": 35,
+  "staticChecks": 107,
+  "savedAnswersReplayed": 32,
+  "previousFailuresResolved": 2,
+  "replayRegressions": 0,
+  "freshModelChecks": 3,
+  "evaluationCostUsd": 0.024365,
+  "productionChecks": [
+    {
+      "messageId": "faq_assistant_d5773463-5340-4062-b759-1b6623ce81de",
+      "latencyMs": 9860,
+      "error": null
+    },
+    {
+      "messageId": "faq_assistant_bf492a71-f7c8-4a20-aec9-1c1252b7c0aa",
+      "latencyMs": 13360,
+      "error": null
+    },
+    {
+      "messageId": "faq_assistant_50512e1a-5931-49e3-ad8d-0fade6e32906",
+      "latencyMs": 9162,
+      "error": null
+    },
+    {
+      "messageId": "faq_assistant_4b7d06a5-1777-4826-9c8f-84795a6c0d98",
+      "latencyMs": 7240,
+      "error": null
+    }
+  ]
+}
