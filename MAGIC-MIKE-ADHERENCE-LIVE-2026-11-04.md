@@ -12,6 +12,13 @@ User authorized daily production processing and the previous week's backfill. Su
 - Backfill uses an explicitly recorded seven-day window and resets only these two adherence scan cursors after preserving the previous state. Accepted pilot data are not deleted or rerun.
 
 ## Verification
-127 tests passed and TypeScript passed before release. Build, release, activation and first-run receipts will be appended after verification. The acceptance boundary is a live scheduler, acknowledged source coverage, durable provider submissions and authenticated UI; submitting a Batch is not proof that final call results have arrived.
+The final regression gate passed on commit 73aed1d (including the additional accepted-recording regression); TypeScript and production build passed. PR377 merged as 59e7074d and Vercel production deployment dpl_7v1XqgXArkwdDii9E4nER3JfqveZ is Ready on the canonical alias. The acceptance boundary is a live scheduler, acknowledged source coverage, durable provider submissions and authenticated UI; submitting a Batch is not proof that final call results have arrived.
 
 Recording identity audit confirmed all 51 accepted rows use canonical workspace/recording identities. Discovery now marks an already-accepted recording complete in the queue instead of leaving an undownloadable phantom pending job. Existing paid/in-progress jobs cannot be reset by discovery. This preserves both no-recharge behavior and accurate backlog counts during backfill.
+
+## Activation evidence
+At 2026-11-04 19:03 UTC, enabled=true, transport=batch, empty canary restriction, and no spending cap were verified. The preserved baseline contains 51 accepted results, checked by source identity, request ID and result digest. The one-week Miami backfill starts October 28 at 00:00 EDT (04:00 UTC).
+
+The daily coordinator and fifteen-minute provider checker are active. Successful payload retention is disabled on both; errors remain retained. The existing protected coordinator webhook was invoked once, with saved submission intent and HTTP acknowledgement. Recording discovery is advancing; this acknowledgement is not a completed backfill.
+
+Authenticated live UI confirms the October28 coverage start, existing 51-call summary, increasing incoming-call queue, and owner diagnostics showing $8.33 actual / $0 reserved / No spending cap at activation. The existing attention indicator includes old retained source items; it must not be represented as an all-green health result. Production runs in hosted n8n and Vercel independently of this chat.
