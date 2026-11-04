@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { recoveryAfterResponse, requestFaqAnswer, type RecoveryRequest } from "../../src/lib/ask-sales-faq/client-recovery";
+import { recoveryAfterResponse, requestFaqAnswer, canRetrySavedAnswer, type RecoveryRequest } from "../../src/lib/ask-sales-faq/client-recovery";
 const request: RecoveryRequest = { conversationId: null, clientRequestId: "original", messages: [{role:"user",content:"What are the rules?"},{role:"assistant",content:"Which show?"},{role:"user",content:"Daymond John"}] };
 const reply = (outcome = "answer_from_evidence") => ({ok:true,conversationId:"saved-chat",messageId:"saved-answer",answer:"Reviewed answer",outcome});
 describe("manual FAQ recovery", () => {
@@ -31,4 +31,10 @@ describe("manual FAQ recovery", () => {
       await expect(requestFaqAnswer(request,vi.fn().mockResolvedValue(response))).rejects.toThrow();
     }
   });
+});
+
+it("does not mistake legacy fallback guidance for a saved technical failure", () => {
+  expect(canRetrySavedAnswer({role:"assistant",outcome:"safe_fallback"})).toBe(false);
+  expect(canRetrySavedAnswer({role:"assistant",outcome:"low_confidence_route",retryableFailure:true})).toBe(false);
+  expect(canRetrySavedAnswer({role:"assistant",outcome:"safe_fallback",retryableFailure:true})).toBe(true);
 });

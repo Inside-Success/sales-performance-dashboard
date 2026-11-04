@@ -46,7 +46,7 @@ import type {
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
 import { cn } from "@/lib/utils";
-import { requestFaqAnswer, recoveryAfterResponse, type RecoveryRequest } from "@/lib/ask-sales-faq/client-recovery";
+import { requestFaqAnswer, recoveryAfterResponse, canRetrySavedAnswer, type RecoveryRequest } from "@/lib/ask-sales-faq/client-recovery";
 import { AnswerMarkdown } from "./answer-markdown";
 
 type ChatMessage = {
@@ -365,7 +365,7 @@ export function AskSalesFaqChat() {
         })),
     );
     const lastSaved = conversation.messages.at(-1);
-    if (lastSaved?.role === "assistant" && lastSaved.outcome === "safe_fallback") {
+    if (canRetrySavedAnswer(lastSaved)) {
       const originalMessages = messagesRef.current.slice(0, -1);
       if (originalMessages.at(-1)?.role === "user") setRecovery({
         request: { conversationId: conversation.id, clientRequestId: createClientRequestId(), messages: buildRequestMessages(originalMessages) },

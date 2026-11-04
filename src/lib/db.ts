@@ -2734,6 +2734,7 @@ export async function getAskSalesFaqConversations(
           m.role,
           m.content_redacted,
           m.outcome,
+          (m.answer_payload #>> '{runtimeMetadata,revamp,status}' = 'technical_failure') as retryable_failure,
           m.source_label,
           m.source_last_reviewed,
           m.answer_payload,
@@ -2763,6 +2764,7 @@ export async function getAskSalesFaqConversations(
       role: "user" | "assistant" | "system_safe";
       content_redacted: string;
       outcome: string | null;
+      retryable_failure: boolean | null;
       source_label: string | null;
       source_last_reviewed: string | null;
       answer_payload: unknown;
@@ -2785,6 +2787,7 @@ export async function getAskSalesFaqConversations(
         role: message.role,
         content: message.content_redacted,
         outcome: message.outcome,
+        retryableFailure: message.retryable_failure === true,
         sourceLabel: message.source_label,
         sourceLastReviewed: message.source_last_reviewed,
         structuredAnswer: normalizeAskSalesFaqAnswerPayload(message.answer_payload),

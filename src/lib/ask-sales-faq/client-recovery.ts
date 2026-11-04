@@ -24,3 +24,7 @@ export async function requestFaqAnswer(request: RecoveryRequest, fetcher: typeof
   }
   return data as AskSalesFaqResponse;
 }
+
+export function canRetrySavedAnswer(message?: { role: string; outcome?: string | null; retryableFailure?: boolean }) {
+  return message?.role === "assistant" && message.outcome === "safe_fallback" && message.retryableFailure === true;
+}
