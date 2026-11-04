@@ -79,11 +79,13 @@ export async function runProviderBatch(){
   const configs=await sql`select * from script_adherence_control where id=true`,config=configs[0];
   if(!config||config.transport!=='batch')return {paused:true};
   // Existing paid batches are always collected, even when intake is paused.
-  const due=await sql`select * from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting') and next_check_at<=now() order by case when state='collecting' then 0 else 1 end,created_at limit 4`;
+  const due=await sql`select * from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting') and next_check_at<=now() order by case when state='collecting' then 0 else 1 end,next_check_at,created_at limit 4`;
   const failures:string[]=[];
   for(const b of due){if(Date.now()>deadline-(b.state==='prepared'?85000:45000))break;try{if(b.provider_id)await collect(b as Batch,deadline);else await submit(b as Batch,deadline);}catch(e){const message=e instanceof Error?e.message:'Batch operation failed';failures.push(message);await sql`update script_adherence_provider_batches set error=${message.slice(0,500)},next_check_at=now()+interval '10 minutes',updated_at=now() where id=${b.id}`;}}
   if(failures.length)throw Error(failures.join('; ').slice(0,500));
-  if((config.enabled||config.canary_keys.length)&&Date.now()<deadline-45000){
+  // Bound provider concurrency; queued calls stay durable. Reviews retain claim priority.
+  const [inflight]=await sql`select count(*)::int as count from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting')`;
+  if((config.enabled||config.canary_keys.length)&&Number(inflight?.count||0)<4&&Date.now()<deadline-45000){
    const work=[];for(let i=0;i<100&&Date.now()<deadline-45000;i++){const item=await claimModel(work.map(w=>w.id),'openai','batch');if(!item)break;work.push(item);}
    if(work.length){
     const id=randomUUID();await sql.transaction([

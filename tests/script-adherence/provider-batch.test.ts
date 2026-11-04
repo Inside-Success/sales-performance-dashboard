@@ -47,3 +47,8 @@ it('records source failures separately so a successful provider poll cannot hide
  await recordSchedulerFailure('hb3M0O7fYx04oVEs');expect(sql.mock.calls[0][0].join('')).toContain('set source_error=');
  await recordSourceSuccess();expect(sql.mock.calls[1][0].join('')).toContain('set source_error=null');
 });
+
+it('does not reserve more requests when four provider batches are already active',async()=>{
+ sql.mockImplementation(async(parts:TemplateStringsArray)=>{const q=parts.join('');if(q.includes('returning id'))return [{id:true}];if(q.includes('select * from script_adherence_control'))return [{transport:'batch',enabled:true,canary_keys:[]}];if(q.includes('select count(*)::int as count'))return [{count:4}];return [];});
+ await runProviderBatch();expect(claimModel).not.toHaveBeenCalled();expect(fetcher).not.toHaveBeenCalled();
+});

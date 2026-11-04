@@ -45,3 +45,9 @@ it('rejects changed receipt content even after the first receipt was settled',as
  sql.mockResolvedValueOnce([{status:'completed',actual_microusd:100,job_state:'complete'}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{matches:false}]);
  await expect(receive('id','job',{id:'different'})).rejects.toThrow('Conflicting');expect(sql).toHaveBeenCalledTimes(3);
 });
+
+it('accounts for previously accepted recordings without putting them back in the source queue',async()=>{
+ const {discover}=await import('@/lib/script-adherence/queue');sql.mockResolvedValue([]);
+ await discover([{accountId:'nTC8wAG7SsijjSRAP3IOng',uuid:'known',rep:'Rep',title:'Call',startedAt:'2026-11-01T00:00:00Z',sourceUrl:'',files:[]}]);
+ const q=sql.mock.calls[0][0].join('');expect(q).toContain("then 'complete' else 'awaiting_transcript'");expect(q).toContain('c.source_key=r.id');expect(q).toContain("where script_adherence_jobs.state='awaiting_transcript'");
+});

@@ -25,10 +25,10 @@ export async function discover(recordings:z.infer<typeof recordingSchema>[]){
  if(new Set(rows.map(r=>r.id)).size!==rows.length)throw Error('Duplicate meeting in coverage page');
  if(!rows.length)return {saved:0};
  // One bounded page write avoids a network round trip per recording.
- await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url)
- select r.id,r.id,r.account_id,r.meeting_uuid,r.files,r.rep,r.title,r.started_at,r.source_url,r.download_url
+ await sql`insert into script_adherence_jobs(id,source_key,account_id,meeting_uuid,files,rep,title,started_at,source_url,download_url,state)
+ select r.id,r.id,r.account_id,r.meeting_uuid,r.files,r.rep,r.title,r.started_at,r.source_url,r.download_url,case when exists(select 1 from script_adherence_calls c where c.source_key=r.id) then 'complete' else 'awaiting_transcript' end
  from jsonb_to_recordset(${JSON.stringify(rows)}::jsonb) as r(id text,account_id text,meeting_uuid text,files jsonb,rep text,title text,started_at timestamptz,source_url text,download_url text)
- on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
+ on conflict(id) do update set files=excluded.files,download_url=excluded.download_url,rep=excluded.rep,state=excluded.state,updated_at=now() where script_adherence_jobs.state='awaiting_transcript'`;
  return {saved:rows.length};
 }
 export async function claimSource(owner:string){
@@ -62,7 +62,7 @@ export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthrop
  const body=buildAnalysisRequest(model,j.transcript,{title:j.title,rep:j.rep},review?j.draft:undefined);
  if(transport==='batch'){if(model!=='gpt-6.1-terra')throw Error('Batch requires evaluated Terra model');delete (body as {service_tier?:string}).service_tier;}
  const requestHash=digest(JSON.stringify(body)),id=digest(j.source_key+requestHash+transport),reserve=model==='gpt-6.1-terra'?500000:200000;
- const result=await sql`with budget as (select * from script_adherence_budget where project='pilot-2026-11-02' for update),job as (update script_adherence_jobs set state=${review?'review_pending':'draft_pending'},draft_request_id=case when ${review} then draft_request_id else ${id} end,review_request_id=case when ${review} then ${id} else review_request_id end,updated_at=now() where id=${j.id} and state=${j.state} and exists(select 1 from budget where committed_microusd+${reserve}<=ceiling_microusd) returning id), inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage,request_body,transport) select ${id},'pilot-2026-11-02',${j.source_key},${requestHash},${model},${reserve},'reserved',${review?'unattended-review':'unattended-draft'},${JSON.stringify(body)}::jsonb,${transport} from job returning id),debited as(update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project='pilot-2026-11-02' and exists(select 1 from inserted) returning project) select id from inserted`;
+ const result=await sql`with budget as (select * from script_adherence_budget where project='pilot-2026-11-02' for update),job as (update script_adherence_jobs set state=${review?'review_pending':'draft_pending'},draft_request_id=case when ${review} then draft_request_id else ${id} end,review_request_id=case when ${review} then ${id} else review_request_id end,updated_at=now() where id=${j.id} and state=${j.state} and exists(select 1 from budget where (ceiling_microusd is null or committed_microusd+${reserve}<=ceiling_microusd)) returning id), inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage,request_body,transport) select ${id},'pilot-2026-11-02',${j.source_key},${requestHash},${model},${reserve},'reserved',${review?'unattended-review':'unattended-draft'},${JSON.stringify(body)}::jsonb,${transport} from job returning id),debited as(update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project='pilot-2026-11-02' and exists(select 1 from inserted) returning project) select id from inserted`;
  // Request FK is deferrable to allow one atomic job/request reservation transaction.
  return result.length?{id,jobId:j.id,body,stage:review?'review':'draft',pipeline:PIPELINE_VERSION}:null;
 }
