@@ -43,10 +43,10 @@ import {
 } from "@/lib/ask-sales-faq/presentation";
 import type {
   AskSalesFaqConversationSummary,
-  AskSalesFaqResponse,
   AskSalesFaqStructuredAnswer,
 } from "@/lib/ask-sales-faq/types";
 import { cn } from "@/lib/utils";
+import { requestFaqAnswer, recoveryAfterResponse, type RecoveryRequest } from "@/lib/ask-sales-faq/client-recovery";
 import { AnswerMarkdown } from "./answer-markdown";
 
 type ChatMessage = {
@@ -186,6 +186,7 @@ export function AskSalesFaqChat() {
   const [conversationHistoryError, setConversationHistoryError] = useState<string | null>(null);
   const [feedbackByMessageId, setFeedbackByMessageId] = useState<Record<string, FeedbackState>>({});
   const [error, setError] = useState<string | null>(null);
+  const [recovery, setRecovery] = useState<{ request: RecoveryRequest; uncertain: boolean } | null>(null);
   const [conversationMenuId, setConversationMenuId] = useState<string | null>(null);
   const [renamingConversation, setRenamingConversation] = useState<AskSalesFaqConversationSummary | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
@@ -332,6 +333,7 @@ export function AskSalesFaqChat() {
   function startNewConversation() {
     if (blockConversationChangeWhileBusy()) return;
     syncActiveConversationId(null);
+    setRecovery(null);
     syncMessages([]);
     setFeedbackByMessageId({});
     setError(null);
@@ -344,6 +346,7 @@ export function AskSalesFaqChat() {
   function openConversation(conversation: AskSalesFaqConversationSummary) {
     if (conversation.id !== activeConversationIdRef.current && blockConversationChangeWhileBusy()) return;
     syncActiveConversationId(conversation.id);
+    setRecovery(null);
     syncMessages(
       conversation.messages
         .filter((message) => message.role === "user" || message.role === "assistant")
@@ -361,6 +364,14 @@ export function AskSalesFaqChat() {
           model: message.model,
         })),
     );
+    const lastSaved = conversation.messages.at(-1);
+    if (lastSaved?.role === "assistant" && lastSaved.outcome === "safe_fallback") {
+      const originalMessages = messagesRef.current.slice(0, -1);
+      if (originalMessages.at(-1)?.role === "user") setRecovery({
+        request: { conversationId: conversation.id, clientRequestId: createClientRequestId(), messages: buildRequestMessages(originalMessages) },
+        uncertain: false,
+      });
+    }
     setFeedbackByMessageId(
       Object.fromEntries(
         conversation.messages.flatMap((message) =>
@@ -513,14 +524,24 @@ export function AskSalesFaqChat() {
     void sendQuestion(nextQuestion.content);
   }
 
-  async function sendQuestion(question: string) {
+  async function retryLastQuestion() {
+    if (!recovery || isLoadingRef.current) return;
+    // Keep the original history and question. A failed answer is not context.
+    const prior = messagesRef.current;
+    const visible = prior.at(-1)?.role === "assistant" ? prior.slice(0, -1) : prior;
+    syncMessages(visible);
+    await sendQuestion(recovery.request.messages.at(-1)!.content, recovery.request);
+  }
+
+  async function sendQuestion(question: string, retryRequest?: RecoveryRequest) {
+    if (isLoadingRef.current) return;
     const userMessage: ChatMessage = {
       id: `local-user-${createClientRequestId()}`,
       role: "user",
       content: question,
     };
 
-    const nextMessages = [...messagesRef.current, userMessage];
+    const nextMessages = retryRequest ? messagesRef.current : [...messagesRef.current, userMessage];
     syncMessages(nextMessages);
     clearComposerIfCurrentQuestion(question);
     syncIsLoading(true);
@@ -528,22 +549,21 @@ export function AskSalesFaqChat() {
     setError(null);
     focusComposer();
 
+    const request: RecoveryRequest = retryRequest || {
+      conversationId: activeConversationIdRef.current,
+      clientRequestId: createClientRequestId(),
+      messages: buildRequestMessages(nextMessages),
+    };
+    setRecovery(null);
     let shouldContinueQueue = true;
 
     try {
-      const response = await fetch("/api/ask-sales-faq", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          conversationId: activeConversationIdRef.current,
-          clientRequestId: createClientRequestId(),
-          messages: buildRequestMessages(nextMessages),
-        }),
-      });
-      const data = (await response.json()) as Partial<AskSalesFaqResponse> & { error?: string };
-
-      if (!response.ok || !data.ok || !data.answer || !data.messageId || !data.conversationId) {
-        throw new Error(data.error || "Ask Sales FAQ could not answer right now.");
+      const data = await requestFaqAnswer(request);
+      const nextRecovery = recoveryAfterResponse(request, data, createClientRequestId);
+      setRecovery(nextRecovery ? { request: nextRecovery, uncertain: data.outcome === "duplicate_in_progress" } : null);
+      if (["safe_fallback", "duplicate_in_progress", "rate_limited", "validation_error", "feature_disabled", "auth_blocked"].includes(data.outcome)) {
+        shouldContinueQueue = false;
+        if (queuedQuestionsRef.current.length) syncQueuePaused(true);
       }
 
       syncActiveConversationId(data.conversationId);
@@ -566,10 +586,11 @@ export function AskSalesFaqChat() {
       ]);
       void loadConversations();
     } catch (requestError) {
+      setRecovery({ request, uncertain: true });
       const message =
         requestError instanceof Error
           ? requestError.message
-          : "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.";
+          : "The connection was interrupted. Your question is preserved. Use Check for answer to recover the result safely.";
       setError(message);
       syncMessages([
         ...messagesRef.current,
@@ -577,12 +598,12 @@ export function AskSalesFaqChat() {
           id: `local-safe-${createClientRequestId()}`,
           role: "assistant",
           content:
-            "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.",
+            "The connection was interrupted. Your question is preserved. Use Check for answer to recover the result safely.",
           structuredAnswer: {
             summary:
-              "Ask Sales FAQ is having trouble right now. Try again in a few moments, and route urgent live-call questions instead of guessing.",
+              "The connection was interrupted. Your question is preserved. Use Check for answer to recover the result safely.",
             sections: [
-              { title: "What to do", items: ["Try again in a few moments.", "Route urgent live-call questions instead of guessing."], tone: "route" },
+              { title: "What to do", items: ["Check for the original answer before sending this question again."], tone: "default" },
             ],
             confidenceLabel: "Low",
             confidenceScore: 0,
@@ -789,7 +810,16 @@ export function AskSalesFaqChat() {
 
             {isLoading ? <LoadingAnswer /> : null}
 
-            {error ? (
+            {recovery && !isLoading ? (
+              <div role="status" className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-slate-700">
+                <p>{recovery.uncertain ? "Your original request may still be finishing. Checking will not start another answer." : "The answer could not be completed. You can retry with the same question and context."}</p>
+                <button type="button" onClick={() => void retryLastQuestion()} disabled={isLoading} className="mt-3 min-h-11 rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-50">
+                  {recovery.uncertain ? "Check for answer" : "Try this question again"}
+                </button>
+              </div>
+            ) : null}
+
+            {error && !recovery ? (
               <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-sm">
                 <Info className="mt-0.5 size-4 shrink-0 text-slate-400" />
                 {error}
@@ -1755,6 +1785,11 @@ function FeedbackControls({
 }
 
 function LoadingAnswer() {
+  const [takingLonger, setTakingLonger] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setTakingLonger(true), 20000);
+    return () => window.clearTimeout(timer);
+  }, []);
   return (
     <div role="status" aria-live="polite" className="flex items-center gap-3">
       <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#DC2626] text-white">
@@ -1762,7 +1797,7 @@ function LoadingAnswer() {
       </span>
       <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-500 shadow-sm">
         <Loader2 className="size-4 animate-spin text-[#DC2626]" />
-        Checking approved FAQ context
+        {takingLonger ? "Taking longer than usual. Still working on your answer…" : "Checking approved FAQ context"}
       </div>
     </div>
   );

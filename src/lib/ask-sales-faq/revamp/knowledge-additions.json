@@ -6881,5 +6881,30 @@
     "conditions": [],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_resource"
+  },
+  {
+    "id": "sales-dfd-terminology-2026-11-04",
+    "decisionKey": "sales-dfd-terminology-2026-11-04",
+    "title": "DFD sales shorthand: Double Fricken Day",
+    "questions": [
+      "What does DFD mean?",
+      "What is a double fricken day?"
+    ],
+    "text": "Mike explicitly expanded DFD as Double Fricken Day in his October 24 announcement. In his October 29 individual-rep example, he used DFD for a rep with two sales that day and described a $300 bonus, with $500 instead if that rep made another sale. These are dated examples, not proof that every product, payment method, or future day qualifies for the same bonus. Mike also uses DFD in team-wide celebration messages, so distinguish individual two-sale usage from a team target; do not infer a universal team threshold, eligibility, or payout promise. Answer the abbreviation directly when that is all the rep asks. For bonus eligibility use the current applicable incentive announcement and verified sales/payment facts.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792850697389389",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793300075926479"
+    ],
+    "reviewedAt": "2026-11-04",
+    "authority": 12,
+    "kind": "resource",
+    "risk": "medium",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_resource"
   }
 ]
