@@ -1760,7 +1760,7 @@
     "decisionKey": "rebooking-calendar-current-directory",
     "title": "Current team rebooking calendar directory",
     "questions": [],
-    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking. November 2 Tech confirms the public calendar may allow bookings further out than the incoming calendar; Kent tentatively described a week. This does not establish a guaranteed universal window. Check the actual correct calendar and current Tech configuration rather than treating the directory’s header as a live availability limit.",
+    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking. November 2 Tech confirms the public calendar may allow bookings further out than the incoming calendar; Kent tentatively described a week. This does not establish a guaranteed universal window. Check the actual correct calendar and current Tech configuration rather than treating the directory’s header as a live availability limit. November 3 Kent clarified that the public calendar is configured so reps can book a week ahead when needed, whereas inbound bookings are restricted to two days ahead; the booking window cannot be customized per person. This supersedes treating the earlier one-week estimate as merely speculative. These are configured windows, not guaranteed available slots; the current public Call 1 versus second-call Calendar purposes still apply. The November 4 ramp-up source now correctly specifies the OnceHub Call 2 Calendar Link for second calls, resolving that particular outdated Public-for-Call-2 wording.",
     "scopes": [
       "shared"
     ],
@@ -1769,9 +1769,11 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792347648297579",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1792670378630849",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633497181699",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633527125309"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633527125309",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793721871032569",
+      "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
     ],
-    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "resource",
     "risk": "medium",
@@ -2756,21 +2758,21 @@
   {
     "id": "new-rep-six-training-sessions-2026-09-21",
     "decisionKey": "new-rep-six-training-sessions-2026-09-21",
-    "title": "New sales reps: mandatory live onboarding training with Mike and Raul",
+    "title": "Current onboarding training schedule and source signoff discrepancy",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
       "What training sessions does Raul host?",
       "When is Mike Call 1 Call 2 compliance training?"
     ],
-    "text": "The October 30 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "text": "The November 4 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2824,7 +2826,7 @@
       "What training do I complete in my first two weeks live?",
       "When do I get HubSpot access during onboarding?"
     ],
-    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions plus a Thursday Objection Handling entry whose time is not supplied), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs. The November 2 NEW REP – PASSED RAMP UP update says to post the completed Part 1 copy link in the onboarding channel and tag Raul; Rudy and Rich have been removed from that signoff tagging instruction. Its support section reserves personal DMs for personal matters; normal sales questions should use the documented sales support/FAQ channels. This does not remove training/readiness requirements or authorize going live without the required approval.",
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions currently listed; the former untimed Thursday objection entry has been removed, while an older six-session signoff remains), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs. The November 2 NEW REP – PASSED RAMP UP update says to post the completed Part 1 copy link in the onboarding channel and tag Raul; Rudy and Rich have been removed from that signoff tagging instruction. Its support section reserves personal DMs for personal matters; normal sales questions should use the documented sales support/FAQ channels. This does not remove training/readiness requirements or authorize going live without the required approval. Part 2 now specifies a check-in with Mike in 10 days to review progress, successes and areas for improvement; finish the tasks and post the completed Part 2 signoff-copy link in the onboarding channel. The current Part 2 Magic Mike link is https://sales-performance-dashboard-rose.vercel.app/ for Call 2 reviews, FAQ help and AI mock-call practice. This does not replace human readiness approval. Both Part 1 and Part 2 link the current show list at https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . Personal matters may be DM’d to the training contact or Rich; ordinary support uses the documented channels.",
     "scopes": [
       "shared"
     ],
@@ -2835,7 +2837,7 @@
       "https://docs.google.com/spreadsheets/d/1tnVFQ_grv-0FB5ZjMBUu_EqkMldhwh6jSM2aQGQ7shc/edit",
       "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
     ],
-    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -3188,7 +3190,7 @@
       "Can I take another rep’s client for a different show?",
       "Another rep contacted this outbound lead but never claimed ownership. Can I claim it?"
     ],
-    "text": "Current October 8 clarification from Rich for the new outbound lead process: if a previous rep contacted the applicant but did not claim ownership, the next rep may claim the unowned lead. This supersedes the earlier blanket first-contact instruction for that specific unclaimed-owner case. Check HubSpot contact history and actual ownership before dialing; do not overwrite an existing claimed owner or bypass DNC. An empty field does not prove no contact occurred, but under this newer instruction prior contact alone does not reserve an otherwise unclaimed lead. For already-owned leads, coordinate rather than duplicate outreach. Rich’s separate cross-show example keeps an existing Legacy Makers client with the original rep while coordinating an interested DJ sale with a DJ rep; a requested show change is not permission to take an existing client. Authorized pass-offs and opt-outs still apply.",
+    "text": "Current October 8 clarification from Rich for the new outbound lead process: if a previous rep contacted the applicant but did not claim ownership, the next rep may claim the unowned lead. This supersedes the earlier blanket first-contact instruction for that specific unclaimed-owner case. Check HubSpot contact history and actual ownership before dialing; do not overwrite an existing claimed owner or bypass DNC. An empty field does not prove no contact occurred, but under this newer instruction prior contact alone does not reserve an otherwise unclaimed lead. For already-owned leads, coordinate rather than duplicate outreach. Rich’s separate cross-show example keeps an existing Legacy Makers client with the original rep while coordinating an interested DJ sale with a DJ rep; a requested show change is not permission to take an existing client. Authorized pass-offs and opt-outs still apply. Igor’s November 3 technical clarification for system-recycled outreach leads: unanswered leads can recycle after a 72-hour cooldown only when the previous rep did not connect and the prospect did not reply, book, opt out or become disqualified. The current assigned-rep field then changes, while the original assignment should remain in outreach-history fields. Existing notes or a previous rep’s attempt do not by themselves prove improper reassignment. Check the actual assignment/history; give Tech the specific contact records to verify suspected premature recycling. This is system-controlled recycling, not permission to manually take a connected, booked, opted-out, disqualified or protected owned lead.",
     "scopes": [
       "shared"
     ],
@@ -3196,9 +3198,10 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790096895088839",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790117140339249",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790119917781709",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791492877913309"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791492877913309",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793703873149639"
     ],
-    "reviewedAt": "2026-10-12T11:12:16.756034+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3777,8 +3780,8 @@
   {
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
-    "title": "Current live new-rep training schedule and unscheduled Thursday objection session",
-    "text": "The October 30 Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. It additionally lists Thursday Objection Handling WITHOUT a time, trainer or joining link in that entry: do not invent these details or assume it is the 2 PM session. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "title": "Current onboarding training schedule and source signoff discrepancy",
+    "text": "The November 4 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3791,7 +3794,7 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4097,7 +4100,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report had refunds/recurring-payment counting issues. Saad’s October 20 updated report explicitly excludes refunded sales and sales with contracted value zero. Do not keep describing that older reconciliation as proof the new report is currently erroneous. Even a corrected sold-to-date report is not live available-space inventory; confirm actual vacancies with Production. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional. October 20 follow-up: Rudy could not confirm whether Island Season 2 would fall late enough in April for a particular applicant; he mentioned Season 3 in June/July as a possible alternative. These remain planning estimates, not guaranteed dates or confirmed availability. He says a passport would be needed if filming is overseas in the Caribbean; this is conditional, not confirmation that Season 2 has a secured overseas destination. In the October 20 cast-report thread, Saad answered the October 21 question about the cast-member limit for each show with 20. This is a reported total cast limit in that report context, not 20 open slots, a live availability check, or a guarantee that a specific season can accept another buyer. Confirm the actual show/season and remaining space with Production before promising a place. October 23 Rudy clarifies that reality cast roll into successive seasons in blocks of 20: 1–20 Season 1, 21–40 Season 2, 41–60 Season 3, and so on. This explains the cast-report totals; it is not live inventory, a guaranteed individual placement, or a confirmed filming date. Check the current Finance/Production allocation before promising the buyer a particular season. Rudy confirmed in the October 27 Master FAQ exchange that a buyer may close now for later-season participation. That Yes does not independently confirm the rep’s assumed Season 6/December 2027 date or any exact future season calendar. The follow-up asking for a $2,000 Call 3 discount was not answered; this reply is not discount authorization.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Mexico/Caribbean edition. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. Keep Season 2 as the default offer; ask Luke/Angelina to confirm a Season 1 exception before promising it. The October 5 cast report had refunds/recurring-payment counting issues. Saad’s October 20 updated report explicitly excludes refunded sales and sales with contracted value zero. Do not keep describing that older reconciliation as proof the new report is currently erroneous. Even a corrected sold-to-date report is not live available-space inventory; confirm actual vacancies with Production. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional. October 20 follow-up: Rudy could not confirm whether Island Season 2 would fall late enough in April for a particular applicant; he mentioned Season 3 in June/July as a possible alternative. These remain planning estimates, not guaranteed dates or confirmed availability. He says a passport would be needed if filming is overseas in the Caribbean; this is conditional, not confirmation that Season 2 has a secured overseas destination. In the October 20 cast-report thread, Saad answered the October 21 question about the cast-member limit for each show with 20. This is a reported total cast limit in that report context, not 20 open slots, a live availability check, or a guarantee that a specific season can accept another buyer. Confirm the actual show/season and remaining space with Production before promising a place. October 23 Rudy clarifies that reality cast roll into successive seasons in blocks of 20: 1–20 Season 1, 21–40 Season 2, 41–60 Season 3, and so on. This explains the cast-report totals; it is not live inventory, a guaranteed individual placement, or a confirmed filming date. Check the current Finance/Production allocation before promising the buyer a particular season. Rudy confirmed in the October 27 Master FAQ exchange that a buyer may close now for later-season participation. That Yes does not independently confirm the rep’s assumed Season 6/December 2027 date or any exact future season calendar. The follow-up asking for a $2,000 Call 3 discount was not answered; this reply is not discount authorization. November 3–4 update specifically about Entrepreneurs Island SEASON 3: Celia estimated summer 2027 (June–August), and Rudy clarified approximately June/July, saying they MAY rotate Island then Mansion every two months. Use approximate June/July 2027 as the latest Season 3 planning estimate in that discussion. It is not a confirmed shoot date, fixed two-month cadence, specific venue or proof of available inventory. The question’s premise that two seasons are full is not independently verified live capacity. Do not keep offering Season 2 as an automatically available default based only on older October posts; confirm the actual current show/season allocation before a sale.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -4133,12 +4136,15 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792502500020049",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792774829034489",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793112235218539"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793112235218539",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793726885301719",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793727049352489",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793772538325279"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5567,7 +5573,7 @@
       "What must I sign on my first day of training?",
       "How long should onboarding and the final mock take?"
     ],
-    "text": "The current Part 1 onboarding sheet adds a mandatory Day 1 Training Expectations acknowledgment: read it, make a copy, sign and date it, then post it in New Sales Closers Onboarding. The linked acknowledgment requires an EOD TRAINING progress update every Monday through Friday before the end of the day: what was completed, current training progress, and questions or blockers. Proactively tell the onboarding team if unable to train or report. Its goal is to finish onboarding, including final mock preparation and completion, within 10 days; this is a target, not automatic approval to go live. A missed report may result in a warning; repeated failures after reminders or consecutive required reporting days without an update may result in removal. Do not invent automatic removal after a single miss or a specific number of missed days. This current explicit requirement supersedes older welcome wording that daily trainee updates are unnecessary. It is separate from live-rep HubSpot sales stats and daily call self-reviews; the non-DJ Slack sales-stats cutover does not exempt trainees from these training progress updates. The existing rule that onboarding-channel progress posts end once live on calls is not changed. The October 20 wording targets completion of onboarding within 10 days; it no longer says the goal itself puts the trainee onto live sales calls within 10 days. Required readiness/signoffs still govern. Part 2 now includes practice with the AI Mock Call Agent at https://mockcallagent.insidesuccess.ai/ . Use that linked practice tool; completing AI practice alone does not replace required training sessions, human final mock-call signoff or live-calendar approval. The October 29 Part 1 wording places the daily EOD report in #new-sales-closer-end-of-day-report (rather than assuming the general onboarding channel) and specifies 3–5 EOD bullets on main training progress plus TOTAL TIME spent training, before 11:59 PM EST, tagging RAUL (replacing older Rich/Rudy tags). The signoff includes a daily goal of sixty outbound dials and six to ten bookings; bookings are a goal, not guaranteed results or permission to invent activity. Questions/help go through main channels instead of unsolicited DMs. Inactivity more than three days WITHOUT notice/reason can lead to removal; preserve that exception and the existing readiness approvals.",
+    "text": "The current Part 1 onboarding sheet adds a mandatory Day 1 Training Expectations acknowledgment: read it, make a copy, sign and date it, then post it in New Sales Closers Onboarding. The linked acknowledgment requires an EOD TRAINING progress update every Monday through Friday before the end of the day: what was completed, current training progress, and questions or blockers. Proactively tell the onboarding team if unable to train or report. Its goal is to finish onboarding, including final mock preparation and completion, within 10 days; this is a target, not automatic approval to go live. A missed report may result in a warning; repeated failures after reminders or consecutive required reporting days without an update may result in removal. Do not invent automatic removal after a single miss or a specific number of missed days. This current explicit requirement supersedes older welcome wording that daily trainee updates are unnecessary. It is separate from live-rep HubSpot sales stats and daily call self-reviews; the non-DJ Slack sales-stats cutover does not exempt trainees from these training progress updates. The existing rule that onboarding-channel progress posts end once live on calls is not changed. The October 20 wording targets completion of onboarding within 10 days; it no longer says the goal itself puts the trainee onto live sales calls within 10 days. Required readiness/signoffs still govern. The November 4 Part 2 update links Magic Mike at https://sales-performance-dashboard-rose.vercel.app/ for Call 2 recording review, FAQ answers and AI mock-call practice, replacing its former direct AI Mock Call Agent entry. Completing AI practice alone does not replace required training sessions, human final mock-call signoff or live-calendar approval. Part 2 specifies a 10-day check-in with Mike to discuss progress, successes and improvements. The October 29 Part 1 wording places the daily EOD report in #new-sales-closer-end-of-day-report (rather than assuming the general onboarding channel) and specifies 3–5 EOD bullets on main training progress plus TOTAL TIME spent training, before 11:59 PM EST, tagging RAUL (replacing older Rich/Rudy tags). The signoff includes a daily goal of sixty outbound dials and six to ten bookings; bookings are a goal, not guaranteed results or permission to invent activity. Questions/help go through main channels instead of unsolicited DMs. Inactivity more than three days WITHOUT notice/reason can lead to removal; preserve that exception and the existing readiness approvals.",
     "scopes": [
       "shared"
     ],
@@ -5576,7 +5582,7 @@
       "https://docs.google.com/document/d/1XGQ4jKXZr77PovynpM2jSLqmUD69yrIzxYFfTThHNGc/edit",
       "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6276,7 +6282,7 @@
       "What are n24hour_text_sent and mot_text_sent?",
       "Why did a prospect get the wrong reminder time?"
     ],
-    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags.",
+    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags. November 4 Igor checked a nine-meeting missing-reminder report: three qualified and received reminders; six were excluded by existing meeting-type rules. He said he was updating those rules to cover second calls and Next Level CEO. This is an identified eligibility cause and planned update, not verified completion or a guarantee that every Call 2/NLCEO booking receives reminders now. Check actual sent flags and the contact timeline; retain required manual confirmation duties and avoid duplicating an already-delivered message.",
     "scopes": [
       "shared"
     ],
@@ -6286,9 +6292,10 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793296521099739",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793644419861019",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793646274459429",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793648251450349"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793648251450349",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793792513546989"
     ],
-    "reviewedAt": "2026-11-03T11:00:32.228125+00:00",
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6906,5 +6913,155 @@
     "conditions": [],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_resource"
+  },
+  {
+    "id": "commission-invoice-work-email-authorization-2026-11-04",
+    "decisionKey": "commission-invoice-work-email-authorization-2026-11-04",
+    "title": "Commission invoicing: authorize the correct work email and wait for activation",
+    "questions": [
+      "How do I authorize my work Gmail for commission invoices?",
+      "I authorized my email. Has an invoice been sent or invoicing activated?",
+      "Why did I not get the work email authorization email?"
+    ],
+    "text": "Use the Tech-provided personal authorization link and the SAME work Google email used for HubSpot, not a personal Gmail, second company account or alias. Open the link, select that work account (Use another account if needed), read the permission to send commission invoice emails, approve Allow/Continue and wait for Success - You can close this page. If the wrong account appears, cancel without approving; reopen the original link in an incognito/private window and sign in with the correct work email. If it fails, send Tech an error screenshot and the selected work email, never a password, login/recovery code or security answer. Possible causes include a wrong/mismatched account, required company admin approval, or an expired/already-used link. Igor’s November 4 rollout email is titled Action required: authorize your Inside Success work email; its unique link must not be forwarded and expires November 18, 2026. For this rollout Igor says no email means already authorized; this is not proof a particular account is activated. After authorization Tech verifies the email and HubSpot commission-profile mapping and confirms when the Commission Invoices tab is ready. Completing authorization does not send an invoice or activate invoicing. Keep existing invoicing procedures until activation is confirmed. Existing Bill.com instructions describe the current invoicing process, not the future Commission Invoices tab workflow. This authorization SOP does not establish how invoices will be submitted after activation; use the Tech-confirmed instructions when that workflow becomes ready.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1kYN2PdNRUYgtgITkp8zp1CWjy_3fCN_3Mwa2SZtwBpk/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793795009989359",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793805247989749"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-cast-no-contact-before-filming-2026-11-04",
+    "decisionKey": "reality-cast-no-contact-before-filming-2026-11-04",
+    "title": "Reality cast: announce participation but do not contact other cast before filming",
+    "questions": [
+      "Can reality cast follow or DM each other before filming?",
+      "Can a cast member post their acceptance graphics before the shoot?"
+    ],
+    "text": "The current reality post-sale welcome email encourages cast to post/share their acceptance letter and announcement graphics and tag the company. Separately it says no contact with other cast members until filming: do not follow, message or reply to other cast members online before being on location, so first impressions happen on camera. After filming wraps, cast may connect. Publicly announcing participation is not permission to approach or interact with fellow cast beforehand. This applies to the reality welcome-email variants, including Entrepreneurs Island and Mansion of Money; do not transfer it to unrelated documentary participants. The initial reality onboarding form remains required before promotional materials or the press release can be created; review responses carefully before submitting. Production/support questions go to support@insidesuccesstv.com; reps CC that inbox on the reality welcome email.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1YgIbq6Sk1vTBn9d8fDeBMUG_WU5yyJg0lhi1247XgXs/edit"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "new-rep-paired-review-deadline-conflict-2026-11-04",
+    "decisionKey": "new-rep-paired-review-deadline-conflict-2026-11-04",
+    "title": "Ramp-up paired call reviews: 14-day section conflicts with 7-day deadline",
+    "questions": [
+      "When must a new rep submit the paired Call 1 and Call 2 recordings?",
+      "Do I have seven or fourteen days for ramp-up call review?"
+    ],
+    "text": "The November 4 reviewed NEW REP – PASSED RAMP UP document requires one Call 1 recording and one Call 2 recording submitted PAIRED TOGETHER in a Slack DM including Rich Allen, Mike Wisner and Raul Rios. Its Required Call Reviews section now says within the first 14 days, but its separate Deadline paragraph still says within the first 7 days live on calls. This is an unresolved contradiction in the same current source, not confirmed permission to wait until day 14. Practical guidance: submit the pair as soon as possible, aim to meet the earlier 7-day deadline, and confirm the applicable deadline with training leadership if needed. Do not assert either conflicting number is definitively the resolved policy. Incoming calls/Master Calendar activation still require review and approval; do not activate the Master Calendar yourself. This paired ramp-up review is separate from trainee mock recordings and daily live-rep self-reviews.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-incoming-sms-alerts-2026-11-04",
+    "decisionKey": "hubspot-incoming-sms-alerts-2026-11-04",
+    "title": "Incoming SMS: Rep interface auto-refresh and current alert limitation",
+    "questions": [
+      "How can I see new SMS replies in HubSpot?",
+      "Can I enable a sound or desktop alert for incoming texts?"
+    ],
+    "text": "Tech’s November 3–4 reply says to bookmark the HubSpot rep interface https://app-eu1.hubspot.com/app/148285209/51316600 to see texts, meetings and related items, and turn on Auto-refresh for SMS. When asked specifically for a sound or desktop notification, Tech answered that for now there is none. Auto-refresh updates the interface; do not describe it as an audible, desktop, Slack or email alert or promise immediate notification while away from the page. Check messages between calls; ask Tech about a future alert capability rather than inventing an existing setting.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793737833669779",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793770987247509"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-coproduction-comparison-resource-2026-11-04",
+    "decisionKey": "reality-coproduction-comparison-resource-2026-11-04",
+    "title": "Rudy’s co-production comparison: reusable content and brand integration",
+    "questions": [
+      "How is our co-production model different from traditional Hollywood TV?",
+      "Where is Rudy’s US versus them comparison for a screenshare?"
+    ],
+    "text": "Rudy shared Our Unique Co-Production Model on November 3 and said reps may use it to understand the model and screenshare if needed. The comparison positions the co-production offer around multiple seasons/opportunities, faster casting and shorter shooting windows, reusable content, done-for-you social content, behind-the-scenes photography, business/personal-brand integration and an opportunity to showcase yourself in your best light. The graphic gives approximate casting/selection examples (around two weeks and one in 15–20 selected, contrasted with traditional one in 1,000); treat these as the graphic’s illustrative positioning, not audited current odds, an individual guarantee, or replacement for actual casting/production schedules. Traditional TV descriptions are broad comparisons, not universal claims about every production. Exact rights, deliverables and timelines remain governed by the buyer’s specific package and contract; best-light positioning does not grant final edit control or guarantee portrayal, selection, reach, sales or ROI. Open Rudy’s linked Slack post for the approved image rather than inventing a downloadable asset URL.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793738546589089"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-casting-versus-filming-dates-2026-11-04",
+    "decisionKey": "documentary-casting-versus-filming-dates-2026-11-04",
+    "title": "Documentary casting dates are different from the studio filming appointment",
+    "questions": [
+      "Are the Women in Power website dates my filming dates?",
+      "My documentary applicant cannot make the dates on the casting page; what should I explain?"
+    ],
+    "text": "Celia clarified November 3 that the Women in Power page dates in the reported case were casting dates, not the studio filming date. Women in Power is a documentary, not reality; its studio shoot is a separately booked, flexible half-day appointment. Clarify whether the prospect means the audition or the later shoot. If they cannot attend the Call 1 audition, reschedule that call through the proper existing-meeting process. Do not claim the bot has checked a live page/calendar, promise any date is available, or apply documentary flexibility to reality-show group filming. Show-family-specific presentation videos, investment and onboarding requirements still apply.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793748588665369",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793748928389669",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793750583192279"
+    ],
+    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
   }
 ]
