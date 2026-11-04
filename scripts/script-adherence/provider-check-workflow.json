@@ -68,7 +68,7 @@
     "timezone": "America/New_York",
     "saveExecutionProgress": false,
     "saveDataErrorExecution": "all",
-    "saveDataSuccessExecution": "all",
+    "saveDataSuccessExecution": "none",
     "executionTimeout": 240,
     "errorWorkflow": "ReqYiNj0X6YHOSKe"
   }

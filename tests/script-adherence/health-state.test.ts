@@ -10,3 +10,8 @@ it('does not demand company-wide coverage from a scoped canary',()=>expect(healt
 it('keeps ordinary source waiting visible without treating it as a failure',()=>expect(healthState({...base,waitingSources:3},now).label).toBe('Waiting for transcripts'));
 
 it('reports budget blocking when there is not enough headroom to reserve the next request',()=>expect(healthState({...base,committed:39800000,ceiling:40000000,pendingRequests:1},now).label).toBe('Budget limit'));
+
+it('supports explicitly uncapped spending without hiding queued work',()=>{
+ expect(healthState({...base,committed:90000000,ceiling:null,pendingRequests:3},now).label).toBe('Queued');
+ expect(healthState({...base,committed:90000000,ceiling:null},now).tone).toBe('good');
+});
