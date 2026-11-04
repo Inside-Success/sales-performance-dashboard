@@ -1,6 +1,6 @@
 # Magic Mike FAQ knowledge refresh — November 4, 2026
 
-Candidate knowledge refresh; publication requires exact-release and authenticated production verification.
+Published knowledge refresh. Three authenticated production answers verified against stored matching knowledge metadata. Admin freshness receipt follows this release.
 
 ## Scope
 
@@ -34,3 +34,7 @@ Initial 16-case isolated evaluation completed: 15 without technical failure, one
 Private evidence: `.magic-mike-knowledge-refresh-2026-11-04/`. Rollback only this refresh's knowledge/export/receipt; preserve November 4 recovery/admin and unrelated Coaching releases.
 
 Final pre-release checks: 492/492 FAQ tests and 107/107 static checks pass. Final 16-case evaluation: 15 answered without technical failure; the same bold-URL validation failure remains on the combined Mike check-in/practice-link question. Model output contains the correct answer, but the unchanged validator rejects the formatting. Do not describe this as 16/16 success. Estimated cumulative evaluation cost $0.23649. Separate runtime repair is not part of this source refresh. No release-wide quality or accuracy percentage is claimed.
+
+## Production receipt
+
+Dashboard PR375 merged as `d1997f56c35271557bf5f499c1659b50aa234d96`; FAQ PR125 as `d4b97ac8d28bca2299a03d790623032769619dde`. READY production deployment `dpl_5tTsr7tRKwYBMHckQwG7rxWHe81Z` serves the rose alias. Three authenticated live answers (commission authorization, pre-filming cast contact and paired-call deadline conflict) passed; database metadata confirms `b34d16420bf7dff04d1be866`, GPT-5.6 Luna and no error/validation issue. Answer latencies 16.4, 11.8 and 7.8 seconds. GitHub job steps report success for tests, static checks, TypeScript, lint and build; aggregate job status was still settling at receipt creation.
