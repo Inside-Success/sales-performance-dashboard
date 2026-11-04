@@ -8,6 +8,7 @@ import { getRevampKnowledge, REVAMP_KNOWLEDGE_VERSION } from "./knowledge";
 import { retrieveEvidence } from "./retrieval";
 import { configuredRevampProvider, RevampProviderError } from "./provider";
 import { ANSWER_PROMPT, PLAN_PROMPT, REVIEW_PROMPT } from "./prompts";
+import { evidenceUrls } from "./evidence-urls";
 import { answerSchema, planSchema, type Answer, type Attempt, type Evidence, type JsonProvider } from "./types";
 
 // Diagnostics retain positions and fingerprints, never rejected prose or URL secrets.
@@ -20,16 +21,15 @@ export type EvidenceIssue = {
 const fingerprint = (value: string) => createHash("sha256").update(value).digest("hex").slice(0,24);
 export function evidenceReferenceIssue(answer: Answer, evidence: Evidence[]): EvidenceIssue | null {
   const ids = new Set(evidence.map(e=>e.id));
+  const suppliedUrls = new Set(evidence.flatMap(e=>[
+    ...e.sourceIds.filter(id=>/^https?:\/\//i.test(id)), ...evidenceUrls(e.text),
+  ]));
   for(const [paragraphIndex, paragraph] of answer.paragraphs.entries()) {
     if(paragraph.kind === "company_fact" && !paragraph.evidenceIds.length) return {code:"missing_fact_evidence",paragraphIndex};
     const referenceIndex=paragraph.evidenceIds.findIndex(id=>!ids.has(id));
     if(referenceIndex>=0) return {code:"unknown_evidence_reference",paragraphIndex,referenceIndex,valueHash:fingerprint(paragraph.evidenceIds[referenceIndex])};
     // Resource URLs must be in the supplied corpus, not merely be syntactically valid.
-    const urls = paragraph.text.match(/https?:\/\/[^\s<>\])]+/g)||[];
-    const suppliedUrls = new Set(evidence.flatMap(e=>[
-      ...e.sourceIds.filter(id=>/^https?:\/\//.test(id)),
-      ...(e.text.match(/https?:\/\/[^\s<>\])]+/g)||[]),
-    ]));
+    const urls = evidenceUrls(paragraph.text);
     const knownUrl = (url:string) => suppliedUrls.has(url) ||
       [...suppliedUrls].some(source=>source.replace(/[.,;:!?]+$/, "")===url.replace(/[.,;:!?]+$/, ""));
     // Sentence punctuation is not part of an ordinary resource link. Exact
