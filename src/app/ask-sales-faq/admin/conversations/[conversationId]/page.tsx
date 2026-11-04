@@ -1,3 +1,4 @@
+import { answerStatusLabel, recoveryLabel } from "@/lib/ask-sales-faq/admin/diagnostics";
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -105,10 +106,9 @@ export default async function Page({
                     : "The response encountered a technical problem."}
                 </p>
               )}
-              {m.unanswered && (
+              {(m.unanswered || answerStatusLabel(m.answer_status)) && !m.failed && (
                 <p className="mt-3 text-sm text-amber-900">
-                  The bot could not fully answer this question. Review the
-                  context before deciding whether that was appropriate.
+                  {answerStatusLabel(m.answer_status) || "Could not fully answer"}. This describes the recorded response, not a quality judgment. Read the exchange before deciding whether follow-up is needed.
                 </p>
               )}
               {m.rating && (
@@ -150,6 +150,7 @@ export default async function Page({
                         ? "Not recorded"
                         : `${(m.latency_ms / 1000).toFixed(1)} seconds`}
                     </div>
+                    <div>Recovery: {recoveryLabel(m.retry_count, m.failed)}</div>
                     {m.error_class && <div>Error: {m.error_class}</div>}
                     {m.failure_stage && <div>Failed stage: {m.failure_stage}</div>}
                     {m.failure_reason && <div>Failure reason: {m.failure_reason}</div>}

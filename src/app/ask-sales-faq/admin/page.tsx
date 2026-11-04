@@ -84,6 +84,10 @@ export default async function Page({
             ["down", "Unhelpful feedback"],
             ["failed", "Failed responses"],
             ["unanswered", "Unanswered / partial"],
+            ["knowledge_gap", "Source gaps"],
+            ["clarification", "Clarifications"],
+            ["action_route", "Human actions"],
+            ["conflict", "Conflicting guidance"],
           ].map(([key, label]) => (
             <Link
               key={key}
@@ -96,7 +100,7 @@ export default async function Page({
           ))}
         </nav>
         <p className="text-xs text-slate-500">
-          Flags identify items to review; they do not prove an answer is wrong.
+          Labels describe the bot’s recorded response type; they do not prove an answer is wrong. Clarifications and human actions can be appropriate. Source gaps identify answers to check against the source material; they do not prove the information is absent.
           Summary cards follow dates and person filters; search and review
           filters narrow the list below.
         </p>

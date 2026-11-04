@@ -12,6 +12,7 @@ const failure = `(m.error_class is not null or m.outcome in ('safe_fallback','ra
 const unanswered = `(m.outcome in ('low_confidence_route','abstain_unapproved') or m.answer_payload #>> '{runtimeMetadata,revamp,status}' in ('knowledge_gap','conflict','partial'))`;
 const base = `with scoped as (
  select m.*, c.viewer_name, c.title, ${failure} as failed, coalesce(${unanswered},false) as unanswered,
+ m.answer_payload #>> '{runtimeMetadata,revamp,status}' as answer_status,
  f.rating, f.comment, greatest(m.created_at,coalesce(f.created_at,m.created_at)) as event_at from ask_sales_faq_messages m join ask_sales_faq_conversations c on c.id=m.conversation_id
  left join lateral (select rating,comment,created_at from ask_sales_faq_feedback where message_id=m.id order by created_at desc,id desc limit 1) f on true
  where c.status <> 'deleted' and m.created_at >= ($1::date::timestamp at time zone 'America/New_York')
@@ -22,6 +23,7 @@ const base = `with scoped as (
  select conversation_id as id, max(viewer_email) as email, max(viewer_name) as name, max(title) as title,
  max(created_at)::text as last_at, count(*)::int as messages, count(*) filter(where role='user')::int as questions,
  bool_or(failed) as failed,bool_or(unanswered) as unanswered,bool_or(rating='down') as down,
+ array_remove(array_agg(distinct answer_status) filter(where role='assistant' and not failed),null) as answer_statuses,
  bool_or($6='' or strpos(lower(content_redacted),lower($6))>0 or strpos(lower(coalesce(viewer_name,'')||' '||viewer_email),lower($6))>0) as matches
  from scoped group by conversation_id
 )`;
@@ -52,7 +54,7 @@ export async function getConversationOverview(f: Filters) {
     sql.query(
       base +
         ` select t.*, (coalesce(r.reviewed,false) and r.reviewed_through >= (select max(greatest(m.created_at,coalesce((select max(f.created_at) from ask_sales_faq_feedback f where f.message_id=m.id),m.created_at))) from ask_sales_faq_messages m where m.conversation_id=t.id)) as reviewed, count(*) over()::int as total from threads t left join ask_sales_faq_admin_reviews r on r.conversation_id=t.id where matches
- and ($7='all' or ($7='attention' and (failed or unanswered or down)) or ($7='down' and down) or ($7='failed' and failed) or ($7='unanswered' and unanswered)) and ($9='all' or ($9='reviewed')=(coalesce(r.reviewed,false) and r.reviewed_through >= (select max(greatest(m.created_at,coalesce((select max(f.created_at) from ask_sales_faq_feedback f where f.message_id=m.id),m.created_at))) from ask_sales_faq_messages m where m.conversation_id=t.id))) order by last_at desc,t.id desc limit 30 offset $8`,
+ and ($7='all' or ($7='attention' and (failed or unanswered or down)) or ($7='down' and down) or ($7='failed' and failed) or ($7='unanswered' and unanswered) or ($7=any(answer_statuses))) and ($9='all' or ($9='reviewed')=(coalesce(r.reviewed,false) and r.reviewed_through >= (select max(greatest(m.created_at,coalesce((select max(f.created_at) from ask_sales_faq_feedback f where f.message_id=m.id),m.created_at))) from ask_sales_faq_messages m where m.conversation_id=t.id))) order by last_at desc,t.id desc limit 30 offset $8`,
       [...args(scopedFilters), f.filter, (f.page - 1) * 30, f.review],
     ),
   ]);
@@ -77,6 +79,7 @@ export type Thread = {
   messages: number;
   questions: number;
   failed: boolean;
+  answer_statuses?: string[];
   unanswered: boolean;
   down: boolean;
   total: number;
@@ -90,7 +93,7 @@ export async function getConversation(id: string) {
   );
   if (!c.length) return null;
   const messages = await sql.query(
-    `select m.id,m.role,m.content_redacted as text,m.created_at::text as date,m.provider,m.model,m.latency_ms,m.error_class,m.answer_payload #>> '{runtimeMetadata,revamp,failure,stage}' as failure_stage,m.answer_payload #>> '{runtimeMetadata,revamp,failure,reason}' as failure_reason,to_char(greatest(m.created_at,coalesce(f.created_at,m.created_at)) at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as event_at,m.source_label,m.answer_payload->'source' as source,${failure} as failed,coalesce(${unanswered},false) as unanswered,f.rating,f.comment from ask_sales_faq_messages m left join lateral(select rating,comment,created_at from ask_sales_faq_feedback where message_id=m.id order by created_at desc,id desc limit 1) f on true where m.conversation_id=$1 order by m.created_at,m.id`,
+    `select m.id,m.role,m.content_redacted as text,m.created_at::text as date,m.provider,m.model,m.latency_ms,m.error_class,m.answer_payload #>> '{runtimeMetadata,revamp,status}' as answer_status, m.answer_payload #> '{runtimeMetadata,revamp,retryCount}' as retry_count,m.answer_payload #>> '{runtimeMetadata,revamp,failure,stage}' as failure_stage,m.answer_payload #>> '{runtimeMetadata,revamp,failure,reason}' as failure_reason,to_char(greatest(m.created_at,coalesce(f.created_at,m.created_at)) at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as event_at,m.source_label,m.answer_payload->'source' as source,${failure} as failed,coalesce(${unanswered},false) as unanswered,f.rating,f.comment from ask_sales_faq_messages m left join lateral(select rating,comment,created_at from ask_sales_faq_feedback where message_id=m.id order by created_at desc,id desc limit 1) f on true where m.conversation_id=$1 order by m.created_at,m.id`,
     [id],
   );
   return {
@@ -113,6 +116,8 @@ export type Message = {
   model: string | null;
   latency_ms: number | null;
   error_class: string | null;
+  answer_status?: string | null;
+  retry_count?: number | null;
   failure_stage?: string | null;
   failure_reason?: string | null;
   source_label: string | null;

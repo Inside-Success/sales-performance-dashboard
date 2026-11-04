@@ -196,6 +196,7 @@ export type AskSalesFaqConversationSummary = {
     role: "user" | "assistant" | "system_safe";
     content: string;
     outcome: string | null;
+    retryableFailure?: boolean;
     sourceLabel: string | null;
     sourceLastReviewed: string | null;
     structuredAnswer?: AskSalesFaqStructuredAnswer | null;

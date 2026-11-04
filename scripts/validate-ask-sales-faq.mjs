@@ -686,7 +686,8 @@ if (missingFiles.length === 0) {
     chatUi.includes("clientRequestId: createClientRequestId()") &&
       chatUi.includes("function createClientRequestId") &&
       chatUi.includes("crypto.randomUUID()") &&
-      chatUi.includes("Ask Sales FAQ is having trouble right now. Try again in a few moments"),
+      chatUi.includes("Your question is preserved. Use Check for answer to recover the result safely.") &&
+      chatUi.includes("setRecovery({ request, uncertain: true })"),
     "client posts an idempotency key and has a friendly network/runtime fallback",
   );
 
@@ -1033,7 +1034,7 @@ if (missingFiles.length === 0) {
       chatUi.includes('placeholder={isLoading ? "Type the next follow-up..."') &&
       chatUi.includes("disabled={isComposerEmpty}") &&
       chatUi.includes('aria-label={isLoading ? "Queue follow-up question" : "Send question"}') &&
-      !chatUi.includes("disabled={isLoading}"),
+      !chatUi.match(/<Textarea[\s\S]*?\/>/)?.[0].includes("disabled="),
     "textarea remains enabled during loading and the submit button queues non-empty follow-ups",
   );
 

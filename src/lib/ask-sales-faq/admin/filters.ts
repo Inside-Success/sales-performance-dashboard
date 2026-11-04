@@ -1,3 +1,4 @@
+import { answerStatusLabel } from "./diagnostics";
 export type Params = Record<string, string | string[] | undefined>;
 export function scalar(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] || "" : v || "";
@@ -29,7 +30,7 @@ export function parseFilters(p: Params, now = new Date()) {
     start = defaultStart;
     end = today;
   }
-  const filter = ["all", "attention", "down", "failed", "unanswered"].includes(
+  const filter = ["all", "attention", "down", "failed", "unanswered", "knowledge_gap", "clarification", "action_route", "conflict", "partial"].includes(
     scalar(p.filter),
   )
     ? scalar(p.filter)
@@ -80,11 +81,13 @@ export function filterQuery(
 export function issueLabels(row: {
   failed?: boolean;
   unanswered?: boolean;
+  answer_statuses?: string[];
   down?: boolean;
 }) {
   return [
     row.failed ? "Response failed" : null,
-    row.unanswered ? "Could not fully answer" : null,
+    ...(row.answer_statuses || []).map(answerStatusLabel),
+    row.unanswered && !(row.answer_statuses || []).some(answerStatusLabel) ? "Could not fully answer" : null,
     row.down ? "Marked unhelpful" : null,
   ].filter(Boolean) as string[];
 }
