@@ -81,13 +81,15 @@ function applySafetyFieldRepairs(coaching,targets,repairs){
  for(const t of targets){
   const r=byId.get(t.id),current=safetyValue(next,t.path);
   if(!t.atomic_field||!enhancedSafetyProsePath(t.path)||r.path!==t.path||current!==t.before)throw Error('Enhanced coaching safety hold: stale or mismatched field repair');
-  const after=r.after.trim();
+  // Optional example wording may be removed by a reductive repair. Remove only
+  // its now-empty trailing label; never invent a replacement example.
+  const after=r.after.replace(/(?:\\n|\n)\s*You could say:\s*[“”"']*\s*$/i,'').trim();
   if(after===current.trim()&&!t.context_only)throw Error('Enhanced coaching safety hold: unchanged unsafe field');
   // Structured evidence is immutable. Timestamp citations must also survive.
   const citations=s=>s.match(/\[(?:\d{1,2}:\d{2}:\d{2}(?:\.\d+)?(?:,\s*)?)+\]/g)||[];
   if(JSON.stringify(citations(current))!==JSON.stringify(citations(after)))throw Error('Enhanced coaching safety hold: citation changed');
   const parts=t.path.split('.'),key=parts.pop();safetyValue(next,parts.join('.'))[key]=after;
-  rows.push({...t,repair_id:r.id,applied:true,after,reason:r.reason});
+  rows.push({...t,repair_id:r.id,applied:true,after,reason:r.reason,empty_example_label_removed:after!==r.after.trim()});
  }
  return {coaching:next,rows};
 }

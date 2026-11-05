@@ -51,6 +51,11 @@ describe('shared coaching repair contract',()=>{
   const out=applySafetyFieldRepairs(r,t,rows);
   expect(out.coaching.strengths[0].observation).not.toContain('borrow');expect(out.coaching.strengths[0].why_it_matters).toBe(r.strengths[0].why_it_matters);
  });
+ it('removes only an empty optional example label, preserving substantive advice',()=>{
+  const t=target(),r=repair(t[0]);
+  for(const separator of ['\n','\\n'])expect(applySafetyFieldRepairs(report,t,[{...r,after:'Keep the supported advice.'+separator+'You could say: '}]).coaching.strengths[0].observation).toBe('Keep the supported advice.');
+  expect(applySafetyFieldRepairs(report,t,[{...r,after:'Keep advice.\nYou could say: What matters most?'}]).coaching.strengths[0].observation).toContain('What matters most?');
+ });
  it('supports root prose repairs without allowing changes to evidence citations',()=>{
   const r={...report,summary:'Unsupported praise [00:01:03].'};
   const t=safetyFieldTargets(r,[{case_id:'c',path:'summary',before:r.summary}]);

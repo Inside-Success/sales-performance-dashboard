@@ -22,12 +22,12 @@ The automatic holds exposed two contract defects: overlapping sentence repairs c
 
 ## Verification so far
 
-- 218 coaching, source-claim, provider-checkpoint, recovery and presentation tests passed.
+- 221 coaching, source-claim, provider-checkpoint, recovery and presentation tests passed.
 - Existing handoff, retry, durable-provider, crash-recovery, reliability, source-accounting, accounting-handoff and no-show verification scripts passed.
 - TypeScript and production build passed. The first local build encountered an existing external `node_modules` symlink; installing this checkout's locked dependencies resolved it without changing the lockfile.
 - Full candidate safety/repair/finalization code replayed against three retained failing execution traces. These use explicit synthetic screen/repair fixtures to test mechanics, **not** to claim model accuracy.
 - Live screen evaluation cleared the manual summary and supported directives, while retaining two substantive automatic repair findings. Pre-release repair trials exposed quote/line-break echo fragility; the final contract avoids model echoes and binds exact input through request hashing. One schema trial was rejected before generation because numeric array bounds are unsupported; local target-count validation remains authoritative.
-- A separate bounded provider evaluation is underway for the same three source records, with no report/Slack writes. Production workflows have not yet been changed.
+- The final bounded provider evaluation passed actual safety/finalization for the retained manual source and two automatic sources. The first automatic repair removed credit-card endorsement across heading/body/reason; the second generalized an asset recommendation without claiming that the disputed benefit is categorically unavailable. An empty optional example label is removed deterministically, without inventing wording. Both original manual Zoom transcripts are accessible. Same-credential Drive and Airtable reads found no artifacts for the failed submissions or held automatic sources. Production rollout/recovery acceptance is still pending.
 
 ## Remaining acceptance
 
