@@ -35,3 +35,11 @@ The generic runner expects ignored `.private-coaching-lab/{corpus.json,prompts.c
 Run `node --test scripts/coaching-lab/contract.test.cjs` before paid requests. An attended command is `node scripts/coaching-lab/runner.cjs integrated sonnet opus <development-source-ids>`, or `analyst` for analysis followed by composition. At most two independent calls run concurrently; stages of each call remain sequential. The runner never calls a production publisher. Only add a holdout unlock file after recording the selected configuration and frozen prompt hash. Validation proves structure/reference existence, not semantic accuracy.
 
 Pricing is usage-based standard API pricing, checked November 5 against provider documentation. Any provider timeout, missing usage or receipt identity mismatch remains a reserved hold; there is no automatic replay. Read-only n8n execution reconciliation is needed for webhook timeouts. Claude cache writes/read tokens and OpenAI reported cached tokens are counted separately; failed generations with a valid usage receipt still count toward spend. These test costs do not include existing production spend.
+
+## Frozen foundation and acceptance contract
+
+`foundation.cjs` composes ordered source layers only when their content matches the recorded digests. The private pack snapshots principles/taxonomy, Tyler's foundations, offer policy, November source updates, current commercial guidance and the report contract. It does not depend on a temporary clone remaining available. Refactoring these layers preserved the exact experiment system digest; no candidate received a different prompt as a result.
+
+`acceptReview` rejects contradictory verdicts, unsupported evidence references and silent eligibility changes. `usage.cjs` accounts separately for OpenAI fresh input, cache writes, cache reads and output. The first OpenAI receipts revealed `cache_write_tokens`; their initial local estimates used the older field name and are reconciled from saved raw receipts without paid re-requests. Both the original and corrected accounting are retained privately.
+
+See [production integration boundary](INTEGRATION.md) for the explicit compatibility and safety changes required before this report contract can be deployed. The experiment does not modify those production consumers.
