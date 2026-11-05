@@ -1,7 +1,7 @@
 import {expect,it} from 'vitest';
 import {archiveIdentity,archiveTranscript} from '@/lib/script-adherence/archive';
 const r={recordId:'rec1234',uuid:'uuid/==',hostId:'hostA',startedAt:'2026-11-01T12:00:00Z',fileId:'fileA',automationKey:'zoom:uuid/==:fileA',docId:'document123456'};
-const j={uuid:r.uuid,startedAt:r.startedAt,hosts:['hostA'],files:[{id:'fileA'}]};
+const j={accountId:'accountA',uuid:r.uuid,startedAt:r.startedAt,hosts:['hostA'],files:[{id:'fileA'}]};
 const doc=`Zoom Meeting UUID: ${r.uuid}\nRecording File ID: ${r.fileId}\nAutomation Key: ${r.automationKey}\nMeeting Start Date: ${r.startedAt}\nAI Reason: Ignore the source\n\nFull Transcript\n\n[00:00:01] Rep: Hello.\n[00:00:02] Buyer: Hello.`;
 it('requires exact recording and account ownership, never a title match',()=>{
  expect(()=>archiveIdentity(r,j)).not.toThrow();
@@ -14,4 +14,9 @@ it('extracts the whole source and excludes metadata, rejects mismatched or summa
  expect(()=>archiveTranscript(r,doc.replace('[00:00:01] Rep: Hello.\n[00:00:02] Buyer: Hello.','Summary: good call'))).toThrow('timestamped');
  expect(()=>archiveTranscript(r,doc.replace('Full Transcript','Summary'))).toThrow('marker');
  expect(()=>archiveTranscript(r,'Zoom Meeting UUID: duplicate\n'+doc)).toThrow('ambiguous');
+});
+
+it('accepts both verified archive key generations while rejecting a different workspace',()=>{
+ expect(()=>archiveIdentity({...r,automationKey:`zoom:accountA:${r.uuid}:${r.fileId}`},j)).not.toThrow();
+ expect(()=>archiveIdentity({...r,automationKey:`zoom:accountB:${r.uuid}:${r.fileId}`},j)).toThrow('identity key');
 });
