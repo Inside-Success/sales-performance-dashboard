@@ -20,18 +20,37 @@ The automatic holds exposed two contract defects: overlapping sentence repairs c
 
 `build-repair-contract.cjs` is an offline, fail-closed builder applied to verified live snapshots of official `L8Nn7xncA9ZPDdWA`, manual `BMRrGxHyXMcgO6j3`, shared reviewer `FShnTde2OGhIUZE4`, and durable provider `X9L4JtDbpkSCflxZ`. Only embedded report-contract copies and the specified safety/manual repair paths change. There is no deployment in the builder. Publish must compare live versions/nodes/connections against the saved baselines before each update and verify the active published version afterwards.
 
-## Verification so far
+## Verification
 
 - 221 coaching, source-claim, provider-checkpoint, recovery and presentation tests passed.
 - Existing handoff, retry, durable-provider, crash-recovery, reliability, source-accounting, accounting-handoff and no-show verification scripts passed.
 - TypeScript and production build passed. The first local build encountered an existing external `node_modules` symlink; installing this checkout's locked dependencies resolved it without changing the lockfile.
 - Full candidate safety/repair/finalization code replayed against three retained failing execution traces. These use explicit synthetic screen/repair fixtures to test mechanics, **not** to claim model accuracy.
 - Live screen evaluation cleared the manual summary and supported directives, while retaining two substantive automatic repair findings. Pre-release repair trials exposed quote/line-break echo fragility; the final contract avoids model echoes and binds exact input through request hashing. One schema trial was rejected before generation because numeric array bounds are unsupported; local target-count validation remains authoritative.
-- The final bounded provider evaluation passed actual safety/finalization for the retained manual source and two automatic sources. The first automatic repair removed credit-card endorsement across heading/body/reason; the second generalized an asset recommendation without claiming that the disputed benefit is categorically unavailable. An empty optional example label is removed deterministically, without inventing wording. Both original manual Zoom transcripts are accessible. Same-credential Drive and Airtable reads found no artifacts for the failed submissions or held automatic sources. Production rollout/recovery acceptance is still pending.
+- The final bounded provider evaluation passed actual safety/finalization for the retained manual source and two automatic sources. The first automatic repair removed credit-card endorsement across heading/body/reason; the second generalized an asset recommendation without claiming that the disputed benefit is categorically unavailable. An empty optional example label is removed deterministically, without inventing wording. Both original manual Zoom transcripts are accessible. Same-credential Drive and Airtable reads found no artifacts for the failed submissions or held automatic sources. Production rollout and recovery acceptance are recorded below.
 
-## Remaining acceptance
+## Production release and recovery acceptance
 
-Review real safety decisions and any repairs against the source evidence, complete CI and deployment verification, publish with baseline checks, then recover only sources proven undelivered. Verify actual report artifacts and authenticated UI. Preserve a hold if source evidence or delivery history cannot establish safe recovery. Record final costs, production versions and outcomes below.
+PR [383](https://github.com/Inside-Success/sales-performance-dashboard/pull/383) merged as `65d0d6e4db2d0b5a8361eab31ffc2e48353c759f`. GitHub deployment status and Vercel inspection confirm production deployment `dpl_CiVwp5pWttF7uZQDTeq4fRHqxrus` is Ready on the canonical dashboard domain.
+
+Published workflow versions were re-read and matched the candidates:
+
+| Workflow | Published version | Nodes |
+| --- | --- | --- |
+| Durable provider | `2d1648ea-1fc0-4485-8319-8c391ec4496f` | 18 |
+| Shared reviewer | `72966413-dda8-49ee-b236-609e87c2012b` | 15 |
+| Manual coaching | `88520ee7-b50f-4f95-bebf-5c4d73eee7d7` | 55 |
+| Official coaching | `26ff02dc-c408-405f-9342-e19e58dc659f` | 159 |
+
+Native n8n replay `1554492` verified hashing, repair preparation and finalization in the actual runtime. Live connection validation passed for manual and official workflows; pre-existing unreachable legacy-node warnings were preserved. Normal model/node counts and one-at-a-time recovery throughput are unchanged.
+
+Recovery was limited to four exact sources after checking their original transcripts, existing reports, claims and document artifacts. Original failures and complete receipts remain private. Both manual reports completed through the actual manual workflow: Sarah `1554518`, Alejandra `1554532`. Their existing self-report URLs now show the completed Enhanced reports, Google Doc and transcript links, verified in the authenticated dashboard. The automatic recoveries use the existing scheduled worker and exact source-owner guards.
+
+Both automatic recoveries completed: `1554581` produced dashboard report [9224](https://sales-performance-dashboard-rose.vercel.app/call/9224), and `1554646` produced [9225](https://sales-performance-dashboard-rose.vercel.app/call/9225). Each exact source has one dashboard row, a completed owner claim and a Google Doc. Saved executions confirm document content insertion, Slack delivery responses and dashboard acknowledgment. Both complete Enhanced reports and source links were inspected in the authenticated UI. The final report preserves observed history while giving supported promotional guidance; the former extra-field content passes the shared canonical review contract.
+
+Final scoped audit: **4/4 recovered**, two manual completed rows, two automatic report rows, both automatic claims `done`, no running provider checkpoints for these sources. Usage-priced incremental API cost is **$1.629516189** across 18 unique new provider responses, including paid unsuccessful evaluation trials, deduplicated by provider response ID and excluding prior paid checkpoints. This is usage-based accounting, not an invoice or a reservation. Normal reports gain no extra AI stage; conditional substantive repair can still incur its existing model cost.
+
+Temporary evaluation/recovery workflows are deactivated, with no running executions in those checked workflows. No unrelated executions were cancelled. External provider outages, genuinely unsupported content and uncertain writes can still be held; this release fixes the demonstrated repair-contract failures without weakening those controls. It is not a claim that future failures are impossible.
 
 ## Rollback
 
