@@ -8,7 +8,7 @@ function validateEnhancedDraft(p,generated,repaired=false) {
  let analysis=generated.parsed_json;
  if(!analysis&&typeof generated.model_text==='string'){try{analysis=JSON.parse(generated.model_text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,''));}catch{}}
  analysis=normalizeObjectionReport(analysis);
- const errors=objectionErrors(analysis,p.prepared.blocks);
+ const errors=objectionErrors(analysis,p.prepared.blocks,true);
  if(generated.ok===false||['length','max_tokens'].includes(generated.stop_reason))errors.push('Incomplete provider response');
  if(analysis?.status==='refused'&&!repaired)errors.push('Eligibility disagreement requires confirmation');
  if(repaired&&errors.length)throw Error('Coaching draft remains invalid after one repair: '+errors.join('; '));
@@ -23,11 +23,16 @@ function acceptEnhancedAudit(prepared,response,expectedId) {
  if(audit.pass && (audit.findings.length||audit.corrected_report!==null))throw Error('Conflicting coaching audit verdict');
  if(!audit.pass && !audit.findings.length)throw Error('Correction requires explicit findings');
  const report=assertObjectionReport(normalizeObjectionReport(audit.pass?prepared.analysis:audit.corrected_report),prepared.blocks);
+ const shapeErrors=objectionErrors(report,prepared.blocks,true);
+ if(shapeErrors.length)throw Error('Invalid coaching audit contract: '+shapeErrors.join('; '));
  if(report.status==='refused')throw Error('Audit cannot silently change eligibility');
  const provenance={generation:OBJECTION_VERSION,policy_revision:prepared.state.coaching_policy_revision,policy_hash:prepared.state.coaching_policy_hash,policy_text:prepared.state.coaching_policy_text,writer_model:prepared.generated.model,reviewer_model:response.model,writer_request_id:prepared.generated.request_id,audit_request_id:response.request_id};
  return renderObjectionReport(report,prepared.blocks,'pending',provenance);
 }
 function enhancedSafetyView(record) {
+ record=normalizeObjectionReport(record);
+ const errors=objectionErrors(record,undefined,true);
+ if(errors.length)throw Error('Invalid safety input contract: '+errors.join('; '));
  assertObjectionReport(record);
  const {provenance,evidence_times,source_id,...analysis}=record;
  void provenance;void evidence_times;void source_id;
