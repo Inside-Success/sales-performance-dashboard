@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — November 5, 2026
 
-Published and authenticated-answer verified; admin freshness receipt follows. Previous checkpoint November 4 (`b34d16420bf7dff04d1be866`). New version `e470519a46279569140bad3e`, 2,607 records: eight new and eleven updated entries.
+Published, authenticated-answer verified, and admin freshness visually verified. Previous checkpoint November 4 (`b34d16420bf7dff04d1be866`). New version `e470519a46279569140bad3e`, 2,607 records: eight new and eleven updated entries.
 
 ## Knowledge changes
 
@@ -29,3 +29,5 @@ Two old Google files and two old Slack roots remain inaccessible; one linked Zoo
 ## Production verification
 
 Dashboard PR386 and FAQ PR128 merged. READY production deployment `dpl_D1YEPz5SctVBtQsfxRrfphqNdPSi` at commit `b7c6e425bba038f39dbcf0c42f62d056a3f167e1` serves the rose alias. Three authenticated live answers verified: current reality casting, Thursday training time, and new script/contract-video restriction. Stored answer metadata matches `e470519a46279569140bad3e`, with no error or validation issue. Answer latencies: 10.1s, 7.6s, 10.7s. Production receipt and admin freshness follow in a documentation-only release.
+
+Final receipt PR387 / FAQ PR129 are merged. Production deployment `dpl_2i9LKpZWmw12TxaVEAMv1A2dAV1u` at `fcc2c1634bc81bfe63124a9f28bcb86a1fb63294` is READY. Authenticated work-profile admin reload shows **Knowledge last updated: 2026-11-05 (Miami date)**. Both working checkouts were clean after synchronizing with merged main.

@@ -11564,6 +11564,9 @@
     "evaluationNontechnical": 20,
     "evaluationCases": 20,
     "evaluationCostUsd": 0.1837276,
-    "adminFreshnessVerification": "pending receipt deployment"
+    "adminFreshnessVerification": "Verified in authenticated work Chrome after receipt deployment: Knowledge last updated: 2026-11-05 (Miami date)",
+    "receiptDashboardPr": 387,
+    "receiptFaqPr": 129,
+    "receiptDeploymentId": "dpl_2i9LKpZWmw12TxaVEAMv1A2dAV1u"
   }
 }
