@@ -111,7 +111,7 @@ export async function saveArchive(id:string,owner:string,record:import('./archiv
  const rows=await sql`select j.*,array(select member_id from script_adherence_closers c where c.account_id=j.account_id) as hosts from script_adherence_jobs j where j.id=${id} and j.lease_owner=${owner} and j.state='awaiting_transcript' and not exists(select 1 from script_adherence_calls a where a.source_key=j.source_key)`;
  if(!rows.length)throw Error('Archive lease no longer owned');
  const j=rows[0],r=archiveRecordSchema.parse(record);
- archiveIdentity(r,{uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
+ archiveIdentity(r,{accountId:j.account_id,uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
  const transcript=archiveTranscript(r,text);
  const roster=await sql`select distinct name from script_adherence_closers`;
  const attribution=observedRep(transcript,j.rep,roster.map(r=>String(r.name)));
@@ -125,7 +125,7 @@ export async function archiveLookup(owner:string,ids:string[],records:Array<{id:
  for(const j of rows){
   try{
    if(incomplete)throw Error('Archive lookup incomplete or unavailable');
-   const record=selectArchive(records,{uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
+   const record=selectArchive(records,{accountId:j.account_id,uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
    work.push({id:j.id,record});
   }catch(e){await saveArchive(j.id,owner,undefined,'',e instanceof Error?e.message:'Archive match unavailable');}
  }
