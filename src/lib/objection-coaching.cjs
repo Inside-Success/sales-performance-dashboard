@@ -10,7 +10,7 @@ const OBJECTION_CATEGORIES = {
   commitment: 'Commitment and Priority concerns', unclassified: 'Unclassified objection',
 };
 
-function objectionErrors(r, blocks) {
+function objectionErrors(r, blocks, strict=false) {
   const errors = [];
   const known = blocks ? new Set(blocks.map(b => b.id)) : null;
   const text = (v, key, max=1800, optional=false) => {
@@ -22,6 +22,12 @@ function objectionErrors(r, blocks) {
   };
   const list = (v, key, max) => { if(!Array.isArray(v)||v.length>max){errors.push('Invalid '+key);return [];} return v; };
   if(!r || typeof r!=='object' || Array.isArray(r)) return ['Missing objection coaching'];
+  if(strict){
+    const keys=(value,allowed,path)=>{if(value&&typeof value==='object'&&!Array.isArray(value))for(const key of Object.keys(value))if(!allowed.split(' ').includes(key))errors.push('Unexpected field '+path+key);};
+    keys(r,'version status call_status refusal_reason eligibility_evidence_ids show offer_family evidence_quality summary outcome objections no_objections_reason not_raised improvements strengths next_steps provenance evidence_times source_id','');
+    keys(r.outcome,'payment summary evidence_ids','outcome.');
+    for(const [field,allowed] of Object.entries({objections:'category title concern response handling resolution assessment recommendation suggested_words evidence_ids counterevidence_ids',improvements:'title observation why_it_matters action evidence_ids counterevidence_ids',strengths:'title observation why_it_matters evidence_ids',next_steps:'kind observation evidence_ids'}))if(Array.isArray(r[field]))r[field].forEach((p,i)=>keys(p,allowed,field+'.'+i+'.'));
+  }
   if(r.version!==OBJECTION_SCHEMA_VERSION) errors.push('Wrong objection coaching version');
   if(r.status!==undefined&&!['completed','refused'].includes(r.status))errors.push('Invalid report status');
   if(r.status==='refused') {
@@ -75,16 +81,25 @@ function normalizeObjectionReport(value) {
  if(!value||typeof value!=='object'||Array.isArray(value)||value.status==='refused'||!Array.isArray(value.objections))return value;
  // Absent-category bookkeeping is deterministic, not another model judgment.
  const raised=new Set(value.objections.map(o=>o?.category));
- return {...value,not_raised:value.evidence_quality==='sufficient'?Object.keys(OBJECTION_CATEGORIES).filter(k=>k!=='unclassified'&&!raised.has(k)):[]};
+ // Older model outputs sometimes put hypothetical wording on improvements.
+ // Preserve it in the canonical action BEFORE review; never expose an unscreened
+ // extra field at render time or silently discard its potentially unsafe text.
+ const improvements=Array.isArray(value.improvements)?value.improvements.map(p=>{
+  if(!p||typeof p!=='object'||!Object.hasOwn(p,'suggested_words'))return p;
+  if(typeof p.suggested_words!=='string'||typeof p.action!=='string')return p;
+  const {suggested_words,...canonical}=p;
+  return {...canonical,action:p.action+(suggested_words.trim()?'\nYou could say: “'+suggested_words+'”':'')};
+ }):value.improvements;
+ return {...value,improvements,not_raised:value.evidence_quality==='sufficient'?Object.keys(OBJECTION_CATEGORIES).filter(k=>k!=='unclassified'&&!raised.has(k)):[]};
 }
 function objectionProviderStage(stage) {return ['objection_v2_writer','objection_v2_repair','objection_v2_audit','objection_v2_audit_repair'].includes(stage);}
 function objectionProviderErrors(stage,value) {
  if(!objectionProviderStage(stage))return [];
- if(!stage.includes('audit'))return objectionErrors(normalizeObjectionReport(value));
+ if(!stage.includes('audit'))return objectionErrors(normalizeObjectionReport(value),undefined,true);
  if(!value||typeof value.pass!=='boolean'||!Array.isArray(value.findings))return ['Invalid objection audit contract'];
  const errors=[];
  if(value.pass&&(value.findings.length||value.corrected_report!==null))errors.push('Conflicting audit verdict');
- if(!value.pass){if(!value.findings.length)errors.push('Missing audit findings');errors.push(...objectionErrors(normalizeObjectionReport(value.corrected_report)));}
+ if(!value.pass){if(!value.findings.length)errors.push('Missing audit findings');errors.push(...objectionErrors(normalizeObjectionReport(value.corrected_report),undefined,true));}
  for(const f of value.findings)if(!f||typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||f.evidence_ids.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id)))errors.push('Invalid audit finding');
  return errors;
 }
