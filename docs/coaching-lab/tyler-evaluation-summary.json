@@ -1,0 +1,80 @@
+{
+  "comparison": [
+    {
+      "writer": "terra",
+      "reviewer": "terra",
+      "calls": 6,
+      "mean_cost": 0.07598860833333333,
+      "per1000": 75.98860833333333,
+      "same_usage_without_cache_per_call": 0.11847133333333332,
+      "cache_read_fraction": 0.6147487816498384,
+      "mean_words": 530,
+      "review_changed_drafts": 3,
+      "mean_provider_seconds": 101.68866666666668
+    },
+    {
+      "writer": "luna",
+      "reviewer": "terra",
+      "calls": 6,
+      "mean_cost": 0.05413880416666667,
+      "per1000": 54.138804166666674,
+      "same_usage_without_cache_per_call": 0.07401243333333334,
+      "cache_read_fraction": 0.5579124508378811,
+      "mean_words": 619.3333333333334,
+      "review_changed_drafts": 6,
+      "mean_provider_seconds": 158.4655
+    },
+    {
+      "writer": "haiku-medium",
+      "reviewer": "terra",
+      "calls": 6,
+      "mean_cost": 0.05305975999999999,
+      "per1000": 53.05975999999999,
+      "same_usage_without_cache_per_call": 0.07935415,
+      "cache_read_fraction": 0.5455735474338161,
+      "mean_words": 586.3333333333334,
+      "review_changed_drafts": 6,
+      "mean_provider_seconds": 125.8925
+    },
+    {
+      "writer": "sonnet-wide",
+      "reviewer": "terra",
+      "calls": 6,
+      "mean_cost": 0.23609470833333332,
+      "per1000": 236.09470833333333,
+      "same_usage_without_cache_per_call": 0.31055916666666666,
+      "cache_read_fraction": 0.5444334324413611,
+      "mean_words": 665.3333333333334,
+      "review_changed_drafts": 6,
+      "mean_provider_seconds": 165.85566666666662
+    }
+  ],
+  "total_estimated_cost": 22.035771734999997,
+  "previous_phase": 15.4950505,
+  "this_phase": 6.540721234999998,
+  "ceiling": 40,
+  "requests": 330,
+  "unresolved": 0,
+  "pricing": "Usage-priced estimates; not invoice; same-source6screen includes cachewarmness and excludes otherproductionstages",
+  "report_artifacts": 68,
+  "valid_artifacts": 68,
+  "real_calls_this_phase": 26,
+  "synthetic_boundaries": 4,
+  "final_revised_outputs": 24,
+  "final_untouched_real_calls": 3,
+  "native_format_outputs": 3,
+  "tests": {
+    "lab": 11,
+    "existing": 161
+  },
+  "blind_first_preferences": {
+    "historical_production": 3,
+    "sonnet_terra": 2,
+    "haiku_terra": 1,
+    "terra_terra": 0
+  },
+  "blind_judge_is_ground_truth": false,
+  "production_workflow_hashes_unchanged": true,
+  "lab_fixture_active": false,
+  "production_release_ready": false
+}
