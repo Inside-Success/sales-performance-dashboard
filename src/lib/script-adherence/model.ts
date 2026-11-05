@@ -73,6 +73,8 @@ export function parseAnalysis(raw:unknown,transcript:string){
  for(const a of v.actions)for(const c of a.components)Object.assign(c,resolveEvidence(c.quote,turns));
  for(const key of ['familyEvidence','stageEvidence','priorPresentationEvidence'] as const)v[key]=resolveEvidence(v[key],turns).quote;
  if(v.currentCallPurpose==='questions_after_prior_presentation'){if(!v.priorPresentationEvidence)throw Error('Unproven prior presentation');v.stage='followup';}
+ const unclassifiedNonConversation=v.family==='unknown'&&v.stage==='other'&&!v.stageEvidence&&!v.eligibleForChecklist&&v.attendance!=='conversation'&&v.currentCallPurpose==='unknown';
+ if(unclassifiedNonConversation)v.stage='unknown'; // No sales stage is established, not an unsupported positive classification.
  if((v.family!=='unknown'&&!v.familyEvidence&&!(v.family==='other'&&!v.eligibleForChecklist&&v.stage==='other'&&v.stageEvidence))||(v.stage!=='unknown'&&!v.stageEvidence))throw Error('Missing classification evidence');
  // Contradictory negative states lose certainty, never gain completion credit.
  const uncertainComponents:string[]=[];
@@ -87,5 +89,5 @@ export function parseAnalysis(raw:unknown,transcript:string){
  const {familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence,...analysis}=v;
  const result=validateAnalysis(analysis,transcript,conditionallyInapplicable);
  if(scriptFor(result)&&!result.actions.length)throw Error('Missing supported checklist');
- return {analysis:result,normalization:{droppedActions,uncertainComponents},classification:{familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence}};
+ return {analysis:result,normalization:{droppedActions,uncertainComponents,unclassifiedNonConversation},classification:{familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence}};
 }

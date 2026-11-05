@@ -68,3 +68,11 @@ it('conservatively downgrades unsupported omissions without granting completion 
  expect(out.analysis.actions.every(a=>a.playbackFraction===null)).toBe(true);
  expect(out.normalization.uncertainComponents.length).toBeGreaterThan(0);
 });
+
+it('keeps non-conversation sales stage unknown when no stage evidence exists',()=>{
+ const source='[00:01] Rep: Your call has been forwarded to an automated voice messaging system.';
+ const raw={...base,family:'unknown',stage:'other',attendance:'outreach',eligibleForChecklist:false,exclusionReason:'Voicemail only',familyEvidence:'',stageEvidence:'',currentCallPurpose:'unknown',priorPresentationEvidence:'',actions:[]};
+ const r=parseAnalysis(raw,source);expect(r.analysis.stage).toBe('unknown');expect(r.analysis.actions).toEqual([]);expect(r.normalization.unclassifiedNonConversation).toBe(true);
+ expect(()=>parseAnalysis({...raw,attendance:'conversation'},source)).toThrow('Missing classification');
+ expect(()=>parseAnalysis({...raw,stage:'call_1'},source)).toThrow('Missing classification');
+});
