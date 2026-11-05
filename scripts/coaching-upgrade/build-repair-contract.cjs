@@ -76,6 +76,12 @@ state.repair_targets = targets;`);
    if(!node||!template)throw Error('Missing durable repair provider');
    Object.assign(node,{name,type:template.type,typeVersion:template.typeVersion,parameters:structuredClone(template.parameters),onError:'continueErrorOutput',retryOnFail:false});
    delete w.connections[unused];delete w.connections[spare];
+   // Native authenticated subworkflow recovery uses the same input validation and
+   // failure handler. It avoids same-instance webhook calls or cloned delivery.
+   const recovery=w.nodes.find(n=>n.name===unused);
+   if(!recovery)throw Error('Missing dormant recovery slot');
+   Object.assign(recovery,{name:'MM Manual Recovery Entry',type:'n8n-nodes-base.executeWorkflowTrigger',typeVersion:1.1,parameters:{inputSource:'passthrough'}});
+   w.connections[recovery.name]={main:[[{node:'Normalize Input',type:'main',index:0}]]};
    w.connections['MM Manual If Repair Needed'].main[0]=[{node:name,type:'main',index:0}];
    w.connections[name]={main:[[{node:final,type:'main',index:0}],[{node:final,type:'main',index:0}]]};
   }
