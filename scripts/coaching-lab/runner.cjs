@@ -48,6 +48,9 @@ const models = {
     },
   },
 };
+models["haiku-medium"] = { ...models.haiku, max_tokens: 24000, reasoning_effort: "medium" };
+models["sonnet-wide"] = { ...models.sonnet, max_tokens: 24000 };
+models["opus-wide"] = { ...models.opus, max_tokens: 24000 };
 function openaiKey() {
   const key = process.env.COACHING_LAB_OPENAI_API_KEY;
   if (!key) throw Error("Authorized experiment key unavailable");
@@ -198,11 +201,25 @@ async function run(c, architecture, first, second) {
     second,
     draft,
   );
-  let final;
-  if (architecture === "integrated") {
-    final = require("./contract.cjs").acceptReview(draft, audit, c.blocks);
-  } else final = audit;
-  validate(final, c.blocks);
+  let final, rendered;
+  try {
+    if (architecture === "integrated") {
+      final = require("./contract.cjs").acceptReview(draft, audit, c.blocks);
+    } else final = audit;
+    validate(final, c.blocks);
+    rendered = render(final, c.blocks);
+  } catch (error) {
+    // Preserve paid evidence without presenting rejected output as accepted.
+    const heldDir = p + "/held/" + hash(system).slice(0, 12);
+    fs.mkdirSync(heldDir, { recursive: true });
+    save(heldDir + "/" + [architecture, first, second, c.id].join("-") + ".json", {
+      id: c.id, architecture, first, second,
+      source_hash: c.transcript_hash, system_hash: hash(system),
+      reason: error.message, draft, audit,
+    });
+    error.code = "OUTPUT_HELD";
+    throw error;
+  }
   save(file, {
     id: c.id,
     split: c.split,
@@ -215,7 +232,7 @@ async function run(c, architecture, first, second) {
     audit,
     final,
   });
-  fs.writeFileSync(file.replace(".json", ".md"), render(final, c.blocks), {
+  fs.writeFileSync(file.replace(".json", ".md"), rendered, {
     mode: 0o600,
   });
   console.log("VALIDATED", c.id, architecture, first, second);
@@ -234,15 +251,23 @@ async function main() {
       return c;
     });
     let index = 0;
+    const held = [];
     const workers = Array.from({ length: 2 }, async () => {
       while (index < cases.length) {
         const c = cases[index++];
-        await run(c, architecture, first, second);
+        try {
+          await run(c, architecture, first, second);
+        } catch (error) {
+          if (error.code !== "OUTPUT_HELD") throw error;
+          held.push({ id: c.id, reason: error.message });
+          console.error("OUTPUT HELD", c.id, error.message);
+        }
       }
     });
     const outcomes = await Promise.allSettled(workers);
     const bad = outcomes.find((x) => x.status === "rejected");
     if (bad) throw bad.reason;
+    if (held.length) throw Error(JSON.stringify({ held }));
   } finally {
     fs.closeSync(lock);
     fs.unlinkSync(p + "/runner.lock");

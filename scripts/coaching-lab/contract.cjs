@@ -172,7 +172,11 @@ function render(r, blocks) {
     );
   if (r.lessons.length) {
     parts.push("## What to carry into your next call");
-    for (const l of r.lessons) {
+    const orderedLessons = [
+      ...r.lessons.filter((l) => l.purpose !== "repeat"),
+      ...r.lessons.filter((l) => l.purpose === "repeat"),
+    ];
+    for (const l of orderedLessons) {
       parts.push(
         "### " + l.title + (l.id === r.focus_id ? " — main takeaway" : ""),
         l.observation,

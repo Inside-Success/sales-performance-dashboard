@@ -71,6 +71,18 @@ test("focus points to an entry and rendering does not expose evidence metadata",
   assert(!render(r, blocks).includes("T1"));
   assert.throws(() => validate({ ...r, focus_id: "missing" }, blocks));
   assert.throws(() => validate(r, []));
+  const excluded = { ...r, status: "excluded", exclusion_reason: "Unreliable dialogue", lessons: [], focus_id: "" };
+  assert.throws(() => acceptReview(excluded, {
+    pass: false,
+    findings: [{ issue: "A narrow lesson may be possible", evidence_ids: ["T1"] }],
+    corrected_report: r,
+  }, blocks), /Eligibility disagreement/);
+  const ordered = structuredClone(r);
+  ordered.lessons.push({ ...ordered.lessons[0], id: "L2", purpose: "refine", title: "Clarify the decision" });
+  const beforeRendering = JSON.stringify(ordered);
+  const readerReport = render(ordered, blocks);
+  assert(readerReport.indexOf("### Clarify the decision") < readerReport.indexOf("### Keep the agreed purpose clear"));
+  assert.equal(JSON.stringify(ordered), beforeRendering);
   const inline = structuredClone(r);
   inline.lessons[0].teaching = "Keep L1 in mind.";
   assert(!render(inline, blocks).includes("L1"));

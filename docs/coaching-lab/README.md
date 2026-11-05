@@ -43,3 +43,13 @@ Pricing is usage-based standard API pricing, checked November 5 against provider
 `acceptReview` rejects contradictory verdicts, unsupported evidence references and silent eligibility changes. `usage.cjs` accounts separately for OpenAI fresh input, cache writes, cache reads and output. The first OpenAI receipts revealed `cache_write_tokens`; their initial local estimates used the older field name and are reconciled from saved raw receipts without paid re-requests. Both the original and corrected accounting are retained privately.
 
 See [production integration boundary](INTEGRATION.md) for the explicit compatibility and safety changes required before this report contract can be deployed. The experiment does not modify those production consumers.
+
+## Evaluation freeze and held outputs
+
+Before opening the twelve held-out sources, two finalists were recorded: integrated Terra/Terra and Haiku-medium/Terra. Both receive the same frozen source pack and coaching prompts. This is a comparative holdout used to choose a configuration, not an independent accuracy guarantee after selection. No coaching-prompt edits are made in response to these twelve outputs.
+
+A complete paid reviewer response can still fail acceptance. Eligibility disagreement remains held for adjudication, with both outputs preserved outside accepted results. Rendering validation runs before saving an accepted result. An output hold does not retry the model or discard sibling cases; uncertain transport remains a hard stop for that worker. Any held candidate inspected by an evaluator is recorded as a proposed, rejected output, never counted as delivered or accepted.
+
+Final presentation places lessons about repeating good practice after other distinct lessons, using a stable rendering order without editing the reviewed prose or mutating the accepted object. This display-only change was made after comparison; it does not change frozen coaching prompts or justify new model-quality claims.
+
+See [completed findings and recommendation](RESULTS.md). The isolated study is complete; no production rollout is authorized or claimed.
