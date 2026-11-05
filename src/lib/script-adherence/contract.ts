@@ -21,7 +21,7 @@ export function scriptFor(r: Pick<Analysis,"family"|"stage"|"attendance"> & {eli
   return Object.hasOwn(RUBRICS,key) ? key as ScriptId : null;
 }
 const normalize=(v:string)=>v.replace(/\s+/g," ").trim().toLowerCase();
-export function validateAnalysis(raw:unknown, transcript:string): Analysis {
+export function validateAnalysis(raw:unknown, transcript:string, conditionallyInapplicable:ReadonlySet<string>=new Set()): Analysis {
   const r=resultSchema.parse(raw), script=scriptFor(r), source=normalize(transcript);
   if(!script) { if(r.actions.length) throw Error("Unsupported script must not have scores"); return r; }
   const rubric=RUBRICS[script];
@@ -36,7 +36,7 @@ export function validateAnalysis(raw:unknown, transcript:string): Analysis {
       if(c.quote && !source.includes(normalize(c.quote))) throw Error("Evidence quote absent from source");
       if((c.state==="done"||c.state==="deferred") && (!c.quote.trim() || !c.timestamp.trim())) throw Error("Completion or deferral requires source evidence");
       if((c.state==="done"||c.state==="deferred") && !source.includes(normalize(c.timestamp.replace(/^\[|\]$/g,"")))) throw Error("Evidence timestamp absent from source");
-      if(found.applicability==="yes" && c.state==="not_applicable" && !/\bif\b/i.test(a.components[i])) throw Error("Unconditional component cannot be inapplicable");
+      if(found.applicability==="yes" && c.state==="not_applicable" && !/\bif\b/i.test(a.components[i]) && !conditionallyInapplicable.has(`${a.id}:${i}`)) throw Error("Unconditional component cannot be inapplicable");
       if(c.state==="not_done" && (!r.transcriptComplete || a.unobservable)) throw Error("Missing evidence cannot prove omission");
     }
     if(found.components.some(c=>c.state==="deferred") && !found.reason.trim()) throw Error("Deferral needs a scoped explanation");
