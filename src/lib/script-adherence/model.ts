@@ -74,8 +74,18 @@ export function parseAnalysis(raw:unknown,transcript:string){
  for(const key of ['familyEvidence','stageEvidence','priorPresentationEvidence'] as const)v[key]=resolveEvidence(v[key],turns).quote;
  if(v.currentCallPurpose==='questions_after_prior_presentation'){if(!v.priorPresentationEvidence)throw Error('Unproven prior presentation');v.stage='followup';}
  if((v.family!=='unknown'&&!v.familyEvidence&&!(v.family==='other'&&!v.eligibleForChecklist&&v.stage==='other'&&v.stageEvidence))||(v.stage!=='unknown'&&!v.stageEvidence))throw Error('Missing classification evidence');
+ // Contradictory negative states lose certainty, never gain completion credit.
+ const uncertainComponents:string[]=[];
+ if(script)for(const a of v.actions){
+  const def=RUBRICS[script].actions.find(d=>d.id===a.id)!;
+  for(const [i,c]of a.components.entries()){
+   const unsupportedOmission=c.state==='not_done'&&(!v.transcriptComplete||def.unobservable);
+   const unsupportedExemption=c.state==='not_applicable'&&a.applicability==='yes'&&!/\bif\b/i.test(def.components[i])&&!conditionallyInapplicable.has(`${a.id}:${i}`);
+   if(unsupportedOmission||unsupportedExemption){c.state='unknown';uncertainComponents.push(`${a.id}:${i}`);if(def.video)a.playbackFraction=null;}
+  }
+ }
  const {familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence,...analysis}=v;
  const result=validateAnalysis(analysis,transcript,conditionallyInapplicable);
  if(scriptFor(result)&&!result.actions.length)throw Error('Missing supported checklist');
- return {analysis:result,normalization:{droppedActions},classification:{familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence}};
+ return {analysis:result,normalization:{droppedActions,uncertainComponents},classification:{familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence}};
 }

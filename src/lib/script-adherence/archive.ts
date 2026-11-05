@@ -28,6 +28,7 @@ export function selectArchive(records:Array<{id:string;fields:Record<string,unkn
  const link=String(f['Meeting Transcript Link']||'');
  const fromLink=/^https:\/\/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)(?:\/|$)/.exec(link)?.[1];
  const fromField=String(f['Transcript Google Doc ID']||'');
+ if(!fromLink&&!fromField)throw Error('No archived transcript document available yet');
  if(fromLink&&fromField&&fromLink!==fromField)throw Error('Archive document identifiers conflict');
  const record=archiveRecordSchema.parse({recordId:id,uuid:f['Zoom Meeting UUID'],hostId:f['Zoom Host ID'],startedAt:f['Meeting Start Date'],fileId:f['Recording File ID'],automationKey:f['Automation Key'],docId:fromField||fromLink||''});
  archiveIdentity(record,job);return record;

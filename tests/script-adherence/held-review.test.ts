@@ -15,3 +15,6 @@ it('reserves one distinct factual review while retaining the original paid reque
 it('refuses an incomplete original provider response',async()=>{
  sql.mockResolvedValueOnce([{payload:{choices:[{finish_reason:'length'}]}}]);await expect(reserveHeldReview('job','prior')).rejects.toThrow('Incomplete');expect(sql).toHaveBeenCalledTimes(1);
 });
+it('zero-charge revalidation refuses unmatched or already accepted requests',async()=>{
+ const {revalidateHeldReview}=await import('@/lib/script-adherence/held-review');sql.mockResolvedValue([]);expect(await revalidateHeldReview('job','prior')).toEqual({published:false});expect(sql).toHaveBeenCalledTimes(1);expect(sql.mock.calls[0][0].join('')).toContain('r.actual_microusd is not null');
+});

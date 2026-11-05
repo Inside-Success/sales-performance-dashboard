@@ -27,3 +27,9 @@ Archive lookup has its own 24-hour cooldown and shared five-minute source lease;
 Rollback: set only `archive_enabled=false` to stop new archive claims; retain recovered transcripts and paid requests. Restore the saved worker definition if necessary. Do not reset request states or replay provider calls. A request without a confirmed receipt remains held for reconciliation.
 
 Verification and outcome are pending; local passing tests alone do not establish production success.
+
+## Conservative negative-state handling
+
+Source-backed review found residual output contradictions. The structured parser now changes an unsupported `not_done` on an incomplete/unobservable source, or an unconditional `not_applicable` without a supported exemption, to `unknown`. For a downgraded video it clears the claimed fraction. It never changes either state to `done`, never removes the uncertain component from the denominator and records the affected components in internal normalization metadata. Direct raw-contract validation remains strict. Settled receipts can be revalidated by exact job/request identity without another provider call; the prior validation error and parser version are preserved in the request result. No accepted historical record is rewritten.
+
+The published daily intake trigger was found disabled despite its workflow being active. Its intended `0 6 * * *` America/New_York schedule was restored and the published nodes/connections re-read. The worker archive branch was validated with zero errors; its first live pass successfully read and verified Google Docs, retaining unmatched records. Final counts are recorded after completion below.

@@ -57,5 +57,14 @@ it('limits sibling exemptions to an evidenced false shared condition',async()=>{
  const raw={...base,currentCallPurpose:'full_offer_presentation',priorPresentationEvidence:'',actions,conditions};
  expect(()=>parseAnalysis(raw,text)).not.toThrow();
  for(const c of Object.values(conditions))c.quote='';
- expect(()=>parseAnalysis(raw,text)).toThrow('Unconditional component');
+ const uncertain=parseAnalysis(raw,text);expect(uncertain.analysis.actions.find(a=>a.id==='onboarding')?.components[1].state).toBe('unknown');expect(uncertain.normalization.uncertainComponents).toContain('onboarding:1');
+});
+
+it('conservatively downgrades unsupported omissions without granting completion or playback',async()=>{
+ const {RUBRICS}=await import('@/lib/script-adherence/rubric');
+ const actions=RUBRICS.reality_call_1.actions.map(a=>({id:a.id,applicability:'yes',reason:'Incomplete source',components:a.components.map(()=>({state:'not_done',quote:'',timestamp:''})),playbackFraction:a.video?0:null}));
+ const out=parseAnalysis({...base,family:'reality',stage:'call_1',currentCallPurpose:'first_audition',transcriptComplete:false,actions},text);
+ expect(out.analysis.actions.every(a=>a.components.every(c=>c.state==='unknown'))).toBe(true);
+ expect(out.analysis.actions.every(a=>a.playbackFraction===null)).toBe(true);
+ expect(out.normalization.uncertainComponents.length).toBeGreaterThan(0);
 });
