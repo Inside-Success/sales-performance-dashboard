@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — November 5, 2026
 
-Candidate knowledge refresh; production acceptance pending. Previous checkpoint November 4 (`b34d16420bf7dff04d1be866`). New version `e470519a46279569140bad3e`, 2,607 records: eight new and eleven updated entries.
+Published and authenticated-answer verified; admin freshness receipt follows. Previous checkpoint November 4 (`b34d16420bf7dff04d1be866`). New version `e470519a46279569140bad3e`, 2,607 records: eight new and eleven updated entries.
 
 ## Knowledge changes
 
@@ -25,3 +25,7 @@ Model, reasoning setting, prompts, runtime algorithms, UI and Coaching remain un
 ## Limits retained
 
 Two old Google files and two old Slack roots remain inaccessible; one linked Zoom setup video could not be fetched. No failed-source checkpoint advanced. Historical oversized Master FAQ partial watermark is retained. Slack's indexed search explicitly cannot guarantee complete synchronization despite completed pagination. Unanswered case-specific questions were not invented into policy. No claim to read every private Slack message or transcribe every older video.
+
+## Production verification
+
+Dashboard PR386 and FAQ PR128 merged. READY production deployment `dpl_D1YEPz5SctVBtQsfxRrfphqNdPSi` at commit `b7c6e425bba038f39dbcf0c42f62d056a3f167e1` serves the rose alias. Three authenticated live answers verified: current reality casting, Thursday training time, and new script/contract-video restriction. Stored answer metadata matches `e470519a46279569140bad3e`, with no error or validation issue. Answer latencies: 10.1s, 7.6s, 10.7s. Production receipt and admin freshness follow in a documentation-only release.
