@@ -1,5 +1,6 @@
 // Isolated experiment contract; not a production report schema.
-const VERSION = "coaching-foundations-lab-v1";
+const VERSION = "coaching-foundations-lab-v2";
+const LEGACY_VERSION = "coaching-foundations-lab-v1";
 const categories = [
   "cost",
   "value",
@@ -57,8 +58,8 @@ const schema = {
   focus_id: "O1 or L1 or empty when none",
   next_steps: [
     {
-      kind: "agreed|recommended",
-      text: "Action; do not invent mutual agreement",
+      kind: "agreed|promised|recommended",
+      text: "Action; agreed means mutual, promised means one party committed, recommended means new coaching advice",
       evidence_ids: ["T0001"],
     },
   ],
@@ -68,7 +69,7 @@ function validate(r, blocks) {
     throw Error(m);
   };
   const text = (s) => typeof s === "string" && s.trim();
-  if (!r || r.version !== VERSION) fail("version");
+  if (!r || ![VERSION, LEGACY_VERSION].includes(r.version)) fail("version");
   if (!["completed", "excluded"].includes(r.status)) fail("status");
   const ids = new Set(blocks.map((b) => b.id));
   const refs = (a, required = true) => {
@@ -141,7 +142,7 @@ function validate(r, blocks) {
   if (typeof r.focus_id !== "string" || (r.focus_id && !seen.has(r.focus_id)))
     fail("focus");
   for (const n of r.next_steps) {
-    if (!["agreed", "recommended"].includes(n.kind) || !text(n.text))
+    if (!(r.version === LEGACY_VERSION ? ["agreed", "recommended"] : ["agreed", "promised", "recommended"]).includes(n.kind) || !text(n.text))
       fail("next step");
     refs(n.evidence_ids);
   }
@@ -171,7 +172,7 @@ function render(r, blocks) {
       ...r.next_steps.map(
         (n) =>
           "- " +
-          (n.kind === "recommended" ? "Suggested: " : "Agreed: ") +
+          (n.kind === "recommended" ? "Suggested: " : n.kind === "promised" ? "Promised: " : "Agreed: ") +
           n.text,
       ),
     );

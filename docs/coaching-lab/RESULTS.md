@@ -1,5 +1,7 @@
 # Isolated coaching evaluation — November 5–6, 2026
 
+Latest isolated phase: [Tyler-faithful evaluation](TYLER-FAITHFUL-EVALUATION.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+
 Status: isolated evaluation complete. Candidate selected; not ready for unattended production activation.
 
 ## What was built

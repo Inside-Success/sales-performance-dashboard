@@ -1,5 +1,7 @@
 # Coaching foundations evaluation — isolated only
 
+Latest isolated phase: [Tyler-faithful evaluation](TYLER-FAITHFUL-EVALUATION.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+
 Authorized November 5, 2026. Scope: substantive Call 2 selling for main documentaries, Next Level CEO, and reality. No Call 1 rollout, production publication, Slack delivery, source mutations, or accepted report writes.
 
 ## Preserved invariants

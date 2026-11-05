@@ -57,5 +57,13 @@
       "revision": "2026-11-05-v1",
       "digest": "57186995fbc130067dc45f19e735a3bfca2256b9a40298c2a14f02f9be5ce0a6"
     }
-  ]
+  ],
+  "current_report_schema": "coaching-foundations-lab-v2",
+  "current_system_hash": "9bcd3539eb2364a67cdf53a22469a73859d7c4a47991465fbad1c0a0c695e51b",
+  "additional_adapters": [
+    "Current Mike instruction applies from November5 onward; earlier effective date unestablished",
+    "Agreed versus promised versus newly suggested follow-ups",
+    "Reviewer envelope explicitly overrides report-shaped output for review requests"
+  ],
+  "source_verified_head": "5a892e080f0585ca0bdb662056651618c6f37fb5"
 }

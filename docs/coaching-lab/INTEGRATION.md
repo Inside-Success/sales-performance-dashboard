@@ -1,5 +1,7 @@
 # Production integration boundary
 
+Latest isolated phase: [Tyler-faithful evaluation](TYLER-FAITHFUL-EVALUATION.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+
 This branch is an isolated evaluation. Its report is intentionally not accepted by the production v2 validator. A successful isolated report does not bypass production safety or authorize release.
 
 ## Layers and ownership
@@ -13,7 +15,7 @@ This branch is an isolated evaluation. Its report is intentionally not accepted 
 
 The lab saves each input layer with a source/revision/digest and verifies exact bytes. Private content remains private. Manifest identity changes when any layer changes. Re-running an existing request reuses its saved receipt; a different prompt is a new paid request, never an invisible replacement.
 
-## Required adapters before any production trial
+## Required adapters before a production replacement
 
 - `src/lib/objection-coaching.cjs`: introduce an explicitly versioned contract and renderer alongside v2. Do not rename v2 arrays in place. Old reports must continue to render unchanged. Current v2 forbids recommendations for sound handling; the new teaching field deliberately allows useful positive teaching without calling it a defect.
 - `scripts/coaching-upgrade/stages.cjs`: bind source identity, request identity, policy digest and evidence to the candidate; require a consistent reviewer verdict and explicit eligibility adjudication. Preserve exact reviewed-object rendering and the final safety binding.
