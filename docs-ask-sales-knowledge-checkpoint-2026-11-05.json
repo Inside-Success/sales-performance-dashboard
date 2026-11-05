@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-11-05",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "b34d16420bf7dff04d1be866",
   "knowledgeVersion": "e470519a46279569140bad3e",
   "activeRecordCount": 2607,
@@ -11545,5 +11545,25 @@
     "documentary-offers-ad-status-2026-11-05",
     "reality-no-cohort-2026-09-18",
     "reality-call1-video-2026-10-03"
-  ]
+  ],
+  "publication": {
+    "verifiedAt": "2026-11-05T17:17:35.952370+00:00",
+    "dashboardPr": 386,
+    "faqPr": 128,
+    "dashboardCommit": "b7c6e425bba038f39dbcf0c42f62d056a3f167e1",
+    "deploymentId": "dpl_D1YEPz5SctVBtQsfxRrfphqNdPSi",
+    "productionAlias": "https://sales-performance-dashboard-rose.vercel.app",
+    "authenticatedChecks": 3,
+    "assistantMessageIds": [
+      "faq_assistant_6b8fd434-c31b-489c-9794-20634c5330dd",
+      "faq_assistant_002c691a-cc17-4dfe-924f-9948bdb2b1a3",
+      "faq_assistant_720be506-864d-4f52-b13e-f1b67d50cab0"
+    ],
+    "faqTestsPassed": 532,
+    "staticChecksPassed": 107,
+    "evaluationNontechnical": 20,
+    "evaluationCases": 20,
+    "evaluationCostUsd": 0.1837276,
+    "adminFreshnessVerification": "pending receipt deployment"
+  }
 }
