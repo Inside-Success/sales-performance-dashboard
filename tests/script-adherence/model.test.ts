@@ -76,3 +76,8 @@ it('keeps non-conversation sales stage unknown when no stage evidence exists',()
  expect(()=>parseAnalysis({...raw,attendance:'conversation'},source)).toThrow('Missing classification');
  expect(()=>parseAnalysis({...raw,stage:'call_1'},source)).toThrow('Missing classification');
 });
+it('separates partial orientation playback from the show-pitch completion rule',()=>{
+ const body=JSON.stringify(buildAnalysisRequest('gpt-6.1-terra',text,{title:'',rep:''},{}));
+ expect(body).toContain('PLAYBACK EXTENT IS SEPARATE FROM VIDEO IDENTITY');
+ expect(body).toContain('Never transfer the show-pitch content lower-bound rule');
+});
