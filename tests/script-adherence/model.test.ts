@@ -41,3 +41,21 @@ it('applies one shared condition while preserving only evidenced action exceptio
  expect(result.actions.find(a=>a.id==='welcome')?.components.every(c=>c.state==='deferred')).toBe(true);
  conditions.condition_0.quote='T9999';expect(()=>parseAnalysis({...raw,conditions},text)).toThrow('Unknown evidence');
 });
+it('allows evidenced non-sales classification without inventing offer-family evidence',()=>{
+ const raw={...base,family:'other',stage:'other',attendance:'internal',eligibleForChecklist:false,exclusionReason:'Internal training',familyEvidence:'',stageEvidence:'T0001',currentCallPurpose:'other',priorPresentationEvidence:'',actions:[]};
+ expect(parseAnalysis(raw,text).analysis.family).toBe('other');
+ expect(()=>parseAnalysis({...raw,stageEvidence:''},text)).toThrow('Missing classification');
+ expect(()=>parseAnalysis({...raw,family:'reality'},text)).toThrow('Missing classification');
+});
+it('limits sibling exemptions to an evidenced false shared condition',async()=>{
+ const {RUBRICS}=await import('@/lib/script-adherence/rubric');
+ const actions=RUBRICS.documentary_call_2.actions.map(a=>({id:a.id,applicability:'yes',reason:'Observed task',components:a.components.map(()=>({state:'unknown',quote:'',timestamp:''})),playbackFraction:null}));
+ const target=actions.find(a=>a.id==='onboarding')!;
+ target.components[0]={state:'done',quote:'T0001',timestamp:''};
+ target.components[1]={state:'not_applicable',quote:'',timestamp:''};
+ const conditions=Object.fromEntries(CONDITIONS.map((_,i)=>[`condition_${i}`,{state:'no',quote:'T0002',reason:'Trigger declined'}]));
+ const raw={...base,currentCallPurpose:'full_offer_presentation',priorPresentationEvidence:'',actions,conditions};
+ expect(()=>parseAnalysis(raw,text)).not.toThrow();
+ for(const c of Object.values(conditions))c.quote='';
+ expect(()=>parseAnalysis(raw,text)).toThrow('Unconditional component');
+});

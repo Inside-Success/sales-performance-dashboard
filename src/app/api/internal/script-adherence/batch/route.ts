@@ -1,7 +1,8 @@
+import {archiveRecordSchema} from '@/lib/script-adherence/archive';
 import {timingSafeEqual} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
 import {z} from 'zod';
-import {ACCOUNTS,claimModel,claimSource,discover,receive,reconcileReceipts,recordingSchema,saveSource,digest} from '@/lib/script-adherence/queue';
+import {ACCOUNTS,archiveLookup,claimArchive,saveArchive,claimModel,claimSource,discover,receive,reconcileReceipts,recordingSchema,saveSource,digest} from '@/lib/script-adherence/queue';
 export const runtime='nodejs';
 export const maxDuration=60;
 const owner=z.string().regex(/^[a-zA-Z0-9:_-]{1,120}$/),id=z.string().regex(/^[a-f0-9]{64}$/);
@@ -13,6 +14,8 @@ const input=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('finish_scan'),accountId:z.enum(ACCOUNTS),runId:owner,from:z.string().datetime(),to:z.string().datetime(),members:z.array(z.string().min(1)).min(1).max(10000)}),
  z.object({operation:z.literal('next'),owner}),
  z.object({operation:z.literal('source'),id,owner,files:z.array(z.object({id:z.string(),vtt:z.string().max(250000)})).max(100),error:z.string().max(1000).optional()}),
+ z.object({operation:z.literal('archive_lookup'),owner,ids:z.array(id).max(30),records:z.array(z.object({id:z.string(),fields:z.record(z.string(),z.unknown())})).max(100),incomplete:z.boolean()}),
+ z.object({operation:z.literal('archive'),id,owner,record:archiveRecordSchema.optional(),text:z.string().max(250000).default(''),error:z.string().max(1000).optional()}),
  z.object({operation:z.literal('receipt'),id,jobId:id,payload:z.record(z.string(),z.unknown())}),
  z.object({operation:z.literal('status')}),
 ]);
@@ -49,9 +52,13 @@ export async function POST(request:Request){
   }else if(p.operation==='next'){
    await reconcileReceipts();const first=await claimModel();
    if(first){const work=[first],provider=String(first.body.model).startsWith('gpt-')?'openai':'anthropic';for(let i=1;i<6;i++){const item=await claimModel(work.map(w=>w.id),provider);if(!item)break;work.push(item);}result={kind:provider,work};}
-   else{const work=[];for(let i=0;i<6;i++){const source=await claimSource(p.owner);if(!source)break;work.push(source);}result=work.length?{kind:'source',work}:{kind:'done'};}
+   else{const work=[];for(let i=0;i<6;i++){const source=await claimSource(p.owner);if(!source)break;work.push(source);}if(work.length)result={kind:'source',work};else{const archive=await claimArchive(p.owner);result=archive.length?{kind:'archive',work:archive}:{kind:'done'};}}
   }else if(p.operation==='source'){
    try{result=await saveSource(p.id,p.owner,p.files,p.error);}catch(e){await saveSource(p.id,p.owner,[],e instanceof Error?e.message:'Invalid source');result={saved:false,retained:true};}
+  }else if(p.operation==='archive_lookup'){
+   result=await archiveLookup(p.owner,p.ids,p.records,p.incomplete);
+  }else if(p.operation==='archive'){
+   try{result=await saveArchive(p.id,p.owner,p.record,p.text,p.error);}catch(e){result=await saveArchive(p.id,p.owner,undefined,'',e instanceof Error?e.message:'Invalid archive');}
   }else if(p.operation==='receipt')result=await receive(p.id,p.jobId,p.payload);
   else{
    const states=await sql`select state,count(*)::int as count,min(created_at)::text as oldest from script_adherence_jobs group by state`;

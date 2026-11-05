@@ -98,3 +98,36 @@ export async function reconcileReceipts(){
  await sql`update script_adherence_jobs j set state='held',error='Provider receipt overdue; reconcile before any paid retry',updated_at=now() from script_adherence_requests r where r.id=case when j.state='review_pending' then j.review_request_id else j.draft_request_id end and j.state in ('draft_pending','review_pending') and r.transport='realtime' and r.status='submitted' and r.updated_at<now()-interval '45 minutes' and not exists(select 1 from script_adherence_receipts p where p.request_id=r.id)`;
  return {reconciled:rows.length};
 }
+
+// Separate archive cooldown preserves Zoom retries and never touches accepted calls.
+export async function claimArchive(owner:string){
+ const sql=db();
+ return sql`with candidates as (select j.id from script_adherence_jobs j,script_adherence_control c where c.archive_enabled and (c.enabled or c.canary_keys ? j.id) and j.state='awaiting_transcript' and j.started_at<now()-interval '2 hours' and (j.archive_checked_at is null or j.archive_checked_at<now()-interval '24 hours') and (j.lease_until is null or j.lease_until<now()) and not exists(select 1 from script_adherence_calls a where a.source_key=j.source_key) order by j.archive_checked_at nulls first,j.created_at for update of j skip locked limit 30) update script_adherence_jobs j set lease_owner=${owner},lease_until=now()+interval '5 minutes' from candidates c where j.id=c.id returning j.id,j.meeting_uuid,j.started_at::text,j.account_id`;
+}
+export async function saveArchive(id:string,owner:string,record:import('./archive').ArchiveRecord|undefined,text:string,error?:string){
+ const sql=db();
+ if(error){await sql`update script_adherence_jobs set archive_checked_at=now(),error=${('Archive: '+error).slice(0,1000)},lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;return {saved:false,retained:true};}
+ const {archiveIdentity,archiveTranscript,archiveRecordSchema}=await import('./archive');
+ const rows=await sql`select j.*,array(select member_id from script_adherence_closers c where c.account_id=j.account_id) as hosts from script_adherence_jobs j where j.id=${id} and j.lease_owner=${owner} and j.state='awaiting_transcript' and not exists(select 1 from script_adherence_calls a where a.source_key=j.source_key)`;
+ if(!rows.length)throw Error('Archive lease no longer owned');
+ const j=rows[0],r=archiveRecordSchema.parse(record);
+ archiveIdentity(r,{uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
+ const transcript=archiveTranscript(r,text);
+ const roster=await sql`select distinct name from script_adherence_closers`;
+ const attribution=observedRep(transcript,j.rep,roster.map(r=>String(r.name)));
+ const updated=await sql`update script_adherence_jobs set transcript=${transcript},transcript_hash=${digest(transcript)},rep=${attribution.rep},attribution=${JSON.stringify(attribution)}::jsonb,source_provenance=${JSON.stringify({kind:'airtable_google_doc',...r,documentHash:digest(text)})}::jsonb,state='ready',archive_checked_at=now(),lease_owner=null,lease_until=null,error=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript' returning id`;
+ return {saved:updated.length===1};
+}
+export async function archiveLookup(owner:string,ids:string[],records:Array<{id:string;fields:Record<string,unknown>}>,incomplete:boolean){
+ const sql=db(),{selectArchive}=await import('./archive');
+ const rows=await sql`select j.*,array(select member_id from script_adherence_closers c where c.account_id=j.account_id) as hosts from script_adherence_jobs j where j.id=any(${ids}::text[]) and j.lease_owner=${owner} and j.state='awaiting_transcript'`;
+ const work=[];
+ for(const j of rows){
+  try{
+   if(incomplete)throw Error('Archive lookup incomplete or unavailable');
+   const record=selectArchive(records,{uuid:j.meeting_uuid,startedAt:j.started_at,hosts:j.hosts,files:j.files});
+   work.push({id:j.id,record});
+  }catch(e){await saveArchive(j.id,owner,undefined,'',e instanceof Error?e.message:'Archive match unavailable');}
+ }
+ return {kind:work.length?'documents':'continue',work};
+}
