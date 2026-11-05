@@ -52,7 +52,7 @@ state.repair_targets = targets;`);
     const purpose=manual?'manual_coaching_safety_repair':'coaching_safety_repair';
     const expr=`providerBody(CUTOVER.repair, "Return JSON only.", buildRepairPrompt(state, targets), state, "${purpose}")`;
     code=once(code,'return { json: { '+(manual?'...state.input, ':'')+'state, repair_target_count: targets.length, provider_request: '+expr+' } };',
-     `const repairRequest=${expr};state.safety_repair_request_id=repairRequest.request_id;\nreturn {json:{${manual?'...state.input,':''}state,repair_target_count:targets.length,provider_request:repairRequest}};`);
+     `const repairRequest=${expr};if(state.coaching_raw?.version==='objection-coaching-v2'&&targets.length){if(repairRequest.provider!=='anthropic')throw Error('Structured repair provider required');repairRequest.output_config={...(repairRequest.output_config||{}),format:safetyRepairFormat(targets)};repairRequest.request_id=repairRequest.request_id+'-atomic-'+safetyDigest(JSON.stringify([repairRequest.prompt,repairRequest.output_config]));}state.safety_repair_request_id=repairRequest.request_id;\nreturn {json:{${manual?'...state.input,':''}state,repair_target_count:targets.length,provider_request:repairRequest}};`);
    }
    if(node.name===final){
     code=Object.values(contract).map(f=>f.toString()).join('\n')+'\n'+code;

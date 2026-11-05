@@ -1,7 +1,8 @@
 import {describe,it,expect} from 'vitest';
+import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
-const {safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
+const {safetyDigest,safetyRepairFormat,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
 const {normalizeObjectionReport,objectionErrors}=require('../../src/lib/objection-coaching.cjs');
 const report={version:'objection-coaching-v2',summary:'Supported summary.',show:'Clean and Thriving',strengths:[{observation:'You asked whether a business card could work. When she explained her limits, you did not argue.',evidence_ids:['T0001']}]};
 const finding=(before:string)=>({case_id:'c',path:'strengths.0.observation',before,layer:'L2',reason:'Do not praise unsupported payment workarounds.'});
@@ -17,9 +18,10 @@ describe('shared coaching repair contract',()=>{
  });
  it('fails closed on omissions, duplicates, unknown IDs, stale before, wrong paths and no-op',()=>{
   const t=target(),r=repair(t[0]);
-  for(const rows of [[],[r,r],[{...r,id:'other'}],[{...r,before:'stale'}],[{...r,path:'show'}],[{...r,after:t[0].before}],[{...r,operation:'delete'}]])expect(()=>applySafetyFieldRepairs(report,t,rows)).toThrow('safety hold');
+  for(const rows of [[],[r,r],[{...r,id:'other'}],[{...r,path:'show'}],[{...r,after:t[0].before}],[{...r,operation:'delete'}]])expect(()=>applySafetyFieldRepairs(report,t,rows)).toThrow('safety hold');
   expect(()=>safetyFieldTargets(report,[{...finding('Clean and Thriving'),path:'show'}])).toThrow('non-prose');
  });
+ it('binds exact Unicode inputs without relying on model echoes',()=>{for(const input of ['', 'abc','quoted “words”\nnext line','x'.repeat(10000)])expect(safetyDigest(input)).toBe(createHash('sha256').update(input).digest('hex'));const schema=safetyRepairFormat(target()).schema;expect(schema.properties.repairs.minItems).toBe(1);expect(schema.properties.repairs.items.required).not.toContain('before');const changed={...report,strengths:[{observation:'Different state'}]};expect(()=>applySafetyFieldRepairs(changed,target(),target().map(repair))).toThrow('stale');});
  it('does not turn generic screen approval into clearance of candidates',()=>{
   const hits=[{id:'l1',rule:'certification'}];
   expect(()=>safetyL1Decisions(hits,{case_pass:true})).toThrow('missing');
@@ -39,6 +41,15 @@ describe('shared coaching repair contract',()=>{
   expect(n.improvements[0].action).toContain('The podcast will help.');expect(n.improvements[0]).not.toHaveProperty('suggested_words');
   expect(normalizeObjectionReport(n)).toEqual(n);expect(r.improvements[0].suggested_words).toBe('The podcast will help.');
   expect(objectionErrors({...n,improvements:[{...n.improvements[0],unknown_advice:'unsafe'}]},undefined,true)).toContain('Unexpected field improvements.0.unknown_advice');
+ });
+
+ it('reviews heading and body together while permitting explicit retention of safe context',()=>{
+  const r={...report,strengths:[{title:'Explored funding options',observation:'You asked her to borrow.',why_it_matters:'You listened when she declined.',evidence_ids:['T0001']}]};
+  const t=safetyFieldTargets(r,[{case_id:'c',path:'strengths.0.title',before:r.strengths[0].title}]);
+  expect(t).toHaveLength(3);expect(t.filter((x:any)=>x.context_only)).toHaveLength(2);
+  const rows=t.map((x:any)=>({...repair(x),after:x.path.endsWith('title')?'Respected her response':x.path.endsWith('observation')?'You accepted her answer.':x.before}));
+  const out=applySafetyFieldRepairs(r,t,rows);
+  expect(out.coaching.strengths[0].observation).not.toContain('borrow');expect(out.coaching.strengths[0].why_it_matters).toBe(r.strengths[0].why_it_matters);
  });
  it('supports root prose repairs without allowing changes to evidence citations',()=>{
   const r={...report,summary:'Unsupported praise [00:01:03].'};
