@@ -27,7 +27,7 @@ describe('October 29 source refresh', () => {
   const text=evidence('When is Thursday objection handling training?');
   expect(text).toContain('no longer present in item 5');
   expect(text).toContain('does not supply a sixth current time/link');
-  expect(text).toContain('Thursday 2–3 PM EST Closing');
+  expect(text).toContain('Thursday 11 AM–noon EST Closing');
  });
  it('does not turn show money or provisional lodging into a benefit guarantee', () => {
   expect(evidence('Do I win a million dollars on Mansion of Money?', 'reality')).toContain('show money');

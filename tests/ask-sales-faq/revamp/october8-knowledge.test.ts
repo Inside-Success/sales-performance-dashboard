@@ -13,7 +13,7 @@ describe('October 8 source refresh', () => {
   });
   it('answers the changed training time without retaining the previous hour', () => {
     const evidence = rows('What time is Thursday closing training with Raul?').map(r => r.text).join('\n');
-    expect(evidence).toContain('Thursday 2–3 PM EST');
+    expect(evidence).toContain('Thursday 11 AM–noon EST');
     expect(evidence).not.toContain('Thursday 1–2 PM EST');
   });
   it('retrieves season restrictions and initial onboarding without importing regular rules', () => {
