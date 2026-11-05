@@ -8,7 +8,12 @@ export async function reserveHeldReview(jobId:string,expectedRequestId:string){
  if(!rows.length)return null;
  const j=rows[0];if(j.payload.choices?.[0]?.finish_reason!=='stop')throw Error('Incomplete original review cannot be replayed');
  const prior=JSON.parse(j.payload.choices[0].message.content);
- const body=buildAnalysisRequest('gpt-6.1-terra',j.transcript,{title:j.title,rep:j.rep},prior);
+ let body;
+ try{body=buildAnalysisRequest('gpt-6.1-terra',j.transcript,{title:j.title,rep:j.rep},prior);}catch(e){
+  if(!(e instanceof Error)||!e.message.includes('bounded context'))throw e;
+  // Omit only the untrusted prior answer, never any source text. Review remains independent.
+  body=buildAnalysisRequest('gpt-6.1-terra',j.transcript,{title:j.title,rep:j.rep},{});
+ }
  const hash=digest(JSON.stringify(body)),id=digest(j.source_key+hash+'held-review-realtime'),reserve=500000;
  const reserved=await sql`with budget as (select * from script_adherence_budget where project='pilot-2026-11-02' for update),job as(update script_adherence_jobs set state='review_pending',review_request_id=${id},error=null,updated_at=now() where id=${jobId} and state='held' and review_request_id=${expectedRequestId} and not exists(select 1 from script_adherence_calls c where c.source_key=${j.source_key}) and exists(select 1 from budget where ceiling_microusd is null or committed_microusd+${reserve}<=ceiling_microusd) returning id),request as(insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage,request_body,transport) select ${id},'pilot-2026-11-02',${j.source_key},${hash},'gpt-6.1-terra',${reserve},'reserved','unattended-review',${JSON.stringify(body)}::jsonb,'realtime' from job returning id),debit as(update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project='pilot-2026-11-02' and exists(select 1 from request)) select id from request`;
  return reserved.length?{id,jobId,originalRequestId:expectedRequestId,body}:null;
