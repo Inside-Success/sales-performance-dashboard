@@ -101,6 +101,7 @@ function validate(r, blocks) {
     (!text(r.exclusion_reason) ||
       r.objections.length ||
       r.lessons.length ||
+      r.next_steps.length ||
       r.focus_id)
   )
     fail("exclusion");
@@ -115,6 +116,10 @@ function validate(r, blocks) {
     refs(o.counterevidence_ids, false);
   }
   for (const o of r.objections) {
+    if (o.handling !== "needs_work" && o.example.trim())
+      fail("Corrective example requires supported weak handling");
+    if (o.handling === "needs_work" && !text(o.teaching))
+      fail("Weak handling requires a usable explanation and better move");
     if (
       !categories.includes(o.category) ||
       !["sound", "needs_work", "uncertain"].includes(o.handling) ||

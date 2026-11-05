@@ -3,11 +3,11 @@ const fs = require("fs");
 const { hash, save, reserve, settle } = require("./accounting.cjs");
 const { validate, render } = require("./contract.cjs");
 const { system, prompt } = require(
-  require("path").resolve(".private-coaching-lab/prompts.cjs"),
+  require("path").resolve(process.env.COACHING_LAB_PROMPTS_PATH || ".private-coaching-lab/prompts.cjs"),
 );
 const { MODELS } = require("../coaching-upgrade/prompts.cjs");
 const p = ".private-coaching-lab";
-const corpus = JSON.parse(fs.readFileSync(".private-coaching-lab/corpus.json"));
+const corpus = JSON.parse(fs.readFileSync(process.env.COACHING_LAB_CORPUS_PATH || ".private-coaching-lab/corpus.json"));
 const models = {
   sonnet: { ...MODELS["claude-sonnet-5-5"], max_tokens: 12000 },
   opus: { ...MODELS["claude-opus-5-5"], max_tokens: 12000 },
