@@ -10,7 +10,7 @@ A separate intake execution created and populated an existing transcript documen
 
 ## Coaching correction
 
-- Omitted L1 decisions normalize to an empty list **only when there are zero candidates and the property is absent**. Null, malformed, unexpected or incomplete lists still fail closed. Real candidates still require exact ID, decision and reason.
+- Omitted L1 decisions normalize to an empty list **only when there are zero candidates and the property is absent**. Null, malformed, unexpected or incomplete lists still fail closed. Real candidates still require exact ID, decision and reason. The screen must contain a boolean verdict and all three finding arrays; caught provider/parse failures in the manual caller cannot turn into an implicit zero-hit pass.
 - Enhanced prompts now have one complete JSON example, with adjudication instructions before source data. Legacy prompts remain unchanged.
 - The other safety finding arrays, contradictory verdict checks, prose-only repairs, exact request identity, factual review, metadata protection and delivery duplicate guards remain intact.
 - Both official and manual embedded copies are patched. Connections and node counts are unchanged. No model or normal AI stage is added.
@@ -29,21 +29,21 @@ Apply `scripts/coaching-upgrade/build-empty-adjudication.cjs` after the November
 
 ## Verification and rollout
 
-- 169 coaching/review/presentation tests passed, including the empty-list and intake recovery regressions. TypeScript and production build passed.
+- 170 coaching/review/presentation tests passed, including the empty-list and intake recovery regressions. TypeScript and production build passed.
 - Existing durable-provider, retry-policy, crash-recovery and reliability-contract verification scripts passed.
 - Candidate connection validation passed for all four workflows. New non-Code recovery nodes passed runtime configuration validation; embedded Code nodes compile. Pre-existing unreachable legacy-node warnings are unchanged.
 - Live snapshots were compared before every publication; nodes, connections and active published version were checked afterwards. Baseline snapshots and recovery evidence are private under `.private-safety/reliability-2026-11-06/` and are not committed.
 
 | Workflow | Published version |
 | --- | --- |
-| Official coaching `L8Nn7xncA9ZPDdWA` | `a0574ed1-3930-4585-ace1-57005cace965` |
-| Manual coaching `BMRrGxHyXMcgO6j3` | `aef7f639-89ef-423f-8b10-62807a2c323e` |
+| Official coaching `L8Nn7xncA9ZPDdWA` | `6855e4b5-3df9-44a5-9df4-4f9c9f48ce6f` |
+| Manual coaching `BMRrGxHyXMcgO6j3` | `760ad3d6-a581-4711-8879-d571d072be66` |
 | Zoom intake `qMQYNQtQbRZWjtG2` | `5d430b2d-6a71-4cb7-a9a5-611851c6675e` |
 | Existing intake recovery `4WXlEbkTrja4AjRa` | `8d180b88-ad66-4509-a22e-55e2aaf9c50b` |
 
 ## Recovery acceptance
 
-Coaching artifact verification is in progress. Intake recovery completed in scheduled execution `1586514`: the original record now has its existing document link, `Processed`, `Call 1`, and no stale waiting note. The exact source read-back and authenticated Airtable UI agree; original failure event 580 is recovered. No document creation or model node ran in this update-only recovery. A separate native two-item fixture verified failure capture and item pairing without business writes and was deactivated. Six exact undelivered coaching sources were checked in both dashboard and Airtable report stores before owner-specific claim release and receipt queueing. No running provider request was present for those sources. The intake document was read and matched before the single original failure event was enriched with its saved payload and queued. Do not treat these queue operations or workflow publication as completed delivery.
+Coaching artifact verification is in progress. Intake recovery completed in scheduled execution `1586514`: the original record now has its existing document link, `Processed`, `Call 1`, and no stale waiting note. The exact source read-back and authenticated Airtable UI agree; original failure event 580 is recovered. No document creation or model node ran in this update-only recovery. A separate native two-item fixture verified failure capture and item pairing without business writes and was deactivated. A new real manual submission also completed under the updated workflow (`1586473`), with a valid safety response, document creation and a completed dashboard callback; it was observed, not submitted as a paid test. Six exact undelivered coaching sources were checked in both dashboard and Airtable report stores before owner-specific claim release and receipt queueing. No running provider request was present for those sources. The intake document was read and matched before the single original failure event was enriched with its saved payload and queued. Do not treat these queue operations or workflow publication as completed delivery.
 
 ## Limits and rollback
 

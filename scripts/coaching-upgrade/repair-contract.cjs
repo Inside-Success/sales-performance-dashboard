@@ -18,6 +18,9 @@ function safetyDigest(text){
 }
 function safetyValue(record,path){return path?path.split('.').reduce((v,k)=>v?.[k],record):record;}
 function safetyL1Decisions(hits,screen){
+ // Manual callers historically catch provider parse errors. An empty/failed
+ // screen must never become an implicit pass when there are zero L1 hits.
+ if(!screen||typeof screen.case_pass!=='boolean'||!['unsupported_specifics','collisions','additional_safety_hits'].every(k=>Array.isArray(screen[k])))throw Error('Enhanced coaching safety hold: invalid safety screen');
  // Absence is safe only when there is nothing to adjudicate. Null/malformed
  // lists and real candidates still fail closed, including cached responses.
  const decisions=hits.length===0&&!Object.prototype.hasOwnProperty.call(screen,'l1_decisions')?[]:screen.l1_decisions;
