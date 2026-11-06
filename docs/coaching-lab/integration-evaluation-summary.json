@@ -1,0 +1,26 @@
+{
+  "status": "isolated_candidate_not_release_ready",
+  "production_changed": false,
+  "matched_report_attempts": 30,
+  "distinct_real_calls": 12,
+  "initial_structurally_accepted": 29,
+  "initial_structural_holds": 1,
+  "additional_targeted_reviews": 3,
+  "targeted_structurally_accepted": 3,
+  "tests_passed": 182,
+  "build_passed": true,
+  "experiment_total_usage_priced_usd": 27.395961234999994,
+  "phase_usage_priced_usd": 5.3601894999999935,
+  "ceiling_usd": 40,
+  "unsettled_requests": 0,
+  "final_commercial_screen_mean_two_stage_cost_usd": {
+    "sonnet_terra": 0.3011281333333334,
+    "terra_terra": 0.10739719166666666
+  },
+  "quality_verdict": "Sonnet/Terra preferred development candidate; no configuration established as unattended replacement",
+  "fresh_validation_limit": "Five new sources in this phase; three became development after first review; only two new sources tested the commercial-duty revision before tuning. No fresh NLCEO in this phase.",
+  "authenticated_preview_verified": false,
+  "preview_blocker": "Preview explicitly reports Google sign-in is not configured",
+  "real_safety_replay": false,
+  "external_delivery_replay": false
+}
