@@ -1,3 +1,4 @@
+import {sections as foundationsSections} from "@/lib/foundations-record.cjs";
 import { CoachingImprovement } from "@/components/dashboard/coaching-improvement";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { readObjectionCoaching, objectionSections } from "@/lib/objection-coaching.cjs";
@@ -26,17 +27,18 @@ export function CoachingReportContent({
   const sourceId = reportType === "manual" ? reportId : (source && typeof source === "object" ? String((source as Record<string, unknown>).source_airtable_record_id || "") : "");
   const reviewed = readReviewedCoaching(source, sourceId);
   const objectionReport = readObjectionCoaching(source, sourceId);
-  const sections = objectionReport ? objectionSections(objectionReport) : reviewed ? [
+  const foundations = foundationsSections(source, sourceId, reportType);
+  const sections = foundations || (objectionReport ? objectionSections(objectionReport) : reviewed ? [
     { key: "outcome", title: "Call outcome", items: [reviewed.outcome.summary + (reviewed.outcome.evidence.length ? ` [${reviewed.outcome.evidence.join(", ")}]` : "")] },
     { key: "improvements", title: "What to improve", items: reviewed.improvements.length ? reviewed.improvements.map(x => [x.title ? `Focus: ${x.title}` : "", x.observation, `Why it matters: ${x.possible_effect}`, `Next time: ${x.better_action}`, x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join("\n")) : ["No specific sales-execution improvement was supported by this call."] },
     { key: "strengths", title: "What you did well", items: reviewed.strengths.map(x=>[x.observation,x.why_useful,x.evidence.length ? `[${x.evidence.join(", ")}]` : ""].filter(Boolean).join(" ")) },
     { key: "objections", title: "Buyer concerns", items: reviewed.blockers.map(x=>x.observation + (x.evidence.length ? ` [${x.evidence.join(", ")}]` : "")) },
     { key: "next-steps", title: "Agreed next steps", items: reviewed.next_steps.map(x=>x.observation + (x.evidence.length ? ` [${x.evidence.join(", ")}]` : "")) },
-  ].filter(section=>section.items.length) : dashboardCoachingSections(report);
+  ].filter(section=>section.items.length) : dashboardCoachingSections(report));
   return (
     <div className="space-y-4">
       {sections.map((section) => (
-        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
+        <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!foundations || !!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
       ))}
     </div>
   );

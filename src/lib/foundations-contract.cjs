@@ -249,3 +249,28 @@ function acceptReview(draft, audit, blocks) {
   return result;
 }
 module.exports = { VERSION, schema, validate, render, acceptReview };
+
+// Provider checkpoint validation is structural only. Real source references are
+// checked again by acceptReview with the exact transcript before publication.
+function providerErrors(stage,value){
+ if(!providerStage(stage))return [];
+ try{
+  const structural=r=>{
+   const refs=[...(r?.outcome?.evidence_ids||[]),...[...(r?.objections||[]),...(r?.lessons||[]),...(r?.next_steps||[])].flatMap(x=>[...(x.evidence_ids||[]),...(x.counterevidence_ids||[])])];
+   if(!refs.length||refs.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id)))throw Error('Invalid evidence identifiers');
+   validate(r,[...new Set(refs)].map(id=>({id})));
+  };
+  if(stage!=='foundations_reviewer_v3')structural(value);
+  else{
+   if(typeof value?.pass!=='boolean'||!Array.isArray(value.findings))throw Error('Invalid audit');
+   if(value.findings.some(f=>!f||typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||f.evidence_ids.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id))))throw Error('Invalid audit findings');
+   if(value.pass){if(value.findings.length||value.corrected_report!==null)throw Error('Contradictory audit');}
+   else{if(!value.findings.length)throw Error('Missing correction rationale');structural(value.corrected_report);}
+  }
+  return [];
+ }catch(e){return [e.message];}
+}
+module.exports.providerErrors=providerErrors;
+
+function providerStage(stage){return ["foundations_writer_v3","foundations_writer_repair_v3","foundations_reviewer_v3"].includes(stage);}
+module.exports.providerStage=providerStage;

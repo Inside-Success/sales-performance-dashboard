@@ -22,6 +22,12 @@ describe('provider storage preserves the bounded repair handoff',()=>{
     expect(writes.some(q=>q.includes("set status='failed',result="))).toBe(true);
     expect(writes.some(q=>q.includes("set status='completed'"))).toBe(false);
   });
+  it('routes invalid foundations OpenAI output to bounded repair without making it reusable',async()=>{
+    const result=await providerCheckpoint({action:'complete',...identity,provider:'openai',stage:'foundations_writer_v3',result:{ok:true,parsed_json:{version:'coaching-foundations-v3'},stop_reason:'stop'}});
+    expect(result).toEqual({status:'rejected_contract',repair_required:true});
+    mocks.rejectOwner=true;
+    await expect(providerCheckpoint({action:'complete',...identity,provider:'openai',stage:'foundations_writer_v3',result:{ok:true,parsed_json:{},stop_reason:'stop'}})).rejects.toThrow('ownership changed');
+  });
   it('still completes valid drafts and refuses ownership changes for rejected drafts',async()=>{
     expect(await providerCheckpoint({action:'complete',...identity,result:{ok:true,parsed_json:draft,stop_reason:'end_turn'}})).toEqual({status:'completed'});
     mocks.rejectOwner=true;

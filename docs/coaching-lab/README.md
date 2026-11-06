@@ -1,6 +1,6 @@
 # Coaching foundations evaluation — isolated only
 
-Latest isolated phase: [Tyler-faithful evaluation](TYLER-FAITHFUL-EVALUATION.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+Latest isolated phase: [November 6 integration and evaluation](INTEGRATION-EVALUATION-2026-11-06.md). Earlier results below remain historical evidence, not the latest candidate verdict.
 
 Authorized November 5, 2026. Scope: substantive Call 2 selling for main documentaries, Next Level CEO, and reality. No Call 1 rollout, production publication, Slack delivery, source mutations, or accepted report writes.
 
@@ -44,7 +44,7 @@ Pricing is usage-based standard API pricing, checked November 5 against provider
 
 `acceptReview` rejects contradictory verdicts, unsupported evidence references and silent eligibility changes. `usage.cjs` accounts separately for OpenAI fresh input, cache writes, cache reads and output. The first OpenAI receipts revealed `cache_write_tokens`; their initial local estimates used the older field name and are reconciled from saved raw receipts without paid re-requests. Both the original and corrected accounting are retained privately.
 
-See [production integration boundary](INTEGRATION.md) for the explicit compatibility and safety changes required before this report contract can be deployed. The experiment does not modify those production consumers.
+See [production integration boundary](INTEGRATION.md) for the explicit compatibility and safety changes required before this report contract can be deployed. The original experiment did not modify those consumers; the November 6 follow-up adds isolated candidate readers and transport adapters, without deploying them.
 
 ## Evaluation freeze and held outputs
 
