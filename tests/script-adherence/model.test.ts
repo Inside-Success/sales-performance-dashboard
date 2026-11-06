@@ -76,3 +76,10 @@ it('keeps non-conversation sales stage unknown when no stage evidence exists',()
  expect(()=>parseAnalysis({...raw,attendance:'conversation'},source)).toThrow('Missing classification');
  expect(()=>parseAnalysis({...raw,stage:'call_1'},source)).toThrow('Missing classification');
 });
+
+it('preserves every source character when an oversized draft is omitted from independent review',()=>{
+ const transcript='[00:00:01] Rep: Opening evidence\n[00:00:02] Buyer: Closing evidence';
+ const request=buildAnalysisRequest('gpt-6.1-terra',transcript,{title:'Call',rep:'Rep'},{irrelevant:'x'.repeat(240000)});
+ const content=JSON.stringify(request);
+ expect(content).toContain('Opening evidence');expect(content).toContain('Closing evidence');expect(content).toContain('previous draft is omitted');expect(content).not.toContain('x'.repeat(100));
+});

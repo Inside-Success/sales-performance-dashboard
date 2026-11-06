@@ -2,7 +2,7 @@ import {observedRep} from './attribution';
 import {createHash} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
 import {z} from 'zod';
-import {buildAnalysisRequest,parseAnalysis,MODELS,type AdherenceModel,PIPELINE_VERSION} from './model';
+import {buildAnalysisRequest,parseAnalysis,MODELS,type AdherenceModel,PIPELINE_VERSION,RequestPreparationError} from './model';
 import {usageCost} from './cost';
 import {actionStatus,scriptFor,summarize,type Analysis} from './contract';
 import {RUBRIC_VERSION} from './rubric';
@@ -44,7 +44,7 @@ export async function saveSource(id:string,owner:string,files:Array<{id:string;v
  // Relative timecodes restart per recording segment; retain segment label and source chronology.
  const text=[...expected].sort((a,b)=>a.start.localeCompare(b.start)).map((f,i)=>transcriptFromVtt(files.find(x=>x.id===f.id)!.vtt).replace(/^\[/gm,`[segment ${i+1} `)).join('\n');
  if(Buffer.byteLength(text)>180000){
-  await sql`update script_adherence_jobs set state='held',error='Full transcript exceeds supported size; retained for review without truncation',lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
+  await sql`update script_adherence_jobs set transcript=${text},transcript_hash=${digest(text)},state='held',error='Full transcript exceeds supported size; retained for review without truncation',lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
   return {saved:false,held:true};
  }
  const roster=await sql`select distinct name from script_adherence_closers`;
@@ -57,14 +57,23 @@ export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthrop
  const sql=db();const configs=await sql`select * from script_adherence_control where id=true`;if(!configs.length)return null;const c=configs[0];if((c.transport??'realtime')!==transport)return null;
  const reserved=await sql`select r.id,r.request_body,j.id as job_id,r.stage from script_adherence_requests r join script_adherence_jobs j on r.id=j.draft_request_id or r.id=j.review_request_id where r.status='reserved' and r.transport=${transport} and not exists(select 1 from script_adherence_batch_members bm where bm.request_id=r.id) and not (r.id=any(${exclude}::text[])) and (${provider||''}='' or (r.model like 'gpt-%')=${provider==='openai'}) and r.request_body is not null and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? j.id) order by r.created_at limit 1`;
  if(reserved.length)return {id:reserved[0].id,jobId:reserved[0].job_id,body:reserved[0].request_body,stage:reserved[0].stage==='unattended-review'?'review':'draft',pipeline:PIPELINE_VERSION};
+ for(let skipped=0;skipped<20;skipped++){
  const rows=await sql`select * from script_adherence_jobs where state in ('ready','review_ready') and (${provider||''}='' or ((case when state='review_ready' then ${c.review_model} else ${c.draft_model} end) like 'gpt-%')=${provider==='openai'}) and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? id) order by case when state='review_ready' then 0 else 1 end,created_at limit 1`;
  if(!rows.length)return null;const j=rows[0],review=j.state==='review_ready',model=(review?c.review_model:c.draft_model) as AdherenceModel;if(!MODELS.includes(model))throw Error('Unpriced model');
- const body=buildAnalysisRequest(model,j.transcript,{title:j.title,rep:j.rep},review?j.draft:undefined);
+ let body;
+ try{body=buildAnalysisRequest(model,j.transcript||'',{title:j.title,rep:j.rep},review?j.draft:undefined);}catch(e){
+  if(!(e instanceof RequestPreparationError))throw e;
+  // Only a deterministic source-specific failure may be isolated. Do not swallow DB/provider faults.
+  await sql`update script_adherence_jobs set state='held',error=${'Request preparation: '+e.code+'; '+e.message},updated_at=now() where id=${j.id} and state=${j.state} and not exists(select 1 from script_adherence_calls c where c.source_key=${j.source_key})`;
+  continue;
+ }
  if(transport==='batch'){if(model!=='gpt-6.1-terra')throw Error('Batch requires evaluated Terra model');delete (body as {service_tier?:string}).service_tier;}
  const requestHash=digest(JSON.stringify(body)),id=digest(j.source_key+requestHash+transport),reserve=model==='gpt-6.1-terra'?500000:200000;
  const result=await sql`with budget as (select * from script_adherence_budget where project='pilot-2026-11-02' for update),job as (update script_adherence_jobs set state=${review?'review_pending':'draft_pending'},draft_request_id=case when ${review} then draft_request_id else ${id} end,review_request_id=case when ${review} then ${id} else review_request_id end,updated_at=now() where id=${j.id} and state=${j.state} and exists(select 1 from budget where (ceiling_microusd is null or committed_microusd+${reserve}<=ceiling_microusd)) returning id), inserted as (insert into script_adherence_requests(id,project,source_key,request_hash,model,reserved_microusd,status,stage,request_body,transport) select ${id},'pilot-2026-11-02',${j.source_key},${requestHash},${model},${reserve},'reserved',${review?'unattended-review':'unattended-draft'},${JSON.stringify(body)}::jsonb,${transport} from job returning id),debited as(update script_adherence_budget set committed_microusd=committed_microusd+${reserve} where project='pilot-2026-11-02' and exists(select 1 from inserted) returning project) select id from inserted`;
  // Request FK is deferrable to allow one atomic job/request reservation transaction.
  return result.length?{id,jobId:j.id,body,stage:review?'review':'draft',pipeline:PIPELINE_VERSION}:null;
+ }
+ return null; // Bounded isolation: a later scheduler tick can continue through additional held sources.
 }
 export async function receive(id:string,jobId:string,payload:Record<string,unknown>){
  const sql=db(),rows=await sql`select r.*,j.transcript,j.transcript_hash,j.account_id,j.meeting_uuid,j.rep,j.title,j.started_at::text,j.source_url,j.state as job_state,j.draft_request_id,j.review_request_id from script_adherence_requests r join script_adherence_jobs j on j.id=${jobId} where r.id=${id} and r.source_key=j.source_key and (j.draft_request_id=r.id or j.review_request_id=r.id)`;
