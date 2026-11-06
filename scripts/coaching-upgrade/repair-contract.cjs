@@ -18,7 +18,9 @@ function safetyDigest(text){
 }
 function safetyValue(record,path){return path?path.split('.').reduce((v,k)=>v?.[k],record):record;}
 function safetyL1Decisions(hits,screen){
- const decisions=screen.l1_decisions;
+ // Absence is safe only when there is nothing to adjudicate. Null/malformed
+ // lists and real candidates still fail closed, including cached responses.
+ const decisions=hits.length===0&&!Object.prototype.hasOwnProperty.call(screen,'l1_decisions')?[]:screen.l1_decisions;
  if(!Array.isArray(decisions)||decisions.length!==hits.length)throw Error('Enhanced coaching safety hold: missing L1 adjudication');
  const byId=new Map();
  for(const d of decisions){
@@ -99,7 +101,13 @@ function safetyRepairPrompt(state,targets){
 function safetyAdjudicationPrompt(){
  return '\nFor EVERY L1 hit return l1_decisions:[{id:"exact L1 id",decision:"retain|repair",reason:"specific evidence and contextual reason"}]. Use [] when no hits. L1 hits are candidates, not proven violations. Retain supported factual descriptions, appropriate conditional future advice, and explicit warnings against unsupported practices. Repair unsupported certification or endorsed unsafe advice. Do not clear a candidate merely because it is negated: assess the full context and offer knowledge. Generic case_pass is not an L1 decision. Other findings still require exact prose paths and quotations. case_pass must be false if any L1 decision is repair or any finding array is nonempty.';
 }
+function safetyScreenContract(prompt){
+ const old='{"case_pass":true,"unsupported_specifics":[],"collisions":[],"additional_safety_hits":[],"rationale":""}';
+ const next='{"case_pass":true,"l1_decisions":[],"unsupported_specifics":[],"collisions":[],"additional_safety_hits":[],"rationale":""}';
+ if(prompt.split(old).length!==2)throw Error('Safety screen response contract drift');
+ return safetyAdjudicationPrompt().trim()+'\n\n'+prompt.replace(old,next);
+}
 function safetyRepairFormat(targets){
  return {type:'json_schema',schema:{type:'object',properties:{repairs:{type:'array',minItems:1,items:{type:'object',properties:{id:{type:'string',enum:targets.map(t=>t.id)},path:{type:'string',enum:[...new Set(targets.map(t=>t.path))]},operation:{type:'string',enum:['replace_field']},after:{type:'string'},reason:{type:'string'}},required:['id','path','operation','after','reason'],additionalProperties:false}}},required:['repairs'],additionalProperties:false}};
 }
-module.exports={safetyDigest,safetyValue,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs,safetyRepairPrompt,safetyAdjudicationPrompt,safetyRepairFormat};
+module.exports={safetyScreenContract,safetyDigest,safetyValue,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs,safetyRepairPrompt,safetyAdjudicationPrompt,safetyRepairFormat};

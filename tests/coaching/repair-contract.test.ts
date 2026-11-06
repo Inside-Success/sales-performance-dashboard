@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
-const {safetyDigest,safetyRepairFormat,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
+const {safetyScreenContract,safetyDigest,safetyRepairFormat,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
 const {normalizeObjectionReport,objectionErrors}=require('../../src/lib/objection-coaching.cjs');
 const report={version:'objection-coaching-v2',summary:'Supported summary.',show:'Clean and Thriving',strengths:[{observation:'You asked whether a business card could work. When she explained her limits, you did not argue.',evidence_ids:['T0001']}]};
 const finding=(before:string)=>({case_id:'c',path:'strengths.0.observation',before,layer:'L2',reason:'Do not praise unsupported payment workarounds.'});
@@ -62,5 +62,26 @@ describe('shared coaching repair contract',()=>{
   const row={...repair(t[0]),after:'Supported advice [00:01:03].'};
   expect(applySafetyFieldRepairs(r,t,[row]).coaching.summary).toBe(row.after);
   expect(()=>applySafetyFieldRepairs(r,t,[{...row,after:'Supported advice.'}])).toThrow('citation');
+ });
+});
+
+describe('empty safety adjudication regression',()=>{
+ it('accepts absent decisions only for zero candidates, for cached and fresh responses',()=>{
+  expect(safetyL1Decisions([],{case_pass:true})).toEqual([]);
+  expect(safetyL1Decisions([],{case_pass:true,l1_decisions:[]})).toEqual([]);
+  for(const value of [null,{},'',false,[{id:'unexpected',decision:'retain',reason:'x'}]])expect(()=>safetyL1Decisions([],{l1_decisions:value})).toThrow();
+  expect(()=>safetyL1Decisions([{id:'real'}],{case_pass:true})).toThrow();
+ });
+ it('does not clear substantive L2 findings just because L1 is empty',()=>{
+  const screen={case_pass:false,additional_safety_hits:[{path:'summary',sentence:'Supported summary.'}]};
+  const targets=[...safetyL1Decisions([],screen),...screen.additional_safety_hits.flatMap((f,i)=>safetyFindingTargets('c',report,f,'unsafe',i))];
+  expect(safetyFieldTargets(report,targets)).toHaveLength(1);
+ });
+ it('uses one complete response example and puts adjudication before source data',()=>{
+  const old='{"case_pass":true,"unsupported_specifics":[],"collisions":[],"additional_safety_hits":[],"rationale":""}';
+  const p=safetyScreenContract('Return '+old+'\nTRANSCRIPT: buyer words');
+  expect(p).not.toContain(old);expect(p).toContain('"l1_decisions":[]');
+  expect(p.indexOf('For EVERY L1')).toBeLessThan(p.indexOf('TRANSCRIPT:'));
+  expect(()=>safetyScreenContract('different contract')).toThrow('drift');
  });
 });
