@@ -29,3 +29,10 @@ PR #393 is merged and deployed; verified results follow below. No changes to coa
 - Authenticated production dashboard verified 1,907 saved results, 189 in analysis and one retained hold immediately after recovery submission. Owner status showed the new successful processor check and one active batch; it correctly retained attention for the oversized individual call.
 
 The ongoing recovery uses the existing provider Batch transport and 15-minute checker. Submission alone is not completion: the audit currently confirms resumed processing, and final provider results remain pending. The saved private baseline and audit helper can verify subsequent scheduled progress without altering requests. No claim of universal AI accuracy or unlimited source-size support is made.
+
+
+## Completed first recovery batch — 00:26 PKT, November 7
+
+All 100 resumed reviews completed at the provider with zero failed requests, were collected through the same durable runner and published successfully. This includes the formerly blocking full-source call. All original 70 reservation IDs/hashes were reused and settled; no duplicate call rows or missing metrics were found. Calls and metrics both total 2,007, with every original 1,906 result unchanged. The ledger reconciles exactly at $55.154011 actual spend with zero outstanding reservation at this checkpoint. The 100 recovered batch reviews cost $1.194092, plus the separate classification review's $0.030351. Eighty-nine initial analyses remain queued for the normal 15-minute checker. One individually oversized call remains held with its full source preserved; missing-transcript records are unchanged and separate.
+
+The authenticated dashboard and owner status were checked after deployment. The runtime fix is live, and completed provider receipts plus saved results establish recovery beyond submission alone. Remaining ordinary catch-up results depend on the existing batch schedule and provider completion; they are not represented as already finished.
