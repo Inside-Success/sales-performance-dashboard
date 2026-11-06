@@ -52,3 +52,17 @@ it('does not reserve more requests when four provider batches are already active
  sql.mockImplementation(async(parts:TemplateStringsArray)=>{const q=parts.join('');if(q.includes('returning id'))return [{id:true}];if(q.includes('select * from script_adherence_control'))return [{transport:'batch',enabled:true,canary_keys:[]}];if(q.includes('select count(*)::int as count'))return [{count:4}];return [];});
  await runProviderBatch();expect(claimModel).not.toHaveBeenCalled();expect(fetcher).not.toHaveBeenCalled();
 });
+
+it('persists a partial manifest when a later claim fails, without submitting or swallowing the fault',async()=>{
+ sql.mockImplementation(async(parts:TemplateStringsArray)=>{const q=parts.join('');if(q.includes('returning id'))return [{id:true}];if(q.includes('select * from script_adherence_control'))return [{transport:'batch',enabled:true,canary_keys:[]}];if(q.includes('select count(*)::int as count'))return [{count:0}];return [];});
+ claimModel.mockResolvedValueOnce({id:'existing-reservation',jobId:'job',body:{model:'gpt-6.1-terra'},stage:'review'}).mockRejectedValueOnce(new Error('database unavailable'));
+ await expect(runProviderBatch()).rejects.toThrow('database unavailable');
+ expect(sql.transaction).toHaveBeenCalledTimes(1);expect(fetcher).not.toHaveBeenCalled();
+ const member=sql.mock.calls.find(c=>c[0].join('').includes('insert into script_adherence_batch_members'))!;
+ expect(member.some(v=>typeof v==='string'&&v.includes('existing-reservation'))).toBe(true);
+ expect(sql.mock.calls.some(c=>c[0].join('').includes('lease_owner=null'))).toBe(true);
+});
+it('keeps the specific processor error when the scheduler reports a generic failure',async()=>{
+ const {recordSchedulerFailure}=await import('@/lib/script-adherence/provider-batch');await recordSchedulerFailure('checker');
+ expect(sql.mock.calls[0][0].join('')).toContain('error=coalesce(error,');
+});

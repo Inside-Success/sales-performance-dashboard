@@ -34,7 +34,7 @@ it('does not advance coverage when any closer has no durable terminal page',asyn
 it('holds oversized sources without truncation or repeated download retries',async()=>{
  sql.mockResolvedValueOnce([{files:[{id:'a',start:'1'}],rep:'Rep'}]).mockResolvedValueOnce([]);
  const result=await saveSource('id','owner',[{id:'a',vtt:'WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.000\n'+ 'speech '.repeat(30000)}]);
- expect(result).toEqual({saved:false,held:true});expect(sql.mock.calls[1][0].join('')).toContain("state='held'");expect(sql).toHaveBeenCalledTimes(2);
+ expect(result).toEqual({saved:false,held:true});expect(sql.mock.calls[1][0].join('')).toContain("state='held'");expect(sql.mock.calls[1][0].join('')).toContain('transcript_hash=');expect(sql.mock.calls[1].some(v=>typeof v==='string'&&v.endsWith('speech '.repeat(30000).trim()))).toBe(true);expect(sql).toHaveBeenCalledTimes(2);
 });
 it('accepts a semantically identical saved receipt without settling twice',async()=>{
  sql.mockResolvedValueOnce([{status:'completed',actual_microusd:100,job_state:'complete'}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{matches:true}]);
@@ -50,4 +50,24 @@ it('accounts for previously accepted recordings without putting them back in the
  const {discover}=await import('@/lib/script-adherence/queue');sql.mockResolvedValue([]);
  await discover([{accountId:'nTC8wAG7SsijjSRAP3IOng',uuid:'known',rep:'Rep',title:'Call',startedAt:'2026-11-01T00:00:00Z',sourceUrl:'',files:[]}]);
  const q=sql.mock.calls[0][0].join('');expect(q).toContain("then 'complete' else 'awaiting_transcript'");expect(q).toContain('c.source_key=r.id');expect(q).toContain("where script_adherence_jobs.state='awaiting_transcript'");
+});
+
+it('isolates an oversized first call and reserves the next usable call',async()=>{
+ const {claimModel}=await import('@/lib/script-adherence/queue');let isolated=false;
+ sql.mockImplementation(async(parts:TemplateStringsArray,...values:unknown[])=>{const q=parts.join('');
+ if(q.includes('select * from script_adherence_control'))return [{enabled:true,canary_keys:[],transport:'batch',review_model:'gpt-6.1-terra',draft_model:'gpt-6.1-terra'}];
+ if(q.includes('select r.id,r.request_body'))return [];
+ if(q.includes("where state in ('ready','review_ready')"))return [isolated?{id:'valid',source_key:'valid',state:'ready',transcript:'[00:01] Rep: Hello',title:'Call',rep:'Rep'}:{id:'oversized',source_key:'oversized',state:'review_ready',transcript:'[00:01] Rep: '+ 'speech '.repeat(40000),title:'Call',rep:'Rep',draft:{}}];
+ if(q.includes("set state='held'")){expect(values).toContain('oversized');isolated=true;return [];}
+ if(q.includes('with budget as'))return [{id:'reserved'}];return [];
+ });
+ expect((await claimModel([],'openai','batch'))?.jobId).toBe('valid');expect(isolated).toBe(true);
+});
+it('reuses an unattached reservation without reserving or charging it again',async()=>{
+ const {claimModel}=await import('@/lib/script-adherence/queue');sql.mockResolvedValueOnce([{enabled:true,transport:'batch',canary_keys:[]}]).mockResolvedValueOnce([{id:'existing',job_id:'j',stage:'unattended-review',request_body:{model:'gpt-6.1-terra'}}]);
+ expect((await claimModel([],'openai','batch'))?.id).toBe('existing');expect(sql).toHaveBeenCalledTimes(2);
+});
+it('does not turn an infrastructure error into an individual call hold',async()=>{
+ const {claimModel}=await import('@/lib/script-adherence/queue');sql.mockResolvedValueOnce([{enabled:true,transport:'batch',canary_keys:[]}]).mockRejectedValueOnce(new Error('connection failed'));
+ await expect(claimModel([],'openai','batch')).rejects.toThrow('connection failed');expect(sql).toHaveBeenCalledTimes(2);
 });

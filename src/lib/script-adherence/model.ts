@@ -6,7 +6,7 @@ import {resultSchema,analysisPrompt,validateAnalysis,scriptFor} from './contract
 import {indexTranscript,indexedText,resolveEvidence} from './evidence';
 export const MODELS=['claude-haiku-5-5','gpt-6.1-terra','gpt-6-luna'] as const;
 export type AdherenceModel=typeof MODELS[number];
-export const PIPELINE_VERSION='adherence-two-pass-2026-11-05-v11';
+export const PIPELINE_VERSION='adherence-two-pass-2026-11-07-v12';
 export const CONDITIONS=[...new Set(Object.values(RUBRICS).flatMap(r=>r.actions.flatMap(a=>a.when?[a.when]:[])))];
 const conditionSchema=z.object(Object.fromEntries(CONDITIONS.map((_,i)=>[`condition_${i}`,z.object({state:z.enum(['yes','no','unknown']),quote:z.string(),reason:z.string()}).strict()]))).strict();
 export const fullOutputSchema=classificationSchema.extend({actions:resultSchema.shape.actions});
@@ -24,16 +24,23 @@ export function strictJsonSchema(schema:unknown):unknown{
   if(v.type==='object'&&v.properties){out.required=Object.keys(v.properties);out.additionalProperties=false;}return out;
  }return schema;
 }
+export class RequestPreparationError extends Error {
+ constructor(public readonly code:'missing_transcript'|'context_limit',message:string){super(message);this.name='RequestPreparationError';}
+}
 export function buildAnalysisRequest(model:AdherenceModel,transcript:string,meta:{title:string;rep:string},draft?:unknown){
- const turns=indexTranscript(transcript);if(!turns.length)throw Error('Missing transcript');
+ const turns=indexTranscript(transcript);if(!turns.length)throw new RequestPreparationError('missing_transcript','Missing transcript');
  const ref=z.string();
  const component=z.object({state:z.enum(['done','not_done','unknown','not_applicable','deferred']),quote:ref,timestamp:z.string()}).strict();
  const ids=[...new Set(Object.values(RUBRICS).flatMap(r=>r.actions.map(a=>a.id)))] as [string,...string[]];
  const output=classificationSchema.extend({conditions:conditionSchema,familyEvidence:ref,stageEvidence:ref,priorPresentationEvidence:ref,actions:z.array(z.object({id:z.enum(ids),applicability:z.enum(['yes','no','unknown']),reason:z.string(),components:z.array(component),playbackFraction:z.number().nullable()}).strict())});
  const schema=strictJsonSchema(z.toJSONSchema(output,{reused:'ref'}));
  const system=`${PIPELINE_VERSION}\n${draft===undefined?'Independently classify and measure the call.':reviewPrompt}\n${classificationPrompt}\n${analysisPrompt()}\n${procedure}\n${semantics}\n${deferralPolicy}\nCONDITION KEYS: ${JSON.stringify(Object.fromEntries(CONDITIONS.map((c,i)=>[`condition_${i}`,c])))}. Use applicable states and matching component states consistently with these conditions; a false or unknown condition does not erase positive performed/deferred evidence.\nEVIDENCE OVERRIDE: use exactly one supplied T-ID (or empty for absent evidence) in quote and classification evidence fields. Do not copy prose there. The application resolves the exact original quote and timestamp. Never invent IDs. Return actions:[] for ineligible or unsupported scripts. Return an array with every action for your final classification, and exactly the required number of components per action. Check the following manifest before returning; do not borrow any action or component count from another script: ${JSON.stringify(Object.fromEntries(Object.entries(RUBRICS).map(([s,r])=>[s,r.actions.map(a=>({id:a.id,components:a.components.length}))])))}. For an interrupted or incomplete recording, absence of a conditional trigger is not proof the condition did not apply. Mark that action applicability unknown with unknown components unless positive evidence establishes that it did not apply. Preserve explicit non-applicability such as a clearly declined offer; do not erase observed completed actions. Do not report reasoning steps.`;
- const user=`Title (unreliable): ${meta.title}\nRep: ${meta.rep}\nFULL TRANSCRIPT:\n${indexedText(turns)}${draft===undefined?'':'\nUNTRUSTED DRAFT TO AUDIT:\n'+JSON.stringify(draft)}`;
- if(Buffer.byteLength(system+user)>220000)throw Error('Input exceeds bounded context; hold, do not truncate');
+ let user=`Title (unreliable): ${meta.title}\nRep: ${meta.rep}\nFULL TRANSCRIPT:\n${indexedText(turns)}${draft===undefined?'':'\nUNTRUSTED DRAFT TO AUDIT:\n'+JSON.stringify(draft)}`;
+ // The prior model answer is optional; source evidence and review instructions are not.
+ if(Buffer.byteLength(system+user)>220000&&draft!==undefined){
+  user=`Title (unreliable): ${meta.title}\nRep: ${meta.rep}\nFULL TRANSCRIPT:\n${indexedText(turns)}\nThe previous draft is omitted to preserve the complete source. Independently review all classifications and actions against that source.`;
+ }
+ if(Buffer.byteLength(system+user)>220000)throw new RequestPreparationError('context_limit','Input exceeds bounded context; hold, do not truncate');
  return model==='claude-haiku-5-5'?{model,max_tokens:16000,system:[{type:'text',text:system,cache_control:{type:'ephemeral'}}],messages:[{role:'user',content:user}],output_config:{effort:'medium',format:{type:'json_schema',schema}}}:{model,service_tier:'default',max_completion_tokens:16000,reasoning_effort:'medium',messages:[{role:'system',content:system},{role:'user',content:user}],response_format:{type:'json_schema',json_schema:{name:'script_adherence',strict:true,schema}}};
 }
 export function parseAnalysis(raw:unknown,transcript:string){

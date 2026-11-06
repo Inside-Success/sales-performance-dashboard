@@ -86,13 +86,17 @@ export async function runProviderBatch(){
   // Bound provider concurrency; queued calls stay durable. Reviews retain claim priority.
   const [inflight]=await sql`select count(*)::int as count from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting')`;
   if((config.enabled||config.canary_keys.length)&&Number(inflight?.count||0)<4&&Date.now()<deadline-45000){
-   const work=[];for(let i=0;i<100&&Date.now()<deadline-45000;i++){const item=await claimModel(work.map(w=>w.id),'openai','batch');if(!item)break;work.push(item);}
+   const work=[];let preparationFailure:unknown;
+   try{for(let i=0;i<100&&Date.now()<deadline-45000;i++){const item=await claimModel(work.map(w=>w.id),'openai','batch');if(!item)break;work.push(item);}}catch(e){preparationFailure=e;}
+   // Persist already reserved work even if a subsequent claim fails. Never lose a partial manifest.
+
    if(work.length){
     const id=randomUUID();await sql.transaction([
      sql`insert into script_adherence_provider_batches(id) values(${id})`,
      sql`insert into script_adherence_batch_members(request_id,batch_id,job_id) select r.id,${id},r.job from jsonb_to_recordset(${JSON.stringify(work.map(w=>({id:w.id,job:w.jobId})))}::jsonb) as r(id text,job text)`,
-    ]);if(Date.now()<deadline-85000)await submit({id,state:'prepared',file_id:null,provider_id:null,submission_at:null},deadline);
+    ]);if(!preparationFailure&&Date.now()<deadline-85000)await submit({id,state:'prepared',file_id:null,provider_id:null,submission_at:null},deadline);
    }
+   if(preparationFailure)throw preparationFailure;
   }
   await sql`update script_adherence_runner set last_success_at=now(),error=null where id=true and lease_owner=${owner}`;
   return {checked:due.length};
@@ -101,7 +105,7 @@ export async function runProviderBatch(){
 }
 
 export async function recordSchedulerFailure(workflowId?:string){
- const sql=db();if(workflowId==='hb3M0O7fYx04oVEs')await sql`update script_adherence_runner set source_error='Source scan reported an error; inspect the scoped n8n execution' where id=true`;else await sql`update script_adherence_runner set error='Provider check reported an error; inspect the scoped n8n execution' where id=true`;
+ const sql=db();if(workflowId==='hb3M0O7fYx04oVEs')await sql`update script_adherence_runner set source_error='Source scan reported an error; inspect the scoped n8n execution' where id=true`;else await sql`update script_adherence_runner set error=coalesce(error,'Provider check reported an error; inspect the scoped n8n execution') where id=true`;
 }
 
 export async function recordSourceSuccess(){const sql=db();await sql`update script_adherence_runner set source_error=null where id=true`;}
