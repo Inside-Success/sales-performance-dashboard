@@ -1,0 +1,54 @@
+const fs=require('node:fs'),crypto=require('node:crypto');
+const pure=require('./contract.cjs');
+function buildIntakeUpdateRecovery(baselines){
+ const intake=structuredClone(baselines.qMQYNQtQbRZWjtG2),worker=structuredClone(baselines['4WXlEbkTrja4AjRa']);
+ const node=(w,name)=>{const n=w.nodes.find(n=>n.name===name);if(!n)throw Error('Missing '+name);return n;};
+ const code=(w,name,jsCode)=>{const n={id:crypto.randomUUID(),name,type:'n8n-nodes-base.code',typeVersion:2,position:[1800,w.nodes.length*20],parameters:{jsCode}};w.nodes.push(n);return n;};
+ const wire=(w,a,b,index=0)=>{w.connections[a]??={main:[]};w.connections[a].main[index]=[{node:b,type:'main',index:0}];};
+ const copy=(w,template,name)=>{const n=structuredClone(template);n.id=crypto.randomUUID();n.name=name;n.position=[2000,w.nodes.length*20];w.nodes.push(n);return n;};
+ const prefix=Object.values(pure).map(f=>f.toString()).join('\n');
+ const prep=node(intake,'Prepare Airtable Write');
+ const anchor='return { json: fields };';if(prep.parameters.jsCode.split(anchor).length!==2)throw Error('Prepare write drift');
+ prep.parameters.jsCode=prep.parameters.jsCode.replace(anchor,'return { json: {...fields,_mmBefore:safeExistingFields} };');
+ const update=node(intake,'Update Airtable Record');if(intake.connections[update.name])throw Error('Unexpected update successors');
+ update.onError='continueErrorOutput';
+ const checkpoint=code(intake,'MM Checkpoint Airtable Update','return $input.all();');
+ for(const c of Object.values(intake.connections))for(const branch of c.main||[])for(const edge of branch||[])if(edge.node===update.name)edge.node=checkpoint.name;
+ wire(intake,checkpoint.name,update.name);
+ const capture=code(intake,'MM Capture Airtable Update Failure',prefix+`\nreturn $input.all().map((item,i)=>{
+ const original=$('MM Checkpoint Airtable Update').itemMatching(i).json;
+ if(!original?.id)throw Error('Cannot identify failed Airtable update input');
+ const error=item.json.error||item.json;
+ const message=String(error.message||error.description||'Airtable update failed').slice(0,600);
+ let payload,status;try{payload=intakeUpdatePayload(original,original._mmBefore||{});payload.due_at=new Date(Date.now()+300000).toISOString();payload.error=message;status='airtable_update_pending';}catch(e){payload={error:message,hold:String(e.message)};status='needs_review';}
+ return {json:{event_key:$execution.id+':'+original.id+':Update Airtable Record',workflow_id:$workflow.id,execution_id:String($execution.id),call_key:original['Automation Key']||'',stage:'Update Airtable Record',status,message:JSON.stringify(payload),occurred_at:new Date().toISOString()},pairedItem:{item:i}};
+});`);
+ const persist=copy(intake,node(intake,'MM Store Recovery Event'),'MM Persist Airtable Update Failure');
+ persist.retryOnFail=true;persist.maxTries=3;persist.waitBetweenTries=5000;
+ wire(intake,update.name,capture.name,1);wire(intake,capture.name,persist.name);
+ const notify=code(intake,'MM Summarize Held Intake Update',`return $input.all().flatMap((i,index)=>{const d=i.json;if(d.status==='airtable_update_pending')return [];let p;try{p=JSON.parse(d.message);}catch{p={};}return [{json:{...d,message:[p.error,p.hold].filter(Boolean).join(' | ').slice(0,900)},pairedItem:{item:index}}];});`);
+ wire(intake,persist.name,notify.name);wire(intake,notify.name,'Notify Intake Failure');
+ const select=node(worker,'Select One Rejected Write');
+ select.parameters.jsCode=prefix+'\n'+select.parameters.jsCode.replace('return candidates.slice(0,1).map(json=>({json}));','const updates=selectIntakeUpdate(rows);return (updates.length?updates:candidates.slice(0,1)).map(json=>({json}));');
+ const branch=copy(worker,node(worker,'Intake Delivery Confirmed?'),'Is Airtable Update Recovery?');
+ branch.parameters.conditions.conditions[0].leftValue="={{ $json.stage === 'Update Airtable Record' }}";
+ wire(worker,'Claim Rejected Write',branch.name);wire(worker,branch.name,'Read Cached Intake',1);
+ const parse=code(worker,'Read Saved Airtable Update',prefix+`\nconst event=$input.first().json;const payload=JSON.parse(event.message);intakeUpdatePayload({id:payload.record_id,...payload.fields},payload.before);return [{json:{payload,event}}];`);parse.onError='continueErrorOutput';wire(worker,branch.name,parse.name);
+ const http=(name,parameters)=>{const n={id:crypto.randomUUID(),name,type:'n8n-nodes-base.httpRequest',typeVersion:4.2,position:[2200,worker.nodes.length*20],retryOnFail:true,maxTries:3,waitBetweenTries:5000,onError:'continueErrorOutput',credentials:structuredClone(update.credentials),parameters:{authentication:'predefinedCredentialType',nodeCredentialType:'airtableTokenApi',options:{timeout:60000},...parameters}};worker.nodes.push(n);return n;};
+ const url="={{ 'https://api.airtable.com/v0/appNIvRt5uouRrcZ6/tblD1VHKC49agh9QZ/'+$('Read Saved Airtable Update').first().json.payload.record_id }}";
+ const read=http('Read Current Intake Record',{url});wire(worker,parse.name,read.name);
+ const compare=code(worker,'Guard Saved Intake Update',prefix+`\nconst saved=$('Read Saved Airtable Update').first().json;return [{json:{...saved,patch:intakeUpdatePatch(saved.payload,$input.first().json),current:$input.first().json}}];`);compare.onError='continueErrorOutput';wire(worker,read.name,compare.name);
+ const needs=copy(worker,branch,'Needs Intake Update?');needs.parameters.conditions.conditions[0].leftValue='={{ $json.patch.needs_write }}';wire(worker,compare.name,needs.name);
+ const patch=http('Apply Saved Intake Update',{url,method:'PATCH',sendBody:true,specifyBody:'json',jsonBody:'={{ {fields: $json.patch.fields, typecast: true} }}'});patch.retryOnFail=false;wire(worker,needs.name,patch.name);
+ const reread=http('Verify Current Intake Record',{url});wire(worker,patch.name,reread.name);wire(worker,needs.name,reread.name,1);
+ const verify=code(worker,'Confirm Saved Intake Update',prefix+`\nconst saved=$('Read Saved Airtable Update').first().json;verifyIntakeUpdate(saved.payload,$input.first().json);return [{json:{id:saved.event.id,status:'recovered'}}];`);verify.onError='continueErrorOutput';wire(worker,reread.name,verify.name);
+ const done=copy(worker,node(worker,'Mark Intake Recovery Failed'),'Mark Airtable Update Recovered');done.parameters.columns.value={status:'recovered'};done.parameters.filters.conditions=[{keyName:'id',condition:'eq',keyValue:"={{ $('Claim Rejected Write').first().json.id }}"},{keyName:'status',condition:'eq',keyValue:'intake_recovering'}];wire(worker,verify.name,done.name);
+ const failure=code(worker,'Classify Intake Update Recovery Failure',`const event=$('Claim Rejected Write').first().json;let p;try{p=JSON.parse(event.message);}catch{p={};}const e=$input.first().json;const message=String(e.error?.message||e.message||e.error||'Recovery failed').slice(0,600);const transient=/429|50[0234]|timeout|timed out|ECONN|ENOTFOUND|service unavailable|temporarily unavailable/i.test(message);p.attempt=Number(p.attempt||0)+1;p.error=message;p.due_at=new Date(Date.now()+Math.min(3600000,300000*2**p.attempt)).toISOString();return [{json:{id:event.id,status:transient&&p.attempt<3?'airtable_update_pending':'intake_recovery_failed',message:JSON.stringify(p)}}];`);
+ const save=copy(worker,done,'Save Intake Update Recovery Result');save.parameters.columns.value={status:'={{ $json.status }}',message:'={{ $json.message }}'};save.parameters.columns.schema.push({id:'message',displayName:'message',type:'string',display:true,required:false,canBeUsedToMatch:true});wire(worker,failure.name,save.name);
+ const terminal=copy(worker,branch,'Intake Update Needs Review?');terminal.parameters.conditions.conditions[0].leftValue="={{ $json.status === 'intake_recovery_failed' }}";wire(worker,save.name,terminal.name);wire(worker,terminal.name,'Notify Unfinished Intake Recovery');
+ for(const n of [parse,read,compare,patch,reread,verify])wire(worker,n.name,failure.name,1);
+ for(const w of [intake,worker])for(const n of w.nodes)if(n.parameters?.jsCode)new (Object.getPrototypeOf(async function(){}).constructor)('$input','$','$json','$execution','$workflow',n.parameters.jsCode);
+ return {qMQYNQtQbRZWjtG2:intake,'4WXlEbkTrja4AjRa':worker};
+}
+module.exports={buildIntakeUpdateRecovery};
+if(require.main===module)fs.writeFileSync(process.argv[3],JSON.stringify(buildIntakeUpdateRecovery(JSON.parse(fs.readFileSync(process.argv[2])))));
