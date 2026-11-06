@@ -26,6 +26,8 @@ function buildIntakeUpdateRecovery(baselines){
  const persist=copy(intake,node(intake,'MM Store Recovery Event'),'MM Persist Airtable Update Failure');
  persist.retryOnFail=true;persist.maxTries=3;persist.waitBetweenTries=5000;
  wire(intake,update.name,capture.name,1);wire(intake,capture.name,persist.name);
+ const notify=code(intake,'MM Summarize Held Intake Update',`return $input.all().flatMap((i,index)=>{const d=i.json;if(d.status==='airtable_update_pending')return [];let p;try{p=JSON.parse(d.message);}catch{p={};}return [{json:{...d,message:[p.error,p.hold].filter(Boolean).join(' | ').slice(0,900)},pairedItem:{item:index}}];});`);
+ wire(intake,persist.name,notify.name);wire(intake,notify.name,'Notify Intake Failure');
  const select=node(worker,'Select One Rejected Write');
  select.parameters.jsCode=prefix+'\n'+select.parameters.jsCode.replace('return candidates.slice(0,1).map(json=>({json}));','const updates=selectIntakeUpdate(rows);return (updates.length?updates:candidates.slice(0,1)).map(json=>({json}));');
  const branch=copy(worker,node(worker,'Intake Delivery Confirmed?'),'Is Airtable Update Recovery?');
