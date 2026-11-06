@@ -19,10 +19,11 @@ function intakeUpdatePatch(payload,record){
  if(clean(old['Call #'])&&old['Call #']!=='Unknown'&&old['Call #']!==want['Call #'])throw Error('Intake recovery call classification conflict');
  if(old['Processing Status']==='Ignored')throw Error('Intake recovery source was intentionally ignored');
  const essential=['Automation Key','Recording File ID','Transcript Google Doc ID','Meeting Transcript Link','Processing Status','Call #'];
+ const same=(k,a,b)=>['Meeting Start Date','Ingested At','Last Seen In Zoom At'].includes(k)&&Number.isFinite(Date.parse(a))&&Number.isFinite(Date.parse(b))?Date.parse(a)===Date.parse(b):clean(a)===clean(b);
  const patch={};
  for(const [k,v] of Object.entries(want)){
-  if(clean(old[k])===clean(v))continue;
-  if(essential.includes(k)||!clean(old[k])||clean(old[k])===clean(before[k]))patch[k]=v;
+  if(same(k,old[k],v))continue;
+  if(essential.includes(k)||!clean(old[k])||same(k,old[k],before[k]))patch[k]=v;
  }
  // Remove only the known obsolete pending-transcript note, never human notes.
  if(/^Waiting for Zoom (?:audio )?transcript[;:]/i.test(clean(old['Manual Review Notes'])))patch['Manual Review Notes']='';

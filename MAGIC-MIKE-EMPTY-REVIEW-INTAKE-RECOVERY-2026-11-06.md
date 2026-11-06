@@ -23,13 +23,13 @@ Apply `scripts/coaching-upgrade/build-empty-adjudication.cjs` after the November
 - The existing update step retains its original retry policy. Its exhausted error output now captures the exact paired record, recording identity, existing transcript document, desired fields and previously read fields into the existing durable failure ledger. No transcript, credential or OAuth token is stored in this recovery payload.
 - The existing five-minute recovery worker gains a separate update-only branch. It claims one eligible receipt atomically, reads the current exact record, verifies meeting/recording/document identity, and patches only the saved update. It never creates a record or document and never invokes classification/coaching AI.
 - Newer manual metadata is preserved. Conflicting identities, documents, call classification and intentionally ignored records remain held. Only the known machine-generated waiting notes are removed.
-- Already-applied writes are reconciled against the read-back. PATCH has no blind transport retry: an ambiguous network failure returns to a fresh read before any subsequent attempt. Transient recovery errors have due-time backoff and a maximum of three scheduled attempts; semantic/authentication failures remain held with the existing notification route.
+- Already-applied writes are reconciled against the read-back, including equivalent Airtable ISO timestamp formatting so a completed update requires no redundant PATCH. PATCH has no blind transport retry: an ambiguous network failure returns to a fresh read before any subsequent attempt. Transient recovery errors have due-time backoff and a maximum of three scheduled attempts; semantic/authentication failures remain held with the existing notification route.
 - Completion is recorded only after reading the source back and matching its key, UUID, recording, document, status and call stage. Only the claimed event is closed, not all events sharing a call key.
 - The normal successful update path adds one pass-through checkpoint and no provider calls or additional workflow executions. Durable payload storage happens on the exhausted failure branch. Existing document-creation recovery is preserved. Non-recoverable capture outcomes still use the existing intake alert, with a concise reason rather than the private saved payload.
 
 ## Verification and rollout
 
-- 170 coaching/review/presentation tests passed, including the empty-list and intake recovery regressions. TypeScript and production build passed.
+- 171 coaching/review/presentation tests passed, including the empty-list and intake recovery regressions. TypeScript and production build passed.
 - Existing durable-provider, retry-policy, crash-recovery and reliability-contract verification scripts passed.
 - Candidate connection validation passed for all four workflows. New non-Code recovery nodes passed runtime configuration validation; embedded Code nodes compile. Pre-existing unreachable legacy-node warnings are unchanged.
 - Live snapshots were compared before every publication; nodes, connections and active published version were checked afterwards. Baseline snapshots and recovery evidence are private under `.private-safety/reliability-2026-11-06/` and are not committed.
@@ -38,8 +38,8 @@ Apply `scripts/coaching-upgrade/build-empty-adjudication.cjs` after the November
 | --- | --- |
 | Official coaching `L8Nn7xncA9ZPDdWA` | `6855e4b5-3df9-44a5-9df4-4f9c9f48ce6f` |
 | Manual coaching `BMRrGxHyXMcgO6j3` | `760ad3d6-a581-4711-8879-d571d072be66` |
-| Zoom intake `qMQYNQtQbRZWjtG2` | `5d430b2d-6a71-4cb7-a9a5-611851c6675e` |
-| Existing intake recovery `4WXlEbkTrja4AjRa` | `8d180b88-ad66-4509-a22e-55e2aaf9c50b` |
+| Zoom intake `qMQYNQtQbRZWjtG2` | `90012051-86af-4ea0-b669-0c1ceb5ad57b` |
+| Existing intake recovery `4WXlEbkTrja4AjRa` | `2b84d256-6a47-421f-9bc6-f2430e900ba5` |
 
 ## Recovery acceptance
 

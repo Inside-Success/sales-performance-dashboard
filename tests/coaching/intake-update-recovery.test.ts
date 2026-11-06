@@ -15,7 +15,7 @@ describe('saved Airtable update recovery',()=>{
   const fields={...wanted,'Manual Review Notes':''};delete (fields as any).id;
   const result=intakeUpdatePatch(p(),{id:'recTest',fields});
   // Old pending notes must not be restored after a successful recovery.
-  expect(result.fields['Manual Review Notes']).not.toBe(before['Manual Review Notes']);
+  expect(result.fields['Manual Review Notes']).not.toBe(before['Manual Review Notes']);expect(result.needs_write).toBe(false);
  });
  it('preserves newer manual metadata and holds identity/document conflicts',()=>{
   const result=intakeUpdatePatch(p(),{id:'recTest',fields:{...before,'Client Name':'Human correction','Manual Review Notes':'Reviewed by owner'}});
@@ -34,4 +34,10 @@ describe('saved Airtable update recovery',()=>{
   expect(selectIntakeUpdate([{...base,message:JSON.stringify({...p(),attempt:3})}],Date.parse('2026-11-06'))).toHaveLength(0);
   expect(selectIntakeUpdate([base],Date.parse('2026-11-04'))).toHaveLength(0);
  });
+});
+
+it('treats Airtable canonical ISO dates as the same saved timestamp',()=>{
+ const payload=intakeUpdatePayload({...wanted,'Meeting Start Date':'2026-11-05T20:58:52Z'},before);
+ const fields={...payload.fields,'Meeting Start Date':'2026-11-05T20:58:52.000Z'};
+ expect(intakeUpdatePatch(payload,{id:'recTest',fields}).needs_write).toBe(false);
 });
