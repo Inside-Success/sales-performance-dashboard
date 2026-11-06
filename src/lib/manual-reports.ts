@@ -1,3 +1,4 @@
+import {GENERATION as FOUNDATIONS_VERSION,read as readFoundations} from "@/lib/foundations-record.cjs";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { OBJECTION_VERSION, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { z } from "zod";
@@ -144,6 +145,7 @@ export function normalizeManualCallback(raw: unknown) {
   if (parsed.status === "completed" && parsed.coaching_version === OBJECTION_VERSION && !readObjectionCoaching(parsed, parsed.public_id)) {
     throw new Error("Enhanced report is missing valid source-aligned coaching");
   }
+  if (parsed.status === "completed" && parsed.coaching_version === FOUNDATIONS_VERSION) readFoundations(parsed, String(parsed.public_id || ""), "manual");
   const whatWentWell = normalizeStringList(parsed.what_went_well);
   const whatToImprove = normalizeStringList(parsed.what_to_improve);
   const objectionsSurfaced = normalizeStringList(parsed.objections_surfaced);

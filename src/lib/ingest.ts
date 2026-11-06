@@ -1,3 +1,4 @@
+import {GENERATION as FOUNDATIONS_VERSION,read as readFoundations} from "@/lib/foundations-record.cjs";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { OBJECTION_VERSION, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { z } from "zod";
@@ -74,6 +75,7 @@ export function normalizeIngestPayload(raw: unknown) {
   }
   const repName = parsed.rep_name || "Unknown rep";
   const repSlug = parsed.rep_slug || slugify(repName);
+  if (parsed.call_status === "scored" && parsed.coaching_version === FOUNDATIONS_VERSION) readFoundations(parsed, String(parsed.source_airtable_record_id || ""), "official");
   const whatWentWell = normalizeStringList(parsed.what_went_well);
   const whatToImprove = normalizeStringList(parsed.what_to_improve);
   const objectionsSurfaced = normalizeStringList(parsed.objections_surfaced);

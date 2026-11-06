@@ -1,6 +1,6 @@
 # Production integration boundary
 
-Latest isolated phase: [Tyler-faithful evaluation](TYLER-FAITHFUL-EVALUATION.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+Latest isolated phase: [November 6 integration and evaluation](INTEGRATION-EVALUATION-2026-11-06.md). Earlier results below remain historical evidence, not the latest candidate verdict.
 
 This branch is an isolated evaluation. Its report is intentionally not accepted by the production v2 validator. A successful isolated report does not bypass production safety or authorize release.
 
@@ -27,4 +27,6 @@ The lab saves each input layer with a source/revision/digest and verifies exact 
 
 ## Acceptance sequence after separate authorization
 
-Offline schema/repair and historical rendering regressions; isolated official/manual workflow replay with real sources and no publishers; authenticated preview review; then a bounded live canary with exact delivery receipts and rollback prepared. Broader activation follows only if output quality and delivery evidence support it. No test can promise zero future failures or prove sales uplift without subsequent rep-use evidence.
+Offline schema/repair and historical rendering regressions; isolated official/manual workflow replay with real sources and real safety review but no production publishers; authenticated preview and delivery-adapter verification. Then present the evidence for the user’s explicit production-replacement decision, with rollback prepared. A live canary is not a substitute for unfinished isolated verification and is not currently authorized. No test can promise zero future failures or prove sales uplift without subsequent rep-use evidence.
+
+November 6 status: the versioned contract, shared official/manual ingest/display/chat readers, prose repair boundary and offline OpenAI checkpoint adapter are implemented on the candidate branch. The complete workflow graphs, real safety replay, Docs/PDF/insights integration and authenticated new-format preview remain unverified or unfinished; see the follow-up report for exact scope.

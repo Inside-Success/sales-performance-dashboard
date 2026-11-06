@@ -1,6 +1,6 @@
 # Tyler-faithful coaching evaluation
 
-Status: isolated experiment complete. Production remains unchanged. This is not a release approval.
+Status: this earlier isolated experiment is complete. See [the follow-up](INTEGRATION-EVALUATION-2026-11-06.md) for the latest candidate and limitations. Production remains unchanged.
 
 ## What changed
 
