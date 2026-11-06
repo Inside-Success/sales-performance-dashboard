@@ -5,7 +5,7 @@ const require=createRequire(import.meta.url),{normalizeOpenAi,decodeOpenAi}=requ
 const body={provider:'openai',request_id:'req',case_id:'recSource',call_purpose:'offline_transport_probe',model:'gpt-6.1-terra',max_tokens:12000,system:'policy',prompt:'source',pricing:{input_mtok:1,cache_read_mtok:.05,cache_write_mtok:1.25,output_mtok:5}};
 const raw={id:'provider-receipt',model:body.model,usage:{prompt_tokens:100,completion_tokens:20,prompt_tokens_details:{cached_tokens:60}},choices:[{finish_reason:'stop',message:{content:'{"value":"reviewed elsewhere"}'}}]};
 describe('offline OpenAI durable-provider adapter',()=>{
- it('accepts OpenAI in the existing exact-request checkpoint identity',()=>expect(checkpointInput.parse({action:'claim',source_id:'recSource',stage:'foundations_writer_v3',provider:'openai',request_hash:'a'.repeat(64)}).provider).toBe('openai'));
+ it('accepts OpenAI in the existing exact-request checkpoint identity',()=>expect(checkpointInput.parse({action:'claim',source_id:'recSource',stage:'foundations_writer_v3',provider:'openai',request_hash:'a'.repeat(64)})).toMatchObject({action:'claim',provider:'openai'}));
  it('preserves exact source/request identity and actual cached usage',()=>{
   const req=normalizeOpenAi(body),r=decodeOpenAi(raw,req);expect(r.request_id).toBe('req');expect(r.case_id).toBe('recSource');expect(r.provider_response_id).toBe(raw.id);expect(r.usage.input_tokens).toBe(40);expect(r.usage.cache_read_input_tokens).toBe(60);expect(r.costs.total_cost_usd).toBeCloseTo(.000143,9);expect(validProviderResult(r)).toBe(true);
  });
