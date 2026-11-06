@@ -1,0 +1,281 @@
+// Attended isolated runner. Requires ignored private inputs; never points to production.
+const fs = require("fs");
+const { hash, save, reserve, settle } = require("./accounting.cjs");
+const { validate, render } = require("./contract.cjs");
+const { system, prompt } = require(
+  require("path").resolve(".private-coaching-lab/prompts.cjs"),
+);
+const { MODELS } = require("../coaching-upgrade/prompts.cjs");
+const p = ".private-coaching-lab";
+const corpus = JSON.parse(fs.readFileSync(".private-coaching-lab/corpus.json"));
+const models = {
+  sonnet: { ...MODELS["claude-sonnet-5-5"], max_tokens: 12000 },
+  opus: { ...MODELS["claude-opus-5-5"], max_tokens: 12000 },
+  haiku: {
+    provider: "anthropic",
+    model: "claude-haiku-5-5",
+    max_tokens: 12000,
+    thinking: { type: "adaptive" },
+    reasoning_effort: "high",
+    prompt_cache: true,
+    pricing: {
+      input_mtok: 0.1,
+      cache_write_mtok: 0.125,
+      cache_read_mtok: 0.01,
+      output_mtok: 0.5,
+    },
+  },
+  terra: {
+    provider: "openai",
+    model: "gpt-6.1-terra",
+    max_tokens: 12000,
+    pricing: {
+      input_mtok: 1,
+      cache_write_mtok: 1.25,
+      cache_read_mtok: 0.05,
+      output_mtok: 5,
+    },
+  },
+  luna: {
+    provider: "openai",
+    model: "gpt-6-luna",
+    max_tokens: 12000,
+    pricing: {
+      input_mtok: 0.1,
+      cache_write_mtok: 0.125,
+      cache_read_mtok: 0.01,
+      output_mtok: 0.5,
+    },
+  },
+};
+models["haiku-medium"] = { ...models.haiku, max_tokens: 24000, reasoning_effort: "medium" };
+models["sonnet-wide"] = { ...models.sonnet, max_tokens: 24000 };
+models["opus-wide"] = { ...models.opus, max_tokens: 24000 };
+function openaiKey() {
+  const key = process.env.COACHING_LAB_OPENAI_API_KEY;
+  if (!key) throw Error("Authorized experiment key unavailable");
+  return key;
+}
+async function request(c, stage, model, prior) {
+  const m = models[model];
+  if (!m) throw Error("Unknown model");
+  const req = {
+    ...m,
+    system,
+    prompt: prompt(c, stage, prior),
+    case_id: c.id,
+    stage,
+  };
+  const id = hash(req),
+    file = p + "/receipts/" + id + ".json";
+  fs.mkdirSync(p + "/receipts", { recursive: true });
+  let receipt;
+  if (fs.existsSync(file)) {
+    receipt = JSON.parse(fs.readFileSync(file));
+    settle(p + "/ledger.json", id, receipt);
+  } else {
+    const old = JSON.parse(fs.readFileSync(p + "/ledger.json")).requests.find(
+      (x) => x.id === id,
+    );
+    if (old) throw Error("Unresolved existing intent " + id);
+    reserve(p + "/ledger.json", req, m.pricing, m.max_tokens);
+    save(p + "/receipts/" + id + ".request.json", req);
+    const started = Date.now();
+    try {
+      if (m.provider === "anthropic") {
+        const transport = JSON.parse(
+          fs.readFileSync(".private-coaching-lab/transport.json"),
+        );
+        const res = await fetch(transport.url, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-lab-token": transport.token,
+          },
+          body: JSON.stringify({ ...req, request_id: id }),
+          signal: AbortSignal.timeout(430000),
+        });
+        const raw = await res.text();
+        if (!res.ok) {
+          save(p + "/receipts/" + id + ".transport-error.json", {
+            http: res.status,
+            body: raw,
+          });
+          throw Error(
+            "Transport " + res.status + "; reconcile execution, do not replay",
+          );
+        }
+        receipt = JSON.parse(raw);
+        if (Array.isArray(receipt)) receipt = receipt[0];
+      } else {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: "Bearer " + openaiKey(),
+          },
+          body: JSON.stringify({
+            model: m.model,
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: req.prompt },
+            ],
+            max_completion_tokens: m.max_tokens,
+            reasoning_effort: "high",
+            response_format: { type: "json_object" },
+          }),
+          signal: AbortSignal.timeout(430000),
+        });
+        const raw = await res.json();
+        save(p + "/receipts/" + id + ".raw.json", raw);
+        if (!res.ok)
+          throw Error("OpenAI " + res.status + " " + raw.error?.code);
+        const accounting = require("./usage.cjs").openAiUsage(raw, m.pricing);
+        const text = raw.choices?.[0]?.message?.content || "";
+        let parsed = null;
+        try {
+          parsed = JSON.parse(text);
+        } catch {}
+        receipt = {
+          ok: true,
+          request_id: id,
+          provider_response_id: raw.id,
+          model: raw.model,
+          ...accounting,
+          latency_ms: Date.now() - started,
+          stop_reason: raw.choices?.[0]?.finish_reason,
+          parsed_json: parsed,
+          model_text: text,
+          raw_response: raw,
+        };
+      }
+      if (receipt.request_id !== id) throw Error("Receipt identity mismatch");
+      save(file, receipt);
+      settle(p + "/ledger.json", id, receipt);
+      console.log(
+        JSON.stringify({
+          case: c.id,
+          stage,
+          model,
+          cost: receipt.costs.total_cost_usd,
+          seconds: Math.round(receipt.latency_ms / 1000),
+        }),
+      );
+    } catch (e) {
+      console.error("HELD", id, e.message);
+      throw e;
+    }
+  }
+  if (
+    !receipt.parsed_json ||
+    ["max_tokens", "length"].includes(receipt.stop_reason)
+  )
+    throw Error("Invalid/truncated output; paid receipt saved");
+  return receipt.parsed_json;
+}
+async function run(c, architecture, first, second) {
+  const dir =
+    p +
+    "/results/" +
+    hash(system).slice(0, 12) +
+    "/" +
+    architecture +
+    "-" +
+    first +
+    "-" +
+    second;
+  fs.mkdirSync(dir, { recursive: true });
+  const file = dir + "/" + c.id + ".json";
+  if (fs.existsSync(file)) {
+    console.log("reuse", file);
+    return;
+  }
+  const draft = await request(
+    c,
+    architecture === "integrated" ? "coach" : "analyst",
+    first,
+  );
+  const audit = await request(
+    c,
+    architecture === "integrated" ? "review" : "compose",
+    second,
+    draft,
+  );
+  let final, rendered;
+  try {
+    if (architecture === "integrated") {
+      final = require("./contract.cjs").acceptReview(draft, audit, c.blocks);
+    } else final = audit;
+    validate(final, c.blocks);
+    rendered = render(final, c.blocks);
+  } catch (error) {
+    // Preserve paid evidence without presenting rejected output as accepted.
+    const heldDir = p + "/held/" + hash(system).slice(0, 12);
+    fs.mkdirSync(heldDir, { recursive: true });
+    save(heldDir + "/" + [architecture, first, second, c.id].join("-") + ".json", {
+      id: c.id, architecture, first, second,
+      source_hash: c.transcript_hash, system_hash: hash(system),
+      reason: error.message, draft, audit,
+    });
+    error.code = "OUTPUT_HELD";
+    throw error;
+  }
+  save(file, {
+    id: c.id,
+    split: c.split,
+    architecture,
+    first,
+    second,
+    source_hash: c.transcript_hash,
+    system_hash: hash(system),
+    draft,
+    audit,
+    final,
+  });
+  fs.writeFileSync(file.replace(".json", ".md"), rendered, {
+    mode: 0o600,
+  });
+  console.log("VALIDATED", c.id, architecture, first, second);
+}
+async function main() {
+  const [architecture, first, second, ...ids] = process.argv.slice(2);
+  if (!["integrated", "analyst"].includes(architecture) || !ids.length)
+    throw Error("Usage architecture first second ids");
+  const lock = fs.openSync(p + "/runner.lock", "wx");
+  try {
+    const cases = ids.map((id) => {
+      const c = corpus.find((c) => c.id === id);
+      if (!c) throw Error("Unknown source");
+      if (c.split === "holdout" && !fs.existsSync(p + "/holdout-unlocked.json"))
+        throw Error("Holdout locked");
+      return c;
+    });
+    let index = 0;
+    const held = [];
+    const workers = Array.from({ length: 2 }, async () => {
+      while (index < cases.length) {
+        const c = cases[index++];
+        try {
+          await run(c, architecture, first, second);
+        } catch (error) {
+          if (error.code !== "OUTPUT_HELD") throw error;
+          held.push({ id: c.id, reason: error.message });
+          console.error("OUTPUT HELD", c.id, error.message);
+        }
+      }
+    });
+    const outcomes = await Promise.allSettled(workers);
+    const bad = outcomes.find((x) => x.status === "rejected");
+    if (bad) throw bad.reason;
+    if (held.length) throw Error(JSON.stringify({ held }));
+  } finally {
+    fs.closeSync(lock);
+    fs.unlinkSync(p + "/runner.lock");
+  }
+}
+if (require.main === module)
+  main().catch((e) => {
+    console.error(e.message);
+    process.exitCode = 1;
+  });
+module.exports = { request, run, models };
