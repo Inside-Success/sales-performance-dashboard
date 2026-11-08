@@ -45,8 +45,10 @@ describe('current operating rules remain attached to historical evidence',()=>{
   expect(corpus.find(r=>r.id==='operational_0116cf89a3be99fd')?.text).toContain('deposit is refunded');
   expect(corpus.find(r=>r.id==='claim_002a5b2b3b9b75cd')?.text).toContain('non-refundable');
  });
- it('does not invent a KPI denominator or automated notification schedule',()=>{
-  expect(corpus.find(r=>r.id==='sales-kpi-expectations-and-definition-boundary-2026-11-03')?.text).toContain('does not explicitly define');
+ it('uses the newly sourced KPI denominator without inventing an automated notification schedule',()=>{
+  const kpi=corpus.find(r=>r.id==='sales-kpi-expectations-and-definition-boundary-2026-11-03');
+  expect(kpi?.text).toContain('assigned/booked Call 1s, including cancellations and no-shows');
+  expect(kpi?.sourceIds).toContain('https://www.loom.com/share/a79af4cd198347dcbfb3abe90cfac867');
   expect(corpus.find(r=>r.id==='manual-booking-calendar-sops-2026-10-07')?.text).toContain('Do not invent a universal');
  });
 });
