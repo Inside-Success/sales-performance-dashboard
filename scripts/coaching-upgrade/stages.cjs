@@ -62,3 +62,14 @@ function bindEnhancedAfterSafety(record,before,after,sourceId) {
  return {...record,source_id:String(sourceId)};
 }
 module.exports={enhancedSafetyView,finishEnhancedSafety,enhancedPrepared,validateEnhancedDraft,acceptEnhancedAudit,bindEnhancedAfterSafety};
+
+// A supported eligibility disagreement is a review hold, never a JSON-repair task.
+function guardEnhancedAuditRepair(audit,blocks){
+ if(audit?.pass!==false||audit.corrected_report?.status!=='refused')return;
+ const report=normalizeObjectionReport(audit.corrected_report);
+ if(objectionErrors(report,blocks,true).length)return;
+ const known=new Set(blocks.map(b=>b.id));
+ if(!Array.isArray(audit.findings)||!audit.findings.length||audit.findings.some(f=>typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||!f.evidence_ids.length||f.evidence_ids.some(id=>!known.has(id))))return;
+ throw Error('Coaching eligibility review required: factual reviewer excluded this call; do not repair into a passing report');
+}
+module.exports.guardEnhancedAuditRepair=guardEnhancedAuditRepair;
