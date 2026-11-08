@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-11-08",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "e470519a46279569140bad3e",
   "knowledgeVersion": "5c8b442c9dd03d4fde88002c",
   "activeRecordCount": 2613,
@@ -11475,7 +11475,7 @@
     "sourceMetadata": [
       {
         "id": "1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E",
-        "title": "NEW REP – PASSED RAMP UP",
+        "title": "NEW REP \u2013 PASSED RAMP UP",
         "modified_time": "2026-11-05T15:02:12.044Z"
       },
       {
@@ -11485,7 +11485,7 @@
       },
       {
         "id": "1mz8fp_iq9Jovzc3RTwVjKYQqJvJw9Ej-bYuJdEK3Xsc",
-        "title": "Inside Success TV – Pass Off Channel Cheat Sheet",
+        "title": "Inside Success TV \u2013 Pass Off Channel Cheat Sheet",
         "modified_time": "2026-09-14T20:37:05.189Z"
       },
       {
@@ -11640,7 +11640,7 @@
       },
       {
         "id": "1YyqlqJHPQzcnlyDluhmpxuFuFtVGzdbwO1MJ33P2rac",
-        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "title": "Inside Success TV \u2013 How to Close a Live Call Cheat Sheet",
         "modified_time": "2026-10-29T18:30:10.466Z"
       },
       {
@@ -11655,7 +11655,7 @@
       },
       {
         "id": "19OFDpep0EetH5Pr1xW-5MnmPRgli-XHRrMGtHIIp15k",
-        "title": "Inside Success TV – Dummy Call Channel Cheat Sheet",
+        "title": "Inside Success TV \u2013 Dummy Call Channel Cheat Sheet",
         "modified_time": "2026-03-24T12:28:16.372Z"
       },
       {
@@ -11670,7 +11670,7 @@
       },
       {
         "id": "1AweNEmoTACqKYfyUY-AxjLEK4FzVBN1wr24T1prsWbM",
-        "title": "Inside Success TV – Outbound Dialing Cheat Sheet",
+        "title": "Inside Success TV \u2013 Outbound Dialing Cheat Sheet",
         "modified_time": "2026-02-12T13:12:39.787Z"
       },
       {
@@ -11780,7 +11780,7 @@
       },
       {
         "id": "12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk",
-        "title": "INSIDE SUCCESS TV – GREEN LIGHT PROCESS CHEAT SHEET",
+        "title": "INSIDE SUCCESS TV \u2013 GREEN LIGHT PROCESS CHEAT SHEET",
         "modified_time": "2026-10-29T18:44:01.993Z"
       },
       {
@@ -11805,7 +11805,7 @@
       },
       {
         "id": "1Mg6_dxHiieQKMerkVzvlvTcfrd9ckd1glelVNIBMB-Y",
-        "title": "Inside Success TV – Double Bookings Cheat Sheet",
+        "title": "Inside Success TV \u2013 Double Bookings Cheat Sheet",
         "modified_time": "2026-02-11T21:55:46.983Z"
       },
       {
@@ -11815,7 +11815,7 @@
       },
       {
         "id": "1CX61sJw3R2x6RQ8liVj7agQa-8VY2cCPQM51OLAayTU",
-        "title": "🎬 Inside Success TV | Double Booking Cheat Sheet",
+        "title": "\ud83c\udfac Inside Success TV | Double Booking Cheat Sheet",
         "modified_time": "2026-11-06T19:46:38.482Z"
       },
       {
@@ -11855,7 +11855,7 @@
       },
       {
         "id": "1NN1TDptK-ef4fDSCBGeX_xqQvOyU2P3PAhX3Eb7Msc8",
-        "title": "Inside Success TV – How to Close a Live Call Cheat Sheet",
+        "title": "Inside Success TV \u2013 How to Close a Live Call Cheat Sheet",
         "modified_time": "2026-06-01T17:58:03.538Z"
       },
       {
@@ -12032,5 +12032,25 @@
     "dated-sales-bonus-nov8-2026",
     "contract-copy-request-2026-09-18",
     "reality-call2-same-day-reduction-2026-11-08"
-  ]
+  ],
+  "publication": {
+    "verifiedAt": "2026-11-08T12:54:36.184779+00:00",
+    "dashboardPr": 397,
+    "faqPr": 131,
+    "dashboardCommit": "d679d4cc354b0f8134942d350f298cba90178e06",
+    "deploymentId": "dpl_4QTc3RUdtbfCoh21H7ESnu2GqnKf",
+    "productionAlias": "https://sales-performance-dashboard-rose.vercel.app",
+    "authenticatedChecks": 3,
+    "assistantMessageIds": [
+      "faq_assistant_4cdf21f4-38ad-4c8a-b066-7f7c24d6635e",
+      "faq_assistant_f7871cd5-d3eb-4828-9522-627ad95afd84",
+      "faq_assistant_ba888401-138a-45db-9cb5-b392eb25f7bf"
+    ],
+    "faqTestsPassed": 537,
+    "staticChecksPassed": 107,
+    "evaluationCases": 16,
+    "evaluationNontechnical": 16,
+    "evaluationCostUsd": 0.1255464,
+    "adminFreshnessVerification": "Receipt updated after three authenticated answers and stored knowledge metadata verified. Final receipt-deployment visual verification is recorded in the workspace report MAGIC-MIKE-KNOWLEDGE-REFRESH-2026-11-08.md."
+  }
 }
