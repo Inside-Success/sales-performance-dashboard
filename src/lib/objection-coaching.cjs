@@ -89,7 +89,7 @@ function normalizeObjectionReport(value) {
    for(const part of group.slice(1,-1).split(',')){
     const m=part.trim().match(/^T(\d{4,})(?:\s*[-–]\s*T(\d{4,}))?$/);if(!m)return group;
     const first=Number(m[1]),last=Number(m[2]||m[1]);
-    if(last<first||last-first>=40)return group;
+    if(!Number.isSafeInteger(first)||!Number.isSafeInteger(last)||last<first||last-first>=40)return group;
     for(let i=first;i<=last;i++)ids.push('T'+String(i).padStart(4,'0'));
    }
    moved.push(...ids);return '';
