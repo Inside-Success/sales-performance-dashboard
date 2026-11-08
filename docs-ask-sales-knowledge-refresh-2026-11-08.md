@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — November 8, 2026
 
-Candidate awaiting production verification. Resumed verified November 5 checkpoint `e470519a46279569140bad3e`. Candidate `5c8b442c9dd03d4fde88002c`, 2613 records: six additions and sixteen amendments.
+Published and production-answer-verified. Resumed verified November 5 checkpoint `e470519a46279569140bad3e`. Published knowledge `5c8b442c9dd03d4fde88002c`, 2613 records: six additions and sixteen amendments.
 
 ## Changes
 
@@ -21,6 +21,10 @@ Two historical Google files, two historical Slack roots and one linked Zoom setu
 
 ## Verification
 
-Sixteen isolated answers completed without technical or validation errors; manually reviewed against sources, including older pricing/video restrictions. Estimated API evaluation cost $0.12555. One old test expected the RPC denominator to remain unknown; updated because the newly linked primary training now supplies it. Added five retrieval/boundary checks. 537 FAQ tests, 107 static safety checks, TypeScript and scoped ESLint passed. Production acceptance pending.
+Sixteen isolated answers completed without technical or validation errors; manually reviewed against sources, including older pricing/video restrictions. Estimated API evaluation cost $0.12555. One old test expected the RPC denominator to remain unknown; updated because the newly linked primary training now supplies it. Added five retrieval/boundary checks. 537 FAQ tests, 107 static safety checks, TypeScript and scoped ESLint passed. Three authenticated production answers and stored knowledge metadata verified.
 
 Model, reasoning setting, prompts, retrieval algorithms, UI and Coaching unchanged. Based on dashboard main df7a9be, preserving teammate changes. Knowledge-only rollback: revert this release's knowledge additions and paired exported registry; retain later unrelated changes.
+
+## Production publication
+
+Dashboard PR397 merged as `d679d4cc354b0f8134942d350f298cba90178e06`; FAQ mirror PR131 merged. Production alias reached READY deployment `dpl_4QTc3RUdtbfCoh21H7ESnu2GqnKf`. Three authenticated work-Chrome checks verified pass-off timing, SMS rollout boundaries and Dropout to CEO active status. Stored responses all use knowledge `5c8b442c9dd03d4fde88002c`, GPT-5.6 Luna, no error or validation issues; latency 8.2–11.9 seconds. Admin publication receipt updated only after this proof. Final receipt-deployment visual check is recorded in the root workspace report. These focused checks do not establish universal answer accuracy.
