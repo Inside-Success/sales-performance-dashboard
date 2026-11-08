@@ -78,7 +78,25 @@ function objectionErrors(r, blocks, strict=false) {
 }
 
 function normalizeObjectionReport(value) {
- if(!value||typeof value!=='object'||Array.isArray(value)||value.status==='refused'||!Array.isArray(value.objections))return value;
+ if(!value||typeof value!=='object'||Array.isArray(value))return value;
+ if(value.status==='refused'){
+  // Preserve source citations as structured evidence, never as user-facing prose.
+  // Unknown IDs are still rejected against the transcript by objectionErrors.
+  if(typeof value.refusal_reason!=='string'||!Array.isArray(value.eligibility_evidence_ids))return value;
+  const moved=[];
+  const reason=value.refusal_reason.replace(/\((T\d{4,}(?:\s*[-–]\s*T\d{4,})?)(?:\s*,\s*T\d{4,}(?:\s*[-–]\s*T\d{4,})?)*\)/g,group=>{
+   const ids=[];
+   for(const part of group.slice(1,-1).split(',')){
+    const m=part.trim().match(/^T(\d{4,})(?:\s*[-–]\s*T(\d{4,}))?$/);if(!m)return group;
+    const first=Number(m[1]),last=Number(m[2]||m[1]);
+    if(last<first||last-first>=40)return group;
+    for(let i=first;i<=last;i++)ids.push('T'+String(i).padStart(4,'0'));
+   }
+   moved.push(...ids);return '';
+  }).replace(/ +([,.;:])/g,'$1').replace(/ {2,}/g,' ').trim();
+  return {...value,refusal_reason:reason,eligibility_evidence_ids:[...new Set([...value.eligibility_evidence_ids,...moved])]};
+ }
+ if(!Array.isArray(value.objections))return value;
  // Absent-category bookkeeping is deterministic, not another model judgment.
  const raised=new Set(value.objections.map(o=>o?.category));
  // Older model outputs sometimes put hypothetical wording on improvements.
