@@ -1,3 +1,4 @@
+import { canReadCoachingLab } from "@/lib/coaching-lab-access";
 import { auth } from "@/auth";
 import { manualDeliveryUrls } from "@/lib/manual-delivery";
 import { randomUUID } from "node:crypto";
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     const publicId = randomUUID().replace(/-/g, "");
 
     // Reject local/preview dispatch before storing a job or running paid analysis.
-    const { callbackUrl, reportUrl } = manualDeliveryUrls(request.nextUrl.origin, publicId, process.env.VERCEL_ENV);
+    const { callbackUrl, reportUrl } = manualDeliveryUrls(request.nextUrl.origin, publicId, process.env.VERCEL_ENV, process.env.COACHING_LAB_CONNECTED === "true" && canReadCoachingLab(process.env.VERCEL_ENV, session.user.email) ? process.env.COACHING_LAB_ORIGIN : undefined);
     const dispatchSecret = process.env.MANUAL_FEEDBACK_SECRET || process.env.INGEST_SECRET;
     if (!dispatchSecret) throw new Error("Manual feedback delivery is not configured.");
     await createManualFeedbackReport(publicId, payload);

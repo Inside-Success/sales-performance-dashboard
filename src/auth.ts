@@ -30,6 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const email = normalizeAuthEmail(googleProfile?.email || user.email);
       const emailVerified = googleProfile?.email_verified;
 
+      if (process.env.VERCEL_ENV === "preview" && process.env.COACHING_LAB_CONNECTED === "true" && email !== "syed.haider@insidesuccess.com") return false;
       return Boolean(email && emailVerified !== false && isAllowedAuthEmail(email));
     },
     async session({ session }) {

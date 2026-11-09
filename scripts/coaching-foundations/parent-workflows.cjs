@@ -43,6 +43,7 @@ return [{json:p}];`;
    n.parameters.jsCode=replaceOnce(n.parameters.jsCode,'let coaching = clone(state.coaching_raw || {});',`if(state.coaching_version===MM_FOUNDATIONS.GENERATION){const payload={coaching_version:state.coaching_version,reviewed_coaching_v3:state.reviewed_coaching_v3};const coaching=MM_FOUNDATIONS.project(payload,sourceIdFromState(state),'official');const output=buildScoredOutput(state,coaching);return [{json:{...state.caseItem.source,output,reviewed_coaching_v3:state.reviewed_coaching_v3,coaching_version:MM_FOUNDATIONS.GENERATION,agent_version:MM_FOUNDATIONS.GENERATION,pipeline:{gate_output:state.gate_output,compliance_filter_log:state.compliance_filter_log,coaching_safety_log:state.coaching_safety_log,provider_results:state.provider_results}}}];}\nlet coaching = clone(state.coaching_raw || {});`);
    const post=get('Post to Dashboard');post.parameters.body=replaceOnce(post.parameters.body,"reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,","reviewed_coaching_v3: $('Performance Agent').item.json.reviewed_coaching_v3 || null, reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,");
   }
+  for(const name of [start,adapter,final]){const n=get(name);if(n.parameters.mode==='runOnceForEachItem')n.parameters.jsCode='const __foundationsItem=await(async()=>{\n'+n.parameters.jsCode+'\n})();return Array.isArray(__foundationsItem)?__foundationsItem[0]:__foundationsItem;';}
   w.active=false;w.name='CANDIDATE ONLY - '+w.name;
  }
  return out;
