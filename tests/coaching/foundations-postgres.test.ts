@@ -1,0 +1,50 @@
+import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
+import { PGlite } from '@electric-sql/pglite';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
+const state = vi.hoisted(()=>({db:null as any}));
+vi.mock('server-only',()=>({}));
+vi.mock('@neondatabase/serverless',()=>({neon:()=>async(parts:TemplateStringsArray,...values:unknown[])=>{
+ const query=parts.reduce((s,p,i)=>s+p+(i<values.length?'$'+(i+1):''),'');
+ return (await state.db.query(query,values)).rows;
+}}));
+import { providerCheckpoint } from '../../src/lib/provider-checkpoints';
+let directory:string;
+beforeAll(async()=>{directory=await mkdtemp(join(tmpdir(),'mm-isolated-pg-'));state.db=await PGlite.create(directory);vi.stubEnv('DATABASE_URL','isolated-engine-only');},30000);
+afterAll(async()=>{await state.db?.close();await rm(directory,{recursive:true,force:true});vi.unstubAllEnvs();});
+const identity=(source:string)=>({source_id:source,stage:'foundations_reviewer_v3',provider:'openai' as const,request_hash:'a'.repeat(64)});
+const result={ok:true,provider_response_id:'saved-provider-receipt',request_id:'exact-request',stop_reason:'stop',parsed_json:{pass:true,findings:[],corrected_report:null}};
+describe('real isolated PostgreSQL checkpoint persistence',()=>{
+ it('grants one concurrent owner and refuses stale completion',async()=>{
+  const id=identity('concurrent');
+  const claims=await Promise.all(Array.from({length:8},()=>providerCheckpoint({action:'claim',...id})));
+  const owners=claims.filter(x=>x.status==='acquired');expect(owners).toHaveLength(1);
+  expect(claims.filter(x=>x.status==='deferred')).toHaveLength(7);
+  await expect(providerCheckpoint({action:'complete',...id,token:randomUUID(),result})).rejects.toThrow('ownership changed');
+  await providerCheckpoint({action:'complete',...id,token:owners[0].token!,result});
+  await providerCheckpoint({action:'fail',...id,token:randomUUID(),error:'stale failure'});
+  expect((await providerCheckpoint({action:'claim',...id})).status).toBe('cached');
+ });
+ it('preserves the exact cached response through a database restart',async()=>{
+  await state.db.close();state.db=await PGlite.create(directory);
+  const cached=await providerCheckpoint({action:'claim',...identity('concurrent')});
+  expect(cached.status).toBe('cached');expect(cached.result.provider_response_id).toBe(result.provider_response_id);
+  expect((await providerCheckpoint({action:'claim',...identity('concurrent'),request_hash:'b'.repeat(64)})).status).toBe('acquired');
+ });
+ it('retains malformed paid output for repair and never caches it as completed',async()=>{
+  const id=identity('malformed');const claim=await providerCheckpoint({action:'claim',...id});
+  const rejected=await providerCheckpoint({action:'complete',...id,token:claim.token!,result:{...result,parsed_json:{pass:true,findings:[{issue:'contradiction'}],corrected_report:null}}});
+  expect(rejected.status).toBe('rejected_contract');
+  const rows=await state.db.query('select status,result from coaching_provider_checkpoints where source_id=$1',['malformed']);
+  expect(rows.rows[0].status).toBe('failed');expect(rows.rows[0].result.provider_response_id).toBe(result.provider_response_id);
+ });
+ it('does not let the old owner close a reacquired request',async()=>{
+  const id=identity('expired');const old=await providerCheckpoint({action:'claim',...id});
+  await state.db.query("update coaching_provider_checkpoints set lease_until=now()-interval '1 minute' where source_id=$1",[id.source_id]);
+  const next=await providerCheckpoint({action:'claim',...id});expect(next.status).toBe('acquired');expect(next.token).not.toBe(old.token);
+  await expect(providerCheckpoint({action:'complete',...id,token:old.token!,result})).rejects.toThrow('ownership changed');
+  await providerCheckpoint({action:'complete',...id,token:next.token!,result});
+ });
+});

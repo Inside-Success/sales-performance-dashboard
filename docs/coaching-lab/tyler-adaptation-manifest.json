@@ -1,0 +1,69 @@
+{
+  "changes": [
+    {
+      "from": "For a feature documentary Call 2, organize",
+      "to": "For an eligible substantive Call 2 in any supplied offer family, organize",
+      "reason": "Generalize the reasoning, not documentary offer entitlements"
+    },
+    {
+      "from": "For feature documentary Call 2 coaching, use",
+      "to": "For eligible Call 2 coaching across the supplied offer families, use",
+      "reason": "Apply contextual value guidance without mandatory sequencing"
+    },
+    {
+      "from": "For genuinely out-of-scope calls (discovery-only, internal/rehearsal, no-show, administrative-only or insufficient usable selling content), return {version:\"objection-coaching-v2\",status:\"refused\",call_status:\"call_1|prospect_no_show|rep_no_show|transcript_too_short|internal_training\",refusal_reason:\"specific evidence-supported reason\",eligibility_evidence_ids:[\"T0001\"]}. Choose one call_status. A weak substantive selling conversation is not an exclusion. Missing timestamps alone does not prevent coaching when the dialogue is usable. Never invent internal participation or an absence from unlabeled speakers.",
+      "to": "For genuinely out-of-scope calls (discovery-only, internal/rehearsal, no-show, administrative-only or insufficient usable selling content), return the complete experiment schema with status excluded, a specific evidence-supported exclusion_reason, empty objections/lessons/next_steps and empty focus_id. A weak substantive selling conversation is not an exclusion. Missing timestamps alone do not prevent coaching. Unlabeled speakers alone establish neither internal participation nor absence. If the fragments do not establish a real usable sales interaction, withhold coaching without inventing why the source is incomplete.",
+      "reason": "Map refusal to the isolated contract; preserve uncertainty instead of invented rehearsal diagnoses"
+    },
+    {
+      "from": "Develop the lesson in the existing field where the evidence belongs: the relevant objection’s assessment, a strength’s why_it_matters, or an improvement’s why_it_matters and action. Let summary frame the lesson and the supporting entry add what the reader still needs.",
+      "to": "Develop the lesson where its evidence belongs: the relevant objection’s assessment and teaching, or a distinct lesson’s observation and teaching. focus_id identifies the main lesson without repeating its prose. A repeat lesson maps a strength; refine maps a justified improvement; explore maps a defensible alternative without implying a defect.",
+      "reason": "One home per insight; explicit old-to-new field mapping"
+    },
+    {
+      "from": "For could_be_handled_better,",
+      "to": "For needs_work,",
+      "reason": "Handling enum mapping"
+    },
+    {
+      "from": "For sound or uncertain handling, keep advice fields empty.",
+      "to": "For sound or uncertain handling, keep corrective advice and example empty. Teaching may explain the sound move or a conditional trade-off, but cannot imply a correction unsupported by evidence.",
+      "reason": "Preserve the distinction between teaching and corrective advice"
+    },
+    {
+      "from": "unclassified: actual resistance exists but no category fits; preserve it rather than force a label.",
+      "to": "unclassified: actual resistance exists but no category fits, or the available dialogue does not explain its substance enough to classify; preserve it rather than force a label.",
+      "reason": "Restore the documented local taxonomy correction"
+    }
+  ],
+  "source_sha256": "fc7d342c43f2d560fca2f2a17c6095a1e22a68b031e836f06ae947fa2ed3df08",
+  "retained_prefix_sha256": "f53a1f52bf1b7fa8846c0c21c17b4ac377175ccf1fa1606228dcc20ead7e23cf",
+  "layers": [
+    {
+      "id": "tyler-foundations",
+      "source": "Tyler private repository 5a892e080f0585ca0bdb662056651618c6f37fb5",
+      "revision": "2026-11-05-v1",
+      "digest": "d2aa8a86ef7ddba0c77ba87d7ab677e0bc77bc610047422b32291ff77871befb"
+    },
+    {
+      "id": "governed-offer-policy",
+      "source": "Frozen authorized November5 source pack",
+      "revision": "2026-11-05-v1",
+      "digest": "677007a6a8a19f1730bdca6c4358456d5c0130cca774bca1deab51ecf7643d7b"
+    },
+    {
+      "id": "november-source-updates",
+      "source": "Frozen authorized November5 source pack",
+      "revision": "2026-11-05-v1",
+      "digest": "57186995fbc130067dc45f19e735a3bfca2256b9a40298c2a14f02f9be5ce0a6"
+    }
+  ],
+  "current_report_schema": "coaching-foundations-lab-v2",
+  "current_system_hash": "9bcd3539eb2364a67cdf53a22469a73859d7c4a47991465fbad1c0a0c695e51b",
+  "additional_adapters": [
+    "Current Mike instruction applies from November5 onward; earlier effective date unestablished",
+    "Agreed versus promised versus newly suggested follow-ups",
+    "Reviewer envelope explicitly overrides report-shaped output for review requests"
+  ],
+  "source_verified_head": "5a892e080f0585ca0bdb662056651618c6f37fb5"
+}

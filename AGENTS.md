@@ -89,3 +89,8 @@ For dashboard/web changes:
 - November 6 empty safety review/intake update recovery: see MAGIC-MIKE-EMPTY-REVIEW-INTAKE-RECOVERY-2026-11-06.md. An omitted L1 list is empty only for zero candidates; actual candidates and L2 findings remain strict. Apply the empty-adjudication follow-up after the repair-contract builder. Exhausted Airtable updates retain exact source/document payloads; the existing bounded worker reads, guards, updates and verifies the same record without rerunning AI or document creation. Preserve claimed-event CAS, newer manual edits and ambiguous-write holds.
 
 - November 8 exclusion citations: see MAGIC-MIKE-HELD-COACHING-2026-11-08.md. Move only exact parenthetical transcript citations from exclusion prose into structured evidence; unknown IDs and unfinished text remain held. Preserve the independent eligibility confirmation and owner-specific recovery/artifact checks.
+
+## Coaching foundations release (November 9)
+
+- See docs/coaching-lab/PRODUCTION-RELEASE-2026-11-09.md for authorized rollout status and rollback. Keep the v3 reviewed source-bound record authoritative across Docs, dashboard, chat and insights. Core default remains isolated; production binding requires explicit mode and the existing durable provider.
+- Preserve current governed knowledge precedence and request identity across JSONB roundtrips. Do not replace approved policy revisions with fetch timestamps or repeat paid reviews on reordered JSON keys. Keep compliance/scoring separate and retain v3 readers if reverting generation after v3 artifacts exist.

@@ -1,3 +1,4 @@
+import {providerErrors as foundationsProviderErrors} from "./foundations-contract.cjs";
 import {objectionProviderErrors} from "./objection-coaching.cjs";
 import { z } from "zod";
 import { coachingStage, normalizeCoaching, coachingContractErrors, failureDecision } from "./coaching-reliability-policy.mjs";
@@ -5,7 +6,7 @@ import { coachingStage, normalizeCoaching, coachingContractErrors, failureDecisi
 const identity = {
   source_id: z.string().min(1).max(160),
   stage: z.string().min(1).max(100),
-  provider: z.enum(["anthropic", "deepseek"]),
+  provider: z.enum(["anthropic", "deepseek", "openai"]),
   request_hash: z.string().regex(/^[a-f0-9]{64}$/),
 };
 export const checkpointInput = z.discriminatedUnion("action", [
@@ -20,7 +21,7 @@ export function validProviderResult(result: Record<string, unknown>) {
   const valid = result.ok === true && !result.parse_error && result.parsed_json !== null &&
     typeof result.parsed_json === "object" && !Array.isArray(result.parsed_json) &&
     !["max_tokens", "refusal", "length"].includes(String(result.stop_reason));
-  return valid && objectionProviderErrors(String(result.call_purpose),result.parsed_json).length === 0 && (!coachingStage(String(result.call_purpose)) || coachingContractErrors(normalizeCoaching(result.parsed_json)).length === 0);
+  return valid && foundationsProviderErrors(String(result.call_purpose),result.parsed_json).length === 0 && objectionProviderErrors(String(result.call_purpose),result.parsed_json).length === 0 && (!coachingStage(String(result.call_purpose)) || coachingContractErrors(normalizeCoaching(result.parsed_json)).length === 0);
 }
 
 export function retryableProviderFailure(message: string) {

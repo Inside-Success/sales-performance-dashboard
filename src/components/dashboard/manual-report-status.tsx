@@ -1,4 +1,5 @@
 "use client";
+import { FOUNDATIONS_COACHING_VERSION } from "@/lib/report-version";
 import { OBJECTION_VERSION } from "@/lib/objection-coaching.cjs";
 
 import { CoachingReportContent } from "@/components/dashboard/coaching-report-content";
@@ -205,7 +206,7 @@ export function ManualReportStatus({
 
           {report.status === "completed" ? (
             <>
-          {(["magic-mike-call2-coaching-2026-09-08",OBJECTION_VERSION].includes(String(report.source_payload.coaching_version))) ? <CoachingReportContent report={report} reportType="manual" reportId={report.public_id} transcriptUrl={transcriptLink} /> : <>
+          {(["magic-mike-call2-coaching-2026-09-08",OBJECTION_VERSION,FOUNDATIONS_COACHING_VERSION].includes(String(report.source_payload.coaching_version))) ? <CoachingReportContent report={report} reportType="manual" reportId={report.public_id} transcriptUrl={transcriptLink} /> : <>
               <ReportSection title="Verdict" icon={<Lightbulb className="size-4" />} featured>
                 <p className="text-base leading-8 md:text-lg">{report.one_line_verdict || "Not provided"}</p>
               </ReportSection>

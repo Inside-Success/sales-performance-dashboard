@@ -15,3 +15,11 @@ describe("manual production delivery boundary", () => {
     expect(() => manualDeliveryUrls(MANUAL_PRODUCTION_ORIGIN, id, env)).toThrow();
   });
 });
+it('allows only the explicitly configured isolated preview origin',()=>{
+ const origin='https://sales-performance-dashboard-git-code-84470c-admin-insidesuccess.vercel.app';
+ expect(manualDeliveryUrls(origin,id,'preview',origin).callbackUrl).toBe(origin+'/api/manual-reports/callback');
+ expect(()=>manualDeliveryUrls(origin,id,'preview')).toThrow();
+ expect(()=>manualDeliveryUrls(MANUAL_PRODUCTION_ORIGIN,id,'preview',origin)).toThrow();
+ expect(()=>manualDeliveryUrls(origin,id,'production',origin)).toThrow();
+ expect(()=>manualDeliveryUrls('https://other.vercel.app',id,'preview','https://other.vercel.app')).toThrow();
+});

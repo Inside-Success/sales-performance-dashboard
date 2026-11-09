@@ -29,6 +29,8 @@ const requestSchema = z.object({
 });
 
 type OpenAIResponse = {
+  id?: string;
+  usage?: Record<string, unknown>;
   output?: Array<{
     type?: string;
     content?: Array<{ type?: string; text?: string }>;
@@ -102,6 +104,10 @@ export async function POST(request: NextRequest) {
       { error: "Magic Mike could not answer right now. Please try again." },
       { status: 502 },
     );
+  }
+
+  if (process.env.VERCEL_ENV === "preview" && process.env.COACHING_LAB_CONNECTED === "true") {
+    console.info("coaching_lab_chat_receipt", JSON.stringify({id:data?.id,usage:data?.usage,model:COACHING_REPORT_CHAT_MODEL}));
   }
 
   const answer = data?.output

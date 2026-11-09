@@ -1,3 +1,4 @@
+import {read as readFoundations} from "@/lib/foundations-record.cjs";
 import { resolveCloseSection } from "@/lib/close-section";
 import { readObjectionCoaching, objectionSections } from "@/lib/objection-coaching.cjs";
 import { completeCoachingText } from "@/lib/coaching-placeholder.cjs";
@@ -35,6 +36,8 @@ export function isReportChatEnabledForManualReport(
 }
 
 export async function fetchTranscriptText(call: PerformanceCall) {
+  const snapshot=foundationsTranscript(call.source_payload,String(call.source_payload.source_airtable_record_id||""),"official");
+  if(snapshot)return snapshot;
   const payloadTranscript = extractTranscriptFromPayload(call.source_payload);
   if (payloadTranscript) {
     return {
@@ -74,6 +77,8 @@ export async function fetchTranscriptText(call: PerformanceCall) {
 }
 
 export async function fetchManualTranscriptText(report: ManualFeedbackReport) {
+  const snapshot=foundationsTranscript(report.source_payload,report.public_id,"manual");
+  if(snapshot)return snapshot;
   const payloadTranscript = extractTranscriptFromPayload(report.source_payload);
   if (payloadTranscript) {
     return {
@@ -113,6 +118,14 @@ export async function fetchManualTranscriptText(report: ManualFeedbackReport) {
   };
 }
 
+function foundationsTranscript(payload: JsonObject, sourceId: string, channel: "official"|"manual") {
+  const reviewed=readFoundations(payload,sourceId,channel);
+  if(!reviewed?.sourceBlocks)return null;
+  const text=reviewed.sourceBlocks.map((block:{timestamp?:string;text:string})=>`${block.timestamp?`[${block.timestamp}] `:""}${block.text}`).join("\n");
+  if(!text.trim())throw new Error("The reviewed transcript is empty.");
+  return {text,source:"reviewed_source_snapshot"};
+}
+
 export function buildReportChatMessages(
   call: PerformanceCall,
   transcriptText: string,
@@ -123,7 +136,7 @@ export function buildReportChatMessages(
     transcriptText,
     sourcePayload: call.source_payload,
   });
-  return buildMessages(buildReportContext(call, transcriptText), history, offer.family, readObjectionCoaching(call.source_payload, String(call.source_payload?.source_airtable_record_id||""))?.provenance?.policy_text);
+  return buildMessages(buildReportContext(call, transcriptText), history, offer.family, readFoundations(call.source_payload,String(call.source_payload?.source_airtable_record_id||""),"official")?.policyText || readObjectionCoaching(call.source_payload, String(call.source_payload?.source_airtable_record_id||""))?.provenance?.policy_text);
 }
 
 export function buildManualReportChatMessages(
@@ -135,7 +148,7 @@ export function buildManualReportChatMessages(
     transcriptText,
     sourcePayload: report.source_payload,
   });
-  return buildMessages(buildManualReportContext(report, transcriptText), history, offer.family, readObjectionCoaching(report.source_payload, report.public_id)?.provenance?.policy_text);
+  return buildMessages(buildManualReportContext(report, transcriptText), history, offer.family, readFoundations(report.source_payload,report.public_id,"manual")?.policyText || readObjectionCoaching(report.source_payload, report.public_id)?.provenance?.policy_text);
 }
 
 function buildMessages(reportContext: string, history: ReportChatMessage[], offerFamily: string, savedPolicy?: unknown) {
@@ -183,6 +196,8 @@ function buildMessages(reportContext: string, history: ReportChatMessage[], offe
 }
 
 function buildReportContext(call: PerformanceCall, transcriptText: string) {
+  const foundations=readFoundations(call.source_payload,String(call.source_payload?.source_airtable_record_id||""),"official");
+  if(foundations)return "Opened official coaching report " + call.id + "\n" + foundations.markdown + "\nAgreed, promised and suggested next steps are distinct.\nMandatory transcript text:\n"+transcriptText;
   const enhanced=readObjectionCoaching(call.source_payload, String(call.source_payload?.source_airtable_record_id||""));
   if(enhanced)return "Opened official coaching report " + call.id + "\nRep: " + call.rep_name + "\nClient: " + call.client_name + "\nCall date: " + call.call_date + "\n" + objectionSections(enhanced).map(s=>s.title+"\n"+s.items.join("\n\n")).join("\n\n") + "\nHandling quality, resolution and payment are independent. Agreed next steps differ from recommended steps.\nMandatory transcript text:\n"+transcriptText;
   const closeSection = resolveCloseSection({
@@ -223,6 +238,8 @@ function buildReportContext(call: PerformanceCall, transcriptText: string) {
 }
 
 function buildManualReportContext(report: ManualFeedbackReport, transcriptText: string) {
+  const foundations=readFoundations(report.source_payload,report.public_id,"manual");
+  if(foundations)return "Opened self-submitted coaching report " + report.public_id + "\n" + foundations.markdown + "\nAgreed, promised and suggested next steps are distinct.\nMandatory transcript text:\n"+transcriptText;
   const enhanced=readObjectionCoaching(report.source_payload,report.public_id);
   if(enhanced)return "Opened self-submitted coaching report " + report.public_id + "\nRep: " + report.rep_name + "\nClient: " + report.client_name + "\n" + objectionSections(enhanced).map(s=>s.title+"\n"+s.items.join("\n\n")).join("\n\n") + "\nHandling quality, resolution and payment are independent. Agreed next steps differ from recommended steps.\nMandatory transcript text:\n"+transcriptText;
   const closeSection = resolveCloseSection({

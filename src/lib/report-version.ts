@@ -1,10 +1,15 @@
 // Generation identity avoids mislabeling delayed or in-flight reports at cutover.
 export const ENHANCED_COACHING_VERSION = "magic-mike-objection-coaching-2026-10-29";
 
+export const FOUNDATIONS_COACHING_VERSION = "magic-mike-foundations-candidate-2026-11-06";
+// Forward-only switch. Deploying readers alone must not relabel existing reports.
+const activeGeneration = process.env.NEXT_PUBLIC_COACHING_GENERATION === FOUNDATIONS_COACHING_VERSION
+  ? FOUNDATIONS_COACHING_VERSION : ENHANCED_COACHING_VERSION;
+
 export type ReportVersion = "legacy" | "enhanced";
 
-export function getReportVersion(coachingVersion: unknown): ReportVersion {
-  return coachingVersion === ENHANCED_COACHING_VERSION ? "enhanced" : "legacy";
+export function getReportVersion(coachingVersion: unknown, generation: string = activeGeneration): ReportVersion {
+  return coachingVersion === generation ? "enhanced" : "legacy";
 }
 
 export function isEnhancedReport(coachingVersion: unknown) {
