@@ -60,7 +60,7 @@ function sections(payload,sourceId,channel){
  const loaded=read(payload,sourceId,channel);if(!loaded)return null;
  // One deterministic renderer supplies Docs/chat/dashboard, without diagnostic metadata.
  const chunks=loaded.markdown.split(/^## /m),result=[{key:'outcome',title:'Call outcome',items:[chunks[0].replace(/^# Call coaching\s*\*\*Outcome:\*\*\s*/, '').trim()]}];
- for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':'lessons';const items=body.split(/^### /m).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
+ for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':({'Reading the buyer':'interpretation','Choosing your approach':'strategy','Principles to use again':'foundations'}[title]||'lessons');const items=body.split(/^### /m).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
  return result;
 }
 module.exports.sections=sections;

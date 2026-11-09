@@ -33,3 +33,10 @@ it('rejects stale or cross-source official and manual callbacks',()=>{
  p.reviewed_coaching_v3.report.outcome.text='Different candidate';expect(()=>normalizeIngestPayload({...p,call_status:'scored'})).toThrow();
 });
 it('matches standard SHA256 after unicode and object key normalization',()=>{const {createHash}=require('node:crypto'),{canonical,digest}=require('../../src/lib/coaching-canonical.cjs');for(const v of [{b:'🙂',a:'é'},'a'.repeat(1000),[]])expect(digest(v)).toBe(createHash('sha256').update(JSON.stringify(canonical(v))).digest('hex'));});
+
+it('counts observed concerns without inventing absence coverage or legacy themes',async()=>{
+ const {summarizeCoachingInsights}=await import('../../src/lib/coaching-insights');
+ const p=payload('official');const call={id:'1',rep_name:'Fixture',rep_slug:'fixture',client_name:'Buyer',call_date:null,one_line_verdict:null,what_to_improve:[],objections_surfaced:[],source_payload:p,source_id:'source-fixture',report_type:'official' as const};
+ const result=summarizeCoachingInsights([call,call]);
+ expect(result.total).toBe(0);expect(result.enhanced.total).toBe(1);expect(result.enhanced.coverageUnassessed).toBe(1);expect(result.enhanced.noObjections).toBe(0);expect(result.enhanced.categories[0].handledWell).toBe(1);
+});

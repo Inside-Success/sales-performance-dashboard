@@ -13,3 +13,9 @@ describe("coaching generation labels", () => {
     }
   });
 });
+
+// A future explicit cutover changes labels by generation, never by completion time.
+it("keeps delayed old-generation reports legacy after an explicit foundations cutover",()=>{
+ expect(getReportVersion("magic-mike-objection-coaching-2026-10-29","magic-mike-foundations-candidate-2026-11-06")).toBe("legacy");
+ expect(getReportVersion("magic-mike-foundations-candidate-2026-11-06","magic-mike-foundations-candidate-2026-11-06")).toBe("enhanced");
+});

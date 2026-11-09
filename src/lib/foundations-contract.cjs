@@ -45,6 +45,7 @@ const schema = {
     {
       id: "L1",
       purpose: "repeat|refine|explore",
+      layer: "foundations|interpretation|strategy",
       title: "A distinct transferable lesson",
       observation: "Specific exchange",
       teaching:
@@ -142,6 +143,7 @@ function validate(r, blocks) {
   }
   for (const l of r.lessons) {
     shape(l, Object.keys(schema.lessons[0]), "lesson");
+    if (l.layer !== undefined && !["foundations", "interpretation", "strategy"].includes(l.layer)) fail("lesson layer");
     if (
       !["repeat", "refine", "explore"].includes(l.purpose) ||
       !text(l.observation) ||
@@ -188,18 +190,22 @@ function render(r, blocks) {
       ),
     );
   if (r.lessons.length) {
-    parts.push("## What to carry into your next call");
-    const orderedLessons = [
-      ...r.lessons.filter((l) => l.purpose !== "repeat"),
-      ...r.lessons.filter((l) => l.purpose === "repeat"),
-    ];
-    for (const l of orderedLessons) {
-      parts.push(
-        "### " + l.title + (l.id === r.focus_id ? " — main takeaway" : ""),
-        l.observation,
-        l.teaching,
-      );
-      if (l.example) parts.push("**For example:** " + l.example);
+    // Older isolated receipts retain their original layout. Never infer a layer from prose.
+    const layered = r.lessons.every(l => l.layer);
+    const groups = layered ? [
+      ['interpretation', 'Reading the buyer'],
+      ['strategy', 'Choosing your approach'],
+      ['foundations', 'Principles to use again'],
+    ] : [[null, 'What to carry into your next call']];
+    for (const [layer, title] of groups) {
+      const selected = r.lessons.filter(l => !layer || l.layer === layer);
+      if (!selected.length) continue;
+      parts.push('## ' + title);
+      const ordered = [...selected.filter(l => l.purpose !== 'repeat'), ...selected.filter(l => l.purpose === 'repeat')];
+      for (const l of ordered) {
+        parts.push('### ' + l.title + (l.id === r.focus_id ? ' — main takeaway' : ''), l.observation, l.teaching);
+        if (l.example) parts.push('**For example:** ' + l.example);
+      }
     }
   }
   const byId = new Map(blocks.map((b) => [b.id, b]));

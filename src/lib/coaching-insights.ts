@@ -1,3 +1,4 @@
+import { read as readFoundations } from "@/lib/foundations-record.cjs";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { OBJECTION_CATEGORIES, readObjectionCoaching } from "@/lib/objection-coaching.cjs";
 import { groupRecentImprovements } from "@/lib/coaching-dashboard-sections";
@@ -44,7 +45,16 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
   const bySource = new Map<string,InsightCall>();
   for(const call of calls){const key=call.report_type+":"+(call.source_id||call.id);if(!bySource.has(key))bySource.set(key,call);}
   const unique = [...bySource.values()];
-  const enhanced = unique.flatMap(call=>{const report=readObjectionCoaching(call.source_payload,call.source_id);return report?[{call,report}]:[];});
+  const enhanced = unique.flatMap(call=>{
+    const loaded=readFoundations(call.source_payload,call.source_id||"",call.report_type);
+    if(loaded){
+      // Explicit projection of observed concerns only. V3 has no absence/coverage verdict.
+      const r=loaded.report as {objections:{category:string;concern:string;handling:"sound"|"needs_work"|"uncertain";resolution:string}[]};
+      return [{call,report:{evidence_quality:"unassessed",objections:r.objections.map(o=>({...o,handling:({sound:"handled_well",needs_work:"could_be_handled_better",uncertain:"not_enough_evidence"} as const)[o.handling]}))}}];
+    }
+    const report=readObjectionCoaching(call.source_payload,call.source_id);
+    return report?[{call,report}]:[];
+  });
   const enhancedIds=new Set(enhanced.map(x=>x.call));
   calls=unique.filter(call=>!enhancedIds.has(call));
   const categories=Object.entries(OBJECTION_CATEGORIES).map(([key,label])=>{
@@ -84,6 +94,7 @@ export function summarizeCoachingInsights(calls: InsightCall[]) {
   return { total: calls.length, structured, withImprovements, unmatchedConcerns:unmatched.length,
     enhanced:{total:enhanced.length,objections:enhanced.reduce((n,x)=>n+x.report.objections.length,0),
       noObjections:enhanced.filter(x=>x.report.evidence_quality==='sufficient'&&!x.report.objections.length).length,
+      coverageUnassessed:enhanced.filter(x=>x.report.evidence_quality==='unassessed').length,
       limited:enhanced.filter(x=>x.report.evidence_quality==='limited').length,categories},
     topics: topicRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length),
     training: trainingRows.filter(x => x.calls.length).sort((a,b) => b.calls.length-a.calls.length) };

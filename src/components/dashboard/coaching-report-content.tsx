@@ -76,7 +76,7 @@ function CoachingSectionCard({ section, reportType, reportId, transcriptUrl, rec
                 {grouped ? <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-red-50 text-sm font-bold text-red-700" aria-label={`Improvement ${index+1}`}>{index+1}</span> : section.items.length > 1 ? (
                   <span className={`mt-2 size-1.5 shrink-0 rounded-full ${isImprovement ? "bg-[#c43132]" : "bg-slate-400"}`} aria-hidden="true" />
                 ) : null}
-                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */}>{grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}</CoachingImprovement> : <CoachingText text={text} isClosingDetail={section.key === "close"} isObjection={section.key === "objections" && text.includes("\nConcern:")} />}
+                {isImprovement ? <CoachingImprovement text={text} expanded={false /* Set true to restore always-visible explanations. */}>{grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}</CoachingImprovement> : <CoachingText text={text} isClosingDetail={section.key === "close"} isObjection={(section.key === "objections" && text.includes("\nConcern:")) || ["lessons", "interpretation", "strategy", "foundations"].includes(section.key)} />}
               </div>
               {!grouped && evidence.length > 0 ? <TranscriptEvidence evidence={evidence} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} /> : null}
             </li>
@@ -104,7 +104,7 @@ function CoachingText({ text, isClosingDetail, isObjection }: { text: string; is
 }
 
 function CoachingLine({ line, asBullet }: { line: string; asBullet: boolean }) {
-  const note = line.match(/^(Why it matters:|Next time:|Concern:|Your response:|You could say:)/);
+  const note = line.match(/^(Why it matters:|Next time:|Concern:|Your response:|You could say:|For example:)/);
   if (note) {
     return (
       <p className="rounded-lg bg-slate-50 px-3 py-2 text-[14.5px] leading-6 text-slate-600 md:text-[15px]">

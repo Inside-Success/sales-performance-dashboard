@@ -34,6 +34,7 @@ export default async function CoachingInsightsPage({ searchParams }: { searchPar
     <section className="magic-card p-5 md:p-6" aria-label="Enhanced report objections">
       <h2 className="text-xl font-bold text-slate-950">Enhanced report objections</h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">{data.enhanced.total} reports · {data.enhanced.objections} distinct objections · {data.enhanced.noObjections} calls with no objections identified{data.enhanced.limited ? ` · ${data.enhanced.limited} calls with limited evidence` : ""}</p>
+      {data.enhanced.coverageUnassessed ? <p className="mt-2 text-sm leading-6 text-slate-600">{data.enhanced.coverageUnassessed} newer reports contribute the concerns they identified. They are not used to infer that other concerns were absent.</p> : null}
       <p className="mt-2 text-sm leading-6 text-slate-500">Each category counts a call once; a call can contain several categories. Handling and resolution are separate. These figures do not establish why a deal closed.</p>
       {data.enhanced.total ? <div className="mt-4 space-y-3">{data.enhanced.categories.map(row=><details key={row.key} className="rounded-xl border border-slate-200 p-4">
         <summary className="cursor-pointer font-semibold text-slate-900">{row.label}<span className="mt-1 block text-sm font-normal text-slate-600">{row.calls.length} of {data.enhanced.total} calls ({Math.round(row.calls.length/data.enhanced.total*100)}%) · {row.objections} objections</span></summary>
