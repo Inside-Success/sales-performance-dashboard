@@ -81,3 +81,45 @@ Sonnet 5.5 writer + Terra substantive reviewer + existing DeepSeek safety is the
 The candidate provides useful call-specific teaching and is ready for review of this isolated implementation. It is not uniformly superior on every call: the short documentary baseline was already useful, a spouse-decision interpretation remains a reasonable judgment trade-off, and the complex reality report remains lengthy. The revised test Doc also has a blank second PDF page. These are explicit limitations, not invented factual failures or proof the architecture needs another redesign.
 
 Do not describe the evidence as a full live production-parent delivery test. Actual model calls, core n8n runtime, PostgreSQL persistence, parent code, native Doc readback and authenticated preview were verified in bounded, separate checks. The complete parent graphs with production destinations were deliberately not activated. Production replacement still requires Moonis's explicit approval and deployment-specific baseline comparison, isolated destination binding and rollback review. No further broad model tournament is recommended; any further work should target a demonstrated integration or content problem.
+
+## Connected isolated acceptance completed — November 9
+
+This section supersedes the earlier disconnected-integration status above. Production remains unchanged. The branch now has a separate initially empty Neon database, owner-authenticated Vercel preview, isolated ingest/callback secrets, and four bounded n8n workflow clones. No production DB credentials were used for the candidate data layer. The separate Google OAuth client remains preview-only.
+
+### Actual paths and results
+
+- Manual: source 9466, public ID `af8d0dae8c2347fda8a9d72a9566779f`, successful execution `1644212`, core `1644213`. The actual preview submission, native checkpointed AI, native Google report/transcript creation, isolated manual receipt table, callback, authenticated report page, and transcript-backed report chat all completed. Final receipt is delivered/completed.
+- Official: source 9344, isolated source ID `recLABConnected9344`. Actual native transcript retrieval, classifier, checkpointed coaching, separate compliance, report Doc creation and preview dashboard ingest completed. Execution `1644292` stopped after paid work at a Code-node return-shape error. Native retry `1644401` resumed saved outputs after the fix without repeating provider requests. Dashboard report ID is `1`.
+- Actual official source settlement initially refused the retry execution's different owner ID. After independently matching the saved report Doc and dashboard receipt, settlement used the original owner `1644292`. A later duplicate claim was refused as already delivered. This is verified operator-assisted recovery, not proof of unattended recovery for every failure mode. Owner protections were preserved.
+- Both native report Docs were read back and matched the exact node-generated insertion text after whitespace normalization. Actual pages show Enhanced and the new objection-first report. Official and manual manager filters each show exactly one report and one source-linked objection, with the correct separate rep/category. Both actual report chats answered from the analyzed source rather than inferring commitments or payment.
+
+### Defects found and fixed
+
+1. n8n per-item Code nodes returned arrays. The parent builder now normalizes the modified node returns, including the official safety bridge. The successful native retry exercises that fix.
+2. Actual official/manual pages selected the old rendering layout for the new generation despite the shared component supporting it. The page selectors and preview generation binding are corrected; actual-page regression coverage was added.
+3. Report chat depended on an unauthenticated Google Doc export even though the source was private. The reviewed envelope now carries the full source blocks, validated against the source digest before use. Chat reads those authenticated, source-bound blocks first. Existing legacy behavior remains the fallback. The two already-generated isolated rows received only their exact source snapshots through compare-and-set; the report digests and prose were unchanged. Future publication uses the same shared publisher. A second fresh paid cohort was not run merely to repeat that deterministic migration.
+4. Preview dispatch now uses the exact isolated origin with owner access; live ingest credentials and destinations are never substituted. Short-lived Vercel OIDC authentication allowed native n8n calls through deployment protection without disabling protection.
+
+Initial unpublished child-workflow and protected-preview failures occurred before provider execution and incurred no AI charges. They were configuration errors in the test setup, not silently counted as successful tests.
+
+### Quality and philosophy assessment
+
+Sonnet 5.5 writer + Terra substantive reviewer + existing DeepSeek safety remains the preferred configuration. Tyler's prompt, definitions, teaching layers and substantive review remain the foundation. Objections stay high in the report, each insight has one home, and applicable offer/payment rules—including Mike's ACH/wire deposit requirement—remain in the policy layer rather than becoming an unrelated repetitive section.
+
+Both connected calls were reviewed against their full transcripts. The documentary continuation correctly respects the buyer's seasonal affordability limit, credits the April follow-up and does not invent a deposit opportunity after refusal. The NLCEO report identifies a legitimate earlier decision opportunity while respecting the later request for adviser review; it does not claim payment or resolution. Neither call triggered the ACH/wire condition, so these two runs are not fresh positive evidence for that rule; earlier policy/contract checks remain its evidence. This connected pair is integration evidence, not two additional held-out quality cases. The earlier documentary/reality/NLCEO evaluation remains the broader quality basis.
+
+### Verification, cost and safe closure
+
+- 204 focused tests across 33 files passed; TypeScript, optimized preview build and GitHub reliability CI passed for implementation `19bd930`.
+- Actual hosted checkpoint boundary: five competing requests produced one owner and four deferred results; stale-owner completion was refused; exact completed receipt was reusable. A duplicate manual callback remained completed and a tampered reviewed callback was rejected. Synthetic boundary receipts were explicitly marked and made no paid requests.
+- Eight distinct generation/classification/compliance/safety receipts cost **$0.866006096**. Two actual report-chat responses cost **$0.006295440**, including 30,659 cached input tokens on the official chat. This connected phase totals **$0.872301536**; total settled lab usage is **$30.300549264 / $40**. Prices are usage-priced estimates from the frozen model rates, not a provider invoice. All ten unique receipts were reconciled into the private ledger; no uncertain paid request remains and the $5 group reservation is settled.
+- All four temporary connected workflows were deactivated after checking zero running/waiting executions, with successful-execution retention restored to `none`. Full private evidence, the isolated DB and test Docs remain preserved. No production workflow was stopped or modified.
+- Final readback confirms production official/manual/reliability/provider nodes, connections, settings and activation equal the saved baseline.
+
+Private evidence: `.private-coaching-lab/connected/` contains native executions, provider receipts, report/source payloads, document readbacks, cost summary, boundary results, screenshots, owner-settlement receipt and closure verification. No private transcripts, credentials or generated reports are committed to GitHub.
+
+### Recommendation and limits
+
+The demonstrated connected integration gaps are closed. Recommend this frozen candidate for the user's production-replacement approval; no further broad model tournament or staging infrastructure is justified by these findings. Do not merge or activate it without that approval. Deployment still requires binding the existing production destinations/credentials, comparing the then-current workflow baseline and retaining a rollback snapshot; these are deployment steps, not additional claims of completed production activity.
+
+The isolated official fixture captured Airtable/Slack mappings instead of writing to real scorecards or sending Slack. Production schedules, bulk load and every recovery branch were not exercised. Native Google Docs, actual preview PostgreSQL/HTTP callbacks, provider checkpoints, authenticated UI, chat and manager aggregation were exercised. No claim of zero future failures or proven sales uplift is made. Content is not uniformly superior on every call: the short-call baseline was already useful, adviser/spouse interpretation can involve legitimate judgment, and long complex calls can still produce lengthy reports.
