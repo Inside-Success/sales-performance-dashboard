@@ -140,7 +140,7 @@ function validate(r, blocks) {
     if (o.handling !== "needs_work" && o.example.trim())
       fail("Corrective example requires supported weak handling");
     if (o.handling === "needs_work" && !text(o.teaching))
-      fail("Weak handling requires a usable explanation and better move");
+      fail("Weak handling requires a usable explanation and better move: objection " + o.id + " has empty teaching. Put the supported practical better move in teaching; assessment or example does not substitute for this required field.");
     if (
       !categories.includes(o.category) ||
       !["sound", "needs_work", "uncertain"].includes(o.handling) ||
