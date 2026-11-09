@@ -2,8 +2,9 @@ import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
-const {safetyDigest,safetyRepairFormat,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
+const {safetyScreenContract,safetyDigest,safetyRepairFormat,safetyL1Decisions,safetyFieldTargets,safetyFindingTargets,applySafetyFieldRepairs}=require('../../scripts/coaching-upgrade/repair-contract.cjs');
 const {normalizeObjectionReport,objectionErrors}=require('../../src/lib/objection-coaching.cjs');
+const validScreen={case_pass:true,unsupported_specifics:[],collisions:[],additional_safety_hits:[]};
 const report={version:'objection-coaching-v2',summary:'Supported summary.',show:'Clean and Thriving',strengths:[{observation:'You asked whether a business card could work. When she explained her limits, you did not argue.',evidence_ids:['T0001']}]};
 const finding=(before:string)=>({case_id:'c',path:'strengths.0.observation',before,layer:'L2',reason:'Do not praise unsupported payment workarounds.'});
 const target=()=>safetyFieldTargets(report,[finding('You asked whether a business card could work.'),finding('When she explained her limits, you did not argue.')]);
@@ -24,10 +25,10 @@ describe('shared coaching repair contract',()=>{
  it('binds exact Unicode inputs without relying on model echoes',()=>{for(const input of ['', 'abc','quoted “words”\nnext line','x'.repeat(10000)])expect(safetyDigest(input)).toBe(createHash('sha256').update(input).digest('hex'));const schema=safetyRepairFormat(target()).schema;expect(schema.properties.repairs.minItems).toBe(1);expect(schema.properties.repairs.items.required).not.toContain('before');const changed={...report,strengths:[{observation:'Different state'}]};expect(()=>applySafetyFieldRepairs(changed,target(),target().map(repair))).toThrow('stale');});
  it('does not turn generic screen approval into clearance of candidates',()=>{
   const hits=[{id:'l1',rule:'certification'}];
-  expect(()=>safetyL1Decisions(hits,{case_pass:true})).toThrow('missing');
-  expect(safetyL1Decisions(hits,{l1_decisions:[{id:'l1',decision:'retain',reason:'Conditional delivery of the correct agreement, not a policy certification.'}]})).toEqual([]);
-  expect(safetyL1Decisions(hits,{l1_decisions:[{id:'l1',decision:'repair',reason:'Claims approval without support.'}]})).toHaveLength(1);
-  for(const rows of [[],[{id:'wrong',decision:'retain',reason:'x'}],[{id:'l1',decision:'retain',reason:''}]])expect(()=>safetyL1Decisions(hits,{l1_decisions:rows})).toThrow();
+  expect(()=>safetyL1Decisions(hits,{...validScreen,case_pass:true})).toThrow('missing');
+  expect(safetyL1Decisions(hits,{...validScreen,l1_decisions:[{id:'l1',decision:'retain',reason:'Conditional delivery of the correct agreement, not a policy certification.'}]})).toEqual([]);
+  expect(safetyL1Decisions(hits,{...validScreen,l1_decisions:[{id:'l1',decision:'repair',reason:'Claims approval without support.'}]})).toHaveLength(1);
+  for(const rows of [[],[{id:'wrong',decision:'retain',reason:'x'}],[{id:'l1',decision:'retain',reason:''}]])expect(()=>safetyL1Decisions(hits,{...validScreen,l1_decisions:rows})).toThrow();
  });
  it('maps exact full prose fields and rejects ambiguous or metadata findings',()=>{
   expect(safetyFindingTargets('c',report,{path:'strengths[0].observation',sentence:'You asked whether a business card could work.'},'unsafe',0)[0].before).toBe(report.strengths[0].observation);
@@ -63,4 +64,29 @@ describe('shared coaching repair contract',()=>{
   expect(applySafetyFieldRepairs(r,t,[row]).coaching.summary).toBe(row.after);
   expect(()=>applySafetyFieldRepairs(r,t,[{...row,after:'Supported advice.'}])).toThrow('citation');
  });
+});
+
+describe('empty safety adjudication regression',()=>{
+ it('accepts absent decisions only for zero candidates, for cached and fresh responses',()=>{
+  expect(safetyL1Decisions([],{...validScreen,case_pass:true})).toEqual([]);
+  expect(safetyL1Decisions([],{...validScreen,case_pass:true,l1_decisions:[]})).toEqual([]);
+  for(const value of [null,{},'',false,[{id:'unexpected',decision:'retain',reason:'x'}]])expect(()=>safetyL1Decisions([],{...validScreen,l1_decisions:value})).toThrow();
+  expect(()=>safetyL1Decisions([{id:'real'}],{...validScreen,case_pass:true})).toThrow();
+ });
+ it('does not clear substantive L2 findings just because L1 is empty',()=>{
+  const screen={...validScreen,case_pass:false,additional_safety_hits:[{path:'summary',sentence:'Supported summary.'}]};
+  const targets=[...safetyL1Decisions([],screen),...screen.additional_safety_hits.flatMap((f,i)=>safetyFindingTargets('c',report,f,'unsafe',i))];
+  expect(safetyFieldTargets(report,targets)).toHaveLength(1);
+ });
+ it('uses one complete response example and puts adjudication before source data',()=>{
+  const old='{"case_pass":true,"unsupported_specifics":[],"collisions":[],"additional_safety_hits":[],"rationale":""}';
+  const p=safetyScreenContract('Return '+old+'\nTRANSCRIPT: buyer words');
+  expect(p).not.toContain(old);expect(p).toContain('"l1_decisions":[]');
+  expect(p.indexOf('For EVERY L1')).toBeLessThan(p.indexOf('TRANSCRIPT:'));
+  expect(()=>safetyScreenContract('different contract')).toThrow('drift');
+ });
+});
+
+it('does not treat a failed or malformed manual safety screen as an empty pass',()=>{
+ for(const screen of [{},null,{case_pass:true},{...validScreen,collisions:null},{...validScreen,case_pass:'true'}])expect(()=>safetyL1Decisions([],screen)).toThrow('invalid safety screen');
 });
