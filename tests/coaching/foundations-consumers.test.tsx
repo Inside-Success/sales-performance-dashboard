@@ -49,3 +49,10 @@ it('renders the actual manual report page with foundations sections, without leg
  expect(html).toContain('Objections and how');expect(html).toContain('Verify before promising.');
  expect(html).not.toContain('Biggest Strength');expect(html).not.toContain('Rudy&#x27;s Note');
 });
+it('reads the exact bound transcript without depending on public Google sharing',async()=>{
+ const {fetchManualTranscriptText}=await import('../../src/lib/report-chat');
+ const p=payload('manual');const report={public_id:'source-fixture',source_payload:p,transcript_link:'https://docs.google.com/document/d/private-doc/edit'} as unknown as ManualFeedbackReport;
+ expect(await fetchManualTranscriptText(report)).toEqual({text:'[00:01] Please check and send it tomorrow.',source:'reviewed_source_snapshot'});
+ p.reviewed_coaching_v3.source_blocks[0].text='Different transcript';
+ await expect(fetchManualTranscriptText(report)).rejects.toThrow('Invalid bound transcript');
+});

@@ -46,14 +46,15 @@ function publish(candidate,{sourceId,channel}){
  if(!candidate.safety?.pass||candidate.safety.candidateDigest!==digest(candidate.report))throw Error('Unreviewed candidate');
  contract.validate(candidate.report,candidate.prepared.blocks);
  const {prepared,...reviewed}=copy(candidate);
- return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
+ return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,source_blocks:prepared.blocks,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
 }
 function read(payload,sourceId,channel){
  if(payload?.coaching_version!==GENERATION)return null;
  const r=payload.reviewed_coaching_v3;
  if(!r||r.report?.status!=='completed'||!r.writerRequestId||!r.reviewRequestId||!r.safety?.requestId||digest(r.policy_text)!==r.policy_hash||r.source_id!==sourceId||r.channel!==channel||!r.safety?.pass||r.digest!==digest(r.report)||r.safety.candidateDigest!==r.digest)throw Error('Invalid bound report');
- contract.validate(r.report,r.evidence_index);
- return {report:r.report,markdown:contract.render(r.report,r.evidence_index),policyText:r.policy_text};
+ if(r.source_blocks!==undefined&&(!Array.isArray(r.source_blocks)||digest(r.source_blocks)!==r.source_hash))throw Error("Invalid bound transcript");
+ contract.validate(r.report,r.source_blocks||r.evidence_index);
+ return {report:r.report,markdown:contract.render(r.report,r.evidence_index),policyText:r.policy_text,sourceBlocks:r.source_blocks||null};
 }
 module.exports={GENERATION,digest,prepare,accept,repair,safety,publish,read};
 function sections(payload,sourceId,channel){

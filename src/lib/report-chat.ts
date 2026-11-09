@@ -36,6 +36,8 @@ export function isReportChatEnabledForManualReport(
 }
 
 export async function fetchTranscriptText(call: PerformanceCall) {
+  const snapshot=foundationsTranscript(call.source_payload,String(call.source_payload.source_airtable_record_id||""),"official");
+  if(snapshot)return snapshot;
   const payloadTranscript = extractTranscriptFromPayload(call.source_payload);
   if (payloadTranscript) {
     return {
@@ -75,6 +77,8 @@ export async function fetchTranscriptText(call: PerformanceCall) {
 }
 
 export async function fetchManualTranscriptText(report: ManualFeedbackReport) {
+  const snapshot=foundationsTranscript(report.source_payload,report.public_id,"manual");
+  if(snapshot)return snapshot;
   const payloadTranscript = extractTranscriptFromPayload(report.source_payload);
   if (payloadTranscript) {
     return {
@@ -112,6 +116,14 @@ export async function fetchManualTranscriptText(report: ManualFeedbackReport) {
     text: transcript,
     source: docId ? "google_doc_export" : "direct_link",
   };
+}
+
+function foundationsTranscript(payload: JsonObject, sourceId: string, channel: "official"|"manual") {
+  const reviewed=readFoundations(payload,sourceId,channel);
+  if(!reviewed?.sourceBlocks)return null;
+  const text=reviewed.sourceBlocks.map((block:{timestamp?:string;text:string})=>`${block.timestamp?`[${block.timestamp}] `:""}${block.text}`).join("\n");
+  if(!text.trim())throw new Error("The reviewed transcript is empty.");
+  return {text,source:"reviewed_source_snapshot"};
 }
 
 export function buildReportChatMessages(

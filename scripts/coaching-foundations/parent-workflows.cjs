@@ -47,7 +47,7 @@ return [{json:p}];`;
    slack.parameters.jsCode=replaceOnce(slack.parameters.jsCode,"(report.reviewed_coaching_v2?'Enhanced':'Legacy')","(report.coaching_version===MM_FOUNDATIONS.GENERATION?'Enhanced':'Legacy')");
    const post=get('Post to Dashboard');post.parameters.body=replaceOnce(post.parameters.body,"reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,","reviewed_coaching_v3: $('Performance Agent').item.json.reviewed_coaching_v3 || null, reviewed_coaching_v1: $('Performance Agent').item.json.reviewed_coaching_v1 || null,");
   }
-  for(const name of [start,adapter,final]){const n=get(name);if(n.parameters.mode==='runOnceForEachItem')n.parameters.jsCode='const __foundationsItem=await(async()=>{\n'+n.parameters.jsCode+'\n})();return Array.isArray(__foundationsItem)?__foundationsItem[0]:__foundationsItem;';}
+  for(const name of [start,adapter,final,...(channel==='official'?['MM Build Safety Screen Request']:[])]){const n=get(name);if(n.parameters.mode==='runOnceForEachItem')n.parameters.jsCode='const __foundationsItem=await(async()=>{\n'+n.parameters.jsCode+'\n})();return Array.isArray(__foundationsItem)?__foundationsItem[0]:__foundationsItem;';}
   w.active=false;w.name='CANDIDATE ONLY - '+w.name;
  }
  return out;
