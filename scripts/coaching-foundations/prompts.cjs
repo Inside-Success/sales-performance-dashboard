@@ -1,7 +1,7 @@
 // Single composition entry point for the candidate; pinned author source is supplied by caller.
 const {adapt}=require('../coaching-lab/tyler-adapter.cjs');
 const {schema}=require('../../src/lib/foundations-contract.cjs');
-const {reconcileScope,LESSON_SELECTION}=require('./lesson-selection.cjs');
+const {reconcileScope,reconcileNextSteps,LESSON_SELECTION}=require('./lesson-selection.cjs');
 const PRESENTATION = `TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT (presentation revision tyler-review-v1):
 Keep the foundational coaching philosophy and governed offer rules. This revision supersedes older report layout and per-objection teaching instructions, not the underlying reasoning.
 Return presentation="tyler-review-v1" and summary: a two-sentence, plain-language coaching snapshot that names the most useful takeaway and why it matters. No clickbait, unsupported sales causation, or administrative status recap. Empty summary for excluded calls.
@@ -15,7 +15,7 @@ Call outcome belongs at the bottom. Distinguish a buyer declining to invest now,
 These are writing constraints, not a shorter-input shortcut: reason from the FULL call, what was knowable at the moment and later recovery. Preserve consequential nuance and required offer boundaries. The reviewer must enforce this same presentation, including not re-expanding good handling into a lesson.`;
 function compose(source,layers){
  const built=adapt(source,layers);
- const system=reconcileScope(built.system).replaceAll('coaching-foundations-lab-v2','coaching-foundations-v3')+'\n'+LESSON_SELECTION+'\n'+PRESENTATION+'\nCURRENT REPORT CONTRACT:\n'+JSON.stringify(schema);
+ const system=reconcileNextSteps(reconcileScope(built.system)).replaceAll('coaching-foundations-lab-v2','coaching-foundations-v3')+'\n'+LESSON_SELECTION+'\n'+PRESENTATION+'\nCURRENT REPORT CONTRACT:\n'+JSON.stringify(schema);
  const prompt=require('./transition.cjs').prompt;
  return {system,prompt,knowledgeTemplate:require('./knowledge.cjs').template(system,layers),manifest:{...built,system:undefined,additional_responsibility_adaptation:'Replace original compliance paragraph; do not append contradictory policy-check duty'}};
 }

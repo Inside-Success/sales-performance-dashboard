@@ -27,3 +27,13 @@ module.exports.CONTEXT_REVIEW = `Before accepting any criticism, read the surrou
 
 // Historical replay only. Current composer rejects this conflicting addendum.
 module.exports.COMMERCIAL_REVIEW = `Before selecting or reviewing the report's lessons, compare material seller representations with the governed offer knowledge. A satisfied or ready buyer can still have been given a materially inaccurate expectation about what they are buying. Distinguish spoken observation, approved entitlement, conditional possibility, and unsupported promise; inspect later corrections before deciding whether a lesson remains useful. Do not treat a company video as independent policy authority when the governed product knowledge differs. Where a consequential mismatch is directly supported, teach the accurate boundary and how to communicate it in a distinct lesson, not an invented buyer objection or legal/compliance verdict. Prioritize that learning against other candidates without requiring a fault on every call. Minor wording differences, genuinely unknown facts, and already-corrected slips do not automatically deserve coaching. The reviewer must independently perform this check, not merely check facts already chosen by the writer. Preserve legitimate initiative and strong positive teaching. Do not invent a policy, an offer benefit, a decision-maker, or an unvoiced buyer concern.`;
+
+// Replace the superseded exact-date rule instead of stacking a contradictory addendum.
+const OLD_NEXT_STEP = 'An absent date, proposed follow-up or missing agreement belongs in a recommended step, never an agreed step.';
+const NEXT_STEP_OWNERSHIP = 'An agreed next step requires mutual commitment to the action, not an exact calendar date. Preserve the agreed window (such as next month) without inventing an appointment. A one-sided explicit commitment is promised. An unaccepted suggestion is not agreed or promised; include a recommended step only when it is genuinely useful new advice. Missing timing does not erase a real agreement.';
+function reconcileNextSteps(system) {
+ if(system.split(OLD_NEXT_STEP).length>2)throw Error('Duplicated next-step ownership rule');
+ return system.replace(OLD_NEXT_STEP,NEXT_STEP_OWNERSHIP);
+}
+module.exports.reconcileNextSteps=reconcileNextSteps;
+module.exports.NEXT_STEP_OWNERSHIP=NEXT_STEP_OWNERSHIP;
