@@ -62,3 +62,41 @@ it('keeps a document insight together and emits one bullet per insight',()=>{
  expect(p.at(-2).keepWithNext).toBe(true);expect(p.at(-1).keepWithNext).toBe(false);
  expect(d.text).toContain('Explain why.\nTry this.');
 });
+
+describe('durable candidate transitions and parent boundary',()=>{
+ const transition=require('../../scripts/coaching-foundations/transition.cjs');
+ const boundary=require('../../scripts/coaching-foundations/production-boundary.cjs');
+ it('repairs one transport-valid malformed draft with a distinct request and then reviews it',async()=>{
+  const {args}=setup();let t=transition.start({...args,system:args.prompts.system});const first=t.request.request_id;
+  t=transition.advance(t,response(t.request,{...report,version:'bad'}));expect(t.request.stage).toBe('writer-contract-repair');expect(t.request.request_id).not.toBe(first);
+  const repaired=t.request.request_id;t=transition.advance(t,response(t.request,report));expect(t.request.stage).toBe('reviewer');expect(t.writer.id).toBe(repaired);
+  expect(t.provider_results).toHaveLength(2);expect(t.provider_results[0].result).not.toHaveProperty('parsed_json');
+ });
+ it('holds a second malformed draft and mismatched or truncated paid receipts',()=>{
+  const {args}=setup();const initial=transition.start({...args,system:'fixture'});
+  expect(()=>transition.advance(initial,{...response(initial.request,report),request_id:'other'})).toThrow('identity');
+  expect(()=>transition.advance(initial,{...response(initial.request,report),stop_reason:'length'})).toThrow('Unusable');
+  const repair=transition.advance(initial,response(initial.request,{...report,version:'bad'}));
+  expect(()=>transition.advance(repair,response(repair.request,{...report,version:'bad'}))).toThrow();
+ });
+ it.each(['official','manual'])('retains source, safety and cached zero-cost receipt for %s',async channel=>{
+  const {args}=setup();const r=await run({...args,channel});
+  const result={...r,source_id:'fixture',channel,provider_results:[{purpose:'writer',result:{cached:true,costs:{total_cost_usd:0},provider_response_id:'saved'}}]};
+  const bound=boundary.bindState({case_id:'fixture',input:{public_id:'fixture'},caseItem:{metadata:{airtable_record_id:'fixture'}},provider_results:[]},result,channel);
+  expect(bound.coaching_raw.reviewed_coaching_v3.digest).toBe(r.payload.reviewed_coaching_v3.digest);
+  expect(bound.provider_results).toEqual(result.provider_results);expect(bound.coaching_raw.winnability).toBe('');
+  expect(()=>boundary.bindState(bound,{...result,source_id:'wrong'},channel)).toThrow('mismatch');
+  expect(()=>boundary.bindState(bound,{...result,status:'excluded'},channel)).toThrow('mismatch');
+ });
+ it('keeps the serialized review guidance identical to Tyler adapter guidance',()=>{
+  expect(require('../../scripts/coaching-foundations/review-guidance.cjs').REVIEW_ADAPTER).toBe(require('../../scripts/coaching-lab/tyler-adapter.cjs').REVIEW_ADAPTER);
+ });
+ it('requires an isolated provider and produces code that runs without structuredClone in n8n',()=>{
+  const {build}=require('../../scripts/coaching-foundations/n8n-workflow.cjs');
+  expect(()=>build({providerWorkflowId:'X9L4JtDbpkSCflxZ',models:{}})).toThrow('isolated');
+  const graph=build({providerWorkflowId:'isolated',models:{writer:{model:'test'},reviewer:{model:'test'},safety:{model:'test'}}});
+  const start=graph.nodes.find((n:any)=>n.name==='Start');
+  const out=new Function('$json',start.parameters.jsCode)({body:{prepared,call:{blocks:prepared.blocks},system:'test',models:{writer:'writer',reviewer:'reviewer',safety:'safety'},channel:'official'}});
+  expect(out[0].json.transition.status).toBe('request');expect(graph.nodes).toHaveLength(6);
+ });
+});

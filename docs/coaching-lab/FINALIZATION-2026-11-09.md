@@ -1,6 +1,6 @@
 # Coaching finalization — November 9, 2026
 
-In progress, isolated only. Production replacement requires Moonis's explicit approval. This record supersedes neither historical results nor live workflows.
+Isolated evaluation and bounded integration verification completed. Production replacement requires Moonis's explicit approval. This record supersedes neither historical results nor live workflows.
 
 ## Tyler's November 9 clarification
 
@@ -61,3 +61,23 @@ Authenticated preview verification completed at approximately 17:51 PKT in compa
 A real verification failure was found and resolved: CLI input truncated the original large fixture at 16,384 characters. The exact fixture is now Brotli-compressed into six bounded secret environment chunks, decoded only server-side after authorization. The successful source-bound report reader verifies the original policy/report digests on render. This transport is lab-only. The branch overrides the application's DATABASE_URL with an intentionally unusable value and uses a separate ingest secret; shared project defaults and production settings remain untouched. The branch preview does not have a usable production database connection through the application data layer.
 
 The preview login work is now closed. Further work must prioritize full official/manual coaching workflow adaptation, durable recovery-path verification and useful concise report content, not additional staging infrastructure or another broad model tournament. Moonis reiterated this priority during verification.
+
+## Completed isolated integration checks (November 9, evening)
+
+The coaching core now uses one serializable transition implementation in both the isolated runner and generated n8n graph. It retains exact source/request identity, substantive review, safety, one bounded contract repair, and one bounded prose repair followed by re-screening. A malformed transport-valid writer response gets a distinct repair request; a second malformed result, truncation, refusal or mismatched receipt stays held. Provider receipt usage/cost/cache metadata survives the graph and parent handoff without placing transcript/report bodies in the usage log.
+
+The generated core executed successfully in the actual company n8n engine using exact saved provider receipts, for documentary 9466, NLCEO 9344 and reality 9471, each through official and manual channels. All six final report digests match the previously reviewed artifacts. This is zero-paid-call runtime replay, not a new model quality evaluation. The initial runtime run exposed unavailable `structuredClone`; a JSON-state clone in the bundled runtime fixed it. Six subsequent runs passed, and another six passed after the usage/repair changes. The temporary protected-webhook workflow is inactive and has no schedule. Execution receipts are retained privately; successful-execution retention is restored to `none`.
+
+Offline parent builders now adapt the exact supplied official/manual baselines, preserve unrelated source, compliance, scoring and delivery branches, and pass the reviewed v3 record into the existing final output. They bypass redundant old review/safety only for the new already-reviewed generation. Usage accounting preserves the individual provider receipts; the manual error guard holds failures instead of presenting them as legitimate exclusions. All six exact reviewed reports passed actual parent finalization code; manual reports additionally passed Parse AI Output, Build Google Doc and Build Complete Callback with the same digest/source. The parent candidates remain private, inactive, and have not been uploaded or executed against production destinations.
+
+Four isolated PostgreSQL tests execute the real checkpoint SQL against PGlite: competing claim ownership, stale-owner rejection, cached receipt persistence through a database restart, and malformed paid-result retention. The Neon HTTP transport is substituted; these are not claims of a live Neon outage or distributed-worker load test.
+
+Validation: 201 focused tests across 33 files, TypeScript and optimized build passed. No new paid AI calls in this integration pass; settled lab cost remains **$29.428247728**, including **$2.032286493** for the November 9 evaluation and presentation runs. The final production readback compares official, manual, reliability and durable-provider workflow nodes/connections/settings/activation with the original baseline. No production merge or activation was performed.
+
+### Assessment and decision boundary
+
+Sonnet 5.5 writer + Terra substantive reviewer + existing DeepSeek safety is the preferred candidate from the tested configurations. Tyler's actual prompt/philosophy remains the foundation, with explicit offer knowledge, Mike's applicable down-payment rule and technical contracts layered around it. Objections lead; distinct teaching has one home; evidence and operational metadata remain internal.
+
+The candidate provides useful call-specific teaching and is ready for review of this isolated implementation. It is not uniformly superior on every call: the short documentary baseline was already useful, a spouse-decision interpretation remains a reasonable judgment trade-off, and the complex reality report remains lengthy. The revised test Doc also has a blank second PDF page. These are explicit limitations, not invented factual failures or proof the architecture needs another redesign.
+
+Do not describe the evidence as a full live production-parent delivery test. Actual model calls, core n8n runtime, PostgreSQL persistence, parent code, native Doc readback and authenticated preview were verified in bounded, separate checks. The complete parent graphs with production destinations were deliberately not activated. Production replacement still requires Moonis's explicit approval and deployment-specific baseline comparison, isolated destination binding and rollback review. No further broad model tournament is recommended; any further work should target a demonstrated integration or content problem.

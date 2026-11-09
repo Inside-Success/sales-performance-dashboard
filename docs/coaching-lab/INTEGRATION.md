@@ -1,6 +1,6 @@
 # Production integration boundary
 
-Latest isolated phase: [November 6 integration and evaluation](INTEGRATION-EVALUATION-2026-11-06.md). Earlier results below remain historical evidence, not the latest candidate verdict.
+Latest isolated phase: [November 9 finalization and verification](FINALIZATION-2026-11-09.md). Earlier results below remain historical evidence, not the latest candidate verdict.
 
 This branch is an isolated evaluation. Its report is intentionally not accepted by the production v2 validator. A successful isolated report does not bypass production safety or authorize release.
 
