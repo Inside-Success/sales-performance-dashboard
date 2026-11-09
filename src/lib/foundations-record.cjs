@@ -20,7 +20,9 @@ function accept({prepared,draftResponse,draftRequestId,reviewResponse,reviewRequ
 }
 function prosePaths(r){
  const paths=['outcome.text'];
+ if(r.presentation==='tyler-review-v1')paths.push('summary');
  for(const [group,fields] of Object.entries({objections:['title','concern','response','assessment','teaching','example'],lessons:['title','observation','teaching','example'],next_steps:['text']}))r[group].forEach((_,i)=>fields.forEach(f=>paths.push(`${group}.${i}.${f}`)));
+ if(r.presentation==='tyler-review-v1')r.objections.forEach((_,i)=>paths.push(`objections.${i}.exchange`));
  return new Set(paths);
 }
 function repair(candidate,expectedDigest,patches){
@@ -60,8 +62,8 @@ module.exports={GENERATION,digest,prepare,accept,repair,safety,publish,read};
 function sections(payload,sourceId,channel){
  const loaded=read(payload,sourceId,channel);if(!loaded)return null;
  // One deterministic renderer supplies Docs/chat/dashboard, without diagnostic metadata.
- const chunks=loaded.markdown.split(/^## /m),result=[{key:'outcome',title:'Call outcome',items:[chunks[0].replace(/^# Call coaching\s*\*\*Outcome:\*\*\s*/, '').trim()]}];
- for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':({'Reading the buyer':'interpretation','Choosing your approach':'strategy','Principles to use again':'foundations'}[title]||'lessons');const items=(key==='next-steps'?body.split(/^[-] /m):body.split(/^### /m)).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
+ const chunks=loaded.markdown.split(/^## /m),result=loaded.report.presentation==='tyler-review-v1'?[]:[{key:'outcome',title:'Call outcome',items:[chunks[0].replace(/^# Call coaching\s*\*\*Outcome:\*\*\s*/, '').trim()]}];
+ for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':title==='Coaching snapshot'?'summary':title==='Call outcome'?'outcome':({'Reading the buyer':'interpretation','Choosing your approach':'strategy','Principles to use again':'foundations'}[title]||'lessons');const items=(key==='next-steps'?body.split(/^[-] /m):body.split(/^### /m)).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
  return result;
 }
 module.exports.sections=sections;
