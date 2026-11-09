@@ -40,3 +40,12 @@ it('counts observed concerns without inventing absence coverage or legacy themes
  const result=summarizeCoachingInsights([call,call]);
  expect(result.total).toBe(0);expect(result.enhanced.total).toBe(1);expect(result.enhanced.coverageUnassessed).toBe(1);expect(result.enhanced.noObjections).toBe(0);expect(result.enhanced.categories[0].handledWell).toBe(1);
 });
+
+it('renders the actual manual report page with foundations sections, without legacy duplicates',async()=>{
+ const {ManualReportStatus}=await import('../../src/components/dashboard/manual-report-status');
+ const p=payload('manual');
+ const report={public_id:'source-fixture',input_type:'transcript',status:'completed',source_payload:p,rep_name:'Fixture rep',client_name:'Fixture buyer',what_went_well:[],what_to_improve:[],objections_surfaced:[],why_no_close:null,what_made_this_close_work:null} as unknown as ManualFeedbackReport;
+ const html=renderToStaticMarkup(<ManualReportStatus initialReport={report}/>);
+ expect(html).toContain('Objections and how');expect(html).toContain('Verify before promising.');
+ expect(html).not.toContain('Biggest Strength');expect(html).not.toContain('Rudy&#x27;s Note');
+});
