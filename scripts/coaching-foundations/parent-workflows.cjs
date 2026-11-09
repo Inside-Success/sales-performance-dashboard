@@ -2,10 +2,11 @@
 const esbuild=require('esbuild'),path=require('node:path');
 const {build:documents}=require('./workflow-adapters.cjs');
 const record=require('../../src/lib/foundations-record.cjs');
-function runtime(){return 'const structuredClone=value=>JSON.parse(JSON.stringify(value));\n'+esbuild.buildSync({stdin:{contents:"module.exports={...require('./src/lib/foundations-record.cjs'),...require('./scripts/coaching-foundations/production-boundary.cjs'),transition:require('./scripts/coaching-foundations/transition.cjs')}",resolveDir:path.resolve(__dirname,'../..')},bundle:true,write:false,format:'iife',globalName:'MM_FOUNDATIONS',platform:'node',target:'es2022'}).outputFiles[0].text;}
+function runtime(){return 'const structuredClone=value=>JSON.parse(JSON.stringify(value));\n'+esbuild.buildSync({stdin:{contents:"module.exports={...require('./src/lib/foundations-record.cjs'),...require('./scripts/coaching-foundations/production-boundary.cjs'),transition:require('./scripts/coaching-foundations/transition.cjs'),knowledge:require('./scripts/coaching-foundations/knowledge.cjs')}",resolveDir:path.resolve(__dirname,'../..')},bundle:true,write:false,format:'iife',globalName:'MM_FOUNDATIONS',platform:'node',target:'es2022'}).outputFiles[0].text;}
 function replaceOnce(text,from,to){if(text.split(from).length!==2)throw Error('Workflow anchor drift: '+from.slice(0,80));return text.replace(from,to);}
-function build(baselines,{coreWorkflowId,system,models,modelConfigs}){
+function build(baselines,{coreWorkflowId,system,models,modelConfigs,knowledgeTemplate}){
  if(!coreWorkflowId||['L8Nn7xncA9ZPDdWA','BMRrGxHyXMcgO6j3','X9L4JtDbpkSCflxZ','FShnTde2OGhIUZE4'].includes(coreWorkflowId))throw Error('Separate candidate core required');
+ if(!knowledgeTemplate)throw Error('Versioned knowledge template required');
  const out=documents(baselines),code=runtime(),edge=node=>({node,type:'main',index:0});
  for(const [id,channel,start,provider,adapter,final]of[
  ['L8Nn7xncA9ZPDdWA','official','MM Build Coaching Request','MM Coaching Provider','MM Reliable Coaching','Performance Agent'],
@@ -15,12 +16,17 @@ function build(baselines,{coreWorkflowId,system,models,modelConfigs}){
 const p=built.json,state=p.state;
 const sourceId=${channel==='manual'?'state.input?.public_id':"state.caseItem?.metadata?.airtable_record_id||state.caseItem?.metadata?.source_airtable_record_id||state.caseItem?.source?.['Source Airtable Record ID']||state.caseItem?.case_id"};
 if(!sourceId)throw Error('Missing exact coaching source');
-const call={metadata:state.caseItem?.metadata||state.input,blocks:p.blocks};
-const prepared=MM_FOUNDATIONS.prepare({sourceId:String(sourceId),policyRevision:'foundations-presentation-2026-11-09',policyText:${JSON.stringify(system)},blocks:p.blocks});
-p.foundations_input={prepared,call,system:${JSON.stringify(system)},models:${JSON.stringify(models)},channel:${JSON.stringify(channel)}};
+const rawMetadata=state.caseItem?.metadata||state.input;
+const metadata=Object.fromEntries(Object.entries(rawMetadata||{}).filter(([key])=>['airtable_record_id','meeting_id','meeting_title','show_name','call_number','rep_name','rep_email','client_name','original_client_name','call_date','meeting_duration','public_id','input_type'].includes(key)));
+const call={metadata,blocks:p.blocks};
+const knowledgeTemplate=${JSON.stringify(knowledgeTemplate||null)};
+const knowledge=knowledgeTemplate?MM_FOUNDATIONS.knowledge.bind(knowledgeTemplate,state.caseItem?.source?.runtime_context_pack||state.input?.runtime_context_pack):{system:${JSON.stringify(system)},revision:'foundations-presentation-2026-11-09',manifest:null};
+const prepared=MM_FOUNDATIONS.prepare({sourceId:String(sourceId),policyRevision:knowledge.revision,policyText:knowledge.system,blocks:p.blocks});
+prepared.knowledgeManifest=knowledge.manifest;
+p.foundations_input={prepared,call,system:knowledge.system,models:${JSON.stringify(models)},channel:${JSON.stringify(channel)}};
 const t=MM_FOUNDATIONS.transition.start(p.foundations_input),cfg=${JSON.stringify(modelConfigs)}[t.request.model];
 p.provider_request={...cfg,...t.request,model:cfg.model,call_purpose:'foundations_writer_v3'};
-state.coaching_version=MM_FOUNDATIONS.GENERATION;state.coaching_revision=MM_FOUNDATIONS.GENERATION;state.coaching_policy_revision=prepared.policyRevision;state.coaching_policy_hash=prepared.policyHash;state.coaching_policy_text=${JSON.stringify(system)};state.coaching_model=${JSON.stringify(modelConfigs[models.writer].model)};
+state.coaching_version=MM_FOUNDATIONS.GENERATION;state.coaching_revision=MM_FOUNDATIONS.GENERATION;state.coaching_policy_revision=prepared.policyRevision;state.coaching_policy_hash=prepared.policyHash;state.coaching_policy_text=knowledge.system;state.coaching_model=${JSON.stringify(modelConfigs[models.writer].model)};
 return [{json:p}];`;
   const p=get(provider);p.parameters={workflowId:{__rl:true,value:coreWorkflowId,mode:'id'},workflowInputs:{mappingMode:'defineBelow',value:{body:`={{ $('${start}').item.json.foundations_input }}`},matchingColumns:[],schema:[{id:'body',displayName:'body',required:true,type:'object'}],attemptToConvertTypes:false,convertFieldsToString:false},options:{waitForSubWorkflow:true}};
   const a=get(adapter);a.type='n8n-nodes-base.code';a.typeVersion=2;delete a.credentials;

@@ -46,7 +46,7 @@ function publish(candidate,{sourceId,channel}){
  if(!candidate.safety?.pass||candidate.safety.candidateDigest!==digest(candidate.report))throw Error('Unreviewed candidate');
  contract.validate(candidate.report,candidate.prepared.blocks);
  const {prepared,...reviewed}=copy(candidate);
- return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,source_blocks:prepared.blocks,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
+ return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,source_blocks:prepared.blocks,knowledge_manifest:prepared.knowledgeManifest||null,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
 }
 function read(payload,sourceId,channel){
  if(payload?.coaching_version!==GENERATION)return null;

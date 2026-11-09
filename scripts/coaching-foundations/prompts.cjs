@@ -7,6 +7,6 @@ function compose(source,layers){
  const built=adapt(source,layers);
  const system=reconcileScope(built.system).replaceAll('coaching-foundations-lab-v2','coaching-foundations-v3')+'\n'+LESSON_SELECTION+'\n'+PRESENTATION+'\nCURRENT REPORT CONTRACT:\n'+JSON.stringify(schema);
  const prompt=require('./transition.cjs').prompt;
- return {system,prompt,manifest:{...built,system:undefined,additional_responsibility_adaptation:'Replace original compliance paragraph; do not append contradictory policy-check duty'}};
+ return {system,prompt,knowledgeTemplate:require('./knowledge.cjs').template(system,layers),manifest:{...built,system:undefined,additional_responsibility_adaptation:'Replace original compliance paragraph; do not append contradictory policy-check duty'}};
 }
 module.exports={compose};
