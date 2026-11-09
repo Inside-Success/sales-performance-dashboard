@@ -23,6 +23,9 @@ it.each(['official','manual'] as const)('preserves the same reviewed teaching in
  else expect(normalizeManualCallback({...p,public_id:'source-fixture',status:'completed'}).source_payload).toBeTruthy();
  const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:p}} reportId='source-fixture' reportType={channel}/>);
  expect(html.indexOf('Objections and how')).toBeLessThan(html.indexOf('What to carry'));
+ expect(html).toContain('How you handled it');expect(html).toContain('Take into your next call');
+ expect(html).toContain('Practical feasibility and constraints');expect(html).toContain('Handled well');expect(html).toContain('Unresolved');
+ expect(html).toContain('You left the answer open.');expect(html.match(/Verify before promising\./g)).toHaveLength(1);
  expect(html).toContain('Verify before promising.');expect(html).toContain('Promised:');expect(html).not.toContain('T0001');expect(html).not.toContain('SYNTHETIC-TEST-ONLY');
  const messages=channel==='official'?buildReportChatMessages(report as unknown as PerformanceCall,'FULL SOURCE',[]):buildManualReportChatMessages(report as unknown as ManualFeedbackReport,'FULL SOURCE',[]);
  const context=messages.map(m=>m.content).join('\n');expect(context).toContain('Verify before promising.');expect(context).toContain('GOVERNED FIXTURE POLICY');expect(context).toContain('FULL SOURCE');
@@ -47,6 +50,8 @@ it('renders the actual manual report page with foundations sections, without leg
  const report={public_id:'source-fixture',input_type:'transcript',status:'completed',source_payload:p,rep_name:'Fixture rep',client_name:'Fixture buyer',what_went_well:[],what_to_improve:[],objections_surfaced:[],why_no_close:null,what_made_this_close_work:null} as unknown as ManualFeedbackReport;
  const html=renderToStaticMarkup(<ManualReportStatus initialReport={report}/>);
  expect(html).toContain('Objections and how');expect(html).toContain('Verify before promising.');
+ expect(html).toContain('aria-label="Call details and links"');
+ expect(html.indexOf('</aside>')).toBeLessThan(html.indexOf('Objections and how'));
  expect(html).not.toContain('Biggest Strength');expect(html).not.toContain('Rudy&#x27;s Note');
 });
 it('reads the exact bound transcript without depending on public Google sharing',async()=>{
