@@ -1,4 +1,5 @@
-import {sections as foundationsSections} from "@/lib/foundations-record.cjs";
+import { CoachingObjections, type CoachingObjection } from "@/components/dashboard/coaching-objections";
+import {read as readFoundations, sections as foundationsSections} from "@/lib/foundations-record.cjs";
 import { CoachingImprovement } from "@/components/dashboard/coaching-improvement";
 import { readReviewedCoaching } from "@/lib/reviewed-coaching";
 import { readObjectionCoaching, objectionSections } from "@/lib/objection-coaching.cjs";
@@ -27,6 +28,8 @@ export function CoachingReportContent({
   const sourceId = reportType === "manual" ? reportId : (source && typeof source === "object" ? String((source as Record<string, unknown>).source_airtable_record_id || "") : "");
   const reviewed = readReviewedCoaching(source, sourceId);
   const objectionReport = readObjectionCoaching(source, sourceId);
+  const boundFoundations = readFoundations(source, sourceId, reportType);
+  const structured = boundFoundations?.report as { objections: CoachingObjection[]; focus_id: string } | undefined;
   const foundations = foundationsSections(source, sourceId, reportType);
   const sections = foundations || (objectionReport ? objectionSections(objectionReport) : reviewed ? [
     { key: "outcome", title: "Call outcome", items: [reviewed.outcome.summary + (reviewed.outcome.evidence.length ? ` [${reviewed.outcome.evidence.join(", ")}]` : "")] },
@@ -37,7 +40,9 @@ export function CoachingReportContent({
   ].filter(section=>section.items.length) : dashboardCoachingSections(report));
   return (
     <div className="space-y-4">
-      {sections.map((section) => (
+      {sections.map((section) => structured && section.key === "objections" ? (
+        <CoachingObjections key={section.key} objections={structured.objections} focusId={structured.focus_id} />
+      ) : (
         <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!foundations || !!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
       ))}
     </div>

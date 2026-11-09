@@ -110,9 +110,9 @@ export function ManualReportStatus({
   return (
     <main className="magic-page">
       {isWaiting ? <div className="fixed inset-x-0 top-16 z-50 h-0.5 overflow-hidden bg-red-100"><div className="loading-progress h-full bg-[#DC2626]" /></div> : null}
-      <div className="magic-container max-w-5xl">
-        <article className="space-y-4">
-          <header className="magic-card magic-hero p-5 md:p-7">
+      <div className="magic-container">
+        <article className="grid items-start gap-5 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="magic-card min-w-0 p-5 lg:sticky lg:top-24" aria-label="Call details and links">
             <div className="relative">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <Link href={manualReportsHref} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}>
@@ -142,14 +142,14 @@ export function ManualReportStatus({
                 ) : null}
               </div>
 
-              <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-normal text-slate-950 md:text-5xl">
+              <h1 className="mt-4 break-words text-2xl font-semibold leading-tight text-slate-950">
                 {report.client_name || `${report.rep_name}'s feedback`}
               </h1>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 Manual sales feedback for {report.rep_name}.
               </p>
 
-              <div className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white/80 p-4 text-sm sm:grid-cols-2">
+              <div className="mt-5 space-y-4 border-y border-slate-100 py-5 text-sm">
                 <MetaItem label="Rep" value={report.rep_name} icon={<UserRound className="size-4" />} />
                 <MetaItem
                   label="Source"
@@ -158,7 +158,7 @@ export function ManualReportStatus({
                 />
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-5 flex flex-col items-stretch gap-2">
                 <ExternalButton
                   href={reportDocLink}
                   label="Open Google Doc"
@@ -191,8 +191,9 @@ export function ManualReportStatus({
                 ) : null}
               </div>
             </div>
-          </header>
+          </aside>
 
+          <div className="min-w-0 space-y-4">
           {error ? (
             <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
               {error}
@@ -254,6 +255,7 @@ export function ManualReportStatus({
               />
             </>
           ) : null}
+          </div>
         </article>
       </div>
     </main>
