@@ -123,3 +123,50 @@ Private evidence: `.private-coaching-lab/connected/` contains native executions,
 The demonstrated connected integration gaps are closed. Recommend this frozen candidate for the user's production-replacement approval; no further broad model tournament or staging infrastructure is justified by these findings. Do not merge or activate it without that approval. Deployment still requires binding the existing production destinations/credentials, comparing the then-current workflow baseline and retaining a rollback snapshot; these are deployment steps, not additional claims of completed production activity.
 
 The isolated official fixture captured Airtable/Slack mappings instead of writing to real scorecards or sending Slack. Production schedules, bulk load and every recovery branch were not exercised. Native Google Docs, actual preview PostgreSQL/HTTP callbacks, provider checkpoints, authenticated UI, chat and manager aggregation were exercised. No claim of zero future failures or proven sales uplift is made. Content is not uniformly superior on every call: the short-call baseline was already useful, adviser/spouse interpretation can involve legitimate judgment, and long complex calls can still produce lengthy reports.
+
+## Governed knowledge and unattended recovery follow-up — November 9
+
+This section supersedes the remaining operator-assisted recovery limitation above for the specific tested pre-delivery interruption. It does not claim that every outage or production scheduler path has been tested.
+
+### Implementation
+
+- `knowledge.cjs` separates the unchanged coaching foundation from governed factual layers. Both agents receive one bound knowledge version, including the actual fetched runtime context that the former candidate discarded. A manifest records source IDs, revisions, content digests and precedence. Approved scoped November updates override the older governed snapshot; both override conflicting general runtime context. Fetch dates are not effective dates, and unverified historical applicability must not become a retrospective violation. Missing, substituted or tampered sources hold processing.
+- An unchanged context fetched again retains the same request identity. Changed knowledge produces a new version. Future scoped commercial changes still require replacing their approved source revision; this is not an automatic policy approval system.
+- Shared guidance preserves useful conditional sales interpretation when unsupported accusations are removed, and asks for compact teaching without cutting distinct material concerns. No extra normal-path model node was added.
+- The connected interruption test exposed a genuine request-identity defect: JSONB reordered a saved writer response, and ordinary JSON serialization changed the reviewer prompt string. Recovery therefore made another reviewer and safety request even though the substantive input had not changed. `transition.cjs` and `safety.cjs` now serialize structured prompt content canonically, including repair requests. A regression test covers the complete writer/reviewer/safety sequence and distinguishes reordered keys from genuinely changed content.
+
+### Connected recovery evidence
+
+The first recovery fixture also had two setup defects: its error guard returned n8n metadata as an output item, and a copied recovery-entry trigger retained an incompatible type version after conversion to a Code node. These were fixed only in the isolated fixture. Failed attempts are preserved and are not counted as passing tests.
+
+After the serialization fix, a fresh identity for the same NLCEO transcript ran through the real candidate provider/core and isolated official parent. Controller `1646279` started worker `1646282`, which intentionally failed after AI processing and before document/dashboard writes. The controller automatically invoked worker `1646447`. That worker used the copied production terminal-owner verification and claim-transfer path, restored all five completed provider receipts (classifier, writer, reviewer, safety, compliance), created one native Google Doc, ingested dashboard report `3`, and settled its own source claim. No owner reconciliation or paid retry was performed by the operator in this final run.
+
+- Total test duration: 4m57s; automatic recovery/delivery: approximately 13s.
+- Five distinct completed provider checkpoints, each with one paid attempt. Five restored results during recovery, costing zero additional AI usage.
+- Exactly one dashboard row for the final test source; source claim is `done` under owner `1646447`.
+- Final document `181NV_sdrPaOdS_F5eGXSiGOjIZSMh_S940otgq5kSYA` matches the generated insertion text after whitespace/Markdown normalization. Authenticated company-profile preview `/call/3` displays the exact reviewed report, Enhanced label and correct source links without internal manifests or evidence IDs.
+- The first, pre-fix recovery also delivered one report (`2`), but incurred two extra paid requests due to the demonstrated serialization fault. Its additional cost is included, not hidden or counted as successful deduplication.
+
+The test controller deliberately injects and handles one known interruption. It exercises actual terminal-owner recovery and artifact delivery, not the production cron scanner, bulk load, every timeout condition or unknown-side-effect replay. Slack and Airtable destinations remain captured fixtures. The previous connected manual delivery evidence remains applicable; the new manual knowledge binding additionally passed an offline replay of its actual saved input envelope, with no paid request.
+
+### Matched content review
+
+Two existing calls were rerun against the revised knowledge/guidance; these are regression cases, not fresh held-out evaluation or proof of statistical superiority.
+
+- Documentary spouse discussion (9470): the report now explains the buyer's information-gathering and joint discussion without assuming the husband must give permission. It preserves a useful license-comparison lesson and the rep's actual promises. Length increased from 301 to 522 rendered words; the added decision-process context is useful, but this is not a brevity win.
+- Complex reality call (9471): all six distinct concerns remain: decision pace/spouse discussion, fit, portrayal, store logistics, distribution confidence and investment value. It credits the final refusal and does not invent a payment commitment or agreed follow-up. Advice distinguishes production estimates from guarantees and licensing from trademark ownership. Rendered length changed from 1,200 to 1,189 words: essentially unchanged. The brevity guidance alone did not meaningfully shorten this case.
+- The final NLCEO recovery report keeps the legitimate earlier first-payment opportunity while respecting the later adviser review. It distinguishes a plausible alternative from proof that the rep mishandled the sale, and does not claim payment. Neither regression nor the NLCEO call positively triggers Mike's ACH/wire condition; its evidence remains the earlier scoped rule and policy tests.
+
+Full source transcripts and exact reports remain private. Content was checked against the source, not merely agreement with the old output. The examples do not establish that every new report is better than every production report, nor sales uplift. No further broad model tournament is justified by this pass.
+
+### Verification and closure
+
+211 focused tests across 35 files, TypeScript, Vercel preview build and GitHub reliability CI passed for implementation `0ad6700` (knowledge/guidance commit `bb826fa`). Production official, manual, reliability and durable-provider nodes, connections, settings and activation match the saved baseline. No production merge, activation, report replacement or Slack message occurred.
+
+All five isolated workflow resources, including the bounded controller and the already-inactive manual fixture, were checked for zero running/waiting executions and left inactive. Successful-execution retention is restored to `none`; private full receipts, sources and artifacts remain preserved.
+
+This pass settled 18 unique paid receipts at **$1.749921670**, including the discovered duplicate-request defect and its fresh confirmation run. There were eight zero-cost restored receipts across both recovery attempts, five in the successful final test. Paid requests reported **265,546 cache-read input tokens** in aggregate. Cumulative settled lab cost is **$32.050470934 / $40**. These are usage-priced estimates from the configured rates, not invoices. The $5 reservation is settled; no paid request remains uncertain or pending.
+
+**Assessment:** retain Sonnet 5.5 writer + Terra substantive reviewer + existing DeepSeek safety. The concrete knowledge-binding and pre-delivery recovery gaps are closed in the tested candidate. It is reasonable to request production-replacement approval on that evidence; no change is authorized yet. Reports are useful and evidence-grounded in the reviewed cases, but long complex-call reports remain a presentation trade-off, not a solved shortening problem. This is readiness for an approval decision, not a promise of universal superiority or zero future failures. Release still requires a fresh production-baseline comparison, exact destination binding and rollback snapshot.
+
+Private evidence: `.private-coaching-lab/final-pass/` contains the failed and successful executions, native receipts, document readbacks, database uniqueness/ownership checks, manual-envelope replay, cost reconciliation and closure records.
