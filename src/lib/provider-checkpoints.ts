@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import {providerStage as foundationsProviderStage,providerErrors as foundationsProviderErrors} from "./foundations-contract.cjs";
 import {objectionProviderStage,objectionProviderErrors} from "./objection-coaching.cjs";
 import "server-only";
@@ -8,8 +9,8 @@ import { coachingStage, normalizeCoaching, coachingContractErrors, CONTRACT_REVI
 
 let schema: Promise<void> | null = null;
 function database() {
-  if (!process.env.DATABASE_URL) throw Error("Checkpoint database unavailable");
-  return neon(process.env.DATABASE_URL);
+  if (!databaseUrl()) throw Error("Checkpoint database unavailable");
+  return neon(databaseUrl()!);
 }
 async function ensureSchema() {
   if (!schema) schema = (async () => {

@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import 'server-only';
 import { neon } from '@neondatabase/serverless';
 import { summarizeUsage, type UsagePeriod, type UsageReportRow } from './usage-overview';
@@ -45,9 +46,9 @@ order by r.rep_slug,c.id`;
 
 export async function getUsageOverview(period: UsagePeriod) {
   const now = new Date();
-  if (!process.env.DATABASE_URL) return { error:'Usage data is unavailable.', generatedAt:now.toISOString(), ...summarizeUsage([],now.getTime()) };
+  if (!databaseUrl()) return { error:'Usage data is unavailable.', generatedAt:now.toISOString(), ...summarizeUsage([],now.getTime()) };
   try {
-    const sql=neon(process.env.DATABASE_URL);
+    const sql=neon(databaseUrl()!);
     const rows=await sql.query(USAGE_OVERVIEW_QUERY,[now.toISOString(),period]) as UsageReportRow[];
     return { error:null, generatedAt:now.toISOString(), ...summarizeUsage(rows,now.getTime(),period) };
   } catch (error) {

@@ -1,11 +1,12 @@
+import { databaseUrl } from '@/lib/database-connection';
 import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { slugify } from "@/lib/slug";
 import type { InsightCall } from "@/lib/coaching-insights";
 
 export async function getCoachingInsightCalls(days: number, type: "official" | "manual") {
-  if (!process.env.DATABASE_URL) throw new Error("Coaching data is unavailable.");
-  const sql = neon(process.env.DATABASE_URL);
+  if (!databaseUrl()) throw new Error("Coaching data is unavailable.");
+  const sql = neon(databaseUrl()!);
   // Read existing storage only: no schema changes, source writes or model calls.
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const rows = type === "official" ? await sql`

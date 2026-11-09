@@ -1,8 +1,9 @@
+import { databaseUrl } from '@/lib/database-connection';
 import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { readAirtablePage } from "./source-read";
 
-const sql = () => neon(process.env.DATABASE_URL!);
+const sql = () => neon(databaseUrl()!);
 let schema: Promise<void> | undefined;
 export async function ensureSourceClaims() {
   if (!schema) schema = sql().query(`create table if not exists coaching_source_claims (

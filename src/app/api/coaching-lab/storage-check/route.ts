@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { neon } from '@neondatabase/serverless';
@@ -9,7 +10,7 @@ export async function GET() {
   if (process.env.VERCEL_ENV !== 'preview' || process.env.COACHING_LAB_CONNECTED !== 'true') return new NextResponse(null, { status: 404 });
   const session = await auth();
   if (session?.user?.email?.toLowerCase() !== 'syed.haider@insidesuccess.com') return new NextResponse(null, { status: 403 });
-  const connection = process.env.DATABASE_URL;
+  const connection = databaseUrl();
   if (!connection) return NextResponse.json({ configured: false }, { status: 503 });
   const url = new URL(connection);
   const sql = neon(connection);

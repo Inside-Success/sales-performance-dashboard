@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import { after } from "next/server";
 import { formatMiamiDateTime } from "@/lib/format";
 import "server-only";
@@ -20,7 +21,7 @@ export type ReadSnapshot<T> = {
 };
 let schema: Promise<void> | undefined;
 function db() {
-  return neon(process.env.DATABASE_URL!);
+  return neon(databaseUrl()!);
 }
 async function ensureSnapshotTable() {
   if (!schema)
@@ -79,7 +80,7 @@ export async function getReadSnapshot<T>(
   spec: SnapshotSpec<T>,
 ): Promise<ReadSnapshot<T>> {
   if (
-    !process.env.DATABASE_URL ||
+    !databaseUrl() ||
     process.env.MAGIC_MIKE_READ_SNAPSHOTS_ENABLED === "false"
   )
     return {
@@ -153,7 +154,7 @@ export async function refreshReadSnapshot<T>(
   spec: SnapshotSpec<T>,
   scheduled = false,
 ): Promise<string> {
-  if (!process.env.DATABASE_URL)
+  if (!databaseUrl())
     throw new Error("Snapshot storage is unavailable.");
   await ensureSnapshotTable();
   const token = randomUUID();
