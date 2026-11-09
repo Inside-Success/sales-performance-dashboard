@@ -1,3 +1,4 @@
+import { brotliDecompressSync } from "node:zlib";
 import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import { CoachingReportContent } from "@/components/dashboard/coaching-report-content";
@@ -8,9 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function CoachingLabPage() {
   const session = await auth();
   if (!canReadCoachingLab(process.env.VERCEL_ENV, session?.user?.email)) notFound();
-  const saved = process.env.COACHING_LAB_REVIEWED_PAYLOAD;
+  const saved = Array.from({length:6},(_,i)=>process.env[`COACHING_LAB_PAYLOAD_${i}`] || "").join("");
   if (!saved) notFound();
-  const payload = JSON.parse(saved);
+  const payload = JSON.parse(brotliDecompressSync(Buffer.from(saved,"base64"), {maxOutputLength: 250_000}).toString("utf8"));
   return <main className="magic-page"><div className="mx-auto max-w-4xl space-y-6 px-5 py-8">
     <header><p className="text-sm font-medium text-amber-700">Isolated review · saved test output</p>
       <h1 className="mt-2 text-3xl font-bold">Call coaching</h1>
