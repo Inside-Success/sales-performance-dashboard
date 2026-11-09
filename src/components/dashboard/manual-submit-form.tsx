@@ -114,7 +114,7 @@ export function ManualSubmitForm() {
           />
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
             <Badge variant="outline">{transcriptText.trim().length.toLocaleString()} characters</Badge>
-            <span>Raw transcript text is sent to the workflow but not stored in the dashboard database.</span>
+            <span>Your transcript is used to generate coaching and saved with the report to support follow-up questions.</span>
           </div>
         </Field>
       )}
