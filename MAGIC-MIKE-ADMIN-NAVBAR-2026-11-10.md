@@ -1,5 +1,7 @@
 # Admin navbar — November 10, 2026
 
+Current production uses the direct-link revision documented below. The earlier sections retain the original dropdown rollout and its verification history.
+
 ## Behavior
 
 Authorized admins get a compact second row beneath the existing application header throughout Magic Mike. Desktop groups are Coaching, Sales Operations and FAQ, with Admin Insights and the existing external Mock Calls link. Mobile uses one grouped Admin pages menu. The current destination is marked inside its menu; the matching desktop group is highlighted, including on nested report/rep/calibration routes. Menus use the installed Base UI accessibility primitives for keyboard navigation, Escape, outside dismissal and focus restoration. Navigation closes on selection and route changes. Existing sticky coaching filters and call-details panels gain admin-only header clearance; ordinary-rep offsets are unchanged.
