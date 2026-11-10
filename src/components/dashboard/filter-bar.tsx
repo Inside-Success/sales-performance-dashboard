@@ -17,7 +17,7 @@ export function FilterBar({ filters, reps, repLocked = false, clearHref = "/" }:
   const activeFilters = getActiveFilters(filters, reps, repLocked);
 
   return (
-    <section className="dashboard-card rounded-xl border bg-card/95 p-3 backdrop-blur lg:sticky lg:top-[4.25rem] lg:z-30">
+    <section className="dashboard-card rounded-xl border bg-card/95 p-3 backdrop-blur lg:sticky lg:top-[calc(4.25rem+var(--magic-admin-offset,0px))] lg:z-30">
       <form method="get" className="grid gap-3 md:grid-cols-[minmax(220px,1fr)_160px_160px_140px_140px_auto_auto]">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
