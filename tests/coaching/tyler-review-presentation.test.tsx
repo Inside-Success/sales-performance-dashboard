@@ -25,3 +25,15 @@ it('safety screens new summary and exchange paths, rather than only old prose fi
 it('replaces the contradictory exact-date instruction without erasing real commitments',()=>{const {reconcileNextSteps}=require('../../scripts/coaching-foundations/lesson-selection.cjs');const old='An absent date, proposed follow-up or missing agreement belongs in a recommended step, never an agreed step.';const revised=reconcileNextSteps('Before. '+old+' After.');expect(revised).not.toContain(old);expect(revised).toContain('not an exact calendar date');expect(revised).toContain('one-sided explicit commitment is promised');expect(revised).toMatch(/^Before\./);expect(revised.endsWith('After.')).toBe(true);});
 
 it('identifies the exact missing teaching field so bounded repair cannot mistake assessment for it',()=>{const r=report();r.objections[0].handling='needs_work';r.objections[0].assessment='A supported assessment and suggested action.';r.objections[0].example='Illustrative words.';expect(()=>c.validate(r,blocks)).toThrow('objection O2 has empty teaching');});
+
+it('fails closed on missing or duplicated pinned reasoning instructions',()=>{
+ const {reconcileConcerns,reconcileNextSteps}=require('../../scripts/coaching-foundations/lesson-selection.cjs');
+ const concern='An objection is actual resistance or a material unresolved concern, not every question.';
+ const next='An absent date, proposed follow-up or missing agreement belongs in a recommended step, never an agreed step.';
+ for(const [fn,text] of [[reconcileConcerns,concern],[reconcileNextSteps,next]]){
+  expect(()=>fn('Unrecognized upstream wording')).toThrow('Expected one pinned');
+  expect(()=>fn(text+'\n'+text)).toThrow('Expected one pinned');
+  const revised=fn('Before. '+text+' After.');
+  expect(revised).not.toContain(text);expect(revised.startsWith('Before. ')).toBe(true);expect(revised.endsWith(' After.')).toBe(true);
+ }
+});

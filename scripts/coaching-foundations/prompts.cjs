@@ -1,11 +1,11 @@
 // Single composition entry point for the candidate; pinned author source is supplied by caller.
 const {adapt}=require('../coaching-lab/tyler-adapter.cjs');
 const {schema}=require('../../src/lib/foundations-contract.cjs');
-const {reconcileScope,reconcileNextSteps,LESSON_SELECTION}=require('./lesson-selection.cjs');
+const {reconcileScope,reconcileNextSteps,reconcileConcerns,LESSON_SELECTION}=require('./lesson-selection.cjs');
 const PRESENTATION = `TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT (presentation revision tyler-review-v1):
 Keep the foundational coaching philosophy and governed offer rules. This revision supersedes older report layout and per-objection teaching instructions, not the underlying reasoning.
 Return presentation="tyler-review-v1" and summary: a two-sentence, plain-language coaching snapshot that names the most useful takeaway and why it matters. No clickbait, unsupported sales causation, or administrative status recap. Empty summary for excluded calls.
-Account for every distinct actual objection using the existing category taxonomy, in order of FIRST occurrence. Include that first occurrence in evidence_ids, alongside later response/recovery evidence. Combine repeated mentions of the same concern; do not classify every question as resistance. Preserve handling, resolution and payment as independent internal judgments. A sound response can leave a concern unresolved.
+Account for every distinct actual resistance or expressed material concern under the shared buyer-concern definition, using the existing category taxonomy, in order of FIRST occurrence. Include that first occurrence in evidence_ids, alongside later response/recovery evidence. Combine repeated mentions of the same concern; do not classify every question as resistance. Preserve handling, resolution and payment as independent internal judgments. A sound response can leave a concern unresolved.
 For each objection, exchange is the reader-facing third-person account of the buyer concern, actual rep response and consequential later recovery. Usually 1–3 sentences, at most 6 when the exchange needs it. Name the actual person and decision, not vague phrases like 'that decision'. Use quotation marks only for actual source wording; a paraphrase is not a quote. concern and response retain analytical detail internally and must agree with exchange.
 When handling is sound, assessment records the grounded judgment internally, teaching and example MUST be empty. The reader sees the exchange and 'Handled well—no further feedback.' Do not add a backhanded correction or forced generic principle.
 When handling needs work, assessment + teaching + optional example form ONE concise Improvement entry of at most THREE sentences total. Make a clear judgment about the actual sales choice, explain the useful better move, and include example wording only if it adds practical value. Do not repeat the exchange or give an audit of everything the buyer did not explicitly confirm. Uncertain handling is reserved for genuinely insufficient evidence; explain the actual limit briefly rather than fabricate confidence.
@@ -15,7 +15,7 @@ Call outcome belongs at the bottom. Distinguish a buyer declining to invest now,
 These are writing constraints, not a shorter-input shortcut: reason from the FULL call, what was knowable at the moment and later recovery. Preserve consequential nuance and required offer boundaries. The reviewer must enforce this same presentation, including not re-expanding good handling into a lesson.`;
 function compose(source,layers){
  const built=adapt(source,layers);
- const system=reconcileNextSteps(reconcileScope(built.system)).replaceAll('coaching-foundations-lab-v2','coaching-foundations-v3')+'\n'+LESSON_SELECTION+'\n'+PRESENTATION+'\nCURRENT REPORT CONTRACT:\n'+JSON.stringify(schema);
+ const system=reconcileConcerns(reconcileNextSteps(reconcileScope(built.system))).replaceAll('coaching-foundations-lab-v2','coaching-foundations-v3')+'\n'+LESSON_SELECTION+'\n'+PRESENTATION+'\nCURRENT REPORT CONTRACT:\n'+JSON.stringify(schema);
  const prompt=require('./transition.cjs').prompt;
  return {system,prompt,knowledgeTemplate:require('./knowledge.cjs').template(system,layers),manifest:{...built,system:undefined,additional_responsibility_adaptation:'Replace original compliance paragraph; do not append contradictory policy-check duty'}};
 }

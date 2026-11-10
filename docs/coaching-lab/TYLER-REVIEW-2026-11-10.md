@@ -1,6 +1,6 @@
 # Tyler review revision — November 10, 2026
 
-Status: isolated revision and evaluation completed. Not recommended for production replacement in its current form. Production replacement is NOT authorized by this task. Do not merge this branch to main or activate production workflows.
+Status: first isolated revision completed; second isolated reasoning revision is under evaluation. The first-round replacement hold below remains until the new evidence is reviewed. Production replacement is NOT authorized by this task. Do not merge this branch to main or activate production workflows.
 
 ## Sources and intent
 
@@ -62,3 +62,11 @@ Examples (isolated, company sign-in):
 - Native Doc readback: https://docs.google.com/document/d/1_m7YqFzZ08SllK1kKju9P9nSlMY-QE6mtVRRI3rDCY0/edit
 
 Private evidence: tyler-review/final results, quality-review.md, integration-results.json, hosted-results.json, doc-readback.json, chat-receipt.json, cost-summary.json, production-baseline.json and authenticated preview screenshot. These are intentionally excluded from Git.
+
+## Second isolated revision — in progress
+
+User authorized the shared concern and final-commitment fixes plus fresh-call testing, with a $50 total experiment ceiling (not a spending target). Production remains outside scope. The shared pinned concern definition is replaced, not contradicted by another addendum. Writer and reviewer retain expressed material constraints without requiring an ultimatum, separate routine questions from concerns, and credit sound responses. Next steps are judged against the final call state: omit superseded buying intentions and casual tasks, retain genuinely outstanding administrative promises with their limited purpose. Missing or duplicate pinned rules fail closed during composition. No extra model stage, taxonomy, UI schema or call-specific override.
+
+The prompt was frozen before inspecting six unused full transcripts: two documentary, two reality and two NLCEO. Four are November 9/10 calls; the newest unused NLCEO candidates are October 17/19, so they are fresh to this evaluation, not newly recorded. The original eight cases are regressions, not holdouts. Source-first observations are saved before candidate review. All fourteen retained cases, repairs and holds will be reported; no selecting winners by output. The configuration remains Sonnet 5.5 / Terra / DeepSeek V4 Pro to isolate the reasoning change.
+
+Initial verification: 240 coaching tests and TypeScript pass. Final connected checks, source review, costs and recommendation are pending. Private evidence is under `.private-coaching-lab/tyler-review-r2/`.
