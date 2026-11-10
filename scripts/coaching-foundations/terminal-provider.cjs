@@ -13,3 +13,14 @@ function patchTerminalProvider(baseline){
  return w;
 }
 module.exports={patchTerminalProvider};
+
+// Apply only after the existing terminal-safety patch on a verified live snapshot.
+function patchRetainedContractProvider(baseline) {
+ const {retainedContractReceipt}=require('../../src/lib/foundations-terminal-receipt.cjs');
+ const w=structuredClone(baseline),n=w.nodes.find(n=>n.name==='Restore Cached Result');
+ const before="if(!repairableSafetyReceipt(terminal.call_purpose,terminal.checkpoint.result))";
+ if(!n||n.parameters.jsCode.split(before).length!==2)throw Error('Retained contract anchor drift');
+ n.parameters.jsCode='const retainedContractReceipt='+retainedContractReceipt.toString()+';\n'+n.parameters.jsCode.replace(before,"if(!repairableSafetyReceipt(terminal.call_purpose,terminal.checkpoint.result)&&!retainedContractReceipt(terminal.call_purpose,terminal.checkpoint.result))");
+ return w;
+}
+module.exports.patchRetainedContractProvider=patchRetainedContractProvider;

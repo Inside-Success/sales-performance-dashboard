@@ -64,3 +64,16 @@ it('resumes a terminal truncated safety receipt without another paid claim or tr
   await expect(providerCheckpoint({action:'complete',...other,token:owner.token!,result:{...terminal,...override}})).rejects.toThrow('Invalid structured');
  }
 });
+
+it('replays the exact malformed writer receipt at zero new cost without reacquiring ownership',async()=>{
+ const id={...identity('terminal-writer'),stage:'foundations_writer_v3',provider:'anthropic' as const};
+ const claim=await providerCheckpoint({action:'claim',...id});
+ const bad={...result,parsed_json:{version:'coaching-foundations-v3'},usage:{input_tokens:100,output_tokens:100},costs:{total_cost_usd:0.2}};
+ expect((await providerCheckpoint({action:'complete',...id,token:claim.token!,result:bad})).status).toBe('rejected_contract');
+ for(let i=0;i<2;i++){
+  const replay=await providerCheckpoint({action:'claim',...id});expect(replay.status).toBe('repair_required');
+  expect(replay.result.provider_response_id).toBe(bad.provider_response_id);expect(replay.result.costs.total_cost_usd).toBe(0);expect(replay.result.checkpoint_original_costs.total_cost_usd).toBe(0.2);
+ }
+ const rows=await state.db!.query<{status:string;attempts:number}>('select status,attempts from coaching_provider_checkpoints where source_id=$1',[id.source_id]);
+ expect(rows.rows[0]).toEqual({status:'failed',attempts:1});
+});
