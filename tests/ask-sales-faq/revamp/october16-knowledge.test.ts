@@ -26,8 +26,9 @@ describe('October 16 source refresh', () => {
   });
   it('separates weekly allowance from automatic qualification', () => {
     const greenlight = evidence('I have six good first calls today. Is three Green Lights a hard daily maximum?');
-    expect(greenlight).toContain('15 per week');
-    expect(greenlight).toContain('not authorization to exceed 15 weekly');
+    // November 9 leadership clarification supersedes the universal weekly cap.
+    expect(greenlight).toContain('no longer a universal cap');
+    expect(greenlight).toContain('not permission to approve unsuitable applicants');
   });
   it('distinguishes reality between-call material from post-sale onboarding', () => {
     const email = evidence('Which email should a reality applicant get between their first and second appointment?', 'reality');
