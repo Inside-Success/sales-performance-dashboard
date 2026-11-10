@@ -69,109 +69,84 @@ const schema = {
   ],
 };
 function validate(r, blocks) {
-  const fail = (m) => {
-    throw Error(m);
+  const issues = [];
+  let location = 'report';
+  const fail = message => issues.push({path: location, message});
+  const finish = () => {
+    if (issues.length) {
+      const error = new Error(issues[0].message);
+      error.issues = issues;
+      throw error;
+    }
+    return r;
   };
-  const text = (s) => typeof s === "string" && s.trim();
-  if (!r || r.version !== VERSION) fail("version");
+  const text = value => typeof value === 'string' && value.trim().length > 0;
+  const object = value => value && typeof value === 'object' && !Array.isArray(value);
   const shape = (value, keys, label) => {
-    if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).some(k => !keys.includes(k))) fail(label + " fields");
+    if (!object(value) || Object.keys(value).some(key => !keys.includes(key))) fail(label + ' fields');
+    return object(value);
   };
-  if (!Array.isArray(blocks) || !blocks.length || new Set(blocks.map(b => b.id)).size !== blocks.length) fail("evidence index");
-  shape(r, Object.keys(schema), "report");
-  if (!text(r.show) || typeof r.exclusion_reason !== "string") fail("identity");
-  shape(r.outcome, Object.keys(schema.outcome), "outcome");
-
-  if (!["completed", "excluded"].includes(r.status)) fail("status");
-  const ids = new Set(blocks.map((b) => b.id));
-  const refs = (a, required = true) => {
-    if (
-      !Array.isArray(a) ||
-      (required && !a.length) ||
-      a.some((i) => !ids.has(i))
-    )
-      fail("evidence");
+  if (!object(r)) { fail('version'); return finish(); }
+  if (r.version !== VERSION) fail('version');
+  shape(r, Object.keys(schema), 'report');
+  if (!Array.isArray(blocks) || !blocks.length || blocks.some(b => !b || typeof b.id !== 'string') || new Set(blocks.map(b => b.id)).size !== blocks.length) {
+    fail('evidence index'); return finish();
+  }
+  const ids = new Set(blocks.map(b => b.id));
+  const refs = (value, required = true) => {
+    if (!Array.isArray(value) || (required && !value.length) || value.some(id => !ids.has(id))) fail('evidence');
   };
-  if (
-    !["main_istv", "next_level_ceo", "reality", "mixed", "unknown"].includes(
-      r.offer_family,
-    )
-  )
-    fail("family");
-  if (
-    !r.outcome ||
-    !["confirmed", "not_confirmed", "unclear"].includes(r.outcome.payment) ||
-    !text(r.outcome.text)
-  )
-    fail("outcome");
-  refs(r.outcome.evidence_ids);
-  const compact = r.presentation === "tyler-review-v1";
-  if (r.presentation !== undefined && !compact) fail("Unknown presentation revision");
-  if (compact && (typeof r.summary !== "string" || (r.status === "completed" && !text(r.summary)))) fail("Missing coaching summary");
-  if (!compact && r.summary !== undefined) fail("Summary requires presentation revision");
-  if (
-    !["objections", "lessons", "next_steps"].every((k) => Array.isArray(r[k]))
-  )
-    fail("arrays");
-  if (
-    r.status === "excluded" &&
-    (!text(r.exclusion_reason) ||
-      r.objections.length ||
-      r.lessons.length ||
-      r.next_steps.length ||
-      r.focus_id)
-  )
-    fail("exclusion");
+  if (!text(r.show) || typeof r.exclusion_reason !== 'string') fail('identity');
+  if (!['completed', 'excluded'].includes(r.status)) fail('status');
+  if (!['main_istv', 'next_level_ceo', 'reality', 'mixed', 'unknown'].includes(r.offer_family)) fail('family');
+  location = 'outcome';
+  if (shape(r.outcome, Object.keys(schema.outcome), 'outcome')) {
+    if (!['confirmed', 'not_confirmed', 'unclear'].includes(r.outcome.payment) || !text(r.outcome.text)) fail('outcome');
+    refs(r.outcome.evidence_ids);
+  }
+  location = 'report';
+  const compact = r.presentation === 'tyler-review-v1';
+  if (r.presentation !== undefined && !compact) fail('Unknown presentation revision');
+  if (compact && (typeof r.summary !== 'string' || (r.status === 'completed' && !text(r.summary)))) fail('Missing coaching summary');
+  if (!compact && r.summary !== undefined) fail('Summary requires presentation revision');
+  const arrays = ['objections', 'lessons', 'next_steps'].every(key => Array.isArray(r[key]));
+  if (!arrays) fail('arrays');
+  if (r.status === 'excluded' && (!text(r.exclusion_reason) || !arrays || r.objections.length || r.lessons.length || r.next_steps.length || r.focus_id)) fail('exclusion');
   const seen = new Set();
-  for (const o of [...r.objections, ...r.lessons]) {
-    if (!text(o.id) || seen.has(o.id)) fail("entry identity");
-    seen.add(o.id);
-    if (!text(o.title)) fail("title");
-    for (const k of ["teaching", "example"])
-      if (typeof o[k] !== "string") fail(k);
-    refs(o.evidence_ids);
-    refs(o.counterevidence_ids, false);
+  for (const group of ['objections', 'lessons']) {
+    for (const [index, entry] of (Array.isArray(r[group]) ? r[group] : []).entries()) {
+      location = group + '.' + index;
+      if (!shape(entry, Object.keys(schema[group][0]), group === 'objections' ? 'objection' : 'lesson')) continue;
+      if (!text(entry.id) || seen.has(entry.id)) fail('entry identity');
+      seen.add(entry.id);
+      if (!text(entry.title)) fail('title');
+      for (const key of ['teaching', 'example']) if (typeof entry[key] !== 'string') fail(key);
+      refs(entry.evidence_ids); refs(entry.counterevidence_ids, false);
+      if (group === 'objections') {
+        if (compact && !text(entry.exchange)) fail('Missing concise exchange');
+        if (!compact && entry.exchange !== undefined) fail('Exchange requires presentation revision');
+        if (compact && entry.handling === 'sound' && (text(entry.teaching) || text(entry.example))) fail('Sound handling must not carry extra feedback');
+        if (entry.handling !== 'needs_work' && text(entry.example)) fail('Corrective example requires supported weak handling');
+        if (entry.handling === 'needs_work' && !text(entry.teaching)) fail('Weak handling requires a usable explanation and better move: objection ' + entry.id + ' has empty teaching. Put the supported practical better move in teaching; assessment or example does not substitute for this required field.');
+        if (!categories.includes(entry.category) || !['sound', 'needs_work', 'uncertain'].includes(entry.handling) || !['resolved', 'partly_resolved', 'unresolved', 'unclear'].includes(entry.resolution)) fail('objection enum');
+        for (const key of ['concern', 'response', 'assessment']) if (!text(entry[key])) fail(key);
+      } else {
+        if (entry.layer !== undefined && !['foundations', 'interpretation', 'strategy'].includes(entry.layer)) fail('lesson layer');
+        if (!['repeat', 'refine', 'explore'].includes(entry.purpose) || !text(entry.observation) || !text(entry.teaching)) fail('lesson');
+      }
+    }
   }
-  for (const o of r.objections) {
-    shape(o, Object.keys(schema.objections[0]), "objection");
-    if (compact && !text(o.exchange)) fail("Missing concise exchange");
-    if (!compact && o.exchange !== undefined) fail("Exchange requires presentation revision");
-    if (compact && o.handling === "sound" && (o.teaching.trim() || o.example.trim())) fail("Sound handling must not carry extra feedback");
-    if (o.handling !== "needs_work" && o.example.trim())
-      fail("Corrective example requires supported weak handling");
-    if (o.handling === "needs_work" && !text(o.teaching))
-      fail("Weak handling requires a usable explanation and better move: objection " + o.id + " has empty teaching. Put the supported practical better move in teaching; assessment or example does not substitute for this required field.");
-    if (
-      !categories.includes(o.category) ||
-      !["sound", "needs_work", "uncertain"].includes(o.handling) ||
-      !["resolved", "partly_resolved", "unresolved", "unclear"].includes(
-        o.resolution,
-      )
-    )
-      fail("objection enum");
-    for (const k of ["concern", "response", "assessment"])
-      if (!text(o[k])) fail(k);
+  location = 'focus_id';
+  if (typeof r.focus_id !== 'string' || (r.focus_id && !seen.has(r.focus_id))) fail('focus');
+  for (const [index, step] of (Array.isArray(r.next_steps) ? r.next_steps : []).entries()) {
+    location = 'next_steps.' + index;
+    if (!shape(step, Object.keys(schema.next_steps[0]), 'next step')) continue;
+    if (!['agreed', 'promised', 'recommended'].includes(step.kind) || !text(step.text)) fail('next step');
+    refs(step.evidence_ids);
   }
-  for (const l of r.lessons) {
-    shape(l, Object.keys(schema.lessons[0]), "lesson");
-    if (l.layer !== undefined && !["foundations", "interpretation", "strategy"].includes(l.layer)) fail("lesson layer");
-    if (
-      !["repeat", "refine", "explore"].includes(l.purpose) ||
-      !text(l.observation) ||
-      !text(l.teaching)
-    )
-      fail("lesson");
-  }
-  if (typeof r.focus_id !== "string" || (r.focus_id && !seen.has(r.focus_id)))
-    fail("focus");
-  for (const n of r.next_steps) {
-    shape(n, Object.keys(schema.next_steps[0]), "next step");
-    if (!["agreed", "promised", "recommended"].includes(n.kind) || !text(n.text))
-      fail("next step");
-    refs(n.evidence_ids);
-  }
-  return r;
+  return finish();
 }
+
 function render(r, blocks) {
   validate(r, blocks);
   if (r.status === "excluded")
@@ -296,7 +271,7 @@ function providerErrors(stage,value){
    else{if(!value.findings.length)throw Error('Missing correction rationale');structural(value.corrected_report);}
   }
   return [];
- }catch(e){return [e.message];}
+ }catch(e){return e.issues?.map(issue=>issue.path+": "+issue.message)||[e.message];}
 }
 module.exports.providerErrors=providerErrors;
 

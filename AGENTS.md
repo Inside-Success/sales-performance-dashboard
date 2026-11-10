@@ -106,3 +106,5 @@ For dashboard/web changes:
 
 - See `docs/coaching-lab/TYLER-PRODUCTION-RELEASE-2026-11-10.md`. New generation is `magic-mike-tyler-coaching-2026-11-10`; historical foundations payloads remain readable and must not be rewritten. Keep the old core available for in-flight execution/rollback.
 - A confirmed first-stage terminal safety format failure can return as `repair_required` with its exact retained receipt, but its checkpoint stays failed. It is never cached approval. The core enforces one bounded format review; unknown paid outcomes, refusal, stale candidate and unmapped findings remain held. Do not reissue the original paid request during resume.
+
+- November 10 terminal coaching recovery: see `docs/coaching-lab/TERMINAL-RECOVERY-2026-11-10.md`. Preserve aggregate contract diagnostics, one bounded repair, exact failed-receipt reuse at zero new cost, and independently reviewed exclusion routing. Excluded results are not scored reports; unknown outcomes and repeated repair failures remain held. Use the scoped terminal-recovery builder against freshly verified parents rather than regenerating unrelated workflow code.

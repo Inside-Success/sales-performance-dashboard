@@ -1,4 +1,4 @@
-import { repairableSafetyReceipt } from "./foundations-terminal-receipt.cjs";
+import { repairableSafetyReceipt, retainedContractReceipt, reusedReceipt } from "./foundations-terminal-receipt.cjs";
 import { databaseUrl } from '@/lib/database-connection';
 import {providerStage as foundationsProviderStage,providerErrors as foundationsProviderErrors} from "./foundations-contract.cjs";
 import {objectionProviderStage,objectionProviderErrors} from "./objection-coaching.cjs";
@@ -45,8 +45,8 @@ export async function providerCheckpoint(input: CheckpointInput) {
   const key = createHash("sha256").update(JSON.stringify([input.source_id, input.stage, input.provider, input.request_hash])).digest("hex");
   if (input.action === "claim") {
     // Resume the core from a confirmed failed receipt instead of buying it again.
-    const terminal = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='failed' and last_error='Terminal safety response requires bounded repair'`;
-    if (terminal[0] && repairableSafetyReceipt(input.stage,terminal[0].result)) return {status:'repair_required',result:terminal[0].result};
+    const terminal = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='failed' and (last_error='Terminal safety response requires bounded repair' or last_error like 'Invalid coaching contract:%')`;
+    if (terminal[0] && (repairableSafetyReceipt(input.stage,terminal[0].result)||retainedContractReceipt(input.stage,terminal[0].result))) return {status:'repair_required',result:reusedReceipt(terminal[0].result)};
     const existing = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='completed'`;
     if (existing[0]) {
       const result = {...existing[0].result,call_purpose:input.stage};

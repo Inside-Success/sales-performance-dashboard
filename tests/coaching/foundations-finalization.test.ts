@@ -101,7 +101,7 @@ describe('durable candidate transitions and parent boundary',()=>{
   expect(bound.coaching_raw.reviewed_coaching_v3.digest).toBe(r.payload.reviewed_coaching_v3.digest);
   expect(bound.provider_results).toEqual(result.provider_results);expect(bound.coaching_raw.winnability).toBe('');
   expect(()=>boundary.bindState(bound,{...result,source_id:'wrong'},channel)).toThrow('mismatch');
-  expect(()=>boundary.bindState(bound,{...result,status:'excluded'},channel)).toThrow('mismatch');
+  expect(()=>boundary.bindState(bound,{...result,status:'excluded'},channel)).toThrow('Unverified coaching exclusion');
  });
  it('keeps the serialized review guidance identical to Tyler adapter guidance',()=>{
   expect(require('../../scripts/coaching-foundations/review-guidance.cjs').REVIEW_ADAPTER).toBe(require('../../scripts/coaching-lab/tyler-adapter.cjs').REVIEW_ADAPTER);
