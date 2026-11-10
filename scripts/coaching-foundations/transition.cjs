@@ -28,7 +28,7 @@ function advance(previous,response){
  if(stage==='writer'||stage==='writer-contract-repair'){
   // Contract/transport errors remain held; no speculative rerun of a paid request.
   if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable writer receipt');
-  try{contract.validate(response.parsed_json,s.prepared.blocks);if(s.system.includes("TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT")&&response.parsed_json.presentation!=="tyler-review-v1")throw Error("Missing requested presentation revision");}catch(error){
+  try{contract.validate(response.parsed_json,s.prepared.blocks);if(s.system.includes("TYLER REVIEW PRESENTATION — revision tyler-review-v2")&&response.parsed_json.presentation!=="tyler-review-v2")throw Error("Missing requested presentation revision");if(s.system.includes("TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT")&&response.parsed_json.presentation!=="tyler-review-v1")throw Error("Missing requested presentation revision");}catch(error){
    if(stage!=='writer'||!response.parsed_json)throw error;
    return request(s,'writer-contract-repair',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+'\nReturn a complete valid report correcting only the contract fault. Preserve supported judgment and evidence. All contract faults: '+stable(error.issues||[{path:'report',message:error.message}])+'\nCorrect every listed fault in one response. Recheck every objection and lesson, not just the first fault. Keep supported judgments, evidence and classification unchanged; do not remove a finding or change handling merely to satisfy the contract. Do not invent generic filler.\nPREVIOUS UNTRUSTED REPORT:\n'+stable(response.parsed_json)});
   }

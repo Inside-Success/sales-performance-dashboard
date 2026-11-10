@@ -41,8 +41,13 @@ export function CoachingReportContent({
   ].filter(section=>section.items.length) : dashboardCoachingSections(report));
   return (
     <div className="space-y-4">
-      {sections.map((section) => structured && section.key === "objections" ? (
-        <CoachingObjections key={section.key} objections={orderedObjections(structured, boundFoundations?.sourceBlocks || (source as { reviewed_coaching_v3: { evidence_index: { id: string }[] } }).reviewed_coaching_v3.evidence_index)} focusId={structured.focus_id} compact={structured.presentation === "tyler-review-v1"} />
+      {sections.map((section) => structured?.presentation === "tyler-review-v2" && section.key === "summary" ? (
+        <section key={section.key} className="magic-card p-5 md:p-7" aria-label="Coaching snapshot">
+          <h2 className="text-xl font-bold text-slate-950 md:text-2xl">{section.items[0]?.split("\n")[0]}</h2>
+          <p className="mt-3 text-base leading-7 text-slate-700">{section.items[0]?.split("\n").slice(1).join(" ")}</p>
+        </section>
+      ) : structured && section.key === "objections" ? (
+        <CoachingObjections key={section.key} objections={orderedObjections(structured, boundFoundations?.sourceBlocks || (source as { reviewed_coaching_v3: { evidence_index: { id: string }[] } }).reviewed_coaching_v3.evidence_index)} focusId={structured.focus_id} compact={["tyler-review-v1","tyler-review-v2"].includes(structured.presentation || "")} numbered={structured.presentation === "tyler-review-v2"} />
       ) : (
         <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!foundations || !!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
       ))}

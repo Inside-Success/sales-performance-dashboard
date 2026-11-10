@@ -12,7 +12,7 @@ const FIELD_ROLES='Respect each supplied field role. A source_account describes 
 function fields(report){
  const out=[{path:'outcome.text',text:report.outcome.text}];
  for(const [group,keys] of Object.entries({objections:['title','concern','response','assessment','teaching','example'],lessons:['title','observation','teaching','example'],next_steps:['text']})) report[group].forEach((item,i)=>keys.forEach(key=>out.push({path:`${group}.${i}.${key}`,text:item[key]})));
- if(report.presentation==='tyler-review-v1'){out.push({path:'summary',text:report.summary});report.objections.forEach((o,i)=>out.push({path:`objections.${i}.exchange`,text:o.exchange}));}
+ if(['tyler-review-v1','tyler-review-v2'].includes(report.presentation)){out.push({path:'summary',text:report.summary});report.objections.forEach((o,i)=>out.push({path:`objections.${i}.exchange`,text:o.exchange}));}
  return out.map(f=>({...f,role:fieldRole(f.path)}));
 }
 function signals(candidate){
