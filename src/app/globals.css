@@ -418,3 +418,8 @@
     transform: translateX(160%) scaleX(0.35);
   }
 }
+
+/* Preserve clearance for existing sticky tools beneath the admin-only header row. */
+body:has(nav[aria-label="Admin pages"]) {
+  --magic-admin-offset: 4rem;
+}

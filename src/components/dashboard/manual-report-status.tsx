@@ -112,7 +112,7 @@ export function ManualReportStatus({
       {isWaiting ? <div className="fixed inset-x-0 top-16 z-50 h-0.5 overflow-hidden bg-red-100"><div className="loading-progress h-full bg-[#DC2626]" /></div> : null}
       <div className="magic-container">
         <article className="grid items-start gap-5 lg:grid-cols-[250px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="magic-card min-w-0 p-5 lg:sticky lg:top-24" aria-label="Call details and links">
+          <aside className="magic-card min-w-0 p-5 lg:sticky lg:top-[calc(6rem+var(--magic-admin-offset,0px))]" aria-label="Call details and links">
             <div className="relative">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <Link href={manualReportsHref} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full px-0 text-slate-500 hover:text-[#B91C1C]")}>

@@ -1,3 +1,4 @@
+import { ADMIN_DIRECTORY_LINKS } from "@/lib/admin-directory";
 import { APPROVED_ADMIN_EMAILS } from "@/lib/approved-admin-emails";
 import { normalizeAuthEmail } from "@/lib/auth-utils";
 
@@ -32,4 +33,11 @@ export function isSalesFaqAdmin(email: string | null | undefined) {
 
 export function canAccessAdminDirectory(email: string | null | undefined) {
   return isMagicMikeAdmin(email) || isSalesFaqAdmin(email);
+}
+
+// Server-side projection: never ship restricted destinations to regular reps.
+export function getAdminNavigationLinks(email: string | null | undefined) {
+  const manager = isMagicMikeAdmin(email);
+  const faq = isSalesFaqAdmin(email);
+  return ADMIN_DIRECTORY_LINKS.filter(link => link.scope === "manager" ? manager : faq);
 }
