@@ -1,6 +1,15 @@
 # Tyler review revision — November 10, 2026
 
-Status: first isolated revision completed; second isolated reasoning revision is under evaluation. The first-round replacement hold below remains until the new evidence is reviewed. Production replacement is NOT authorized by this task. Do not merge this branch to main or activate production workflows.
+## Final second-revision status
+
+Isolated implementation and verification are complete. Production replacement was not performed and still requires explicit approval. All 16 retained calls completed the reviewed/safety-checked pipeline: eight regressions, two diagnostic cases, and six untouched-output coaching holdouts across all three offer families. Full source evidence was reviewed before candidate assessment. The two additional safety-protocol repairs were tested separately; the fresh-call prompts were not retuned to those outputs.
+
+Recommendation: this candidate is a reasonable replacement for the current coaching presentation and reasoning, subject to approval and normal deployment verification. No material factual or integration blocker remains in the tested cases. This is not a claim of universal superiority or perfect future accuracy. Next-step relevance is improved but not perfect: one fresh report retained a casual music-video promise, and one interrupted-call regression retains a qualified video task that could be omitted. These are minor curation limitations, not invented commitments or payment outcomes, and do not justify another broad model tournament.
+
+The sections below retain the first revision's findings and decision history. That earlier hold recommendation is superseded by this final assessment.
+
+
+Historical first-round status: the first candidate was held for concern coverage and final commitment reasoning. The completed second revision and current recommendation are recorded above. Production replacement remains unauthorized by this task.
 
 ## Sources and intent
 
@@ -84,3 +93,24 @@ At this checkpoint all 241 coaching tests, TypeScript, GitHub reliability CI and
 The final regression pass exposed two terminal response failures: one safety model returned acknowledgments for every prose field instead of the empty lexical-candidate list, and another exhausted its output limit. Neither was accepted as a valid safety review. The shared state machine now allows one compact safety-contract review per candidate after a confirmed terminal, source-matching format failure or truncation. It uses the same model, complete source and governed knowledge; a second failure remains held. Uncertain transport outcomes, refusals, wrong request IDs, stale candidate digests and unmapped/non-prose findings are not replayed. Genuine findings still use the existing bounded prose repair and re-screening. No new workflow node or routine model call is added, and no full-field acknowledgment is silently treated as lexical approval.
 
 Nine additional regression tests cover these paths; all 250 coaching tests pass. The six fresh holdout prompts and reports were not tuned for this protocol repair. Existing successful provider receipts are reused for compiled replays; only the two confirmed invalid safety responses receive new explicitly identified repair requests.
+
+## Final second-revision evidence and costs
+
+- Preserved material buyer concerns, including resolved concerns and good rep responses. The four-payment/cash-flow case now retains the concern without requiring an ultimatum. Final-state follow-up reasoning removes superseded pursuit after refusal and preserves genuine administrative promises and agreed windows without inventing exact appointments.
+- Preserved Tyler's short snapshot, chronological objection exchanges, existing categories, explicit credit for good handling, selective layered teaching and outcome last. Left details card remains. Main coaching models remain Sonnet 5.5 writer, Terra reviewer and DeepSeek V4 Pro safety. No additional routine model stage or workflow node.
+- All 16 final reports reviewed against source evidence. Six holdouts: two documentary, two reality and two NLCEO; the NLCEO recordings are older but unused in this experiment. Two diagnostic calls are not counted as holdouts. Results range from 271 to 855 words; the longest covers six distinct concerns.
+- Five current-production comparisons have identical source blocks: aggregate rendered word count fell from 2,699 to 2,161 (19.9%). Four are shorter, one slightly longer. Material concerns remain; one previously buried ownership concern is now explicit. Other historical baselines are not presented as equivalent current-production comparisons.
+- 250 coaching tests across 40 files, TypeScript, GitHub reliability CI and Vercel preview build pass. All 32 compiled official/manual graph replays passed using exact saved receipts, including the two new safety-contract recovery paths. All 16 official/manual pairs persisted through actual isolated preview routes, with duplicate delivery, source-digest readback and tampered-payload rejection. Authenticated preview reports and the left details layout were checked.
+- Scope limit: this round exercises the real core/parent code and isolated report persistence, not a new full intake/classifier/compliance run or manual file-upload test. The prior round's native Google Doc readback and chat checks remain valid for unchanged consumers; this round rechecks generated document/callback content through the actual compiled code.
+- Usage-priced cost this round: **$4.452186175**. Shared experiment total: **$40.011948570 / $50**. Includes all failed attempts, contract/prose repairs and three safety controls. Zero unresolved paid requests; ledger request IDs and provider receipt IDs are unique. External lab-webhook timeouts were reconciled to their original provider receipts, not blindly resubmitted. The bounded repairs followed confirmed terminal invalid responses, not unknown transport outcomes.
+- The owned temporary lab provider workflow is inactive after settlement. Four protected production coaching workflow hashes are unchanged; production has zero `tyler-r2-*` official/manual records. Other chats' production deployments were not restored or modified. This branch is unmerged and production activation remains outside scope.
+
+Final code verification: commit `469eac658625bf886fe0c018e7b1320ab8c9dea1`, isolated deployment `dpl_6iorNu5LJgtKKNXCQfc9Wc9JuwNN`. The final documentation commit does not change runtime code.
+
+Examples (isolated preview, company sign-in):
+- Kayla, concise financial-timing concern with good handling: https://sales-performance-dashboard-git-code-84470c-admin-insidesuccess.vercel.app/call/64
+- Chantel, multiple concerns with contextual coaching: https://sales-performance-dashboard-git-code-84470c-admin-insidesuccess.vercel.app/call/58
+- Mike, six concerns and no obsolete next steps after refusal: https://sales-performance-dashboard-git-code-84470c-admin-insidesuccess.vercel.app/call/42
+- Romell, retained minor next-step curation issue: https://sales-performance-dashboard-git-code-84470c-admin-insidesuccess.vercel.app/call/48
+
+Private evidence: `tyler-review-r2/{source-review.md,quality-review.md,corpus-final.json,prompt-freeze.json,safety-freeze.json,safety-controls.json,final-safety-v2,integration-results.json,hosted-results.json,paired-comparison.json,cost-summary.json,production-after.json,production-test-record-check.json,transport-final.json,ui-verification.json}` and exact provider receipts in `finalization/receipts`. No transcript, credential or private report is committed.
