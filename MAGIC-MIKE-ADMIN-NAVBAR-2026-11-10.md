@@ -10,11 +10,19 @@ The navbar and Admin Insights directory use the same destination registry and se
 
 No changes to access rosters, auth grants, report generation, n8n, knowledge, scoring, Script Adherence processing or source data. No extra AI/API calls. Internal admin links disable eager prefetching to avoid loading manager datasets merely by opening a menu. The external Mock Calls link retains new-tab behavior and its own service authorization.
 
-Implementation reuses a clean checkout on `codex/admin-navbar-2026-11-10`. Other chats were inspected read-only; no messages were sent. FAQ knowledge PR403 and coaching-review PR402 had no overlapping files at the pre-release check. Recheck current main and open changes before merging; do not overwrite another chat's branch or worktree.
+Implementation reuses a clean checkout on `codex/admin-navbar-2026-11-10`. Other chats were inspected read-only; no messages were sent. FAQ knowledge PR403 and coaching-review PR402 had no overlapping files at the pre-release check. FAQ PR403 landed during implementation and was merged into this branch without conflicts before final checks. No other chat's branch or worktree was modified.
 
 ## Validation
 
-Permission projection, server-header serialization and route matching have targeted regressions, alongside existing admin page/API authorization tests. TypeScript, scoped lint and production build are checked before release. No local development server is used. Authenticated desktop/mobile navigation and production deployment acceptance are pending.
+Released in [PR404](https://github.com/Inside-Success/sales-performance-dashboard/pull/404), production commit `11e038200fe7f85a057456aaa78dca39048ad876`, Vercel deployment `dpl_Eheb6pPrNvj1RCUXB2fmN1Gr5wog`. GitHub reliability checks and Vercel deployment passed.
+
+- 37 tests across five navigation/header and existing admin page/API authorization suites passed. TypeScript, scoped ESLint and the production build passed. No local development server was used.
+- Authenticated production desktop checks confirmed grouped menus, keyboard Down/Enter navigation to Rep Usage, Escape dismissal with focus restored to the trigger, and the current Rep Usage item marked `aria-current=page`.
+- FAQ Usage and Rep No-Shows loaded through their menus. The navbar persisted on the regular Coaching page. Existing FAQ local tabs remained and the redundant return strip was absent.
+- At 390px and 320px, the grouped mobile menu stayed within the viewport and exposed all 11 destinations. Mobile Rep Usage selection navigated and closed the menu. The viewport override was reset afterward.
+- External Mock Calls retains `_blank` and `noopener noreferrer`.
+
+Limits: FAQ-only/nonadmin access was verified through server permission/header tests rather than signing into additional accounts. Nested active-route matching and sticky clearance were regression/code checked; every individual destination and scrolling state was not independently exercised live. The existing Rep Usage data table remains wider than a phone viewport; the new navbar itself fits. No navbar defects were found in the verified scope; this is not a full application health check.
 
 ## Rollback
 
