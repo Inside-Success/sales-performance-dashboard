@@ -1,3 +1,4 @@
+import { orderedObjections } from "@/lib/foundations-contract.cjs";
 import { CoachingObjections, type CoachingObjection } from "@/components/dashboard/coaching-objections";
 import {read as readFoundations, sections as foundationsSections} from "@/lib/foundations-record.cjs";
 import { CoachingImprovement } from "@/components/dashboard/coaching-improvement";
@@ -29,7 +30,7 @@ export function CoachingReportContent({
   const reviewed = readReviewedCoaching(source, sourceId);
   const objectionReport = readObjectionCoaching(source, sourceId);
   const boundFoundations = readFoundations(source, sourceId, reportType);
-  const structured = boundFoundations?.report as { objections: CoachingObjection[]; focus_id: string } | undefined;
+  const structured = boundFoundations?.report as { objections: CoachingObjection[]; focus_id: string; presentation?: string } | undefined;
   const foundations = foundationsSections(source, sourceId, reportType);
   const sections = foundations || (objectionReport ? objectionSections(objectionReport) : reviewed ? [
     { key: "outcome", title: "Call outcome", items: [reviewed.outcome.summary + (reviewed.outcome.evidence.length ? ` [${reviewed.outcome.evidence.join(", ")}]` : "")] },
@@ -41,7 +42,7 @@ export function CoachingReportContent({
   return (
     <div className="space-y-4">
       {sections.map((section) => structured && section.key === "objections" ? (
-        <CoachingObjections key={section.key} objections={structured.objections} focusId={structured.focus_id} />
+        <CoachingObjections key={section.key} objections={orderedObjections(structured, boundFoundations?.sourceBlocks || (source as { reviewed_coaching_v3: { evidence_index: { id: string }[] } }).reviewed_coaching_v3.evidence_index)} focusId={structured.focus_id} compact={structured.presentation === "tyler-review-v1"} />
       ) : (
         <CoachingSectionCard key={section.key} section={section} reportType={reportType} reportId={reportId} transcriptUrl={transcriptUrl} recent={!!foundations || !!objectionReport || !!reviewed || isRecentCoachingReport(report)} />
       ))}

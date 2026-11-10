@@ -101,3 +101,8 @@ For dashboard/web changes:
 
 - See MAGIC-MIKE-SCRIPT-VERSIONS-2026-11-10.md. Saved calls and metrics are immutable; use their stored rubric version for detail and aggregates. New draft selection uses call-start time against the activation timestamp; review/publication use the original durable request version. Never apply current global rules to in-flight or scored historical calls.
 - Preserve full-source context bounds and explicit holds; omit optional prior-model text before source evidence. Daily Google Doc monitoring flags changes for review and never automatically promotes rules. Coaching and FAQ remain separate.
+
+## Tyler coaching release (November 10)
+
+- See `docs/coaching-lab/TYLER-PRODUCTION-RELEASE-2026-11-10.md`. New generation is `magic-mike-tyler-coaching-2026-11-10`; historical foundations payloads remain readable and must not be rewritten. Keep the old core available for in-flight execution/rollback.
+- A confirmed first-stage terminal safety format failure can return as `repair_required` with its exact retained receipt, but its checkpoint stays failed. It is never cached approval. The core enforces one bounded format review; unknown paid outcomes, refusal, stale candidate and unmapped findings remain held. Do not reissue the original paid request during resume.

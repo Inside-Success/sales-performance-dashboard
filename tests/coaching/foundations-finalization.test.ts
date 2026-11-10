@@ -22,6 +22,21 @@ function setup(mode='pass'){
  return {requests,writes,args:{prepared,call:{blocks:prepared.blocks},prompts:{system:'fixture',prompt:()=>''},provider,store,channel:'official',models:{writer:'writer',reviewer:'reviewer',safety:'safety'}}};
 }
 describe('candidate full isolated path',()=>{
+ it('passes field purpose to safety and repair without exempting factual accounts',()=>{
+  const safety=require('../../scripts/coaching-foundations/safety.cjs');
+  const r={...report,lessons:[{...report.lessons[0],observation:'The rep said you are legally compliant.'}]};
+  const candidate={report:r,prepared,digest:'fixture'};
+  const fields=safety.fields(r);
+  expect(fields.find((f:any)=>f.path==='lessons.0.observation').role).toBe('source_account');
+  expect(fields.find((f:any)=>f.path==='lessons.0.teaching').role).toBe('coaching_judgment');
+  expect(fields.find((f:any)=>f.path==='next_steps.0.text').role).toBe('commitment');
+  expect(safety.signals(candidate).some((h:any)=>h.path==='lessons.0.observation')).toBe(true);
+  const req=safety.safetyRequest(candidate),data=JSON.parse(req.prompt.slice(req.prompt.indexOf('\n')+1));
+  expect(data.prose_fields).toEqual(fields);
+  const repair=safety.repairRequest(candidate,[]),repairData=JSON.parse(repair.prompt.slice(repair.prompt.indexOf('\n')+1));
+  expect(repairData.field_roles).toContainEqual({path:'lessons.0.observation',role:'source_account'});
+  expect(()=>safety.assess(candidate,response({request_id:'s'},{candidate_digest:'fixture',pass:true,findings:[],l1_decisions:[]}), 's')).toThrow('Incomplete safety adjudication');
+ });
  it('replaces competing duties instead of appending instructions',()=>{
   const source='Before\nKeep compliance/legal evaluation and numeric scoring out of coaching. Old rule.\nAfter';
   const result=reconcileScope(source);expect(result).not.toContain('Old rule');expect(result).toContain('separate compliance stage owns exhaustive policy checking');
@@ -98,5 +113,30 @@ describe('durable candidate transitions and parent boundary',()=>{
   const start=graph.nodes.find((n:any)=>n.name==='Start');
   const out=new Function('$json',start.parameters.jsCode)({body:{prepared,call:{blocks:prepared.blocks},system:'test',models:{writer:'writer',reviewer:'reviewer',safety:'safety'},channel:'official'}});
   expect(out[0].json.transition.status).toBe('request');expect(graph.nodes).toHaveLength(6);
+ });
+});
+
+describe('bounded terminal safety format repair',()=>{
+ const transition=require('../../scripts/coaching-foundations/transition.cjs');
+ function ready(){const {args}=setup();let t=transition.start({...args,system:'fixture'});t=transition.advance(t,response(t.request,report));return transition.advance(t,response(t.request,{pass:true,findings:[],corrected_report:null}));}
+ const pass=(t:any)=>response(t.request,{candidate_digest:t.candidate.digest,pass:true,findings:[],l1_decisions:[]});
+ it.each(['length','malformed','extra-decisions'])('re-reviews %s once using the same source, without accepting the bad response',kind=>{
+  const t=ready(),bad=pass(t);
+  if(kind==='length'){bad.stop_reason='length';bad.parsed_json=null;}
+  if(kind==='malformed')bad.parsed_json={candidate_digest:t.candidate.digest,pass:'yes'};
+  if(kind==='extra-decisions')bad.parsed_json.l1_decisions=[{id:'outcome.text',decision:'retain',reason:'Reviewed field.'}];
+  const repair=transition.advance(t,bad);expect(repair.status).toBe('request');expect(repair.request.stage).toBe('safety-contract-repair');expect(repair.request.request_id).not.toBe(t.request.request_id);expect(repair.prepared).toEqual(t.prepared);expect(repair.candidate).toEqual(t.candidate);expect(repair.request.model).toBe(t.request.model);expect(repair.request.prompt).toContain('when lexical_candidates is empty, return l1_decisions: []');
+  expect(transition.advance(repair,pass(repair)).status).toBe('completed');
+  expect(()=>transition.advance(repair,{...pass(repair),stop_reason:'length'})).toThrow('Invalid safety receipt');
+ });
+ it.each(['refusal','uncertain','stale','unmapped','wrong-request'])('does not retry %s responses',kind=>{
+  const t=ready(),bad=pass(t);
+  if(kind==='refusal')bad.stop_reason='refusal';if(kind==='uncertain')bad.provider_response_id='';if(kind==='stale')bad.parsed_json.candidate_digest='stale';if(kind==='wrong-request')bad.request_id='other';
+  if(kind==='unmapped'){bad.parsed_json.pass=false;bad.parsed_json.findings=[{path:'offer_family',before:'main_istv',reason:'Wrong metadata.'}];}
+  expect(()=>transition.advance(t,bad)).toThrow();
+ });
+ it('routes genuine findings from the format review through the existing prose repair',()=>{
+  const t=ready(),retry=transition.advance(t,{...pass(t),stop_reason:'length'}),r=pass(retry);r.parsed_json.pass=false;r.parsed_json.findings=[{path:'lessons.0.teaching',before:report.lessons[0].teaching,reason:'Actual unsafe teaching.'}];
+  const next=transition.advance(retry,r);expect(next.request.stage).toBe('safety-repair');expect(next.repairCount).toBe(1);expect(next.status).toBe('request');
  });
 });

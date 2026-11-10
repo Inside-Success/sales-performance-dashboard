@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
@@ -8,15 +9,15 @@ type ScanState = {revision?:string; offset?:string; end?:string; reported?:strin
 const REVISION='source-accounting-2026-10-19';
 export async function observeCoachingSource(sourceId:string,executionId:string) {
   if(!/^rec[A-Za-z0-9]+$/.test(sourceId)||!/^\d+$/.test(executionId))throw Error('Invalid source observation');
-  const sql=neon(process.env.DATABASE_URL!);
+  const sql=neon(databaseUrl()!);
   await sql`create table if not exists coaching_source_attempts (source_id text not null, execution_id text not null, revision text not null, received_at timestamptz not null default now(), primary key(source_id,execution_id))`;
   await sql`insert into coaching_source_attempts(source_id,execution_id,revision) values(${sourceId},${executionId},${REVISION}) on conflict do nothing`;
   return {status:'observed'};
 }
 // Dashboard-owned cursor only. Source calls are read through Airtable GETs.
 export async function coachingCoverage(action:"scan"|"ack", token?:string, missingIds:string[]=[], notifiedIds?:string[]) {
-  if (!process.env.DATABASE_URL) throw Error("Coverage storage unavailable");
-  const sql=neon(process.env.DATABASE_URL);
+  if (!databaseUrl()) throw Error("Coverage storage unavailable");
+  const sql=neon(databaseUrl()!);
   await sql`create table if not exists coaching_coverage_cursor (id integer primary key, payload jsonb not null default '{}', owner uuid, lease_until timestamptz, updated_at timestamptz not null default now())`;
   await sql`insert into coaching_coverage_cursor(id) values (1) on conflict do nothing`;
   const rows=await sql`select payload from coaching_coverage_cursor where id=1`;

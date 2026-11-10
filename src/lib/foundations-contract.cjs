@@ -12,8 +12,11 @@ const categories = [
   "commitment",
   "unclassified",
 ];
+const categoryLabels = require('./objection-coaching.cjs').OBJECTION_CATEGORIES;
 const schema = {
   version: VERSION,
+  presentation: "tyler-review-v1",
+  summary: "Two-sentence coaching snapshot; empty for excluded calls",
   status: "completed|excluded",
   exclusion_reason: "Only for insufficient or out-of-scope evidence",
   offer_family: "main_istv|next_level_ceo|reality|mixed|unknown",
@@ -28,7 +31,8 @@ const schema = {
       id: "O1",
       category: categories.join("|"),
       title: "Specific concern",
-      concern: "Actual resistance",
+      exchange: "Concise third-person account of concern, response and relevant later recovery; at most six sentences",
+      concern: "Actual resistance (internal analytical detail)",
       response: "Actual response, including later recovery",
       handling: "sound|needs_work|uncertain",
       resolution: "resolved|partly_resolved|unresolved|unclear",
@@ -101,6 +105,10 @@ function validate(r, blocks) {
   )
     fail("outcome");
   refs(r.outcome.evidence_ids);
+  const compact = r.presentation === "tyler-review-v1";
+  if (r.presentation !== undefined && !compact) fail("Unknown presentation revision");
+  if (compact && (typeof r.summary !== "string" || (r.status === "completed" && !text(r.summary)))) fail("Missing coaching summary");
+  if (!compact && r.summary !== undefined) fail("Summary requires presentation revision");
   if (
     !["objections", "lessons", "next_steps"].every((k) => Array.isArray(r[k]))
   )
@@ -126,10 +134,13 @@ function validate(r, blocks) {
   }
   for (const o of r.objections) {
     shape(o, Object.keys(schema.objections[0]), "objection");
+    if (compact && !text(o.exchange)) fail("Missing concise exchange");
+    if (!compact && o.exchange !== undefined) fail("Exchange requires presentation revision");
+    if (compact && o.handling === "sound" && (o.teaching.trim() || o.example.trim())) fail("Sound handling must not carry extra feedback");
     if (o.handling !== "needs_work" && o.example.trim())
       fail("Corrective example requires supported weak handling");
     if (o.handling === "needs_work" && !text(o.teaching))
-      fail("Weak handling requires a usable explanation and better move");
+      fail("Weak handling requires a usable explanation and better move: objection " + o.id + " has empty teaching. Put the supported practical better move in teaching; assessment or example does not substitute for this required field.");
     if (
       !categories.includes(o.category) ||
       !["sound", "needs_work", "uncertain"].includes(o.handling) ||
@@ -165,10 +176,18 @@ function render(r, blocks) {
   validate(r, blocks);
   if (r.status === "excluded")
     return "Not enough applicable selling evidence: " + r.exclusion_reason;
-  const parts = ["# Call coaching", "**Outcome:** " + r.outcome.text];
+  const compact = r.presentation === "tyler-review-v1";
+  const parts = compact ? ["# Call coaching", "## Coaching snapshot", r.summary] : ["# Call coaching", "**Outcome:** " + r.outcome.text];
   if (r.objections.length) {
     parts.push("## Objections and how you handled them");
-    for (const o of r.objections) {
+    for (const o of orderedObjections(r, blocks)) {
+      if (compact) {
+        const label = categoryLabels[o.category];
+        parts.push('### ' + o.title + ' [' + label + ']', o.exchange);
+        if (o.handling === 'sound') parts.push('Handled well—no further feedback.');
+        else parts.push('**' + (o.handling === 'needs_work' ? 'Improvement' : 'Assessment') + ':** ' + [o.assessment, o.teaching, o.example ? 'For example: ' + o.example : ''].filter(Boolean).join(' '));
+        continue;
+      }
       parts.push(
         "### " + o.title + (o.id === r.focus_id ? " — main takeaway" : ""),
         "**Concern:** " + o.concern,
@@ -179,7 +198,7 @@ function render(r, blocks) {
       if (o.example) parts.push("**For example:** " + o.example);
     }
   }
-  if (r.next_steps.length)
+  if (r.next_steps.length && !compact)
     parts.push(
       "## Next steps",
       ...r.next_steps.map(
@@ -208,6 +227,8 @@ function render(r, blocks) {
       }
     }
   }
+  if (compact && r.next_steps.length) parts.push('## Next steps', ...r.next_steps.map(n=>'- '+(n.kind==='recommended'?'Suggested: ':n.kind==='promised'?'Promised: ':'Agreed: ')+n.text));
+  if (compact) parts.push("## Call outcome", r.outcome.text);
   const byId = new Map(blocks.map((b) => [b.id, b]));
   const entries = new Map(
     [...r.objections, ...r.lessons].map((e) => [e.id, e.title]),
@@ -250,6 +271,7 @@ function acceptReview(draft, audit, blocks) {
   if (!audit.pass && (!audit.findings.length || !audit.corrected_report))
     throw Error("Correction needs findings");
   const result = validate(audit.pass ? draft : audit.corrected_report, blocks);
+  if (result.presentation !== draft.presentation) throw Error("Reviewer changed presentation revision");
   if (result.status !== draft.status)
     throw Error("Eligibility disagreement requires adjudication");
   return result;
@@ -280,3 +302,12 @@ module.exports.providerErrors=providerErrors;
 
 function providerStage(stage){return ["foundations_writer_v3","foundations_writer_repair_v3","foundations_reviewer_v3"].includes(stage);}
 module.exports.providerStage=providerStage;
+
+// Earliest supporting source position, never the array order generated by the model.
+function orderedObjections(report, blocks) {
+ if (report.presentation !== 'tyler-review-v1') return report.objections;
+ const index = new Map(blocks.map((b,i)=>[b.id,i]));
+ const first = o => Math.min(...o.evidence_ids.map(id=>index.get(id) ?? Infinity));
+ return [...report.objections].sort((a,b)=>first(a)-first(b));
+}
+module.exports.orderedObjections=orderedObjections;

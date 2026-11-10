@@ -4,6 +4,7 @@ export type CoachingObjection = {
   id: string;
   title: string;
   category: string;
+  exchange?: string;
   concern: string;
   response: string;
   handling: "sound" | "needs_work" | "uncertain";
@@ -27,10 +28,27 @@ const resolutionLabels = {
 
 // Display only: callers supply the source-bound, validated and safety-reviewed record.
 // Never reconstruct categories or assessment boundaries from generated prose.
-export function CoachingObjections({ objections, focusId }: {
+export function CoachingObjections({ objections, focusId, compact = false }: {
   objections: CoachingObjection[];
   focusId: string;
+  compact?: boolean;
 }) {
+  if (compact) return (
+    <section className="magic-card min-w-0 p-5 md:p-7" aria-label="Objections and how you handled them">
+      <h2 className="mb-5 text-xl font-bold tracking-tight text-slate-950 md:text-2xl">Objections and how you handled them</h2>
+      <ul className="divide-y divide-slate-200">
+        {objections.map((o, i) => <li key={o.id} className={`space-y-3 break-words py-5 ${i === 0 ? "pt-0" : ""}`}>
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold text-slate-950">{o.title}</h3>
+            <p className="text-sm font-medium text-slate-600">{OBJECTION_CATEGORIES[o.category]}</p>
+          </div>
+          <p className="text-base leading-7 text-slate-700">{o.exchange}</p>
+          {o.handling === "sound" ? <p className="text-base italic leading-7 text-slate-600">Handled well—no further feedback.</p> :
+            <p className="border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700"><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{[o.assessment, o.teaching, o.example ? `For example: ${o.example}` : ""].filter(Boolean).join(" ")}</p>}
+        </li>)}
+      </ul>
+    </section>
+  );
   return (
     <section className="magic-card min-w-0 p-5 md:p-7" aria-label="Objections and how you handled them">
       <div className="mb-5 flex items-center gap-3">

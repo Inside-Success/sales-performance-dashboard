@@ -1,3 +1,4 @@
+import { databaseUrl } from '@/lib/database-connection';
 import { getSalesFaqAdminEmails } from "@/lib/admin-access-policy";
 import { neon } from "@neondatabase/serverless";
 import { getAuthEmailDomain, normalizeAuthEmail } from "@/lib/auth-utils";
@@ -72,16 +73,16 @@ let schemaReady = false;
 let schemaReadyPromise: Promise<void> | null = null;
 
 export function hasDatabase() {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(databaseUrl());
 }
 
 function getSql() {
-  if (!process.env.DATABASE_URL) {
+  if (!databaseUrl()) {
     throw new Error("DATABASE_URL is not configured");
   }
 
   if (!sqlClient) {
-    sqlClient = neon(process.env.DATABASE_URL);
+    sqlClient = neon(databaseUrl()!);
   }
 
   return sqlClient;

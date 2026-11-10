@@ -8,7 +8,7 @@ function docRequests(sections,header){
   for(const item of s.items){
    const lines=item.split(/\n+/).filter(Boolean),start=1+text.length;
    lines.forEach((line,i)=>add(line,'NORMAL_TEXT',i<lines.length-1));
-   if(s.key!=='outcome'&&lines.length)bullets.push({start,end:1+text.length,headingEnd:start+lines[0].length});
+   if(!['outcome','summary'].includes(s.key)&&lines.length)bullets.push({start,end:1+text.length,headingEnd:start+lines[0].length});
   }
  }
  const requests=[{insertText:{location:{index:1},text}}];
