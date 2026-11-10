@@ -15,10 +15,12 @@ Moonis approved prospective script updates and large-transcript handling. Alread
 ## Sources
 Reviewed script tab `t.0` from each source in `src/lib/script-adherence/source-manifest.json`. Secondary persuasion/commentary tabs are not checklist authority. Reality Call 2 was announced November 4, but this release deliberately uses a new prospective activation, not that historical date.
 
-## Validation in progress
+## Validation before rollout
 - 131 tests passed; read-only live aggregation matched 2,768 saved calls at the checkpoint.
-- Type check, scoped lint and production build passed before the final source-condition refinement; final checks required again before merge.
-- Ten isolated normal-API cases cover all four scripts and the two retained large sources. No test results are written to accepted dashboard data. Additional Reality Call 2 tests check the corrected onboarding trigger on both regression and fresh calls.
+- Type check, scoped lint and production build passed. Final condition-key manifest change passed the full adherence suite and type/lint checks; hosted preview built successfully.
+- 12 distinct real calls, 17 two-pass evaluations / 34 regular-API requests, zero HTTP/parse/validation failures. Usage-priced test cost $1.858391. Full private receipts retained; no accepted dashboard writes. Both previously oversized sources completed both passes without source truncation.
+- Review found and corrected two general issues: production-onboarding conditions were too broad, and shared condition keys could be incorrectly considered unused. Five Reality Call 2 reruns included two fresh calls; the last two retests confirmed the explicit key mapping. No source-specific expected answers were supplied.
+- This is a targeted regression sample, not a measured company-wide accuracy guarantee. Missing speech remains unknown. Existing historical holds were used only as private test sources, not replayed or published; no historical backfill is part of this release.
 - Source-watch candidate validates: zero errors; one pre-existing loop-done warning is intentional (initialize processing only after coverage completes).
 - Additive schema installed with both activation fields NULL. Production scoring rules are still unchanged.
 
