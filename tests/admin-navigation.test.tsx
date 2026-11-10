@@ -30,3 +30,21 @@ it('renders nothing for reps and no forbidden groups for FAQ-only admins',()=>{
  expect(html).toContain('Admin pages');expect(html).toContain('Admin Insights');expect(html).toContain('FAQ');
  for(const text of ['Sales Operations','Mock Calls','Objection Library','Closer Scorecard'])expect(html).not.toContain(text);
 });
+
+it('exposes every authorized page as a direct link without menu triggers',()=>{
+ const html=renderToStaticMarkup(<AdminNavbar pathname="/manager/usage" links={ADMIN_DIRECTORY_LINKS} />);
+ expect(html.match(/<a /g)).toHaveLength(12);
+ expect(html).not.toContain('<button');
+ expect(html).not.toContain('role="menu');
+ for(const link of ADMIN_DIRECTORY_LINKS) expect(html).toContain(`href="${link.href}"`);
+ expect(html).toContain('FAQ Usage');expect(html).toContain('FAQ Conversations');
+ expect(html.match(/<a[^>]*href="\/manager\/usage"[^>]*>/)?.[0]).toContain('aria-current="page"');
+ expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+ expect(html).toContain('target="_blank" rel="noopener noreferrer"');
+});
+
+it('marks only the specific FAQ destination on nested routes',()=>{
+ const html=renderToStaticMarkup(<AdminNavbar pathname="/ask-sales-faq/admin/usage" links={ADMIN_DIRECTORY_LINKS} />);
+ expect(html.match(/<a[^>]*href="\/ask-sales-faq\/admin\/usage"[^>]*>/)?.[0]).toContain('aria-current="page"');
+ expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+});

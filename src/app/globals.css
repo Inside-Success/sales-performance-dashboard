@@ -423,3 +423,9 @@
 body:has(nav[aria-label="Admin pages"]) {
   --magic-admin-offset: 4rem;
 }
+
+@media (min-width: 64rem) {
+  body:has(nav[data-admin-layout="full"]) {
+    --magic-admin-offset: 7rem;
+  }
+}

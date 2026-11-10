@@ -168,7 +168,7 @@ export default async function CallPage({
           />
           </div>
 
-          <aside id="call-details" className="magic-card order-2 min-w-0 scroll-mt-28 p-5 lg:sticky lg:top-24 lg:order-1" aria-label="Call details and links">
+          <aside id="call-details" className="magic-card order-2 min-w-0 scroll-mt-[calc(7rem+var(--magic-admin-offset,0px))] p-5 lg:sticky lg:top-[calc(6rem+var(--magic-admin-offset,0px))] lg:order-1" aria-label="Call details and links">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-base font-bold text-slate-950">Call details</h2>
               <ReportVersionBadge coachingVersion={call.source_payload.coaching_version} />
