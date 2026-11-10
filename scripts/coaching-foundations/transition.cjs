@@ -43,8 +43,23 @@ function advance(previous,response){
   if(s.candidate.report.status==='excluded')return {...s,status:'excluded',request:null};
   return request(s,'safety',s.models.safety,safety.safetyRequest(s.candidate));
  }
- if(stage==='safety'){
-  const result=safety.assess(s.candidate,response,id);s.candidate=result.candidate;
+ if(stage==='safety'||stage==='safety-contract-repair'){
+  let result;
+  try{result=safety.assess(s.candidate,response,id);}catch(error){
+   // Only a confirmed terminal response may receive one new format review.
+   // Unknown transport outcomes, refusals, stale digests and unmapped findings stay held.
+   const terminal=response.ok===true&&response.provider_response_id&&['stop','end_turn','length','max_tokens'].includes(response.stop_reason);
+   const parsed=response.parsed_json;
+   const sameCandidate=!parsed||parsed.candidate_digest===s.candidate.digest;
+   const formatFault=['length','max_tokens'].includes(response.stop_reason)||!parsed||/^(Incomplete safety adjudication|Conflicting safety decision)$/.test(error.message);
+   const attempted=s.safetyContractRepairs?.includes(s.candidate.digest);
+   if(stage!=='safety'||!terminal||!sameCandidate||!formatFault||attempted)throw error;
+   s.safetyContractRepairs=[...(s.safetyContractRepairs||[]),s.candidate.digest];
+   const body=safety.safetyRequest(s.candidate);
+   body.prompt+='\nA previous terminal review could not be accepted because its response was truncated or structurally invalid. Independently review the same complete candidate and source again. Return only the specified compact JSON envelope. l1_decisions must contain exactly the supplied lexical candidate IDs, not prose field paths; when lexical_candidates is empty, return l1_decisions: []. Keep reasoning concise, but preserve every genuine finding. Never infer approval from the previous attempt.';
+   return request(s,'safety-contract-repair',s.models.safety,body);
+  }
+  s.candidate=result.candidate;
   if(!result.findings.length)return {...s,status:'completed',request:null,payload:record.publish(s.candidate,{sourceId:s.prepared.sourceId,channel:s.channel})};
   if(s.repairCount>=1)throw Error('Safety remains held after one repair');
   s.findings=result.findings;s.repairCount++;

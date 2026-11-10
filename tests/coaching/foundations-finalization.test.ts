@@ -115,3 +115,28 @@ describe('durable candidate transitions and parent boundary',()=>{
   expect(out[0].json.transition.status).toBe('request');expect(graph.nodes).toHaveLength(6);
  });
 });
+
+describe('bounded terminal safety format repair',()=>{
+ const transition=require('../../scripts/coaching-foundations/transition.cjs');
+ function ready(){const {args}=setup();let t=transition.start({...args,system:'fixture'});t=transition.advance(t,response(t.request,report));return transition.advance(t,response(t.request,{pass:true,findings:[],corrected_report:null}));}
+ const pass=(t:any)=>response(t.request,{candidate_digest:t.candidate.digest,pass:true,findings:[],l1_decisions:[]});
+ it.each(['length','malformed','extra-decisions'])('re-reviews %s once using the same source, without accepting the bad response',kind=>{
+  const t=ready(),bad=pass(t);
+  if(kind==='length'){bad.stop_reason='length';bad.parsed_json=null;}
+  if(kind==='malformed')bad.parsed_json={candidate_digest:t.candidate.digest,pass:'yes'};
+  if(kind==='extra-decisions')bad.parsed_json.l1_decisions=[{id:'outcome.text',decision:'retain',reason:'Reviewed field.'}];
+  const repair=transition.advance(t,bad);expect(repair.status).toBe('request');expect(repair.request.stage).toBe('safety-contract-repair');expect(repair.request.request_id).not.toBe(t.request.request_id);expect(repair.prepared).toEqual(t.prepared);expect(repair.candidate).toEqual(t.candidate);expect(repair.request.model).toBe(t.request.model);expect(repair.request.prompt).toContain('when lexical_candidates is empty, return l1_decisions: []');
+  expect(transition.advance(repair,pass(repair)).status).toBe('completed');
+  expect(()=>transition.advance(repair,{...pass(repair),stop_reason:'length'})).toThrow('Invalid safety receipt');
+ });
+ it.each(['refusal','uncertain','stale','unmapped','wrong-request'])('does not retry %s responses',kind=>{
+  const t=ready(),bad=pass(t);
+  if(kind==='refusal')bad.stop_reason='refusal';if(kind==='uncertain')bad.provider_response_id='';if(kind==='stale')bad.parsed_json.candidate_digest='stale';if(kind==='wrong-request')bad.request_id='other';
+  if(kind==='unmapped'){bad.parsed_json.pass=false;bad.parsed_json.findings=[{path:'offer_family',before:'main_istv',reason:'Wrong metadata.'}];}
+  expect(()=>transition.advance(t,bad)).toThrow();
+ });
+ it('routes genuine findings from the format review through the existing prose repair',()=>{
+  const t=ready(),retry=transition.advance(t,{...pass(t),stop_reason:'length'}),r=pass(retry);r.parsed_json.pass=false;r.parsed_json.findings=[{path:'lessons.0.teaching',before:report.lessons[0].teaching,reason:'Actual unsafe teaching.'}];
+  const next=transition.advance(retry,r);expect(next.request.stage).toBe('safety-repair');expect(next.repairCount).toBe(1);expect(next.status).toBe('request');
+ });
+});
