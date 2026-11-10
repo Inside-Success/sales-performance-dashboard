@@ -96,3 +96,8 @@ For dashboard/web changes:
 - Preserve current governed knowledge precedence and request identity across JSONB roundtrips. Do not replace approved policy revisions with fetch timestamps or repeat paid reviews on reordered JSON keys. Keep compliance/scoring separate and retain v3 readers if reverting generation after v3 artifacts exist.
 
 - November 10 admin navbar: see MAGIC-MIKE-ADMIN-NAVBAR-2026-11-10.md. The application header receives server-filtered destinations from the same registry as Admin Insights. Preserve FAQ-only scope, ordinary-rep exclusion, nested active matching, keyboard/mobile behavior and existing page/API authorization. Keep admin-link prefetch disabled; no data/workflow changes belong in navigation work.
+
+## Script Adherence prospective versions (November 10)
+
+- See MAGIC-MIKE-SCRIPT-VERSIONS-2026-11-10.md. Saved calls and metrics are immutable; use their stored rubric version for detail and aggregates. New draft selection uses call-start time against the activation timestamp; review/publication use the original durable request version. Never apply current global rules to in-flight or scored historical calls.
+- Preserve full-source context bounds and explicit holds; omit optional prior-model text before source evidence. Daily Google Doc monitoring flags changes for review and never automatically promotes rules. Coaching and FAQ remain separate.
