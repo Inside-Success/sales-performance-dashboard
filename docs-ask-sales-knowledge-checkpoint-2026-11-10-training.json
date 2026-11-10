@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-11-10",
-  "status": "candidate_verified_pending_publication",
+  "status": "published_verified",
   "previousKnowledgeVersion": "87394488be0655dc912e231e",
   "knowledgeVersion": "18ad70421bb0b0cac92d453a",
   "activeRecordCount": 2616,
@@ -12423,7 +12423,15 @@
       "scope": "show premise and documentary classification only"
     }
   ],
-  "publication": {},
+  "publication": {
+    "dashboardPR": 407,
+    "faqPR": 135,
+    "dashboardCommit": "fb90a2973d0f832d9318ee70fe4f95005f20f03b",
+    "deploymentId": "dpl_48JDLdnSr6s6pnmZveZnjuDFhT4q",
+    "productionAnswerChecks": 3,
+    "knowledgeVersion": "18ad70421bb0b0cac92d453a",
+    "verification": "Authenticated work Chrome answers and persisted metadata, no errors or validation issues; 10.959–19.380 seconds."
+  },
   "additionalVideoSources": [
     {
       "url": "https://insidesuccess.zoom.us/clips/share/ViEkex71T5exguVS1tbQkA",
