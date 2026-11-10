@@ -1,4 +1,6 @@
 import {expect,it,vi} from 'vitest';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
 const base=require('../../scripts/coaching-foundations/prompts.cjs');
 const candidate=require('../../scripts/coaching-foundations/layered-candidate.cjs');
 const knowledge=require('../../scripts/coaching-foundations/knowledge.cjs');
@@ -6,12 +8,12 @@ const {digest}=require('../../src/lib/coaching-canonical.cjs');
 const facts=(id:string,text:string)=>({id,text,digest:digest(text),revision:'test-v1',source:'test/'+id});
 it('separates reasoning-module identity from replaceable offer knowledge without changing the default composer',()=>{
  const original=base.compose;
- const spy=vi.spyOn(base,'compose').mockImplementation((_source:any,layers:any)=>({system:layers.map((x:any)=>x.text).join('\n')+'\n'+base.PRESENTATION+'\n{"presentation":"tyler-review-v1"}',manifest:{source_sha256:'test-source'}}));
+ const spy=vi.spyOn(base,'compose').mockImplementation((_source:unknown,layers:unknown)=>({system:(layers as {text:string}[]).map((x:{text:string})=>x.text).join('\n')+'\n'+base.PRESENTATION+'\n{"presentation":"tyler-review-v1"}',manifest:{source_sha256:'test-source'}}));
  try{
   const a=[facts('governed-offer-policy','First approved facts'),facts('november-source-updates','New approved facts')];
   const b=[a[0],facts('november-source-updates','Replacement approved facts')];
   const first=candidate.compose('fixture',a),second=candidate.compose('fixture',b);
-  expect(first.manifest.modules.map((m:any)=>m.id)).toEqual(['foundations','interpretation','strategy','execution']);
+  expect(first.manifest.modules.map((m:{id:string})=>m.id)).toEqual(['foundations','interpretation','strategy','execution']);
   expect(first.manifest.modules).toEqual(second.manifest.modules);
   expect(first.knowledgeTemplate.foundation).toEqual(second.knowledgeTemplate.foundation);
   expect(first.system).not.toContain(base.PRESENTATION);

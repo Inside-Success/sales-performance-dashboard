@@ -45,3 +45,18 @@ The shared isolated ledger began at $40.01194857 settled. Prior production verif
 Pending final evidence. Do not infer readiness from this document or passing tests. Final results must include observed costs, unresolved failures, source-based quality findings, historical compatibility, connected preview verification, and an explicit release recommendation.
 
 A separate frozen supplement reuses two historical NLCEO calls (9344 and 8780) with the same candidate, explicitly labeled regression coverage, not fresh holdouts. This is fixed before inspecting the current outputs. It checks cross-offer behavior without rewriting the eight-call cohort.
+
+## Observed implementation checks
+
+- 280 coaching tests passed across 42 files. Type checking and local production build passed before the final test-only typing cleanup; repeat type check is recorded in final verification.
+- The compiled n8n core and both parent adapter paths replay exact saved provider receipts without new AI charges; first six completed cases preserved the same reviewed digest through official and manual projections, including manual document/callback construction.
+- Changed production components and the new architecture test pass scoped lint. The existing presentation test file has pre-existing lint violations; its new callback type is explicit.
+- GitHub reliability CI passed on `6aa1f16`. Vercel preview provisioning failed twice before build logs were available (`Resource provisioning timed out`, deployments `dpl_GAakUS4yxVdKaktiZqBiZ9CZo86J` and `dpl_HoW7qVogo8LG31LqNXJTAV7tmJFb`). This is not an application test pass. Authenticated connected preview verification is outstanding. No production alias or login setting was changed.
+
+## Early source-based findings
+
+The candidate improves readability through hook/subheadline and numbered chronology. Byron receives a legitimate proactive documentary comparison that production omitted. Kiana receives a more concrete application, while Aron remains appropriately credited for a direct funding check. Shiona's main conclusions are broadly equivalent to production.
+
+Michael still disproportionately emphasizes offer-term verification and season caution. Carmen shifts emphasis from buyer-story meaning toward installment clarity. Both are grounded observations, but they show that factual correctness and modular instructions alone do not ensure the most useful teaching priority. Reviewer fixes to chronology and certainty are useful; judgment prioritization remains a distinct problem, not a reason to discard factual safeguards.
+
+Two safety repairs require careful interpretation: one removes a calendar date absent from transcript-only commitment evidence; the other removes a named speaker attribution in a transcript whose diarization combines two participants. Neither should be reported as a proven serious hallucination without considering metadata and surrounding speech.

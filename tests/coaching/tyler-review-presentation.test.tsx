@@ -46,7 +46,7 @@ it('v2 renders a hook, subheadline and numbered source-order objections while pr
  const x=candidate(r),p=a.publish(a.safety(x,{candidateDigest:x.digest,requestId:'SYNTHETIC-UNIT-ONLY',pass:true,unresolvedFindings:[]}),{sourceId:'fixture',channel:'official'});
  const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:{...p,source_airtable_record_id:"fixture"}}} reportType="official" reportId="fixture"/>);
  expect(html).toContain('1. Wife discussion');expect(html).toContain('Make the next conversation count');expect(html).toContain('whitespace-pre-line');
- expect(require('../../scripts/coaching-foundations/safety.cjs').fields(r).map((f:any)=>f.path)).toContain('summary');
+ expect(require('../../scripts/coaching-foundations/safety.cjs').fields(r).map((f:{path:string})=>f.path)).toContain('summary');
  expect(()=>c.validate({...r,summary:'Missing subheadline'},blocks)).toThrow('two nonempty lines');
  const repaired=a.repair(x,x.digest,[{path:'summary',before:r.summary,after:'A grounded hook\nA grounded subheadline.'}]);expect(repaired.safety).toBeNull();
  expect(()=>a.publish(repaired,{sourceId:'fixture',channel:'official'})).toThrow('Unreviewed');
