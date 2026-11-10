@@ -5838,20 +5838,24 @@
       "Do I keep calling after the applicant confirms?",
       "Can a busy rep reduce the reminder calls?"
     ],
-    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, the day-before sequence is four calls with three texts: suggested 9 AM call then Text 1 (Hey, is this [First Name]?); noon call then Text 2 identifying the rep, show/audition tomorrow and asking for two minutes to prepare; 3 PM call then Text 3 asking whether they still plan to attend or prefer to cancel; final 5–7 PM call with no additional text required. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details. Approved day-before text copy (fill truthful placeholders and use the correct show): Text 1: “Hey, is this [First Name]?” Text 2: “Hey [First Name], it's [Rep Name] from Inside Success TV. I'm trying to reach you about your reality TV casting audition tomorrow. I just need two minutes to help you prepare. When's a good time to chat?” Text 3: “Hey [First Name], I've tried reaching you a few times. This is [Rep Name] from Inside Success TV regarding casting for [Show Name]. You're booked for your CASTING AUDITION tomorrow, and I wanted to help you prepare. Are you still planning to attend, or would you prefer to cancel your appointment? Please reply or give me a quick call.” The quoted reality wording must not mislabel a documentary applicant; drafts can adapt the correct known show and actual prior attempts without inventing a new policy.",
+    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, the day-before sequence is four calls with three texts: suggested 9 AM call then Text 1 (Hey, is this [First Name]?); noon call then Text 2 identifying the rep, show/audition tomorrow and asking for two minutes to prepare; 3 PM call then Text 3 asking whether they still plan to attend or prefer to cancel; final 5–7 PM call with no additional text required. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details. Approved day-before text copy (fill truthful placeholders and use the correct show): Text 1: “Hey, is this [First Name]?” Text 2: “Hey [First Name], it's [Rep Name] from Inside Success TV. I'm trying to reach you about your reality TV casting audition tomorrow. I just need two minutes to help you prepare. When's a good time to chat?” Text 3: “Hey [First Name], I've tried reaching you a few times. This is [Rep Name] from Inside Success TV regarding casting for [Show Name]. You're booked for your CASTING AUDITION tomorrow, and I wanted to help you prepare. Are you still planning to attend, or would you prefer to cancel your appointment? Please reply or give me a quick call.” The quoted reality wording must not mislabel a documentary applicant; drafts can adapt the correct known show and actual prior attempts without inventing a new policy. Rudy’s November mini-training on show rate and mandatory pre-calling gives a general minimum of two day-before attempts (morning and afternoon/early evening), recommends an additional attempt around 6 PM, and also acknowledges up to four attempts. It explicitly restricts calls to 9 AM–7 PM in the PROSPECT’S local time; check their HubSpot timezone, not the rep’s timezone. This minimum does not explicitly revoke the written SOP’s four-attempt unanswered-booking sequence or its leadership-approved two-call exception. For an unanswered booking, follow the detailed written sequence within the prospect-local contact window unless leadership has explicitly authorized a different cadence; two attempts meet the video’s general floor but are not proof the full SOP is complete. Do not restart or continue the unanswered sequence after completing preparation or receiving an opt-out. Explain the difference plainly if asked rather than declaring either source nonexistent or inventing a new blanket exception. Rudy uses roughly one-in-three attendance and 10–20% closing examples to explain why preparation and sufficient booked-call volume matter; these are training illustrations, not a live show-rate report, earnings guarantee or justification to book unqualified applicants. Weekend confirmation of existing appointments remains allowed under Rudy’s November 9 clarification; random Sunday dialing is separate.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1LuBAHOmisxHBvVwhOU2R_VmDRECAwAlbHVSzoyUT04c/edit",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792168139087059"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792168139087059",
+      "https://www.loom.com/share/3391617af3924a9599f0c36662110444",
+      "https://istvoffical.slack.com/archives/C0CEUSFRM5Y/p1794310107000349"
     ],
-    "reviewedAt": "2026-10-19T10:45:59.083493+00:00",
+    "reviewedAt": "2026-11-10T13:22:49.796896+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
     "routeKey": null,
-    "conditions": [],
+    "conditions": [
+      "governing_evidence:outbound-calling-hours-2026-10-14"
+    ],
     "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   },
@@ -7610,6 +7614,35 @@
     "routeKey": null,
     "conditions": [],
     "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reddit-concerns-practical-response-2026-11-10",
+    "decisionKey": "reddit-concerns-practical-response-2026-11-10",
+    "title": "Responding to Reddit concerns: acknowledge, explain co-production and verify evidence",
+    "questions": [
+      "How do I answer a prospect worried about negative Reddit posts?",
+      "What does Rudy teach in Reddit versus real clients?",
+      "Can I say all online complaints are from non-customers?"
+    ],
+    "text": "Rudy’s Reddit versus real clients mini-training explains why prospects may become concerned after researching between Call 1 and Call 2. When a prospect raises it, acknowledge the concern, ask which specific claim worries them, and explain the co-production model transparently: the studio produces the show, while the participant pays for the applicable contracted licensing, promotional and content package. Explain the actual current package, total fee, rights and deliverables; do not describe this as a paid acting job or free participation. Offer to walk through the written agreement and official cast-member testimonials/Google reviews together so they can evaluate evidence and decide whether it fits. Do not proactively introduce Reddit objections to an applicant who has not raised them. A useful adaptable reply is: “I understand why that would give you pause. Which part concerned you? This is a co-production offer with a paid package, so let’s look at exactly what it includes, the written terms and experiences shared by cast members before you decide.” Tailor to the known show without inventing its benefits or promising business results. The video says many online comments misunderstand the model or come from people who did not participate. That is Rudy’s characterization, not verified identity evidence for every commenter. Do not claim every criticism is false, every commenter is a non-customer, all clients are satisfied, or that a review alone proves legitimacy or guarantees outcomes. Do not repeat the video’s review totals, ratings, reach or conversion figures as current independently verified statistics. Address a specific factual or contract concern from its source; if unresolved, explain exactly what needs confirmation rather than dismissing it or giving a blanket reassurance. This replaces older categorical instructions to avoid all discussion of Reddit or label the commenters as people who do not know the company. It does not authorize public replies, review removal, contacting commenters or sending unapproved training videos to prospects.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://www.loom.com/share/ce7bf8dd0b1b49ed9f0495fb5d89e933",
+      "https://istvoffical.slack.com/archives/C0CEUSFRM5Y/p1794310107000349"
+    ],
+    "reviewedAt": "2026-11-10T13:22:49.796896+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "operational_edb70f8a0644cbfe",
+      "operational_f65a5463a5492076"
+    ],
     "sourceKind": "source_reviewed_governed_policy"
   }
 ]
