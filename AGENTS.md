@@ -94,3 +94,5 @@ For dashboard/web changes:
 
 - See docs/coaching-lab/PRODUCTION-RELEASE-2026-11-09.md for authorized rollout status and rollback. Keep the v3 reviewed source-bound record authoritative across Docs, dashboard, chat and insights. Core default remains isolated; production binding requires explicit mode and the existing durable provider.
 - Preserve current governed knowledge precedence and request identity across JSONB roundtrips. Do not replace approved policy revisions with fetch timestamps or repeat paid reviews on reordered JSON keys. Keep compliance/scoring separate and retain v3 readers if reverting generation after v3 artifacts exist.
+
+- November 10 admin navbar: see MAGIC-MIKE-ADMIN-NAVBAR-2026-11-10.md. The application header receives server-filtered destinations from the same registry as Admin Insights. Preserve FAQ-only scope, ordinary-rep exclusion, nested active matching, keyboard/mobile behavior and existing page/API authorization. Keep admin-link prefetch disabled; no data/workflow changes belong in navigation work.
