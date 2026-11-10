@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminNavbar } from "@/components/dashboard/admin-navbar";
+import type { AdminNavigationLink } from "@/lib/admin-directory";
 import Link from "next/link";
 import { Bot } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -8,7 +10,7 @@ import { ProfileMenu } from "@/components/dashboard/profile-menu";
 import welcomeStyles from "@/app/welcome.module.css";
 import { ToolSwitcher } from "@/components/dashboard/tool-switcher";
 
-export function HeaderVisibility({ userName, userEmail }: { userName: string; userEmail: string }) {
+export function HeaderVisibility({ userName, userEmail, adminLinks = [] }: { userName: string; userEmail: string; adminLinks?: readonly AdminNavigationLink[] }) {
   const pathname = usePathname();
 
   if (pathname === "/sign-in" || pathname.startsWith("/sign-in/")) return null;
@@ -41,6 +43,7 @@ export function HeaderVisibility({ userName, userEmail }: { userName: string; us
           </div>
         )}
       </div>
+      <AdminNavbar key={pathname} links={adminLinks} pathname={pathname} />
     </header>
   );
 }

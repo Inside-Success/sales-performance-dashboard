@@ -3,8 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
-import { canAccessAdminDirectory, isMagicMikeAdmin, isSalesFaqAdmin } from "@/lib/admin-access-policy";
-import { ADMIN_DIRECTORY_LINKS } from "@/lib/admin-directory";
+import { canAccessAdminDirectory, getAdminNavigationLinks } from "@/lib/admin-access-policy";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Admin Insights", robots: { index: false, follow: false } };
@@ -13,8 +12,7 @@ export default async function AdminDirectoryPage() {
   const session = await auth();
   const email = session?.user?.email;
   if (!canAccessAdminDirectory(email)) notFound();
-  const links = ADMIN_DIRECTORY_LINKS.filter(link =>
-    link.scope === "manager" ? isMagicMikeAdmin(email) : isSalesFaqAdmin(email));
+  const links = getAdminNavigationLinks(email);
 
   return <main className="magic-page">
     <div className="mx-auto max-w-3xl px-5 py-8 sm:px-8 sm:py-10">

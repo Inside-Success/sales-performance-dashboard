@@ -1,3 +1,4 @@
+import { getAdminNavigationLinks } from "@/lib/admin-access-policy";
 import { auth } from "@/auth";
 import { HeaderVisibility } from "@/components/dashboard/header-visibility";
 
@@ -6,5 +7,5 @@ export async function AppHeader() {
   const userName = session?.user?.name?.trim() || "Signed-in user";
   const userEmail = session?.user?.email?.trim() || "Google account";
 
-  return <HeaderVisibility userName={userName} userEmail={userEmail} />;
+  return <HeaderVisibility userName={userName} userEmail={userEmail} adminLinks={getAdminNavigationLinks(session?.user?.email)} />;
 }
