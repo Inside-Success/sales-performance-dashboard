@@ -22,6 +22,21 @@ function setup(mode='pass'){
  return {requests,writes,args:{prepared,call:{blocks:prepared.blocks},prompts:{system:'fixture',prompt:()=>''},provider,store,channel:'official',models:{writer:'writer',reviewer:'reviewer',safety:'safety'}}};
 }
 describe('candidate full isolated path',()=>{
+ it('passes field purpose to safety and repair without exempting factual accounts',()=>{
+  const safety=require('../../scripts/coaching-foundations/safety.cjs');
+  const r={...report,lessons:[{...report.lessons[0],observation:'The rep said you are legally compliant.'}]};
+  const candidate={report:r,prepared,digest:'fixture'};
+  const fields=safety.fields(r);
+  expect(fields.find((f:any)=>f.path==='lessons.0.observation').role).toBe('source_account');
+  expect(fields.find((f:any)=>f.path==='lessons.0.teaching').role).toBe('coaching_judgment');
+  expect(fields.find((f:any)=>f.path==='next_steps.0.text').role).toBe('commitment');
+  expect(safety.signals(candidate).some((h:any)=>h.path==='lessons.0.observation')).toBe(true);
+  const req=safety.safetyRequest(candidate),data=JSON.parse(req.prompt.slice(req.prompt.indexOf('\n')+1));
+  expect(data.prose_fields).toEqual(fields);
+  const repair=safety.repairRequest(candidate,[]),repairData=JSON.parse(repair.prompt.slice(repair.prompt.indexOf('\n')+1));
+  expect(repairData.field_roles).toContainEqual({path:'lessons.0.observation',role:'source_account'});
+  expect(()=>safety.assess(candidate,response({request_id:'s'},{candidate_digest:'fixture',pass:true,findings:[],l1_decisions:[]}), 's')).toThrow('Incomplete safety adjudication');
+ });
  it('replaces competing duties instead of appending instructions',()=>{
   const source='Before\nKeep compliance/legal evaluation and numeric scoring out of coaching. Old rule.\nAfter';
   const result=reconcileScope(source);expect(result).not.toContain('Old rule');expect(result).toContain('separate compliance stage owns exhaustive policy checking');
