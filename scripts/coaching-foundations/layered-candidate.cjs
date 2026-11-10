@@ -13,10 +13,10 @@ For sound handling leave teaching/example empty; assessment retains the internal
 Consider distinct teaching in interpretation, strategy and foundations after objections without mandatory quotas or duplicate lessons. Use simple headings and plain rep-facing language. Useful strengths follow corrections within a layer. A smooth call can still teach a principle. Keep the call outcome last and only meaningful outstanding commitments in next_steps. No miscellaneous compliance section. Preserve full-call reasoning, actual identities and approved offer boundaries. Reps recommend suitable licenses; do not display every license indiscriminately. This presentation controls expression, never the underlying sales judgment.`;
 function compose(source,layers){
  const built=base.compose(source,layers);
- const modules=IDS.map(id=>{const text=fs.readFileSync(path.join(__dirname,'layers',id+'.md'),'utf8');return {id,revision:'2026-11-11-v1',digest:digest(text),text};});
+ const modules=IDS.map(id=>{const text=fs.readFileSync(path.join(__dirname,'layers',id+'.md'),'utf8');return {id,revision:'2026-11-11-v2',digest:digest(text),text};});
  if(built.system.split(base.PRESENTATION).length!==2)throw Error('Unrecognized production presentation');
- const system=built.system.replace(base.PRESENTATION,[AUTHORITY,...modules.map(x=>x.text),PRESENTATION].join('\n')).replace('"presentation":"tyler-review-v1"','"presentation":"tyler-review-v2"').replace('Two-sentence coaching snapshot; empty for excluded calls','Exactly two lines: short hook then subheadline; empty for excluded calls');
- const manifest={revision:'layered-judgment-2026-11-11',source:built.manifest.source_sha256,modules:modules.map(({text,...m})=>m),authority:digest(AUTHORITY),presentation:digest(PRESENTATION),system:digest(system)};
- return {...built,system,manifest,knowledgeTemplate:require('./knowledge.cjs').template(system,layers)};
+ const system=built.system.replace(base.PRESENTATION,[AUTHORITY,...modules.map(x=>x.text),require('./judgment-review.cjs').GUIDANCE,PRESENTATION].join('\n')).replace('"presentation":"tyler-review-v1"','"presentation":"tyler-review-v2"').replace('Two-sentence coaching snapshot; empty for excluded calls','Exactly two lines: short hook then subheadline; empty for excluded calls');
+ const manifest={revision:'layered-judgment-2026-11-11-v2',source:built.manifest.source_sha256,modules:modules.map(({text,...m})=>m),authority:digest(AUTHORITY),presentation:digest(PRESENTATION),system:digest(system)};
+ return {...built,system,manifest,knowledgeTemplate:{...require('./knowledge.cjs').template(system,layers),coachingView:require('./coaching-knowledge-view.cjs').VERSION}};
 }
 module.exports={compose,IDS,AUTHORITY,PRESENTATION};

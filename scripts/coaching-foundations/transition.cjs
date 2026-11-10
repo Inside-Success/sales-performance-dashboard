@@ -35,7 +35,7 @@ function advance(previous,response){
   s.writer={id,response};return request(s,'reviewer',s.models.reviewer,{system:s.system,prompt:prompt(s.call,'review',response.parsed_json)});
  }
  if(stage==='reviewer'||stage==='review-contract-repair'){
-  try{s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:response,reviewRequestId:id});}
+  try{if(s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:response,reviewRequestId:id});}
   catch(error){
    if(stage!=='reviewer'||response.ok!==true||!response.provider_response_id||!response.parsed_json||['length','max_tokens','refusal'].includes(response.stop_reason)||/receipt|misaligned/i.test(error.message))throw error;
    return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:prompt(s.call,'review',s.writer.response.parsed_json)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
