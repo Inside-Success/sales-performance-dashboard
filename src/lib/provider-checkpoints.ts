@@ -1,3 +1,4 @@
+import { repairableSafetyReceipt } from "./foundations-terminal-receipt.cjs";
 import { databaseUrl } from '@/lib/database-connection';
 import {providerStage as foundationsProviderStage,providerErrors as foundationsProviderErrors} from "./foundations-contract.cjs";
 import {objectionProviderStage,objectionProviderErrors} from "./objection-coaching.cjs";
@@ -43,6 +44,9 @@ export async function providerCheckpoint(input: CheckpointInput) {
   }
   const key = createHash("sha256").update(JSON.stringify([input.source_id, input.stage, input.provider, input.request_hash])).digest("hex");
   if (input.action === "claim") {
+    // Resume the core from a confirmed failed receipt instead of buying it again.
+    const terminal = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='failed' and last_error='Terminal safety response requires bounded repair'`;
+    if (terminal[0] && repairableSafetyReceipt(input.stage,terminal[0].result)) return {status:'repair_required',result:terminal[0].result};
     const existing = await sql`select result from coaching_provider_checkpoints where checkpoint_key=${key} and status='completed'`;
     if (existing[0]) {
       const result = {...existing[0].result,call_purpose:input.stage};
@@ -101,6 +105,18 @@ export async function providerCheckpoint(input: CheckpointInput) {
         if(prior[0]?.status!=='failed'||prior[0]?.owner_token!==input.token||prior[0]?.last_error!==reason)throw Error('Checkpoint ownership changed; rejection refused');
       }
       return {status:'rejected_contract',repair_required:true};
+    }
+    if (repairableSafetyReceipt(input.stage,normalized)) {
+      const retained={...normalized};delete retained.raw_response;
+      const reason='Terminal safety response requires bounded repair';
+      const rows=await sql`update coaching_provider_checkpoints set status='failed',result=${JSON.stringify(retained)}::jsonb,
+        last_error=${reason},next_attempt_at=now()+interval '24 hours',updated_at=now()
+        where checkpoint_key=${key} and owner_token=${input.token} and status='running' returning checkpoint_key`;
+      if(!rows.length) {
+        const prior=await sql`select status,owner_token,result,last_error from coaching_provider_checkpoints where checkpoint_key=${key}`;
+        if(prior[0]?.status!=='failed'||prior[0]?.owner_token!==input.token||prior[0]?.last_error!==reason||prior[0]?.result?.provider_response_id!==retained.provider_response_id)throw Error('Checkpoint ownership changed; terminal receipt refused');
+      }
+      return {status:'repair_required',repair_required:true};
     }
     if (!validProviderResult(normalized)) throw Error("Invalid structured provider result; checkpoint refused");
     // raw_response duplicates the text and may contain reasoning; retain normalized fields only.

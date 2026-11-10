@@ -48,3 +48,19 @@ describe('real isolated PostgreSQL checkpoint persistence',()=>{
   await providerCheckpoint({action:'complete',...id,token:next.token!,result});
  });
 });
+
+it('resumes a terminal truncated safety receipt without another paid claim or treating it as approval',async()=>{
+ const id={...identity('terminal-safety'),stage:'foundations_safety_v3',provider:'deepseek' as const};
+ const claim=await providerCheckpoint({action:'claim',...id});
+ const terminal={...result,stop_reason:'length',parsed_json:null,parse_error:'JSON parse failed',usage:{input_tokens:100,output_tokens:12000}};
+ const saved=await providerCheckpoint({action:'complete',...id,token:claim.token!,result:terminal});
+ expect(saved.status).toBe('repair_required');
+ expect((await providerCheckpoint({action:'complete',...id,token:claim.token!,result:terminal})).status).toBe('repair_required');
+ const resumed=await providerCheckpoint({action:'claim',...id});expect(resumed.status).toBe('repair_required');expect(resumed.result.provider_response_id).toBe(terminal.provider_response_id);
+ const row=(await state.db.query('select status,attempts from coaching_provider_checkpoints where source_id=$1',[id.source_id])).rows[0];expect(row).toMatchObject({status:'failed',attempts:1});
+ await expect(providerCheckpoint({action:'complete',...id,token:randomUUID(),result:terminal})).rejects.toThrow('ownership changed');
+ for(const [i,override] of [{provider_response_id:null},{stop_reason:'refusal'},{stop_reason:'error'},{usage:null},{ok:false}].entries()){
+  const other={...id,source_id:'terminal-negative-'+i};const owner=await providerCheckpoint({action:'claim',...other});
+  await expect(providerCheckpoint({action:'complete',...other,token:owner.token!,result:{...terminal,...override}})).rejects.toThrow('Invalid structured');
+ }
+});
