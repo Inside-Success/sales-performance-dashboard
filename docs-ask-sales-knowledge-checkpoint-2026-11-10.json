@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-11-10",
-  "status": "candidate awaiting production verification",
+  "status": "published_verified",
   "previousKnowledgeVersion": "5c8b442c9dd03d4fde88002c",
   "knowledgeVersion": "87394488be0655dc912e231e",
   "activeRecordCount": 2617,
@@ -12439,6 +12439,30 @@
       "url": "https://www.championsreborntv.com/tvcr-main",
       "reviewed": "2026-11-10",
       "scope": "show premise and documentary classification only"
+    }
+  ],
+  "publication": {
+    "verifiedAt": "2026-11-10T13:02:06.413326+00:00",
+    "knowledgeVersion": "87394488be0655dc912e231e",
+    "dashboardPR": "https://github.com/Inside-Success/sales-performance-dashboard/pull/403",
+    "faqPR": "https://github.com/Inside-Success/faq-chatbot/pull/133",
+    "deploymentId": "dpl_4BoKkWLP3rhyjCHD6jaJqytUzrdZ",
+    "dashboardCommit": "fa56cd157201d36946bd48be32f8b6e69c730e7d",
+    "productionAnswers": [
+      "faq_assistant_e6710cff-322e-4754-8a43-ddb5dc910344",
+      "faq_assistant_e39e8d64-82e6-47c7-90a3-2295e931d83d",
+      "faq_assistant_241d4458-08ed-45b7-8b42-f9ef0abd4832"
+    ],
+    "allValidationIssuesEmpty": true,
+    "allErrorClassesNull": true
+  },
+  "additionalVideoSources": [
+    {
+      "url": "https://insidesuccess.zoom.us/clips/share/ViEkex71T5exguVS1tbQkA",
+      "title": "Earning Potential and Limitations / Sales Training",
+      "reviewed": "2026-11-10",
+      "transcriptReadComplete": true,
+      "duration": "27:40"
     }
   ]
 }
