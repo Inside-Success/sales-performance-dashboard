@@ -19,13 +19,14 @@ export function HeaderVisibility({ userName, userEmail, adminLinks = [] }: { use
   const isHub = pathname === "/" || pathname === "/admin";
   const isFaq = pathname === "/ask-sales-faq" || pathname.startsWith("/ask-sales-faq/");
   const isFaqAdmin = pathname.startsWith("/ask-sales-faq/admin");
+  const showTools = adminLinks.length > 0 || (!isHub && !isFaqAdmin && !isManager);
 
   return (
     <header className={`magic-app-header sticky top-0 z-40 border-b backdrop-blur supports-[backdrop-filter]:bg-white/85 ${isHub ? welcomeStyles.header : ""}`}>
       <div className="mx-auto flex min-h-[72px] w-full max-w-[84rem] flex-col items-stretch justify-center gap-3 px-5 py-3 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:py-0">
         <div className="flex min-w-0 items-center justify-between gap-3">
-          <BrandLink compact={!isHub && !isManager && !isFaqAdmin} />
-          {!isHub && !isFaqAdmin && !isManager ? <ToolSwitcher active={isFaq ? "faq" : "coaching"} /> : null}
+          <BrandLink compact={showTools} />
+          {showTools ? <ToolSwitcher active={isManager || isFaqAdmin || isHub ? undefined : isFaq ? "faq" : "coaching"} /> : null}
           <div className="lg:hidden">
             <ProfileMenu userName={userName} userEmail={userEmail} compact />
           </div>

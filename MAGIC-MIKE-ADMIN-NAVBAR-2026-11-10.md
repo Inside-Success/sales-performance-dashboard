@@ -27,3 +27,14 @@ Limits: FAQ-only/nonadmin access was verified through server permission/header t
 ## Rollback
 
 Revert this scoped navbar change while preserving unrelated merged work. There are no migrations or workflow/data changes. Keep the shared registry and projection consistent with both navigation surfaces if adjusting destinations later.
+
+
+## Direct-link revision — November 10
+
+Mike and Tyler requested one-click destinations instead of category dropdowns. The revision replaces all admin menus with ordinary links in a stable order: Admin Insights plus five Coaching links on row one; three Sales Operations links, two explicitly labelled FAQ links and Mock Calls on row two. At widths below 1024px the same links form a horizontally scrollable strip with a continuation fade. A visible link opens in one tap; off-screen links require a swipe first. Keyboard focus can reach every link, and the active destination is revealed horizontally without scrolling the document vertically.
+
+The ordinary Coaching and Ask Sales FAQ tool links now remain accessible to authorized admins on admin/manager pages. Neither tool is falsely marked active while viewing administration. Server permission filtering, exact destination URLs, external-link protections and disabled admin prefetch are retained. FAQ-only admins still receive only their permitted FAQ destinations plus the authorized directory.
+
+Full desktop navigation uses two 44px rows and separate sticky clearance; compact FAQ-only navigation and the smaller-screen strip keep the prior clearance. Official call details and FAQ conversation side panels now also respect the admin header. Report Review section anchors receive matching clearance. No report content, data, workflows, source permissions or AI stages change. Report-return context and breadcrumb improvements remain separate follow-up work.
+
+The implementation uses a clean branch from current main, including the latest coaching and FAQ releases. Both named chats were checked read-only and were idle; no messages were sent. Targeted navigation/access tests, TypeScript, lint, build, CI and hosted UI verification are required before acceptance. Production acceptance of this revision is pending.

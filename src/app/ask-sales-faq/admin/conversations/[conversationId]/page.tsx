@@ -161,7 +161,7 @@ export default async function Page({
             </article>
           ))}
         </section>
-        <aside className="rounded-2xl border bg-white p-5 lg:sticky lg:top-4">
+        <aside className="rounded-2xl border bg-white p-5 lg:sticky lg:top-[calc(6rem+var(--magic-admin-offset,0px))]">
           <h2 className="mb-4 font-bold">Internal review</h2>
           <ReviewForm
             key={`${review?.version || 0}-${through}`}

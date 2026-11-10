@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MessageCircleQuestion, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function ToolSwitcher({ active }: { active: "coaching" | "faq" }) {
+export function ToolSwitcher({ active }: { active?: "coaching" | "faq" }) {
   const tools = [
     { id: "coaching" as const, href: "/coaching", label: "Coaching", shortLabel: "Coaching", icon: Target },
     { id: "faq" as const, href: "/ask-sales-faq", label: "Ask Sales FAQ", shortLabel: "FAQ", icon: MessageCircleQuestion },
