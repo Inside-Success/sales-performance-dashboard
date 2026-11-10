@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — November 10, 2026
 
-Candidate verified locally; production publication pending. Resumed the verified November 8 checkpoint `5c8b442c9dd03d4fde88002c`. Candidate `87394488be0655dc912e231e` contains 2,617 records: four additions and sixteen amendments. Dashboard baseline main `1658615` preserves the separate coaching presentation release.
+Published and production-answer-verified. Resumed the verified November 8 checkpoint `5c8b442c9dd03d4fde88002c`. Published `87394488be0655dc912e231e` contains 2,617 records: four additions and sixteen amendments. Dashboard baseline main `1658615` preserves the separate coaching presentation release.
 
 ## Source-backed changes
 
@@ -24,3 +24,7 @@ Limits: two historical Google files and two historical Slack roots still unavail
 543 FAQ tests, 107 static checks, TypeScript and scoped ESLint passed. Nineteen isolated model answers reviewed against sources: sixteen general refresh checks, followed by three focused training checks after the full transcript became accessible. No model-call or output-validation failures; estimated API cost $0.16383. Initial local harness selected an env file without an OpenAI key: two not-configured results, zero provider spend; corrected the local key-file path, not production configuration. One historical test was updated because Rudy explicitly superseded its universal Green Light cap; six new retrieval/boundary checks added. Local dependency install aligned this checkout to the existing main lockfile; no dependency manifest changes.
 
 No model, reasoning, prompts, retrieval algorithm, UI or Coaching changes. No Slack messages sent; all external knowledge sources read-only. Knowledge-only rollback: revert this release’s knowledge additions and paired registry, preserving unrelated later commits. Focused checks do not establish universal answer accuracy.
+
+## Production verification
+
+Dashboard PR403 and FAQ PR133 merged. Production alias READY at `dpl_4BoKkWLP3rhyjCHD6jaJqytUzrdZ`, commit `fa56cd157201d36946bd48be32f8b6e69c730e7d`. Three independent authenticated work-Chrome answers verified: current Call 1 affordability wording, high-volume Green Light allowance, and Champions Reborn premise. All stored answers use GPT-5.6 Luna and knowledge `87394488be0655dc912e231e`, with no technical errors or validation issues. Observed latency: 7.024–11.99 seconds. Admin publication receipt is updated after this proof; final receipt-deployment visual verification is recorded in the root report.
