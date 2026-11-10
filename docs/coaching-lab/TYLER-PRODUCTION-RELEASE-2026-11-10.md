@@ -16,7 +16,39 @@ Real isolated PostgreSQL tests cover receipt persistence, replay without payment
 
 ## Verification status
 
-Release in progress. Do not infer production completion from this document or the merge alone. Final acceptance requires deployed reader/API code, published workflow readback, real manual production reports with native Doc/checkpoint/UI evidence, historical digest preservation and normal official traffic inspection. Source, provider and report evidence is retained privately under `.private-coaching-lab/tyler-production-2026-11-10/`.
+Released through PR #402 at 14:34 UTC. Production deployment `dpl_DAvouSSDuQohf7JKwfHAU2rcSPLz` is READY at merge commit `497bfaf2d709c05fd867cf326783ba6cff3b2d81`. The production alias was verified against that deployment. Source, provider and report evidence is retained privately under `.private-coaching-lab/tyler-production-2026-11-10/`.
+
+Published versions, independently read back:
+
+| Component | Workflow | Active version |
+| --- | --- | --- |
+| New reviewed core | `kvdhff3rUlq1YoyS` | `455690d4-fc2d-4a20-8e41-65386d60f2a8` |
+| Official parent | `L8Nn7xncA9ZPDdWA` | `14fd5239-ec2a-437d-9bdc-adde328ceb18` |
+| Manual parent | `BMRrGxHyXMcgO6j3` | `69726957-0f40-4b00-936c-4c690f8b44c1` |
+| Durable provider | `X9L4JtDbpkSCflxZ` | `d29cc3bf-f769-4760-ad83-2401286b3884` |
+
+Old core and reliability workflow remain unchanged. The old core remains available for in-flight work and rollback.
+
+### Verification evidence
+
+- 252 coaching tests across 40 files passed, TypeScript and scoped lint passed, and production build passed. GitHub reliability CI run `42834977583` passed, including broader delivery/recovery checks.
+- 32 official/manual compiled parent replays passed using exact saved receipts; shared terminal-safety boundary was also tested against real isolated PostgreSQL and compiled provider nodes.
+- Three full-transcript submissions through the authenticated live manual UI completed. Stored bound reports, policy/source digests, provider request identities, native Google Docs and authenticated dashboard pages were verified. Doc text matches the deterministic reviewed sections for all three. Full transcript text is retained; these pasted inputs parsed as one source block, so they do not demonstrate fine-grained citation segmentation.
+- All eleven verification provider responses have distinct provider IDs and `attempts=1`. Two original writer responses lacked the required teaching field; each was retained as failed and recovered through one bounded writer repair, then independent review and safety. Neither became a failed delivered report. This is successful recovery, not flawless first-pass generation.
+- Historical payload digests unchanged: 9,470 official records (`f2037ccbb812561b68e8de2bdf235a18`) and 117 completed manual records (`e7eeccd82248b16878b2a4d892794a07`). A previous report was visibly verified as Legacy; new reports are Enhanced. No historical rewrite or official replay.
+- n8n static validation retains the same two array-return false positives and bundled dynamic-require warnings as the existing core; provider retains the existing deprecated `continueOnFail` warning. Actual compiled graph checks and live executions verify the return shapes. These warnings are not claimed as a clean static-validation result.
+
+### Production examples and usage-priced verification cost
+
+| Show family | Example | Delivery time | Provider cost |
+| --- | --- | --- | ---: |
+| Documentary | [Kayla Hooper](https://sales-performance-dashboard-rose.vercel.app/self-report/e8460d29751f4c609f5b9f4add5e38e6) | 3m 28s | $0.420634271 |
+| Reality | [Eric Estoque](https://sales-performance-dashboard-rose.vercel.app/self-report/16e2f5388d484213a935ea592c03041b) | 5m 01s | $0.361064066 |
+| NLCEO | [Chantel Marie Fox](https://sales-performance-dashboard-rose.vercel.app/self-report/54ef8885dbef49f8850401d5c8f63010) | 4m 43s | $0.213351256 |
+
+Total new verification cost **$0.995049593**, including both repairs; prior isolated ledger **$40.011948570**, combined **$41.006998163** against the authorized $50 ceiling. Ordinary company traffic is separate from these test costs. Cache reuse is observed in receipts: four writer/repair requests reused 60,359 tokens each; two reviewer requests report 37,437 cache-read tokens each; three safety requests report 512 each. These three examples are not a production-average cost forecast.
+
+Source review found all three final reports useful and supported. Kayla's final review removed unsupported first-draft criticism; Eric's report distinguishes historical promises from advice and separates reality interview deliverables from a studio documentary; Chantel's report focuses on hearing the buyer's priorities and preserves the conditional decision. Eric has minor repetition between a teaching point and suggested follow-up, not a blocking factual error.
 
 ## Rollback
 
@@ -24,4 +56,4 @@ Fresh full production workflow snapshots are saved privately before any edits. W
 
 ## Assessment carried forward
 
-The isolated final reports meet the intended style and preserve material buyer concerns; five exact-source current-v3 comparisons were 19.9% shorter in aggregate, not uniformly shorter. Six untouched-output holdouts cover documentary, reality and NLCEO, with older unused recordings for NLCEO. Minor next-step curation remains in two examples. This is a supported release recommendation, not a promise of perfect judgment or zero future provider failures. Final production findings and usage-priced verification costs will be appended after actual verification.
+The isolated final reports meet the intended style and preserve material buyer concerns; five exact-source current-v3 comparisons were 19.9% shorter in aggregate, not uniformly shorter. Six untouched-output holdouts cover documentary, reality and NLCEO, with older unused recordings for NLCEO. Minor next-step curation remains in two examples. This is a supported release recommendation, not a promise of perfect judgment or zero future provider failures. Production examples above support retaining the release; they do not establish universally optimal coaching or zero future failures.
