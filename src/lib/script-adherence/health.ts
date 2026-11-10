@@ -1,7 +1,7 @@
 import 'server-only';
 import {neon} from '@neondatabase/serverless';
 import {healthState,type HealthState} from './health-state';
-export type OperatorHealth={state:HealthState;lastCheck:string|null;active:number;held:number;spent:number;reserved:number;ceiling:number|null};
+export type OperatorHealth={state:HealthState;lastCheck:string|null;active:number;held:number;spent:number;reserved:number;ceiling:number|null;scriptSources?:{changed:number;unavailable:number;stale:number}};
 export async function readOperatorHealth(email:string|null|undefined):Promise<OperatorHealth|null>{
  // The diagnostic data never crosses the server boundary for other managers.
  if(email?.trim().toLowerCase()!=='syed.haider@insidesuccess.com')return null;
@@ -20,6 +20,8 @@ export async function readOperatorHealth(email:string|null|undefined):Promise<Op
  from script_adherence_control c cross join script_adherence_runner r cross join script_adherence_budget b where c.id=true and r.id=true and b.project='pilot-2026-11-02'`;
  if(!rows)throw Error('Missing state');
  const state=healthState({enabled:rows.enabled,canary:rows.canary,active:rows.active,held:rows.held,errors:rows.errors,oldest:rows.oldest,lastCheck:rows.last_check,coverage:rows.coverage,committed:Number(rows.committed_microusd),ceiling:rows.ceiling_microusd===null?null:Number(rows.ceiling_microusd),runnerError:rows.runner_error,stalled:rows.stalled,waitingSources:rows.waiting_sources,pendingRequests:rows.pending_requests});
- return {state,lastCheck:rows.last_check,active:rows.active,held:rows.held,spent:Number(rows.spent_microusd)/1e6,reserved:(Number(rows.committed_microusd)-Number(rows.spent_microusd))/1e6,ceiling:rows.ceiling_microusd===null?null:Number(rows.ceiling_microusd)/1e6};
+ const checks=await sql`select count(*) filter(where observed_hash<>expected_hash)::int as changed,count(*) filter(where error is not null)::int as unavailable,count(*) filter(where checked_at<now()-interval '36 hours')::int as stale,count(*)::int as total from script_adherence_source_checks`;
+ const scriptSources={changed:checks[0].changed,unavailable:checks[0].unavailable,stale:checks[0].stale+Math.max(0,4-checks[0].total)};
+ return {scriptSources,state,lastCheck:rows.last_check,active:rows.active,held:rows.held,spent:Number(rows.spent_microusd)/1e6,reserved:(Number(rows.committed_microusd)-Number(rows.spent_microusd))/1e6,ceiling:rows.ceiling_microusd===null?null:Number(rows.ceiling_microusd)/1e6};
  }catch{return {state:{tone:'attention',label:'Status unavailable',message:'Backend status could not be verified. This does not establish a processing failure.'},lastCheck:null,active:0,held:0,spent:0,reserved:0,ceiling:null};}
 }
