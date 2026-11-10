@@ -1,6 +1,6 @@
 # Layered coaching judgment — isolated revision, November 11
 
-Status: isolated implementation complete; model evaluation and receipt reconciliation complete; connected preview verification blocked. Not a production release. Existing generation, production workflows, accepted reports, compliance and scoring remain unchanged.
+Status: v2 isolated implementation and bounded model evaluation complete; connected preview verification still blocked; candidate not approved for production. The v1 results below are retained as history. See the v2 findings at the end. Production generation, workflows, accepted reports, compliance and scoring remain unchanged.
 
 ## Why this revision exists
 
@@ -84,3 +84,42 @@ The two historical NLCEO checks are explicitly not fresh NLCEO holdouts. Phil's 
 - Hosted preview browser/API/DB checks remain **not completed** because Vercel provisioning failed. No existing lab alias was reassigned. Branch-scoped preview credentials were configured; production credentials/settings were not edited.
 
 Final recommendation: preserve this work in draft PR #417 and do not replace production. The architecture separation and presentation are useful, but reviewer judgment and selection of the most useful lesson still need correction, followed by a new frozen held-out evaluation and the outstanding connected checks.
+
+
+## V2: underlying instruction and reviewer-contract corrections
+
+Code commit `9165357` addresses the two identified mechanisms without changing the three-model topology (Sonnet writer, Terra reviewer, DeepSeek safety):
+
+1. `coaching-knowledge-view.cjs` creates an explicit, versioned coaching view of governed knowledge. It removes 24 exact evaluator-command lines from the bound runtime pack while retaining factual terms and provenance; the two governed packs required no edits. Original evidence is never rewritten. Newly recognized evaluator commands without an approved transformation fail closed. Production composition does not opt into this view.
+2. `judgment-review.cjs` requires a private, source-bound explanation when the reviewer adds or worsens a needs-work judgment: concrete behavior, buyer need, counterevidence, independence from outcome and an exact transcript quote. Missing/invalid proof uses the existing single contract repair. This catches unsupported contract changes, not every semantic mistake. Writer/reviewer receipt evidence remains private; no extra model stage or rep-facing metadata was introduced.
+3. Execution guidance explicitly separates handling from resolution and requires consideration of the full explanation and later recovery. Facts remain a constraint on selling advice, not the purpose of the report.
+
+### Frozen evaluation and actual results
+
+The prompt and source hashes were saved before selecting four previously unused calls. Six calls completed: known regressions 9501 and 9531, fresh sources 9540, 9541, 9520 and 9539. The four fresh sources cover documentary, reality and mixed offers; no fresh NLCEO coverage is claimed for this revision. Earlier historical NLCEO tests remain v1 evidence, not v2 passes.
+
+| Source | Source-based assessment |
+| --- | --- |
+| 9501, known funding/alternative case | Credits proactive documentary alternative and distinguishes accessing funds from rejecting the price. Still substantially payment/season focused; no claim of universally improved teaching priority. |
+| 9531, known unresolved-value case | Does not equate an unresolved objection with a missing explanation. Reviewer now identifies actual post-opt-out price pursuit, with source-bound proof. Earlier permission to ask questions remains counterevidence; this must not become a universal stop-at-any-no rule. |
+| 9540, fresh documentary | Sound payment handling credited; expected check clearance is not mislabeled as an ACH/wire failure. Useful mission-based story lesson, conditional follow-up and no invented paid outcome. Cleaner than the comparator, similar core judgment. |
+| 9541, fresh reality | Separates unsettled business fit from investment restriction. Credits the rep's alternative framing and preserves an optional documentary route without declaring the existing response wrong. Production's different lesson is also defensible. |
+| 9520, fresh mixed offer | Correctly preserves legitimate downsell and separates understanding from willingness to buy. However, the paid-participation response is labeled sound despite containing the inaccurate universal claim that everyone on TV pays. The saved production comparator caught this. This is a real regression, not merely a style preference. |
+| 9539, fresh reality | Notices drinking and distraction, unlike the saved comparator's main advice, but does not consistently prioritize decision readiness and verification of an earlier disrupted payment. It still praises proceeding to payment and makes show choice the main takeaway. Mixed guidance is not release-ready. |
+
+All full source blocks were supplied to both stages; manual review covered the conversations and the relevant shared-video explanations. Production output was a comparator, never ground truth. No post-output prompt retuning or further paid cohort was started. Reports range from 301 to 679 words (median 493); no truncation or hard word-limit rewrite was used.
+
+### Technical and operational verification
+
+- 284 coaching tests across 43 files passed. Type checking, scoped new-test lint, Next build and an additional isolated-environment Vercel prebuild passed.
+- 12/12 compiled core and parent replays passed (official and manual for every final report). They use exact saved provider receipts, preserve the reviewed digest, exercise manual document/callback construction and incur no new AI charges. They are not external Google Doc/Slack delivery tests.
+- All 18 requests settled, three per call, no bounded repair required, no duplicate request IDs, and no unresolved paid requests in the ledger. This revision cost **$1.733612236**. Combined tracked spend is **$45.743094551**, including the previously recorded outside-ledger verification, below $50. Cache-read tokens: Sonnet 254,432; Terra 160,128; DeepSeek 3,072. These are receipt-priced costs, not a reconciliation to the providers' monthly invoice.
+- The lab-only transport `6ZfdtDHhQwP1tKPV` is inactive again; nodes and connections exactly match its pre-run snapshot.
+- GitHub reliability CI passed on `9165357`. Production main remained `ed03b7bff4afbea875828632fd1e8e6ad4933030` at the closing read. No production deployment, workflow edit or report write was performed.
+- Hosted verification remains **blocked**. The Git preview failed before build. An isolated prebuilt deployment (`dpl_Ca5a4K8pD38k6yfHtRs48A57GnpC`) and a deployment-only alternate-machine attempt (`dpl_BJv2kGipqpfARNDT4gYPTTcsBNsZ`) also failed with resource provisioning timeout. No project-wide build setting or production alias was changed. Chrome in the Inside Success profile showed the failed preview. No accepted dashboard/test report rows were written for this revision; authenticated new-UI/API/DB checks remain unexecuted.
+
+### Honest decision and bounded next step
+
+Do not replace production with this candidate. The two requested mechanisms were corrected and tested, and several reports improved, but the fresh evidence does not justify claiming the full quality problem solved. A source quote in the reviewer contract proves provenance, not good judgment. Removing evaluator commands likewise does not guarantee proper prioritization.
+
+The next engineering target is the assessment boundary, not another broad model comparison: relevant inaccuracies in the rep's actual response must prevent blanket credit, and advice about a new payment must consistently account for the buyer's ability to evaluate the decision and the status of any earlier payment. These principles belong in interpretation/strategy and the shared reviewer responsibility; presentation must not mask them. Do not patch individual names, keywords or expected verdicts into the prompt. Preserve the counterexamples where direct asks and proactive alternatives are legitimate. The known failing calls are now regressions, not future holdouts. Hosted verification must also finish after preview provisioning is available. No further paid testing or production promotion is implied by this decision.
