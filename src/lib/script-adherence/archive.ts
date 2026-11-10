@@ -10,13 +10,13 @@ export function archiveIdentity(record:ArchiveRecord,job:{accountId:string;uuid:
  if(job.files.length && (job.files.length!==1||job.files[0].id!==record.fileId))throw Error('Archive does not establish all recording segments');
 }
 export function archiveTranscript(record:ArchiveRecord,text:string){
- if(Buffer.byteLength(text)>250000)throw Error('Archive exceeds supported size');
+ if(Buffer.byteLength(text)>650000)throw Error('Archive exceeds supported size');
  const markers=[...text.matchAll(/^Full Transcript\s*$/gm)];if(markers.length!==1)throw Error('Archive full transcript marker ambiguous');const marker=markers[0];if(!marker)throw Error('Archive full transcript marker absent');
  const header=text.slice(0,marker.index),body=text.slice(marker.index+marker[0].length).trim();
  const field=(name:string)=>{const lines=header.split(/\r?\n/).filter(l=>l.startsWith(name+': '));if(lines.length!==1)throw Error('Archive metadata ambiguous');return lines[0].slice(name.length+2).trim();};
  if(field('Zoom Meeting UUID')!==record.uuid||field('Recording File ID')!==record.fileId||field('Automation Key')!==record.automationKey||Date.parse(field('Meeting Start Date'))!==Date.parse(record.startedAt))throw Error('Document does not match archive record');
  if(!/^\[([^\]\n]*\d{1,2}:\d{2}[^\]\n]*)\]\s*[^:\n]+:\s*\S/m.test(body))throw Error('Archive lacks timestamped speaker transcript');
- if(Buffer.byteLength(body)>180000)throw Error('Full archive transcript exceeds supported size');
+ if(Buffer.byteLength(body)>600000)throw Error('Full archive transcript exceeds supported size');
  // No summarization, truncation or AI-generated metadata enters the transcript.
  return body;
 }

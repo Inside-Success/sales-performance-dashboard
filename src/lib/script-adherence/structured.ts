@@ -1,5 +1,6 @@
 import {z} from "zod";
-import {RUBRICS,type ScriptId} from "./rubric";
+import {type ScriptId} from "./rubric";
+import {rubricsFor,LEGACY_VERSION} from "./versions";
 import {resultSchema,type Analysis} from "./contract";
 export const classificationSchema=resultSchema.omit({actions:true}).extend({
   eligibleForChecklist:z.boolean(),exclusionReason:z.string(),
@@ -18,28 +19,28 @@ transcriptComplete=true when the substantive call has a beginning and end with n
 
 // Fixed object keys prevent cross-script actions, missing actions and duplicates.
 // Components have fixed keys too; the UI contract remains a simple ordered array.
-export function extractionSchema(script:ScriptId,evidenceIds?:[string,...string[]]){
+export function extractionSchema(script:ScriptId,evidenceIds?:[string,...string[]],version=LEGACY_VERSION){
   const actions:Record<string,z.ZodType>={};
   const quoteSchema=evidenceIds?z.enum(evidenceIds):z.string();
-  for(const a of RUBRICS[script].actions){
+  for(const a of rubricsFor(version)[script]!.actions){
     const parts:Record<string,z.ZodType>={};
     a.components.forEach((label,i)=>{parts[`part_${i+1}`]=z.object({state:z.enum(["done","not_done","unknown","not_applicable","deferred"]),quote:quoteSchema,timestamp:z.string()}).strict().describe(label);});
     actions[a.id]=z.object({applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.object(parts).strict(),...(a.video?{playbackFraction:z.number().min(0).max(1).nullable()}:{} )}).strict().describe(JSON.stringify(a));
   }
   return z.object({actions:z.object(actions).strict()}).strict();
 }
-export function providerExtractionSchema(script:ScriptId){
- return z.object({actions:z.array(z.object({id:z.enum(RUBRICS[script].actions.map(a=>a.id) as [string,...string[]]),applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.array(z.object({state:z.enum(["done","not_done","unknown","not_applicable","deferred"]),quote:z.string(),timestamp:z.string()}).strict()),playbackFraction:z.number().nullable()}).strict())}).strict();
+export function providerExtractionSchema(script:ScriptId,version=LEGACY_VERSION){
+ return z.object({actions:z.array(z.object({id:z.enum(rubricsFor(version)[script]!.actions.map(a=>a.id) as [string,...string[]]),applicability:z.enum(["yes","no","unknown"]),reason:z.string(),components:z.array(z.object({state:z.enum(["done","not_done","unknown","not_applicable","deferred"]),quote:z.string(),timestamp:z.string()}).strict()),playbackFraction:z.number().nullable()}).strict())}).strict();
 }
-export function unpackExtraction(script:ScriptId,classification:Classification,raw:unknown):Analysis{
+export function unpackExtraction(script:ScriptId,classification:Classification,raw:unknown,version=LEGACY_VERSION):Analysis{
   if(Array.isArray((raw as {actions:unknown}).actions)){
   const {familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence,...base}=classification;
   void familyEvidence;void stageEvidence;void currentCallPurpose;void priorPresentationEvidence;
-  return {...base,...providerExtractionSchema(script).parse(raw)} as Analysis;
+  return {...base,...providerExtractionSchema(script,version).parse(raw)} as Analysis;
  }
- const parsed=extractionSchema(script).parse(raw) as {actions:Record<string,{applicability:"yes"|"no"|"unknown";reason:string;components:Record<string,Analysis["actions"][number]["components"][number]>;playbackFraction:number|null}>};
+ const parsed=extractionSchema(script,undefined,version).parse(raw) as {actions:Record<string,{applicability:"yes"|"no"|"unknown";reason:string;components:Record<string,Analysis["actions"][number]["components"][number]>;playbackFraction:number|null}>};
   const {familyEvidence,stageEvidence,currentCallPurpose,priorPresentationEvidence,...base}=classification;
   void familyEvidence;void stageEvidence;void currentCallPurpose;void priorPresentationEvidence;
   if(!classification.eligibleForChecklist)return {...base,classificationReason:classification.exclusionReason||classification.classificationReason,actions:[]};
-  return {...base,actions:RUBRICS[script].actions.map(a=>({id:a.id,...parsed.actions[a.id],playbackFraction:parsed.actions[a.id].playbackFraction??null,components:a.components.map((_,i)=>parsed.actions[a.id].components[`part_${i+1}`])}))};
+  return {...base,actions:rubricsFor(version)[script]!.actions.map(a=>({id:a.id,...parsed.actions[a.id],playbackFraction:parsed.actions[a.id].playbackFraction??null,components:a.components.map((_,i)=>parsed.actions[a.id].components[`part_${i+1}`])}))};
 }

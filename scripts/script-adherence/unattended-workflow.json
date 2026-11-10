@@ -4,6 +4,7 @@
     {
       "id": "60adb0ee-88d2-45bd-a8fe-883f32543f35",
       "name": "Daily coverage",
+      "disabled": false,
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.4,
       "position": [
@@ -163,16 +164,16 @@
       "name": "Read one coverage task",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
       "position": [
         1350,
         0
       ],
       "parameters": {
         "jsCode": "// One loop item per Code invocation avoids the shared 60-second task limit.\nconst task=$input.first().json;if(task.kind==='persist')return [{json:task.payload}];\nconst account=task.account,runId=task.runId,started=Date.now();\nconst tokens={nTC8wAG7SsijjSRAP3IOng:$('Zoom main token').first().json.access_token,ELrPkucySZ2nxcs4fpyAaA:$('Zoom legacy token').first().json.access_token};\nconst get=async(path,query={})=>{if(Date.now()-started>35000)throw Error('Member pagination reached bounded runtime; coverage not advanced');return await this.helpers.httpRequest({method:'GET',url:'https://api.zoom.us/v2'+path,qs:query,headers:{Authorization:'Bearer '+tokens[account.id]},json:true,timeout:10000});};\nfunction recording(account,meeting,member){\n const files=meeting.recording_files||[],transcripts=files.filter(f=>f.file_type==='TRANSCRIPT'||f.recording_type==='audio_transcript');\n const mediaStarts=[...new Set(files.filter(f=>['MP4','M4A'].includes(f.file_type)).map(f=>f.recording_start).filter(Boolean))];\n const missingSegment=mediaStarts.some(start=>!transcripts.some(f=>f.recording_start===start));\n const settled=Date.parse(meeting.start_time)+Number(meeting.duration||0)*60000<Date.now()-30*60000;\n return {accountId:account,uuid:meeting.uuid,rep:[member.first_name,member.last_name].filter(Boolean).join(' ')||member.email||member.id,title:meeting.topic||'Untitled Zoom meeting',startedAt:meeting.start_time,sourceUrl:meeting.share_url||'',files:transcripts.map(f=>({id:f.id,url:f.download_url,start:f.recording_start||meeting.start_time,ready:!missingSegment&&settled&&f.status==='completed'}))};\n}\n\nif(task.kind==='pending'){\n const p=task.pending,raw=p.meeting_uuid,encoded=raw.startsWith('/')||raw.includes('//')?encodeURIComponent(encodeURIComponent(raw)):encodeURIComponent(raw);\n try{const m=await get('/meetings/'+encoded+'/recordings');return [{json:{operation:'discover',accountId:account.id,runId,memberId:'pending:'+raw,from:account.from,to:account.to,page:'',next:'',recordings:[recording(account.id,m,{id:m.host_id,first_name:p.rep,last_name:''})]}}];}\n catch{return [{json:{operation:'pending_checked',accountId:account.id,uuid:raw,error:'Recording metadata unavailable; retained for retry'}}];}\n}\nif(task.kind!=='member')throw Error('Unknown coverage task');\nconst output=[],seen=new Set();let token='';\ndo{\n if(seen.has(token))throw Error('Repeated recordings pagination token');seen.add(token);\n const r=await get('/users/'+encodeURIComponent(task.member.id)+'/recordings',{from:account.from.slice(0,10),to:account.to.slice(0,10),page_size:300,next_page_token:token});\n if(!Array.isArray(r.meetings))throw Error('Invalid recording page');\n output.push({json:{operation:'discover',accountId:account.id,runId,memberId:task.member.id,from:account.from,to:account.to,page:token,next:r.next_page_token||'',recordings:r.meetings.filter(m=>Date.parse(m.start_time)>=Date.parse(account.from)&&Date.parse(m.start_time)<=Date.parse(account.to)).map(m=>recording(account.id,m,task.member))}});\n token=r.next_page_token||'';\n}while(token);\nreturn output;\n"
-      },
-      "retryOnFail": true,
-      "maxTries": 2,
-      "waitBetweenTries": 1000
+      }
     },
     {
       "id": "3e8768d7-b689-403c-823e-fe51e733c9e4",
@@ -322,6 +323,9 @@
       "name": "Start provider processing",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
       "position": [
         3500,
         0
@@ -341,28 +345,25 @@
       "credentials": {
         "httpHeaderAuth": {
           "id": "E3CMQbjt6fZ5gPXw",
-          "name": "SalesPerformanceDashboardIngest"
+          "name": "Sales Performance Dashboard Ingest"
         }
-      },
-      "retryOnFail": true,
-      "maxTries": 2,
-      "waitBetweenTries": 5000
+      }
     },
     {
       "id": "101bd14a-cc61-402e-a62a-d51d85f68699",
       "name": "Prepare coverage tasks",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
       "position": [
         1200,
         0
       ],
       "parameters": {
         "jsCode": "// Runs once: only group pagination, never every closer's recordings.\nconst window=$('Read coverage window').first().json;\nconst tokens={nTC8wAG7SsijjSRAP3IOng:$('Zoom main token').first().json.access_token,ELrPkucySZ2nxcs4fpyAaA:$('Zoom legacy token').first().json.access_token};\nconst tasks=[],started=Date.now(),runId=String($execution.id);\nfor(const account of window.accounts){\n const members=[];let token='';const seen=new Set();\n do{\n  if(Date.now()-started>35000)throw Error('Group pagination reached bounded runtime; coverage retained');\n  if(seen.has(token))throw Error('Repeated group pagination token');seen.add(token);\n  const r=await this.helpers.httpRequest({method:'GET',url:'https://api.zoom.us/v2/groups/'+encodeURIComponent(account.group)+'/members',qs:{page_size:300,next_page_token:token},headers:{Authorization:'Bearer '+tokens[account.id]},json:true,timeout:10000});\n  if(!Array.isArray(r.members))throw Error('Invalid closer group');members.push(...r.members);token=r.next_page_token||'';\n }while(token);\n const unique=[...new Map(members.map(m=>[m.id,m])).values()];if(!unique.length)throw Error('Empty closer group; coverage not advanced');\n tasks.push({json:{kind:'persist',payload:{operation:'closers',accountId:account.id,members:unique.map(m=>({id:m.id,name:[m.first_name,m.last_name].filter(Boolean).join(' ')||m.email||m.id}))}}});\n for(const member of unique)tasks.push({json:{kind:'member',account,member,runId}});\n for(const pending of window.pending.filter(p=>p.account_id===account.id))tasks.push({json:{kind:'pending',account,pending,runId}});\n // The loop reaches this receipt only after every earlier page was acknowledged.\n tasks.push({json:{kind:'persist',payload:{operation:'finish_scan',accountId:account.id,runId,from:account.from,to:account.to,members:unique.map(m=>m.id)}}});\n}\nreturn tasks;\n"
-      },
-      "retryOnFail": true,
-      "maxTries": 2,
-      "waitBetweenTries": 1000
+      }
     },
     {
       "id": "cc01a29e-43ce-4905-b067-bbe036554c73",
@@ -392,6 +393,85 @@
         "numberOutputs": 2,
         "output": "={{ $json.body?.sourceOnly === true ? 1 : 0 }}"
       }
+    },
+    {
+      "id": "adherence-script-source-list",
+      "name": "Script source list",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        -400
+      ],
+      "parameters": {
+        "jsCode": "return [{\"json\": {\"documentId\": \"1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE\"}, \"pairedItem\": {\"item\": 0}}, {\"json\": {\"documentId\": \"1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ\"}, \"pairedItem\": {\"item\": 0}}, {\"json\": {\"documentId\": \"1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo\"}, \"pairedItem\": {\"item\": 0}}, {\"json\": {\"documentId\": \"114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI\"}, \"pairedItem\": {\"item\": 0}}];"
+      }
+    },
+    {
+      "id": "adherence-read-script-source",
+      "name": "Read script source",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        850,
+        -400
+      ],
+      "parameters": {
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $json.documentId }}?includeTabsContent=true&suggestionsViewMode=PREVIEW_WITHOUT_SUGGESTIONS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "cKUAWmLGskh7kIOm",
+          "name": "Syed Moonis Haider google doc"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "adherence-record-script-check",
+      "name": "Record script check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "position": [
+        1100,
+        -400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://sales-performance-dashboard-rose.vercel.app/api/internal/script-adherence/batch",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {operation:'script_source',documentId:$('Script source list').item.json.documentId,document:$json} }}",
+        "options": {
+          "timeout": 65000,
+          "batching": {
+            "batch": {
+              "batchSize": 3,
+              "batchInterval": 100
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "E3CMQbjt6fZ5gPXw",
+          "name": "Sales Performance Dashboard Ingest"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -462,6 +542,11 @@
         [
           {
             "node": "Zoom main token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Script source list",
             "type": "main",
             "index": 0
           }
@@ -564,6 +649,35 @@
         [
           {
             "node": "Initialize coordinator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script source list": {
+      "main": [
+        [
+          {
+            "node": "Read script source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read script source": {
+      "main": [
+        [
+          {
+            "node": "Record script check",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record script check",
             "type": "main",
             "index": 0
           }

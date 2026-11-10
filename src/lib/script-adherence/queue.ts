@@ -5,7 +5,7 @@ import {z} from 'zod';
 import {buildAnalysisRequest,parseAnalysis,MODELS,type AdherenceModel,PIPELINE_VERSION,RequestPreparationError} from './model';
 import {usageCost} from './cost';
 import {actionStatus,scriptFor,summarize,type Analysis} from './contract';
-import {RUBRIC_VERSION} from './rubric';
+import {LEGACY_VERSION,selectVersion,requestVersion} from './versions';
 const db=()=>neon(process.env.DATABASE_URL!);
 export const digest=(v:string)=>createHash('sha256').update(v).digest('hex');
 export const ACCOUNTS=['nTC8wAG7SsijjSRAP3IOng','ELrPkucySZ2nxcs4fpyAaA'] as const;
@@ -43,7 +43,7 @@ export async function saveSource(id:string,owner:string,files:Array<{id:string;v
  if(files.length!==expected.length||new Set(files.map(f=>f.id)).size!==expected.length||expected.some(f=>!files.some(x=>x.id===f.id)))throw Error('Incomplete recording segments');
  // Relative timecodes restart per recording segment; retain segment label and source chronology.
  const text=[...expected].sort((a,b)=>a.start.localeCompare(b.start)).map((f,i)=>transcriptFromVtt(files.find(x=>x.id===f.id)!.vtt).replace(/^\[/gm,`[segment ${i+1} `)).join('\n');
- if(Buffer.byteLength(text)>180000){
+ if(Buffer.byteLength(text)>600000){
   await sql`update script_adherence_jobs set transcript=${text},transcript_hash=${digest(text)},state='held',error='Full transcript exceeds supported size; retained for review without truncation',lease_owner=null,lease_until=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript'`;
   return {saved:false,held:true};
  }
@@ -52,7 +52,7 @@ export async function saveSource(id:string,owner:string,files:Array<{id:string;v
  const updated=await sql`update script_adherence_jobs set rep=${attribution.rep},attribution=${JSON.stringify(attribution)}::jsonb,transcript=${text},transcript_hash=${digest(text)},state='ready',lease_owner=null,lease_until=null,error=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript' returning id`;
  return {saved:updated.length===1};
 }
-export function metrics(result:Analysis,startedAt:string){const s=summarize([result],[startedAt]);return {...s,script:scriptFor(result),actions:result.actions.map(a=>({id:a.id,status:actionStatus(result,a.id,startedAt)}))};}
+export function metrics(result:Analysis,startedAt:string,version=LEGACY_VERSION){const s=summarize([result],[startedAt],[version]);return {...s,script:scriptFor(result,version),actions:result.actions.map(a=>({id:a.id,status:actionStatus(result,a.id,startedAt,version)}))};}
 export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthropic',transport:'realtime'|'batch'='realtime'){
  const sql=db();const configs=await sql`select * from script_adherence_control where id=true`;if(!configs.length)return null;const c=configs[0];if((c.transport??'realtime')!==transport)return null;
  const reserved=await sql`select r.id,r.request_body,j.id as job_id,r.stage from script_adherence_requests r join script_adherence_jobs j on r.id=j.draft_request_id or r.id=j.review_request_id where r.status='reserved' and r.transport=${transport} and not exists(select 1 from script_adherence_batch_members bm where bm.request_id=r.id) and not (r.id=any(${exclude}::text[])) and (${provider||''}='' or (r.model like 'gpt-%')=${provider==='openai'}) and r.request_body is not null and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? j.id) order by r.created_at limit 1`;
@@ -60,8 +60,10 @@ export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthrop
  for(let skipped=0;skipped<20;skipped++){
  const rows=await sql`select * from script_adherence_jobs where state in ('ready','review_ready') and (${provider||''}='' or ((case when state='review_ready' then ${c.review_model} else ${c.draft_model} end) like 'gpt-%')=${provider==='openai'}) and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? id) order by case when state='review_ready' then 0 else 1 end,created_at limit 1`;
  if(!rows.length)return null;const j=rows[0],review=j.state==='review_ready',model=(review?c.review_model:c.draft_model) as AdherenceModel;if(!MODELS.includes(model))throw Error('Unpriced model');
+ const draftRequest=review?(await sql`select request_body from script_adherence_requests where id=${j.draft_request_id}`)[0]:null;
+ const version=review?requestVersion(draftRequest?.request_body):selectVersion(new Date(j.started_at).toISOString(),c.rubric_effective_at?new Date(c.rubric_effective_at).toISOString():null,c.active_rubric_version);
  let body;
- try{body=buildAnalysisRequest(model,j.transcript||'',{title:j.title,rep:j.rep},review?j.draft:undefined);}catch(e){
+ try{body=buildAnalysisRequest(model,j.transcript||'',{title:j.title,rep:j.rep,rubricVersion:version},review?j.draft:undefined);}catch(e){
   if(!(e instanceof RequestPreparationError))throw e;
   // Only a deterministic source-specific failure may be isolated. Do not swallow DB/provider faults.
   await sql`update script_adherence_jobs set state='held',error=${'Request preparation: '+e.code+'; '+e.message},updated_at=now() where id=${j.id} and state=${j.state} and not exists(select 1 from script_adherence_calls c where c.source_key=${j.source_key})`;
@@ -91,13 +93,13 @@ export async function receive(id:string,jobId:string,payload:Record<string,unkno
   const open=r.model.startsWith('gpt'),choices=payload.choices as Array<{finish_reason:string;message:{content:string}}>;
   if(open?choices?.[0]?.finish_reason!=='stop':payload.stop_reason!=='end_turn')throw Error('Incomplete provider output');
   raw=JSON.parse(open?choices[0].message.content:(payload.content as Array<{type:string;text:string}>).filter(x=>x.type==='text').map(x=>x.text).join(''));
-  validated=parseAnalysis(raw,r.transcript);
+  validated=parseAnalysis(raw,r.transcript,requestVersion(r.request_body));
  }catch(e){error=e instanceof Error?e.message:'Invalid model output';}
  const complete=review&&!!validated,next=complete?'complete':!review&&raw?'review_ready':'held';
- const analysis=validated?.analysis,summary=analysis?metrics(analysis,r.started_at):null;
+ const analysis=validated?.analysis,summary=analysis?metrics(analysis,r.started_at,requestVersion(r.request_body)):null;
  // Receipt, budget settlement, queue advancement and publication share one transaction.
  // A draft may be structurally invalid: the independent full-source review can correct it.
- const updates=await sql`with settled as (update script_adherence_requests set actual_microusd=${cost},status=${error?'held':'completed'},validation_error=${error.slice(0,1000)||null},provider_id=${String(payload.id||'')},usage=${JSON.stringify(usage)}::jsonb,result=${JSON.stringify(validated)}::jsonb,updated_at=now() where id=${id} and actual_microusd is null returning project,reserved_microusd),budget as (update script_adherence_budget b set committed_microusd=b.committed_microusd-s.reserved_microusd+${cost} from settled s where b.project=s.project),job as (update script_adherence_jobs set state=${next},draft=case when ${review} then draft else ${JSON.stringify(raw)}::jsonb end,reviewed=case when ${review} then ${JSON.stringify(validated)}::jsonb else reviewed end,error=${error.slice(0,1000)||null},updated_at=now() where id=${jobId} and exists(select 1 from settled) returning id),published as (insert into script_adherence_calls(source_key,account_id,meeting_uuid,transcript_hash,rep,title,started_at,source_url,rubric_version,result,request_id,review_status) select ${r.source_key},${r.account_id},${r.meeting_uuid},${r.transcript_hash},${r.rep},${r.title},${r.started_at},${r.source_url},${RUBRIC_VERSION},${JSON.stringify(analysis)}::jsonb,${id},'accepted' from job where ${complete} on conflict(source_key) do nothing returning source_key) insert into script_adherence_metrics(source_key,rep,started_at,show,stage,script,complete,not_complete,unknown,not_applicable,actions) select source_key,${r.rep},${r.started_at},${analysis?.show||''},${analysis?.stage||'unknown'},${summary?.script||null},${summary?.complete||0},${summary?.notComplete||0},${summary?.unknown||0},${summary?.notApplicable||0},${JSON.stringify(summary?.actions||[])}::jsonb from published returning source_key`;
+ const updates=await sql`with settled as (update script_adherence_requests set actual_microusd=${cost},status=${error?'held':'completed'},validation_error=${error.slice(0,1000)||null},provider_id=${String(payload.id||'')},usage=${JSON.stringify(usage)}::jsonb,result=${JSON.stringify(validated)}::jsonb,updated_at=now() where id=${id} and actual_microusd is null returning project,reserved_microusd),budget as (update script_adherence_budget b set committed_microusd=b.committed_microusd-s.reserved_microusd+${cost} from settled s where b.project=s.project),job as (update script_adherence_jobs set state=${next},draft=case when ${review} then draft else ${JSON.stringify(raw)}::jsonb end,reviewed=case when ${review} then ${JSON.stringify(validated)}::jsonb else reviewed end,error=${error.slice(0,1000)||null},updated_at=now() where id=${jobId} and exists(select 1 from settled) returning id),published as (insert into script_adherence_calls(source_key,account_id,meeting_uuid,transcript_hash,rep,title,started_at,source_url,rubric_version,result,request_id,review_status) select ${r.source_key},${r.account_id},${r.meeting_uuid},${r.transcript_hash},${r.rep},${r.title},${r.started_at},${r.source_url},${requestVersion(r.request_body)},${JSON.stringify(analysis)}::jsonb,${id},'accepted' from job where ${complete} on conflict(source_key) do nothing returning source_key) insert into script_adherence_metrics(source_key,rep,started_at,show,stage,script,complete,not_complete,unknown,not_applicable,actions) select source_key,${r.rep},${r.started_at},${analysis?.show||''},${analysis?.stage||'unknown'},${summary?.script||null},${summary?.complete||0},${summary?.notComplete||0},${summary?.unknown||0},${summary?.notApplicable||0},${JSON.stringify(summary?.actions||[])}::jsonb from published returning source_key`;
  return {published:updates.length===1,state:next,costMicrousd:cost};
 }
 export async function reconcileReceipts(){

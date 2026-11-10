@@ -1,3 +1,4 @@
+import {recordSourceCheck} from '@/lib/script-adherence/source-watch';
 import {archiveRecordSchema} from '@/lib/script-adherence/archive';
 import {timingSafeEqual} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
@@ -7,15 +8,16 @@ export const runtime='nodejs';
 export const maxDuration=60;
 const owner=z.string().regex(/^[a-zA-Z0-9:_-]{1,120}$/),id=z.string().regex(/^[a-f0-9]{64}$/);
 const input=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('script_source'),documentId:z.string().max(150),document:z.unknown()}),
  z.object({operation:z.literal('window')}),
  z.object({operation:z.literal('pending_checked'),accountId:z.enum(ACCOUNTS),uuid:z.string().min(1),error:z.string().max(1000)}),
  z.object({operation:z.literal('closers'),accountId:z.enum(ACCOUNTS),members:z.array(z.object({id:z.string().min(1),name:z.string().min(1)})).min(1).max(10000)}),
  z.object({operation:z.literal('discover'),accountId:z.enum(ACCOUNTS),runId:owner,memberId:z.string().max(200),from:z.string().datetime(),to:z.string().datetime(),page:z.string().max(1000),next:z.string().max(1000),recordings:z.array(recordingSchema).max(300)}),
  z.object({operation:z.literal('finish_scan'),accountId:z.enum(ACCOUNTS),runId:owner,from:z.string().datetime(),to:z.string().datetime(),members:z.array(z.string().min(1)).min(1).max(10000)}),
  z.object({operation:z.literal('next'),owner}),
- z.object({operation:z.literal('source'),id,owner,files:z.array(z.object({id:z.string(),vtt:z.string().max(250000)})).max(100),error:z.string().max(1000).optional()}),
+ z.object({operation:z.literal('source'),id,owner,files:z.array(z.object({id:z.string(),vtt:z.string().max(650000)})).max(100),error:z.string().max(1000).optional()}),
  z.object({operation:z.literal('archive_lookup'),owner,ids:z.array(id).max(30),records:z.array(z.object({id:z.string(),fields:z.record(z.string(),z.unknown())})).max(100),incomplete:z.boolean()}),
- z.object({operation:z.literal('archive'),id,owner,record:archiveRecordSchema.optional(),text:z.string().max(250000).default(''),error:z.string().max(1000).optional()}),
+ z.object({operation:z.literal('archive'),id,owner,record:archiveRecordSchema.optional(),text:z.string().max(650000).default(''),error:z.string().max(1000).optional()}),
  z.object({operation:z.literal('receipt'),id,jobId:id,payload:z.record(z.string(),z.unknown())}),
  z.object({operation:z.literal('status')}),
 ]);
@@ -25,7 +27,8 @@ export async function POST(request:Request){
  try{
   const raw=await request.text();if(Buffer.byteLength(raw)>3_000_000)return Response.json({error:'Payload too large'},{status:413});
   const p=input.parse(JSON.parse(raw)),sql=neon(process.env.DATABASE_URL!);let result:unknown;
-  if(p.operation==='window'){
+  if(p.operation==='script_source'){result=await recordSourceCheck(p.documentId,p.document);
+  }else if(p.operation==='window'){
    const c=(await sql`select * from script_adherence_control where id=true`)[0];
    const pending=await sql`select account_id,meeting_uuid,rep from script_adherence_jobs where state='awaiting_transcript' and next_attempt_at<=now() and (jsonb_array_length(files)=0 or exists(select 1 from jsonb_array_elements(files) f where (f->>'ready')::boolean=false)) order by updated_at limit 300`;
    const coverage=await sql`select account_id,through_at::text from script_adherence_coverage`;

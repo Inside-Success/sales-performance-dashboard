@@ -1,5 +1,5 @@
 export const RUBRIC_VERSION = "script-adherence-2026-11-02-v1";
-export type ScriptId = "documentary_call_1" | "documentary_call_2" | "reality_call_1";
+export type ScriptId = "documentary_call_1" | "documentary_call_2" | "reality_call_1" | "reality_call_2";
 export type Action = { id: string; label: string; components: string[]; when?: string; video?: string; unobservable?: boolean };
 const a = (id: string, label: string, components: string[], extra: Partial<Action> = {}): Action => ({ id, label, components, ...extra });
 const opening = [
@@ -24,7 +24,7 @@ const followup = [
   a("prework", "Set episode and media-kit preparation", ["Asks prospect to watch an episode", "Shows or explains media kit", "Asks commitment to review before next call"], {when:"Prospect is being advanced"}),
   a("email", "Confirm follow-up email", ["Sends or announces sending materials", "Checks prospect received them"], {when:"Prospect is being advanced"}),
 ];
-export const RUBRICS: Record<ScriptId, {label: string; source: string; actions: Action[]}> = {
+export const RUBRICS: Record<Exclude<ScriptId,"reality_call_2">, {label: string; source: string; actions: Action[]}> = {
   documentary_call_1: {label:"Documentary · Call 1", source:"1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ", actions:[...opening,
     a("research", "Research the prospect", ["Reviews correct person's online presence"], {unobservable:true}),
     a("story", "Explore their story", ["Asks business backstory", "Asks what makes it TV-worthy"]),
