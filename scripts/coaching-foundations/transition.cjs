@@ -21,15 +21,15 @@ function request(state,stage,model,body){
 function start({prepared,call,system,models,channel,reasoning:options}){
  if(options?.version==='decision-plan-v1')return require('./decision-plan.cjs').start({prepared,call,system,models,channel,reasoning:options});
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
- const configured=options?.version==='interaction-reasoning-v1'?{version:options.version,analyst:true}:reasoning.config(options);
+ const configured=['interaction-reasoning-v1','interaction-identity-v1'].includes(options?.version)?{version:options.version,analyst:true}:reasoning.config(options);
  const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
  if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:protocol(state).ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
  return writer(state);
 }
 function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}
-function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(s.reasoning?.version==='interaction-reasoning-v1')body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});return body;}
-function protocol(s){return s.reasoning?.version==='interaction-reasoning-v1'?require('./interaction-reasoning.cjs'):reasoning;}
-function reviewPrompt(s){if(s.reasoning?.version==='interaction-reasoning-v1')return 'Review the coaching judgment and source coverage. '+CONTEXT_REVIEW+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nUNTRUSTED CANDIDATE:\n'+stable(s.writer.response.parsed_json)+'\n'+protocol(s).editGuidance(s.analysis);return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+protocol(s).editGuidance(s.analysis):'');}
+function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});return body;}
+function protocol(s){if(s.reasoning?.version==='interaction-identity-v1')return require('./identity-reasoning.cjs');return s.reasoning?.version==='interaction-reasoning-v1'?require('./interaction-reasoning.cjs'):reasoning;}
+function reviewPrompt(s){if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))return 'Review the coaching judgment and source coverage. '+CONTEXT_REVIEW+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nUNTRUSTED CANDIDATE:\n'+stable(s.writer.response.parsed_json)+'\n'+protocol(s).editGuidance(s.analysis);return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+protocol(s).editGuidance(s.analysis):'');}
 function advance(previous,response){
  if(previous.reasoning?.version==='decision-plan-v1')return require('./decision-plan.cjs').advance(previous,response);
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
@@ -37,12 +37,12 @@ function advance(previous,response){
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
  if(stage==='source-analyst'){
   if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable analyst receipt');
-  s.analysis=protocol(s).validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s);
+  s.analysis=protocol(s).validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s.reasoning?.version==='interaction-identity-v1'?protocol(s).bind(s):s);
  }
  if(stage==='writer'||stage==='writer-contract-repair'){
   // Contract/transport errors remain held; no speculative rerun of a paid request.
   if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable writer receipt');
-  try{contract.validate(response.parsed_json,s.prepared.blocks);if(s.system.includes("TYLER REVIEW PRESENTATION — revision tyler-review-v2")&&response.parsed_json.presentation!=="tyler-review-v2")throw Error("Missing requested presentation revision");if(s.system.includes("TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT")&&response.parsed_json.presentation!=="tyler-review-v1")throw Error("Missing requested presentation revision");}catch(error){
+  try{contract.validate(response.parsed_json,s.prepared.blocks);if(s.reasoning?.version==='interaction-identity-v1')protocol(s).assertReport(response.parsed_json,s.analysis);if(s.system.includes("TYLER REVIEW PRESENTATION — revision tyler-review-v2")&&response.parsed_json.presentation!=="tyler-review-v2")throw Error("Missing requested presentation revision");if(s.system.includes("TYLER REVIEW, NOVEMBER 9 CALL AND EDITED DRAFT")&&response.parsed_json.presentation!=="tyler-review-v1")throw Error("Missing requested presentation revision");}catch(error){
    if(stage!=='writer'||!response.parsed_json)throw error;
    return request(s,'writer-contract-repair',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+'\nReturn a complete valid report correcting only the contract fault. Preserve supported judgment and evidence. All contract faults: '+stable(error.issues||[{path:'report',message:error.message}])+'\nCorrect every listed fault in one response. Recheck every objection and lesson, not just the first fault. Keep supported judgments, evidence and classification unchanged; do not remove a finding or change handling merely to satisfy the contract. Do not invent generic filler.\nPREVIOUS UNTRUSTED REPORT:\n'+stable(response.parsed_json)});
   }
