@@ -1354,7 +1354,7 @@
     "decisionKey": "current-passoff-clock",
     "title": "Pass-off waiting periods run from the scheduled start",
     "questions": [],
-    "text": "The updated Pass Off Channel Cheat Sheet says the first commenter waits three minutes after the top or bottom of the hour (the scheduled start), not three minutes after commenting. The original closer may take over or allow continuation if joining within seven minutes of that scheduled start. Preserve the sheet’s other eligibility and claiming requirements. Rich explicitly reconfirmed November 6: an early client arrival does not start either clock. For a 3 PM booking with client arrival at 2:55, the auto-zap claimant may join at 3:03 and the original closer has until 3:07. A separate pre-posted confirmed double booking is claimed by the first got it reply in its thread and may be joined at the scheduled start without the auto-zap three-minute wait. Claim auto-zaps in the thread with got it or here; first commenter has first rights. Rich confirmed the original closer should not reclaim a call fourteen minutes after its scheduled start. Do not interpret an accidental Zoom join/disconnection as proof of intentional misconduct.",
+    "text": "The updated Pass Off Channel Cheat Sheet says the first commenter waits three minutes after the top or bottom of the hour (the scheduled start), not three minutes after commenting. The original closer may take over or allow continuation if joining within seven minutes of that scheduled start. Preserve the sheet’s other eligibility and claiming requirements. Rich explicitly reconfirmed November 6: an early client arrival does not start either clock. For a 3 PM booking with client arrival at 2:55, the auto-zap claimant may join at 3:03 and the original closer has until 3:07. A separate pre-posted confirmed double booking is claimed by the first got it reply in its thread and may be joined at the scheduled start without the auto-zap three-minute wait. Claim auto-zaps in the thread with got it or here; first commenter has first rights. Rich confirmed the original closer should not reclaim a call fourteen minutes after its scheduled start. Do not interpret an accidental Zoom join/disconnection as proof of intentional misconduct. November 11 reread of the maintained Pass-Off SOP replaces legacy Keap references with HubSpot. The three-minute auto-passoff and seven-minute original-closer timing rules are unchanged; follow the HubSpot handoff/ownership process rather than the old CRM name.",
     "scopes": [
       "shared"
     ],
@@ -1364,7 +1364,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793988637265859",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793987389850479"
     ],
-    "reviewedAt": "2026-11-08T12:43:07.267277+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2552,14 +2552,16 @@
       "Do Millionaire Match House participants share rooms?",
       "What ages are being cast?"
     ],
-    "text": "Rudy described Millionaire Match House as generally ages 25 and up with a mixture of ages. Participants share rooms with others of the same sex. Casting aims for a roughly balanced mix of men and women but may have a couple more on one side. These are general format expectations, not exact quotas, guaranteed cast counts, private-room promises, or a guarantee that every applicant qualifies.",
+    "text": "Rudy described Millionaire Match House as generally ages 25 and up with a mixture of ages. Participants share rooms with others of the same sex. Casting aims for a roughly balanced mix of men and women but may have a couple more on one side. These are general format expectations, not exact quotas, guaranteed cast counts, private-room promises, or a guarantee that every applicant qualifies. Current November 10 availability overrides this historical concept/eligibility material: Millionaire Match House is no longer offered, and Jungle is not currently running. For MMH interest discuss Mansion without dating; for Jungle or Mountain interest discuss an appropriate currently open show such as Island, subject to actual acceptance and availability. Historical videos or exceptions do not reopen either show.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789757044039959"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789757044039959",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330739516559",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330680166269"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2571,21 +2573,25 @@
   {
     "id": "background-review-authority-2026-09-18",
     "decisionKey": "background-review-authority-2026-09-18",
-    "title": "Criminal history and qualification: Green Light team makes final decision",
+    "title": "Background concerns: evidence review and current Mike escalation",
     "questions": [
       "Can Clean and Thriving take someone with an old conviction?",
       "Who decides whether a background issue disqualifies someone?"
     ],
-    "text": "Reps should not automatically approve or disqualify applicants solely from a criminal-history description, an old charge, an elapsed number of years, or a clean web search. Mike’s current Clean and Thriving guidance is to submit the applicant through Green Light for the team’s background check; Rich reiterates that final background qualification belongs to that team. This resolves the earlier lack of a next step, not every eligibility outcome. If a social/background screen has already rejected the applicant, raise the case with Jen/the Green Light team rather than overriding the rejection or promising approval. Preserve the applicant’s relevant context in that review.",
+    "text": "Reps should not automatically approve or disqualify applicants solely from a criminal-history description, an old charge, an elapsed number of years, or a clean web search. Mike’s current Clean and Thriving guidance is to submit the applicant through Green Light for the team’s background check; Rich reiterates that final background qualification belongs to that team. This resolves the earlier lack of a next step, not every eligibility outcome. If a social/background screen has already rejected the applicant, raise the case with Jen/the Green Light team rather than overriding the rejection or promising approval. Preserve the applicant’s relevant context in that review. November 10 current review instruction: Mike asks reps to send him the rejection reason for final approval and obtain relevant offense/history and show context instead of deciding from an unclear name-only search. In one disputed case Mike specifically authorized Green Light/Call 2 to ask further details; that individual approval is not a universal bypass or final acceptance. Preserve background review and evidence; never assert that a public record belongs to an applicant based only on a matching name.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789569675714809",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1789650760260649",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789665767983769"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789665767983769",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794319225967289",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794318435028039",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794319634653599",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794323357418149"
     ],
-    "reviewedAt": "2026-09-21",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3035,16 +3041,18 @@
     "questions": [
       "Must Millionaire Match House applicants have a million dollar net worth?"
     ],
-    "text": "Asked whether Millionaire Match House’s million-dollar net-worth requirement is negotiable, Rudy answered that an applicant can still be considered if they are good and very successful. This is a narrow qualitative exception, not abolition of the requirement, guaranteed acceptance, or permission to approve someone who merely wants a dating show and is not a successful business fit. Do not invent a lower numeric threshold; explain the condition and confirm the specific applicant with the casting team if their fit is unclear.",
+    "text": "Asked whether Millionaire Match House’s million-dollar net-worth requirement is negotiable, Rudy answered that an applicant can still be considered if they are good and very successful. This is a narrow qualitative exception, not abolition of the requirement, guaranteed acceptance, or permission to approve someone who merely wants a dating show and is not a successful business fit. Do not invent a lower numeric threshold; explain the condition and confirm the specific applicant with the casting team if their fit is unclear. Current November 10 availability overrides this historical concept/eligibility material: Millionaire Match House is no longer offered, and Jungle is not currently running. For MMH interest discuss Mansion without dating; for Jungle or Mountain interest discuss an appropriate currently open show such as Island, subject to actual acceptance and availability. Historical videos or exceptions do not reopen either show.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790204932731429",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790205751241449",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790205755706979"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790205755706979",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330739516559",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330680166269"
     ],
-    "reviewedAt": "2026-09-24",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3381,7 +3389,7 @@
       "Should I tag Madeline for sales help?",
       "Who handles an urgent sales question?"
     ],
-    "text": "Rich’s September 26 update says Madeline is no longer monitoring #sales-questions-requests. First use Magic Mike/FAQ; if the answer is still missing, ask #sales-questions-requests for team help. For a true emergency, DM Rich and Mike; do not promise a quick weekend reply. Technical and HubSpot issues go to #sales-tech-requests. For detailed reality questions, consult the reality FAQ and its main-channel thread https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009 ; Madeline directed unresolved reality questions there for Rudy. This is a help-routing update, not a change to specialist billing, training or production ownership, and not permission for the chatbot to send messages. Rich announced November 7 that November 8 is his final day at ISTV. Treat earlier instructions to DM him for ongoing approval/support as historical after that date. No successor was named in the reviewed announcement. Use the established sales support channel, Mike for the existing emergency/personal-matter remit and Raul for training; do not appoint a new Head of Sales or change approval authority by inference. November 9 Mike explicitly takes call-transfer approval requests after Rich’s departure. Tag Mike for that process; this does not establish a replacement Head of Sales or transfer every approval remit.",
+    "text": "Rich’s September 26 update says Madeline is no longer monitoring #sales-questions-requests. First use Magic Mike/FAQ; if the answer is still missing, ask #sales-questions-requests for team help. For a true emergency, DM Rich and Mike; do not promise a quick weekend reply. Technical and HubSpot issues go to #sales-tech-requests. For detailed reality questions, consult the reality FAQ and its main-channel thread https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009 ; Madeline directed unresolved reality questions there for Rudy. This is a help-routing update, not a change to specialist billing, training or production ownership, and not permission for the chatbot to send messages. Rich announced November 7 that November 8 is his final day at ISTV. Treat earlier instructions to DM him for ongoing approval/support as historical after that date. No successor was named in the reviewed announcement. Use the established sales support channel, Mike for the existing emergency/personal-matter remit and Raul for training; do not appoint a new Head of Sales or change approval authority by inference. November 9 Mike explicitly takes call-transfer approval requests after Rich’s departure. Tag Mike for that process; this does not establish a replacement Head of Sales or transfer every approval remit. The maintained Part 1 onboarding sheet now explicitly directs questions to the appropriate channels and prohibits unsolicited DMs or private one-to-one training requests to seniors. Use the relevant public internal help channel; this does not override an explicit leader request to send a particular case directly or grant permission for the chatbot to send messages.",
     "scopes": [
       "shared"
     ],
@@ -3390,9 +3398,10 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790358429836599",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790358453504509",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794075692361369",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794232775365759"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794232775365759",
+      "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-11-10T12:44:35.525214+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4093,7 +4102,7 @@
     "id": "reality-catalog-status-2026-10-03",
     "decisionKey": "reality-catalog-status-2026-10-03",
     "title": "Current reality casting: Island, Mansion and US Business Race only",
-    "text": "As of November 5, Timothy explicitly confirms the only three reality shows currently being filled are Entrepreneurs Island, Mansion of Money and Business Race (US). Business Race UK is not being filled. The other reality shows lacked sufficient sales/interest; their existing participants have been or are being moved to another show. This supersedes the older October open-casting list including Operation Profit and Entrepreneurs Jungle. Do not sell Operation Profit, Jungle, Mountain, Business Race UK or other historical reality titles as currently open just because an old FAQ, website or video still exists. A transfer announcement is not permission for a rep to promise a particular replacement show, refund, season or slot; confirm the individual allocation with the responsible team. Kids CEO remains cancelled; do not infer all other paused titles are permanently cancelled. The current ISTV Offers Reality tab lists Island and Mansion On, Business Race US with no status filled in, Business Race UK Off, Entrepreneurs Jungle Off and Entrepreneurs Mountain Off; Timothy’s explicit message supplies US Race current casting status. For documentaries, Timothy says MOST older shows can still be sold even when their ads are off because episodes can be added; do not apply that documentary rule to reality seasons. Exact live capacity and filming dates still need their own evidence. Historical concepts: Operation Profit is a special-forces-style physical/mental leadership competition, and Jungle is a remote-jungle business/strategy/leadership competition; these descriptions do not reopen casting.",
+    "text": "As of November 5, Timothy explicitly confirms the only three reality shows currently being filled are Entrepreneurs Island, Mansion of Money and Business Race (US). Business Race UK is not being filled. The other reality shows lacked sufficient sales/interest; their existing participants have been or are being moved to another show. This supersedes the older October open-casting list including Operation Profit and Entrepreneurs Jungle. Do not sell Operation Profit, Jungle, Mountain, Business Race UK or other historical reality titles as currently open just because an old FAQ, website or video still exists. A transfer announcement is not permission for a rep to promise a particular replacement show, refund, season or slot; confirm the individual allocation with the responsible team. Kids CEO remains cancelled; do not infer all other paused titles are permanently cancelled. The current ISTV Offers Reality tab lists Island and Mansion On, Business Race US with no status filled in, Business Race UK Off, Entrepreneurs Jungle Off and Entrepreneurs Mountain Off; Timothy’s explicit message supplies US Race current casting status. For documentaries, Timothy says MOST older shows can still be sold even when their ads are off because episodes can be added; do not apply that documentary rule to reality seasons. Exact live capacity and filming dates still need their own evidence. Historical concepts: Operation Profit is a special-forces-style physical/mental leadership competition, and Jungle is a remote-jungle business/strategy/leadership competition; these descriptions do not reopen casting. November 10 Timothy explicitly says Millionaire Match House is no longer offered: transition interested prospects toward Mansion of Money, which is not a dating show. Timothy and Mike clarify Jungle is not running/has no ads; still take already-booked calls and discuss an appropriate currently offered alternative such as Island. This does not reopen Jungle or guarantee a transfer, acceptance, season or space.",
     "questions": [
       "Which reality shows are currently open?",
       "What is Entrepreneurs Jungle?",
@@ -4116,12 +4125,16 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893487728799",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893505336649",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893543587099",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893624816669"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893624816669",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330739516559",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794320439084649",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794320445621059",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330680166269"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4139,7 +4152,7 @@
     "id": "reality-season-schedule-2026-10-03",
     "decisionKey": "reality-season-schedule-2026-10-03",
     "title": "Island Season 1 now full; Season 2 approximately April and provisional show schedule",
-    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Season 2. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. That was the October default, not live November availability; confirm the actual current allocation before promising any season. The October 5 cast report had refunds/recurring-payment counting issues. Saad’s October 20 updated report explicitly excludes refunded sales and sales with contracted value zero. Do not keep describing that older reconciliation as proof the new report is currently erroneous. Even a corrected sold-to-date report is not live available-space inventory; confirm actual vacancies with Production. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional. October 20 follow-up: Rudy could not confirm whether Island Season 2 would fall late enough in April for a particular applicant; he mentioned Season 3 in June/July as a possible alternative. These remain planning estimates, not guaranteed dates or confirmed availability. He says a passport would be needed if filming is overseas in the Caribbean; this is conditional, not confirmation that Season 2 has a secured overseas destination. In the October 20 cast-report thread, Saad answered the October 21 question about the cast-member limit for each show with 20. This is a reported total cast limit in that report context, not 20 open slots, a live availability check, or a guarantee that a specific season can accept another buyer. Confirm the actual show/season and remaining space with Production before promising a place. October 23 Rudy clarifies that reality cast roll into successive seasons in blocks of 20: 1–20 Season 1, 21–40 Season 2, 41–60 Season 3, and so on. This explains the cast-report totals; it is not live inventory, a guaranteed individual placement, or a confirmed filming date. Check the current Finance/Production allocation before promising the buyer a particular season. Rudy confirmed in the October 27 Master FAQ exchange that a buyer may close now for later-season participation. That Yes does not independently confirm the rep’s assumed Season 6/December 2027 date or any exact future season calendar. The follow-up asking for a $2,000 Call 3 discount was not answered; this reply is not discount authorization. November 3–4 update specifically about Entrepreneurs Island SEASON 3: Celia estimated summer 2027 (June–August), and Rudy clarified approximately June/July, saying they MAY rotate Island then Mansion every two months. Use approximate June/July 2027 as the latest Season 3 planning estimate in that discussion. It is not a confirmed shoot date, fixed two-month cadence, specific venue or proof of available inventory. The question’s premise that two seasons are full is not independently verified live capacity. Do not keep offering Season 2 as an automatically available default based only on older October posts; confirm the actual current show/season allocation before a sale. The Master FAQ reviewed November 5 extends its EXAMPLE, APPROXIMATE schedule: January 2027 Island Florida Season 1; February Mansion; March Business Race; April Island Season 2; May Mansion Season 2; June Island Season 3; July Mansion Season 3. It says monthly filming, or eventually every 20 days, as a plan. The newer FAQ narrows the example Island Season 3 month to June, while Rudy’s November 3–4 approximate June/July guidance remains background. None is a guaranteed date, release date, venue booking, or available seat. April is no longer labelled Mexico/Caribbean in this example.",
+    "text": "Rich's October 1 reply explicitly says Entrepreneurs Island Season 1 is FULL and reps are now selling Season 2, approximately April. This supersedes the September 30 reopening-to-20 clarification: 20 was total capacity, not twenty available places. Rudy also says the next Island would logically be April and describes expansion through Caribbean/Mexico/Ibiza editions plus Season 2. Do not infer live remaining slots or guaranteed destination. The updated FAQ's EXAMPLE, APPROXIMATE schedule is January 2027 Island Florida Season 1; February Mansion of Money; March Business Race; April Island Season 2. Rudy's message supports the approximate April timing, not fixed travel dates. Production confirms actual dates/location; follow the current casting list for open shows. An expected monthly show/season cadence is a plan, not a guaranteed release or filming commitment. October 3 qualification: in response to an individual Island Season 1 exception request, Rudy said a disputed payment might have freed a place and instructed the rep to check with Luke and Angelina. This is a possible case-specific vacancy, not a general reopening or confirmed slot. That was the October default, not live November availability; confirm the actual current allocation before promising any season. The October 5 cast report had refunds/recurring-payment counting issues. Saad’s October 20 updated report explicitly excludes refunded sales and sales with contracted value zero. Do not keep describing that older reconciliation as proof the new report is currently erroneous. Even a corrected sold-to-date report is not live available-space inventory; confirm actual vacancies with Production. October 7–8 follow-up from Rudy: Mansion of Money Season 1 is full and reps are now casting Season 2; spring is an approximate future-season estimate, not a fixed shoot date. Rudy again says Island Season 2 is probably April. A VIP buyer booking Island Season 2 may request the Season 1 waitlist if an opening becomes available; this is not guaranteed priority, a confirmed vacancy, or a general Season 1 reopening. Do not infer a blanket right to transfer shows from a prospect's date conflict. Newer October 10 clarification from Rudy in the master reality FAQ thread: \"All future seasons April–June.\" Use that April–June planning window for future seasons rather than promising Island Season 2 in April specifically. This is not an exact confirmed filming date, location, guaranteed slot or announcement changing already scheduled Season 1 dates. Keep the Season 1 closure and individually confirmed waitlist/vacancy distinctions above. October 12 Rich reconfirmed current Island and Mansion casting is Season 2, likely several months after Season 1. Separately Rudy has now confirmed Entrepreneurs Island Season 1 financing and secured filming location/production arrangements in the linked governing evidence. This does not supply the location's identity, an exact travel date, a new available place or a confirmation about Season 2. A later October 13 update names provisional Mansion and Island venues with Rudy's qualifier 'Not 100% but mostly confirmed'; see the governing venue evidence. Earlier statements that a specific reply supplied no location identity describe that reply, not the absence of all newer venue information. Rudy's October 15 reply to the Mansion Season 2 question says there will be no further updates until 60 days out and describes all Season 2 productions as spring/early summer. Treat this as broad planning guidance, not exact dates, a specific venue guarantee or an automated notification SLA. Earlier month-specific estimates remain provisional. October 20 follow-up: Rudy could not confirm whether Island Season 2 would fall late enough in April for a particular applicant; he mentioned Season 3 in June/July as a possible alternative. These remain planning estimates, not guaranteed dates or confirmed availability. He says a passport would be needed if filming is overseas in the Caribbean; this is conditional, not confirmation that Season 2 has a secured overseas destination. In the October 20 cast-report thread, Saad answered the October 21 question about the cast-member limit for each show with 20. This is a reported total cast limit in that report context, not 20 open slots, a live availability check, or a guarantee that a specific season can accept another buyer. Confirm the actual show/season and remaining space with Production before promising a place. October 23 Rudy clarifies that reality cast roll into successive seasons in blocks of 20: 1–20 Season 1, 21–40 Season 2, 41–60 Season 3, and so on. This explains the cast-report totals; it is not live inventory, a guaranteed individual placement, or a confirmed filming date. Check the current Finance/Production allocation before promising the buyer a particular season. Rudy confirmed in the October 27 Master FAQ exchange that a buyer may close now for later-season participation. That Yes does not independently confirm the rep’s assumed Season 6/December 2027 date or any exact future season calendar. The follow-up asking for a $2,000 Call 3 discount was not answered; this reply is not discount authorization. November 3–4 update specifically about Entrepreneurs Island SEASON 3: Celia estimated summer 2027 (June–August), and Rudy clarified approximately June/July, saying they MAY rotate Island then Mansion every two months. Use approximate June/July 2027 as the latest Season 3 planning estimate in that discussion. It is not a confirmed shoot date, fixed two-month cadence, specific venue or proof of available inventory. The question’s premise that two seasons are full is not independently verified live capacity. Do not keep offering Season 2 as an automatically available default based only on older October posts; confirm the actual current show/season allocation before a sale. The Master FAQ reviewed November 5 extends its EXAMPLE, APPROXIMATE schedule: January 2027 Island Florida Season 1; February Mansion; March Business Race; April Island Season 2; May Mansion Season 2; June Island Season 3; July Mansion Season 3. It says monthly filming, or eventually every 20 days, as a plan. The newer FAQ narrows the example Island Season 3 month to June, while Rudy’s November 3–4 approximate June/July guidance remains background. None is a guaranteed date, release date, venue booking, or available seat. April is no longer labelled Mexico/Caribbean in this example. November 10 supersession for current Island sales: Season 3 has filled and new prospects go to Season 4, with only a conditional Season 3 opening if someone cannot make the dates. Rudy gives Season 4 summer July/August, superseding the old blanket April–June future-season estimate for that season. In the November 10 casting meeting (35:48), Rudy gives January 16th/17th for Island Season 1 in the January 2027 context; this is more specific current planning guidance than the old January 10–30 window, not an individual travel booking or new vacancy. At 17:43 he says allow two weeks for filming, generally 10–12 days with ten full shoot days; confirm personal dates with Production. Do not convert future production cadence or venue negotiations discussed in the meeting into finalized schedules.",
     "questions": [
       "Is Island season one still available?",
       "When is Island Season 2 filming?",
@@ -4178,12 +4191,15 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793112235218539",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793726885301719",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793727049352489",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793772538325279"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793772538325279",
+      "https://insidesuccess.zoom.us/rec/share/ri0gZH44XDw-gGSpBYxlummD-26FUJqX0l6u7QXVw-JgvJIVX2leuG2s8zkZg0Vo.N0CaDjP5u0DiIUcH",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794346888330529",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794349296073069"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4513,7 +4529,7 @@
     "id": "greenlight-rejection-owner-2026-10-03",
     "decisionKey": "greenlight-rejection-owner-2026-10-03",
     "title": "Rep handles rejection email and cancellation after failed Green Light",
-    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists. Mike’s November 1 clarification says send the approved rejection letter the NEXT DAY, matching the maintained Green Light cheat sheet. His short reply does not establish a new HubSpot “unqualified” value or remove existing required Meeting Status/Reject Call Notes; follow the documented reporting fields for the actual outcome.",
+    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists. Mike’s November 1 clarification says send the approved rejection letter the NEXT DAY, matching the maintained Green Light cheat sheet. His short reply does not establish a new HubSpot “unqualified” value or remove existing required Meeting Status/Reject Call Notes; follow the documented reporting fields for the actual outcome. November 10 Mike asks reps to send rejection reasons to him for final approval. Do not automatically reject on assumed wealth or an unverified name-only background match; preserve actual screening and case-specific review. His permission to advance one disputed case to Call 2 does not approve every applicant.",
     "questions": [
       "Who emails rejection after failed greenlight and cancels call two?"
     ],
@@ -4521,12 +4537,14 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790946952130479",
       "https://docs.google.com/document/d/105q-WjisE2DcHVzKGDXtKURT5NE9rml-u-pAY0_o0Do/edit",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793558785147189",
-      "https://docs.google.com/document/d/12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk/edit"
+      "https://docs.google.com/document/d/12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794319225967289",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794323357418149"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-11-02T09:24:01.741524+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4647,7 +4665,7 @@
     "id": "outbound-hubspot-assignment-2026-10-07",
     "decisionKey": "outbound-hubspot-assignment-2026-10-07",
     "title": "20 Percent Dial-Out SOP: current HubSpot outreach lead allocation and logging",
-    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules.",
+    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules. The newly linked Daily Cheat Sheet sets at least sixty outbound dials as a daily activity target, distinct from the 100-lead allocation cap. The November 11 reread of the outbound booking script has an internal pricing inconsistency: one cost-answer sentence now says $8,000 minimum while the next still says $10,000. Do not turn either into a new universal package price or import that outbound wording into scheduled Call 1. State the document conflict if specifically asked for that minimum; confirm the intended outbound wording with leadership and preserve the current Call 1 no-routine-price rule and narrow nonnumeric financial-fit exception.",
     "questions": [
       "Where do I get my 20% outbound leads now?",
       "Do I still use the daily dial out spreadsheet?",
@@ -4683,12 +4701,13 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792529828461459",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792529958105199",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792774649521979",
-      "https://drive.google.com/file/d/19AgFs07snplYygCnXPnbQLi3ugyhLSlL/view"
+      "https://drive.google.com/file/d/19AgFs07snplYygCnXPnbQLi3ugyhLSlL/view",
+      "https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4749,7 +4768,7 @@
     "id": "reality-updated-explainer-videos-2026-10-07",
     "decisionKey": "reality-updated-explainer-videos-2026-10-07",
     "title": "Updated Jungle and Mansion concept videos",
-    "text": "Rudy shared two new October 5 explainer videos: Entrepreneur Jungle https://www.loom.com/share/c79dc48a00124a62896c111f1d071cd5 and Mansion of Money https://www.loom.com/share/7a1fabb77fe946e881494ec76422b613 . The reviewed opening Jungle transcript describes jungle survival blended with entrepreneurial leadership, negotiation, creativity and team challenges; hut-building with limited supplies is an example, not a fixed challenge promised to every cast member. The reviewed opening Mansion transcript describes a social reality competition with 20 entrepreneurs in a Florida mansion, leadership/teamwork/strategy challenges and show-money progression. Rudy explicitly labels this initial pre-production planning: details may change, some rules are intentionally unrevealed, and the unaired show's details are confidential. Present those as concept descriptions, not finalized dates, confirmed available slots or guaranteed challenges. Full transcript access was unavailable in this review, so no new timing, platform-distribution or package-entitlement promises are established from these videos; existing approved contract-specific guidance still applies. October 22 resource update: the latest Mansion of Money Call 1 overview with updated slides/design is https://drive.google.com/file/d/1m7gOy50i_bfWTxD-n2TklYS1ktZYyU7e/view in the maintained Call 1 video folder. Use this current resource rather than the older October 5 link when asked for the latest video. The separate Mansion teaser is https://rudymawer.wistia.com/s/wtc0atv42urg5i7 ; it does not replace either mandatory Call 1 video. These links/announcements do not establish new package terms or a reviewed full transcript.",
+    "text": "Rudy shared two new October 5 explainer videos: Entrepreneur Jungle https://www.loom.com/share/c79dc48a00124a62896c111f1d071cd5 and Mansion of Money https://www.loom.com/share/7a1fabb77fe946e881494ec76422b613 . The reviewed opening Jungle transcript describes jungle survival blended with entrepreneurial leadership, negotiation, creativity and team challenges; hut-building with limited supplies is an example, not a fixed challenge promised to every cast member. The reviewed opening Mansion transcript describes a social reality competition with 20 entrepreneurs in a Florida mansion, leadership/teamwork/strategy challenges and show-money progression. Rudy explicitly labels this initial pre-production planning: details may change, some rules are intentionally unrevealed, and the unaired show's details are confidential. Present those as concept descriptions, not finalized dates, confirmed available slots or guaranteed challenges. Full transcript access was unavailable in this review, so no new timing, platform-distribution or package-entitlement promises are established from these videos; existing approved contract-specific guidance still applies. October 22 resource update: the latest Mansion of Money Call 1 overview with updated slides/design is https://drive.google.com/file/d/1m7gOy50i_bfWTxD-n2TklYS1ktZYyU7e/view in the maintained Call 1 video folder. Use this current resource rather than the older October 5 link when asked for the latest video. The separate Mansion teaser is https://rudymawer.wistia.com/s/wtc0atv42urg5i7 ; it does not replace either mandatory Call 1 video. These links/announcements do not establish new package terms or a reviewed full transcript. Current November 10 availability overrides this historical concept/eligibility material: Millionaire Match House is no longer offered, and Jungle is not currently running. For MMH interest discuss Mansion without dating; for Jungle or Mountain interest discuss an appropriate currently open show such as Island, subject to actual acceptance and availability. Historical videos or exceptions do not reopen either show.",
     "questions": [
       "Where is Rudy new Jungle video?",
       "Where is the latest Mansion of Money overview video?",
@@ -4762,12 +4781,14 @@
       "https://www.loom.com/share/7a1fabb77fe946e881494ec76422b613",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792675384433849",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792716504837819",
-      "https://drive.google.com/file/d/1m7gOy50i_bfWTxD-n2TklYS1ktZYyU7e/view"
+      "https://drive.google.com/file/d/1m7gOy50i_bfWTxD-n2TklYS1ktZYyU7e/view",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330739516559",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330680166269"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-23T19:36:02.147467+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5158,7 +5179,7 @@
     "id": "reality-entrepreneurs-mountain-2026-10-08",
     "decisionKey": "reality-entrepreneurs-mountain-2026-10-08",
     "title": "Entrepreneurs Mountain paused; redirect lingering leads toward Jungle",
-    "text": "Timothy's October 12 announcement pauses Entrepreneurs Mountain; there had been no sales. For lingering Mountain leads, he recommends redirecting them to Entrepreneurs Jungle, the most similar show. Do not present Mountain as currently available or continue its earlier casting/video workaround as if sales were open. The prior October 8 instruction to skip the missing show-specific second Call 1 video and explain verified details manually was historical guidance before this pause; it never waived the mandatory Call 2 license presentation. No Mountain reopening date, replacement booking, guaranteed Jungle acceptance or automatic transfer was confirmed.",
+    "text": "Timothy's October 12 announcement pauses Entrepreneurs Mountain; there had been no sales. For lingering Mountain leads, he recommends redirecting them to Entrepreneurs Jungle, the most similar show. Do not present Mountain as currently available or continue its earlier casting/video workaround as if sales were open. The prior October 8 instruction to skip the missing show-specific second Call 1 video and explain verified details manually was historical guidance before this pause; it never waived the mandatory Call 2 license presentation. No Mountain reopening date, replacement booking, guaranteed Jungle acceptance or automatic transfer was confirmed. Current November 10 availability overrides this historical concept/eligibility material: Millionaire Match House is no longer offered, and Jungle is not currently running. For MMH interest discuss Mansion without dating; for Jungle or Mountain interest discuss an appropriate currently open show such as Island, subject to actual acceptance and availability. Historical videos or exceptions do not reopen either show.",
     "questions": [
       "What is Entrepreneurs Mountain?",
       "Where is the Entrepreneurs Mountain Call 1 video?",
@@ -5171,12 +5192,14 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791472298718649",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791472305173409",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791831441249359",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791835119421039"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791835119421039",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330739516559",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794330680166269"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-14T12:24:30.542134+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5702,8 +5725,8 @@
   {
     "id": "greenlight-weekly-average-2026-10-16",
     "decisionKey": "greenlight-weekly-average-2026-10-16",
-    "title": "Green Light allowance: three daily is an average within fifteen weekly",
-    "text": "The earlier 15-per-week allowance and three-per-day average are no longer a universal cap. Rudy clarified November 9: fifteen weekly applies to reps on about five calls daily or doing dial-outs; for higher volume of roughly 40–100 calls per week, twenty-five approvals is fine. In response to a rep doing fifteen calls daily, he said twenty-five to forty per week is fine. Match the allowance to the stated volume context rather than applying 25–40 to everyone, turning an average into a strict daily cap, or assuming unlimited approvals. Normal suitability and Green Light approval requirements remain; volume is not permission to approve unsuitable applicants. Ask leadership for an allowance outside these documented cases.",
+    "title": "Green Light allowances depend on call volume; suitability and approval still apply",
+    "text": "The earlier 15-per-week allowance and three-per-day average are no longer a universal cap. Rudy clarified November 9: fifteen weekly applies to reps on about five calls daily or doing dial-outs; for higher volume of roughly 40–100 calls per week, twenty-five approvals is fine. In response to a rep doing fifteen calls daily, he said twenty-five to forty per week is fine. Match the allowance to the stated volume context rather than applying 25–40 to everyone, turning an average into a strict daily cap, or assuming unlimited approvals. Normal suitability and Green Light approval requirements remain; volume is not permission to approve unsuitable applicants. Ask leadership for an allowance outside these documented cases. November 10 Rudy reiterates a minimum 70% through/Green Light rate for suitable applicants and says not to reject based on assumptions about wealth. Clearly unsuitable/no cases remain excluded; the target never requires approving someone unsuitable or skipping review. The casting meeting reiterates fifteen for about five calls daily and seeking Mike’s allowance for higher volume; do not impose a hard three-per-day cap.",
     "questions": [
       "Can I submit more than three Green Lights in a day?",
       "Is the Green Light cap daily or weekly?"
@@ -5713,12 +5736,14 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791998780245789",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794243877310269",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794243888479689",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794244538943689"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794244538943689",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794318701144809",
+      "https://insidesuccess.zoom.us/rec/share/ri0gZH44XDw-gGSpBYxlummD-26FUJqX0l6u7QXVw-JgvJIVX2leuG2s8zkZg0Vo.N0CaDjP5u0DiIUcH"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-11-10T12:44:35.525214+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5868,14 +5893,16 @@
       "They ignored all reminders. Should I cancel their audition?",
       "How long do I wait for an audition no-show?"
     ],
-    "text": "The Pre-Audition Contact SOP calls for a 2–4 minute preparation conversation, not a full audition: introduce yourself and confirm the application/time, ask what they know and why they applied, explain the camera-on quiet-place Zoom audition and Green Light review, establish seriousness about relevant commitments without inventing costs or benefits, confirm they received the correct Zoom invite, and close with the confirmed date/time. If the invitation is missing, verify email, resend through the approved process and ask them to verify receipt. If no calls or texts were answered the previous day, call again on the audition morning and, if unanswered, send the approved confirmation text requesting YES. Do not automatically cancel solely for nonresponse; keep the appointment active unless cancelled through an approved process. At the scheduled audition, join on time, allow approximately 1–2 minutes, then if absent send the approved no-show/rebooking text, record the no-show in HubSpot and move to an available pass-off/dummy call under scheduling rules. Only say you previously called/texted if those attempts actually occurred. Preserve consent, opt-outs and truthful company claims. The new no-show procedure does not grant permission to reject or cancel a live appointment merely because the applicant was hard to reach. Approved morning-of text: “Good morning [First Name], it's [Rep Name] from Inside Success TV. You're scheduled for your CASTING AUDITION today at [Time] for [Show Name]. I've been trying to reach you to help you prepare. Can you please confirm you're attending? Just reply YES so I know you're all set.” Approved no-show text: “Hey [First Name], it's [Rep Name] from Inside Success TV. I joined your CASTING AUDITION at the scheduled time, but you weren't there. I tried reaching you by text and phone yesterday, so I'm assuming you're not attending. If you'd like to rebook, you can do that here: [Rebooking Link]. You'll need to reply to our texts so we can confirm and prepare you for your appointment.” Omit or correct statements about prior attempts if they did not occur. Use the actual approved rebooking link and preserve show-specific eligibility; the template is not permission to bypass reapplication restrictions.",
+    "text": "The Pre-Audition Contact SOP calls for a 2–4 minute preparation conversation, not a full audition: introduce yourself and confirm the application/time, ask what they know and why they applied, explain the camera-on quiet-place Zoom audition and Green Light review, establish seriousness about relevant commitments without inventing costs or benefits, confirm they received the correct Zoom invite, and close with the confirmed date/time. If the invitation is missing, verify email, resend through the approved process and ask them to verify receipt. If no calls or texts were answered the previous day, call again on the audition morning and, if unanswered, send the approved confirmation text requesting YES. Do not automatically cancel solely for nonresponse; keep the appointment active unless cancelled through an approved process. At the scheduled audition, join on time, allow approximately 1–2 minutes, then if absent send the approved no-show/rebooking text, record the no-show in HubSpot and move to an available pass-off/dummy call under scheduling rules. Only say you previously called/texted if those attempts actually occurred. Preserve consent, opt-outs and truthful company claims. The new no-show procedure does not grant permission to reject or cancel a live appointment merely because the applicant was hard to reach. Approved morning-of text: “Good morning [First Name], it's [Rep Name] from Inside Success TV. You're scheduled for your CASTING AUDITION today at [Time] for [Show Name]. I've been trying to reach you to help you prepare. Can you please confirm you're attending? Just reply YES so I know you're all set.” Approved no-show text: “Hey [First Name], it's [Rep Name] from Inside Success TV. I joined your CASTING AUDITION at the scheduled time, but you weren't there. I tried reaching you by text and phone yesterday, so I'm assuming you're not attending. If you'd like to rebook, you can do that here: [Rebooking Link]. You'll need to reply to our texts so we can confirm and prepare you for your appointment.” Omit or correct statements about prior attempts if they did not occur. Use the actual approved rebooking link and preserve show-specific eligibility; the template is not permission to bypass reapplication restrictions. November 10 casting training clarifies that a prospect who already confirmed by text still needs the preparation call: acknowledge their confirmation, check trailer/application and readiness rather than just repeating a confirmation request. Rudy distinguishes the three outbound booking qualification questions from this short preparation call for an already-booked lead; do not turn it into another full qualification/audition. The new Daily Cheat Sheet says two pre-meeting dials plus email/text the day before and a day-of text; the detailed SOP retains its extra attempts for unresponsive contacts, so the checklist is not proof those conditional attempts were abolished. Preserve booked-call weekend exceptions and contact restrictions.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1LuBAHOmisxHBvVwhOU2R_VmDRECAwAlbHVSzoyUT04c/edit"
+      "https://docs.google.com/document/d/1LuBAHOmisxHBvVwhOU2R_VmDRECAwAlbHVSzoyUT04c/edit",
+      "https://insidesuccess.zoom.us/rec/share/ri0gZH44XDw-gGSpBYxlummD-26FUJqX0l6u7QXVw-JgvJIVX2leuG2s8zkZg0Vo.N0CaDjP5u0DiIUcH",
+      "https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit"
     ],
-    "reviewedAt": "2026-10-19T10:45:59.083493+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6352,7 +6379,7 @@
       "What are n24hour_text_sent and mot_text_sent?",
       "Why did a prospect get the wrong reminder time?"
     ],
-    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags. November 4 Igor checked a nine-meeting missing-reminder report: three qualified and received reminders; six were excluded by existing meeting-type rules. He said he was updating those rules to cover second calls and Next Level CEO. This is an identified eligibility cause and planned update, not verified completion or a guarantee that every Call 2/NLCEO booking receives reminders now. Check actual sent flags and the contact timeline; retain required manual confirmation duties and avoid duplicating an already-delivered message. November 5 Igor confirmed a separate wrong-time incident: texts were sent before HubSpot finished syncing corrected meeting times, so the temporary values were delivered before the records corrected. He said he was adding a safeguard; this is not verified completion or proof all reminder problems are solved. Compare the actual sent text with the corrected meeting record and timezone; give Tech the specific mismatch for correction, and do not treat an already-sent incorrect text as retracted. His separate reply about email timezone says it should be correct from now on; that statement is distinct from the SMS sync safeguard. November 6 Igor’s later, specific confirmation supersedes the earlier planned NLCEO status: first-call reminders and Next Level CEO reminders are now active. Second-call and repeat-contact reminders are still not automated and are being tested, not released. Keep manual Call 2 confirmation duties and check sent flags/timeline rather than assuming every meeting type is covered.",
+    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags. November 4 Igor checked a nine-meeting missing-reminder report: three qualified and received reminders; six were excluded by existing meeting-type rules. He said he was updating those rules to cover second calls and Next Level CEO. This is an identified eligibility cause and planned update, not verified completion or a guarantee that every Call 2/NLCEO booking receives reminders now. Check actual sent flags and the contact timeline; retain required manual confirmation duties and avoid duplicating an already-delivered message. November 5 Igor confirmed a separate wrong-time incident: texts were sent before HubSpot finished syncing corrected meeting times, so the temporary values were delivered before the records corrected. He said he was adding a safeguard; this is not verified completion or proof all reminder problems are solved. Compare the actual sent text with the corrected meeting record and timezone; give Tech the specific mismatch for correction, and do not treat an already-sent incorrect text as retracted. His separate reply about email timezone says it should be correct from now on; that statement is distinct from the SMS sync safeguard. November 6 Igor’s later, specific confirmation supersedes the earlier planned NLCEO status: first-call reminders and Next Level CEO reminders are now active. Second-call and repeat-contact reminders are still not automated and are being tested, not released. Keep manual Call 2 confirmation duties and check sent flags/timeline rather than assuming every meeting type is covered. November 11 Igor explicitly announces all SMS reminders are now live, with separate Call 1 and Call 2 versions: booking confirmation, 24 hours before, same-day, one hour before and ten minutes before. This supersedes the November 6 statement that Call 2 reminders were still in testing. Messages include relevant meeting-owner/client-name, customer-timezone and Zoom details where applicable. This rollout is not proof any particular text was delivered, a guarantee for an undocumented edge case, or removal of preparation calls. Continue checking actual timeline/sent status, opt-outs and duplicates. For missing or wrong-time reminders give Tech the client and meeting date/time; for excess texts supply example contact records so Tech can inspect trigger history rather than disabling all reminders.",
     "scopes": [
       "shared"
     ],
@@ -6366,9 +6393,11 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793792513546989",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793877397414379",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793863957402269",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793951886469649"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793951886469649",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794392367649169",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794342181766339"
     ],
-    "reviewedAt": "2026-11-08T12:43:07.267277+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7361,7 +7390,7 @@
       "How do I handle two confirmed auditions at once?",
       "I blocked my calendar but a second appointment still got booked. Why?"
     ],
-    "text": "Double booking is for approved reps, not an entitlement for every rep. Review and confirm both applicants, choose the call you will take and pre-post the other confirmed appointment in #ft-docs-istv-passoff with time and necessary contact/Zoom details before the start when the overlap is known. Do not leave the second applicant waiting. Auto-zaps require the client to join while the closer is absent; a no-show alone is not proof a call was passed off. The linked double-booking video explains two calendars (MC1/MC2): block unavailable time on BOTH calendars or update both OnceHub availabilities. Kent clarified November 5 to mark both block events Busy and check the assigned calendar: duplicating an event can accidentally leave both copies on the same calendar. Blocking future availability does not move existing bookings. Follow the specific current handoff SOP rather than the older video’s generic legacy sales-channel instruction. The cheat sheets still mention Keap after-call ownership; for current HubSpot assignment use the separately maintained #hubspot-passoff SOP, matched Slack/HubSpot email, one cast email per message and confirmation reply. Do not mistake the live-call claim for a completed CRM transfer; retain notes, outcome and next steps, and request the original recording if needed.",
+    "text": "Double booking is for approved reps, not an entitlement for every rep. Review and confirm both applicants, choose the call you will take and pre-post the other confirmed appointment in #ft-docs-istv-passoff with time and necessary contact/Zoom details before the start when the overlap is known. Do not leave the second applicant waiting. Auto-zaps require the client to join while the closer is absent; a no-show alone is not proof a call was passed off. The linked double-booking video explains two calendars (MC1/MC2): block unavailable time on BOTH calendars or update both OnceHub availabilities. Kent clarified November 5 to mark both block events Busy and check the assigned calendar: duplicating an event can accidentally leave both copies on the same calendar. Blocking future availability does not move existing bookings. Follow the specific current handoff SOP rather than the older video’s generic legacy sales-channel instruction. The cheat sheets still mention Keap after-call ownership; for current HubSpot assignment use the separately maintained #hubspot-passoff SOP, matched Slack/HubSpot email, one cast email per message and confirmation reply. Do not mistake the live-call claim for a completed CRM transfer; retain notes, outcome and next steps, and request the original recording if needed. The maintained Pass-Off SOP now explicitly names HubSpot instead of Keap; its timing is unchanged. Older video/cheat-sheet CRM references do not override the current HubSpot transfer receipt process.",
     "scopes": [
       "shared"
     ],
@@ -7373,7 +7402,7 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793907340960139",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793976294310849"
     ],
-    "reviewedAt": "2026-11-08T12:43:07.267277+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7423,7 +7452,7 @@
       "Are third calls banned and do they now pay five percent commission?",
       "What does Rudy mean by no Call 3?"
     ],
-    "text": "Rudy’s November 6 announcement says NO CALL 3s and instructs reps to seek initial payment and confirmation on Call 2. It then says the company WILL SOON ban Call 3 totally OR only pay 5% commission: this does not establish a currently effective 5% commission rate. The linked 10 Commandments and objection-handling training use stronger no-third-call language, ask for substantive objection handling after the license video and emphasize genuine commitment before that video. Explain the operational expectation to work through concerns on Call 2, without inventing a finalized commission penalty or treating every follow-up as an approved standard path. These broad closing directions conflict with the current reality script’s specific no-pressure, bank/card and meaningful agreement-review safeguards. Preserve that conflict and those safeguards; do not direct reps to prevent someone leaving, force a bank call, dismiss an actual legal concern, invent scarcity or collect money before informed agreement. A later balance/wire coordination after an agreed initial payment is distinct from postponing the initial decision. Use the approved package/payment terms, not illustrative amounts from training.",
+    "text": "Rudy’s November 6 announcement says NO CALL 3s and instructs reps to seek initial payment and confirmation on Call 2. It then says the company WILL SOON ban Call 3 totally OR only pay 5% commission: this does not establish a currently effective 5% commission rate. The linked 10 Commandments and objection-handling training use stronger no-third-call language, ask for substantive objection handling after the license video and emphasize genuine commitment before that video. Explain the operational expectation to work through concerns on Call 2, without inventing a finalized commission penalty or treating every follow-up as an approved standard path. These broad closing directions conflict with the current reality script’s specific no-pressure, bank/card and meaningful agreement-review safeguards. Preserve that conflict and those safeguards; do not direct reps to prevent someone leaving, force a bank call, dismiss an actual legal concern, invent scarcity or collect money before informed agreement. A later balance/wire coordination after an agreed initial payment is distinct from postponing the initial decision. Use the approved package/payment terms, not illustrative amounts from training. The updated Rudy tips add firm objection handling when someone says they will think about it, using genuine limited availability. Do not invent live inventory or present an illustrative daily casting-volume claim as audited fact. Preserve the current script’s agreement-review and no-pressure safeguards and approved exceptions.",
     "scopes": [
       "shared"
     ],
@@ -7433,7 +7462,7 @@
       "https://www.loom.com/share/586c43d0c24f4a7dbf0f8c7de126659c",
       "https://docs.google.com/document/d/114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI/edit"
     ],
-    "reviewedAt": "2026-11-08T12:43:07.267277+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7596,18 +7625,24 @@
   {
     "id": "reality-season3-availability-nov9-2026",
     "decisionKey": "reality-season3-availability-nov9-2026",
-    "title": "Dated November 9 Season 3 availability snapshot",
+    "title": "Island Season 3 filled; sell Season 4 with conditional Season 3 opening",
     "questions": [
-      "Are there spots left for Island and Mansion season three?"
+      "Are there spots left for Island and Mansion season three?",
+      "Which Island season are we selling now?",
+      "When is Island season four?"
     ],
-    "text": "Rudy’s November 9 snapshot says Island Season 3 had three spots remaining and Mansion Season 3 six. His expectation that they would fill within one to four days is a forecast, not a promise or live count. These numbers are dated November 9, 2026; verify current casting availability before offering a slot or claiming a season is full. Do not decrement inventory from unverified peer comments or imply the chatbot can reserve a place.",
+    "text": "November 10 current update supersedes the November 9 Island three-spots snapshot: Mike directs reps to Season 4 and Rudy confirms Season 3 has just filled. Be honest with new prospects that they are joining the next season. Rudy says they can be first on the list for Season 3 if an existing participant cannot make the dates; this is conditional on a real opening, not a guaranteed Season 3 place or permission to reserve a slot. Rudy gives summer July/August for Season 4 as a planning window, not exact confirmed dates, secured travel arrangements or a promise that every future season films April–June. The separate Mansion Season 3 six-spots count remains only a November 9 dated snapshot, not verified live inventory. Confirm actual allocation before promising a place.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794249091946999"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794249091946999",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794340176223089",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794346888330529",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794349296073069",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794349301843629"
     ],
-    "reviewedAt": "2026-11-10T12:44:35.525214+00:00",
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7643,6 +7678,135 @@
       "operational_edb70f8a0644cbfe",
       "operational_f65a5463a5492076"
     ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "preparation-call-audit-review-2026-11-11",
+    "decisionKey": "preparation-call-audit-review-2026-11-11",
+    "title": "Preparation-call compliance audit and disputed results",
+    "questions": [
+      "The prep-call audit says red but I called everyone. Am I removed?",
+      "How much daily time should I block to prepare tomorrow’s calls?"
+    ],
+    "text": "Rudy instructs reps to block 30–45 minutes daily to call and prepare tomorrow’s booked leads. His November 11 warning uses yellow/red and 80% or lower audit results, but his subsequent clarification says the new report is being audited for accuracy and results must be verified before anyone is removed from calendars. If you dialled every person booked for the next day, he says you are fine; report a suspected audit issue to Alex with actual appointment/call evidence. A warning color alone is not proof of noncompliance or automatic removal. Do not invent a verified cause for a disputed score, fabricate call logs or treat this as permission to ignore required preparation. Follow the actual SOP and booked-call/contact-hour exceptions.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794320216670009",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794396577839009",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794398467997469"
+    ],
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "hubspot-booking-contact-identity-2026-11-11",
+    "decisionKey": "hubspot-booking-contact-identity-2026-11-11",
+    "title": "Booking ownership and mismatched contact identity",
+    "questions": [
+      "Does booking a meeting make me the contact owner?",
+      "The booking email matches but the name and phone are different. What do I do?"
+    ],
+    "text": "Igor clarifies that the person who books a meeting is not necessarily the HubSpot contact owner. Before booking a lead who may belong to another rep, check the existing contact owner and meetings and flag ownership conflicts. If the booking email matches an existing contact but the name or phone belongs to someone else, flag the mismatch to Tech before relying on the merged identity. An automated acceptance/history entry does not prove which person actually used a link. Provide the specific contact/meeting evidence through the appropriate internal support process; do not overwrite someone else’s identity or infer payment/acceptance from an unrelated matched email.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794337159126709",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794337746809209"
+    ],
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "sales-daily-checklist-2026-11-11",
+    "decisionKey": "sales-daily-checklist-2026-11-11",
+    "title": "Sales Rep Daily Cheat Sheet and applicable exceptions",
+    "questions": [
+      "Where is the daily sales rep checklist?",
+      "What should I do each day as a sales rep?"
+    ],
+    "text": "The newly linked Sales Rep Daily Cheat Sheet covers: two pre-meeting dials plus email/text the day before scheduled calls and a day-of text; at least 60 daily dial-outs from the HubSpot outreach channel; approved-calendar access before 20-percent, pass-off or dummy-channel calls; the correct Call 1/2 script and videos; substantive Call 2 objection handling after the licensing video; permitted follow-up with prior sold clients, no-shows and cancellations; and end-of-day HubSpot cast/status/score updates. Checklist: https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit . Sixty dials is an activity target, not the lead-allocation limit; preserve the current 100-lead/day allocation controls, ownership, actual call logging, contact hours and opt-outs. The checklist’s 30-minute post-video instruction does not override meaningful agreement review or authorize pressuring someone to remain. Its two-dial summary does not explicitly repeal the detailed SOP’s extra attempts for unresponsive contacts. Do not blindly contact a cancelled or opted-out prospect when contact is prohibited.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit",
+      "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit"
+    ],
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-hospital-cohort-exception-2026-11-11",
+    "decisionKey": "documentary-hospital-cohort-exception-2026-11-11",
+    "title": "Documentary cohort exception for a hospital issue",
+    "questions": [
+      "A documentary prospect was in hospital and missed the cohort deadline. Can we help?"
+    ],
+    "text": "On November 10 Rudy and Mike approved a hospital-related exception for a particular documentary prospect whose situation delayed the cohort process. This establishes that a documented hospital issue can be raised for leadership-approved exception handling, not that reps may waive every cohort deadline themselves or that all documentary cohorts have ended. Explain the situation to the responsible leader and obtain the case-specific approval. Reality offers retain their separate no-documentary-cohort rules. Rich is no longer with the business as Mike confirmed November 9; do not route current requests to Rich. For the documented hospital situation contact Mike/the responsible current leader, who can obtain Rudy’s approval where needed. Preserve the older serious-genuine-event exception (such as a car crash or family death with appropriate proof): it still needs leadership review and is never self-approved. Other nonstandard deadline, next-cohort or disputed rejection requests need the responsible current leader’s review; this does not transfer every former Rich responsibility to Mike or guarantee an exception.",
+    "scopes": [
+      "main_istv"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794335885778819",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794339424550389",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794232775365759"
+    ],
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [
+      "claim_545148587c77d367",
+      "claim_396379cd8a7da9ba__a3",
+      "claim_91adcd3b411340ef__a3"
+    ],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "casting-meeting-training-2026-11-10",
+    "decisionKey": "casting-meeting-training-2026-11-10",
+    "title": "November 10 casting training replay: preparation, qualification and production boundaries",
+    "questions": [
+      "Where is the November 10 casting team meeting?",
+      "Can I send the production challenge slides to a prospect?"
+    ],
+    "text": "November 10 Casting Team Meeting replay: https://insidesuccess.zoom.us/rec/share/ri0gZH44XDw-gGSpBYxlummD-26FUJqX0l6u7QXVw-JgvJIVX2leuG2s8zkZg0Vo.N0CaDjP5u0DiIUcH . Reviewed lessons: prepare already-booked prospects even if they confirmed by text; distinguish preparation from outbound booking qualification; Green Light allowances depend on call volume and suitability; work through real Call 2 concerns while preserving informed agreement. Rudy explicitly says the example production challenge slides are illustrative/fake and confidential, not actual promised show challenges and not to be forwarded to cast/prospects. Do not publish their detailed contents as show rules. Hypothetical Netflix pickup, venue negotiations and hoped-for production cadence are not signed distribution or finalized schedules. Use the current show/season-specific schedule record for dated planning guidance, and Production for individual travel details.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://insidesuccess.zoom.us/rec/share/ri0gZH44XDw-gGSpBYxlummD-26FUJqX0l6u7QXVw-JgvJIVX2leuG2s8zkZg0Vo.N0CaDjP5u0DiIUcH"
+    ],
+    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
     "sourceKind": "source_reviewed_governed_policy"
   }
 ]
