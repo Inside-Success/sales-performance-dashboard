@@ -1,0 +1,98 @@
+[
+  {
+    "before": "* The compliance evaluation uses the distribution facts, refund status, and celebrity roster below to judge risk.",
+    "after": ""
+  },
+  {
+    "before": "* Coaching and compliance are separate outputs and never mix. Where the company's sales method and the compliance rules point in different directions (e.g., urgency, scarcity, ROI-style framing), compliance wins, and coaching must never reward a prohibited tactic.",
+    "after": "* Applicable company restrictions constrain which claims and terms may truthfully be offered. They do not establish that every unresolved buying concern was handled poorly."
+  },
+  {
+    "before": "* Precedence: this pack is authoritative for the facts and company rules it contains. If anything in the prompt's base instructions conflicts with a fact here, follow this pack. (This pack does not override the prompt's evaluation logic, output structure, classification rules, or the coaching/compliance separation — those live in the prompt.)",
+    "after": ""
+  },
+  {
+    "before": "Compliance-critical exclusions: LITE has no Tier-1 submission and no 100,000 views. STANDARD has no Tier-1 submission. (See §2 for what \"Tier-1\" does and doesn't mean.)",
+    "after": "Package exclusions: LITE has no Tier-1 submission and no 100,000 views. STANDARD has no Tier-1 submission. (See §2 for what \"Tier-1\" does and doesn't mean.)"
+  },
+  {
+    "before": "* No custom amounts or custom payment plans — only the options above. (A rep making a slight slip here is gentle coaching, not a harsh mark; it's only a compliance matter if the rep states a materially deceptive or unauthorized term.)",
+    "after": "* No custom amounts or custom payment plans — only the options above."
+  },
+  {
+    "before": "Determine the show from any provided metadata (the record/show name) or clear transcript cues (mentions of \"Daymond John\" or \"Next Level CEO\"). Use that show's pricing above. Default to the main program (ISTV) if the show is genuinely unclear, and never flag a price as wrong purely because of show ambiguity.",
+    "after": "Show-specific prices apply only to the identified show. When the show cannot be established, its price is unknown; ambiguity is not evidence of a wrong price."
+  },
+  {
+    "before": "2. Distribution / platform truth (compliance-critical)",
+    "after": "2. Distribution / platform facts"
+  },
+  {
+    "before": "* Platform availability vs. license (confirmed with Mike & Rich): A client's episode is hosted on the ISTV platform (Inside Success Network) for 5 years. Separately, the client holds a lifetime license to their own episode and may keep and use that content indefinitely. These are different and must not be merged. Compliance: An accurate claim that the episode stays on the ISTV platform for 5 years (for example, \"5 years on our platform\") is correct → not a flag. A claim that the episode stays on the ISTV platform beyond 5 years, permanently, indefinitely, forever, or for a lifetime overstates the platform window → flag it. An accurate statement that the client has a lifetime license to their own episode is correct → not a flag.",
+    "after": "* Platform availability vs. license (confirmed with Mike & Rich): A client's episode is hosted on the ISTV platform (Inside Success Network) for 5 years. Separately, the client holds a lifetime license to their own episode and may keep and use that content indefinitely. These are different and must not be merged."
+  },
+  {
+    "before": "* Call 1 = casting / discovery. Pricing is not discussed on Call 1 (license costs are only mentioned after a prospect is greenlit). Call 1 is not scored.",
+    "after": "* Call 1 = casting / discovery. Pricing is not discussed on Call 1 (license costs are only mentioned after a prospect is greenlit)."
+  },
+  {
+    "before": "* Call 2 = license pitch + close. This is the scored call. Typical flow: welcome & excitement → greenlight story visualization → soft yes → play the license video at the chosen price point → contract / payment / onboarding → objection handling.",
+    "after": "* Call 2 = license pitch + close. Typical flow: welcome & excitement → greenlight story visualization → soft yes → play the license video at the chosen price point → contract / payment / onboarding → objection handling."
+  },
+  {
+    "before": "Unauthorized (coaching must not recommend these; some are also compliance issues): custom payment plans/deposits or invented amounts; showing all three prices at once; sharing the full contract before payment; immediately agreeing to \"just send me the info / PDF / contract\" (it kills the sale — a +10-minute last resort only); using a personal cell (all comms go through company systems); contacting past/current cast members as references; sending internal call recordings; inventing show/package details; doing board/investor review calls; chasing uninterested prospects.",
+    "after": "Unauthorized company actions: custom payment plans/deposits or invented amounts; showing all three prices at once; sharing the full contract before payment; immediately agreeing to \"just send me the info / PDF / contract\" (it kills the sale — a +10-minute last resort only); using a personal cell (all comms go through company systems); contacting past/current cast members as references; sending internal call recordings; inventing show/package details; doing board/investor review calls; chasing uninterested prospects."
+  },
+  {
+    "before": "* ROI / results: never promise or imply ROI, revenue, leads, or results. Reframe around the vehicle, the assets/PR, and the precursors to growth. (This is both the company's own rule and a compliance rule.)",
+    "after": "* ROI / results: never promise or imply ROI, revenue, leads, or results. Reframe around the vehicle, the assets/PR, and the precursors to growth."
+  },
+  {
+    "before": "Important: several tactics in the broader method — urgency, scarcity, ROI-style framing, pressing past a spouse/board, encouraging financing — are constrained or prohibited by compliance (§7 and the prompt's compliance rules). Coaching reinforces skilled, compliant handling and must never reward a prohibited claim; compliance flags those independently. The two never mix.",
+    "after": ""
+  },
+  {
+    "before": "6. Approved celebrity / influencer roster (compliance allow-list)",
+    "after": "6. Approved celebrity / influencer roster"
+  },
+  {
+    "before": "* A listed name referenced as ISTV-associated → do not flag.",
+    "after": "* Listed names may be described as ISTV-associated."
+  },
+  {
+    "before": "* \"On Amazon Prime\" = Yes → that person's episode is genuinely on Amazon Prime, so a rep saying they're on Amazon is accurate — but this applies once the episode is Published; for a \"Yes\" name whose episode is still upcoming/not filmed, a rep should not claim it is already on Amazon (it will be once published). \"On Amazon Prime\" = No → ISN network only; a rep claiming they're on Amazon Prime is inaccurate → flag.",
+    "after": "* \"On Amazon Prime\" = Yes means the person’s episode is on Amazon Prime only once Published. Upcoming or not-yet-filmed episodes are not already on Amazon. \"On Amazon Prime\" = No means ISN network only."
+  },
+  {
+    "before": "* A name not on this list, referenced as if ISTV-associated or endorsing → flag (this also covers celebrities whose content ISTV merely licensed).",
+    "after": "* The roster does not establish an ISTV association or endorsement for unlisted names, including people whose content ISTV merely licensed."
+  },
+  {
+    "before": "* Even for listed names, implying the celebrity endorses the prospect's business or guarantees the prospect's outcome → flag.",
+    "after": "* Being listed does not mean a celebrity endorses the prospect’s business or guarantees the prospect’s outcome."
+  },
+  {
+    "before": "7. Other compliance-relevant facts",
+    "after": "7. Other applicable company facts"
+  },
+  {
+    "before": "(These support the compliance evaluation only and must never appear in coaching fields. The detailed flag logic lives in the prompt; these are the facts it relies on, alongside §2 and §6.)",
+    "after": ""
+  },
+  {
+    "before": "* Next Level CEO (Daymond John) shows: a 3-day refund window is approved and current for this show. A rep accurately referencing this 3-day refund is correct → not a flag. Flag only if a rep on a Next Level CEO call promises refund terms clearly beyond this approved window (for example an open-ended/anytime money-back, or a longer guaranteed-refund period).",
+    "after": "* Next Level CEO (Daymond John): the approved refund window is 3 days. This does not authorize longer or open-ended refund terms."
+  },
+  {
+    "before": "* All other shows (the main program — every show other than Next Level CEO, including ISTV, Legacy Makers, and American Founders): there is no refund offer; there are no refunds. Any rep promise or implication of a refund, a refund timeframe, a 3-day window, or post-payment cancellation/reversal on these shows is a refund/payment compliance issue → flag. Apply only the calling show's rule. Do not flag a correct 3-day refund statement on a Next Level CEO call, and do not treat a refund as allowed on any non–Next Level CEO call.",
+    "after": "* All other shows, including ISTV, Legacy Makers and American Founders: no refund offer or post-payment cancellation/reversal is authorized. Apply the calling show’s rule; the NLCEO 3-day window does not extend to other shows."
+  },
+  {
+    "before": "* * Recording consent: the rep should disclose that the call is recorded for training/compliance. Treat consent as satisfied whenever the rep discloses the recording and the client does not object — this includes implicit acknowledgment such as a brief \"okay,\" \"sure,\" \"that's fine,\" or simply continuing the conversation after the disclosure. Do NOT flag when the rep disclosed the recording and the client went along with it, even if the acknowledgment was indirect and the rep did not ask for an explicit yes. Flag only when (a) there is no recording disclosure at all on a scored Call 2, or (b) the client objects to being recorded and the rep keeps recording anyway.",
+    "after": "* Recording practice: disclose recording for training. A buyer may acknowledge explicitly or continue without objection; an explicit objection must be respected."
+  },
+  {
+    "before": "* Sensitive info (PII): complete or materially usable sensitive values spoken or accepted on the recording (card numbers, SSNs, tax IDs, bank details) are a flag. A prompt rep intervention that stops the disclosure before a usable value is captured is not a flag.",
+    "after": "* Sensitive information includes materially usable card numbers, SSNs, tax IDs and bank details. Stop disclosure before a usable value is recorded."
+  }
+]

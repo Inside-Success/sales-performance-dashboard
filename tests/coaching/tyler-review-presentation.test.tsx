@@ -37,3 +37,47 @@ it('fails closed on missing or duplicated pinned reasoning instructions',()=>{
   expect(revised).not.toContain(text);expect(revised.startsWith('Before. ')).toBe(true);expect(revised.endsWith(' After.')).toBe(true);
  }
 });
+
+it('v2 renders a hook, subheadline and numbered source-order objections while preserving safety',()=>{
+ const r=report();r.presentation='tyler-review-v2';r.summary='Make the next conversation count\nInclude the decision partner while respecting a later refusal.';
+ r.objections[1].exchange='He wanted his wife present.\n\nThe rep offered a joint conversation.';
+ c.validate(r,blocks);
+ expect(c.render(r,blocks)).toContain('### 1. Wife discussion');expect(c.render(r,blocks)).toContain('### 2. Declines investment');
+ const x=candidate(r),p=a.publish(a.safety(x,{candidateDigest:x.digest,requestId:'SYNTHETIC-UNIT-ONLY',pass:true,unresolvedFindings:[]}),{sourceId:'fixture',channel:'official'});
+ const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:{...p,source_airtable_record_id:"fixture"}}} reportType="official" reportId="fixture"/>);
+ expect(html).toContain('1. Wife discussion');expect(html).toContain('Make the next conversation count');expect(html).toContain('whitespace-pre-line');
+ expect(require('../../scripts/coaching-foundations/safety.cjs').fields(r).map((f:{path:string})=>f.path)).toContain('summary');
+ expect(()=>c.validate({...r,summary:'Missing subheadline'},blocks)).toThrow('two nonempty lines');
+ const repaired=a.repair(x,x.digest,[{path:'summary',before:r.summary,after:'A grounded hook\nA grounded subheadline.'}]);expect(repaired.safety).toBeNull();
+ expect(()=>a.publish(repaired,{sourceId:'fixture',channel:'official'})).toThrow('Unreviewed');
+ expect(()=>c.acceptReview(r,{pass:false,findings:[{issue:'downgrade',evidence_ids:[]}],corrected_report:report()},blocks)).toThrow('presentation revision');
+});
+
+it('v2 puts every improvement before strengths across reasoning layers without dropping reviewed text',()=>{
+ const r:any=report();r.presentation='tyler-review-v2';r.summary='A useful decision conversation\nClarify the decision without inventing urgency.';
+ r.lessons=[
+  {id:'L1',title:'Keep the relevant invitation',purpose:'repeat',layer:'interpretation',observation:'The invitation matched the stated need.',teaching:'Include the actual decision partner.',example:'',evidence_ids:['T0001'],counterevidence_ids:[]},
+  {id:'L2',title:'Respect the changed decision',purpose:'refine',layer:'strategy',observation:'The later refusal superseded the earlier opportunity.',teaching:'Use the latest buyer decision to choose the next move.',example:'',evidence_ids:['T0002'],counterevidence_ids:[]},
+  {id:'L3',title:'Explore the underlying value',purpose:'explore',layer:'foundations',observation:'The early request provided an opportunity to understand shared value.',teaching:'Explore what the decision partner would need to understand.',example:'',evidence_ids:['T0001'],counterevidence_ids:[]},
+ ];
+ r.objections[0].handling='needs_work';r.objections[0].teaching='A separate practical move.';r.objections[0].example='A distinct illustrative sentence.';
+ r.next_steps=[{kind:'promised',text:'Send the requested information.',evidence_ids:['T0001']}];
+ const md=c.render(r,blocks),before=JSON.stringify(r);
+ expect(md.indexOf('Explore the underlying value')).toBeLessThan(md.indexOf('What worked'));
+ expect(md.indexOf('What to improve')).toBeLessThan(md.indexOf('What worked'));
+ expect(md).toContain('**Improvement:** The refusal was clear.\n\nA separate practical move.\n\n**For example:** A distinct illustrative sentence.');
+ for(const channel of ['official','manual'] as const){
+  const x=candidate(r),p=a.publish(a.safety(x,{candidateDigest:x.digest,requestId:'SYNTHETIC-UNIT-ONLY',pass:true,unresolvedFindings:[]}),{sourceId:'fixture',channel});
+  const sections=a.sections(p,'fixture',channel),keys=sections.map((s:any)=>s.key);
+  expect(new Set(keys).size).toBe(keys.length);expect(keys).toEqual(['summary','objections','takeaways','strengths','next-steps','outcome']);
+  const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:{...p,source_airtable_record_id:'fixture'}}} reportType={channel} reportId="fixture"/>);
+  expect(html.indexOf('Explore the underlying value')).toBeLessThan(html.indexOf('Keep the relevant invitation'));
+  for(const lesson of r.lessons)for(const field of ['title','observation','teaching'])expect(html).toContain(lesson[field]);
+  expect(html).toContain('Send the requested information.');expect(html).toContain('A separate practical move.</p><p>');
+  const doc=require('../../scripts/coaching-foundations/document-format.cjs').docRequests(sections,[]);
+  expect(doc.text.indexOf('Explore the underlying value')).toBeLessThan(doc.text.indexOf('Keep the relevant invitation'));
+  expect(p.reviewed_coaching_v3.digest).toBe(a.digest(r));
+ }
+ expect(JSON.stringify(r)).toBe(before);
+ r.presentation='tyler-review-v1';expect(c.render(r,blocks)).toContain('Reading the buyer');expect(c.render(r,blocks)).not.toContain('## What worked');
+});

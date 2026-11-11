@@ -2,7 +2,8 @@
 const {digest}=require('./coaching-canonical.cjs');
 const contract=require('./foundations-contract.cjs');
 const LEGACY_GENERATION='magic-mike-foundations-candidate-2026-11-06';
-const GENERATION='magic-mike-tyler-coaching-2026-11-10';
+const PREVIOUS_GENERATION='magic-mike-tyler-coaching-2026-11-10';
+const GENERATION='magic-mike-tyler-coaching-2026-11-12';
 const copy=value=>structuredClone(value);
 function required(value,label){if(typeof value!=='string'||!value.trim())throw Error('Missing '+label);return value;}
 function receipt(response,expected){
@@ -21,9 +22,9 @@ function accept({prepared,draftResponse,draftRequestId,reviewResponse,reviewRequ
 }
 function prosePaths(r){
  const paths=['outcome.text'];
- if(r.presentation==='tyler-review-v1')paths.push('summary');
+ if(['tyler-review-v1','tyler-review-v2'].includes(r.presentation))paths.push('summary');
  for(const [group,fields] of Object.entries({objections:['title','concern','response','assessment','teaching','example'],lessons:['title','observation','teaching','example'],next_steps:['text']}))r[group].forEach((_,i)=>fields.forEach(f=>paths.push(`${group}.${i}.${f}`)));
- if(r.presentation==='tyler-review-v1')r.objections.forEach((_,i)=>paths.push(`objections.${i}.exchange`));
+ if(['tyler-review-v1','tyler-review-v2'].includes(r.presentation))r.objections.forEach((_,i)=>paths.push(`objections.${i}.exchange`));
  return new Set(paths);
 }
 function repair(candidate,expectedDigest,patches){
@@ -52,7 +53,7 @@ function publish(candidate,{sourceId,channel}){
  return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,source_blocks:prepared.blocks,knowledge_manifest:prepared.knowledgeManifest||null,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
 }
 function read(payload,sourceId,channel){
- if(![GENERATION,LEGACY_GENERATION].includes(payload?.coaching_version))return null;
+ if(![GENERATION,PREVIOUS_GENERATION,LEGACY_GENERATION].includes(payload?.coaching_version))return null;
  const r=payload.reviewed_coaching_v3;
  if(!r||r.report?.status!=='completed'||!r.writerRequestId||!r.reviewRequestId||!r.safety?.requestId||digest(r.policy_text)!==r.policy_hash||r.source_id!==sourceId||r.channel!==channel||!r.safety?.pass||r.digest!==digest(r.report)||r.safety.candidateDigest!==r.digest)throw Error('Invalid bound report');
  if(r.source_blocks!==undefined&&(!Array.isArray(r.source_blocks)||digest(r.source_blocks)!==r.source_hash))throw Error("Invalid bound transcript");
@@ -63,8 +64,8 @@ module.exports={GENERATION,digest,prepare,accept,repair,safety,publish,read};
 function sections(payload,sourceId,channel){
  const loaded=read(payload,sourceId,channel);if(!loaded)return null;
  // One deterministic renderer supplies Docs/chat/dashboard, without diagnostic metadata.
- const chunks=loaded.markdown.split(/^## /m),result=loaded.report.presentation==='tyler-review-v1'?[]:[{key:'outcome',title:'Call outcome',items:[chunks[0].replace(/^# Call coaching\s*\*\*Outcome:\*\*\s*/, '').trim()]}];
- for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':title==='Coaching snapshot'?'summary':title==='Call outcome'?'outcome':({'Reading the buyer':'interpretation','Choosing your approach':'strategy','Principles to use again':'foundations'}[title]||'lessons');const items=(key==='next-steps'?body.split(/^[-] /m):body.split(/^### /m)).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
+ const chunks=loaded.markdown.split(/^## /m),result=['tyler-review-v1','tyler-review-v2'].includes(loaded.report.presentation)?[]:[{key:'outcome',title:'Call outcome',items:[chunks[0].replace(/^# Call coaching\s*\*\*Outcome:\*\*\s*/, '').trim()]}];
+ for(const chunk of chunks.slice(1)){const i=chunk.indexOf('\n'),title=chunk.slice(0,i).trim(),body=chunk.slice(i+1).trim();const key=title.startsWith('Objections')?'objections':title==='Next steps'?'next-steps':title==='Coaching snapshot'?'summary':title==='Call outcome'?'outcome':({'What to improve':'takeaways','What worked':'strengths','Reading the buyer':'interpretation','Choosing your approach':'strategy','Principles to use again':'foundations'}[title]||'lessons');const items=(key==='next-steps'?body.split(/^[-] /m):body.split(/^### /m)).filter(x=>x.trim()).map(s=>s.replace(/\*\*([^*]+)\*\*/g,'$1').trim());result.push({key,title,items});}
  return result;
 }
 module.exports.sections=sections;

@@ -1,3 +1,5 @@
+import {normalizeIngestPayload} from '../../src/lib/ingest';
+import {normalizeManualCallback} from '../../src/lib/manual-reports';
 import {describe,it,expect} from 'vitest';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
@@ -40,4 +42,15 @@ describe('foundations offline publication boundary',()=>{
   r.objections[0].source_id='other';expect(()=>contract.render(r,prepared().blocks)).toThrow('fields');
  });
  it('leaves legacy generations to their existing reader',()=>expect(a.read({coaching_version:'magic-mike-objection-coaching-2026-10-29'},'recA','official')).toBeNull());
+});
+
+it.each(['magic-mike-tyler-coaching-2026-11-10','magic-mike-foundations-candidate-2026-11-06'])('validates delayed historical generation %s at both delivery APIs',generation=>{
+ for(const channel of ['official','manual']){
+  const p={...a.publish(cleared(),{sourceId:'recA',channel}),coaching_version:generation};
+  const raw={...p,source_airtable_record_id:'recA',public_id:'recA',call_status:'scored',status:'completed'};
+  const normalize=channel==='official'?normalizeIngestPayload:normalizeManualCallback;
+  expect(()=>normalize(raw)).not.toThrow();
+  raw.reviewed_coaching_v3.report.outcome.payment='confirmed';
+  expect(()=>normalize(raw)).toThrow();
+ }
 });

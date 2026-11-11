@@ -14,6 +14,15 @@ function project(payload,sourceId,channel){
 // Exclusions are reviewed terminal outcomes, never scored reports or processing errors.
 function excludedProjection(result, expected) {
  const c=result.candidate,p=c?.prepared;
+ // Reconstruct the identity-scoped policy from the original parent binding;
+ // a child-provided hash alone never authorizes a different policy.
+ if(expected && result.reasoning?.version==='interaction-identity-v1') {
+  const identity=require('./identity-reasoning.cjs');
+  identity.validateAnalysis(result.analysis,expected.blocks);
+  const rebound=identity.bind({prepared:expected,system:expected.policyText,analysis:result.analysis,reasoning:result.reasoning});
+  expected=rebound.prepared;
+ }
+
  if(!expected||expected.sourceId!==result.source_id||!p||p.sourceId!==result.source_id||p.sourceHash!==expected.sourceHash||p.policyHash!==expected.policyHash||p.policyRevision!==expected.policyRevision||record.digest(p.blocks)!==p.sourceHash||record.digest(p.policyText)!==p.policyHash||c.digest!==record.digest(c.report)||c.report?.status!=='excluded'||result.payload!=null)throw Error('Unverified coaching exclusion binding');
  require('../../src/lib/foundations-contract.cjs').validate(c.report,p.blocks);
  const receipts=result.provider_results||[];

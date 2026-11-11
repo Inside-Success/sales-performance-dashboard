@@ -1,7 +1,8 @@
-// A terminal failed safety response is evidence for a bounded repair, never approval.
+// A terminal failed safety response is retained evidence, never approval.
+// The core can repair the initial stage once; a failed repair is retained and held.
 // Keep this pure predicate shared by the durable API and compiled n8n handoff.
 function repairableSafetyReceipt(stage, r) {
- return stage === 'foundations_safety_v3' && r?.ok === true &&
+ return ['foundations_safety_v3','foundations_safety_contract_repair_v3'].includes(stage) && r?.ok === true &&
   typeof r.provider_response_id === 'string' && Boolean(r.provider_response_id) &&
   typeof r.request_id === 'string' && Boolean(r.request_id) &&
   ['stop','end_turn','length','max_tokens'].includes(r.stop_reason) &&

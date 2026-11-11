@@ -19,4 +19,4 @@ function compose(source,layers){
  const prompt=require('./transition.cjs').prompt;
  return {system,prompt,knowledgeTemplate:require('./knowledge.cjs').template(system,layers),manifest:{...built,system:undefined,additional_responsibility_adaptation:'Replace original compliance paragraph; do not append contradictory policy-check duty'}};
 }
-module.exports={compose};
+module.exports={compose,PRESENTATION};

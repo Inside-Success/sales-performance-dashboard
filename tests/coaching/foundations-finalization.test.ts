@@ -135,6 +135,30 @@ describe('bounded terminal safety format repair',()=>{
   if(kind==='unmapped'){bad.parsed_json.pass=false;bad.parsed_json.findings=[{path:'offer_family',before:'main_istv',reason:'Wrong metadata.'}];}
   expect(()=>transition.advance(t,bad)).toThrow();
  });
+ it('discards a mismatched digest only in the isolated protocol and requires a new exact audit',()=>{
+  const t=ready();t.reasoning={version:'interaction-identity-v1',analyst:true};
+  const bad=pass(t);bad.parsed_json.candidate_digest='a'.repeat(64);
+  const retry=transition.advance(t,bad);
+  expect(retry.request.stage).toBe('safety-contract-repair');expect(retry.payload).toBeUndefined();
+  expect(retry.candidate).toEqual(t.candidate);expect(retry.prepared).toEqual(t.prepared);
+  expect(retry.request.request_id).not.toBe(t.request.request_id);
+  expect(retry.request.prompt).toContain(t.candidate.digest);
+  expect(retry.request.prompt).toContain('full_transcript');
+  expect(retry.request.prompt).toContain('AUDIT RESPONSE BINDING (copy exactly; do not calculate or rewrite):');
+  expect(retry.request.prompt.indexOf('AUDIT RESPONSE BINDING')).toBeGreaterThan(retry.request.prompt.indexOf('full_transcript'));
+  expect(transition.advance(JSON.parse(JSON.stringify(t)),bad).request).toEqual(retry.request);
+  expect(()=>transition.advance(retry,{...bad,request_id:retry.request.request_id})).toThrow();
+  expect(transition.advance(retry,pass(retry)).status).toBe('completed');
+  const finding=pass(retry);finding.parsed_json.pass=false;finding.parsed_json.findings=[{path:'lessons.0.teaching',before:report.lessons[0].teaching,reason:'Actual unsafe teaching.'}];
+  expect(transition.advance(retry,finding).request.stage).toBe('safety-repair');
+ });
+ it.each(['default','wrong-request','uncertain','refusal','unknown-stop','invalid-digest'])('keeps %s digest failures held',kind=>{
+  const t=ready();if(kind!=='default')t.reasoning={version:'interaction-identity-v1',analyst:true};
+  const bad=pass(t);bad.parsed_json.candidate_digest='a'.repeat(64);
+  if(kind==='wrong-request')bad.request_id='other';if(kind==='uncertain')bad.provider_response_id='';
+  if(kind==='refusal')bad.stop_reason='refusal';if(kind==='unknown-stop')bad.stop_reason='unknown';if(kind==='invalid-digest')bad.parsed_json.candidate_digest='invalid';
+  expect(()=>transition.advance(t,bad)).toThrow();
+ });
  it('routes genuine findings from the format review through the existing prose repair',()=>{
   const t=ready(),retry=transition.advance(t,{...pass(t),stop_reason:'length'}),r=pass(retry);r.parsed_json.pass=false;r.parsed_json.findings=[{path:'lessons.0.teaching',before:report.lessons[0].teaching,reason:'Actual unsafe teaching.'}];
   const next=transition.advance(retry,r);expect(next.request.stage).toBe('safety-repair');expect(next.repairCount).toBe(1);expect(next.status).toBe('request');

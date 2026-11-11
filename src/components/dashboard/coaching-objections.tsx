@@ -28,10 +28,11 @@ const resolutionLabels = {
 
 // Display only: callers supply the source-bound, validated and safety-reviewed record.
 // Never reconstruct categories or assessment boundaries from generated prose.
-export function CoachingObjections({ objections, focusId, compact = false }: {
+export function CoachingObjections({ objections, focusId, compact = false, numbered = false }: {
   objections: CoachingObjection[];
   focusId: string;
   compact?: boolean;
+  numbered?: boolean;
 }) {
   if (compact) return (
     <section className="magic-card min-w-0 p-5 md:p-7" aria-label="Objections and how you handled them">
@@ -39,12 +40,16 @@ export function CoachingObjections({ objections, focusId, compact = false }: {
       <ul className="divide-y divide-slate-200">
         {objections.map((o, i) => <li key={o.id} className={`space-y-3 break-words py-5 ${i === 0 ? "pt-0" : ""}`}>
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-slate-950">{o.title}</h3>
+            <h3 className="text-lg font-semibold text-slate-950">{numbered ? `${i+1}. ` : ""}{o.title}</h3>
             <p className="text-sm font-medium text-slate-600">{OBJECTION_CATEGORIES[o.category]}</p>
           </div>
-          <p className="text-base leading-7 text-slate-700">{o.exchange}</p>
+          <p className="whitespace-pre-line text-base leading-7 text-slate-700">{o.exchange}</p>
           {o.handling === "sound" ? <p className="text-base italic leading-7 text-slate-600">Handled well—no further feedback.</p> :
-            <p className="border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700"><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{[o.assessment, o.teaching, o.example ? `For example: ${o.example}` : ""].filter(Boolean).join(" ")}</p>}
+            numbered ? <div className="space-y-2 border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700">
+              <p><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{o.assessment}</p>
+              {o.teaching ? <p>{o.teaching}</p> : null}
+              {o.example ? <p><strong className="text-slate-950">For example: </strong>{o.example}</p> : null}
+            </div> : <p className="border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700"><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{[o.assessment, o.teaching, o.example ? `For example: ${o.example}` : ""].filter(Boolean).join(" ")}</p>}
         </li>)}
       </ul>
     </section>
