@@ -1,3 +1,5 @@
+> Current isolated follow-up: [November 12 source identity and explicit coaching](IDENTITY-COACHING-2026-11-12.md). The user raised the cumulative ceiling to $100; earlier experiment budgets and results below are historical. Production replacement is not authorized for this follow-up.
+
 # Coaching foundations evaluation — isolated only
 
 Latest isolated phase: [November 11 interaction-first evaluation](INTERACTION-COACHING-2026-11-11.md). Earlier results, budgets and experiment procedures below are historical records, not the latest candidate verdict. The current authorized cumulative ceiling is $100, with a $10 incremental cap on this round. Production remains unchanged.

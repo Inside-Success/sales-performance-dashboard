@@ -21,9 +21,9 @@ function request(state,stage,model,body){
 function start({prepared,call,system,models,channel,reasoning:options}){
  if(options?.version==='decision-plan-v1')return require('./decision-plan.cjs').start({prepared,call,system,models,channel,reasoning:options});
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
- const configured=['interaction-reasoning-v1','interaction-identity-v1'].includes(options?.version)?{version:options.version,analyst:true}:reasoning.config(options);
+ const configured=['interaction-reasoning-v1','interaction-identity-v1'].includes(options?.version)?{version:options.version,analyst:true,...(options.identityCatalog?{identityCatalog:options.identityCatalog}:{})}:reasoning.config(options);
  const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
- if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:protocol(state).ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
+ if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:protocol(state).analystSystem?protocol(state).analystSystem(state.reasoning):protocol(state).ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
  return writer(state);
 }
 function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}

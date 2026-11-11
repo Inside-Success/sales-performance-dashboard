@@ -5,6 +5,7 @@ const VERSION='interaction-identity-v1';
 const IDENTITY=`SOURCE IDENTITY RESPONSIBILITY:
 Add offer_identity:{family:"main_istv|next_level_ceo|reality|mixed|unknown",show:string,reason:string,evidence:[{id,text}]} to the analysis. Identify the offer actually under discussion, not a celebrity example, comparison, past appearance, video producer biography or rejected alternative. Generic Inside Success branding, price/tier and a celebrity name cannot establish a family. Documentary format alone cannot distinguish regular documentary from Next Level CEO. Use unknown when the source does not establish that distinction. Unknown is valid evidence restraint, not a report exclusion. Mixed means multiple live offers are genuinely being considered, not incidental mentions. Explicit current-show identification or clear current reality-format/competition description can resolve a family. Consider conflicting metadata and the entire ending, not a keyword count. Evidence contains short exact excerpts from supplied T blocks; metadata alone cannot resolve a family. For a resolved family supply at least one direct identifying source excerpt; explain why it identifies the current offer. Use show="Unknown" if the specific name is not established. Never normalize a possibly mistranscribed celebrity into a show name.`;
 const ANALYST_SYSTEM=prior.ANALYST_SYSTEM.replaceAll(prior.VERSION,VERSION)+'\n'+IDENTITY;
+function analystSystem(options){if(!options.identityCatalog)return ANALYST_SYSTEM;const c=require('./identity-catalog.cjs');if(options.identityCatalog!==c.VERSION)throw Error('Unknown identity catalog');return ANALYST_SYSTEM+'\n'+c.TEXT;}
 function validateAnalysis(a,blocks){
  prior.validateAnalysis({...a,version:prior.VERSION},blocks);
  const i=a.offer_identity;
@@ -23,10 +24,10 @@ function bind(state){
  if(limited){const at=system.indexOf(open),end=system.indexOf(close);if(at<0||end<at||system.split(open).length!==2||system.split(close).length!==2)throw Error('Missing scoped knowledge boundary');system=system.slice(0,at)+system.slice(end+close.length);}
  system+='\n'+SCOPE+'\n'+(limited?LIMITED:'Apply only the bound family and explicitly supported alternative-offer conditions from the governed sources.')+'\nBOUND SOURCE IDENTITY:\n'+JSON.stringify(identity);
  const prepared=record.prepare({sourceId:state.prepared.sourceId,blocks:state.prepared.blocks,policyRevision:state.prepared.policyRevision+':identity:'+record.digest(identity),policyText:system});
- prepared.knowledgeManifest={...state.prepared.knowledgeManifest,identity:{version:VERSION,...identity,limited,original_policy_hash:state.prepared.policyHash}};
+ prepared.knowledgeManifest={...state.prepared.knowledgeManifest,identity:{version:VERSION,...identity,limited,...(state.reasoning?.identityCatalog?{catalog:state.reasoning.identityCatalog,catalog_digest:record.digest(require('./identity-catalog.cjs').TEXT)}:{}),original_policy_hash:state.prepared.policyHash}};
  return {...state,system,prepared};
 }
 function assertReport(report,analysis){if(report.offer_family!==analysis.offer_identity.family)throw Error('Report identity differs from source-bound policy');}
 function materializeReview(draft,audit,analysis,blocks){const out=prior.materializeReview(draft,audit,analysis,blocks);assertReport(out.corrected_report||draft,analysis);return out;}
 function editGuidance(a){return prior.editGuidance(a)+'\nCheck the bound show identity independently against the complete source. A genuine direct-source contradiction must be held, not normalized away. In limited knowledge mode check every recommendation for unsupported family-specific facts, without deleting source-grounded selling advice. Tighten repeated explanation within each insight; preserve every necessary distinction, not a word-count target.';}
-module.exports={VERSION,ANALYST_SYSTEM,validateAnalysis,editGuidance,materializeReview,bind,assertReport};
+module.exports={VERSION,ANALYST_SYSTEM,analystSystem,validateAnalysis,editGuidance,materializeReview,bind,assertReport};

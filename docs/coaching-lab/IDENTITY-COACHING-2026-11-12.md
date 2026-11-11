@@ -26,3 +26,6 @@ No production workflow activation/update, production database write, merge, Slac
 
 ## Results
 Pending final evidence. Unit/contract tests and TypeScript passing alone are not acceptance.
+
+### Identity reference correction during evaluation
+The first source analyst correctly found the explicit Women in Power name but left its family unknown: unlike the coach, the analyst had no approved show-to-family reference. This was conservative under-classification, not an unsafe invented family. Add an opt-in versioned identity-only catalog from the existing governed `company-current-context`, `active-show-list-resource` and November4 documentary clarification records. It conveys no prices, availability or entitlements and cannot classify from mere mention. The prior frozen no-catalog path remains replayable; the catalog is separately configured and hashed into request/provenance. Initial in-flight work is retained and settled, remaining ungenerated synthetic cases move to the reference-enabled run, and the affected real case is explicitly a known remediation repeat, not a fresh holdout. A different documentary with a past-NLCEO contrast tests generality. No output-specific coaching rule or mandatory lesson is added.
